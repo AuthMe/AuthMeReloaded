@@ -3,6 +3,7 @@ package fr.xephi.authme.process;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.util.BukkitService;
@@ -25,7 +26,7 @@ public class ProcessService {
     @Inject
     private Messages messages;
     @Inject
-    private AuthMe authMe;
+    private AuthMe plugin;
     @Inject
     private ValidationService validationService;
     @Inject
@@ -99,7 +100,7 @@ public class ProcessService {
      * @return the assigned task id
      */
     public BukkitTask runTask(Runnable task) {
-        return authMe.getServer().getScheduler().runTask(authMe, task);
+        return plugin.getServer().getScheduler().runTask(plugin, task);
     }
 
     /**
@@ -110,7 +111,7 @@ public class ProcessService {
      * @return the assigned task id
      */
     public BukkitTask runTaskLater(Runnable task, long delay) {
-        return authMe.getServer().getScheduler().runTaskLater(authMe, task, delay);
+        return plugin.getServer().getScheduler().runTaskLater(plugin, task, delay);
     }
 
     /**
@@ -120,7 +121,7 @@ public class ProcessService {
      * @return the task id
      */
     public int scheduleSyncDelayedTask(Runnable task) {
-        return authMe.getServer().getScheduler().scheduleSyncDelayedTask(authMe, task);
+        return plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task);
     }
 
     /**
@@ -129,7 +130,7 @@ public class ProcessService {
      * @param event the event to emit
      */
     public void callEvent(Event event) {
-        authMe.getServer().getPluginManager().callEvent(event);
+        plugin.getServer().getPluginManager().callEvent(event);
     }
 
     /**
@@ -138,7 +139,7 @@ public class ProcessService {
      * @return AuthMe instance
      */
     public AuthMe getAuthMe() {
-        return authMe;
+        return plugin;
     }
 
     /**
@@ -166,6 +167,10 @@ public class ProcessService {
 
     public BukkitService getBukkitService() {
         return bukkitService;
+    }
+
+    public boolean hasPermission(Player player, PermissionNode node) {
+        return plugin.getPermissionsManager().hasPermission(player, node);
     }
 
 }

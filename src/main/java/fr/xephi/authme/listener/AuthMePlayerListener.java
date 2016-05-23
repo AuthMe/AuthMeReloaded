@@ -26,7 +26,6 @@ import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -142,7 +141,7 @@ public class AuthMePlayerListener implements Listener {
             bukkitService.runTaskAsynchronously(new Runnable() {
                 @Override
                 public void run() {
-                    m.send(player, MessageKey.DENIED_CHAT_MESSAGE);
+                    m.send(player, MessageKey.DENIED_CHAT);
                 }
             });
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
@@ -233,11 +232,6 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (player == null) {
             return;
-        }
-
-        if (settings.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
-            && !player.hasPermission(PlayerStatePermission.BYPASS_FORCE_SURVIVAL.getNode())) {
-            player.setGameMode(GameMode.SURVIVAL);
         }
 
         // Schedule login task so works after the prelogin

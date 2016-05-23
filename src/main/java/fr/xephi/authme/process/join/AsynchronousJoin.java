@@ -28,6 +28,7 @@ import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -73,13 +74,24 @@ public class AsynchronousJoin implements AsynchronousProcess {
         if (Utils.isUnrestricted(player)) {
             return;
         }
+
         final String name = player.getName().toLowerCase();
+        final String ip = Utils.getPlayerIp(player);
+
+        // Prevent player collisions in 1.9
+        if (DISABLE_COLLISIONS) {
+            ((LivingEntity) player).setCollidable(false);
+        }
+
+        if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
+            && !service.hasPermission(player, PlayerStatePermission.BYPASS_FORCE_SURVIVAL)) {
+            player.setGameMode(GameMode.SURVIVAL);
+        }
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
             pluginHooks.setEssentialsSocialSpyStatus(player, false);
         }
 
-        final String ip = Utils.getPlayerIp(player);
         if (isNameRestricted(name, ip, player.getAddress().getHostName())) {
             service.scheduleSyncDelayedTask(new Runnable() {
                 @Override
@@ -93,25 +105,27 @@ public class AsynchronousJoin implements AsynchronousProcess {
             });
             return;
         }
+
         if (service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP) > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && !"127.0.0.1".equalsIgnoreCase(ip)
-            && !"localhost".equalsIgnoreCase(ip)
-            && hasJoinedIp(player.getName(), ip)) {
+                && !service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
+                && !"127.0.0.1".equalsIgnoreCase(ip)
+                && !"localhost".equalsIgnoreCase(ip)
+                && hasJoinedIp(player.getName(), ip)) {
+
             service.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
-                    player.kickPlayer("A player with the same IP is already in game!");
+                    // TODO: Messages entry
+                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE));
                 }
             });
             return;
         }
-        // Prevent player collisions in 1.9
-        if (DISABLE_COLLISIONS) {
-            ((LivingEntity) player).setCollidable(false);
-        }
+
         final Location spawnLoc = spawnLoader.getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
+
+        // TODO: continue cleanup from this -sgdc3
         if (isAuthAvailable) {
             if (!service.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {

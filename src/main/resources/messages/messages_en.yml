@@ -1,3 +1,4 @@
+same_ip_online: 'A player with the same IP is already in game!'
 denied_chat: '&cIn order to be able to chat you must be authenticated!'
 kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
 unknown_user: '&cCan''t find the requested user in the database!'
