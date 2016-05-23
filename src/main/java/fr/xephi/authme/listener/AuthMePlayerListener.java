@@ -76,7 +76,7 @@ public class AuthMePlayerListener implements Listener {
 
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
-    public static final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<String>();
+
     @Inject
     private AuthMe plugin;
     @Inject
@@ -276,7 +276,7 @@ public class AuthMePlayerListener implements Listener {
         if (auth == null && antiBot.getAntiBotStatus() == AntiBotStatus.ACTIVE) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            antibotKicked.addIfAbsent(event.getName());
+            antiBot.antibotKicked.addIfAbsent(event.getName());
             return;
         }
         if (auth == null && settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)) {
@@ -368,7 +368,7 @@ public class AuthMePlayerListener implements Listener {
         if (antiBot.getAntiBotStatus() == AntiBotStatus.ACTIVE && !isAuthAvailable) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            antibotKicked.addIfAbsent(player.getName());
+            antiBot.antibotKicked.addIfAbsent(player.getName());
             return;
         }
 
@@ -413,7 +413,7 @@ public class AuthMePlayerListener implements Listener {
             event.setQuitMessage(null);
         }
 
-        if (antibotKicked.contains(player.getName())) {
+        if (antiBot.antibotKicked.contains(player.getName())) {
         	return;
         }
 
@@ -434,7 +434,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (antibotKicked.contains(player.getName())) {
+        if (antiBot.antibotKicked.contains(player.getName())) {
         	return;
         }
 
