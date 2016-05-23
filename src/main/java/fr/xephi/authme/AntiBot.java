@@ -1,6 +1,5 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -11,8 +10,6 @@ import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;

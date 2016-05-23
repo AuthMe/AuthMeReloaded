@@ -28,7 +28,6 @@ import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,11 +58,7 @@ import javax.inject.Inject;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
