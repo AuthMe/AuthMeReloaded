@@ -114,6 +114,7 @@ public class FieldInjection<T> implements Injection<T> {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> Constructor<T> getDefaultConstructor(Class<T> clazz) {
         try {
             Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();

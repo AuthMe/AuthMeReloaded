@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link FieldInjection}.
  */
+
 public class FieldInjectionTest {
 
     @SuppressWarnings("unchecked")
@@ -114,6 +115,8 @@ public class FieldInjectionTest {
         assertThat(injection, nullValue());
     }
 
+
+    @SuppressWarnings("unused")
     private static class ThrowingConstructor {
         @Inject
         private ProvidedClass providedClass;

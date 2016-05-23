@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.logout;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -16,9 +15,6 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 
 public class AsynchronousLogout implements AsynchronousProcess {
-
-    @Inject
-    private AuthMe plugin;
 
     @Inject
     private DataSource database;

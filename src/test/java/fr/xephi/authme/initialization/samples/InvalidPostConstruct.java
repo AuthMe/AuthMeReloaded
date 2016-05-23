@@ -6,6 +6,8 @@ import javax.inject.Inject;
 /**
  * Class with invalid @PostConstruct method.
  */
+
+@SuppressWarnings("unused")
 public abstract class InvalidPostConstruct {
 
     public static final class WithParams {
