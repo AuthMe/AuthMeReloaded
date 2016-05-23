@@ -36,9 +36,9 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -55,6 +55,9 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
+
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -70,6 +73,7 @@ public class AuthMePlayerListener implements Listener {
 
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
+
     @Inject
     private AuthMe plugin;
     @Inject
@@ -88,24 +92,6 @@ public class AuthMePlayerListener implements Listener {
     private SpawnLoader spawnLoader;
     @Inject
     private ValidationService validationService;
-
-    private void handleChat(AsyncPlayerChatEvent event) {
-        if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
-            return;
-        }
-
-        final Player player = event.getPlayer();
-        if (shouldCancelEvent(player)) {
-            event.setCancelled(true);
-            sendLoginOrRegisterMessage(player);
-        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
-            for (Player p : bukkitService.getOnlinePlayers()) {
-                if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
-                    event.getRecipients().remove(p);
-                }
-            }
-        }
-    }
 
     private void sendLoginOrRegisterMessage(final Player player) {
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -144,29 +130,31 @@ public class AuthMePlayerListener implements Listener {
         sendLoginOrRegisterMessage(event.getPlayer());
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void onPlayerHighChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onPlayerLowChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
+    public void onPlayerChat(PlayerChatEvent event) {
+        if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        if (shouldCancelEvent(player)) {
+            event.setCancelled(true);
+            bukkitService.runTaskAsynchronously(new Runnable() {
+                @Override
+                public void run() {
+                    m.send(player, MessageKey.DENIED_CHAT_MESSAGE);
+                }
+            });
+        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+            Set<Player> recipients = event.getRecipients();
+            Iterator<Player> iter = recipients.iterator();
+            while (iter.hasNext()) {
+                Player p = iter.next();
+                if (shouldCancelEvent(p)) {
+                    iter.remove();
+                }
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -192,7 +180,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             event.setTo(event.getFrom());
-            // sgdc3 TODO: remove this, maybe we should set the effect every x ticks, idk!
             if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
                 player.setFlySpeed(0.0f);
                 player.setWalkSpeed(0.0f);
@@ -253,7 +240,7 @@ public class AuthMePlayerListener implements Listener {
             player.setGameMode(GameMode.SURVIVAL);
         }
 
-        // Shedule login task so works after the prelogin
+        // Schedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
         bukkitService.runTask(new Runnable() {
             @Override
@@ -266,6 +253,23 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerAuth auth = dataSource.getAuth(event.getName());
+        if (auth == null && antiBot.getAntiBotStatus() == AntiBotStatus.ACTIVE) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            antiBot.antibotKicked.addIfAbsent(event.getName());
+            return;
+        }
+        if (auth == null && settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+        final String name = event.getName().toLowerCase();
+        if (name.length() > settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH) || name.length() < settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_LENGTH));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            return;
+        }
         if (settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE) && auth != null && auth.getRealName() != null) {
             String realName = auth.getRealName();
             if (!realName.isEmpty() && !"Player".equals(realName) && !realName.equals(event.getName())) {
@@ -287,7 +291,6 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        final String name = event.getName().toLowerCase();
         final Player player = bukkitService.getPlayerExact(name);
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
@@ -345,6 +348,7 @@ public class AuthMePlayerListener implements Listener {
         if (antiBot.getAntiBotStatus() == AntiBotStatus.ACTIVE && !isAuthAvailable) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            antiBot.antibotKicked.addIfAbsent(player.getName());
             return;
         }
 
@@ -362,7 +366,7 @@ public class AuthMePlayerListener implements Listener {
 
         String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
         Pattern nickPattern = Pattern.compile(nickRegEx);
-        if (nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
+        if (name.equalsIgnoreCase("Player") || !nickPattern.matcher(player.getName()).matches()) {
             event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", nickRegEx));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
@@ -389,6 +393,10 @@ public class AuthMePlayerListener implements Listener {
             event.setQuitMessage(null);
         }
 
+        if (antiBot.antibotKicked.contains(player.getName())) {
+        	return;
+        }
+
         management.performQuit(player, false);
     }
 
@@ -404,6 +412,10 @@ public class AuthMePlayerListener implements Listener {
             && event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR))) {
             event.setCancelled(true);
             return;
+        }
+
+        if (antiBot.antibotKicked.contains(player.getName())) {
+        	return;
         }
 
         plugin.getManagement().performQuit(player, true);

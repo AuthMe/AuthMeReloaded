@@ -64,13 +64,13 @@ public class SQLite implements DataSource {
         ConsoleLogger.logException("Error while executing SQL statement:", e);
     }
 
-    private synchronized void connect() throws ClassNotFoundException, SQLException {
+    private void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
     }
 
-    private synchronized void setup() throws SQLException {
+    private void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
         try {
@@ -143,7 +143,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean isAuthAvailable(String user) {
+    public boolean isAuthAvailable(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
@@ -181,7 +181,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized PlayerAuth getAuth(String user) {
+    public PlayerAuth getAuth(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
@@ -201,7 +201,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean saveAuth(PlayerAuth auth) {
+    public boolean saveAuth(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
             HashedPassword password = auth.getPassword();
@@ -242,12 +242,12 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean updatePassword(PlayerAuth auth) {
+    public boolean updatePassword(PlayerAuth auth) {
         return updatePassword(auth.getNickname(), auth.getPassword());
     }
 
     @Override
-    public synchronized boolean updatePassword(String user, HashedPassword password) {
+    public boolean updatePassword(String user, HashedPassword password) {
         user = user.toLowerCase();
         PreparedStatement pst = null;
         try {
@@ -274,7 +274,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateSession(PlayerAuth auth) {
+    public boolean updateSession(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;");
@@ -315,7 +315,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean removeAuth(String user) {
+    public boolean removeAuth(String user) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
@@ -331,7 +331,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateQuitLoc(PlayerAuth auth) {
+    public boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=? WHERE " + col.NAME + "=?;");
@@ -351,7 +351,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateEmail(PlayerAuth auth) {
+    public boolean updateEmail(PlayerAuth auth) {
         String sql = "UPDATE " + tableName + " SET " + col.EMAIL + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getEmail());
@@ -365,7 +365,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized void close() {
+    public void close() {
         try {
             if (con != null && !con.isClosed()) {
                 con.close();
@@ -462,7 +462,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean isLogged(String user) {
+    public boolean isLogged(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
@@ -481,7 +481,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized void setLogged(String user) {
+    public void setLogged(String user) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;");
@@ -496,7 +496,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized void setUnlogged(String user) {
+    public void setUnlogged(String user) {
         PreparedStatement pst = null;
         if (user != null)
             try {
@@ -540,7 +540,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateRealName(String user, String realName) {
+    public boolean updateRealName(String user, String realName) {
         String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, realName);
@@ -554,7 +554,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateIp(String user, String ip) {
+    public boolean updateIp(String user, String ip) {
         String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);

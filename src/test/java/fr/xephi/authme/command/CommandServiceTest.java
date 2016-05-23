@@ -6,7 +6,6 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -45,8 +44,6 @@ public class CommandServiceTest {
     private NewSetting settings;
     @Mock
     private ValidationService validationService;
-    @Mock
-    private BukkitService bukkitService;
 
     @Test
     public void shouldSendMessage() {
