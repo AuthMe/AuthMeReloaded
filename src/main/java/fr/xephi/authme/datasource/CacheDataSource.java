@@ -72,7 +72,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean isAuthAvailable(String user) {
+    public boolean isAuthAvailable(String user) {
         return getAuth(user) != null;
     }
 
@@ -87,13 +87,13 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized PlayerAuth getAuth(String user) {
+    public PlayerAuth getAuth(String user) {
         user = user.toLowerCase();
         return cachedAuths.getUnchecked(user).orNull();
     }
 
     @Override
-    public synchronized boolean saveAuth(PlayerAuth auth) {
+    public boolean saveAuth(PlayerAuth auth) {
         boolean result = source.saveAuth(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -102,7 +102,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updatePassword(PlayerAuth auth) {
+    public boolean updatePassword(PlayerAuth auth) {
         boolean result = source.updatePassword(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -111,7 +111,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updatePassword(String user, HashedPassword password) {
+    public boolean updatePassword(String user, HashedPassword password) {
         user = user.toLowerCase();
         boolean result = source.updatePassword(user, password);
         if (result) {
@@ -121,7 +121,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateSession(PlayerAuth auth) {
+    public boolean updateSession(PlayerAuth auth) {
         boolean result = source.updateSession(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -130,7 +130,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateQuitLoc(final PlayerAuth auth) {
+    public boolean updateQuitLoc(final PlayerAuth auth) {
         boolean result = source.updateQuitLoc(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -149,7 +149,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean removeAuth(String name) {
+    public boolean removeAuth(String name) {
         name = name.toLowerCase();
         boolean result = source.removeAuth(name);
         if (result) {
@@ -159,7 +159,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized void close() {
+    public void close() {
         source.close();
         cachedAuths.invalidateAll();
         executorService.shutdown();
@@ -171,7 +171,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateEmail(final PlayerAuth auth) {
+    public boolean updateEmail(final PlayerAuth auth) {
         boolean result = source.updateEmail(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -180,17 +180,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByIp(final String ip) {
+    public List<String> getAllAuthsByIp(final String ip) {
         return source.getAllAuthsByIp(ip);
     }
 
     @Override
-    public synchronized int countAuthsByEmail(final String email) {
+    public int countAuthsByEmail(final String email) {
         return source.countAuthsByEmail(email);
     }
 
     @Override
-    public synchronized void purgeBanned(final Set<String> banned) {
+    public void purgeBanned(final Set<String> banned) {
         source.purgeBanned(banned);
         cachedAuths.invalidateAll(banned);
     }
@@ -201,17 +201,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean isLogged(String user) {
+    public boolean isLogged(String user) {
         return PlayerCache.getInstance().isAuthenticated(user);
     }
 
     @Override
-    public synchronized void setLogged(final String user) {
+    public void setLogged(final String user) {
         source.setLogged(user.toLowerCase());
     }
 
     @Override
-    public synchronized void setUnlogged(final String user) {
+    public void setUnlogged(final String user) {
         source.setUnlogged(user.toLowerCase());
     }
 
@@ -227,7 +227,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateRealName(String user, String realName) {
+    public boolean updateRealName(String user, String realName) {
         boolean result = source.updateRealName(user, realName);
         if (result) {
             cachedAuths.refresh(user);
@@ -236,7 +236,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateIp(String user, String ip) {
+    public boolean updateIp(String user, String ip) {
         boolean result = source.updateIp(user, ip);
         if (result) {
             cachedAuths.refresh(user);
