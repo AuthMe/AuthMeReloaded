@@ -149,7 +149,7 @@ public class AuthMePlayerListener implements Listener {
             Iterator<Player> iter = recipients.iterator();
             while (iter.hasNext()) {
                 Player p = iter.next();
-                if (PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                if (shouldCancelEvent(p)) {
                     iter.remove();
                 }
             }
