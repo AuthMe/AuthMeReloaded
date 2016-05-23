@@ -28,7 +28,6 @@ import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -37,9 +36,9 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -57,11 +56,9 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
@@ -95,24 +92,6 @@ public class AuthMePlayerListener implements Listener {
     private SpawnLoader spawnLoader;
     @Inject
     private ValidationService validationService;
-
-    private void handleChat(AsyncPlayerChatEvent event) {
-        if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
-            return;
-        }
-
-        final Player player = event.getPlayer();
-        if (shouldCancelEvent(player)) {
-            event.setCancelled(true);
-            sendLoginOrRegisterMessage(player);
-        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
-            for (Player p : bukkitService.getOnlinePlayers()) {
-                if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
-                    event.getRecipients().remove(p);
-                }
-            }
-        }
-    }
 
     private void sendLoginOrRegisterMessage(final Player player) {
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -151,29 +130,31 @@ public class AuthMePlayerListener implements Listener {
         sendLoginOrRegisterMessage(event.getPlayer());
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void onPlayerHighChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onPlayerLowChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
+    public void onPlayerChat(PlayerChatEvent event) {
+        if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        if (shouldCancelEvent(player)) {
+            event.setCancelled(true);
+            bukkitService.runTaskAsynchronously(new Runnable() {
+                @Override
+                public void run() {
+                    m.send(player, MessageKey.DENIED_CHAT_MESSAGE);
+                }
+            });
+        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+            Set<Player> recipients = event.getRecipients();
+            Iterator<Player> iter = recipients.iterator();
+            while (iter.hasNext()) {
+                Player p = iter.next();
+                if (shouldCancelEvent(p)) {
+                    iter.remove();
+                }
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -199,7 +180,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             event.setTo(event.getFrom());
-            // sgdc3 TODO: remove this, maybe we should set the effect every x ticks, idk!
             if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
                 player.setFlySpeed(0.0f);
                 player.setWalkSpeed(0.0f);

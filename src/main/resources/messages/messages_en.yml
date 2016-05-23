@@ -1,3 +1,4 @@
+denied_chat: '&cIn order to be able to chat you must be authenticated!'
 kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
 unknown_user: '&cCan''t find the requested user in the database!'
 unsafe_spawn: '&cYour quit location was unsafe, you have been teleported to the world''s spawnpoint.'

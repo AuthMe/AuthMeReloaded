@@ -5,6 +5,8 @@ package fr.xephi.authme.output;
  */
 public enum MessageKey {
 
+    DENIED_CHAT_MESSAGE("denied_chat"),
+
     KICK_ANTIBOT("kick_antibot"),
 
     UNKNOWN_USER("unknown_user"),
