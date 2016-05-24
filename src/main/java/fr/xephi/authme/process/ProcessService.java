@@ -6,15 +6,11 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.scheduler.BukkitTask;
-
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Service for asynchronous and synchronous processes.
