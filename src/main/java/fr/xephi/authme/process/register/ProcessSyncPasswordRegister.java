@@ -79,7 +79,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         BukkitTask task;
         if (delay != 0) {
-            task = bukkitService.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
+            task = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), delay);
             cache.getLimboPlayer(name).setTimeoutTask(task);
         }
         task = bukkitService.runTask(new MessageTask(bukkitService, plugin.getMessages(),

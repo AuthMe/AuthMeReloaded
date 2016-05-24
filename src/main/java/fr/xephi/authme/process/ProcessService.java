@@ -1,15 +1,17 @@
 package fr.xephi.authme.process;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.PluginManager;
+
 import javax.inject.Inject;
 
 /**
@@ -24,10 +26,13 @@ public class ProcessService {
     private Messages messages;
 
     @Inject
-    private AuthMe plugin;
+    private PluginManager pluginManager;
 
     @Inject
     private ValidationService validationService;
+
+    @Inject
+    private PermissionsManager permissionsManager;
 
     /**
      * Retrieve a property's value.
@@ -96,16 +101,7 @@ public class ProcessService {
      * @param event the event to emit
      */
     public void callEvent(Event event) {
-        plugin.getServer().getPluginManager().callEvent(event);
-    }
-
-    /**
-     * Return the plugin instance.
-     *
-     * @return AuthMe instance
-     */
-    public AuthMe getAuthMe() {
-        return plugin;
+        pluginManager.callEvent(event);
     }
 
     /**
@@ -128,7 +124,7 @@ public class ProcessService {
     }
 
     public boolean hasPermission(Player player, PermissionNode node) {
-        return plugin.getPermissionsManager().hasPermission(player, node);
+        return permissionsManager.hasPermission(player, node);
     }
 
 }

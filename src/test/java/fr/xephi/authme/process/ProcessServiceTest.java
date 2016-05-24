@@ -1,16 +1,17 @@
 package fr.xephi.authme.process;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.plugin.PluginManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,22 +32,21 @@ public class ProcessServiceTest {
 
     @InjectMocks
     private ProcessService processService;
+
     @Mock
     private ValidationService validationService;
+
     @Mock
     private NewSetting settings;
+
     @Mock
     private Messages messages;
+
     @Mock
-    private AuthMe authMe;
+    private PluginManager pluginManager;
+
     @Mock
-    private DataSource dataSource;
-    @Mock
-    private SpawnLoader spawnLoader;
-    @Mock
-    private PluginHooks pluginHooks;
-    @Mock
-    private BukkitService bukkitService;
+    private PermissionsManager permissionsManager;
 
     @Test
     public void shouldGetProperty() {
@@ -128,15 +128,6 @@ public class ProcessServiceTest {
     }
 
     @Test
-    public void shouldReturnAuthMeInstance() {
-        // given / when
-        AuthMe result = processService.getAuthMe();
-
-        // then
-        assertThat(result, equalTo(authMe));
-    }
-
-    @Test
     public void shouldValidatePassword() {
         // given
         String user = "test-user";
@@ -179,5 +170,32 @@ public class ProcessServiceTest {
         // then
         assertThat(result, equalTo(true));
         verify(validationService).isEmailFreeForRegistration(email, sender);
+    }
+
+    @Test
+    public void shouldEmitEvent() {
+        // given
+        Event event = mock(Event.class);
+
+        // when
+        processService.callEvent(event);
+
+        // then
+        verify(pluginManager).callEvent(event);
+    }
+
+    @Test
+    public void shouldCheckPermission() {
+        // given
+        Player player = mock(Player.class);
+        PermissionNode permission = PlayerPermission.CHANGE_PASSWORD;
+        given(permissionsManager.hasPermission(player, permission)).willReturn(true);
+
+        // when
+        boolean result = processService.hasPermission(player, permission);
+
+        // then
+        verify(permissionsManager).hasPermission(player, permission);
+        assertThat(result, equalTo(true));
     }
 }
