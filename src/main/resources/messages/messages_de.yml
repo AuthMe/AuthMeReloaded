@@ -11,6 +11,7 @@ login: '&2Erfolgreich eingeloggt!'
 vb_nonActiv: '&cDein Account wurde noch nicht aktiviert. Bitte prüfe deine E-Mails!'
 user_regged: '&cDieser Benutzername ist schon vergeben'
 usage_reg: '&cBenutze: /register <passwort> <passwortBestätigen>'
+# TODO max_reg: Missing tag %reg_names
 max_reg: '&cDu hast die maximale Anzahl an Accounts erreicht (%max_acc/%reg_count).'
 no_perm: '&4Du hast keine Rechte, um diese Aktion auszuführen!'
 error: '&4Ein Fehler ist aufgetreten. Bitte kontaktiere einen Administrator.'
@@ -61,3 +62,5 @@ two_factor_create: '&2Dein geheimer Code ist %code. Du kannst ihn hier abfragen:
 email_already_used: '&4Diese E-Mail-Adresse wird bereits genutzt.'
 invalid_name_case: 'Dein registrierter Benutzername ist &2%valid&f - nicht &4%invalid&f.'
 not_owner_error: 'Du bist nicht der Besitzer dieses Accounts. Bitte wähle einen anderen Namen!'
+denied_chat: '&cDu musst eingeloggt sein, um chatten zu können!'
+same_ip_online: 'Ein Spieler mit derselben IP ist bereits online!'

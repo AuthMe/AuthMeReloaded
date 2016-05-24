@@ -12,6 +12,7 @@ login: '&cConnexion effectuée!'
 vb_nonActiv: '&fCe compte n''est pas actif, consultez vos emails!'
 user_regged: '&cCe nom est deja utilisé.'
 usage_reg: '&cUtilisez la commande /register motdepasse confirmermotdepasse'
+# TODO max_reg: Missing tags %reg_count, %reg_names, %max_acc
 max_reg: '&fLimite d''enregistrement atteinte pour ce compte'
 no_perm: '&cVous n''avez pas la permission'
 password_error_nick: '&fYou can''t use your name as password'
@@ -62,3 +63,5 @@ two_factor_create: '&2Votre code secret est %code. Vous pouvez le scanner depuis
 email_already_used: '&4L''adresse email a déjà été utilisée'
 not_owner_error: 'Vous n''êtes pas le propriétaire de ce compte. Veuillez utiliser un autre nom !'
 invalid_name_case: 'Veuillez vous connecter avec %valid et non pas avec %invalid.'
+denied_chat: 'Vous devez être connecté pour pouvoir parler !'
+same_ip_online: 'Un joueur avec la même adresse IP joue déjà !'

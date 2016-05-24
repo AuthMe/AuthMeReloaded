@@ -15,6 +15,7 @@ login: '&8[&6用戶系統&8] &c你成功登入了。'
 vb_nonActiv: '&8[&6用戶系統&8] &f你的帳戶還沒有經過電郵驗證 ！'
 user_regged: '&8[&6用戶系統&8] &c此用戶名已經註冊過了。'
 usage_reg: '&8[&6用戶系統&8] &f用法： 《 /register <密碼> <重覆密碼> 》'
+# TODO max_reg: Missing tags %reg_count, %reg_names, %max_acc
 max_reg: '&8[&6用戶系統&8] &f你的IP地址已達到註冊數上限。'
 no_perm: '&8[&6用戶系統&8] &b嗯～你想幹甚麼？'
 error: '&8[&6用戶系統&8] &f發生錯誤，請與管理員聯絡。'
@@ -64,3 +65,5 @@ email_exists: '&8[&6用戶系統&8] &c訊息已發送！如果你收不到該封
 two_factor_create: '&8[&6用戶系統 - 兩步驗證碼&8] &b你的登入金鑰為&9「%c%code&9」&b，掃描連結為：&c %url'
 not_owner_error: '&8[&6用戶系統&8] &4警告！&c你並不是此帳戶持有人，請立即登出。'
 invalid_name_case: '&8[&6用戶系統&8] &4警告！&c你應該使用「%valid」而並非「%invalid」登入遊戲。'
+# TODO denied_chat: '&cIn order to be able to chat you must be authenticated!'
+# TODO same_ip_online: 'A player with the same IP is already in game!'
