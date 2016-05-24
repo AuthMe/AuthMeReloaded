@@ -35,9 +35,9 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -129,8 +129,8 @@ public class AuthMePlayerListener implements Listener {
         sendLoginOrRegisterMessage(event.getPlayer());
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onPlayerChat(PlayerChatEvent event) {
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
             return;
         }
