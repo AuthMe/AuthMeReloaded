@@ -120,7 +120,6 @@ public class HelpProvider implements SettingsDependent {
     }
 
     private static void printAlternatives(CommandDescription command, List<String> correctLabels, List<String> lines) {
-        // TODO ljacqu 20151219: Need to show alternatives for base labels too? E.g. /r for /register
         if (command.getLabels().size() <= 1 || correctLabels.size() <= 1) {
             return;
         }

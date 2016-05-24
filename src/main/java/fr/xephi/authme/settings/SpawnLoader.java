@@ -201,7 +201,6 @@ public class SpawnLoader implements SettingsDependent {
     }
 
     private boolean saveAuthMeConfig() {
-        // TODO ljacqu 20160312: Investigate whether this utility should be put in a Utils class
         try {
             authMeConfiguration.save(authMeConfigurationFile);
             return true;

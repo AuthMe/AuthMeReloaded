@@ -151,7 +151,7 @@ public class PasswordSecurity implements Reloadable {
      *
      * @return The associated encryption method, or null if CUSTOM / deprecated
      */
-    public EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm) {
+    private EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm) {
         if (HashAlgorithm.CUSTOM.equals(algorithm) || HashAlgorithm.PLAINTEXT.equals(algorithm)) {
             return null;
         }

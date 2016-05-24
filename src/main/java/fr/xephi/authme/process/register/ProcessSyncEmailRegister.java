@@ -37,7 +37,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
     @Inject
     private AuthMe authMe;
 
-    public ProcessSyncEmailRegister() { }
+    ProcessSyncEmailRegister() { }
 
     public void processEmailRegister(Player player) {
         final String name = player.getName().toLowerCase();

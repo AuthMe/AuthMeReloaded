@@ -52,7 +52,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    // TODO ljacqu 20160520: Need to check whether we want to inject PluginManager, or some intermediate service
     private PluginManager pluginManager;
 
     private final boolean restoreCollisions = MethodUtils
