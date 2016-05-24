@@ -25,6 +25,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -65,6 +66,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private SpawnLoader spawnLoader;
 
+    @Inject
+    private BukkitService bukkitService;
+
     private static final boolean DISABLE_COLLISIONS = MethodUtils
             .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
@@ -93,7 +97,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         if (isNameRestricted(name, ip, player.getAddress().getHostName())) {
-            service.scheduleSyncDelayedTask(new Runnable() {
+            bukkitService.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
@@ -112,7 +116,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 && !"localhost".equalsIgnoreCase(ip)
                 && hasJoinedIp(player.getName(), ip)) {
 
-            service.scheduleSyncDelayedTask(new Runnable() {
+            bukkitService.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
                     // TODO: Messages entry
@@ -129,7 +133,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         if (isAuthAvailable) {
             if (!service.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    service.scheduleSyncDelayedTask(new Runnable() {
+                    bukkitService.scheduleSyncDelayedTask(new Runnable() {
                         @Override
                         public void run() {
                             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, playerCache.isAuthenticated(name));
@@ -183,7 +187,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
             if (!Settings.noTeleport && !needFirstSpawn(player) && Settings.isTeleportToSpawnEnabled
                 || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                service.scheduleSyncDelayedTask(new Runnable() {
+                bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override
                     public void run() {
                         SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, playerCache.isAuthenticated(name));
@@ -204,7 +208,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
 
-        service.scheduleSyncDelayedTask(new Runnable() {
+        bukkitService.scheduleSyncDelayedTask(new Runnable() {
             @Override
             public void run() {
                 player.setOp(false);
@@ -228,7 +232,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (registrationTimeout > 0) {
-            BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
+            BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
             LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer != null) {
                 limboPlayer.setTimeoutTask(id);
@@ -244,7 +248,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 : MessageKey.REGISTER_MESSAGE;
         }
         if (msgInterval > 0 && limboCache.getLimboPlayer(name) != null) {
-            BukkitTask msgTask = service.runTaskLater(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+            BukkitTask msgTask = bukkitService.runTaskLater(new MessageTask(bukkitService, plugin.getMessages(),
                     name, msg, msgInterval), 20L);
             LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer != null) {
@@ -267,7 +271,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         if (!tpEvent.isCancelled()) {
             if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
                 final Location fLoc = tpEvent.getTo();
-                service.scheduleSyncDelayedTask(new Runnable() {
+                bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override
                     public void run() {
                         player.teleport(fLoc);
@@ -285,7 +289,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         if (!player.hasPlayedBefore())
             return;
-        service.scheduleSyncDelayedTask(new Runnable() {
+        bukkitService.scheduleSyncDelayedTask(new Runnable() {
             @Override
             public void run() {
                 if (spawnLoc.getWorld() == null) {
@@ -334,7 +338,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     private boolean hasJoinedIp(String name, String ip) {
         int count = 0;
-        for (Player player : service.getOnlinePlayers()) {
+        for (Player player : bukkitService.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
                 && !player.getName().equalsIgnoreCase(name)) {
                 count++;

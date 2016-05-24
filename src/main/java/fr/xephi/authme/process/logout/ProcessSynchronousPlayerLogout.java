@@ -14,6 +14,8 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.BukkitService;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -35,6 +37,9 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     @Inject
     private LimboCache limboCache;
+
+    @Inject
+    private BukkitService bukkitService;
 
     ProcessSynchronousPlayerLogout() { }
 
@@ -66,10 +71,10 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (timeOut != 0) {
-            BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
+            BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
             limboCache.getLimboPlayer(name).setTimeoutTask(id);
         }
-        BukkitTask msgT = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+        BukkitTask msgT = bukkitService.runTask(new MessageTask(bukkitService, plugin.getMessages(),
             name, MessageKey.LOGIN_MESSAGE, interval));
         limboCache.getLimboPlayer(name).setMessageTask(msgT);
         if (player.isInsideVehicle() && player.getVehicle() != null) {

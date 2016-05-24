@@ -16,6 +16,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.entity.Player;
@@ -47,6 +48,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     @Inject
     private LimboCache limboCache;
 
+    @Inject
+    private BukkitService bukkitService;
+
     AsynchronousUnregister() { }
 
     public void unregister(Player player, String password, boolean force) {
@@ -69,10 +73,10 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
                 int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
                 if (timeOut != 0) {
-                    BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
+                    BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
                     limboPlayer.setTimeoutTask(id);
                 }
-                limboPlayer.setMessageTask(service.runTask(new MessageTask(service.getBukkitService(),
+                limboPlayer.setMessageTask(bukkitService.runTask(new MessageTask(bukkitService,
                     plugin.getMessages(), name, MessageKey.REGISTER_MESSAGE, interval)));
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");

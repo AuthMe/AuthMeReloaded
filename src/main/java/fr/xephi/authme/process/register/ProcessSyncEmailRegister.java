@@ -12,6 +12,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -29,6 +30,9 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
     @Inject
     private LimboCache limboCache;
 
+    @Inject
+    private BukkitService bukkitService;
+
     public ProcessSyncEmailRegister() { }
 
     public void processEmailRegister(Player player) {
@@ -43,11 +47,11 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
 
         if (limbo != null) {
             if (time != 0) {
-                BukkitTask id = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), time);
+                BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), time);
                 limbo.setTimeoutTask(id);
             }
-            BukkitTask messageTask = service.runTask(new MessageTask(
-                service.getBukkitService(), name, service.retrieveMessage(MessageKey.LOGIN_MESSAGE), msgInterval));
+            BukkitTask messageTask = bukkitService.runTask(new MessageTask(
+                bukkitService, name, service.retrieveMessage(MessageKey.LOGIN_MESSAGE), msgInterval));
             limbo.setMessageTask(messageTask);
         }
 

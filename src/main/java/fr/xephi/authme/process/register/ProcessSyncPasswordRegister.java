@@ -19,6 +19,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -39,6 +40,9 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
     private ProcessService service;
+
+    @Inject
+    private BukkitService bukkitService;
 
     ProcessSyncPasswordRegister() { }
 
@@ -75,10 +79,10 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         BukkitTask task;
         if (delay != 0) {
-            task = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
+            task = bukkitService.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
             cache.getLimboPlayer(name).setTimeoutTask(task);
         }
-        task = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+        task = bukkitService.runTask(new MessageTask(bukkitService, plugin.getMessages(),
             name, MessageKey.LOGIN_MESSAGE, interval));
         cache.getLimboPlayer(name).setMessageTask(task);
         if (player.isInsideVehicle() && player.getVehicle() != null) {

@@ -18,6 +18,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -46,6 +47,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
     private DataSource dataSource;
+
+    @Inject
+    private BukkitService bukkitService;
 
     @Inject
     // TODO ljacqu 20160520: Need to check whether we want to inject PluginManager, or some intermediate service
@@ -151,7 +155,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         String jm = AuthMePlayerListener.joinMessage.get(name);
         if (jm != null) {
             if (!jm.isEmpty()) {
-                for (Player p : service.getOnlinePlayers()) {
+                for (Player p : bukkitService.getOnlinePlayers()) {
                     if (p.isOnline()) {
                         p.sendMessage(jm);
                     }

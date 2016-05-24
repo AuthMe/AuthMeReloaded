@@ -8,6 +8,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.entity.Player;
@@ -31,6 +32,9 @@ public class AsynchronousLogout implements AsynchronousProcess {
     @Inject
     private SyncProcessManager syncProcessManager;
 
+    @Inject
+    private BukkitService bukkitService;
+
     AsynchronousLogout() { }
 
     public void logout(final Player player) {
@@ -49,7 +53,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
 
         playerCache.removePlayer(name);
         database.setUnlogged(name);
-        service.scheduleSyncDelayedTask(new Runnable() {
+        bukkitService.scheduleSyncDelayedTask(new Runnable() {
             @Override
             public void run() {
                 Utils.teleportToSpawn(player);

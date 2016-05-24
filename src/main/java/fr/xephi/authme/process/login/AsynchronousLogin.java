@@ -24,6 +24,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -57,6 +58,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private SyncProcessManager syncProcessManager;
+
+    @Inject
+    private BukkitService bukkitService;
 
 
     AsynchronousLogin() { }
@@ -103,7 +107,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 String[] msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
                     ? service.retrieveMessage(MessageKey.REGISTER_EMAIL_MESSAGE)
                     : service.retrieveMessage(MessageKey.REGISTER_MESSAGE);
-                BukkitTask messageTask = service.runTask(new MessageTask(service.getBukkitService(),
+                BukkitTask messageTask = bukkitService.runTask(new MessageTask(bukkitService,
                     name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
                 limboPlayer.setMessageTask(messageTask);
             }
@@ -207,7 +211,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 ConsoleLogger.info(player.getName() + " used the wrong password");
             }
             if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
-                service.scheduleSyncDelayedTask(new Runnable() {
+                bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override
                     public void run() {
                         player.kickPlayer(service.retrieveSingleMessage(MessageKey.WRONG_PASSWORD));
@@ -237,7 +241,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
         ConsoleLogger.info(message);
 
-        for (Player onlinePlayer : service.getOnlinePlayers()) {
+        for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(player.getName())
                 && permissionsManager.hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS)) {
                 onlinePlayer.sendMessage("You own " + auths.size() + " accounts:");

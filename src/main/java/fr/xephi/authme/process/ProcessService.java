@@ -23,14 +23,15 @@ public class ProcessService {
 
     @Inject
     private NewSetting settings;
+
     @Inject
     private Messages messages;
+
     @Inject
     private AuthMe plugin;
+
     @Inject
     private ValidationService validationService;
-    @Inject
-    private BukkitService bukkitService;
 
     /**
      * Retrieve a property's value.
@@ -94,37 +95,6 @@ public class ProcessService {
     }
 
     /**
-     * Run a task.
-     *
-     * @param task the task to run
-     * @return the assigned task id
-     */
-    public BukkitTask runTask(Runnable task) {
-        return plugin.getServer().getScheduler().runTask(plugin, task);
-    }
-
-    /**
-     * Run a task at a later time.
-     *
-     * @param task the task to run
-     * @param delay the delay before running the task
-     * @return the assigned task id
-     */
-    public BukkitTask runTaskLater(Runnable task, long delay) {
-        return plugin.getServer().getScheduler().runTaskLater(plugin, task, delay);
-    }
-
-    /**
-     * Schedule a synchronous delayed task.
-     *
-     * @param task the task to schedule
-     * @return the task id
-     */
-    public int scheduleSyncDelayedTask(Runnable task) {
-        return plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task);
-    }
-
-    /**
      * Emit an event.
      *
      * @param event the event to emit
@@ -159,14 +129,6 @@ public class ProcessService {
 
     public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
         return validationService.isEmailFreeForRegistration(email, sender);
-    }
-
-    public Collection<? extends Player> getOnlinePlayers() {
-        return bukkitService.getOnlinePlayers();
-    }
-
-    public BukkitService getBukkitService() {
-        return bukkitService;
     }
 
     public boolean hasPermission(Player player, PermissionNode node) {
