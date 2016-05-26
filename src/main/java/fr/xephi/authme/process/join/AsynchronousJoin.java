@@ -89,7 +89,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
             && !service.hasPermission(player, PlayerStatePermission.BYPASS_FORCE_SURVIVAL)) {
-            player.setGameMode(GameMode.SURVIVAL);
+            bukkitService.runTask(new Runnable() {
+                @Override
+                public void run() {
+                    player.setGameMode(GameMode.SURVIVAL);
+                }
+            });
         }
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
