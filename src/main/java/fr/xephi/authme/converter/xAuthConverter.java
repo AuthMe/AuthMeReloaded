@@ -3,18 +3,19 @@ package fr.xephi.authme.converter;
 import fr.xephi.authme.AuthMe;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
+
 public class xAuthConverter implements Converter {
 
     private final AuthMe plugin;
-    private final CommandSender sender;
 
-    public xAuthConverter(AuthMe plugin, CommandSender sender) {
+    @Inject
+    xAuthConverter(AuthMe plugin) {
         this.plugin = plugin;
-        this.sender = sender;
     }
 
     @Override
-    public void run() {
+    public void execute(CommandSender sender) {
         try {
             Class.forName("de.luricos.bukkit.xAuth.xAuth");
             xAuthToFlat converter = new xAuthToFlat(plugin, sender);

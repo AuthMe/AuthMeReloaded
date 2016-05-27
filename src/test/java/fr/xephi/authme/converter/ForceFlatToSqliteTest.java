@@ -54,7 +54,7 @@ public class ForceFlatToSqliteTest {
         ForceFlatToSqlite converter = new ForceFlatToSqlite(flatFile, dataSource);
 
         // when
-        converter.run();
+        converter.execute(null);
 
         // then
         ArgumentCaptor<PlayerAuth> authCaptor = ArgumentCaptor.forClass(PlayerAuth.class);

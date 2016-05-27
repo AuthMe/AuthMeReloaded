@@ -1,40 +1,43 @@
 package fr.xephi.authme.converter;
 
-import fr.xephi.authme.settings.NewSetting;
-import org.bukkit.command.CommandSender;
-
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.settings.NewSetting;
+import org.bukkit.command.CommandSender;
+
+import javax.inject.Inject;
 
 public class SqliteToSql implements Converter {
 
-    private final AuthMe plugin;
-    private final CommandSender sender;
     private final NewSetting settings;
+    private final DataSource dataSource;
+    private final Messages messages;
 
-    public SqliteToSql(AuthMe plugin, CommandSender sender, NewSetting settings) {
-        this.plugin = plugin;
-        this.sender = sender;
+    @Inject
+    SqliteToSql(NewSetting settings, DataSource dataSource, Messages messages) {
         this.settings = settings;
+        this.dataSource = dataSource;
+        this.messages = messages;
     }
 
     @Override
-    public void run() {
-        if (plugin.getDataSource().getType() != DataSourceType.MYSQL) {
+    public void execute(CommandSender sender) {
+        if (dataSource.getType() != DataSourceType.MYSQL) {
             sender.sendMessage("Please configure your mySQL connection and re-run this command");
             return;
         }
         try {
             SQLite data = new SQLite(settings);
             for (PlayerAuth auth : data.getAllAuths()) {
-                plugin.getDataSource().saveAuth(auth);
+                dataSource.saveAuth(auth);
             }
         } catch (Exception e) {
-            plugin.getMessages().send(sender, MessageKey.ERROR);
+            messages.send(sender, MessageKey.ERROR);
             ConsoleLogger.logException("Problem during SQLite to SQL conversion:", e);
         }
     }

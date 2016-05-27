@@ -4,18 +4,19 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
+
 public class vAuthConverter implements Converter {
 
     private final AuthMe plugin;
-    private final CommandSender sender;
 
-    public vAuthConverter(AuthMe plugin, CommandSender sender) {
+    @Inject
+    vAuthConverter(AuthMe plugin) {
         this.plugin = plugin;
-        this.sender = sender;
     }
 
     @Override
-    public void run() {
+    public void execute(CommandSender sender) {
         try {
             new vAuthFileReader(plugin).convert();
         } catch (Exception e) {

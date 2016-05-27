@@ -5,9 +5,11 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import javax.inject.Inject;
 import java.io.File;
 
 import static fr.xephi.authme.util.StringUtils.makePath;
@@ -19,13 +21,14 @@ public class RoyalAuthConverter implements Converter {
     private final AuthMe plugin;
     private final DataSource dataSource;
 
-    public RoyalAuthConverter(AuthMe plugin) {
+    @Inject
+    RoyalAuthConverter(AuthMe plugin, DataSource dataSource) {
         this.plugin = plugin;
-        this.dataSource = plugin.getDataSource();
+        this.dataSource = dataSource;
     }
 
     @Override
-    public void run() {
+    public void execute(CommandSender sender) {
         for (OfflinePlayer player : plugin.getServer().getOfflinePlayers()) {
             try {
                 String name = player.getName().toLowerCase();
