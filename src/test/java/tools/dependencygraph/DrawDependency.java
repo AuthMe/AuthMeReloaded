@@ -158,7 +158,7 @@ public class DrawDependency implements ToolTask {
         Map<String, Boolean> dependencies = new HashMap<>();
         for (Map.Entry<Class<?>, String> entry : foundDependencies.entries()) {
             final String className = entry.getKey().getSimpleName();
-            dependencies.putIfAbsent(className, Boolean.FALSE);
+            dependencies.put(className, Boolean.FALSE);
             dependencies.put(entry.getValue(), Boolean.TRUE);
         }
 
