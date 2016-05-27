@@ -1,10 +1,16 @@
 package tools.dependencygraph;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.initialization.ConstructorInjection;
 import fr.xephi.authme.initialization.FieldInjection;
 import fr.xephi.authme.initialization.Injection;
+import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.security.crypts.EncryptionMethod;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -28,8 +34,12 @@ public class DrawDependency implements ToolTask {
     // Package root
     private static final String ROOT_PACKAGE = "fr.xephi.authme";
 
+    private static final List<Class<?>> SUPER_TYPES = ImmutableList.of(ExecutableCommand.class,
+        SynchronousProcess.class, AsynchronousProcess.class, EncryptionMethod.class, Converter.class);
+
+    private boolean mapToSupertype;
     // Map with the graph's nodes: value is one of the key's dependencies
-    private Multimap<Class<?>, String> foundDependencies = ArrayListMultimap.create();
+    private Multimap<Class<?>, String> foundDependencies = HashMultimap.create();
 
     @Override
     public String getTaskName() {
@@ -38,6 +48,9 @@ public class DrawDependency implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
+        System.out.println("Summarize classes to their generic super type where applicable?");
+        mapToSupertype = "y".equalsIgnoreCase(scanner.nextLine());
+
         // Gather all connections
         readAndProcessFiles(new File(ToolsConstants.MAIN_SOURCE_ROOT));
 
@@ -98,8 +111,20 @@ public class DrawDependency implements ToolTask {
     private void processClass(Class<?> clazz) {
         List<String> dependencies = getDependencies(clazz);
         if (dependencies != null) {
-            foundDependencies.putAll(clazz, dependencies);
+            foundDependencies.putAll(mapToSuper(clazz), dependencies);
         }
+    }
+
+    private Class<?> mapToSuper(Class<?> clazz) {
+        if (!mapToSupertype || clazz == null) {
+            return clazz;
+        }
+        for (Class<?> parent : SUPER_TYPES) {
+            if (parent.isAssignableFrom(clazz)) {
+                return parent;
+            }
+        }
+        return clazz;
     }
 
     // Load Class object for the class in the given file
@@ -117,7 +142,7 @@ public class DrawDependency implements ToolTask {
         }
     }
 
-    private static List<String> getDependencies(Class<?> clazz) {
+    private List<String> getDependencies(Class<?> clazz) {
         Injection<?> injection = ConstructorInjection.provide(clazz).get();
         if (injection != null) {
             return formatInjectionDependencies(injection);
@@ -134,7 +159,7 @@ public class DrawDependency implements ToolTask {
      * @param injection the injection whose dependencies should be formatted
      * @return list of dependencies in a friendly format
      */
-    private static List<String> formatInjectionDependencies(Injection<?> injection) {
+    private List<String> formatInjectionDependencies(Injection<?> injection) {
         Class<?>[] dependencies = injection.getDependencies();
         Class<?>[] annotations = injection.getDependencyAnnotations();
 
@@ -143,7 +168,7 @@ public class DrawDependency implements ToolTask {
             if (annotations[i] != null) {
                 result.add("@" + annotations[i].getSimpleName());
             } else {
-                result.add(dependencies[i].getSimpleName());
+                result.add(mapToSuper(dependencies[i]).getSimpleName());
             }
         }
         return result;
