@@ -69,6 +69,7 @@ public class PermissionsManager implements PermissionsService {
      * Constructor.
      *
      * @param server Server instance
+     * @param pluginManager Bukkit plugin manager
      */
     @Inject
     public PermissionsManager(Server server, PluginManager pluginManager) {

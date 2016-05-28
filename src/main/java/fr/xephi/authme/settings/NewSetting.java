@@ -1,6 +1,8 @@
 package fr.xephi.authme.settings;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
@@ -121,10 +123,20 @@ public class NewSetting {
         return "/messages/messages_en.yml";
     }
 
+    /**
+     * Return the text to use in email registrations.
+     *
+     * @return The email message
+     */
     public String getEmailMessage() {
         return emailMessage;
     }
 
+    /**
+     * Return the lines to output after an in-game registration.
+     *
+     * @return The welcome message
+     */
     public List<String> getWelcomeMessage() {
         return welcomeMessage;
     }
@@ -206,7 +218,7 @@ public class NewSetting {
 
     private <T> String toYaml(Property<T> property, int indent, Yaml simpleYaml, Yaml singleQuoteYaml) {
         String representation = property.toYaml(configuration, simpleYaml, singleQuoteYaml);
-        return join("\n" + indent(indent), representation.split("\\n"));
+        return Joiner.on("\n" + indent(indent)).join(representation.split("\\n"));
     }
 
     private File buildMessagesFile() {
@@ -251,7 +263,7 @@ public class NewSetting {
         final Charset charset = Charset.forName("UTF-8");
         if (copyFileFromResource(emailFile, "email.html")) {
             try {
-                return StringUtils.join("\n", Files.readLines(emailFile, charset));
+                return Files.toString(emailFile, charset);
             } catch (IOException e) {
                 ConsoleLogger.logException("Failed to read file '" + emailFile.getPath() + "':", e);
             }
@@ -269,23 +281,9 @@ public class NewSetting {
         return new Yaml(options);
     }
 
-    private static String join(String delimiter, String[] items) {
-        StringBuilder sb = new StringBuilder();
-        String delim = "";
-        for (String item : items) {
-            sb.append(delim).append(item);
-            delim = delimiter;
-        }
-        return sb.toString();
-    }
-
     private static String indent(int level) {
         // We use an indentation of 4 spaces
-        StringBuilder sb = new StringBuilder(level * 4);
-        for (int i = 0; i < level; ++i) {
-            sb.append("    ");
-        }
-        return sb.toString();
+        return Strings.repeat(" ", level * 4);
     }
 
 }

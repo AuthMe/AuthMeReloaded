@@ -31,8 +31,9 @@ public class LoginEvent extends CustomEvent {
     }
 
     /**
+     * Ensures compatibility with plugins like GuiRules.
      *
-     * @return
+     * @return true
      * @deprecated this will always return true because this event is only called if it was successful
      */
     @Deprecated

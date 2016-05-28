@@ -26,10 +26,8 @@ public class CommandHandler {
     private final CommandService commandService;
     private final PermissionsManager permissionsManager;
 
-    /**
-     * Create a command handler.
-     * 
-     * @param commandService The CommandService instance
+    /*
+     * Constructor.
      */
     @Inject
     public CommandHandler(CommandService commandService, PermissionsManager permissionsManager) {
