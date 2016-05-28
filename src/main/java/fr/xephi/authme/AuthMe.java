@@ -20,6 +20,7 @@ import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
 import fr.xephi.authme.listener.AuthMeBlockListener;
+import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
@@ -357,7 +358,7 @@ public class AuthMe extends JavaPlugin {
         // Register event listeners
         pluginManager.registerEvents(initializer.get(AuthMePlayerListener.class), this);
         pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class),  this);
-        pluginManager.registerEvents(initializer.get(AuthMePlayerListener.class), this);
+        pluginManager.registerEvents(initializer.get(AuthMeEntityListener.class), this);
         pluginManager.registerEvents(initializer.get(AuthMeServerListener.class), this);
 
         // Try to register 1.6 player listeners
