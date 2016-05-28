@@ -22,6 +22,7 @@ import fr.xephi.authme.initialization.MetricsStarter;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
+import fr.xephi.authme.listener.AuthMePlayerJoinListener;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
@@ -34,7 +35,6 @@ import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
@@ -360,6 +360,7 @@ public class AuthMe extends JavaPlugin {
         pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class),  this);
         pluginManager.registerEvents(initializer.get(AuthMeEntityListener.class), this);
         pluginManager.registerEvents(initializer.get(AuthMeServerListener.class), this);
+        pluginManager.registerEvents(initializer.get(AuthMePlayerJoinListener.class), this);
 
         // Try to register 1.6 player listeners
         try {
@@ -648,16 +649,6 @@ public class AuthMe extends JavaPlugin {
 
     private boolean safeIsNpc(Player player) {
         return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
-    }
-
-    // Select the player to kick when a vip player joins the server when full
-    public Player generateKickPlayer(Collection<? extends Player> collection) {
-        for (Player player : collection) {
-            if (!getPermissionsManager().hasPermission(player, PlayerStatePermission.IS_VIP)) {
-                return player;
-            }
-        }
-        return null;
     }
 
     // Purge inactive players from the database, as defined in the configuration
