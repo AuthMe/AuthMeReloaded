@@ -5,7 +5,6 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 /**
  * Mandatory migration from the deprecated flat file datasource to SQLite.
  */
-public class ForceFlatToSqlite implements Converter {
+public class ForceFlatToSqlite {
 
     private final DataSource source;
     private final DataSource destination;
@@ -32,9 +31,7 @@ public class ForceFlatToSqlite implements Converter {
     /**
      * Perform the conversion.
      */
-    @Override
-    // Note ljacqu 20160527: CommandSender is null here; it is only present because of the interface it implements
-    public void execute(CommandSender sender) {
+    public void run() {
         List<String> skippedPlayers = new ArrayList<>();
         for (PlayerAuth auth : source.getAllAuths()) {
             if (destination.isAuthAvailable(auth.getNickname())) {

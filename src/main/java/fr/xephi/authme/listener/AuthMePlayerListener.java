@@ -11,6 +11,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -53,8 +54,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,10 +69,9 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
 /**
  * Listener class for player events.
  */
-public class AuthMePlayerListener implements Listener {
+public class AuthMePlayerListener implements Listener, Reloadable {
 
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
 
     @Inject
     private AuthMe plugin;
@@ -91,6 +91,10 @@ public class AuthMePlayerListener implements Listener {
     private SpawnLoader spawnLoader;
     @Inject
     private ValidationService validationService;
+    @Inject
+    private PermissionsManager permissionsManager;
+
+    private Pattern nicknamePattern;
 
     private void sendLoginOrRegisterMessage(final Player player) {
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -244,6 +248,7 @@ public class AuthMePlayerListener implements Listener {
         });
     }
 
+    // Note ljacqu 20160528: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerAuth auth = dataSource.getAuth(event.getName());
@@ -306,11 +311,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        // Get the permissions manager
-        PermissionsManager permsMan = plugin.getPermissionsManager();
-
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            if (permsMan.hasPermission(player, PlayerStatePermission.IS_VIP)) {
+            if (permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
                 int playersOnline = bukkitService.getOnlinePlayers().size();
                 if (playersOnline > plugin.getServer().getMaxPlayers()) {
                     event.allow();
@@ -358,10 +360,9 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
-        Pattern nickPattern = Pattern.compile(nickRegEx);
-        if (name.equalsIgnoreCase("Player") || !nickPattern.matcher(player.getName()).matches()) {
-            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", nickRegEx));
+        if (name.equalsIgnoreCase("Player") || !nicknamePattern.matcher(player.getName()).matches()) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS)
+                .replace("REG_EX", nicknamePattern.pattern()));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
@@ -388,7 +389,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (antiBot.antibotKicked.contains(player.getName())) {
-        	return;
+            return;
         }
 
         management.performQuit(player, false);
@@ -408,11 +409,9 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (antiBot.antibotKicked.contains(player.getName())) {
-        	return;
+        if (!antiBot.antibotKicked.contains(player.getName())) {
+            plugin.getManagement().performQuit(player, true);
         }
-
-        plugin.getManagement().performQuit(player, true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -546,6 +545,19 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerFish(PlayerFishEvent event) {
         if (shouldCancelEvent(event)) {
             event.setCancelled(true);
+        }
+    }
+
+    @PostConstruct
+    @Override
+    public void reload() {
+        String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
+        try {
+            nicknamePattern = Pattern.compile(nickRegEx);
+        } catch (Exception e) {
+            nicknamePattern = Pattern.compile(".*?");
+            ConsoleLogger.showError("Nickname pattern is not a valid regular expression! "
+                + "Fallback to allowing all nicknames");
         }
     }
 }

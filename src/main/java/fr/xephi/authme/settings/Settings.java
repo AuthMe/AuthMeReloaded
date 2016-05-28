@@ -29,7 +29,6 @@ public final class Settings {
     public static boolean protectInventoryBeforeLogInEnabled;
     public static boolean isStopEnabled;
     public static boolean reloadSupport;
-    public static boolean rakamakUseIp;
     public static boolean removePassword;
     public static boolean multiverse;
     public static boolean bungee;
@@ -39,8 +38,6 @@ public final class Settings {
     public static String getUnloggedinGroup;
     public static String unRegisteredGroup;
     public static String getRegisteredGroup;
-    public static String rakamakUsers;
-    public static String rakamakUsersIp;
     public static String defaultWorld;
     public static String crazyloginFileName;
     public static int getSessionTimeout;
@@ -83,10 +80,6 @@ public final class Settings {
         protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
-
-        rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
-        rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
-        rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);

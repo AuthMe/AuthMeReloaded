@@ -69,7 +69,7 @@ public final class MigrationService {
             try {
                 SQLite sqlite = new SQLite(settings);
                 ForceFlatToSqlite converter = new ForceFlatToSqlite(flatFile, sqlite);
-                converter.execute(null);
+                converter.run();
                 settings.setProperty(DatabaseSettings.BACKEND, DataSourceType.SQLITE);
                 settings.save();
                 return sqlite;

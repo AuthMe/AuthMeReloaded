@@ -11,7 +11,6 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -105,7 +104,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             bukkitService.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
-                    AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
                     player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
                     if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
                         plugin.getServer().banIP(ip);
@@ -124,7 +122,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             bukkitService.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
-                    // TODO: Messages entry
                     player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE));
                 }
             });
