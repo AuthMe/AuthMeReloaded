@@ -29,8 +29,8 @@ public class AntiBot {
     private AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
     @Inject
-    public AntiBot(NewSetting settings, Messages messages, PermissionsManager permissionsManager,
-                   BukkitService bukkitService) {
+    AntiBot(NewSetting settings, Messages messages, PermissionsManager permissionsManager,
+            BukkitService bukkitService) {
         this.settings = settings;
         this.messages = messages;
         this.permissionsManager = permissionsManager;
@@ -86,7 +86,12 @@ public class AntiBot {
         }, duration * TICKS_PER_MINUTE);
     }
 
-    public void checkAntiBot(final Player player) {
+    /**
+     * Handles a player joining the server and checks if AntiBot needs to be activated.
+     *
+     * @param player the player who joined the server
+     */
+    public void handlePlayerJoin(final Player player) {
         if (antiBotStatus == AntiBotStatus.ACTIVE || antiBotStatus == AntiBotStatus.DISABLED) {
             return;
         }

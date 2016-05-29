@@ -1,12 +1,11 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -15,8 +14,6 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.ValidationService;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -60,8 +57,6 @@ public class AuthMePlayerListener implements Listener {
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
 
     @Inject
-    private AuthMe plugin;
-    @Inject
     private NewSetting settings;
     @Inject
     private Messages m;
@@ -76,9 +71,7 @@ public class AuthMePlayerListener implements Listener {
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
-    private ValidationService validationService;
-    @Inject
-    private PermissionsManager permissionsManager;
+    private PluginHooks pluginHooks;
 
     private void sendLoginOrRegisterMessage(final Player player) {
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -249,7 +242,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (!antiBot.antibotKicked.contains(player.getName())) {
-            plugin.getManagement().performQuit(player, true);
+            management.performQuit(player, true);
         }
     }
 
@@ -287,7 +280,7 @@ public class AuthMePlayerListener implements Listener {
          * @note little hack cause InventoryOpenEvent cannot be cancelled for
          * real, cause no packet is send to server by client for the main inv
          */
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        bukkitService.scheduleSyncDelayedTask(new Runnable() {
             @Override
             public void run() {
                 player.closeInventory();
@@ -307,7 +300,7 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(player)) {
             return;
         }
-        if (plugin.getPluginHooks().isNpc(player)) {
+        if (pluginHooks.isNpc(player)) {
             return;
         }
         event.setCancelled(true);
