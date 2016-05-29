@@ -1,6 +1,9 @@
 package fr.xephi.authme.listener;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
@@ -24,6 +27,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -33,6 +37,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -72,6 +77,10 @@ public class AuthMePlayerListener implements Listener {
     private SpawnLoader spawnLoader;
     @Inject
     private PluginHooks pluginHooks;
+    @Inject
+    private OnJoinVerifier onJoinVerifier;
+    @Inject
+    private AuthMe plugin;
 
     private void sendLoginOrRegisterMessage(final Player player) {
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -205,6 +214,77 @@ public class AuthMePlayerListener implements Listener {
         if (joinMsg != null) {
             event.setJoinMessage(null);
             joinMessage.put(name, joinMsg);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        if (player != null) {
+            // Schedule login task so works after the prelogin
+            // (Fix found by Koolaid5000)
+            bukkitService.runTask(new Runnable() {
+                @Override
+                public void run() {
+                    management.performJoin(player);
+                }
+            });
+        }
+    }
+
+    // Note ljacqu 20160528: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
+    // e.g. CraftBukkit does not. So we need to run crucial things in onPlayerLogin, too
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        final String name = event.getName().toLowerCase();
+        final boolean isAuthAvailable = dataSource.isAuthAvailable(event.getName());
+
+        try {
+            // Potential performance improvement: make checkAntiBot not require `isAuthAvailable` info and use
+            // "checkKickNonRegistered" as last -> no need to query the DB before checking antibot / name
+            onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+            onJoinVerifier.checkIsValidName(name);
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        final Player player = event.getPlayer();
+        if (player == null || Utils.isUnrestricted(player)) {
+            return;
+        } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
+            return;
+        } else if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            return;
+        }
+
+        final String name = player.getName().toLowerCase();
+        final PlayerAuth auth = dataSource.getAuth(player.getName());
+        final boolean isAuthAvailable = auth != null;
+
+        try {
+            onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+            onJoinVerifier.checkIsValidName(name);
+            onJoinVerifier.checkNameCasing(player, auth);
+            onJoinVerifier.checkSingleSession(player);
+            onJoinVerifier.checkPlayerCountry(isAuthAvailable, event);
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+
+        antiBot.handlePlayerJoin(player);
+
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("IP");
+            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         }
     }
 

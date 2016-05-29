@@ -21,11 +21,11 @@ import static org.junit.Assert.fail;
 public final class ListenerConsistencyTest {
 
     private static final Class<?>[] LISTENERS = { AuthMeBlockListener.class, AuthMeEntityListener.class,
-        AuthMePlayerJoinListener.class, AuthMePlayerListener.class, AuthMePlayerListener16.class,
-        AuthMePlayerListener18.class, AuthMeServerListener.class };
+        AuthMePlayerListener.class, AuthMePlayerListener16.class, AuthMePlayerListener18.class,
+        AuthMeServerListener.class };
 
-    private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerJoinListener#onPlayerJoin",
-        "AuthMePlayerJoinListener#onPreLogin", "AuthMePlayerJoinListener#onPlayerLogin",
+    private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerListener#onPlayerJoin",
+        "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",
         "AuthMePlayerListener#onPlayerQuit", "AuthMeServerListener#onPluginDisable",
         "AuthMeServerListener#onServerPing", "AuthMeServerListener#onPluginEnable",
         "AuthMePlayerListener#onJoinMessage");
