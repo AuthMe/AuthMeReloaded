@@ -51,7 +51,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
-import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
 
 /**
@@ -82,41 +81,21 @@ public class AuthMePlayerListener implements Listener {
     @Inject
     private AuthMe plugin;
 
-    private void sendLoginOrRegisterMessage(final Player player) {
-        bukkitService.runTaskAsynchronously(new Runnable() {
-            @Override
-            public void run() {
-                if (dataSource.isAuthAvailable(player.getName().toLowerCase())) {
-                    m.send(player, MessageKey.LOGIN_MESSAGE);
-                } else {
-                    if (settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)) {
-                        m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
-                    } else {
-                        m.send(player, MessageKey.REGISTER_MESSAGE);
-                    }
-                }
-            }
-        });
-    }
-
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
-        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && "/motd".equals(cmd)) {
-            return;
-        }
-        if (!settings.getProperty(RegistrationSettings.FORCE)
-            && settings.getProperty(ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL)) {
+        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && cmd.equals("/motd")) {
             return;
         }
         if (settings.getProperty(RestrictionSettings.ALLOW_COMMANDS).contains(cmd)) {
             return;
         }
-        if (Utils.checkAuth(event.getPlayer())) {
+        final Player player = event.getPlayer();
+        if (!shouldCancelEvent(player)) {
             return;
         }
         event.setCancelled(true);
-        sendLoginOrRegisterMessage(event.getPlayer());
+        m.send(player, MessageKey.DENIED_COMMAND);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -128,12 +107,7 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (shouldCancelEvent(player)) {
             event.setCancelled(true);
-            bukkitService.runTaskAsynchronously(new Runnable() {
-                @Override
-                public void run() {
-                    m.send(player, MessageKey.DENIED_CHAT);
-                }
-            });
+            m.send(player, MessageKey.DENIED_CHAT);
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
             Set<Player> recipients = event.getRecipients();
             Iterator<Player> iter = recipients.iterator();
@@ -142,6 +116,9 @@ public class AuthMePlayerListener implements Listener {
                 if (shouldCancelEvent(p)) {
                     iter.remove();
                 }
+            }
+            if (recipients.size() == 0) {
+                event.setCancelled(true);
             }
         }
     }

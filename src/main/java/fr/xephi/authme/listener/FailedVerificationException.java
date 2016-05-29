@@ -6,6 +6,7 @@ import fr.xephi.authme.util.StringUtils;
 /**
  * Exception thrown when a verification has failed.
  */
+@SuppressWarnings("serial")
 public class FailedVerificationException extends Exception {
 
     private final MessageKey reason;
