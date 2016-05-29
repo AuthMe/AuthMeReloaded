@@ -69,9 +69,6 @@ settings:
         allowChat: false
         # Can not authenticated players see the chat log?
         hideChat: false
-        # WARNING: use this only if you need it!
-        # Allow unlogged users to use all the commands if registration is not forced!
-        allowAllCommandsIfRegistrationIsOptional: false
         # Commands allowed when a player is not authenticated
         allowCommands:
         - /login
