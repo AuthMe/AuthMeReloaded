@@ -224,11 +224,12 @@ public class PermissionsManager implements PermissionsService {
         String pluginName = plugin.getName();
 
         // Check if any known permissions system is enabling
-        if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
-            pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-            pluginName.equals("zPermissions") || pluginName.equals("Vault")) {
-            ConsoleLogger.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
-            setup();
+        for (PermissionsSystemType permissionsSystemType : PermissionsSystemType.values()) {
+            if (permissionsSystemType.isPermissionSystem(pluginName)) {
+                ConsoleLogger.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
+                setup();
+                break;
+            }
         }
     }
 
@@ -243,11 +244,12 @@ public class PermissionsManager implements PermissionsService {
         String pluginName = plugin.getName();
 
         // Is the WorldGuard plugin disabled
-        if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
-            pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-            pluginName.equals("zPermissions") || pluginName.equals("Vault")) {
-            ConsoleLogger.info(pluginName + " plugin disabled, updating hooks!");
-            setup();
+        for (PermissionsSystemType permissionsSystemType : PermissionsSystemType.values()) {
+            if (permissionsSystemType.isPermissionSystem(pluginName)) {
+                ConsoleLogger.info(pluginName + " plugin disabled, updating hooks!");
+                setup();
+                break;
+            }
         }
     }
 
