@@ -133,18 +133,21 @@ public class AuthMePlayerListener implements Listener {
          * Limit player X and Z movements to 1 block
          * Deny player Y+ movements (allows falling)
          */
-        if (event.getFrom().getBlockX() == event.getTo().getBlockX()
-            && event.getFrom().getBlockZ() == event.getTo().getBlockZ()
-            && event.getFrom().getY() - event.getTo().getY() >= 0) {
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        if (from.getBlockX() == to.getBlockX()
+            && from.getBlockZ() == to.getBlockZ()
+            && from.getY() - to.getY() >= 0) {
             return;
         }
 
         Player player = event.getPlayer();
-        if (Utils.checkAuth(player)) {
+        if (!shouldCancelEvent(player)) {
             return;
         }
 
         if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
+            // "cancel" the event
             event.setTo(event.getFrom());
             if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
                 player.setFlySpeed(0.0f);
@@ -231,7 +234,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
-        if (player == null || Utils.isUnrestricted(player)) {
+        if (Utils.isUnrestricted(player)) {
             return;
         } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
@@ -241,7 +244,7 @@ public class AuthMePlayerListener implements Listener {
 
         final String name = player.getName().toLowerCase();
         final PlayerAuth auth = dataSource.getAuth(player.getName());
-        final boolean isAuthAvailable = auth != null;
+        final boolean isAuthAvailable = (auth != null);
 
         try {
             onJoinVerifier.checkAntibot(name, isAuthAvailable);
@@ -257,21 +260,11 @@ public class AuthMePlayerListener implements Listener {
         }
 
         antiBot.handlePlayerJoin(player);
-
-        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("IP");
-            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-
-        if (player == null) {
-            return;
-        }
 
         if (settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)) {
             event.setQuitMessage(null);
@@ -287,16 +280,6 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
-
-        if (player == null) {
-            return;
-        }
-
-        if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
-            && event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR))) {
-            event.setCancelled(true);
-            return;
-        }
 
         if (!antiBot.antibotKicked.contains(player.getName())) {
             management.performQuit(player, true);
@@ -328,7 +311,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
 
-        if (!ListenerService.shouldCancelEvent(player)) {
+        if (!shouldCancelEvent(player)) {
             return;
         }
         event.setCancelled(true);
@@ -354,10 +337,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        if (Utils.checkAuth(player)) {
-            return;
-        }
-        if (pluginHooks.isNpc(player)) {
+        if (!shouldCancelEvent(player)) {
             return;
         }
         event.setCancelled(true);
@@ -365,7 +345,7 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerHitPlayerEvent(EntityDamageByEntityEvent event) {
-        if (ListenerService.shouldCancelEvent(event)) {
+        if (shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
@@ -394,11 +374,12 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
-        if (ListenerService.shouldCancelEvent(player)) {
+        if (shouldCancelEvent(player)) {
             event.setCancelled(true);
         }
     }
 
+    // TODO: check this, why do we need to save the quit loc?
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
