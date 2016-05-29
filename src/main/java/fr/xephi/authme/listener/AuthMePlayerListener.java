@@ -1,12 +1,8 @@
 package fr.xephi.authme.listener;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.process.Management;
@@ -75,11 +71,7 @@ public class AuthMePlayerListener implements Listener {
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
-    private PluginHooks pluginHooks;
-    @Inject
     private OnJoinVerifier onJoinVerifier;
-    @Inject
-    private AuthMe plugin;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -379,7 +371,7 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    // TODO: check this, why do we need to save the quit loc?
+    // TODO: check this, why do we need to update the quit loc? -sgdc3
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
