@@ -16,6 +16,9 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
+import fr.xephi.authme.ConsoleLogger;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
@@ -87,7 +90,7 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
-    // TODO #568: Need to check this, player can't throw snowball but the item is taken.
+    // In old versions of the Bukkit API getShooter() returns a Player Object instead of a ProjectileSource
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() == null) {
@@ -103,14 +106,14 @@ public class AuthMeEntityListener implements Listener {
             }
             player = (Player) shooter;
         } else {
-            // TODO #568 20151220: Invoking getShooter() with null but method isn't static
             try {
                 if (getShooter == null) {
                     getShooter = Projectile.class.getMethod("getShooter");
                 }
-                Object obj = getShooter.invoke(null);
+                Object obj = getShooter.invoke(projectile);
                 player = (Player) obj;
-            } catch (Exception ignored) {
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                ConsoleLogger.logException("Error getting shooter", e);
             }
         }
 
