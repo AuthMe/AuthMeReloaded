@@ -24,7 +24,7 @@ class EnumProperty<E extends Enum<E>> extends Property<E> {
             return getDefaultValue();
         }
         E mappedValue = mapToEnum(textValue);
-        return mappedValue != null ? mappedValue : getDefaultValue();
+        return mappedValue == null ? getDefaultValue() : mappedValue;
     }
 
     @Override

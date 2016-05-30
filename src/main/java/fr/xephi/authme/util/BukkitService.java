@@ -158,7 +158,7 @@ public class BukkitService {
             } else if (obj instanceof Player[]) {
                 return Arrays.asList((Player[]) obj);
             } else {
-                String type = (obj != null) ? obj.getClass().getName() : "null";
+                String type = (obj == null) ? "null" : obj.getClass().getName();
                 ConsoleLogger.showError("Unknown list of online players of type " + type);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {

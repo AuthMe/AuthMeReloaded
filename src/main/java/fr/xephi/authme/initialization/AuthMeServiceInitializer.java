@@ -181,15 +181,15 @@ public class AuthMeServiceInitializer {
         Class<?>[] annotations = injection.getDependencyAnnotations();
         Object[] values = new Object[dependencies.length];
         for (int i = 0; i < dependencies.length; ++i) {
-            if (annotations[i] != null) {
+            if (annotations[i] == null) {
+                values[i] = get(dependencies[i], traversedClasses);
+            } else {
                 Object value = objects.get(annotations[i]);
                 if (value == null) {
                     throw new IllegalStateException("Value for field with @" + annotations[i].getSimpleName()
                         + " must be registered beforehand");
                 }
                 values[i] = value;
-            } else {
-                values[i] = get(dependencies[i], traversedClasses);
             }
         }
         return values;

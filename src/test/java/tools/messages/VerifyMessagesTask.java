@@ -133,7 +133,7 @@ public final class VerifyMessagesTask implements ToolTask {
         File folder = new File(MESSAGES_FOLDER);
         File[] files = folder.listFiles();
         if (files == null) {
-            throw new RuntimeException("Could not read files from folder '" + folder.getName() + "'");
+            throw new IllegalStateException("Could not read files from folder '" + folder.getName() + "'");
         }
 
         List<File> messageFiles = new ArrayList<>();
@@ -143,7 +143,7 @@ public final class VerifyMessagesTask implements ToolTask {
             }
         }
         if (messageFiles.isEmpty()) {
-            throw new RuntimeException("Error getting message files: list of files is empty");
+            throw new IllegalStateException("Error getting message files: list of files is empty");
         }
         return messageFiles;
     }

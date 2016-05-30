@@ -62,10 +62,10 @@ public final class ToolsRunner {
             ToolTask task = tasks.get(taskName);
             if (task == null) {
                 System.out.format("Unknown task '%s'%n", taskName);
-            } else if (!(task instanceof AutoToolTask)) {
-                System.out.format("Task '%s' cannot be run on command line%n", taskName);
-            } else {
+            } else if (task instanceof AutoToolTask) {
                 ((AutoToolTask) task).executeDefault();
+            } else {
+                System.out.format("Task '%s' cannot be run on command line%n", taskName);
             }
         }
     }

@@ -85,11 +85,11 @@ public final class TestCommandsUtil {
     private static CommandDescription createCommand(PermissionNode permission, CommandDescription parent,
                                                     List<String> labels, CommandArgumentDescription... arguments) {
         PermissionNode[] notNullPermission;
-        if (permission != null) {
+        if (permission == null) {
+            notNullPermission = new PermissionNode[0];
+        } else {
             notNullPermission = new PermissionNode[1];
             notNullPermission[0] = permission;
-        } else {
-            notNullPermission = new PermissionNode[0];
         }
 
         CommandDescription.CommandBuilder command = CommandDescription.builder()

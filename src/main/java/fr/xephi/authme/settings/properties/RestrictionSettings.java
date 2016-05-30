@@ -7,6 +7,7 @@ import fr.xephi.authme.settings.domain.SettingsClass;
 import java.util.List;
 
 import static fr.xephi.authme.settings.domain.Property.newListProperty;
+import static fr.xephi.authme.settings.domain.Property.newLowercaseListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class RestrictionSettings implements SettingsClass {
@@ -24,7 +25,7 @@ public class RestrictionSettings implements SettingsClass {
 
     @Comment("Allowed commands for unauthenticated players")
     public static final Property<List<String>> ALLOW_COMMANDS =
-        newListProperty("settings.restrictions.allowCommands",
+        newLowercaseListProperty("settings.restrictions.allowCommands",
             "/login", "/register", "/l", "/reg", "/email", "/captcha");
 
     @Comment({
@@ -81,7 +82,7 @@ public class RestrictionSettings implements SettingsClass {
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1"})
     public static final Property<List<String>> ALLOWED_RESTRICTED_USERS =
-        newListProperty("settings.restrictions.AllowedRestrictedUser");
+        newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
 
     @Comment("Should unregistered players be kicked immediately?")
     public static final Property<Boolean> KICK_NON_REGISTERED =
@@ -188,7 +189,7 @@ public class RestrictionSettings implements SettingsClass {
         "It is case-sensitive!"
     })
     public static final Property<List<String>> UNRESTRICTED_NAMES =
-        newListProperty("settings.unrestrictions.UnrestrictedName");
+        newLowercaseListProperty("settings.unrestrictions.UnrestrictedName");
 
 
     private RestrictionSettings() {

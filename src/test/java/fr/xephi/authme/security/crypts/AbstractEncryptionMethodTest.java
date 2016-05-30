@@ -152,7 +152,7 @@ public abstract class AbstractEncryptionMethodTest {
      *
      * @param method The method to create a test class for
      */
-    static void generateTest(EncryptionMethod method) {
+    protected static void generateTest(EncryptionMethod method) {
         String className = method.getClass().getSimpleName();
         // Create javadoc and "public class extends" and the constructor call "super(new Class(),"
         System.out.println("/**\n * Test for {@link " + className + "}.\n */");
