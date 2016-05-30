@@ -49,9 +49,6 @@ public final class ConsoleLogger {
      */
     public static void info(String message) {
         logger.info(message);
-        if (useLogging) {
-            writeLog(message);
-        }
     }
 
     public static void debug(String message) {
