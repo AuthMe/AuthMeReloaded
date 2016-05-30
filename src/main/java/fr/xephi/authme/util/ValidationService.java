@@ -49,8 +49,6 @@ public class ValidationService {
             || password.length() > settings.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
             return MessageKey.INVALID_PASSWORD_LENGTH;
         } else if (settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(passLow)) {
-            // TODO #602 20160312: The UNSAFE_PASSWORDS should be all lowercase
-            // -> introduce a lowercase String list property type
             return MessageKey.PASSWORD_UNSAFE_ERROR;
         }
         return null;
