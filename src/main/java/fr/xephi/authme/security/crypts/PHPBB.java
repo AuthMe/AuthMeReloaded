@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
@@ -24,7 +20,7 @@ public class PHPBB extends HexSaltedMethod {
             byte[] hash = md5er.digest(bytes);
             return bytes2hex(hash);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new UnsupportedOperationException(e);
         }
     }
 

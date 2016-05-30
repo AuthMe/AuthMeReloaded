@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -52,7 +51,7 @@ public class CommandMapperTest {
     @Test
     public void shouldMapPartsToLoginChildCommand() {
         // given
-        List<String> parts = Arrays.asList("authme", "login", "test1");
+        List<String> parts = asList("authme", "login", "test1");
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
@@ -71,7 +70,7 @@ public class CommandMapperTest {
     @Test
     public void shouldMapPartsToCommandWithNoCaseSensitivity() {
         // given
-        List<String> parts = Arrays.asList("Authme", "REG", "arg1", "arg2");
+        List<String> parts = asList("Authme", "REG", "arg1", "arg2");
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
@@ -89,7 +88,7 @@ public class CommandMapperTest {
     @Test
     public void shouldRejectCommandWithTooManyArguments() {
         // given
-        List<String> parts = Arrays.asList("authme", "register", "pass123", "pass123", "pass123");
+        List<String> parts = asList("authme", "register", "pass123", "pass123", "pass123");
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
@@ -107,7 +106,7 @@ public class CommandMapperTest {
     @Test
     public void shouldRejectCommandWithTooFewArguments() {
         // given
-        List<String> parts = Arrays.asList("authme", "Reg");
+        List<String> parts = asList("authme", "Reg");
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
@@ -125,7 +124,7 @@ public class CommandMapperTest {
     @Test
     public void shouldSuggestCommandWithSimilarLabel() {
         // given
-        List<String> parts = Arrays.asList("authme", "reh", "pass123", "pass123");
+        List<String> parts = asList("authme", "reh", "pass123", "pass123");
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
@@ -144,7 +143,7 @@ public class CommandMapperTest {
     @Test
     public void shouldSuggestMostSimilarCommand() {
         // given
-        List<String> parts = Arrays.asList("authme", "asdfawetawty4asdca");
+        List<String> parts = asList("authme", "asdfawetawty4asdca");
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
@@ -259,7 +258,7 @@ public class CommandMapperTest {
     @Test
     public void shouldRecognizeMissingPermissionForCommand() {
         // given
-        List<String> parts = Arrays.asList("authme", "login", "test1");
+        List<String> parts = asList("authme", "login", "test1");
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(false);
 

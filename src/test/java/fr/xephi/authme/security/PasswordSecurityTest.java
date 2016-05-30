@@ -73,13 +73,13 @@ public class PasswordSecurityTest {
                 Object[] arguments = invocation.getArguments();
                 if (arguments[0] instanceof PasswordEncryptionEvent) {
                     PasswordEncryptionEvent event = (PasswordEncryptionEvent) arguments[0];
-                    caughtClassInEvent = event.getMethod() != null ? event.getMethod().getClass() : null;
+                    caughtClassInEvent = event.getMethod() == null ? null : event.getMethod().getClass();
                     event.setMethod(method);
                 }
                 return null;
             }
         }).when(pluginManager).callEvent(any(Event.class));
-        initializer = new AuthMeServiceInitializer(new String[]{});
+        initializer = new AuthMeServiceInitializer();
         initializer.register(NewSetting.class, settings);
         initializer.register(DataSource.class, dataSource);
         initializer.register(PluginManager.class, pluginManager);

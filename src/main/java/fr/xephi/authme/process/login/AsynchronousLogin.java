@@ -68,12 +68,12 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private boolean needsCaptcha(Player player) {
         final String name = player.getName().toLowerCase();
         if (service.getProperty(SecuritySettings.USE_CAPTCHA)) {
-            if (!plugin.captcha.containsKey(name)) {
-                plugin.captcha.putIfAbsent(name, 1);
-            } else {
+            if (plugin.captcha.containsKey(name)) {
                 int i = plugin.captcha.get(name) + 1;
                 plugin.captcha.remove(name);
                 plugin.captcha.putIfAbsent(name, i);
+            } else {
+                plugin.captcha.putIfAbsent(name, 1);
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
                 plugin.cap.putIfAbsent(name, RandomString.generate(Settings.captchaLength));

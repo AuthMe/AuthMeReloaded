@@ -5,9 +5,6 @@ package tools.utils;
  */
 public final class ToolsConstants {
 
-    private ToolsConstants() {
-    }
-
     public static final String MAIN_SOURCE_ROOT = "src/main/java/";
 
     public static final String MAIN_RESOURCES_ROOT = "src/main/resources/";
@@ -20,5 +17,8 @@ public final class ToolsConstants {
     public static final String DOCS_FOLDER = "docs/";
 
     public static final String DOCS_FOLDER_URL = "https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/";
+
+    private ToolsConstants() {
+    }
 
 }

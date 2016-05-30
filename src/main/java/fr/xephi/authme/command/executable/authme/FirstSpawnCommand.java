@@ -18,10 +18,10 @@ public class FirstSpawnCommand extends PlayerCommand {
 
     @Override
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
-        if (spawnLoader.getFirstSpawn() != null) {
-            player.teleport(spawnLoader.getFirstSpawn());
-        } else {
+        if (spawnLoader.getFirstSpawn() == null) {
             player.sendMessage("[AuthMe] First spawn has failed, please try to define the first spawn");
+        } else {
+            player.teleport(spawnLoader.getFirstSpawn());
         }
     }
 }

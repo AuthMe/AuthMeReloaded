@@ -66,11 +66,11 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
                 HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
                 auth.setPassword(hashedPassword);
 
-                if (!dataSource.updatePassword(auth)) {
-                    commandService.send(sender, MessageKey.ERROR);
-                } else {
+                if (dataSource.updatePassword(auth)) {
                     commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
                     ConsoleLogger.info(playerNameLowerCase + "'s password changed");
+                } else {
+                    commandService.send(sender, MessageKey.ERROR);
                 }
             }
 

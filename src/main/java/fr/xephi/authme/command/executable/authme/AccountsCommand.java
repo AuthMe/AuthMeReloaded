@@ -29,7 +29,21 @@ public class AccountsCommand implements ExecutableCommand {
         final String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         // Assumption: a player name cannot contain '.'
-        if (!playerName.contains(".")) {
+        if (playerName.contains(".")) {
+            bukkitService.runTaskAsynchronously(new Runnable() {
+                @Override
+                public void run() {
+                    List<String> accountList = dataSource.getAllAuthsByIp(playerName);
+                    if (accountList.isEmpty()) {
+                        sender.sendMessage("[AuthMe] This IP does not exist in the database.");
+                    } else if (accountList.size() == 1) {
+                        sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
+                    } else {
+                        outputAccountsList(sender, playerName, accountList);
+                    }
+                }
+            });
+        } else {
             bukkitService.runTaskAsynchronously(new Runnable() {
                 @Override
                 public void run() {
@@ -42,20 +56,6 @@ public class AccountsCommand implements ExecutableCommand {
                     List<String> accountList = dataSource.getAllAuthsByIp(auth.getIp());
                     if (accountList.isEmpty()) {
                         commandService.send(sender, MessageKey.USER_NOT_REGISTERED);
-                    } else if (accountList.size() == 1) {
-                        sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
-                    } else {
-                        outputAccountsList(sender, playerName, accountList);
-                    }
-                }
-            });
-        } else {
-            bukkitService.runTaskAsynchronously(new Runnable() {
-                @Override
-                public void run() {
-                    List<String> accountList = dataSource.getAllAuthsByIp(playerName);
-                    if (accountList.isEmpty()) {
-                        sender.sendMessage("[AuthMe] This IP does not exist in the database.");
                     } else if (accountList.size() == 1) {
                         sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
                     } else {

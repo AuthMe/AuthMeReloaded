@@ -22,6 +22,7 @@ import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -187,12 +188,12 @@ public class CommandInitializerTest {
                 assertThat(command.getExecutableCommand(), not(nullValue()));
                 ExecutableCommand commandExec = command.getExecutableCommand();
                 ExecutableCommand storedExec = implementations.get(command.getExecutableCommand().getClass());
-                if (storedExec != null) {
-                    assertThat("has same implementation of '" + storedExec.getClass().getName() + "' for command with "
-                        + "parent " + (command.getParent() == null ? "null" : command.getParent().getLabels()),
-                        storedExec == commandExec, equalTo(true));
-                } else {
+                if (storedExec == null) {
                     implementations.put(commandExec.getClass(), commandExec);
+                } else {
+                    assertSame("has same implementation of '" + storedExec.getClass().getName() + "' for command with "
+                        + "parent " + (command.getParent() == null ? "null" : command.getParent().getLabels()),
+                        storedExec, commandExec);
                 }
             }
         };
@@ -211,7 +212,7 @@ public class CommandInitializerTest {
                 for (CommandArgumentDescription argument : command.getArguments()) {
                     if (argument.isOptional()) {
                         encounteredOptionalArg = true;
-                    } else if (!argument.isOptional() && encounteredOptionalArg) {
+                    } else if (encounteredOptionalArg) {
                         fail("Mandatory arguments should come before optional ones for command with labels '"
                             + command.getLabels() + "'");
                     }
@@ -256,11 +257,10 @@ public class CommandInitializerTest {
             @Override
             public void accept(CommandDescription command, int depth) {
                 CommandPermissions permissions = command.getCommandPermissions();
-                if (permissions != null && OP_ONLY.equals(permissions.getDefaultPermission())) {
-                    if (!hasAdminNode(permissions)) {
-                        fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
-                            + "permission but no permission node on admin level");
-                    }
+                if (permissions != null && OP_ONLY.equals(permissions.getDefaultPermission())
+                    && !hasAdminNode(permissions)) {
+                    fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
+                        + "permission but no permission node on admin level");
                 }
             }
 
@@ -298,13 +298,13 @@ public class CommandInitializerTest {
                                                   Map<Class<? extends ExecutableCommand>, Integer> collection) {
                 final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand().getClass();
                 Integer existingCount = collection.get(clazz);
-                if (existingCount != null) {
+                if (existingCount == null) {
+                    collection.put(clazz, argCount);
+                } else {
                     String commandDescription = "Command with label '" + command.getLabels().get(0) + "' and parent '"
-                        + (command.getParent() != null ? command.getLabels().get(0) : "null") + "' ";
+                        + (command.getParent() == null ? "null" : command.getLabels().get(0)) + "' ";
                     assertThat(commandDescription + "should point to " + clazz + " with arguments consistent to others",
                         argCount, equalTo(existingCount));
-                } else {
-                    collection.put(clazz, argCount);
                 }
             }
         };

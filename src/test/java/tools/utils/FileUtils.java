@@ -27,7 +27,7 @@ public final class FileUtils {
         try {
             Files.write(Paths.get(outputFile), contents.getBytes());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to write to file '" + outputFile + "'", e);
+            throw new UnsupportedOperationException("Failed to write to file '" + outputFile + "'", e);
         }
     }
 
@@ -35,7 +35,7 @@ public final class FileUtils {
         try {
             Files.write(Paths.get(outputFile), contents.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to append to file '" + outputFile + "'", e);
+            throw new UnsupportedOperationException("Failed to append to file '" + outputFile + "'", e);
         }
     }
 
@@ -43,7 +43,7 @@ public final class FileUtils {
         try {
             return new String(Files.readAllBytes(Paths.get(file)), CHARSET);
         } catch (IOException e) {
-            throw new RuntimeException("Could not read from file '" + file + "'", e);
+            throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }
     }
 
@@ -51,7 +51,7 @@ public final class FileUtils {
         try {
             return Files.readAllLines(Paths.get(file), CHARSET);
         } catch (IOException e) {
-            throw new RuntimeException("Could not read from file '" + file + "'", e);
+            throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }
     }
 
