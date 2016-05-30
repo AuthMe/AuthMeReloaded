@@ -1,7 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.HelpCommand;
-import fr.xephi.authme.permission.DefaultPermission;
+import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PlayerPermission;
 
@@ -43,8 +43,8 @@ public final class TestCommandsUtil {
             .description("test").detailedDescription("Test.").withArgument("Query", "", false).build();
 
         // Register /unregister <player>, alias: /unreg
-        CommandDescription unregisterBase = createCommand(null, null, asList("unregister", "unreg"),
-            newArgument("player", false));
+        CommandDescription unregisterBase = createCommand(AdminPermission.UNREGISTER, null,
+            asList("unregister", "unreg"), newArgument("player", false));
 
         return newHashSet(authMeBase, emailBase, unregisterBase);
     }

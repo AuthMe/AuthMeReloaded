@@ -1,6 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -287,7 +286,7 @@ public class CommandDescription {
         }
 
         /**
-         * Add a permission node that the a user must have to execute the command.
+         * Add a permission node that a user must have to execute the command.
          *
          * @param permission The PermissionNode to add
          * @return The builder
