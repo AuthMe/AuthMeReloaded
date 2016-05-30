@@ -52,9 +52,9 @@ public class CommandDescription {
      */
     private List<CommandArgumentDescription> arguments;
     /**
-     * Command permissions required to execute this command.
+     * Permission node required to execute this command.
      */
-    private CommandPermissions permissions;
+    private PermissionNode permission;
 
     /**
      * Private constructor. Use {@link CommandDescription#builder()} to create instances of this class.
@@ -74,7 +74,7 @@ public class CommandDescription {
      * @param executableCommand   The executable command, or null.
      * @param parent              Parent command.
      * @param arguments           Command arguments.
-     * @param permissions         The permissions required to execute this command.
+     * @param permission          The permission node required to execute this command.
      *
      * @return The created instance
      * @see CommandDescription#builder()
@@ -82,7 +82,7 @@ public class CommandDescription {
     private static CommandDescription createInstance(List<String> labels, String description,
                                                  String detailedDescription, ExecutableCommand executableCommand,
                                                  CommandDescription parent, List<CommandArgumentDescription> arguments,
-                                                 CommandPermissions permissions) {
+                                                 PermissionNode permission) {
         CommandDescription instance = new CommandDescription();
         instance.labels = labels;
         instance.description = description;
@@ -90,7 +90,7 @@ public class CommandDescription {
         instance.executableCommand = executableCommand;
         instance.parent = parent;
         instance.arguments = arguments;
-        instance.permissions = permissions;
+        instance.permission = permission;
 
         if (parent != null) {
             parent.addChild(instance);
@@ -196,12 +196,12 @@ public class CommandDescription {
     }
 
     /**
-     * Return the permissions required to execute the command.
+     * Return the permission node required to execute the command.
      *
-     * @return The command permissions, or null if none are required to execute the command.
+     * @return The permission node, or null if none are required to execute the command.
      */
-    public CommandPermissions getCommandPermissions() {
-        return permissions;
+    public PermissionNode getPermission() {
+        return permission;
     }
 
     /**
@@ -223,7 +223,7 @@ public class CommandDescription {
         private ExecutableCommand executableCommand;
         private CommandDescription parent;
         private List<CommandArgumentDescription> arguments = new ArrayList<>();
-        private CommandPermissions permissions;
+        private PermissionNode permission;
 
         /**
          * Build a CommandDescription from the builder or throw an exception if a mandatory
@@ -239,7 +239,7 @@ public class CommandDescription {
             // parents and permissions may be null; arguments may be empty
 
             return createInstance(labels, description, detailedDescription, executableCommand,
-                                  parent, arguments, permissions);
+                                  parent, arguments, permission);
         }
 
         public CommandBuilder labels(List<String> labels) {
@@ -286,9 +286,14 @@ public class CommandDescription {
             return this;
         }
 
-        public CommandBuilder permissions(DefaultPermission defaultPermission,
-                                          PermissionNode... permissionNodes) {
-            this.permissions = new CommandPermissions(asList(permissionNodes), defaultPermission);
+        /**
+         * Add a permission node that the a user must have to execute the command.
+         *
+         * @param permission The PermissionNode to add
+         * @return The builder
+         */
+        public CommandBuilder permission(PermissionNode permission) {
+            this.permission = permission;
             return this;
         }
     }

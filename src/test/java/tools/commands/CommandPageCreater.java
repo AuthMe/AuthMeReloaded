@@ -3,7 +3,6 @@ package tools.commands;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
-import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.initialization.AuthMeServiceInitializer;
@@ -58,7 +57,7 @@ public class CommandPageCreater implements AutoToolTask {
                 .put("command", CommandUtils.constructCommandPath(command))
                 .put("description", command.getDetailedDescription())
                 .put("arguments", formatArguments(command.getArguments()))
-                .put("permissions", formatPermissions(command.getCommandPermissions()));
+                .put("permissions", formatPermissions(command.getPermission()));
             commandTags.add(tags);
 
             if (!command.getChildren().isEmpty()) {
@@ -67,15 +66,12 @@ public class CommandPageCreater implements AutoToolTask {
         }
     }
 
-    private static String formatPermissions(CommandPermissions permissions) {
-        if (permissions == null) {
+    private static String formatPermissions(PermissionNode permission) {
+        if (permission == null) {
             return "";
+        } else {
+            return permission.getNode();
         }
-        String result = "";
-        for (PermissionNode node : permissions.getPermissionNodes()) {
-            result += node.getNode() + " ";
-        }
-        return result.trim();
     }
 
     private static String formatArguments(Iterable<CommandArgumentDescription> arguments) {

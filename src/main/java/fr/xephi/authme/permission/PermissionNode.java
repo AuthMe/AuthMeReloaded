@@ -12,4 +12,10 @@ public interface PermissionNode {
      */
     String getNode();
 
+    /**
+     * Return the default permission for this node, e.g. "OP_ONLY"
+     *
+     * @return The default level of permission
+     */
+    DefaultPermission getDefaultPermission();
 }

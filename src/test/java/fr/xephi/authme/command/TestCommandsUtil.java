@@ -84,18 +84,10 @@ public final class TestCommandsUtil {
     /** Shortcut command to initialize a new test command. */
     private static CommandDescription createCommand(PermissionNode permission, CommandDescription parent,
                                                     List<String> labels, CommandArgumentDescription... arguments) {
-        PermissionNode[] notNullPermission;
-        if (permission == null) {
-            notNullPermission = new PermissionNode[0];
-        } else {
-            notNullPermission = new PermissionNode[1];
-            notNullPermission[0] = permission;
-        }
-
         CommandDescription.CommandBuilder command = CommandDescription.builder()
             .labels(labels)
             .parent(parent)
-            .permissions(DefaultPermission.OP_ONLY, notNullPermission)
+            .permission(permission)
             .description(labels.get(0) + " cmd")
             .detailedDescription("'" + labels.get(0) + "' test command")
             .executableCommand(mock(ExecutableCommand.class));

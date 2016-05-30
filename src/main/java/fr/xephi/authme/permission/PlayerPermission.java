@@ -8,57 +8,57 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Command permission to login.
      */
-    LOGIN("authme.player.login"),
+    LOGIN("authme.player.login", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to logout.
      */
-    LOGOUT("authme.player.logout"),
+    LOGOUT("authme.player.logout", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to register.
      */
-    REGISTER("authme.player.register"),
+    REGISTER("authme.player.register", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to unregister.
      */
-    UNREGISTER("authme.player.unregister"),
+    UNREGISTER("authme.player.unregister", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to change the password.
      */
-    CHANGE_PASSWORD("authme.player.changepassword"),
+    CHANGE_PASSWORD("authme.player.changepassword", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to add an email address.
      */
-    ADD_EMAIL("authme.player.email.add"),
+    ADD_EMAIL("authme.player.email.add", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to change the email address.
      */
-    CHANGE_EMAIL("authme.player.email.change"),
+    CHANGE_EMAIL("authme.player.email.change", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to recover an account using it's email address.
      */
-    RECOVER_EMAIL("authme.player.email.recover"),
+    RECOVER_EMAIL("authme.player.email.recover", DefaultPermission.ALLOWED),
 
     /**
      * Command permission to use captcha.
      */
-    CAPTCHA("authme.player.captcha"),
+    CAPTCHA("authme.player.captcha", DefaultPermission.ALLOWED),
 
     /**
      * Permission for users a login can be forced to.
      */
-    CAN_LOGIN_BE_FORCED("authme.player.canbeforced"),
+    CAN_LOGIN_BE_FORCED("authme.player.canbeforced", DefaultPermission.ALLOWED),
 
     /**
      * Permission to use to see own other accounts.
      */
-    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
+    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts", DefaultPermission.ALLOWED);
 
     /**
      * The permission node.
@@ -66,17 +66,28 @@ public enum PlayerPermission implements PermissionNode {
     private String node;
 
     /**
+     * The default permission level
+     */
+    private DefaultPermission defaultPermission;
+
+    /**
      * Constructor.
      *
      * @param node Permission node.
      */
-    PlayerPermission(String node) {
+    PlayerPermission(String node, DefaultPermission defaultPermission) {
         this.node = node;
+        this.defaultPermission = defaultPermission;
     }
 
     @Override
     public String getNode() {
         return node;
+    }
+
+    @Override
+    public DefaultPermission getDefaultPermission() {
+        return defaultPermission;
     }
 
 }
