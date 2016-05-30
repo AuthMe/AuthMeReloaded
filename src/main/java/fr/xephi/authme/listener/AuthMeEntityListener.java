@@ -25,14 +25,15 @@ import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 
 public class AuthMeEntityListener implements Listener {
 
-    private static Method getShooter;
-    private static boolean shooterIsProjectileSource;
+    private Method getShooter;
+    private boolean shooterIsProjectileSource;
 
     public AuthMeEntityListener() {
         try {
-            Method m = Projectile.class.getDeclaredMethod("getShooter");
-            shooterIsProjectileSource = m.getReturnType() != LivingEntity.class;
-        } catch (Exception ignored) {
+            getShooter = Projectile.class.getDeclaredMethod("getShooter");
+            shooterIsProjectileSource = getShooter.getReturnType() != LivingEntity.class;
+        } catch (NoSuchMethodException | SecurityException e) {
+            ConsoleLogger.logException("Cannot load getShooter() method on Projectile class", e);
         }
     }
 
@@ -90,7 +91,7 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
-    // In old versions of the Bukkit API getShooter() returns a Player Object instead of a ProjectileSource
+    // TODO #733: Player can't throw snowball but the item is taken.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() == null) {
@@ -99,6 +100,7 @@ public class AuthMeEntityListener implements Listener {
 
         Player player = null;
         Projectile projectile = event.getEntity();
+        // In old versions of the Bukkit API getShooter() returns a Player object instead of a ProjectileSource
         if (shooterIsProjectileSource) {
             ProjectileSource shooter = projectile.getShooter();
             if (shooter == null || !(shooter instanceof Player)) {
