@@ -16,20 +16,24 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
+import fr.xephi.authme.ConsoleLogger;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 
 public class AuthMeEntityListener implements Listener {
 
-    private static Method getShooter;
-    private static boolean shooterIsProjectileSource;
+    private Method getShooter;
+    private boolean shooterIsProjectileSource;
 
     public AuthMeEntityListener() {
         try {
-            Method m = Projectile.class.getDeclaredMethod("getShooter");
-            shooterIsProjectileSource = m.getReturnType() != LivingEntity.class;
-        } catch (Exception ignored) {
+            getShooter = Projectile.class.getDeclaredMethod("getShooter");
+            shooterIsProjectileSource = getShooter.getReturnType() != LivingEntity.class;
+        } catch (NoSuchMethodException | SecurityException e) {
+            ConsoleLogger.logException("Cannot load getShooter() method on Projectile class", e);
         }
     }
 
@@ -87,7 +91,7 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
-    // TODO #568: Need to check this, player can't throw snowball but the item is taken.
+    // TODO #733: Player can't throw snowball but the item is taken.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() == null) {
@@ -96,6 +100,7 @@ public class AuthMeEntityListener implements Listener {
 
         Player player = null;
         Projectile projectile = event.getEntity();
+        // In old versions of the Bukkit API getShooter() returns a Player object instead of a ProjectileSource
         if (shooterIsProjectileSource) {
             ProjectileSource shooter = projectile.getShooter();
             if (shooter == null || !(shooter instanceof Player)) {
@@ -103,14 +108,14 @@ public class AuthMeEntityListener implements Listener {
             }
             player = (Player) shooter;
         } else {
-            // TODO #568 20151220: Invoking getShooter() with null but method isn't static
             try {
                 if (getShooter == null) {
                     getShooter = Projectile.class.getMethod("getShooter");
                 }
-                Object obj = getShooter.invoke(null);
+                Object obj = getShooter.invoke(projectile);
                 player = (Player) obj;
-            } catch (Exception ignored) {
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                ConsoleLogger.logException("Error getting shooter", e);
             }
         }
 

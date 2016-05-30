@@ -5,6 +5,8 @@ package fr.xephi.authme.output;
  */
 public enum MessageKey {
 
+    DENIED_COMMAND("denied_command"),
+
     SAME_IP_ONLINE("same_ip_online"),
 
     DENIED_CHAT("denied_chat"),

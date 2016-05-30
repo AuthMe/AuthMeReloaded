@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
@@ -22,9 +21,6 @@ import java.util.List;
  * Converter command: launches conversion based on its parameters.
  */
 public class ConverterCommand implements ExecutableCommand {
-
-    @Inject
-    private AuthMe authMe;
 
     @Inject
     private BukkitService bukkitService;

@@ -34,7 +34,6 @@ import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
@@ -648,16 +647,6 @@ public class AuthMe extends JavaPlugin {
 
     private boolean safeIsNpc(Player player) {
         return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
-    }
-
-    // Select the player to kick when a vip player joins the server when full
-    public Player generateKickPlayer(Collection<? extends Player> collection) {
-        for (Player player : collection) {
-            if (!getPermissionsManager().hasPermission(player, PlayerStatePermission.IS_VIP)) {
-                return player;
-            }
-        }
-        return null;
     }
 
     // Purge inactive players from the database, as defined in the configuration

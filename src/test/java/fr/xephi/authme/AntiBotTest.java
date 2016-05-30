@@ -164,7 +164,7 @@ public class AntiBotTest {
         AntiBot antiBot = createListeningAntiBot();
 
         // when
-        antiBot.checkAntiBot(player);
+        antiBot.handlePlayerJoin(player);
 
         // then
         @SuppressWarnings("unchecked")
@@ -194,7 +194,7 @@ public class AntiBotTest {
         AntiBot antiBot = createListeningAntiBot();
 
         // when
-        antiBot.checkAntiBot(player);
+        antiBot.handlePlayerJoin(player);
 
         // then
         @SuppressWarnings("rawtypes")
