@@ -503,6 +503,7 @@ public class AuthMe extends JavaPlugin {
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
+        ConsoleLogger.close();
     }
 
     // Stop/unload the server/plugin as defined in the configuration
