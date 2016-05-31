@@ -285,15 +285,14 @@ public class PermissionsManager implements PermissionsService {
     }
 
     public boolean hasPermission(CommandSender sender, CommandDescription command) {
-        if (command.getCommandPermissions() == null
-            || CollectionUtils.isEmpty(command.getCommandPermissions().getPermissionNodes())) {
+        if (command.getPermission() == null) {
             return true;
         }
 
-        DefaultPermission defaultPermission = command.getCommandPermissions().getDefaultPermission();
+        DefaultPermission defaultPermission = command.getPermission().getDefaultPermission();
         boolean def = evaluateDefaultPermission(defaultPermission, sender);
         return (sender instanceof Player)
-            ? hasPermission((Player) sender, command.getCommandPermissions().getPermissionNodes(), def)
+            ? hasPermission((Player) sender, command.getPermission().getNode(), def)
             : def;
     }
 

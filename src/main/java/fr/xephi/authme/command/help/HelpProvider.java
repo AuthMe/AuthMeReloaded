@@ -4,7 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.initialization.SettingsDependent;
@@ -13,7 +12,6 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -139,22 +137,19 @@ public class HelpProvider implements SettingsDependent {
 
     private static void printPermissions(CommandDescription command, CommandSender sender,
                                         PermissionsManager permissionsManager, List<String> lines) {
-        CommandPermissions permissions = command.getCommandPermissions();
-        // TODO ljacqu 20151224: Isn't it possible to have a default permission but no permission nodes?
-        if (permissions == null || CollectionUtils.isEmpty(permissions.getPermissionNodes())) {
+        PermissionNode permission = command.getPermission();
+        if (permission == null) {
             return;
         }
         lines.add(ChatColor.GOLD + "Permissions:");
 
-        for (PermissionNode node : permissions.getPermissionNodes()) {
-            boolean hasPermission = permissionsManager.hasPermission(sender, node);
-            final String nodePermsString = "" + ChatColor.GRAY + ChatColor.ITALIC
-                + (hasPermission ? " (You have permission)" : " (No permission)");
-            lines.add(" " + ChatColor.YELLOW + ChatColor.ITALIC + node.getNode() + nodePermsString);
-        }
+        boolean hasPermission = permissionsManager.hasPermission(sender, permission);
+        final String nodePermsString = "" + ChatColor.GRAY + ChatColor.ITALIC
+            + (hasPermission ? " (You have permission)" : " (No permission)");
+        lines.add(" " + ChatColor.YELLOW + ChatColor.ITALIC + permission.getNode() + nodePermsString);
 
         // Addendum to the line to specify whether the sender has permission or not when default is OP_ONLY
-        final DefaultPermission defaultPermission = permissions.getDefaultPermission();
+        final DefaultPermission defaultPermission = permission.getDefaultPermission();
         String addendum = "";
         if (DefaultPermission.OP_ONLY.equals(defaultPermission)) {
             addendum = PermissionsManager.evaluateDefaultPermission(defaultPermission, sender)

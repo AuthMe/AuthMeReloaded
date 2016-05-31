@@ -82,7 +82,7 @@ public class CommandInitializer {
             .detailedDescription("Register the specified player with the specified password.")
             .withArgument("player", "Player name", false)
             .withArgument("password", "Password", false)
-            .permissions(OP_ONLY, AdminPermission.REGISTER)
+            .permission(AdminPermission.REGISTER)
             .executableCommand(initializer.newInstance(RegisterAdminCommand.class))
             .build();
 
@@ -93,7 +93,7 @@ public class CommandInitializer {
             .description("Unregister a player")
             .detailedDescription("Unregister the specified player.")
             .withArgument("player", "Player name", false)
-            .permissions(OP_ONLY, AdminPermission.UNREGISTER)
+            .permission(AdminPermission.UNREGISTER)
             .executableCommand(initializer.newInstance(UnregisterAdminCommand.class))
             .build();
 
@@ -104,7 +104,7 @@ public class CommandInitializer {
             .description("Enforce login player")
             .detailedDescription("Enforce the specified player to login.")
             .withArgument("player", "Online player name", true)
-            .permissions(OP_ONLY, AdminPermission.FORCE_LOGIN)
+            .permission(AdminPermission.FORCE_LOGIN)
             .executableCommand(initializer.newInstance(ForceLoginCommand.class))
             .build();
 
@@ -116,7 +116,7 @@ public class CommandInitializer {
             .detailedDescription("Change the password of a player.")
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
-            .permissions(OP_ONLY, AdminPermission.CHANGE_PASSWORD)
+            .permission(AdminPermission.CHANGE_PASSWORD)
             .executableCommand(initializer.newInstance(ChangePasswordAdminCommand.class))
             .build();
 
@@ -127,7 +127,7 @@ public class CommandInitializer {
             .description("Player's last login")
             .detailedDescription("View the date of the specified players last login.")
             .withArgument("player", "Player name", true)
-            .permissions(OP_ONLY, AdminPermission.LAST_LOGIN)
+            .permission(AdminPermission.LAST_LOGIN)
             .executableCommand(initializer.newInstance(LastLoginCommand.class))
             .build();
 
@@ -138,7 +138,7 @@ public class CommandInitializer {
             .description("Display player accounts")
             .detailedDescription("Display all accounts of a player by his player name or IP.")
             .withArgument("player", "Player name or IP", true)
-            .permissions(OP_ONLY, AdminPermission.ACCOUNTS)
+            .permission(AdminPermission.ACCOUNTS)
             .executableCommand(initializer.newInstance(AccountsCommand.class))
             .build();
 
@@ -149,7 +149,7 @@ public class CommandInitializer {
             .description("Display player's email")
             .detailedDescription("Display the email address of the specified player if set.")
             .withArgument("player", "Player name", true)
-            .permissions(OP_ONLY, AdminPermission.GET_EMAIL)
+            .permission(AdminPermission.GET_EMAIL)
             .executableCommand(initializer.newInstance(GetEmailCommand.class))
             .build();
 
@@ -161,7 +161,7 @@ public class CommandInitializer {
             .detailedDescription("Change the email address of the specified player.")
             .withArgument("player", "Player name", false)
             .withArgument("email", "Player email", false)
-            .permissions(OP_ONLY, AdminPermission.CHANGE_EMAIL)
+            .permission(AdminPermission.CHANGE_EMAIL)
             .executableCommand(initializer.newInstance(SetEmailCommand.class))
             .build();
 
@@ -172,7 +172,7 @@ public class CommandInitializer {
             .description("Get player's IP")
             .detailedDescription("Get the IP address of the specified online player.")
             .withArgument("player", "Player name", false)
-            .permissions(OP_ONLY, AdminPermission.GET_IP)
+            .permission(AdminPermission.GET_IP)
             .executableCommand(initializer.newInstance(GetIpCommand.class))
             .build();
 
@@ -182,7 +182,7 @@ public class CommandInitializer {
             .labels("spawn", "home")
             .description("Teleport to spawn")
             .detailedDescription("Teleport to the spawn.")
-            .permissions(OP_ONLY, AdminPermission.SPAWN)
+            .permission(AdminPermission.SPAWN)
             .executableCommand(initializer.newInstance(SpawnCommand.class))
             .build();
 
@@ -192,7 +192,7 @@ public class CommandInitializer {
             .labels("setspawn", "chgspawn")
             .description("Change the spawn")
             .detailedDescription("Change the player's spawn to your current position.")
-            .permissions(OP_ONLY, AdminPermission.SET_SPAWN)
+            .permission(AdminPermission.SET_SPAWN)
             .executableCommand(initializer.newInstance(SetSpawnCommand.class))
             .build();
 
@@ -202,7 +202,7 @@ public class CommandInitializer {
             .labels("firstspawn", "firsthome")
             .description("Teleport to first spawn")
             .detailedDescription("Teleport to the first spawn.")
-            .permissions(OP_ONLY, AdminPermission.FIRST_SPAWN)
+            .permission(AdminPermission.FIRST_SPAWN)
             .executableCommand(initializer.newInstance(FirstSpawnCommand.class))
             .build();
 
@@ -212,7 +212,7 @@ public class CommandInitializer {
             .labels("setfirstspawn", "chgfirstspawn")
             .description("Change the first spawn")
             .detailedDescription("Change the first player's spawn to your current position.")
-            .permissions(OP_ONLY, AdminPermission.SET_FIRST_SPAWN)
+            .permission(AdminPermission.SET_FIRST_SPAWN)
             .executableCommand(initializer.newInstance(SetFirstSpawnCommand.class))
             .build();
 
@@ -223,7 +223,7 @@ public class CommandInitializer {
             .description("Purge old data")
             .detailedDescription("Purge old AuthMeReloaded data longer than the specified amount of days ago.")
             .withArgument("days", "Number of days", false)
-            .permissions(OP_ONLY, AdminPermission.PURGE)
+            .permission(AdminPermission.PURGE)
             .executableCommand(initializer.newInstance(PurgeCommand.class))
             .build();
 
@@ -235,7 +235,7 @@ public class CommandInitializer {
             .description("Purge player's last position")
             .detailedDescription("Purge the last know position of the specified player or all of them.")
             .withArgument("player/*", "Player name or * for all players", false)
-            .permissions(OP_ONLY, AdminPermission.PURGE_LAST_POSITION)
+            .permission(AdminPermission.PURGE_LAST_POSITION)
             .executableCommand(initializer.newInstance(PurgeLastPositionCommand.class))
             .build();
 
@@ -245,7 +245,7 @@ public class CommandInitializer {
             .labels("purgebannedplayers", "purgebannedplayer", "deletebannedplayers", "deletebannedplayer")
             .description("Purge banned players data")
             .detailedDescription("Purge all AuthMeReloaded data for banned players.")
-            .permissions(OP_ONLY, AdminPermission.PURGE_BANNED_PLAYERS)
+            .permission(AdminPermission.PURGE_BANNED_PLAYERS)
             .executableCommand(initializer.newInstance(PurgeBannedPlayersCommand.class))
             .build();
 
@@ -256,7 +256,7 @@ public class CommandInitializer {
             .description("Switch AntiBot mode")
             .detailedDescription("Switch or toggle the AntiBot mode to the specified state.")
             .withArgument("mode", "ON / OFF", true)
-            .permissions(OP_ONLY, AdminPermission.SWITCH_ANTIBOT)
+            .permission(AdminPermission.SWITCH_ANTIBOT)
             .executableCommand(initializer.newInstance(SwitchAntiBotCommand.class))
             .build();
 
@@ -266,7 +266,7 @@ public class CommandInitializer {
             .labels("reload", "rld")
             .description("Reload plugin")
             .detailedDescription("Reload the AuthMeReloaded plugin.")
-            .permissions(OP_ONLY, AdminPermission.RELOAD)
+            .permission(AdminPermission.RELOAD)
             .executableCommand(initializer.newInstance(ReloadCommand.class))
             .build();
 
@@ -287,7 +287,7 @@ public class CommandInitializer {
             .detailedDescription("Converter command for AuthMeReloaded.")
             .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
                 "royalauth / vauth / sqlitetosql", false)
-            .permissions(OP_ONLY, AdminPermission.CONVERTER)
+            .permission(AdminPermission.CONVERTER)
             .executableCommand(initializer.newInstance(ConverterCommand.class))
             .build();
 
@@ -298,7 +298,7 @@ public class CommandInitializer {
             .description("Login command")
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .withArgument("password", "Login password", false)
-            .permissions(ALLOWED, PlayerPermission.LOGIN)
+            .permission(PlayerPermission.LOGIN)
             .executableCommand(initializer.newInstance(LoginCommand.class))
             .build();
 
@@ -308,7 +308,7 @@ public class CommandInitializer {
             .labels("logout")
             .description("Logout command")
             .detailedDescription("Command to logout using AuthMeReloaded.")
-            .permissions(ALLOWED, PlayerPermission.LOGOUT)
+            .permission(PlayerPermission.LOGOUT)
             .executableCommand(initializer.newInstance(LogoutCommand.class))
             .build();
 
@@ -320,7 +320,7 @@ public class CommandInitializer {
             .detailedDescription("Command to register using AuthMeReloaded.")
             .withArgument("password", "Password", true)
             .withArgument("verifyPassword", "Verify password", true)
-            .permissions(ALLOWED, PlayerPermission.REGISTER)
+            .permission(PlayerPermission.REGISTER)
             .executableCommand(initializer.newInstance(RegisterCommand.class))
             .build();
 
@@ -331,7 +331,7 @@ public class CommandInitializer {
             .description("Unregistration Command")
             .detailedDescription("Command to unregister using AuthMeReloaded.")
             .withArgument("password", "Password", false)
-            .permissions(ALLOWED, PlayerPermission.UNREGISTER)
+            .permission(PlayerPermission.UNREGISTER)
             .executableCommand(initializer.newInstance(UnregisterCommand.class))
             .build();
 
@@ -343,7 +343,7 @@ public class CommandInitializer {
             .detailedDescription("Command to change your password using AuthMeReloaded.")
             .withArgument("oldPassword", "Old Password", false)
             .withArgument("newPassword", "New Password.", false)
-            .permissions(ALLOWED, PlayerPermission.CHANGE_PASSWORD)
+            .permission(PlayerPermission.CHANGE_PASSWORD)
             .executableCommand(initializer.newInstance(ChangePasswordCommand.class))
             .build();
 
@@ -364,7 +364,7 @@ public class CommandInitializer {
             .detailedDescription("Add a new email address to your account.")
             .withArgument("email", "Email address", false)
             .withArgument("verifyEmail", "Email address verification", false)
-            .permissions(ALLOWED, PlayerPermission.ADD_EMAIL)
+            .permission(PlayerPermission.ADD_EMAIL)
             .executableCommand(initializer.newInstance(AddEmailCommand.class))
             .build();
 
@@ -376,7 +376,7 @@ public class CommandInitializer {
             .detailedDescription("Change an email address of your account.")
             .withArgument("oldEmail", "Old email address", false)
             .withArgument("newEmail", "New email address", false)
-            .permissions(ALLOWED, PlayerPermission.CHANGE_EMAIL)
+            .permission(PlayerPermission.CHANGE_EMAIL)
             .executableCommand(initializer.newInstance(ChangeEmailCommand.class))
             .build();
 
@@ -388,7 +388,7 @@ public class CommandInitializer {
             .detailedDescription("Recover your account using an Email address by sending a mail containing " +
                 "a new password.")
             .withArgument("email", "Email address", false)
-            .permissions(ALLOWED, PlayerPermission.RECOVER_EMAIL)
+            .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(initializer.newInstance(RecoverEmailCommand.class))
             .build();
 
@@ -399,7 +399,7 @@ public class CommandInitializer {
             .description("Captcha Command")
             .detailedDescription("Captcha command for AuthMeReloaded.")
             .withArgument("captcha", "The Captcha", false)
-            .permissions(ALLOWED, PlayerPermission.CAPTCHA)
+            .permission(PlayerPermission.CAPTCHA)
             .executableCommand(initializer.newInstance(CaptchaCommand.class))
             .build();
 

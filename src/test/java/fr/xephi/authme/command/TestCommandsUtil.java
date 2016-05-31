@@ -1,7 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.HelpCommand;
-import fr.xephi.authme.permission.DefaultPermission;
+import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PlayerPermission;
 
@@ -43,8 +43,8 @@ public final class TestCommandsUtil {
             .description("test").detailedDescription("Test.").withArgument("Query", "", false).build();
 
         // Register /unregister <player>, alias: /unreg
-        CommandDescription unregisterBase = createCommand(null, null, asList("unregister", "unreg"),
-            newArgument("player", false));
+        CommandDescription unregisterBase = createCommand(AdminPermission.UNREGISTER, null,
+            asList("unregister", "unreg"), newArgument("player", false));
 
         return newHashSet(authMeBase, emailBase, unregisterBase);
     }
@@ -84,18 +84,10 @@ public final class TestCommandsUtil {
     /** Shortcut command to initialize a new test command. */
     private static CommandDescription createCommand(PermissionNode permission, CommandDescription parent,
                                                     List<String> labels, CommandArgumentDescription... arguments) {
-        PermissionNode[] notNullPermission;
-        if (permission == null) {
-            notNullPermission = new PermissionNode[0];
-        } else {
-            notNullPermission = new PermissionNode[1];
-            notNullPermission[0] = permission;
-        }
-
         CommandDescription.CommandBuilder command = CommandDescription.builder()
             .labels(labels)
             .parent(parent)
-            .permissions(DefaultPermission.OP_ONLY, notNullPermission)
+            .permission(permission)
             .description(labels.get(0) + " cmd")
             .detailedDescription("'" + labels.get(0) + "' test command")
             .executableCommand(mock(ExecutableCommand.class));

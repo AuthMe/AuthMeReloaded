@@ -256,21 +256,16 @@ public class CommandInitializerTest {
         BiConsumer adminPermissionChecker = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
-                CommandPermissions permissions = command.getCommandPermissions();
-                if (permissions != null && OP_ONLY.equals(permissions.getDefaultPermission())
-                    && !hasAdminNode(permissions)) {
+                PermissionNode permission = command.getPermission();
+                if (permission != null && OP_ONLY.equals(permission.getDefaultPermission())
+                    && !hasAdminNode(permission)) {
                     fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
                         + "permission but no permission node on admin level");
                 }
             }
 
-            private boolean hasAdminNode(CommandPermissions permissions) {
-                for (PermissionNode node : permissions.getPermissionNodes()) {
-                    if (node instanceof AdminPermission) {
-                        return true;
-                    }
-                }
-                return false;
+            private boolean hasAdminNode(PermissionNode permission) {
+                return permission instanceof AdminPermission;
             }
         };
 

@@ -4,8 +4,8 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.FoundResultStatus;
 import fr.xephi.authme.command.TestCommandsUtil;
+import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
@@ -126,10 +126,10 @@ public class HelpProviderTest {
     @Test
     public void shouldShowAndEvaluatePermissions() {
         // given
-        CommandDescription command = getCommandWithLabel(commands, "authme", "login");
-        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+        CommandDescription command = getCommandWithLabel(commands, "unregister");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("unreg"));
         given(sender.isOp()).willReturn(true);
-        given(permissionsManager.hasPermission(sender, PlayerPermission.LOGIN)).willReturn(true);
+        given(permissionsManager.hasPermission(sender, AdminPermission.UNREGISTER)).willReturn(true);
         given(permissionsManager.hasPermission(sender, command)).willReturn(true);
 
         // when
@@ -139,7 +139,7 @@ public class HelpProviderTest {
         assertThat(lines, hasSize(5));
         assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
         assertThat(removeColors(lines.get(2)),
-            containsString(PlayerPermission.LOGIN.getNode() + " (You have permission)"));
+            containsString(AdminPermission.UNREGISTER.getNode() + " (You have permission)"));
         assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (You have permission)"));
         assertThat(removeColors(lines.get(4)), containsString("Result: You have permission"));
     }
@@ -147,10 +147,10 @@ public class HelpProviderTest {
     @Test
     public void shouldShowAndEvaluateForbiddenPermissions() {
         // given
-        CommandDescription command = getCommandWithLabel(commands, "authme", "login");
-        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+        CommandDescription command = getCommandWithLabel(commands, "unregister");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("unregister"));
         given(sender.isOp()).willReturn(false);
-        given(permissionsManager.hasPermission(sender, PlayerPermission.LOGIN)).willReturn(false);
+        given(permissionsManager.hasPermission(sender, AdminPermission.UNREGISTER)).willReturn(false);
         given(permissionsManager.hasPermission(sender, command)).willReturn(false);
 
         // when
@@ -160,7 +160,7 @@ public class HelpProviderTest {
         assertThat(lines, hasSize(5));
         assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
         assertThat(removeColors(lines.get(2)),
-            containsString(PlayerPermission.LOGIN.getNode() + " (No permission)"));
+            containsString(AdminPermission.UNREGISTER.getNode() + " (No permission)"));
         assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (No permission)"));
         assertThat(removeColors(lines.get(4)), containsString("Result: No permission"));
     }
@@ -182,7 +182,7 @@ public class HelpProviderTest {
     public void shouldNotShowAnythingForNullPermissionsOnCommand() {
         // given
         CommandDescription command = mock(CommandDescription.class);
-        given(command.getCommandPermissions()).willReturn(null);
+        given(command.getPermission()).willReturn(null);
         given(command.getLabels()).willReturn(Collections.singletonList("test"));
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("test"));
 
