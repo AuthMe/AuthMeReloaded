@@ -1,6 +1,5 @@
 package fr.xephi.authme.converter;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -24,17 +23,18 @@ import java.util.Map.Entry;
  */
 public class RakamakConverter implements Converter {
 
-    private final AuthMe instance;
     private final DataSource database;
     private final NewSetting settings;
     private final File pluginFolder;
+    private final PasswordSecurity passwordSecurity;
 
     @Inject
-    RakamakConverter(@DataFolder File dataFolder, AuthMe instance, DataSource dataSource, NewSetting settings) {
-        this.instance = instance;
+    RakamakConverter(@DataFolder File dataFolder, DataSource dataSource, NewSetting settings,
+                     PasswordSecurity passwordSecurity) {
         this.database = dataSource;
         this.settings = settings;
         this.pluginFolder = dataFolder;
+        this.passwordSecurity = passwordSecurity;
     }
 
     @Override
@@ -64,7 +64,6 @@ public class RakamakConverter implements Converter {
             ipFile.close();
 
             users = new BufferedReader(new FileReader(source));
-            PasswordSecurity passwordSecurity = instance.getPasswordSecurity();
             while ((line = users.readLine()) != null) {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");

@@ -3,6 +3,7 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.SettingsDependent;
@@ -32,6 +33,7 @@ public class SpawnLoader implements SettingsDependent {
 
     private final File authMeConfigurationFile;
     private final PluginHooks pluginHooks;
+    private final DataSource dataSource;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
@@ -44,12 +46,14 @@ public class SpawnLoader implements SettingsDependent {
      * @param pluginHooks The plugin hooks instance
      */
     @Inject
-    public SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks) {
+    public SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
+                       DataSource dataSource) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
         this.pluginHooks = pluginHooks;
+        this.dataSource = dataSource;
         loadSettings(settings);
     }
 
@@ -166,7 +170,7 @@ public class SpawnLoader implements SettingsDependent {
                     if (PlayerCache.getInstance().isAuthenticated(playerNameLower)) {
                         spawnLoc = getSpawn();
                     } else if (getFirstSpawn() != null && (!player.hasPlayedBefore() ||
-                        !plugin.getDataSource().isAuthAvailable(playerNameLower))) {
+                        !dataSource.isAuthAvailable(playerNameLower))) {
                         spawnLoc = getFirstSpawn();
                     } else {
                         spawnLoc = getSpawn();

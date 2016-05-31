@@ -1,16 +1,14 @@
 package fr.xephi.authme.api;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
 
@@ -33,15 +31,6 @@ public class NewAPI {
     @Inject
     public NewAPI(AuthMe plugin) {
         this.plugin = plugin;
-    }
-
-    /**
-     * Constructor for NewAPI.
-     *
-     * @param server The server instance
-     */
-    public NewAPI(Server server) {
-        this.plugin = (AuthMe) server.getPluginManager().getPlugin("AuthMe");
     }
 
     /**

@@ -5,7 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
@@ -26,6 +26,8 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 
+import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
+
 public class AsyncRegister implements AsynchronousProcess {
 
     @Inject
@@ -45,6 +47,9 @@ public class AsyncRegister implements AsynchronousProcess {
 
     @Inject
     private SyncProcessManager syncProcessManager;
+
+    @Inject
+    private PermissionsManager permissionsManager;
 
     AsyncRegister() { }
 
@@ -78,7 +83,7 @@ public class AsyncRegister implements AsynchronousProcess {
         if (maxRegPerIp > 0
             && !"127.0.0.1".equalsIgnoreCase(ip)
             && !"localhost".equalsIgnoreCase(ip)
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+            && !permissionsManager.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
             if (otherAccounts.size() >= maxRegPerIp) {
                 service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerIp),
@@ -102,8 +107,7 @@ public class AsyncRegister implements AsynchronousProcess {
     private void emailRegister(Player player, String password, String email) {
         final String name = player.getName().toLowerCase();
         final int maxRegPerEmail = service.getProperty(EmailSettings.MAX_REG_PER_EMAIL);
-        if (maxRegPerEmail > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+        if (maxRegPerEmail > 0 && !permissionsManager.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
             int otherAccounts = database.countAuthsByEmail(email);
             if (otherAccounts >= maxRegPerEmail) {
                 service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerEmail),

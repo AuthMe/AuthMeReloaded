@@ -19,19 +19,20 @@ public class ChangePasswordTask implements Runnable {
     private final Player player;
     private final String oldPassword;
     private final String newPassword;
+    private final PasswordSecurity passwordSecurity;
 
-    public ChangePasswordTask(AuthMe plugin, Player player, String oldPassword, String newPassword) {
+    public ChangePasswordTask(AuthMe plugin, Player player, String oldPassword, String newPassword,
+                              PasswordSecurity passwordSecurity) {
         this.plugin = plugin;
         this.player = player;
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;
+        this.passwordSecurity = passwordSecurity;
     }
 
     @Override
     public void run() {
         Messages m = plugin.getMessages();
-        PasswordSecurity passwordSecurity = plugin.getPasswordSecurity();
-
         final String name = player.getName().toLowerCase();
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
         if (passwordSecurity.comparePassword(oldPassword, auth.getPassword(), player.getName())) {

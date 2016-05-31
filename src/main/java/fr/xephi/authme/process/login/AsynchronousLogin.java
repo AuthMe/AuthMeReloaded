@@ -16,6 +16,7 @@ import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -61,6 +62,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private PasswordSecurity passwordSecurity;
 
 
     AsynchronousLogin() { }
@@ -150,8 +154,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         String email = pAuth.getEmail();
-        boolean passwordVerified = forceLogin || plugin.getPasswordSecurity()
-            .comparePassword(password, pAuth.getPassword(), player.getName());
+        boolean passwordVerified = forceLogin || passwordSecurity.comparePassword(
+            password, pAuth.getPassword(), player.getName());
 
         final String name = player.getName().toLowerCase();
         if (passwordVerified && player.isOnline()) {

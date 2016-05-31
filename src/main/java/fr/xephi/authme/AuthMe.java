@@ -297,7 +297,7 @@ public class AuthMe extends JavaPlugin {
 
 
         // Set up the BungeeCord hook
-        setupBungeeCordHook(newSettings);
+        setupBungeeCordHook(newSettings, initializer);
 
         // Reload support hook
         reloadSupportHook();
@@ -396,11 +396,11 @@ public class AuthMe extends JavaPlugin {
     /**
      * Set up the BungeeCord hook.
      */
-    private void setupBungeeCordHook(NewSetting settings) {
+    private void setupBungeeCordHook(NewSetting settings, AuthMeServiceInitializer initializer) {
         if (settings.getProperty(HooksSettings.BUNGEECORD)) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(
-                this, "BungeeCord", new BungeeCordMessage(this));
+                this, "BungeeCord", initializer.get(BungeeCordMessage.class));
         }
     }
 
@@ -750,37 +750,57 @@ public class AuthMe extends JavaPlugin {
         return commandHandler.processCommand(sender, commandLabel, args);
     }
 
+    public void notifyAutoPurgeEnd() {
+        this.autoPurging = false;
+    }
+
+
+    // -------------
+    // Service getters (deprecated)
+    // Use @Inject fields instead
+    // -------------
     /**
-     * Get the permissions manager instance.
-     *
-     * @return Permissions Manager instance.
+     * @return permission manager
+     * @deprecated should be used in API classes only (temporarily)
      */
+    @Deprecated
     public PermissionsManager getPermissionsManager() {
         return this.permsMan;
     }
 
     /**
-     * Return the management instance.
-     *
-     * @return management The Management
+     * @return process manager
+     * @deprecated should be used in API classes only (temporarily)
      */
+    @Deprecated
     public Management getManagement() {
         return management;
     }
 
+    /**
+     * @return the datasource
+     * @deprecated should be used in API classes only (temporarily)
+     */
+    @Deprecated
     public DataSource getDataSource() {
         return database;
     }
 
+    /**
+     * @return password manager
+     * @deprecated should be used in API classes only (temporarily)
+     */
+    @Deprecated
     public PasswordSecurity getPasswordSecurity() {
         return passwordSecurity;
     }
 
+    /**
+     * @return plugin hooks
+     * @deprecated should be used in API classes only (temporarily)
+     */
+    @Deprecated
     public PluginHooks getPluginHooks() {
         return pluginHooks;
-    }
-
-    public void notifyAutoPurgeEnd() {
-        this.autoPurging = false;
     }
 }

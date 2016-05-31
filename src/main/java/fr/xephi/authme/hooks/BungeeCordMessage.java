@@ -2,29 +2,31 @@ package fr.xephi.authme.hooks;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-/**
- */
+import javax.inject.Inject;
+
+
 public class BungeeCordMessage implements PluginMessageListener {
 
-    private final AuthMe plugin;
+    @Inject
+    private DataSource dataSource;
 
-    /**
-     * Constructor for BungeeCordMessage.
-     *
-     * @param plugin The plugin instance
-     */
-    public BungeeCordMessage(AuthMe plugin) {
-        this.plugin = plugin;
-    }
+    @Inject
+    private BukkitService bukkitService;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    BungeeCordMessage() { }
+
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
@@ -38,8 +40,7 @@ public class BungeeCordMessage implements PluginMessageListener {
             final String[] args = str.split(";");
             final String act = args[0];
             final String name = args[1];
-            final DataSource dataSource = plugin.getDataSource();
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            bukkitService.runTaskAsynchronously(new Runnable() {
                 @Override
                 public void run() {
                     PlayerAuth auth = dataSource.getAuth(name);
@@ -47,12 +48,12 @@ public class BungeeCordMessage implements PluginMessageListener {
                         return;
                     }
                     if ("login".equals(act)) {
-                        PlayerCache.getInstance().updatePlayer(auth);
+                        playerCache.updatePlayer(auth);
                         dataSource.setLogged(name);
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has logged in from one of your server!");
                     } else if ("logout".equals(act)) {
-                        PlayerCache.getInstance().removePlayer(name);
+                        playerCache.removePlayer(name);
                         dataSource.setUnlogged(name);
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has logged out from one of your server!");
@@ -63,7 +64,7 @@ public class BungeeCordMessage implements PluginMessageListener {
                         final String password = args[2];
                         final String salt = args.length >= 4 ? args[3] : null;
                         auth.setPassword(new HashedPassword(password, salt));
-                        PlayerCache.getInstance().updatePlayer(auth);
+                        playerCache.updatePlayer(auth);
                         dataSource.updatePassword(auth);
                     }
 
