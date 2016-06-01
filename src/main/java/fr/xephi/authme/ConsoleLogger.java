@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -68,9 +69,15 @@ public final class ConsoleLogger {
 
     public static void debug(String message) {
         if (enableDebug) {
-            logger.fine(message);
+            if (logger.isLoggable(Level.FINE)) {
+                //creating and filling an exception is a expensive call
+                logger.log(Level.FINE, message + ' ' + Thread.currentThread().getName(), new Exception());
+            } else {
+                logger.log(Level.FINE, "{0} {1}", new Object[]{message, Thread.currentThread().getName()});
+            }
+
             if (useLogging) {
-                writeLog("Debug: " + message);
+                writeLog("Debug: " + Thread.currentThread().getName() + ':' + message);
             }
         }
     }
