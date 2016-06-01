@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -14,9 +15,6 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.projectiles.ProjectileSource;
-
-import fr.xephi.authme.ConsoleLogger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,12 +24,12 @@ import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 public class AuthMeEntityListener implements Listener {
 
     private Method getShooter;
-    private boolean shooterIsProjectileSource;
+    private boolean shooterIsLivingEntity;
 
     public AuthMeEntityListener() {
         try {
             getShooter = Projectile.class.getDeclaredMethod("getShooter");
-            shooterIsProjectileSource = getShooter.getReturnType() != LivingEntity.class;
+            shooterIsLivingEntity = getShooter.getReturnType() == LivingEntity.class;
         } catch (NoSuchMethodException | SecurityException e) {
             ConsoleLogger.logException("Cannot load getShooter() method on Projectile class", e);
         }
@@ -98,28 +96,22 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        Player player = null;
         Projectile projectile = event.getEntity();
-        // In old versions of the Bukkit API getShooter() returns a Player object instead of a ProjectileSource
-        if (shooterIsProjectileSource) {
-            ProjectileSource shooter = projectile.getShooter();
-            if (shooter == null || !(shooter instanceof Player)) {
-                return;
-            }
-            player = (Player) shooter;
-        } else {
+        // In the Bukkit API prior to 1.7, getShooter() returns a LivingEntity instead of a ProjectileSource
+        Object shooterRaw = null;
+        if (shooterIsLivingEntity) {
             try {
                 if (getShooter == null) {
                     getShooter = Projectile.class.getMethod("getShooter");
                 }
-                Object obj = getShooter.invoke(projectile);
-                player = (Player) obj;
+                shooterRaw = getShooter.invoke(projectile);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 ConsoleLogger.logException("Error getting shooter", e);
             }
+        } else {
+            shooterRaw = projectile.getShooter();
         }
-
-        if (ListenerService.shouldCancelEvent(player)) {
+        if (shooterRaw instanceof Player && shouldCancelEvent((Player) shooterRaw)) {
             event.setCancelled(true);
         }
     }
