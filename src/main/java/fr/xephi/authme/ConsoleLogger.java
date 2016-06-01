@@ -44,7 +44,8 @@ public final class ConsoleLogger {
             if (fileWriter == null) {
                 try {
                     fileWriter = new FileWriter(logFile, true);
-                } catch (IOException ignored) {
+                } catch (IOException e) {
+                    ConsoleLogger.showError("Failed to create the log file:" + e);
                 }
             }
         } else {
