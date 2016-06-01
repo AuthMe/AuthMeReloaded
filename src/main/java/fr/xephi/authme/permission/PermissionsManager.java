@@ -198,6 +198,7 @@ public class PermissionsManager {
     public void unhook() {
         // Reset the current used permissions system
         this.permsType = null;
+        this.handler = null;
 
         // Print a status message to the console
         ConsoleLogger.info("Unhooked from Permissions!");
