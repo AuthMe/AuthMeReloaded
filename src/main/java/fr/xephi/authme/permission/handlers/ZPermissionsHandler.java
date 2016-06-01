@@ -29,12 +29,12 @@ public class ZPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermission(Player player, PermissionNode node, boolean def) {
+    public boolean hasPermission(Player player, PermissionNode node) {
         Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(player.getWorld().getName(), null, player.getName());
         if (perms.containsKey(node.getNode()))
             return perms.get(node.getNode());
         else
-            return def;
+            return node.getDefaultPermission().evaluate(player);
     }
 
     @Override

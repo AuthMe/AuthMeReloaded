@@ -27,7 +27,7 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermission(Player player, PermissionNode node, boolean def) {
+    public boolean hasPermission(Player player, PermissionNode node) {
         return vaultProvider.has(player, node.getNode());
     }
 

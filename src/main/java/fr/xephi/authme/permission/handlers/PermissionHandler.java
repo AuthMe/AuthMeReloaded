@@ -31,11 +31,10 @@ public interface PermissionHandler {
      *
      * @param player    The player.
      * @param node The permission node.
-     * @param def       Default returned if no permissions system is used.
      *
      * @return True if the player has permission.
      */
-    boolean hasPermission(Player player, PermissionNode node, boolean def);
+    boolean hasPermission(Player player, PermissionNode node);
 
     /**
      * Check whether the player is in the specified group.

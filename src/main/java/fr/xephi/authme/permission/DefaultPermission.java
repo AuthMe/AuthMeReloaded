@@ -1,18 +1,35 @@
 package fr.xephi.authme.permission;
 
+import org.bukkit.command.CommandSender;
+
 /**
- * The default permission for a command if there is no support for permission nodes.
+ * The default permission to fall back to if there is no support for permission nodes.
  */
 public enum DefaultPermission {
 
-    /** No one can execute the command. */
-    NOT_ALLOWED("No permission"),
+    /** No one has permission. */
+    NOT_ALLOWED("No permission") {
+        @Override
+        public boolean evaluate(CommandSender sender) {
+            return false;
+        }
+    },
 
-    /** Only players with the OP status may execute the command. */
-    OP_ONLY("OP's only"),
+    /** Only players with OP status have permission. */
+    OP_ONLY("OP's only") {
+        @Override
+        public boolean evaluate(CommandSender sender) {
+            return sender.isOp();
+        }
+    },
 
-    /** The command can be executed by anyone. */
-    ALLOWED("Everyone allowed");
+    /** Everyone is granted permission. */
+    ALLOWED("Everyone allowed") {
+        @Override
+        public boolean evaluate(CommandSender sender) {
+            return true;
+        }
+    };
 
     /** Textual representation of the default permission. */
     private final String title;
@@ -26,9 +43,17 @@ public enum DefaultPermission {
     }
 
     /**
-     *  Return the textual representation.
-     *  
-     *  @return The textual representation
+     * Evaluates whether permission is granted to the sender or not.
+     *
+     * @param sender the sender to process
+     * @return true if the sender has permission, false otherwise
+     */
+    public abstract boolean evaluate(CommandSender sender);
+
+    /**
+     * Return the textual representation.
+     *
+     * @return the textual representation
      */
     public String getTitle() {
         return title;

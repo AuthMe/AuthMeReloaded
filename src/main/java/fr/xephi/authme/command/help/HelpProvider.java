@@ -48,7 +48,7 @@ public class HelpProvider implements SettingsDependent {
     private String helpHeader;
 
     @Inject
-    public HelpProvider(PermissionsManager permissionsManager, NewSetting settings) {
+    HelpProvider(PermissionsManager permissionsManager, NewSetting settings) {
         this.permissionsManager = permissionsManager;
         loadSettings(settings);
     }
@@ -152,7 +152,7 @@ public class HelpProvider implements SettingsDependent {
         final DefaultPermission defaultPermission = permission.getDefaultPermission();
         String addendum = "";
         if (DefaultPermission.OP_ONLY.equals(defaultPermission)) {
-            addendum = PermissionsManager.evaluateDefaultPermission(defaultPermission, sender)
+            addendum = defaultPermission.evaluate(sender)
                 ? " (You have permission)"
                 : " (No permission)";
         }

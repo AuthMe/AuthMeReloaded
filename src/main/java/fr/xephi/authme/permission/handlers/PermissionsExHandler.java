@@ -21,7 +21,7 @@ public class PermissionsExHandler implements PermissionHandler {
 
     @Override
     public boolean addToGroup(Player player, String group) {
-        if(!PermissionsEx.getPermissionManager().getGroupNames().contains(group)) {
+        if (!PermissionsEx.getPermissionManager().getGroupNames().contains(group)) {
             ConsoleLogger.showError("The plugin tried to set " + player + "'s group to '" + group + "', but it doesn't exist!");
             return false;
         }
@@ -37,7 +37,7 @@ public class PermissionsExHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermission(Player player, PermissionNode node, boolean def) {
+    public boolean hasPermission(Player player, PermissionNode node) {
         PermissionUser user = permissionManager.getUser(player);
         return user.has(node.getNode());
     }

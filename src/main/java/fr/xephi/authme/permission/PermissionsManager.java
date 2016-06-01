@@ -224,7 +224,7 @@ public class PermissionsManager {
      * @param event Event instance.
      */
     public void onPluginEnable(PluginEnableEvent event) {
-        // Get the plugin and it's name
+        // Get the plugin and its name
         Plugin plugin = event.getPlugin();
         String pluginName = plugin.getName();
 
@@ -280,39 +280,16 @@ public class PermissionsManager {
         return hasPermission(player, permissionNode, def);
     }
 
-    public boolean hasPermission(Player player, Iterable<PermissionNode> nodes, boolean def) {
-        for (PermissionNode node : nodes) {
-            if (!hasPermission(player, node, def)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public boolean hasPermission(CommandSender sender, CommandDescription command) {
         if (command.getPermission() == null) {
             return true;
         }
 
         DefaultPermission defaultPermission = command.getPermission().getDefaultPermission();
-        boolean def = evaluateDefaultPermission(defaultPermission, sender);
+        boolean def = defaultPermission.evaluate(sender);
         return (sender instanceof Player)
             ? hasPermission((Player) sender, command.getPermission(), def)
             : def;
-    }
-
-    public static boolean evaluateDefaultPermission(DefaultPermission defaultPermission, CommandSender sender) {
-        switch (defaultPermission) {
-            case ALLOWED:
-                return true;
-
-            case OP_ONLY:
-                return sender.isOp();
-
-            case NOT_ALLOWED:
-            default:
-                return false;
-        }
     }
 
     /**
@@ -329,7 +306,7 @@ public class PermissionsManager {
         if (!isEnabled())
             return def;
 
-        return handler.hasPermission(player, node, def);
+        return handler.hasPermission(player, node);
     }
 
     /**
@@ -530,7 +507,7 @@ public class PermissionsManager {
     /**
      * Remove all groups of the specified player, if supported.
      * Systems like Essentials GroupManager don't allow all groups to be removed from a player, thus the user will stay
-     * in it's primary group. All the subgroups are removed just fine.
+     * in its primary group. All the subgroups are removed just fine.
      *
      * @param player The player to remove all groups from.
      *
