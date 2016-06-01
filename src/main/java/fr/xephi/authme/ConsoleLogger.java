@@ -46,7 +46,7 @@ public final class ConsoleLogger {
                 try {
                     fileWriter = new FileWriter(logFile, true);
                 } catch (IOException e) {
-                    ConsoleLogger.showError("Failed to create the log file:" + e);
+                    ConsoleLogger.logException("Failed to create the log file:", e);
                 }
             }
         } else {
@@ -70,7 +70,7 @@ public final class ConsoleLogger {
     public static void debug(String message) {
         if (enableDebug) {
             //creating and filling an exception is a expensive call
-            //->so it should be removed as soon #419 is fixed
+            //TODO #419 20160601: ->so it should be removed as soon #419 is fixed
             //logger.isLoggable does not work because the plugin logger is always ALL
             logger.log(Level.FINE, message + ' ' + Thread.currentThread().getName(), new Exception());
 

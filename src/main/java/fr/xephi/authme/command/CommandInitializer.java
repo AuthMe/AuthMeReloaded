@@ -43,9 +43,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static fr.xephi.authme.permission.DefaultPermission.ALLOWED;
-import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
-
 /**
  * Initializes all available AuthMe commands.
  */
