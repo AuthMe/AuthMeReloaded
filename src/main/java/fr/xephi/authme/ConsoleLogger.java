@@ -70,7 +70,7 @@ public final class ConsoleLogger {
     public static void debug(String message) {
         if (enableDebug) {
             //creating and filling an exception is a expensive call
-            //->so it should be removed as soon #418 is fixed
+            //->so it should be removed as soon #419 is fixed
             //logger.isLoggable does not work because the plugin logger is always ALL
             logger.log(Level.FINE, message + ' ' + Thread.currentThread().getName(), new Exception());
 
