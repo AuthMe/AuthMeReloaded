@@ -69,12 +69,10 @@ public final class ConsoleLogger {
 
     public static void debug(String message) {
         if (enableDebug) {
-            if (logger.isLoggable(Level.FINE)) {
-                //creating and filling an exception is a expensive call
-                logger.log(Level.FINE, message + ' ' + Thread.currentThread().getName(), new Exception());
-            } else {
-                logger.log(Level.FINE, "{0} {1}", new Object[]{message, Thread.currentThread().getName()});
-            }
+            //creating and filling an exception is a expensive call
+            //->so it should be removed as soon #418 is fixed
+            //logger.isLoggable does not work because the plugin logger is always ALL
+            logger.log(Level.FINE, message + ' ' + Thread.currentThread().getName(), new Exception());
 
             if (useLogging) {
                 writeLog("Debug: " + Thread.currentThread().getName() + ':' + message);
