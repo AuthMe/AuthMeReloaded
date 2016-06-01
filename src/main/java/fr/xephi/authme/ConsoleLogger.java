@@ -6,9 +6,8 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,6 +24,7 @@ public final class ConsoleLogger {
     private static boolean enableDebug = false;
     private static boolean useLogging = false;
     private static File logFile;
+    private static FileWriter fileWriter;
 
     private ConsoleLogger() {
     }
@@ -40,6 +40,16 @@ public final class ConsoleLogger {
     public static void setLoggingOptions(NewSetting settings) {
         ConsoleLogger.useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
         ConsoleLogger.enableDebug = !settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
+        if (useLogging) {
+            if (fileWriter == null) {
+                try {
+                    fileWriter = new FileWriter(logFile, true);
+                } catch (IOException ignored) {
+                }
+            }
+        } else {
+            close();
+        }
     }
 
     /**
@@ -49,6 +59,10 @@ public final class ConsoleLogger {
      */
     public static void info(String message) {
         logger.info(message);
+        if (useLogging) {
+            writeLog(message);
+        }
+
     }
 
     public static void debug(String message) {
@@ -83,9 +97,11 @@ public final class ConsoleLogger {
             dateTime = DATE_FORMAT.format(new Date());
         }
         try {
-            Files.write(logFile.toPath(), (dateTime + ": " + message + NEW_LINE).getBytes(),
-                StandardOpenOption.APPEND,
-                StandardOpenOption.CREATE);
+            fileWriter.write(dateTime);
+            fileWriter.write(": ");
+            fileWriter.write(message);
+            fileWriter.write(NEW_LINE);
+            fileWriter.flush();
         } catch (IOException ignored) {
         }
     }
@@ -105,10 +121,21 @@ public final class ConsoleLogger {
      * Logs a Throwable with the provided message and saves the stack trace to the log file.
      *
      * @param message The message to accompany the exception
-     * @param th The Throwable to log
+     * @param th      The Throwable to log
      */
     public static void logException(String message, Throwable th) {
         showError(message + " " + StringUtils.formatException(th));
         writeStackTrace(th);
+    }
+
+    public static void close() {
+        if (fileWriter != null) {
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+                fileWriter = null;
+            } catch (IOException ignored) {
+            }
+        }
     }
 }

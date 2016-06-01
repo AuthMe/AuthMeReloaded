@@ -35,12 +35,12 @@ public class ReloadCommand implements ExecutableCommand {
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         try {
             settings.reload();
+            ConsoleLogger.setLoggingOptions(settings);
             // We do not change database type for consistency issues, but we'll output a note in the logs
             if (!settings.getProperty(DatabaseSettings.BACKEND).equals(dataSource.getType())) {
                 ConsoleLogger.info("Note: cannot change database type during /authme reload");
                 sender.sendMessage("Note: cannot change database type during /authme reload");
             }
-            ConsoleLogger.setLoggingOptions(settings);
             initializer.performReloadOnServices();
             commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
