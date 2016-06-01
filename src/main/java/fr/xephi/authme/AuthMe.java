@@ -215,7 +215,7 @@ public class AuthMe extends JavaPlugin {
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
         newSettings = createNewSetting();
         if (newSettings == null) {
-            ConsoleLogger.showError("Could not load configuration. Aborting.");
+            getLogger().warning("Could not load configuration. Aborting.");
             getServer().shutdown();
             return;
         }
