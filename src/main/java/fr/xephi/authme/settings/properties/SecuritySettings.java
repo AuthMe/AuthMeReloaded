@@ -7,7 +7,6 @@ import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
-import static fr.xephi.authme.settings.domain.Property.newListProperty;
 import static fr.xephi.authme.settings.domain.Property.newLowercaseListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 

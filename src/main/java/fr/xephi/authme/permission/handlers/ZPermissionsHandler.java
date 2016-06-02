@@ -53,10 +53,9 @@ public class ZPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<String> getGroups(Player player) {
         // TODO Gnat008 20160631: Use UUID not name?
-        return new ArrayList(zPermissionsService.getPlayerGroups(player.getName()));
+        return new ArrayList<String>(zPermissionsService.getPlayerGroups(player.getName()));
     }
 
     @Override

@@ -57,6 +57,7 @@ public class CommandConsistencyTest {
      *
      * @return collection of all base command labels
      */
+    @SuppressWarnings("unchecked")
     private static Collection<List<String>> initializeCommands() {
         AuthMeServiceInitializer injector = mock(AuthMeServiceInitializer.class);
         given(injector.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {

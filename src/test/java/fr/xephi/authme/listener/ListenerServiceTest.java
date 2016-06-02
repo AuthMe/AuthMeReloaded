@@ -49,6 +49,7 @@ public class ListenerServiceTest {
     @Mock
     private PlayerCache playerCache;
 
+    @SuppressWarnings("rawtypes")
     @Before
     public void initializeTestSetup() {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
