@@ -2,6 +2,8 @@ package fr.xephi.authme.hooks;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -24,6 +26,9 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     @Inject
     private PlayerCache playerCache;
+
+    @Inject
+    private AuthMe plugin;
 
     BungeeCordMessage() { }
 
@@ -50,6 +55,12 @@ public class BungeeCordMessage implements PluginMessageListener {
                     if ("login".equals(act)) {
                         playerCache.updatePlayer(auth);
                         dataSource.setLogged(name);
+                        //START 03062016 sgdc3: should fix #731 but we need to recode this mess
+                        if (plugin.sessions.containsKey(name)) {
+                            plugin.sessions.get(name).cancel();
+                            plugin.sessions.remove(name);
+                        }
+                        //END
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has logged in from one of your server!");
                     } else if ("logout".equals(act)) {
