@@ -4,7 +4,6 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,6 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link PermissionsManager}.
  */
-// TODO #739: Unignore tests after they pass
 @RunWith(MockitoJUnitRunner.class)
 public class PermissionsManagerTest {
 
@@ -42,7 +40,7 @@ public class PermissionsManagerTest {
         boolean result = permissionsManager.hasPermission(sender, node);
 
         // then
-        assertThat(result, equalTo(false));
+        assertThat(result, equalTo(true));
     }
 
     @Test
@@ -60,8 +58,6 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    @Ignore
-    // TODO ljacqu 20160601: This test should pass - tested permission node has DefaultPermission.NOT_ALLOWED
     public void shouldDenyPermissionEvenForOpCommandSender() {
         // given
         PermissionNode node = TestPermissions.WORLD_DOMINATION;
@@ -76,8 +72,6 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    @Ignore
-    // TODO ljacqu 20160601: This test MUST pass! -> tested node has DefaultPermission.ALLOW
     public void shouldAllowForNonOpPlayer() {
         // given
         PermissionNode node = TestPermissions.LOGIN;
@@ -118,8 +112,6 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    @Ignore
-    // TODO ljacqu 20160601: This should pass -> tested node has DefaultPermission.NOT_ALLOWED so result should be false
     public void shouldDenyEvenForOpPlayer() {
         // given
         PermissionNode node = TestPermissions.WORLD_DOMINATION;
@@ -134,8 +126,6 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    @Ignore
-    // TODO ljacqu 20160601: This must pass. null permission => true
     public void shouldHandleNullPermissionForCommandSender() {
         // given
         PermissionNode node = null;
@@ -149,8 +139,6 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    @Ignore
-    // TODO ljacqu 20160601: This must pass. null permission => true
     public void shouldHandleNullPermissionForPlayer() {
         // given
         PermissionNode node = null;

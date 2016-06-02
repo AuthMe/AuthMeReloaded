@@ -1,7 +1,6 @@
 package fr.xephi.authme.permission;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.GroupManagerHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
@@ -15,8 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -186,8 +183,6 @@ public class PermissionsManager {
 
     /**
      * Reload the permissions manager, and re-hook all permission plugins.
-     *
-     * @return True on success, false on failure.
      */
     public void reload() {
         // Unhook all permission plugins
@@ -246,7 +241,7 @@ public class PermissionsManager {
 
         // Return if the player is an Op if sender is console or no permission system in use
         if (!(sender instanceof Player) || !isEnabled()) {
-            return sender.isOp();
+            return permissionNode.getDefaultPermission().evaluate(sender);
         }
 
         Player player = (Player) sender;
