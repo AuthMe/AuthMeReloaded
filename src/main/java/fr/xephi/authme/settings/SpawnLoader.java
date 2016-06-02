@@ -44,6 +44,7 @@ public class SpawnLoader implements SettingsDependent {
      * @param pluginFolder The AuthMe data folder
      * @param settings The setting instance
      * @param pluginHooks The plugin hooks instance
+     * @param dataSource The plugin auth database instance
      */
     @Inject
     public SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
