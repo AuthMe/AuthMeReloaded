@@ -47,11 +47,7 @@ public class PermissionsManager {
      */
     private final Server server;
     private final PluginManager pluginManager;
-    /**
-     * Type of permissions system that is currently used.
-     * Null if no permissions system is hooked and/or used.
-     */
-    private PermissionsSystemType permsType = null;
+
     /**
      * The permission handler that is currently in use.
      * Null if no permission system is hooked.
@@ -80,24 +76,12 @@ public class PermissionsManager {
     }
 
     /**
-     * Return the permissions system where the permissions manager is currently hooked into.
-     *
-     * @return The name of the permissions system used.
-     */
-    public PermissionsSystemType getSystem() {
-        return permsType;
-    }
-
-    /**
      * Setup and hook into the permissions systems.
      */
     @PostConstruct
     public void setup() {
         // Force-unhook from current hooked permissions systems
         unhook();
-
-        // Reset used permissions system type flag
-        permsType = null;
 
         // Loop through all the available permissions system types
         for (PermissionsSystemType type : PermissionsSystemType.values()) {
@@ -173,9 +157,6 @@ public class PermissionsManager {
                     default:
                 }
 
-                // Set the hooked permissions system type
-                this.permsType = type;
-
                 // Show a success message
                 ConsoleLogger.info("Hooked into " + type.getName() + "!");
 
@@ -197,7 +178,6 @@ public class PermissionsManager {
      */
     public void unhook() {
         // Reset the current used permissions system
-        this.permsType = null;
         this.handler = null;
 
         // Print a status message to the console
@@ -209,25 +189,20 @@ public class PermissionsManager {
      *
      * @return True on success, false on failure.
      */
-    public boolean reload() {
+    public void reload() {
         // Unhook all permission plugins
         unhook();
 
         // Set up the permissions manager again, return the result
         setup();
-        return true;
     }
 
     /**
      * Method called when a plugin is being enabled.
      *
-     * @param event Event instance.
+     * @param pluginName The name of the plugin being enabled.
      */
-    public void onPluginEnable(PluginEnableEvent event) {
-        // Get the plugin and its name
-        Plugin plugin = event.getPlugin();
-        String pluginName = plugin.getName();
-
+    public void onPluginEnable(String pluginName) {
         // Check if any known permissions system is enabling
         for (PermissionsSystemType permissionsSystemType : PermissionsSystemType.values()) {
             if (permissionsSystemType.isPermissionSystem(pluginName)) {
@@ -241,14 +216,10 @@ public class PermissionsManager {
     /**
      * Method called when a plugin is being disabled.
      *
-     * @param event Event instance.
+     * @param pluginName The name of the plugin being disabled.
      */
-    public void onPluginDisable(PluginDisableEvent event) {
-        // Get the plugin instance and name
-        Plugin plugin = event.getPlugin();
-        String pluginName = plugin.getName();
-
-        // Is the WorldGuard plugin disabled
+    public void onPluginDisable(String pluginName) {
+        // Check if any known permission system is being disabled
         for (PermissionsSystemType permissionsSystemType : PermissionsSystemType.values()) {
             if (permissionsSystemType.isPermissionSystem(pluginName)) {
                 ConsoleLogger.info(pluginName + " plugin disabled, updating hooks!");

@@ -55,10 +55,11 @@ public class AuthMeServerListener implements Listener {
             return;
         }
 
-        // Call the onPluginDisable method in the permissions manager
-        permissionsManager.onPluginDisable(event);
-
         final String pluginName = event.getPlugin().getName();
+
+        // Call the onPluginDisable method in the permissions manager
+        permissionsManager.onPluginDisable(pluginName);
+
         if ("Essentials".equalsIgnoreCase(pluginName)) {
             pluginHooks.unhookEssentials();
             ConsoleLogger.info("Essentials has been disabled: unhooking");
@@ -88,10 +89,11 @@ public class AuthMeServerListener implements Listener {
             return;
         }
 
-        // Call the onPluginEnable method in the permissions manager
-        permissionsManager.onPluginEnable(event);
-
         final String pluginName = event.getPlugin().getName();
+
+        // Call the onPluginEnable method in the permissions manager
+        permissionsManager.onPluginEnable(pluginName);
+
         if ("Essentials".equalsIgnoreCase(pluginName)) {
             pluginHooks.tryHookToEssentials();
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
