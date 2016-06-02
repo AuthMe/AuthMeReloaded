@@ -473,13 +473,13 @@ public class AuthMe extends JavaPlugin {
                         pendingTasks.add(pendingTask.getTaskId());
                     }
                 }
-                ConsoleLogger.info("Waiting for " + pendingTasks.size() + " tasks to finish");
+                getLogger().info("Waiting for " + pendingTasks.size() + " tasks to finish");
                 int progress = 0;
                 for (int taskId : pendingTasks) {
                     int maxTries = 5;
                     while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
                         if (maxTries <= 0) {
-                            ConsoleLogger.info("Async task " + taskId + " times out after to many tries");
+                            getLogger().info("Async task " + taskId + " times out after to many tries");
                             break;
                         }
                         try {
@@ -490,7 +490,7 @@ public class AuthMe extends JavaPlugin {
                     }
 
                     progress++;
-                    ConsoleLogger.info("Progress: " + progress + " / " + pendingTasks.size());
+                    getLogger().info("Progress: " + progress + " / " + pendingTasks.size());
                 }
                 if (database != null) {
                     database.close();
