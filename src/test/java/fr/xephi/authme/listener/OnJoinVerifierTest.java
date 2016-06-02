@@ -396,7 +396,6 @@ public class OnJoinVerifierTest {
     }
 
     private void expectValidationExceptionWith(MessageKey messageKey, String... args) {
-        //expectedException.expect(FailedVerificationException.class);
         expectedException.expect(exceptionWithData(messageKey, args));
     }
 

@@ -179,7 +179,7 @@ public class API {
      */
     @Deprecated
     public boolean isNPC(Player player) {
-        return Utils.isNPC(player);
+        return instance.getPluginHooks().isNpc(player);
     }
 
 }

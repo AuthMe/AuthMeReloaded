@@ -16,17 +16,19 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
-
 public class AuthMeEntityListener implements Listener {
 
+    private final ListenerService listenerService;
     private Method getShooter;
     private boolean shooterIsLivingEntity;
 
-    public AuthMeEntityListener() {
+    @Inject
+    AuthMeEntityListener(ListenerService listenerService) {
+        this.listenerService = listenerService;
         try {
             getShooter = Projectile.class.getDeclaredMethod("getShooter");
             shooterIsLivingEntity = getShooter.getReturnType() == LivingEntity.class;
@@ -38,7 +40,7 @@ public class AuthMeEntityListener implements Listener {
     // Note #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.getEntity().setFireTicks(0);
             event.setDamage(0);
             event.setCancelled(true);
@@ -47,7 +49,7 @@ public class AuthMeEntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setTarget(null);
             event.setCancelled(true);
         }
@@ -55,21 +57,21 @@ public class AuthMeEntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void entityRegainHealthEvent(EntityRegainHealthEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setAmount(0);
             event.setCancelled(true);
         }
@@ -77,14 +79,14 @@ public class AuthMeEntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
@@ -111,14 +113,14 @@ public class AuthMeEntityListener implements Listener {
         } else {
             shooterRaw = projectile.getShooter();
         }
-        if (shooterRaw instanceof Player && shouldCancelEvent((Player) shooterRaw)) {
+        if (shooterRaw instanceof Player && listenerService.shouldCancelEvent((Player) shooterRaw)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onShoot(EntityShootBowEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }

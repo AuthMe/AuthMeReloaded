@@ -12,8 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +24,6 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link SpawnLoader}.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class SpawnLoaderTest {
 
     @Rule

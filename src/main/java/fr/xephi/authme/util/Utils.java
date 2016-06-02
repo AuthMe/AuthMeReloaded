@@ -2,7 +2,6 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
@@ -118,23 +117,9 @@ public final class Utils {
         return permsMan.addGroup(player, group);
     }
 
-    // TODO: Move to a Manager
-    public static boolean checkAuth(Player player) {
-        if (player == null || Utils.isUnrestricted(player)) {
-            return true;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
-            return true;
-        }
-
-        if (!Settings.isForcedRegistrationEnabled && !plugin.getDataSource().isAuthAvailable(player.getName())) {
-            return true;
-        }
-        return false;
-    }
-
     public static boolean isUnrestricted(Player player) {
+        // TODO ljacqu 20160602: Checking for Settings.isAllowRestrictedIp is wrong! Nothing in the config suggests
+        // that this setting has anything to do with unrestricted names
         return Settings.isAllowRestrictedIp
             && Settings.getUnrestrictedName.contains(player.getName().toLowerCase());
     }
@@ -163,11 +148,6 @@ public final class Utils {
                 }
             }
         });
-    }
-
-    @Deprecated
-    public static boolean isNPC(Player player) {
-        return plugin.getPluginHooks().isNpc(player);
     }
 
     public static void teleportToSpawn(Player player) {

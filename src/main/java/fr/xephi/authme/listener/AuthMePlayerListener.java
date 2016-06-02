@@ -45,7 +45,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
 
@@ -72,6 +71,8 @@ public class AuthMePlayerListener implements Listener {
     private SpawnLoader spawnLoader;
     @Inject
     private OnJoinVerifier onJoinVerifier;
+    @Inject
+    private ListenerService listenerService;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -83,11 +84,10 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         final Player player = event.getPlayer();
-        if (!shouldCancelEvent(player)) {
-            return;
+        if (listenerService.shouldCancelEvent(player)) {
+            event.setCancelled(true);
+            m.send(player, MessageKey.DENIED_COMMAND);
         }
-        event.setCancelled(true);
-        m.send(player, MessageKey.DENIED_COMMAND);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -97,7 +97,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-        if (shouldCancelEvent(player)) {
+        if (listenerService.shouldCancelEvent(player)) {
             event.setCancelled(true);
             m.send(player, MessageKey.DENIED_CHAT);
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
@@ -105,7 +105,7 @@ public class AuthMePlayerListener implements Listener {
             Iterator<Player> iter = recipients.iterator();
             while (iter.hasNext()) {
                 Player p = iter.next();
-                if (shouldCancelEvent(p)) {
+                if (listenerService.shouldCancelEvent(p)) {
                     iter.remove();
                 }
             }
@@ -134,7 +134,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (!shouldCancelEvent(player)) {
+        if (!listenerService.shouldCancelEvent(player)) {
             return;
         }
 
@@ -280,21 +280,21 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
@@ -303,7 +303,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
 
-        if (!shouldCancelEvent(player)) {
+        if (!listenerService.shouldCancelEvent(player)) {
             return;
         }
         event.setCancelled(true);
@@ -329,7 +329,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        if (!shouldCancelEvent(player)) {
+        if (!listenerService.shouldCancelEvent(player)) {
             return;
         }
         event.setCancelled(true);
@@ -337,28 +337,28 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerHitPlayerEvent(EntityDamageByEntityEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
@@ -366,7 +366,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
-        if (shouldCancelEvent(player)) {
+        if (listenerService.shouldCancelEvent(player)) {
             event.setCancelled(true);
         }
     }
@@ -377,7 +377,7 @@ public class AuthMePlayerListener implements Listener {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }
-        if (!shouldCancelEvent(event)) {
+        if (!listenerService.shouldCancelEvent(event)) {
             return;
         }
         Player player = event.getPlayer();
@@ -398,14 +398,14 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerShear(PlayerShearEntityEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerFish(PlayerFishEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
