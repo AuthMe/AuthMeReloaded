@@ -154,7 +154,7 @@ public class CommandMapper {
     }
 
     private FoundResultStatus getPermissionAwareStatus(CommandSender sender, CommandDescription command) {
-        if (sender != null && !permissionsManager.hasPermission(sender, command)) {
+        if (sender != null && !permissionsManager.hasPermission(sender, command.getPermission())) {
             return FoundResultStatus.NO_PERMISSION;
         }
         return FoundResultStatus.SUCCESS;

@@ -160,7 +160,7 @@ public class HelpProvider implements SettingsDependent {
             + defaultPermission.getTitle() + addendum);
 
         // Evaluate if the sender has permission to the command
-        if (permissionsManager.hasPermission(sender, command)) {
+        if (permissionsManager.hasPermission(sender, command.getPermission())) {
             lines.add(ChatColor.GOLD + " Result: " + ChatColor.GREEN + ChatColor.ITALIC + "You have permission");
         } else {
             lines.add(ChatColor.GOLD + " Result: " + ChatColor.DARK_RED + ChatColor.ITALIC + "No permission");

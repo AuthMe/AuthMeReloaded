@@ -130,7 +130,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("unreg"));
         given(sender.isOp()).willReturn(true);
         given(permissionsManager.hasPermission(sender, AdminPermission.UNREGISTER)).willReturn(true);
-        given(permissionsManager.hasPermission(sender, command)).willReturn(true);
+        given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
 
         // when
         List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
@@ -151,7 +151,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("unregister"));
         given(sender.isOp()).willReturn(false);
         given(permissionsManager.hasPermission(sender, AdminPermission.UNREGISTER)).willReturn(false);
-        given(permissionsManager.hasPermission(sender, command)).willReturn(false);
+        given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(false);
 
         // when
         List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);

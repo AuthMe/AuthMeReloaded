@@ -112,7 +112,7 @@ public class CommandHandlerTest {
         CommandDescription command = mock(CommandDescription.class);
         given(serviceMock.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
-        given(permissionsManager.hasPermission(sender, command)).willReturn(true);
+        given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
@@ -136,7 +136,7 @@ public class CommandHandlerTest {
         CommandDescription command = mock(CommandDescription.class);
         given(serviceMock.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
-        given(permissionsManager.hasPermission(sender, command)).willReturn(false);
+        given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(false);
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);

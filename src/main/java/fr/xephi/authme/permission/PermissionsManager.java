@@ -239,45 +239,18 @@ public class PermissionsManager {
      * @return True if the sender has the permission, false otherwise.
      */
     public boolean hasPermission(CommandSender sender, PermissionNode permissionNode) {
-        return hasPermission(sender, permissionNode, sender.isOp());
-    }
-
-    public boolean hasPermission(CommandSender sender, PermissionNode permissionNode, boolean def) {
-        if (!(sender instanceof Player)) {
-            return def;
-        }
-
-        Player player = (Player) sender;
-        return hasPermission(player, permissionNode, def);
-    }
-
-    public boolean hasPermission(CommandSender sender, CommandDescription command) {
-        if (command.getPermission() == null) {
+        // Check if the permission node is null
+        if (permissionNode == null) {
             return true;
         }
 
-        DefaultPermission defaultPermission = command.getPermission().getDefaultPermission();
-        boolean def = defaultPermission.evaluate(sender);
-        return (sender instanceof Player)
-            ? hasPermission((Player) sender, command.getPermission(), def)
-            : def;
-    }
+        // Return if the player is an Op if sender is console or no permission system in use
+        if (!(sender instanceof Player) || !isEnabled()) {
+            return sender.isOp();
+        }
 
-    /**
-     * Check if a player has permission.
-     *
-     * @param player    The player.
-     * @param node      The permission node.
-     * @param def       Default returned if no permissions system is used.
-     *
-     * @return True if the player has permission.
-     */
-    private boolean hasPermission(Player player, PermissionNode node, boolean def) {
-        // If no permissions system is used, return the default value
-        if (!isEnabled())
-            return def;
-
-        return handler.hasPermission(player, node);
+        Player player = (Player) sender;
+        return handler.hasPermission(player, permissionNode);
     }
 
     /**

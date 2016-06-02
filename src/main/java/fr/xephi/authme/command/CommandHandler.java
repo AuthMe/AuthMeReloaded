@@ -127,7 +127,7 @@ public class CommandHandler {
 
     private void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result) {
         CommandDescription command = result.getCommandDescription();
-        if (!permissionsManager.hasPermission(sender, command)) {
+        if (!permissionsManager.hasPermission(sender, command.getPermission())) {
             sendPermissionDeniedError(sender);
             return;
         }
