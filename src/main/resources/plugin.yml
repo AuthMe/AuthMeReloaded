@@ -28,12 +28,14 @@ commands:
     changepassword:
         description: Change password of an account
         usage: /changepassword <oldPassword> <newPassword>
+        aliases: [cp,changepass]
     logout:
         description: Logout
         usage: /logout
     unregister:
         description: Unregister your account
         usage: /unregister <password>
+        aliases: [unreg]
     email:
         description: Add Email or recover password
         usage: '/email add your@email.com your@email.com|change oldEmail newEmail|recovery your@email.com'

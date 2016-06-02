@@ -291,7 +291,7 @@ public class CommandInitializer {
         // Register the base login command
         final CommandDescription LOGIN_BASE = CommandDescription.builder()
             .parent(null)
-            .labels("login", "l")
+            .labels("login", "l", "log")
             .description("Login command")
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .withArgument("password", "Login password", false)
@@ -324,7 +324,7 @@ public class CommandInitializer {
         // Register the base unregister command
         CommandDescription UNREGISTER_BASE = CommandDescription.builder()
             .parent(null)
-            .labels("unreg", "unregister")
+            .labels("unregister", "unreg")
             .description("Unregistration Command")
             .detailedDescription("Command to unregister using AuthMeReloaded.")
             .withArgument("password", "Password", false)
@@ -347,7 +347,7 @@ public class CommandInitializer {
         // Register the base Email command
         CommandDescription EMAIL_BASE = CommandDescription.builder()
             .parent(null)
-            .labels("email", "mail")
+            .labels("email")
             .description("Email command")
             .detailedDescription("The AuthMeReloaded Email command base.")
             .executableCommand(initializer.newInstance(EmailBaseCommand.class))
@@ -392,7 +392,7 @@ public class CommandInitializer {
         // Register the base captcha command
         CommandDescription CAPTCHA_BASE = CommandDescription.builder()
             .parent(null)
-            .labels("captcha", "capt")
+            .labels("captcha")
             .description("Captcha Command")
             .detailedDescription("Captcha command for AuthMeReloaded.")
             .withArgument("captcha", "The Captcha", false)
