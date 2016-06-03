@@ -2,6 +2,7 @@ package fr.xephi.authme.process.login;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.CaptchaManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -17,7 +18,6 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
@@ -66,24 +66,16 @@ public class AsynchronousLogin implements AsynchronousProcess {
     @Inject
     private PasswordSecurity passwordSecurity;
 
+    @Inject
+    private CaptchaManager captchaManager;
 
     AsynchronousLogin() { }
 
+
     private boolean needsCaptcha(Player player) {
-        final String name = player.getName().toLowerCase();
-        if (service.getProperty(SecuritySettings.USE_CAPTCHA)) {
-            if (plugin.captcha.containsKey(name)) {
-                int i = plugin.captcha.get(name) + 1;
-                plugin.captcha.remove(name);
-                plugin.captcha.putIfAbsent(name, i);
-            } else {
-                plugin.captcha.putIfAbsent(name, 1);
-            }
-            if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
-                plugin.cap.putIfAbsent(name, RandomString.generate(Settings.captchaLength));
-                service.send(player, MessageKey.USAGE_CAPTCHA, plugin.cap.get(name));
-                return true;
-            }
+        if (captchaManager.isCaptchaRequired(player.getName())) {
+            service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
+            return true;
         }
         return false;
     }
@@ -124,7 +116,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         final String ip = Utils.getPlayerIp(player);
-        if (Settings.getMaxLoginPerIp > 0
+        if (service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP) > 0
             && !permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !"127.0.0.1".equalsIgnoreCase(ip) && !"localhost".equalsIgnoreCase(ip)) {
             if (plugin.isLoggedIp(name, ip)) {
@@ -168,16 +160,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 .build();
             database.updateSession(auth);
 
-            if (service.getProperty(SecuritySettings.USE_CAPTCHA)) {
-                if (plugin.captcha.containsKey(name)) {
-                    plugin.captcha.remove(name);
-                }
-                if (plugin.cap.containsKey(name)) {
-                    plugin.cap.remove(name);
-                }
-            }
-
+            captchaManager.resetCounts(name);
             player.setNoDamageTicks(0);
+
             if (!forceLogin)
                 service.send(player, MessageKey.LOGIN_SUCCESS);
 
@@ -214,6 +199,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                 ConsoleLogger.info(player.getName() + " used the wrong password");
             }
+            captchaManager.increaseCount(name);
             if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
                 bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override

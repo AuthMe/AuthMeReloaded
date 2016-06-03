@@ -321,9 +321,9 @@ Security:
         # Copy AuthMe log output in a separate file as well?
         logConsole: true
     captcha:
-        # Player need to put a captcha when he fails too lot the password
+        # Enable captcha when a player uses wrong password too many times
         useCaptcha: false
-        # Max allowed tries before request a captcha
+        # Max allowed tries before a captcha is required
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5

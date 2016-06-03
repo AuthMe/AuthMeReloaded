@@ -101,13 +101,10 @@ public class AuthMe extends JavaPlugin {
     /*
      *  Maps and stuff
      */
-    // TODO #601: Integrate CaptchaManager
     public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
 
     /*
-     * Public Instances
+     * Public instances
      */
     public NewAPI api;
     // TODO #655: Encapsulate mail

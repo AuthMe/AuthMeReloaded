@@ -34,11 +34,11 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<Boolean> USE_LOGGING =
         newProperty("Security.console.logConsole", true);
 
-    @Comment("Player need to put a captcha when he fails too lot the password")
+    @Comment("Enable captcha when a player uses wrong password too many times")
     public static final Property<Boolean> USE_CAPTCHA =
         newProperty("Security.captcha.useCaptcha", false);
 
-    @Comment("Max allowed tries before request a captcha")
+    @Comment("Max allowed tries before a captcha is required")
     public static final Property<Integer> MAX_LOGIN_TRIES_BEFORE_CAPTCHA =
         newProperty("Security.captcha.maxLoginTry", 5);
 
