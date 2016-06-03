@@ -9,6 +9,7 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -53,56 +53,56 @@ public class ValidationServiceTest {
     @Test
     public void shouldRejectPasswordSameAsUsername() {
         // given/when
-        MessageKey error = validationService.validatePassword("bobby", "Bobby");
+        ValidationResult error = validationService.validatePassword("bobby", "Bobby");
 
         // then
-        assertThat(error, equalTo(MessageKey.PASSWORD_IS_USERNAME_ERROR));
+        assertErrorEquals(error, MessageKey.PASSWORD_IS_USERNAME_ERROR);
     }
 
     @Test
     public void shouldRejectPasswordNotMatchingPattern() {
         // given/when
         // service mock returns pattern a-zA-Z -> numbers should not be accepted
-        MessageKey error = validationService.validatePassword("invalid1234", "myPlayer");
+        ValidationResult error = validationService.validatePassword("invalid1234", "myPlayer");
 
         // then
-        assertThat(error, equalTo(MessageKey.PASSWORD_MATCH_ERROR));
+        assertErrorEquals(error, MessageKey.PASSWORD_CHARACTERS_ERROR, "[a-zA-Z]+");
     }
 
     @Test
     public void shouldRejectTooShortPassword() {
         // given/when
-        MessageKey error = validationService.validatePassword("ab", "tester");
+        ValidationResult error = validationService.validatePassword("ab", "tester");
 
         // then
-        assertThat(error, equalTo(MessageKey.INVALID_PASSWORD_LENGTH));
+        assertErrorEquals(error, MessageKey.INVALID_PASSWORD_LENGTH);
     }
 
     @Test
     public void shouldRejectTooLongPassword() {
         // given/when
-        MessageKey error = validationService.validatePassword(Strings.repeat("a", 30), "player");
+        ValidationResult error = validationService.validatePassword(Strings.repeat("a", 30), "player");
 
         // then
-        assertThat(error, equalTo(MessageKey.INVALID_PASSWORD_LENGTH));
+        assertErrorEquals(error, MessageKey.INVALID_PASSWORD_LENGTH);
     }
 
     @Test
     public void shouldRejectUnsafePassword() {
         // given/when
-        MessageKey error = validationService.validatePassword("unsafe", "playertest");
+        ValidationResult error = validationService.validatePassword("unsafe", "playertest");
 
         // then
-        assertThat(error, equalTo(MessageKey.PASSWORD_UNSAFE_ERROR));
+        assertErrorEquals(error, MessageKey.PASSWORD_UNSAFE_ERROR);
     }
 
     @Test
     public void shouldAcceptValidPassword() {
         // given/when
-        MessageKey error = validationService.validatePassword("safePass", "some_user");
+        ValidationResult error = validationService.validatePassword("safePass", "some_user");
 
         // then
-        assertThat(error, nullValue());
+        assertThat(error.hasError(), equalTo(false));
     }
 
     @Test
@@ -229,5 +229,11 @@ public class ValidationServiceTest {
 
         // then
         assertThat(result, equalTo(true));
+    }
+
+    private static void assertErrorEquals(ValidationResult validationResult, MessageKey messageKey, String... args) {
+        assertThat(validationResult.hasError(), equalTo(true));
+        assertThat(validationResult.getMessageKey(), equalTo(messageKey));
+        assertThat(validationResult.getArgs(), equalTo(args));
     }
 }

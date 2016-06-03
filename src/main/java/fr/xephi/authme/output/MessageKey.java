@@ -63,6 +63,8 @@ public enum MessageKey {
 
     PASSWORD_UNSAFE_ERROR("password_error_unsafe"),
 
+    PASSWORD_CHARACTERS_ERROR("password_error_chars", "REG_EX"),
+
     SESSION_EXPIRED("invalid_session"),
 
     MUST_REGISTER_MESSAGE("reg_only"),

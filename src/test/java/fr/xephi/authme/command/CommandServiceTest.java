@@ -142,21 +142,6 @@ public class CommandServiceTest {
     }
 
     @Test
-    public void shouldValidatePassword() {
-        // given
-        String user = "asdf";
-        String password = "mySecret55";
-        given(validationService.validatePassword(password, user)).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
-
-        // when
-        MessageKey result = commandService.validatePassword(password, user);
-
-        // then
-        assertThat(result, equalTo(MessageKey.INVALID_PASSWORD_LENGTH));
-        verify(validationService).validatePassword(password, user);
-    }
-
-    @Test
     public void shouldValidateEmail() {
         // given
         String email = "test@example.tld";

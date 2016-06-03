@@ -8,6 +8,8 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.ChangePasswordTask;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -53,6 +55,9 @@ public class ChangePasswordCommandTest {
     @Mock
     private BukkitService bukkitService;
 
+    @Mock
+    private ValidationService validationService;
+
     @Before
     public void setSettings() {
         when(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).thenReturn(2);
@@ -91,26 +96,28 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
         String password = "newPW";
-        given(commandService.validatePassword(password, "abc12")).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
+        given(validationService.validatePassword(password, "abc12"))
+            .willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
 
         // when
         command.executeCommand(sender, Arrays.asList("tester", password), commandService);
 
         // then
-        verify(commandService).validatePassword(password, "abc12");
-        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
+        verify(validationService).validatePassword(password, "abc12");
+        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, new String[0]);
     }
 
     @Test
     public void shouldForwardTheDataForValidPassword() {
         // given
         CommandSender sender = initPlayerWithName("parker", true);
+        given(validationService.validatePassword("abc123", "parker")).willReturn(new ValidationResult());
 
         // when
         command.executeCommand(sender, Arrays.asList("abc123", "abc123"), commandService);
 
         // then
-        verify(commandService).validatePassword("abc123", "parker");
+        verify(validationService).validatePassword("abc123", "parker");
         verify(commandService, never()).send(eq(sender), any(MessageKey.class));
         ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
         verify(bukkitService).runTaskAsynchronously(taskCaptor.capture());

@@ -10,6 +10,8 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -32,6 +34,9 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private ValidationService validationService;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments,
                                final CommandService commandService) {
@@ -40,9 +45,9 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
         final String playerPass = arguments.get(1);
 
         // Validate the password
-        MessageKey passwordError = commandService.validatePassword(playerPass, playerName);
-        if (passwordError != null) {
-            commandService.send(sender, passwordError);
+        ValidationResult validationResult = validationService.validatePassword(playerPass, playerName);
+        if (validationResult.hasError()) {
+            commandService.send(sender, validationResult.getMessageKey(), validationResult.getArgs());
             return;
         }
 

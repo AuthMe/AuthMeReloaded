@@ -9,6 +9,8 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,6 +53,9 @@ public class ChangePasswordAdminCommandTest {
     @Mock
     private BukkitService bukkitService;
 
+    @Mock
+    private ValidationService validationService;
+
     @BeforeClass
     public static void setUpLogger() {
         TestHelper.setupLogger();
@@ -60,14 +65,15 @@ public class ChangePasswordAdminCommandTest {
     public void shouldRejectInvalidPassword() {
         // given
         CommandSender sender = mock(CommandSender.class);
-        given(service.validatePassword("Bobby", "bobby")).willReturn(MessageKey.PASSWORD_IS_USERNAME_ERROR);
+        given(validationService.validatePassword("Bobby", "bobby")).willReturn(
+            new ValidationResult(MessageKey.PASSWORD_IS_USERNAME_ERROR));
 
         // when
         command.executeCommand(sender, Arrays.asList("bobby", "Bobby"), service);
 
         // then
-        verify(service).validatePassword("Bobby", "bobby");
-        verify(service).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+        verify(validationService).validatePassword("Bobby", "bobby");
+        verify(service).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR, new String[0]);
         verifyZeroInteractions(dataSource);
     }
 
@@ -76,11 +82,13 @@ public class ChangePasswordAdminCommandTest {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "player";
+        String password = "password";
         given(playerCache.isAuthenticated(player)).willReturn(false);
         given(dataSource.getAuth(player)).willReturn(null);
+        given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         // when
-        command.executeCommand(sender, Arrays.asList(player, "password"), service);
+        command.executeCommand(sender, Arrays.asList(player, password), service);
         runInnerRunnable(bukkitService);
 
         // then
@@ -102,13 +110,14 @@ public class ChangePasswordAdminCommandTest {
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
         given(dataSource.updatePassword(auth)).willReturn(true);
+        given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password), service);
         runInnerRunnable(bukkitService);
 
         // then
-        verify(service).validatePassword(password, player);
+        verify(validationService).validatePassword(password, player);
         verify(service).send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
         verify(passwordSecurity).computeHash(password, player);
         verify(auth).setPassword(hashedPassword);
@@ -126,6 +135,7 @@ public class ChangePasswordAdminCommandTest {
         given(dataSource.isAuthAvailable(player)).willReturn(true);
         given(dataSource.getAuth(player)).willReturn(auth);
         given(dataSource.updatePassword(auth)).willReturn(true);
+        given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
@@ -135,7 +145,7 @@ public class ChangePasswordAdminCommandTest {
         runInnerRunnable(bukkitService);
 
         // then
-        verify(service).validatePassword(password, player);
+        verify(validationService).validatePassword(password, player);
         verify(service).send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
         verify(passwordSecurity).computeHash(password, player);
         verify(auth).setPassword(hashedPassword);
@@ -151,6 +161,7 @@ public class ChangePasswordAdminCommandTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(playerCache.isAuthenticated(player)).willReturn(true);
         given(playerCache.getAuth(player)).willReturn(auth);
+        given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
@@ -161,7 +172,7 @@ public class ChangePasswordAdminCommandTest {
         runInnerRunnable(bukkitService);
 
         // then
-        verify(service).validatePassword(password, player);
+        verify(validationService).validatePassword(password, player);
         verify(service).send(sender, MessageKey.ERROR);
         verify(passwordSecurity).computeHash(password, player);
         verify(auth).setPassword(hashedPassword);

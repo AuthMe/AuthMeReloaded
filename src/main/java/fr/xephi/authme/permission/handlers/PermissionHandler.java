@@ -5,6 +5,8 @@ import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+
+
 public interface PermissionHandler {
 
     /**

@@ -8,6 +8,8 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.task.ChangePasswordTask;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -25,6 +27,9 @@ public class ChangePasswordCommand extends PlayerCommand {
     private BukkitService bukkitService;
 
     @Inject
+    private ValidationService validationService;
+
+    @Inject
     // TODO ljacqu 20160531: Remove this once change password task runs as a process (via Management)
     private PasswordSecurity passwordSecurity;
 
@@ -40,9 +45,9 @@ public class ChangePasswordCommand extends PlayerCommand {
         }
 
         // Make sure the password is allowed
-        MessageKey passwordError = commandService.validatePassword(newPassword, name);
-        if (passwordError != null) {
-            commandService.send(player, passwordError);
+        ValidationResult passwordValidation = validationService.validatePassword(newPassword, name);
+        if (passwordValidation.hasError()) {
+            commandService.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
             return;
         }
 

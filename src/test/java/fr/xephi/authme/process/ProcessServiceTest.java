@@ -128,21 +128,6 @@ public class ProcessServiceTest {
     }
 
     @Test
-    public void shouldValidatePassword() {
-        // given
-        String user = "test-user";
-        String password = "passw0rd";
-        given(validationService.validatePassword(password, user)).willReturn(MessageKey.PASSWORD_MATCH_ERROR);
-
-        // when
-        MessageKey result = processService.validatePassword(password, user);
-
-        // then
-        assertThat(result, equalTo(MessageKey.PASSWORD_MATCH_ERROR));
-        verify(validationService).validatePassword(password, user);
-    }
-
-    @Test
     public void shouldValidateEmail() {
         // given
         String email = "test@example.tld";

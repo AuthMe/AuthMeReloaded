@@ -20,6 +20,8 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -51,6 +53,9 @@ public class AsyncRegister implements AsynchronousProcess {
     @Inject
     private PermissionsManager permissionsManager;
 
+    @Inject
+    private ValidationService validationService;
+
     AsyncRegister() { }
 
     private boolean preRegisterCheck(Player player, String password) {
@@ -65,9 +70,9 @@ public class AsyncRegister implements AsynchronousProcess {
 
         //check the password safety only if it's not a automatically generated password
         if (service.getProperty(SecuritySettings.PASSWORD_HASH) != HashAlgorithm.TWO_FACTOR) {
-            MessageKey passwordError = service.validatePassword(password, player.getName());
-            if (passwordError != null) {
-                service.send(player, passwordError);
+            ValidationResult passwordValidation = validationService.validatePassword(password, player.getName());
+            if (passwordValidation.hasError()) {
+                service.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
                 return false;
             }
         }

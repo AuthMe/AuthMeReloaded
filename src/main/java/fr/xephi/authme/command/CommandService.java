@@ -104,18 +104,6 @@ public class CommandService {
         return settings;
     }
 
-
-    /**
-     * Verifies whether a password is valid according to the plugin settings.
-     *
-     * @param password the password to verify
-     * @param username the username the password is associated with
-     * @return message key with the password error, or {@code null} if password is valid
-     */
-    public MessageKey validatePassword(String password, String username) {
-        return validationService.validatePassword(password, username);
-    }
-
     public boolean validateEmail(String email) {
         return validationService.validateEmail(email);
     }
