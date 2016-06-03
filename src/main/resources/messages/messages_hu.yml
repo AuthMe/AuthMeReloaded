@@ -64,3 +64,4 @@ two_factor_create: '&2A te titkos kódod a következő: %code. Vagy skenneld be 
 denied_chat: '&cAmíg nem vagy bejelentkezve, nem használhatod a csevegőt!'
 denied_command: '&cAmíg nem vagy bejelentkezve, nem használhatod ezt a parancsot!'
 same_ip_online: 'Már valaki csatlakozott a szerverhez ezzel az IP címmel!'
+# TODO password_error_chars: '&4Your password contains illegal characters. Allowed chars: REG_EX'
