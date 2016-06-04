@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
- * or to display help messages for unknown invocations.
+ * The AuthMe command handler, responsible for invoking the correct {@link ExecutableCommand} based on incoming
+ * command labels or for displaying a help message for unknown command labels.
  */
 public class CommandHandler {
 
@@ -88,7 +88,7 @@ public class CommandHandler {
     }
 
     /**
-     * Initializes all required ExecutableCommand objects.
+     * Initialize all required ExecutableCommand objects.
      *
      * @param commandClasses the classes to instantiate
      */

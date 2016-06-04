@@ -35,7 +35,7 @@ public class CommandDescription {
      */
     private String detailedDescription;
     /**
-     * The executable command instance described by this object.
+     * The class implementing the command described by this object.
      */
     private Class<? extends ExecutableCommand> executableCommand;
     /**
@@ -112,7 +112,7 @@ public class CommandDescription {
     }
 
     /**
-     * Check whether this command description has a specific command.
+     * Check whether this command description has the given label.
      *
      * @param commandLabel The label to check for.
      *
@@ -128,9 +128,9 @@ public class CommandDescription {
     }
 
     /**
-     * Return the {@link ExecutableCommand} instance defined by the command description.
+     * Return the {@link ExecutableCommand} class implementing this command.
      *
-     * @return The executable command object.
+     * @return The executable command class
      */
     public Class<? extends ExecutableCommand> getExecutableCommand() {
         return executableCommand;
@@ -139,7 +139,7 @@ public class CommandDescription {
     /**
      * Return the parent.
      *
-     * @return The parent command, or null for base commands.
+     * @return The parent command, or null for base commands
      */
     public CommandDescription getParent() {
         return parent;

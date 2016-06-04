@@ -17,8 +17,7 @@ import static fr.xephi.authme.command.FoundResultStatus.MISSING_BASE_COMMAND;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 
 /**
- * The AuthMe command handler, responsible for mapping incoming
- * command parts to the correct {@link CommandDescription}.
+ * Maps incoming command parts to the correct {@link CommandDescription}.
  */
 public class CommandMapper {
 
@@ -159,7 +158,7 @@ public class CommandMapper {
 
     private static FoundCommandResult transformResultForHelp(FoundCommandResult result) {
         if (result.getCommandDescription() != null
-            && HELP_COMMAND_CLASS.isAssignableFrom(result.getCommandDescription().getExecutableCommand())) {
+            && HELP_COMMAND_CLASS == result.getCommandDescription().getExecutableCommand()) {
             // For "/authme help register" we have labels = [authme, help] and arguments = [register]
             // But for the help command we want labels = [authme, help] and arguments = [authme, register],
             // so we can use the arguments as the labels to the command to show help for
