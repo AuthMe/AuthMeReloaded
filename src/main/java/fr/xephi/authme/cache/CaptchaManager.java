@@ -110,6 +110,11 @@ public class CaptchaManager implements SettingsDependent {
         return false;
     }
 
+    /**
+     * Resets the login count of the given player to 0.
+     *
+     * @param name the player's name
+     */
     public void resetCounts(String name) {
         if (isEnabled) {
             captchaCodes.remove(name.toLowerCase());

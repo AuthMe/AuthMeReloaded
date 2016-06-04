@@ -73,9 +73,14 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
 
     private boolean needsCaptcha(Player player) {
-        if (captchaManager.isCaptchaRequired(player.getName())) {
-            service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
+        final String playerName = player.getName();
+        if (captchaManager.isCaptchaRequired(playerName)) {
+            service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(playerName));
             return true;
+        } else {
+            // Increase the count here before knowing the result of the login.
+            // If login is successful, we clear the count for the player
+            captchaManager.increaseCount(playerName);
         }
         return false;
     }
@@ -199,7 +204,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
             if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                 ConsoleLogger.info(player.getName() + " used the wrong password");
             }
-            captchaManager.increaseCount(name);
             if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
                 bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override
