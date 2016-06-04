@@ -1,11 +1,5 @@
 package fr.xephi.authme.command.executable.email;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -19,11 +13,18 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.util.StringUtils;
+import org.bukkit.entity.Player;
+
+import javax.inject.Inject;
+import java.util.List;
 
 public class RecoverEmailCommand extends PlayerCommand {
 
     @Inject
     private PasswordSecurity passwordSecurity;
+
+    @Inject
+    private CommandService commandService;
 
     @Inject
     private DataSource dataSource;
@@ -32,10 +33,11 @@ public class RecoverEmailCommand extends PlayerCommand {
     private PlayerCache playerCache;
 
     @Inject
+    // TODO #655: Remove injected AuthMe instance once Authme#mail is encapsulated
     private AuthMe plugin;
 
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         final String playerMail = arguments.get(0);
         final String playerName = player.getName();
 

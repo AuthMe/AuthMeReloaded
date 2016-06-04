@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.login;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -33,8 +32,6 @@ public class LoginCommandTest {
     @Mock
     private Management management;
 
-    @Mock
-    private CommandService commandService;
 
     @Test
     public void shouldStopIfSenderIsNotAPlayer() {
@@ -42,7 +39,7 @@ public class LoginCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), commandService);
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         verifyZeroInteractions(management);
@@ -55,7 +52,7 @@ public class LoginCommandTest {
         Player sender = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("password"), commandService);
+        command.executeCommand(sender, Collections.singletonList("password"));
 
         // then
         verify(management).performLogin(eq(sender), eq("password"), eq(false));

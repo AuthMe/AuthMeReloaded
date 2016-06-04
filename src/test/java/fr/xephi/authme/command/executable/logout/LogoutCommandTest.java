@@ -1,11 +1,9 @@
 package fr.xephi.authme.command.executable.logout;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -33,13 +31,6 @@ public class LogoutCommandTest {
     @Mock
     private Management management;
 
-    @Mock
-    private CommandService commandService;
-
-    @Before
-    public void initializeAuthMeMock() {
-        commandService = mock(CommandService.class);
-    }
 
     @Test
     public void shouldStopIfSenderIsNotAPlayer() {
@@ -47,7 +38,7 @@ public class LogoutCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), commandService);
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         verifyZeroInteractions(management);
@@ -60,7 +51,7 @@ public class LogoutCommandTest {
         Player sender = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("password"), commandService);
+        command.executeCommand(sender, Collections.singletonList("password"));
 
         // then
         verify(management).performLogout(sender);

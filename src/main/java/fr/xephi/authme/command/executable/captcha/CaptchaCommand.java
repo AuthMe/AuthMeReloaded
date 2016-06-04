@@ -18,8 +18,11 @@ public class CaptchaCommand extends PlayerCommand {
     @Inject
     private CaptchaManager captchaManager;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         final String playerName = player.getName().toLowerCase();
 
         if (playerCache.isAuthenticated(playerName)) {

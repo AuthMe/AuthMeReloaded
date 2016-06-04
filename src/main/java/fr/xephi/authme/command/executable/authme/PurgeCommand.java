@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.task.PurgeTask;
@@ -28,7 +27,7 @@ public class PurgeCommand implements ExecutableCommand {
     private AuthMe plugin;
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Get the days parameter
         String daysStr = arguments.get(0);
 

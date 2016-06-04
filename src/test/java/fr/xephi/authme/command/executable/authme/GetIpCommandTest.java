@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,21 +31,17 @@ public class GetIpCommandTest {
     private GetIpCommand command;
 
     @Mock
-    private CommandService commandService;
-
-    @Mock
     private BukkitService bukkitService;
 
-    @Mock
-    private CommandSender sender;
 
     @Test
     public void shouldGetIpOfPlayer() {
         // given
         given(bukkitService.getPlayerExact(anyString())).willReturn(null);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("Testt"), commandService);
+        command.executeCommand(sender, Collections.singletonList("Testt"));
 
         // then
         verify(bukkitService).getPlayerExact("Testt");
@@ -60,9 +55,10 @@ public class GetIpCommandTest {
         String ip = "123.34.56.88";
         Player player = mockPlayer(playerName, ip);
         given(bukkitService.getPlayerExact(playerName)).willReturn(player);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(playerName), commandService);
+        command.executeCommand(sender, Collections.singletonList(playerName));
 
         // then
         verify(bukkitService).getPlayerExact(playerName);

@@ -17,8 +17,11 @@ public class AddEmailCommand extends PlayerCommand {
     @Inject
     private Management management;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         String email = arguments.get(0);
         String emailConfirmation = arguments.get(1);
 

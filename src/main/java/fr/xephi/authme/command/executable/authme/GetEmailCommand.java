@@ -18,8 +18,11 @@ public class GetEmailCommand implements ExecutableCommand {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         PlayerAuth auth = dataSource.getAuth(playerName);

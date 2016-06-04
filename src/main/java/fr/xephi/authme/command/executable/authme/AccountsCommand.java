@@ -23,9 +23,11 @@ public class AccountsCommand implements ExecutableCommand {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments,
-                               final CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         final String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         // Assumption: a player name cannot contain '.'

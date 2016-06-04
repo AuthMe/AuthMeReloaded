@@ -50,6 +50,9 @@ public class ReloadCommandTest {
     @Mock
     private DataSource dataSource;
 
+    @Mock
+    private CommandService commandService;
+
     @BeforeClass
     public static void setUpLogger() {
         TestHelper.setupLogger();
@@ -66,17 +69,16 @@ public class ReloadCommandTest {
     public void shouldReload() {
         // given
         CommandSender sender = mock(CommandSender.class);
-        CommandService service = mock(CommandService.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(settings).reload();
         verify(initializer).performReloadOnServices();
-        verify(service).send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
+        verify(commandService).send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
     }
 
     @Test
@@ -89,7 +91,7 @@ public class ReloadCommandTest {
         given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(settings).reload();
@@ -107,7 +109,7 @@ public class ReloadCommandTest {
         given(dataSource.getType()).willReturn(DataSourceType.SQLITE);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(settings).reload();

@@ -23,17 +23,12 @@ public class CommandHandler {
      */
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
-    private final CommandService commandService;
-    private final PermissionsManager permissionsManager;
-
-    /*
-     * Constructor.
-     */
     @Inject
-    public CommandHandler(CommandService commandService, PermissionsManager permissionsManager) {
-        this.commandService = commandService;
-        this.permissionsManager = permissionsManager;
-    }
+    private CommandService commandService;
+
+    @Inject
+    private PermissionsManager permissionsManager;
+
 
     /**
      * Map a command that was invoked to the proper {@link CommandDescription} or return a useful error
@@ -86,7 +81,7 @@ public class CommandHandler {
     private void executeCommand(CommandSender sender, FoundCommandResult result) {
         ExecutableCommand executableCommand = result.getCommandDescription().getExecutableCommand();
         List<String> arguments = result.getArguments();
-        executableCommand.executeCommand(sender, arguments, commandService);
+        executableCommand.executeCommand(sender, arguments);
     }
 
     /**

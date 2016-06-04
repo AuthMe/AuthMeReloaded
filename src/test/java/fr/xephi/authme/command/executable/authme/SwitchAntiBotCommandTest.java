@@ -44,7 +44,7 @@ public class SwitchAntiBotCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(sender).sendMessage(argThat(containsString("status: ACTIVE")));
@@ -56,7 +56,7 @@ public class SwitchAntiBotCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("on"), service);
+        command.executeCommand(sender, Collections.singletonList("on"));
 
         // then
         verify(antiBot).overrideAntiBotStatus(true);
@@ -69,7 +69,7 @@ public class SwitchAntiBotCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("Off"), service);
+        command.executeCommand(sender, Collections.singletonList("Off"));
 
         // then
         verify(antiBot).overrideAntiBotStatus(false);
@@ -84,7 +84,7 @@ public class SwitchAntiBotCommandTest {
         given(service.mapPartsToCommand(sender, asList("authme", "antibot"))).willReturn(foundCommandResult);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("wrong"), service);
+        command.executeCommand(sender, Collections.singletonList("wrong"));
 
         // then
         verify(antiBot, never()).overrideAntiBotStatus(anyBoolean());

@@ -44,7 +44,7 @@ public class CaptchaCommandTest {
         given(playerCache.isAuthenticated(name)).willReturn(true);
 
         // when
-        command.executeCommand(player, Collections.singletonList("123"), commandService);
+        command.executeCommand(player, Collections.singletonList("123"));
 
         // then
         verify(commandService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -59,7 +59,7 @@ public class CaptchaCommandTest {
         given(captchaManager.isCaptchaRequired(name)).willReturn(false);
 
         // when
-        command.executeCommand(player, Collections.singletonList("1234"), commandService);
+        command.executeCommand(player, Collections.singletonList("1234"));
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_LOGIN);
@@ -78,7 +78,7 @@ public class CaptchaCommandTest {
         given(captchaManager.checkCode(name, captchaCode)).willReturn(true);
 
         // when
-        command.executeCommand(player, Collections.singletonList(captchaCode), commandService);
+        command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
         verify(captchaManager).isCaptchaRequired(name);
@@ -102,7 +102,7 @@ public class CaptchaCommandTest {
         given(captchaManager.generateCode(name)).willReturn(newCode);
 
         // when
-        command.executeCommand(player, Collections.singletonList(captchaCode), commandService);
+        command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
         verify(captchaManager).isCaptchaRequired(name);

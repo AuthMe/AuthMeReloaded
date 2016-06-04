@@ -24,8 +24,11 @@ public class RegisterCommand extends PlayerCommand {
     @Inject
     private Management management;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         if (commandService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
             management.performRegister(player, "", "", true);

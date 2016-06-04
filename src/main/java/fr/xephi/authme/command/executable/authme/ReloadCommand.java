@@ -31,8 +31,11 @@ public class ReloadCommand implements ExecutableCommand {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         try {
             settings.reload();
             ConsoleLogger.setLoggingOptions(settings);

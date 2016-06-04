@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
@@ -28,7 +27,7 @@ public class ForceLoginCommand implements ExecutableCommand {
     private BukkitService bukkitService;
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Get the player query
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 

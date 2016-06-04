@@ -21,6 +21,9 @@ import java.util.List;
 public class ChangePasswordCommand extends PlayerCommand {
 
     @Inject
+    private CommandService commandService;
+
+    @Inject
     private PlayerCache playerCache;
 
     @Inject
@@ -34,7 +37,7 @@ public class ChangePasswordCommand extends PlayerCommand {
     private PasswordSecurity passwordSecurity;
 
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         String oldPassword = arguments.get(0);
         String newPassword = arguments.get(1);
 

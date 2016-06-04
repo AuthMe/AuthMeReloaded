@@ -21,14 +21,16 @@ public class SetEmailCommand implements ExecutableCommand {
     private DataSource dataSource;
 
     @Inject
+    private CommandService commandService;
+
+    @Inject
     private PlayerCache playerCache;
 
     @Inject
     private BukkitService bukkitService;
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments,
-                               final CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player name and email address
         final String playerName = arguments.get(0);
         final String playerEmail = arguments.get(1);

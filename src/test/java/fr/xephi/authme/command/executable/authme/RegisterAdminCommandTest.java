@@ -71,7 +71,7 @@ public class RegisterAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -89,7 +89,7 @@ public class RegisterAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
         TestHelper.runInnerRunnable(bukkitService);
 
         // then
@@ -111,7 +111,7 @@ public class RegisterAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
         TestHelper.runInnerRunnable(bukkitService);
 
         // then
@@ -136,7 +136,7 @@ public class RegisterAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
         TestHelper.runInnerRunnable(bukkitService);
 
         // then
@@ -163,7 +163,7 @@ public class RegisterAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
         TestHelper.runInnerRunnable(bukkitService);
         runSyncDelayedTask(bukkitService);
 

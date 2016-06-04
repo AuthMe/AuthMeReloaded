@@ -27,7 +27,7 @@ public class PlayerCommandTest {
         PlayerCommandImpl command = new PlayerCommandImpl();
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), mock(CommandService.class));
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(sender).sendMessage(argThat(containsString("only for players")));
@@ -42,7 +42,7 @@ public class PlayerCommandTest {
         PlayerCommandImpl command = new PlayerCommandImpl();
 
         // when
-        command.executeCommand(player, arguments, service);
+        command.executeCommand(player, arguments);
 
         // then
         verify(player, times(1)).sendMessage("testarg2");
@@ -55,7 +55,7 @@ public class PlayerCommandTest {
         PlayerCommandWithAlt command = new PlayerCommandWithAlt();
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), mock(CommandService.class));
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(sender, times(1)).sendMessage(argThat(containsString("use /authme test <command> instead")));
@@ -64,14 +64,14 @@ public class PlayerCommandTest {
 
     private static class PlayerCommandImpl extends PlayerCommand {
         @Override
-        public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+        public void runCommand(Player player, List<String> arguments) {
             player.sendMessage(arguments.get(1));
         }
     }
 
     private static class PlayerCommandWithAlt extends PlayerCommand {
         @Override
-        public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+        public void runCommand(Player player, List<String> arguments) {
             throw new IllegalStateException("Should not be called");
         }
         @Override

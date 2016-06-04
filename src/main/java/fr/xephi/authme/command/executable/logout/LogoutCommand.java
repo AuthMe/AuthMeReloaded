@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.logout;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.process.Management;
 import org.bukkit.entity.Player;
@@ -17,7 +16,7 @@ public class LogoutCommand extends PlayerCommand {
     private Management management;
 
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         management.performLogout(player);
     }
 }

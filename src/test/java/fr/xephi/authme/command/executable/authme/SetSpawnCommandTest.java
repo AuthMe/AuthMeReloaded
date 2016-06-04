@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -30,8 +29,6 @@ public class SetSpawnCommandTest {
     @Mock
     private SpawnLoader spawnLoader;
 
-    @Mock
-    private CommandService service;
 
     @Test
     public void shouldSetSpawn() {
@@ -42,7 +39,7 @@ public class SetSpawnCommandTest {
         given(spawnLoader.setSpawn(location)).willReturn(true);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
         verify(spawnLoader).setSpawn(location);
@@ -58,7 +55,7 @@ public class SetSpawnCommandTest {
         given(spawnLoader.setSpawn(location)).willReturn(false);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
         verify(spawnLoader).setSpawn(location);

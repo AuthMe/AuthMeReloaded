@@ -1,21 +1,18 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.task.PurgeTask;
 import fr.xephi.authme.util.BukkitService;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.inject.Inject;
-import org.bukkit.ChatColor;
-
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 
 /**
  * Command for purging data of banned players. Depending on the settings
@@ -33,7 +30,7 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
     private BukkitService bukkitService;
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Get the list of banned players
         Set<String> namedBanned = new HashSet<>();
         Set<OfflinePlayer> bannedPlayers = bukkitService.getBannedPlayers();

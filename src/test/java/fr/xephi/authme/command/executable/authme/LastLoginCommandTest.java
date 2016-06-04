@@ -29,6 +29,9 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class LastLoginCommandTest {
 
+    private static final long HOUR_IN_MSEC = 3600 * 1000;
+    private static final long DAY_IN_MSEC = 24 * HOUR_IN_MSEC;
+
     @InjectMocks
     private LastLoginCommand command;
 
@@ -38,20 +41,16 @@ public class LastLoginCommandTest {
     @Mock
     private CommandService service;
 
-    @Mock
-    private CommandSender sender;
-
-    private static final long HOUR_IN_MSEC = 3600 * 1000;
-    private static final long DAY_IN_MSEC = 24 * HOUR_IN_MSEC;
 
     @Test
     public void shouldRejectNonExistentUser() {
         // given
         String player = "tester";
         given(dataSource.getAuth(player)).willReturn(null);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(player), service);
+        command.executeCommand(sender, Collections.singletonList(player));
 
         // then
         verify(dataSource).getAuth(player);
@@ -68,9 +67,10 @@ public class LastLoginCommandTest {
         given(auth.getLastLogin()).willReturn(lastLogin);
         given(auth.getIp()).willReturn("123.45.66.77");
         given(dataSource.getAuth(player)).willReturn(auth);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(player), service);
+        command.executeCommand(sender, Collections.singletonList(player));
 
         // then
         verify(dataSource).getAuth(player);
@@ -87,6 +87,7 @@ public class LastLoginCommandTest {
     public void shouldDisplayLastLoginOfCommandSender() {
         // given
         String name = "CommandSender";
+        CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn(name);
 
         long lastLogin = System.currentTimeMillis() -
@@ -97,7 +98,7 @@ public class LastLoginCommandTest {
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(dataSource).getAuth(name);

@@ -18,8 +18,11 @@ public class PurgeLastPositionCommand implements ExecutableCommand {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         if ("*".equals(playerName)) {

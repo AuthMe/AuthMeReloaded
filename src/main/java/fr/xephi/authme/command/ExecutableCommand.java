@@ -10,12 +10,11 @@ import java.util.List;
 public interface ExecutableCommand {
 
     /**
-     * Execute the command with the given arguments.
+     * Executes the command with the given arguments.
      *
-     * @param sender         The command sender.
-     * @param arguments      The arguments.
-     * @param commandService The command service.
+     * @param sender     the command sender (initiator of the command)
+     * @param arguments  the arguments
      */
-    void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService);
+    void executeCommand(CommandSender sender, List<String> arguments);
 
 }

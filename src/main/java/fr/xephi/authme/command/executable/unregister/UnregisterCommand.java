@@ -15,8 +15,11 @@ public class UnregisterCommand extends PlayerCommand {
     @Inject
     private Management management;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         String playerPass = arguments.get(0);
         final String playerNameLowerCase = player.getName().toLowerCase();
 

@@ -49,8 +49,6 @@ public class RegisterCommandTest {
     @Mock
     private Management management;
 
-    @Mock
-    private Player sender;
 
     @BeforeClass
     public static void setup() {
@@ -70,7 +68,7 @@ public class RegisterCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), commandService);
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         verify(sender).sendMessage(argThat(containsString("Player only!")));
@@ -81,21 +79,25 @@ public class RegisterCommandTest {
     public void shouldForwardToManagementForTwoFactor() {
         // given
         given(commandService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.TWO_FACTOR);
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), commandService);
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
-        verify(management).performRegister(sender, "", "", true);
+        verify(management).performRegister(player, "", "", true);
     }
 
     @Test
     public void shouldReturnErrorForEmptyArguments() {
-        // given / when
-        command.executeCommand(sender, Collections.<String>emptyList(), commandService);
+        // given
+        Player player = mock(Player.class);
+
+        // when
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
-        verify(commandService).send(sender, MessageKey.USAGE_REGISTER);
+        verify(commandService).send(player, MessageKey.USAGE_REGISTER);
         verifyZeroInteractions(management);
     }
 
@@ -103,12 +105,13 @@ public class RegisterCommandTest {
     public void shouldReturnErrorForMissingConfirmation() {
         // given
         given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(true);
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("arrrr"), commandService);
+        command.executeCommand(player, Collections.singletonList("arrrr"));
 
         // then
-        verify(commandService).send(sender, MessageKey.USAGE_REGISTER);
+        verify(commandService).send(player, MessageKey.USAGE_REGISTER);
         verifyZeroInteractions(management);
     }
 
@@ -117,12 +120,13 @@ public class RegisterCommandTest {
         // given
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("test@example.org"), commandService);
+        command.executeCommand(player, Collections.singletonList("test@example.org"));
 
         // then
-        verify(commandService).send(sender, MessageKey.USAGE_REGISTER);
+        verify(commandService).send(player, MessageKey.USAGE_REGISTER);
         verifyZeroInteractions(management);
     }
 
@@ -132,12 +136,13 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(false);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("");
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("myMail@example.tld"), commandService);
+        command.executeCommand(player, Collections.singletonList("myMail@example.tld"));
 
         // then
-        verify(sender).sendMessage(argThat(containsString("no email address")));
+        verify(player).sendMessage(argThat(containsString("no email address")));
         verifyZeroInteractions(management);
     }
 
@@ -150,13 +155,14 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(playerMail, playerMail), commandService);
+        command.executeCommand(player, Arrays.asList(playerMail, playerMail));
 
         // then
         verify(commandService).validateEmail(playerMail);
-        verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
+        verify(commandService).send(player, MessageKey.INVALID_EMAIL);
         verifyZeroInteractions(management);
     }
 
@@ -169,12 +175,13 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(playerMail, "invalid"), commandService);
+        command.executeCommand(player, Arrays.asList(playerMail, "invalid"));
 
         // then
-        verify(commandService).send(sender, MessageKey.USAGE_REGISTER);
+        verify(commandService).send(player, MessageKey.USAGE_REGISTER);
         verifyZeroInteractions(management);
     }
 
@@ -189,35 +196,40 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(playerMail, playerMail), commandService);
+        command.executeCommand(player, Arrays.asList(playerMail, playerMail));
 
         // then
         verify(commandService).validateEmail(playerMail);
-        verify(management).performRegister(eq(sender), argThat(stringWithLength(passLength)), eq(playerMail), eq(true));
+        verify(management).performRegister(eq(player), argThat(stringWithLength(passLength)), eq(playerMail), eq(true));
     }
 
     @Test
     public void shouldRejectInvalidPasswordConfirmation() {
         // given
         given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(true);
+        Player player = mock(Player.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList("myPass", "mypass"), commandService);
+        command.executeCommand(player, Arrays.asList("myPass", "mypass"));
 
         // then
-        verify(commandService).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+        verify(commandService).send(player, MessageKey.PASSWORD_MATCH_ERROR);
         verifyZeroInteractions(management);
     }
 
     @Test
     public void shouldPerformPasswordValidation() {
-        // given / when
-        command.executeCommand(sender, Collections.singletonList("myPass"), commandService);
+        // given
+        Player player = mock(Player.class);
+
+        // when
+        command.executeCommand(player, Collections.singletonList("myPass"));
 
         // then
-        verify(management).performRegister(sender, "myPass", "", true);
+        verify(management).performRegister(player, "myPass", "", true);
     }
 
 

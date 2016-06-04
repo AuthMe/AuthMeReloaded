@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
@@ -43,9 +42,6 @@ public class ForceLoginCommandTest {
     @Mock
     private BukkitService bukkitService;
 
-    @Mock
-    private CommandService commandService;
-
     @Test
     public void shouldRejectOfflinePlayer() {
         // given
@@ -55,7 +51,7 @@ public class ForceLoginCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(playerName), commandService);
+        command.executeCommand(sender, Collections.singletonList(playerName));
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
@@ -71,7 +67,7 @@ public class ForceLoginCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(playerName), commandService);
+        command.executeCommand(sender, Collections.singletonList(playerName));
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
@@ -89,7 +85,7 @@ public class ForceLoginCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(playerName), commandService);
+        command.executeCommand(sender, Collections.singletonList(playerName));
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
@@ -107,7 +103,7 @@ public class ForceLoginCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(playerName), commandService);
+        command.executeCommand(sender, Collections.singletonList(playerName));
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
@@ -125,7 +121,7 @@ public class ForceLoginCommandTest {
         given(sender.getName()).willReturn(senderName);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), commandService);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(bukkitService).getPlayerExact(senderName);

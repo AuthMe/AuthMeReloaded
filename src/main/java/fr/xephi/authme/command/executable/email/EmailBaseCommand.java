@@ -6,6 +6,7 @@ import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,8 +15,11 @@ import java.util.List;
  */
 public class EmailBaseCommand implements ExecutableCommand {
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         FoundCommandResult result = commandService.mapPartsToCommand(sender, Collections.singletonList("email"));
         commandService.outputHelp(sender, result, HelpProvider.SHOW_CHILDREN);
     }

@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -33,9 +32,6 @@ public class FirstSpawnCommandTest {
     @Mock
     private SpawnLoader spawnLoader;
 
-    @Mock
-    private CommandService service;
-
     @Test
     public void shouldTeleportToFirstSpawn() {
         // given
@@ -44,7 +40,7 @@ public class FirstSpawnCommandTest {
         Player player = mock(Player.class);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
         verify(player).teleport(firstSpawn);
@@ -58,7 +54,7 @@ public class FirstSpawnCommandTest {
         Player player = mock(Player.class);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
         verify(player).sendMessage(argThat(containsString("spawn has failed")));

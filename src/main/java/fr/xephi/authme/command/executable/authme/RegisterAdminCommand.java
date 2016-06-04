@@ -26,6 +26,9 @@ public class RegisterAdminCommand implements ExecutableCommand {
     private PasswordSecurity passwordSecurity;
 
     @Inject
+    private CommandService commandService;
+
+    @Inject
     private DataSource dataSource;
 
     @Inject
@@ -35,8 +38,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
     private ValidationService validationService;
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments,
-                               final CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player name and password
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);

@@ -20,8 +20,11 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
     @Inject
     private AntiBot antiBot;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) {
             sender.sendMessage("[AuthMe] AntiBot status: " + antiBot.getAntiBotStatus().name());
             return;

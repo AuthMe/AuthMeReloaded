@@ -41,7 +41,7 @@ public class AddEmailCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), commandService);
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         verifyZeroInteractions(management);
@@ -55,7 +55,7 @@ public class AddEmailCommandTest {
         given(commandService.validateEmail(email)).willReturn(true);
 
         // when
-        command.executeCommand(sender, Arrays.asList(email, email), commandService);
+        command.executeCommand(sender, Arrays.asList(email, email));
 
         // then
         verify(management).performAddEmail(sender, email);
@@ -69,7 +69,7 @@ public class AddEmailCommandTest {
         given(commandService.validateEmail(email)).willReturn(true);
 
         // when
-        command.executeCommand(sender, Arrays.asList(email, "wrongConf"), commandService);
+        command.executeCommand(sender, Arrays.asList(email, "wrongConf"));
 
         // then
         verifyZeroInteractions(management);

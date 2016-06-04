@@ -9,6 +9,7 @@ import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.command.FoundResultStatus.MISSING_BASE_COMMAND;
@@ -16,10 +17,14 @@ import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 
 public class HelpCommand implements ExecutableCommand {
 
+    @Inject
+    private CommandService commandService;
+
+
     // Convention: arguments is not the actual invoked arguments but the command that was invoked,
     // e.g. "/authme help register" would typically be arguments = [register], but here we pass [authme, register]
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         FoundCommandResult result = commandService.mapPartsToCommand(sender, arguments);
 
         FoundResultStatus resultStatus = result.getResultStatus();

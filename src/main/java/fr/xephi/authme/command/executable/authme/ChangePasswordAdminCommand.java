@@ -37,9 +37,11 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments,
-                               final CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player and password
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);

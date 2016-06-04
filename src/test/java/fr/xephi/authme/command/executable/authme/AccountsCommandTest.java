@@ -53,7 +53,7 @@ public class AccountsCommandTest {
         given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Arrays.asList("Toaster", "Pester"));
 
         // when
-        command.executeCommand(sender, arguments, service);
+        command.executeCommand(sender, arguments);
         runInnerRunnable(bukkitService);
 
         // then
@@ -69,7 +69,7 @@ public class AccountsCommandTest {
         given(dataSource.getAuth("someuser")).willReturn(null);
 
         // when
-        command.executeCommand(sender, arguments, service);
+        command.executeCommand(sender, arguments);
         runInnerRunnable(bukkitService);
 
         // then
@@ -85,7 +85,7 @@ public class AccountsCommandTest {
         given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String>emptyList());
 
         // when
-        command.executeCommand(sender, arguments, service);
+        command.executeCommand(sender, arguments);
         runInnerRunnable(bukkitService);
 
         // then
@@ -101,7 +101,7 @@ public class AccountsCommandTest {
         given(dataSource.getAllAuthsByIp("56.78.90.123")).willReturn(Collections.singletonList("SomeUser"));
 
         // when
-        command.executeCommand(sender, arguments, service);
+        command.executeCommand(sender, arguments);
         runInnerRunnable(bukkitService);
 
         // then
@@ -119,7 +119,7 @@ public class AccountsCommandTest {
         given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String>emptyList());
 
         // when
-        command.executeCommand(sender, arguments, service);
+        command.executeCommand(sender, arguments);
         runInnerRunnable(bukkitService);
 
         // then
@@ -134,7 +134,7 @@ public class AccountsCommandTest {
         given(dataSource.getAllAuthsByIp("24.24.48.48")).willReturn(Collections.singletonList("SomeUser"));
 
         // when
-        command.executeCommand(sender, arguments, service);
+        command.executeCommand(sender, arguments);
         runInnerRunnable(bukkitService);
 
         // then
@@ -149,7 +149,7 @@ public class AccountsCommandTest {
         given(dataSource.getAllAuthsByIp("98.76.41.122")).willReturn(Arrays.asList("Tester", "Lester", "Taster"));
 
         // when
-        command.executeCommand(sender, arguments, service);
+        command.executeCommand(sender, arguments);
         runInnerRunnable(bukkitService);
 
         // then

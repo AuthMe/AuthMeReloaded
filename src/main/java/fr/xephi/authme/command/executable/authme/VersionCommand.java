@@ -19,8 +19,11 @@ public class VersionCommand implements ExecutableCommand {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Show some version info
         sender.sendMessage(ChatColor.GOLD + "==========[ " + commandService.getProperty(HELP_HEADER)
             + " ABOUT ]==========");

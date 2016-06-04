@@ -32,9 +32,6 @@ public class GetEmailCommandTest {
     private DataSource dataSource;
 
     @Mock
-    private CommandSender sender;
-
-    @Mock
     private CommandService service;
 
     @Test
@@ -42,9 +39,10 @@ public class GetEmailCommandTest {
         // given
         String user = "myTestUser";
         given(dataSource.getAuth(user)).willReturn(null);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(user), service);
+        command.executeCommand(sender, Collections.singletonList(user));
 
         // then
         verify(service).send(sender, MessageKey.UNKNOWN_USER);
@@ -58,9 +56,10 @@ public class GetEmailCommandTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(email);
         given(dataSource.getAuth(user)).willReturn(auth);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(user), service);
+        command.executeCommand(sender, Collections.singletonList(user));
 
         // then
         verify(sender).sendMessage(argThat(containsString(email)));

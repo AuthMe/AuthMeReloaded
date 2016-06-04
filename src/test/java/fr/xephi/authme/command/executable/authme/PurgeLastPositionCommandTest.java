@@ -35,8 +35,6 @@ public class PurgeLastPositionCommandTest {
     @Mock
     private CommandService service;
 
-    @Mock
-    private CommandSender sender;
 
     @Test
     public void shouldPurgeLastPosOfUser() {
@@ -44,9 +42,10 @@ public class PurgeLastPositionCommandTest {
         String player = "_Bobby";
         PlayerAuth auth = mock(PlayerAuth.class);
         given(dataSource.getAuth(player)).willReturn(auth);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(player), service);
+        command.executeCommand(sender, Collections.singletonList(player));
 
         // then
         verify(dataSource).getAuth(player);
@@ -64,7 +63,7 @@ public class PurgeLastPositionCommandTest {
         given(dataSource.getAuth(player)).willReturn(auth);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(dataSource).getAuth(player);
@@ -76,9 +75,10 @@ public class PurgeLastPositionCommandTest {
     public void shouldHandleNonExistentUser() {
         // given
         String name = "invalidPlayer";
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(name), service);
+        command.executeCommand(sender, Collections.singletonList(name));
 
         // then
         verify(dataSource).getAuth(name);
@@ -92,9 +92,10 @@ public class PurgeLastPositionCommandTest {
         PlayerAuth auth2 = mock(PlayerAuth.class);
         PlayerAuth auth3 = mock(PlayerAuth.class);
         given(dataSource.getAllAuths()).willReturn(Arrays.asList(auth1, auth2, auth3));
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("*"), service);
+        command.executeCommand(sender, Collections.singletonList("*"));
 
         // then
         verify(dataSource).getAllAuths();

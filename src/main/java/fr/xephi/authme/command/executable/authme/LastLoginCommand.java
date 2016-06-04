@@ -19,8 +19,11 @@ public class LastLoginCommand implements ExecutableCommand {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Get the player
         String playerName = (arguments.size() >= 1) ? arguments.get(0) : sender.getName();
 

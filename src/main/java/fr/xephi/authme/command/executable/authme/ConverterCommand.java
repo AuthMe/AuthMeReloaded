@@ -23,13 +23,16 @@ import java.util.List;
 public class ConverterCommand implements ExecutableCommand {
 
     @Inject
+    private CommandService commandService;
+
+    @Inject
     private BukkitService bukkitService;
 
     @Inject
     private AuthMeServiceInitializer initializer;
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the conversion job
         String job = arguments.get(0);
 

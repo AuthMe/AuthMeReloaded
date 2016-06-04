@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.help;
 
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.TestCommandsUtil;
 import org.bukkit.ChatColor;
@@ -64,6 +65,12 @@ public class CommandSyntaxHelperTest {
 
         // then
         assertThat(result, equalTo(ChatColor.WHITE + "/email" + ChatColor.YELLOW + " [player]"));
+    }
+
+    @Test
+    public void shouldHaveHiddenConstructor() {
+        // given / when / then
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(CommandSyntaxHelper.class);
     }
 
 }

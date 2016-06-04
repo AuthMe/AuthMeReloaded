@@ -73,7 +73,7 @@ public class ChangePasswordCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), commandService);
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         verify(sender).sendMessage(argThat(containsString("only for players")));
@@ -85,7 +85,7 @@ public class ChangePasswordCommandTest {
         CommandSender sender = initPlayerWithName("name", false);
 
         // when
-        command.executeCommand(sender, Arrays.asList("pass", "pass"), commandService);
+        command.executeCommand(sender, Arrays.asList("pass", "pass"));
 
         // then
         verify(commandService).send(sender, MessageKey.NOT_LOGGED_IN);
@@ -100,7 +100,7 @@ public class ChangePasswordCommandTest {
             .willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
 
         // when
-        command.executeCommand(sender, Arrays.asList("tester", password), commandService);
+        command.executeCommand(sender, Arrays.asList("tester", password));
 
         // then
         verify(validationService).validatePassword(password, "abc12");
@@ -114,7 +114,7 @@ public class ChangePasswordCommandTest {
         given(validationService.validatePassword("abc123", "parker")).willReturn(new ValidationResult());
 
         // when
-        command.executeCommand(sender, Arrays.asList("abc123", "abc123"), commandService);
+        command.executeCommand(sender, Arrays.asList("abc123", "abc123"));
 
         // then
         verify(validationService).validatePassword("abc123", "parker");

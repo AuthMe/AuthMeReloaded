@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.entity.Player;
@@ -14,7 +13,7 @@ public class SpawnCommand extends PlayerCommand {
     private SpawnLoader spawnLoader;
 
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         if (spawnLoader.getSpawn() == null) {
             player.sendMessage("[AuthMe] Spawn has failed, please try to define the spawn");
         } else {

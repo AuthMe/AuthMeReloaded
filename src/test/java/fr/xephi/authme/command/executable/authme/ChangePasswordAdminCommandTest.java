@@ -69,7 +69,7 @@ public class ChangePasswordAdminCommandTest {
             new ValidationResult(MessageKey.PASSWORD_IS_USERNAME_ERROR));
 
         // when
-        command.executeCommand(sender, Arrays.asList("bobby", "Bobby"), service);
+        command.executeCommand(sender, Arrays.asList("bobby", "Bobby"));
 
         // then
         verify(validationService).validatePassword("Bobby", "bobby");
@@ -88,7 +88,7 @@ public class ChangePasswordAdminCommandTest {
         given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         // when
-        command.executeCommand(sender, Arrays.asList(player, password), service);
+        command.executeCommand(sender, Arrays.asList(player, password));
         runInnerRunnable(bukkitService);
 
         // then
@@ -113,7 +113,7 @@ public class ChangePasswordAdminCommandTest {
         given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         // when
-        command.executeCommand(sender, Arrays.asList(player, password), service);
+        command.executeCommand(sender, Arrays.asList(player, password));
         runInnerRunnable(bukkitService);
 
         // then
@@ -141,7 +141,7 @@ public class ChangePasswordAdminCommandTest {
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
 
         // when
-        command.executeCommand(sender, Arrays.asList(player, password), service);
+        command.executeCommand(sender, Arrays.asList(player, password));
         runInnerRunnable(bukkitService);
 
         // then
@@ -168,7 +168,7 @@ public class ChangePasswordAdminCommandTest {
         given(dataSource.updatePassword(auth)).willReturn(false);
 
         // when
-        command.executeCommand(sender, Arrays.asList(player, password), service);
+        command.executeCommand(sender, Arrays.asList(player, password));
         runInnerRunnable(bukkitService);
 
         // then
