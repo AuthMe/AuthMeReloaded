@@ -199,12 +199,9 @@ public class PermissionsManager {
      */
     public void onPluginEnable(String pluginName) {
         // Check if any known permissions system is enabling
-        for (PermissionsSystemType permissionsSystemType : PermissionsSystemType.values()) {
-            if (permissionsSystemType.isPermissionSystem(pluginName)) {
-                ConsoleLogger.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
-                setup();
-                break;
-            }
+        if (PermissionsSystemType.isPermissionSystem(pluginName)) {
+            ConsoleLogger.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
+            setup();
         }
     }
 
@@ -215,12 +212,9 @@ public class PermissionsManager {
      */
     public void onPluginDisable(String pluginName) {
         // Check if any known permission system is being disabled
-        for (PermissionsSystemType permissionsSystemType : PermissionsSystemType.values()) {
-            if (permissionsSystemType.isPermissionSystem(pluginName)) {
-                ConsoleLogger.info(pluginName + " plugin disabled, updating hooks!");
-                setup();
-                break;
-            }
+        if (PermissionsSystemType.isPermissionSystem(pluginName)) {
+            ConsoleLogger.info(pluginName + " plugin disabled, updating hooks!");
+            setup();
         }
     }
 
