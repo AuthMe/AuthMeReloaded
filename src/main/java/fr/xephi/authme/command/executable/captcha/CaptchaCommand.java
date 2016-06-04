@@ -30,18 +30,18 @@ public class CaptchaCommand extends PlayerCommand {
         } else if (!captchaManager.isCaptchaRequired(playerName)) {
             commandService.send(player, MessageKey.USAGE_LOGIN);
         } else {
-            checkCaptcha(player, arguments.get(0), commandService);
+            checkCaptcha(player, arguments.get(0));
         }
     }
 
-    private void checkCaptcha(Player player, String captchaCode, CommandService service) {
+    private void checkCaptcha(Player player, String captchaCode) {
         final boolean isCorrectCode = captchaManager.checkCode(player.getName(), captchaCode);
         if (isCorrectCode) {
-            service.send(player, MessageKey.CAPTCHA_SUCCESS);
-            service.send(player, MessageKey.LOGIN_MESSAGE);
+            commandService.send(player, MessageKey.CAPTCHA_SUCCESS);
+            commandService.send(player, MessageKey.LOGIN_MESSAGE);
         } else {
             String newCode = captchaManager.generateCode(player.getName());
-            service.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
+            commandService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
     }
 }

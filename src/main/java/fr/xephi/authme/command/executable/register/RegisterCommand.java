@@ -36,16 +36,16 @@ public class RegisterCommand extends PlayerCommand {
         }
 
         // Ensure that there is 1 argument, or 2 if confirmation is required
-        final boolean useConfirmation = isConfirmationRequired(commandService);
+        final boolean useConfirmation = isConfirmationRequired();
         if (arguments.isEmpty() || useConfirmation && arguments.size() < 2) {
             commandService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
 
         if (commandService.getProperty(USE_EMAIL_REGISTRATION)) {
-            handleEmailRegistration(player, arguments, commandService);
+            handleEmailRegistration(player, arguments);
         } else {
-            handlePasswordRegistration(player, arguments, commandService);
+            handlePasswordRegistration(player, arguments);
         }
     }
 
@@ -54,7 +54,7 @@ public class RegisterCommand extends PlayerCommand {
         return "/authme register <playername> <password>";
     }
 
-    private void handlePasswordRegistration(Player player, List<String> arguments, CommandService commandService) {
+    private void handlePasswordRegistration(Player player, List<String> arguments) {
         if (commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION) && !arguments.get(0).equals(arguments.get(1))) {
             commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
         } else {
@@ -62,7 +62,7 @@ public class RegisterCommand extends PlayerCommand {
         }
     }
 
-    private void handleEmailRegistration(Player player, List<String> arguments, CommandService commandService) {
+    private void handleEmailRegistration(Player player, List<String> arguments) {
         if (commandService.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {
             player.sendMessage("Cannot register: no email address is set for the server. "
                 + "Please contact an administrator");
@@ -85,10 +85,9 @@ public class RegisterCommand extends PlayerCommand {
     /**
      * Return whether the password or email has to be confirmed.
      *
-     * @param commandService The command service
      * @return True if the confirmation is needed, false otherwise
      */
-    private boolean isConfirmationRequired(CommandService commandService) {
+    private boolean isConfirmationRequired() {
         return commandService.getProperty(USE_EMAIL_REGISTRATION)
             ? commandService.getProperty(ENABLE_CONFIRM_EMAIL)
             : commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION);

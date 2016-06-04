@@ -72,7 +72,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {
             if (commandService.getProperty(RegistrationSettings.FORCE)) {
-                applyUnregisteredEffectsAndTasks(target, commandService);
+                applyUnregisteredEffectsAndTasks(target);
             }
             commandService.send(target, MessageKey.UNREGISTERED_SUCCESS);
         }
@@ -88,15 +88,14 @@ public class UnregisterAdminCommand implements ExecutableCommand {
      * timeout kick, blindness.
      *
      * @param target the player that was unregistered
-     * @param service the command service
      */
-    private void applyUnregisteredEffectsAndTasks(Player target, CommandService service) {
+    private void applyUnregisteredEffectsAndTasks(Player target) {
         final String playerNameLowerCase = target.getName().toLowerCase();
 
         Utils.teleportToSpawn(target);
         limboCache.addLimboPlayer(target);
-        int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-        int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
+        int timeOut = commandService.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+        int interval = commandService.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (timeOut != 0) {
             BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(authMe, playerNameLowerCase, target), timeOut);
             limboCache.getLimboPlayer(playerNameLowerCase).setTimeoutTask(id);
@@ -105,7 +104,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
             bukkitService.runTask(new MessageTask(bukkitService, authMe.getMessages(),
                 playerNameLowerCase, MessageKey.REGISTER_MESSAGE, interval)));
 
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+        if (commandService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
         }
     }
