@@ -13,7 +13,7 @@ import static java.util.Arrays.asList;
 /**
  * Command description – defines which labels ("names") will lead to a command and points to the
  * {@link ExecutableCommand} implementation that executes the logic of the command.
- *
+ * <p>
  * CommandDescription instances are built hierarchically: they have one parent, or {@code null} for base commands
  * (main commands such as {@code /authme}), and may have multiple children extending the mapping of the parent: e.g. if
  * {@code /authme} has a child whose label is {@code "register"}, then {@code /authme register} is the command that
@@ -37,7 +37,7 @@ public class CommandDescription {
     /**
      * The executable command instance described by this object.
      */
-    private ExecutableCommand executableCommand;
+    private Class<? extends ExecutableCommand> executableCommand;
     /**
      * The parent command.
      */
@@ -57,7 +57,7 @@ public class CommandDescription {
 
     /**
      * Private constructor. Use {@link CommandDescription#builder()} to create instances of this class.
-     * <p />
+     * <p>
      * Note for developers: Instances should be created with {@link CommandDescription#createInstance} to be properly
      * registered in the command tree.
      */
@@ -67,21 +67,20 @@ public class CommandDescription {
     /**
      * Create an instance.
      *
-     * @param labels              List of command labels.
-     * @param description         Command description.
-     * @param detailedDescription Detailed comment description.
-     * @param executableCommand   The executable command, or null.
-     * @param parent              Parent command.
-     * @param arguments           Command arguments.
-     * @param permission          The permission node required to execute this command.
+     * @param labels              command labels
+     * @param description         description of the command
+     * @param detailedDescription detailed command description
+     * @param executableCommand   class of the command implementation
+     * @param parent              parent command
+     * @param arguments           command arguments
+     * @param permission          permission node required to execute this command
      *
-     * @return The created instance
+     * @return the created instance
      * @see CommandDescription#builder()
      */
     private static CommandDescription createInstance(List<String> labels, String description,
-                                                 String detailedDescription, ExecutableCommand executableCommand,
-                                                 CommandDescription parent, List<CommandArgumentDescription> arguments,
-                                                 PermissionNode permission) {
+            String detailedDescription, Class<? extends ExecutableCommand> executableCommand, CommandDescription parent,
+            List<CommandArgumentDescription> arguments,  PermissionNode permission) {
         CommandDescription instance = new CommandDescription();
         instance.labels = labels;
         instance.description = description;
@@ -133,7 +132,7 @@ public class CommandDescription {
      *
      * @return The executable command object.
      */
-    public ExecutableCommand getExecutableCommand() {
+    public Class<? extends ExecutableCommand> getExecutableCommand() {
         return executableCommand;
     }
 
@@ -219,7 +218,7 @@ public class CommandDescription {
         private List<String> labels;
         private String description;
         private String detailedDescription;
-        private ExecutableCommand executableCommand;
+        private Class<? extends ExecutableCommand> executableCommand;
         private CommandDescription parent;
         private List<CommandArgumentDescription> arguments = new ArrayList<>();
         private PermissionNode permission;
@@ -260,7 +259,7 @@ public class CommandDescription {
             return this;
         }
 
-        public CommandBuilder executableCommand(ExecutableCommand executableCommand) {
+        public CommandBuilder executableCommand(Class<? extends ExecutableCommand> executableCommand) {
             this.executableCommand = executableCommand;
             return this;
         }

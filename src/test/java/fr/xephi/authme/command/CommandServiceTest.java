@@ -1,6 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
@@ -11,19 +10,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -34,10 +28,6 @@ public class CommandServiceTest {
 
     @InjectMocks
     private CommandService commandService;
-    @Mock
-    private CommandMapper commandMapper;
-    @Mock
-    private HelpProvider helpProvider;
     @Mock
     private Messages messages;
     @Mock
@@ -67,40 +57,6 @@ public class CommandServiceTest {
 
         // then
         verify(messages).send(sender, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE, "10");
-    }
-
-    @Test
-    public void shouldMapPartsToCommand() {
-        // given
-        CommandSender sender = mock(Player.class);
-        List<String> commandParts = Arrays.asList("authme", "test", "test2");
-        FoundCommandResult givenResult = mock(FoundCommandResult.class);
-        given(commandMapper.mapPartsToCommand(sender, commandParts)).willReturn(givenResult);
-
-        // when
-        FoundCommandResult result = commandService.mapPartsToCommand(sender, commandParts);
-
-        // then
-        assertThat(result, equalTo(givenResult));
-        verify(commandMapper).mapPartsToCommand(sender, commandParts);
-    }
-
-    @Test
-    public void shouldOutputHelp() {
-        // given
-        CommandSender sender = mock(CommandSender.class);
-        FoundCommandResult result = mock(FoundCommandResult.class);
-        int options = HelpProvider.SHOW_LONG_DESCRIPTION;
-        List<String> messages = Arrays.asList("Test message 1", "Other test message", "Third message for test");
-        given(helpProvider.printHelp(sender, result, options)).willReturn(messages);
-
-        // when
-        commandService.outputHelp(sender, result, options);
-
-        // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(3)).sendMessage(captor.capture());
-        assertThat(captor.getAllValues(), equalTo(messages));
     }
 
     @Test

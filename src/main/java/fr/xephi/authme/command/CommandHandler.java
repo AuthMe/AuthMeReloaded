@@ -2,6 +2,7 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
@@ -9,7 +10,10 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
@@ -23,12 +27,23 @@ public class CommandHandler {
      */
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
-    @Inject
-    private CommandService commandService;
+    private final CommandMapper commandMapper;
+    private final PermissionsManager permissionsManager;
+    private final HelpProvider helpProvider;
+
+    /**
+     * Map with ExecutableCommand children. The key is the type of the value.
+     */
+    private Map<Class<? extends ExecutableCommand>, ExecutableCommand> commands = new HashMap<>();
 
     @Inject
-    private PermissionsManager permissionsManager;
-
+    public CommandHandler(AuthMeServiceInitializer initializer, CommandMapper commandMapper,
+                          PermissionsManager permissionsManager, HelpProvider helpProvider) {
+        this.commandMapper = commandMapper;
+        this.permissionsManager = permissionsManager;
+        this.helpProvider = helpProvider;
+        initializeCommands(initializer, commandMapper.getCommandClasses());
+    }
 
     /**
      * Map a command that was invoked to the proper {@link CommandDescription} or return a useful error
@@ -45,7 +60,7 @@ public class CommandHandler {
         List<String> parts = skipEmptyArguments(bukkitArgs);
         parts.add(0, bukkitCommandLabel);
 
-        FoundCommandResult result = commandService.mapPartsToCommand(sender, parts);
+        FoundCommandResult result = commandMapper.mapPartsToCommand(sender, parts);
         handleCommandResult(sender, result);
         return !FoundResultStatus.MISSING_BASE_COMMAND.equals(result.getResultStatus());
     }
@@ -73,13 +88,25 @@ public class CommandHandler {
     }
 
     /**
+     * Initializes all required ExecutableCommand objects.
+     *
+     * @param commandClasses the classes to instantiate
+     */
+    private void initializeCommands(AuthMeServiceInitializer initializer,
+                                    Set<Class<? extends ExecutableCommand>> commandClasses) {
+        for (Class<? extends ExecutableCommand> clazz : commandClasses) {
+            commands.put(clazz, initializer.newInstance(clazz));
+        }
+    }
+
+    /**
      * Execute the command for the given command sender.
      *
      * @param sender The sender which initiated the command
      * @param result The mapped result
      */
     private void executeCommand(CommandSender sender, FoundCommandResult result) {
-        ExecutableCommand executableCommand = result.getCommandDescription().getExecutableCommand();
+        ExecutableCommand executableCommand = commands.get(result.getCommandDescription().getExecutableCommand());
         List<String> arguments = result.getArguments();
         executableCommand.executeCommand(sender, arguments);
     }
@@ -129,7 +156,7 @@ public class CommandHandler {
 
         // Show the command argument help
         sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
-        commandService.outputHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
 
         List<String> labels = result.getLabels();
         String childLabel = labels.size() >= 2 ? labels.get(1) : "";

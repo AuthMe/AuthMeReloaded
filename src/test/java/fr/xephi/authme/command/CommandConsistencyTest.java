@@ -1,13 +1,9 @@
 package fr.xephi.authme.command;
 
-
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,9 +18,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 
 /**
  * Checks that the commands declared in plugin.yml correspond
@@ -59,14 +52,7 @@ public class CommandConsistencyTest {
      */
     @SuppressWarnings("unchecked")
     private static Collection<List<String>> initializeCommands() {
-        AuthMeServiceInitializer injector = mock(AuthMeServiceInitializer.class);
-        given(injector.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return mock((Class<?>) invocation.getArguments()[0]);
-            }
-        });
-        CommandInitializer initializer = new CommandInitializer(injector);
+        CommandInitializer initializer = new CommandInitializer();
         Collection<List<String>> commandLabels = new ArrayList<>();
         for (CommandDescription baseCommand : initializer.getCommands()) {
             commandLabels.add(baseCommand.getLabels());

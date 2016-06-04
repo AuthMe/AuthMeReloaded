@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
@@ -16,11 +16,14 @@ import java.util.List;
 public class EmailBaseCommand implements ExecutableCommand {
 
     @Inject
-    private CommandService commandService;
+    private CommandMapper commandMapper;
+
+    @Inject
+    private HelpProvider helpProvider;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
-        FoundCommandResult result = commandService.mapPartsToCommand(sender, Collections.singletonList("email"));
-        commandService.outputHelp(sender, result, HelpProvider.SHOW_CHILDREN);
+        FoundCommandResult result = commandMapper.mapPartsToCommand(sender, Collections.singletonList("email"));
+        helpProvider.outputHelp(sender, result, HelpProvider.SHOW_CHILDREN);
     }
 }

@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable;
 
-import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.FoundCommandResult;
@@ -18,14 +18,17 @@ import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 public class HelpCommand implements ExecutableCommand {
 
     @Inject
-    private CommandService commandService;
+    private CommandMapper commandMapper;
+
+    @Inject
+    private HelpProvider helpProvider;
 
 
     // Convention: arguments is not the actual invoked arguments but the command that was invoked,
     // e.g. "/authme help register" would typically be arguments = [register], but here we pass [authme, register]
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
-        FoundCommandResult result = commandService.mapPartsToCommand(sender, arguments);
+        FoundCommandResult result = commandMapper.mapPartsToCommand(sender, arguments);
 
         FoundResultStatus resultStatus = result.getResultStatus();
         if (MISSING_BASE_COMMAND.equals(resultStatus)) {
@@ -43,9 +46,9 @@ public class HelpCommand implements ExecutableCommand {
 
         int mappedCommandLevel = result.getCommandDescription().getLabelCount();
         if (mappedCommandLevel == 1) {
-            commandService.outputHelp(sender, result, HelpProvider.SHOW_CHILDREN);
+            helpProvider.outputHelp(sender, result, HelpProvider.SHOW_CHILDREN);
         } else {
-            commandService.outputHelp(sender, result, HelpProvider.ALL_OPTIONS);
+            helpProvider.outputHelp(sender, result, HelpProvider.ALL_OPTIONS);
         }
     }
 

@@ -1,5 +1,9 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
+import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
+import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
+import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
@@ -14,6 +18,7 @@ import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -273,6 +278,16 @@ public class CommandMapperTest {
         assertThat(result.getDifference(), equalTo(0.0));
         assertThat(result.getLabels(), equalTo(parts.subList(0, 2)));
         assertThat(result.getArguments(), contains(parts.get(2)));
+    }
+
+    @Test
+    public void shouldReturnExecutableCommandClasses() {
+        // given / when
+        Set<Class<? extends ExecutableCommand>> commandClasses = mapper.getCommandClasses();
+
+        // then
+        assertThat(commandClasses, containsInAnyOrder(ExecutableCommand.class, HelpCommand.class,
+            TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
     }
 
 }

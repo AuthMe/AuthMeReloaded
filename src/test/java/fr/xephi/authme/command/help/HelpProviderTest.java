@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +34,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link HelpProvider}.
@@ -67,9 +70,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, SHOW_LONG_DESCRIPTION);
+        helpProvider.outputHelp(sender, result, SHOW_LONG_DESCRIPTION);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(5));
         assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
         assertThat(removeColors(lines.get(1)), containsString("Command: /authme login <password>"));
@@ -85,9 +89,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
         assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
         assertThat(removeColors(lines.get(1)), equalTo("Arguments:"));
@@ -102,9 +107,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("email"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(3));
         assertThat(removeColors(lines.get(2)), containsString("player: 'player' argument description (Optional)"));
     }
@@ -117,9 +123,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(1)); // only has the help banner
     }
 
@@ -133,9 +140,10 @@ public class HelpProviderTest {
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(5));
         assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
         assertThat(removeColors(lines.get(2)),
@@ -154,9 +162,10 @@ public class HelpProviderTest {
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(false);
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(5));
         assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
         assertThat(removeColors(lines.get(2)),
@@ -172,9 +181,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(1));
     }
 
@@ -187,9 +197,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("test"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(1));
     }
 
@@ -200,9 +211,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
         assertThat(removeColors(lines.get(1)), containsString("Alternatives:"));
         assertThat(removeColors(lines.get(2)), containsString("/authme register <password> <confirmation>"));
@@ -216,9 +228,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(1));
     }
 
@@ -229,9 +242,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
         assertThat(removeColors(lines.get(1)), containsString("Commands:"));
         assertThat(removeColors(lines.get(2)), containsString("/authme login: login cmd"));
@@ -245,9 +259,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(1));
     }
 
@@ -258,9 +273,10 @@ public class HelpProviderTest {
             Collections.<String>emptyList(), 0.0, FoundResultStatus.UNKNOWN_LABEL);
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, ALL_OPTIONS);
+        helpProvider.outputHelp(sender, result, ALL_OPTIONS);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(1));
         assertThat(lines.get(0), containsString("Failed to retrieve any help information"));
     }
@@ -276,9 +292,10 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "ragister"));
 
         // when
-        List<String> lines = helpProvider.printHelp(sender, result, 0);
+        helpProvider.outputHelp(sender, result, 0);
 
         // then
+        List<String> lines = getLines(sender);
         assertThat(lines, hasSize(2));
         assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
         assertThat(removeColors(lines.get(1)), containsString("Command: /authme register <password> <confirmation>"));
@@ -327,6 +344,12 @@ public class HelpProviderTest {
             str = str.replace(color.toString(), "");
         }
         return str;
+    }
+    
+    private static List<String> getLines(CommandSender sender) {
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender, atLeastOnce()).sendMessage(captor.capture());
+        return captor.getAllValues();
     }
 
 }

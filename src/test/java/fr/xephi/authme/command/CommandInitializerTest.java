@@ -1,13 +1,10 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,14 +17,8 @@ import java.util.regex.Pattern;
 
 import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
@@ -45,15 +36,7 @@ public class CommandInitializerTest {
     @SuppressWarnings("unchecked")
     @BeforeClass
     public static void initializeCommandCollection() {
-        AuthMeServiceInitializer initializer = mock(AuthMeServiceInitializer.class);
-        when(initializer.newInstance(any(Class.class))).thenAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Class<?> clazz = (Class<?>) invocation.getArguments()[0];
-                return mock(clazz);
-            }
-        });
-        CommandInitializer commandInitializer = new CommandInitializer(initializer);
+        CommandInitializer commandInitializer = new CommandInitializer();
         commands = commandInitializer.getCommands();
     }
 
@@ -174,34 +157,6 @@ public class CommandInitializerTest {
         walkThroughCommands(commands, descriptionTester);
     }
 
-    /**
-     * Check that the implementation of {@link ExecutableCommand} a command points to is the same for each type:
-     * it is inefficient to instantiate the same type multiple times.
-     */
-    @Test
-    public void shouldNotHaveMultipleInstancesOfSameExecutableCommandSubType() {
-        // given
-        final Map<Class<? extends ExecutableCommand>, ExecutableCommand> implementations = new HashMap<>();
-        BiConsumer descriptionTester = new BiConsumer() {
-            @Override
-            public void accept(CommandDescription command, int depth) {
-                assertThat(command.getExecutableCommand(), not(nullValue()));
-                ExecutableCommand commandExec = command.getExecutableCommand();
-                ExecutableCommand storedExec = implementations.get(command.getExecutableCommand().getClass());
-                if (storedExec == null) {
-                    implementations.put(commandExec.getClass(), commandExec);
-                } else {
-                    assertSame("has same implementation of '" + storedExec.getClass().getName() + "' for command with "
-                        + "parent " + (command.getParent() == null ? "null" : command.getParent().getLabels()),
-                        storedExec, commandExec);
-                }
-            }
-        };
-
-        // when/then
-        walkThroughCommands(commands, descriptionTester);
-    }
-
     @Test
     public void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
         // given
@@ -291,7 +246,7 @@ public class CommandInitializerTest {
             }
             private void testCollectionForCommand(CommandDescription command, int argCount,
                                                   Map<Class<? extends ExecutableCommand>, Integer> collection) {
-                final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand().getClass();
+                final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand();
                 Integer existingCount = collection.get(clazz);
                 if (existingCount == null) {
                     collection.put(clazz, argCount);

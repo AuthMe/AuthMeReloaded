@@ -53,7 +53,7 @@ public class HelpProvider implements SettingsDependent {
         loadSettings(settings);
     }
 
-    public List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
+    private List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
         if (result.getCommandDescription() == null) {
             return singletonList(ChatColor.DARK_RED + "Failed to retrieve any help information!");
         }
@@ -85,6 +85,20 @@ public class HelpProvider implements SettingsDependent {
         }
 
         return lines;
+    }
+
+    /**
+     * Output the help for a given command.
+     *
+     * @param sender The sender to output the help to
+     * @param result The result to output information about
+     * @param options Output options, see {@link HelpProvider}
+     */
+    public void outputHelp(CommandSender sender, FoundCommandResult result, int options) {
+        List<String> lines = printHelp(sender, result, options);
+        for (String line : lines) {
+            sender.sendMessage(line);
+        }
     }
 
     @Override

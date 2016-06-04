@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -67,6 +68,23 @@ public class CommandMapper {
         }
 
         return getCommandWithSmallestDifference(base, parts);
+    }
+
+    /**
+     * Return all {@link ExecutableCommand} classes referenced in {@link CommandDescription} objects.
+     *
+     * @return all classes
+     * @see CommandInitializer#getCommands
+     */
+    public Set<Class<? extends ExecutableCommand>> getCommandClasses() {
+        Set<Class<? extends ExecutableCommand>> classes = new HashSet<>(50);
+        for (CommandDescription command : baseCommands) {
+            classes.add(command.getExecutableCommand());
+            for (CommandDescription child : command.getChildren()) {
+                classes.add(child.getExecutableCommand());
+            }
+        }
+        return classes;
     }
 
     private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
@@ -141,7 +159,7 @@ public class CommandMapper {
 
     private static FoundCommandResult transformResultForHelp(FoundCommandResult result) {
         if (result.getCommandDescription() != null
-            && HELP_COMMAND_CLASS.isAssignableFrom(result.getCommandDescription().getExecutableCommand().getClass())) {
+            && HELP_COMMAND_CLASS.isAssignableFrom(result.getCommandDescription().getExecutableCommand())) {
             // For "/authme help register" we have labels = [authme, help] and arguments = [register]
             // But for the help command we want labels = [authme, help] and arguments = [authme, register],
             // so we can use the arguments as the labels to the command to show help for

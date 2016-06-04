@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link CommandUtils}.
@@ -59,14 +58,14 @@ public class CommandUtilsTest {
             .labels("authme", "auth")
             .description("Base")
             .detailedDescription("Test base command.")
-            .executableCommand(mock(ExecutableCommand.class))
+            .executableCommand(ExecutableCommand.class)
             .build();
         CommandDescription command = CommandDescription.builder()
             .parent(base)
             .labels("help", "h", "?")
             .description("Child")
             .detailedDescription("Test child command.")
-            .executableCommand(mock(ExecutableCommand.class))
+            .executableCommand(ExecutableCommand.class)
             .build();
 
         // when
@@ -131,6 +130,6 @@ public class CommandUtilsTest {
             .labels("authme", "auth")
             .description("Base")
             .detailedDescription("Test base command.")
-            .executableCommand(mock(ExecutableCommand.class));
+            .executableCommand(ExecutableCommand.class);
     }
 }

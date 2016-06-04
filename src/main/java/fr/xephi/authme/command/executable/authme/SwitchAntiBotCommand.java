@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
@@ -21,7 +21,10 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
     private AntiBot antiBot;
 
     @Inject
-    private CommandService commandService;
+    private CommandMapper commandMapper;
+
+    @Inject
+    private HelpProvider helpProvider;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
@@ -41,8 +44,8 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
             sender.sendMessage("[AuthMe] AntiBot Manual Override: disabled!");
         } else {
             sender.sendMessage(ChatColor.DARK_RED + "Invalid AntiBot mode!");
-            FoundCommandResult result = commandService.mapPartsToCommand(sender, Arrays.asList("authme", "antibot"));
-            commandService.outputHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
+            FoundCommandResult result = commandMapper.mapPartsToCommand(sender, Arrays.asList("authme", "antibot"));
+            helpProvider.outputHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
             sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/authme help antibot");
         }
     }

@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.command.CommandSender;
@@ -35,7 +35,10 @@ public class SwitchAntiBotCommandTest {
     private AntiBot antiBot;
 
     @Mock
-    private CommandService service;
+    private CommandMapper commandMapper;
+
+    @Mock
+    private HelpProvider helpProvider;
 
     @Test
     public void shouldReturnAntiBotState() {
@@ -81,7 +84,7 @@ public class SwitchAntiBotCommandTest {
         // given
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult foundCommandResult = mock(FoundCommandResult.class);
-        given(service.mapPartsToCommand(sender, asList("authme", "antibot"))).willReturn(foundCommandResult);
+        given(commandMapper.mapPartsToCommand(sender, asList("authme", "antibot"))).willReturn(foundCommandResult);
 
         // when
         command.executeCommand(sender, Collections.singletonList("wrong"));
@@ -89,6 +92,6 @@ public class SwitchAntiBotCommandTest {
         // then
         verify(antiBot, never()).overrideAntiBotStatus(anyBoolean());
         verify(sender).sendMessage(argThat(containsString("Invalid")));
-        verify(service).outputHelp(sender, foundCommandResult, HelpProvider.SHOW_ARGUMENTS);
+        verify(helpProvider).outputHelp(sender, foundCommandResult, HelpProvider.SHOW_ARGUMENTS);
     }
 }

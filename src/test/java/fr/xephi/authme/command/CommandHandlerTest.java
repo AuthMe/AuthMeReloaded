@@ -1,17 +1,25 @@
 package fr.xephi.authme.command;
 
+import com.google.common.collect.Sets;
+import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
+import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
+import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
+import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static fr.xephi.authme.command.FoundResultStatus.INCORRECT_ARGUMENTS;
 import static fr.xephi.authme.command.FoundResultStatus.MISSING_BASE_COMMAND;
@@ -19,7 +27,6 @@ import static fr.xephi.authme.command.FoundResultStatus.NO_PERMISSION;
 import static fr.xephi.authme.command.FoundResultStatus.SUCCESS;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -29,6 +36,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -43,20 +51,53 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class CommandHandlerTest {
 
-    @InjectMocks
     private CommandHandler handler;
 
     @Mock
-    private CommandService commandService;
-
+    private AuthMeServiceInitializer initializer;
+    @Mock
+    private CommandInitializer commandInitializer;
     @Mock
     private CommandMapper commandMapper;
-
     @Mock
     private PermissionsManager permissionsManager;
+    @Mock
+    private HelpProvider helpProvider;
 
-    @Captor
-    private ArgumentCaptor<List<String>> captor;
+    private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
+
+    @Before
+    @SuppressWarnings("unchecked")
+    public void initializeCommandMapper() {
+        given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(ExecutableCommand.class,
+            TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
+        setInjectorToMockExecutableCommandClasses();
+        handler = new CommandHandler(initializer, commandMapper, permissionsManager, helpProvider);
+    }
+
+    /**
+     * Makes the initializer return a mock when {@link AuthMeServiceInitializer#newInstance(Class)} is invoked
+     * with (a child of) ExecutableCommand.class. The mocks the initializer creates are stored in {@link #mockedCommands}.
+     * <p>
+     * The {@link CommandMapper} is mocked in {@link #initializeCommandMapper()} to return certain test classes.
+     */
+    private void setInjectorToMockExecutableCommandClasses() {
+        given(initializer.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Class<?> clazz = (Class<?>) invocation.getArguments()[0];
+                if (ExecutableCommand.class.isAssignableFrom(clazz)) {
+                    @SuppressWarnings("unchecked")
+                    Class<? extends ExecutableCommand> commandClass = (Class<? extends ExecutableCommand>) clazz;
+                    ExecutableCommand mock = mock(commandClass);
+                    mockedCommands.put(commandClass, mock);
+                    return mock;
+                }
+                throw new IllegalStateException("Unexpected class '" + clazz.getName()
+                    + "': Not a child of ExecutableCommand");
+            }
+        });
+    }
 
 
     @Test
@@ -66,22 +107,18 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"Login", "myPass"};
 
         CommandSender sender = mock(CommandSender.class);
-        ExecutableCommand executableCommand = mock(ExecutableCommand.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(command.getExecutableCommand()).willReturn(executableCommand);
-        given(commandService.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class)))
+        doReturn(TestLoginCommand.class).when(command).getExecutableCommand();
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class)))
             .willReturn(new FoundCommandResult(command, asList("Authme", "Login"), asList("myPass"), 0.0, SUCCESS));
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("Authme", "Login", "myPass"));
-
-        verify(executableCommand).executeCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("myPass"));
-
+        ExecutableCommand executableCommand = mockedCommands.get(TestLoginCommand.class);
+        verify(commandMapper).mapPartsToCommand(sender, asList("Authme", "Login", "myPass"));
+        verify(executableCommand).executeCommand(sender, asList("myPass"));
         // Ensure that no error message was issued to the command sender
         verify(sender, never()).sendMessage(anyString());
     }
@@ -93,15 +130,14 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandService.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class)))
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class)))
             .willReturn(new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, NO_PERMISSION));
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("unreg", "testPlayer"));
+        verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         verify(sender).sendMessage(argThat(containsString("don't have permission")));
     }
@@ -113,7 +149,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandService.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
 
@@ -121,9 +157,7 @@ public class CommandHandlerTest {
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("unreg", "testPlayer"));
-
+        verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(captor.capture());
@@ -137,7 +171,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandService.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(false);
 
@@ -145,9 +179,7 @@ public class CommandHandlerTest {
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("unreg", "testPlayer"));
-
+        verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
@@ -161,15 +193,14 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandService.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, MISSING_BASE_COMMAND));
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("unreg", "testPlayer"));
+        verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         verify(sender).sendMessage(argThat(containsString("Failed to parse")));
     }
@@ -182,16 +213,14 @@ public class CommandHandlerTest {
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
         given(command.getLabels()).willReturn(Collections.singletonList("test_cmd"));
-        given(commandService.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.01, UNKNOWN_LABEL));
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("unreg", "testPlayer"));
-
+        verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(3)).sendMessage(captor.capture());
@@ -210,16 +239,14 @@ public class CommandHandlerTest {
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
         given(command.getLabels()).willReturn(Collections.singletonList("test_cmd"));
-        given(commandService.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 1.0, UNKNOWN_LABEL));
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("unreg", "testPlayer"));
-
+        verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(2)).sendMessage(captor.capture());
@@ -232,25 +259,21 @@ public class CommandHandlerTest {
     public void shouldStripWhitespace() {
         // given
         String bukkitLabel = "AuthMe";
-        String[] bukkitArgs = {" ", "", "LOGIN", "  ", "testArg", " "};
+        String[] bukkitArgs = {" ", "", "REGISTER", "  ", "testArg", " "};
         CommandSender sender = mock(CommandSender.class);
 
-        ExecutableCommand executableCommand = mock(ExecutableCommand.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(command.getExecutableCommand()).willReturn(executableCommand);
-        given(commandService.mapPartsToCommand(eq(sender), anyListOf(String.class)))
-            .willReturn(new FoundCommandResult(command, asList("AuthMe", "LOGIN"), asList("testArg"), 0.0, SUCCESS));
+        doReturn(TestRegisterCommand.class).when(command).getExecutableCommand();
+        given(commandMapper.mapPartsToCommand(eq(sender), anyListOf(String.class)))
+            .willReturn(new FoundCommandResult(command, asList("AuthMe", "REGISTER"), asList("testArg"), 0.0, SUCCESS));
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
 
         // then
-        verify(commandService).mapPartsToCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("AuthMe", "LOGIN", "testArg"));
-
-        verify(command.getExecutableCommand()).executeCommand(eq(sender), captor.capture());
-        assertThat(captor.getValue(), contains("testArg"));
-
+        ExecutableCommand executableCommand = mockedCommands.get(TestRegisterCommand.class);
+        verify(commandMapper).mapPartsToCommand(sender, asList("AuthMe", "REGISTER", "testArg"));
+        verify(executableCommand).executeCommand(sender, asList("testArg"));
         verify(sender, never()).sendMessage(anyString());
     }
 
