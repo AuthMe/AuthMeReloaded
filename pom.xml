@@ -56,6 +56,7 @@
         <!-- Output properties -->
         <project.outputName>AuthMe</project.outputName>
         <project.buildNumber>CUSTOM</project.buildNumber>
+        <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
         <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
         <project.finalName>${project.outputName}-${project.version}</project.finalName>
 
@@ -79,6 +80,17 @@
             </activation>
             <properties>
                 <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
+            </properties>
+        </profile>
+        <profile>
+            <id>skipLongHashTests</id>
+            <activation>
+                <property>
+                    <name>skipLongHashTests</name>
+                </property>
+            </activation>
+            <properties>
+                <project.skipExtendedHashTests>true</project.skipExtendedHashTests>
             </properties>
         </profile>
     </profiles>
@@ -124,6 +136,9 @@
                 <version>2.19.1</version>
                 <configuration>
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{argLine}</argLine>
+                    <systemPropertyVariables>
+                        <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <!-- Libs Shading and Relocation -->
