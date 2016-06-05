@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
@@ -58,7 +59,8 @@ public class ConverterCommand implements ExecutableCommand {
         sender.sendMessage("[AuthMe] Successfully converted from " + jobType.getName());
     }
 
-    private enum ConvertType {
+    @VisibleForTesting
+    enum ConvertType {
         XAUTH("xauth", xAuthConverter.class),
         CRAZYLOGIN("crazylogin", CrazyLoginConverter.class),
         RAKAMAK("rakamak", RakamakConverter.class),

@@ -18,13 +18,16 @@ public class UnregisterCommand extends PlayerCommand {
     @Inject
     private CommandService commandService;
 
+    @Inject
+    private PlayerCache playerCache;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
         String playerPass = arguments.get(0);
         final String playerNameLowerCase = player.getName().toLowerCase();
 
         // Make sure the player is authenticated
-        if (!PlayerCache.getInstance().isAuthenticated(playerNameLowerCase)) {
+        if (!playerCache.isAuthenticated(playerNameLowerCase)) {
             commandService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }
