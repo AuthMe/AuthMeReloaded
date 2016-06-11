@@ -85,8 +85,6 @@ public class ReloadCommandTest {
     public void shouldHandleReloadError() {
         // given
         CommandSender sender = mock(CommandSender.class);
-        @SuppressWarnings("unused")
-        CommandService service = mock(CommandService.class);
         doThrow(IllegalStateException.class).when(initializer).performReloadOnServices();
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
@@ -105,8 +103,6 @@ public class ReloadCommandTest {
     public void shouldIssueWarningForChangedDatasourceSetting() {
         // given
         CommandSender sender = mock(CommandSender.class);
-        @SuppressWarnings("unused")
-        CommandService service = mock(CommandService.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.SQLITE);
 
