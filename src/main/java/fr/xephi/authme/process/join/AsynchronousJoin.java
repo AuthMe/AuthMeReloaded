@@ -83,7 +83,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         // Prevent player collisions in 1.9
         if (DISABLE_COLLISIONS) {
-            ((LivingEntity) player).setCollidable(false);
+            player.setCollidable(false);
         }
 
         if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
@@ -133,6 +133,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         // TODO: continue cleanup from this -sgdc3
         if (isAuthAvailable) {
+            // Registered
+
+            // Groups logic
+            Utils.setGroup(player, GroupType.NOTLOGGEDIN);
+
+            // Spawn logic
             if (!service.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     bukkitService.scheduleSyncDelayedTask(new Runnable() {
@@ -149,9 +155,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
             placePlayerSafely(player, spawnLoc);
+
+            // Limbo cache
             limboCache.updateLimboPlayer(player);
 
-            // protect inventory
+            // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 plugin.getServer().getPluginManager().callEvent(ev);
@@ -163,6 +171,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
 
+            // Session logic
             if (service.getProperty(PluginSettings.SESSIONS_ENABLED) && (playerCache.isAuthenticated(name) || database.isLogged(name))) {
                 if (plugin.sessions.containsKey(name)) {
                     plugin.sessions.get(name).cancel();
@@ -180,13 +189,17 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
         } else {
-            if (!Settings.unRegisteredGroup.isEmpty()) {
-                Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
-            }
+            // Not Registered
+
+            // Groups logic
+            Utils.setGroup(player, GroupType.UNREGISTERED);
+
+            // Skip if registration is optional
             if (!service.getProperty(RegistrationSettings.FORCE)) {
                 return;
             }
 
+            // Spawn logic
             if (!Settings.noTeleport && !needFirstSpawn(player) && Settings.isTeleportToSpawnEnabled
                 || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                 bukkitService.scheduleSyncDelayedTask(new Runnable() {
@@ -202,37 +215,33 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 });
             }
         }
+        // The user is not logged in
 
         if (!limboCache.hasLimboPlayer(name)) {
             limboCache.addLimboPlayer(player);
         }
-        Utils.setGroup(player, isAuthAvailable ? GroupType.NOTLOGGEDIN : GroupType.UNREGISTERED);
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
 
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                player.setOp(false);
-                if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-                    && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-                    player.setFlySpeed(0.0f);
-                    player.setWalkSpeed(0.0f);
-                }
-                player.setNoDamageTicks(registrationTimeout);
-                if (pluginHooks.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
-                    player.performCommand("motd");
-                }
-                if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-                    // Allow infinite blindness effect
-                    int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
-                }
-            }
+        // Apply effects
+        // TODO: clenup!
+        player.setOp(false);
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+            player.setFlySpeed(0.0f);
+            player.setWalkSpeed(0.0f);
+        }
+        player.setNoDamageTicks(registrationTimeout);
+        if (pluginHooks.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
+            player.performCommand("motd");
+        }
+        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+            // Allow infinite blindness effect
+            int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
+        }
 
-        });
-
-        int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
+        // Timeout task
         if (registrationTimeout > 0) {
             BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
             LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
@@ -241,6 +250,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
         }
 
+        // Message task
+        int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         MessageKey msg;
         if (isAuthAvailable) {
             msg = MessageKey.LOGIN_MESSAGE;

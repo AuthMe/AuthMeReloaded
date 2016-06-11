@@ -66,7 +66,7 @@
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkit.version>1.9.4-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.10-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
     <!-- Jenkins profile (add the real buildNumber to the version string) -->

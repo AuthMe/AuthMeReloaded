@@ -313,9 +313,14 @@ public class PermissionsManager {
      * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroup(Player player, String groupName) {
-        // If no permissions system is used, return false
-        if (!isEnabled())
+        if(groupName.isEmpty()) {
             return false;
+        }
+
+        // If no permissions system is used, return false
+        if (!isEnabled()) {
+            return false;
+        }
 
         return handler.addToGroup(player, groupName);
     }

@@ -38,6 +38,7 @@ public class PlayerCommandTest {
         // given
         Player player = mock(Player.class);
         List<String> arguments = Arrays.asList("arg1", "testarg2");
+        @SuppressWarnings("unused")
         CommandService service = mock(CommandService.class);
         PlayerCommandImpl command = new PlayerCommandImpl();
 

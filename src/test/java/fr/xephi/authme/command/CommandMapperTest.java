@@ -280,6 +280,7 @@ public class CommandMapperTest {
         assertThat(result.getArguments(), contains(parts.get(2)));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldReturnExecutableCommandClasses() {
         // given / when

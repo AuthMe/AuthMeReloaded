@@ -81,13 +81,13 @@ public class CommandHandlerTest {
      * <p>
      * The {@link CommandMapper} is mocked in {@link #initializeCommandMapper()} to return certain test classes.
      */
+    @SuppressWarnings("unchecked")
     private void setInjectorToMockExecutableCommandClasses() {
         given(initializer.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Class<?> clazz = (Class<?>) invocation.getArguments()[0];
                 if (ExecutableCommand.class.isAssignableFrom(clazz)) {
-                    @SuppressWarnings("unchecked")
                     Class<? extends ExecutableCommand> commandClass = (Class<? extends ExecutableCommand>) clazz;
                     ExecutableCommand mock = mock(commandClass);
                     mockedCommands.put(commandClass, mock);

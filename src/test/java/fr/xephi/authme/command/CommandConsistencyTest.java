@@ -50,7 +50,6 @@ public class CommandConsistencyTest {
      *
      * @return collection of all base command labels
      */
-    @SuppressWarnings("unchecked")
     private static Collection<List<String>> initializeCommands() {
         CommandInitializer initializer = new CommandInitializer();
         Collection<List<String>> commandLabels = new ArrayList<>();

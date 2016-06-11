@@ -33,7 +33,6 @@ public class CommandInitializerTest {
 
     private static Set<CommandDescription> commands;
 
-    @SuppressWarnings("unchecked")
     @BeforeClass
     public static void initializeCommandCollection() {
         CommandInitializer commandInitializer = new CommandInitializer();
