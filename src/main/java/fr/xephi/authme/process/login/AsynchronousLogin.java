@@ -3,6 +3,7 @@ package fr.xephi.authme.process.login;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.CaptchaManager;
+import fr.xephi.authme.cache.TempbanManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -69,6 +70,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
     @Inject
     private CaptchaManager captchaManager;
 
+    @Inject
+    private TempbanManager tempbanManager;
+
     AsynchronousLogin() { }
 
     /**
@@ -82,6 +86,19 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String playerName = player.getName();
 
         return captchaManager.isCaptchaRequired(playerName);
+    }
+
+    /**
+     * Queries the {@link fr.xephi.authme.cache.TempbanManager} to
+     * see if the player has reached the tempban threshold.
+     *
+     * @param player The player to check
+     * @return True if the player needs to be tempbanned
+     */
+    private boolean shouldTempban(Player player) {
+        final String playerName = player.getName();
+
+        return tempbanManager.shouldTempban(playerName);
     }
 
     /**
@@ -146,9 +163,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
         final String ip = Utils.getPlayerIp(player);
 
-        // Increase the count here before knowing the result of the login.
+        // Increase the counts here before knowing the result of the login.
         // If the login is successful, we clear the count for the player.
         captchaManager.increaseCount(name);
+        tempbanManager.increaseCount(name);
 
         if ("127.0.0.1".equals(pAuth.getIp()) && !pAuth.getIp().equals(ip)) {
             pAuth.setIp(ip);
@@ -169,6 +187,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             database.updateSession(auth);
 
             captchaManager.resetCounts(name);
+            tempbanManager.resetCount(name);
             player.setNoDamageTicks(0);
 
             if (!forceLogin)
@@ -214,7 +233,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
                         player.kickPlayer(service.retrieveSingleMessage(MessageKey.WRONG_PASSWORD));
                     }
                 });
-            } else {
+            } else if (shouldTempban(player)) {
+                tempbanManager.tempbanPlayer(player);
+            } else  {
                 service.send(player, MessageKey.WRONG_PASSWORD);
 
                 // Check again if a captcha is required to log in

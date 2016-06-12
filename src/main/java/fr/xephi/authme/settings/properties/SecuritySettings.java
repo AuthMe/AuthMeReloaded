@@ -100,6 +100,19 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<List<String>> UNSAFE_PASSWORDS =
         newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321");
 
+    @Comment("Tempban users if they enter the wrong password too many times")
+    public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =
+        newProperty("Security.tempban.enableTempban", false);
+
+    @Comment("How many times a user can attempt to login before being tempbanned")
+    public static final Property<Integer> MAX_LOGIN_TEMPBAN =
+        newProperty("Security.tempban.maxLoginTries", 10);
+
+    @Comment({"The length of time a player will be tempbanned in minutes",
+        "Default: 480 minutes, or 8 hours"})
+    public static final Property<Integer> TEMPBAN_LENGTH =
+        newProperty("Security.tempban.tempbanLength", 480);
+
     private SecuritySettings() {
     }
 

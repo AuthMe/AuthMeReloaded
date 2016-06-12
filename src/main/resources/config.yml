@@ -331,6 +331,14 @@ Security:
         # Kick players before stopping the server, that allow us to save position of players, and all needed
         # information correctly without any corruption.
         kickPlayersBeforeStopping: true
+    tempban:
+        # Tempban users if they enter the wrong password too many times
+        enableTempban: false
+        # How many times a user can attempt to login before being tempbanned
+        maxLoginTries: 10
+        # The length of time a player will be tempbanned in minutes
+        # Default: 480 minutes, or 8 hours
+        tempbanLength: 480
 Converter:
     Rakamak:
         # Rakamak file name

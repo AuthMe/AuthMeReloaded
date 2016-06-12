@@ -137,7 +137,9 @@ public enum MessageKey {
 
     NOT_OWNER_ERROR("not_owner_error"),
     
-    INVALID_NAME_CASE("invalid_name_case", "%valid", "%invalid");
+    INVALID_NAME_CASE("invalid_name_case", "%valid", "%invalid"),
+
+    TEMPBAN_MAX_LOGINS("tempban_max_logins");
 
     private String key;
     private String[] tags;
