@@ -1,9 +1,14 @@
 package fr.xephi.authme.cache;
 
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.BukkitService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Map;
 
@@ -15,13 +20,20 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link TempbanManager}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class TempbanManagerTest {
+
+    @Mock
+    BukkitService bukkitService;
+
+    @Mock
+    Messages messages;
 
     @Test
     public void shouldAddCounts() {
         // given
         NewSetting settings = mockSettings(3, 60);
-        TempbanManager manager = new TempbanManager(settings);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         String player = "Tester";
 
         // when
@@ -41,7 +53,7 @@ public class TempbanManagerTest {
         // given
         String player = "plaYah";
         NewSetting settings = mockSettings(3, 60);
-        TempbanManager manager = new TempbanManager(settings);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
         manager.increaseCount(player);
@@ -66,7 +78,7 @@ public class TempbanManagerTest {
         String player = "playah";
         NewSetting settings = mockSettings(1, 5);
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
-        TempbanManager manager = new TempbanManager(settings);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
         manager.increaseCount(player);
@@ -81,7 +93,7 @@ public class TempbanManagerTest {
         // given
         String player = "playah";
         NewSetting settings = mockSettings(1, 5);
-        TempbanManager manager = new TempbanManager(settings);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
 
         // when

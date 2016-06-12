@@ -34,8 +34,10 @@ public class TempbanManager implements SettingsDependent {
     private int length;
 
     @Inject
-    TempbanManager(NewSetting settings) {
-        playerCounts = new ConcurrentHashMap<>();
+    TempbanManager(BukkitService bukkitService, Messages messages, NewSetting settings) {
+        this.playerCounts = new ConcurrentHashMap<>();
+        this.bukkitService = bukkitService;
+        this.messages = messages;
         loadSettings(settings);
     }
 
