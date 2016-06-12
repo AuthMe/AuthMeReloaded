@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
@@ -43,7 +44,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         final String name = player.getName().toLowerCase();
         LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.setGroup(player, Utils.GroupType.REGISTERED);
+            service.setGroup(player, AuthGroupType.REGISTERED);
         }
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
         int time = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;

@@ -96,8 +96,22 @@ public class AuthMeServiceInitializer {
     }
 
     /**
-     * Returns an instance of the given class or the value associated with an annotation,
-     * by retrieving it or by instantiating it if not yet present.
+     * Returns an instance of the given class if available. This simply returns the instance if present and
+     * otherwise {@code null}. Calling this method will not instantiate anything.
+     *
+     * @param clazz the class to retrieve the instance for
+     * @param <T> the class' type
+     * @return instance or null if none available
+     */
+    public <T> T getIfAvailable(Class<T> clazz) {
+        if (Annotation.class.isAssignableFrom(clazz)) {
+            throw new UnsupportedOperationException("Annotations may not be retrieved in this way!");
+        }
+        return clazz.cast(objects.get(clazz));
+    }
+
+    /**
+     * Returns an instance of the given class by retrieving it or by instantiating it if not yet present.
      *
      * @param clazz the class to retrieve a value for
      * @param traversedClasses the list of traversed classes

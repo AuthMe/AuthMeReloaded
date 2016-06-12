@@ -9,8 +9,9 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -44,6 +45,9 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private LimboCache limboCache;
+
     ProcessSyncPasswordRegister() { }
 
     private void sendBungeeMessage(Player player) {
@@ -73,18 +77,17 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
         Utils.teleportToSpawn(player);
-        LimboCache cache = LimboCache.getInstance();
-        cache.updateLimboPlayer(player);
+        limboCache.updateLimboPlayer(player);
         int delay = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         BukkitTask task;
         if (delay != 0) {
             task = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), delay);
-            cache.getLimboPlayer(name).setTimeoutTask(task);
+            limboCache.getLimboPlayer(name).setTimeoutTask(task);
         }
         task = bukkitService.runTask(new MessageTask(bukkitService, plugin.getMessages(),
             name, MessageKey.LOGIN_MESSAGE, interval));
-        cache.getLimboPlayer(name).setMessageTask(task);
+        limboCache.getLimboPlayer(name).setMessageTask(task);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
         }
@@ -92,7 +95,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     public void processPasswordRegister(Player player) {
         final String name = player.getName().toLowerCase();
-        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+        LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (limbo != null) {
             if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
                 plugin.tablistHider.sendTablist(player);
@@ -108,11 +111,11 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
                 }
             }
 
-            LimboCache.getInstance().deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(name);
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.setGroup(player, Utils.GroupType.REGISTERED);
+            service.setGroup(player, AuthGroupType.REGISTERED);
         }
 
         service.send(player, MessageKey.REGISTER_SUCCESS);

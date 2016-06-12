@@ -6,7 +6,8 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -29,9 +30,10 @@ import java.io.IOException;
  * should be taken from. In AuthMe, we can distinguish between the regular spawn and a "first spawn",
  * to which players will be teleported who have joined for the first time.
  */
-public class SpawnLoader implements SettingsDependent {
+public class SpawnLoader implements Reloadable {
 
     private final File authMeConfigurationFile;
+    private final NewSetting settings;
     private final PluginHooks pluginHooks;
     private final DataSource dataSource;
     private FileConfiguration authMeConfiguration;
@@ -53,18 +55,17 @@ public class SpawnLoader implements SettingsDependent {
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
+        this.settings = settings;
         this.pluginHooks = pluginHooks;
         this.dataSource = dataSource;
-        loadSettings(settings);
+        reload();
     }
 
     /**
-     * Retrieve the relevant settings and load the AuthMe spawn.yml file.
-     *
-     * @param settings The settings instance
+     * (Re)loads the spawn file and relevant settings.
      */
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload() {
         spawnPriority = settings.getProperty(RestrictionSettings.SPAWN_PRIORITY).split(",");
         authMeConfiguration = YamlConfiguration.loadConfiguration(authMeConfigurationFile);
         loadEssentialsSpawn();
@@ -159,7 +160,7 @@ public class SpawnLoader implements SettingsDependent {
                     }
                     break;
                 case "multiverse":
-                    if (Settings.multiverse) {
+                    if (settings.getProperty(HooksSettings.MULTIVERSE)) {
                         spawnLoc = pluginHooks.getMultiverseSpawn(world);
                     }
                     break;

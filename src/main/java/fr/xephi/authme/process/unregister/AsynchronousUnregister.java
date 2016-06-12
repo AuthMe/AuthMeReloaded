@@ -8,6 +8,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -18,7 +19,6 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -62,12 +62,12 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 return;
             }
             int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-            if (Settings.isForcedRegistrationEnabled) {
+            if (service.getProperty(RegistrationSettings.FORCE)) {
                 Utils.teleportToSpawn(player);
                 player.saveData();
                 playerCache.removePlayer(player.getName().toLowerCase());
                 if (!Settings.getRegisteredGroup.isEmpty()) {
-                    Utils.setGroup(player, GroupType.UNREGISTERED);
+                    service.setGroup(player, AuthGroupType.UNREGISTERED);
                 }
                 limboCache.addLimboPlayer(player);
                 LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
@@ -83,7 +83,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 return;
             }
             if (!Settings.unRegisteredGroup.isEmpty()) {
-                Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
+                service.setGroup(player, AuthGroupType.UNREGISTERED);
             }
             playerCache.removePlayer(name);
 

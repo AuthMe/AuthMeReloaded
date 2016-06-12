@@ -8,6 +8,8 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupType;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
@@ -48,6 +50,9 @@ public class UnregisterAdminCommand implements ExecutableCommand {
     @Inject
     private LimboCache limboCache;
 
+    @Inject
+    private PermissionsManager permissionsManager;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player name
@@ -69,7 +74,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         // Unregister the player
         Player target = bukkitService.getPlayerExact(playerNameLowerCase);
         playerCache.removePlayer(playerNameLowerCase);
-        Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
+        permissionsManager.setGroup(target, AuthGroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {
             if (commandService.getProperty(RegistrationSettings.FORCE)) {
                 applyUnregisteredEffectsAndTasks(target);

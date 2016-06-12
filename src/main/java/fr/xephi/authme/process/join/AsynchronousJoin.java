@@ -10,10 +10,10 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
-import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -22,8 +22,8 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.Utils.GroupType;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
@@ -35,6 +35,7 @@ import org.bukkit.scheduler.BukkitTask;
 import javax.inject.Inject;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
 
 public class AsynchronousJoin implements AsynchronousProcess {
@@ -116,7 +117,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
-            Utils.setGroup(player, GroupType.NOTLOGGEDIN);
+            service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
             teleportationService.teleportOnJoin(player);
             limboCache.updateLimboPlayer(player);
 
@@ -153,7 +154,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             // Not Registered
 
             // Groups logic
-            Utils.setGroup(player, GroupType.UNREGISTERED);
+            service.setGroup(player, AuthGroupType.UNREGISTERED);
 
             // Skip if registration is optional
             if (!service.getProperty(RegistrationSettings.FORCE)) {
@@ -168,7 +169,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             limboCache.addLimboPlayer(player);
         }
 
-        final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+        final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncDelayedTask(new Runnable() {
             @Override

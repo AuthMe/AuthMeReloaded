@@ -27,7 +27,7 @@ public class HashAlgorithmIntegrationTest {
     private static AuthMeServiceInitializer initializer;
 
     @BeforeClass
-    public static void setUpWrapper() {
+    public static void setUpConfigAndInjector() {
         NewSetting settings = mock(NewSetting.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
@@ -52,7 +52,7 @@ public class HashAlgorithmIntegrationTest {
     }
 
     @Test
-    public void shouldBeAbleToInstantiateEncryptionAlgorithms() throws InstantiationException, IllegalAccessException {
+    public void shouldBeAbleToInstantiateEncryptionAlgorithms() {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {

@@ -123,7 +123,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP) > 0
             && !permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !"127.0.0.1".equalsIgnoreCase(ip) && !"localhost".equalsIgnoreCase(ip)) {
-            if (plugin.isLoggedIp(name, ip)) {
+            if (isLoggedIp(name, ip)) {
                 service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return null;
             }
@@ -253,5 +253,17 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 onlinePlayer.sendMessage(message);
             }
         }
+    }
+
+    private boolean isLoggedIp(String name, String ip) {
+        int count = 0;
+        for (Player player : bukkitService.getOnlinePlayers()) {
+            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
+                && database.isLogged(player.getName().toLowerCase())
+                && !player.getName().equalsIgnoreCase(name)) {
+                ++count;
+            }
+        }
+        return count >= service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP);
     }
 }

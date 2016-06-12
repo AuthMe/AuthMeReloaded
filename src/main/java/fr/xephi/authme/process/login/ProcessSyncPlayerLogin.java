@@ -10,15 +10,14 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.Utils.GroupType;
+import fr.xephi.authme.util.TeleportationService;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -95,7 +94,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         if (limbo != null) {
             // Restore Op state and Permission Group
             restoreOpState(player, limbo);
-            Utils.setGroup(player, GroupType.LOGGEDIN);
+            service.setGroup(player, AuthGroupType.LOGGED_IN);
 
             teleportationService.teleportOnLogin(player, auth, limbo);
 

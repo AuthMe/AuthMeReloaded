@@ -14,22 +14,18 @@ import java.util.List;
 /**
  * Old settings manager. See {@link NewSetting} for the new manager.
  */
+@Deprecated
 public final class Settings {
 
     public static List<String> getUnrestrictedName;
-    public static List<String> getForcedWorlds;
     public static boolean isPermissionCheckEnabled;
-    public static boolean isForcedRegistrationEnabled;
     public static boolean isTeleportToSpawnEnabled;
     public static boolean isSessionsEnabled;
     public static boolean isAllowRestrictedIp;
-    public static boolean isForceSpawnLocOnJoinEnabled;
     public static boolean isSaveQuitLocationEnabled;
     public static boolean protectInventoryBeforeLogInEnabled;
     public static boolean isStopEnabled;
     public static boolean reloadSupport;
-    public static boolean removePassword;
-    public static boolean multiverse;
     public static boolean bungee;
     public static boolean forceRegLogin;
     public static boolean noTeleport;
@@ -41,9 +37,6 @@ public final class Settings {
     public static String crazyloginFileName;
     public static int getSessionTimeout;
     public static int getNonActivatedGroup;
-    public static int maxLoginTry;
-    public static int captchaLength;
-    public static int getMaxLoginPerIp;
     private static FileConfiguration configFile;
 
     /**
@@ -58,13 +51,11 @@ public final class Settings {
 
     private static void loadVariables() {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
-        isForcedRegistrationEnabled = load(RegistrationSettings.FORCE);
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
         isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
         isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
-        isForceSpawnLocOnJoinEnabled = load(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN);
         isSaveQuitLocationEnabled = load(RestrictionSettings.SAVE_QUIT_LOCATION);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
@@ -74,15 +65,9 @@ public final class Settings {
         protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
-        removePassword = configFile.getBoolean("Security.console.removePassword", true);
-        maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
-        captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        multiverse = load(HooksSettings.MULTIVERSE);
         bungee = load(HooksSettings.BUNGEECORD);
-        getForcedWorlds = load(RestrictionSettings.FORCE_SPAWN_ON_WORLDS);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
-        getMaxLoginPerIp = load(RestrictionSettings.MAX_LOGIN_PER_IP);
         noTeleport = load(RestrictionSettings.NO_TELEPORT);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
     }

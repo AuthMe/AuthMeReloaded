@@ -2,6 +2,7 @@ package fr.xephi.authme.process;
 
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
@@ -100,6 +101,10 @@ public class ProcessService {
 
     public boolean hasPermission(Player player, PermissionNode node) {
         return permissionsManager.hasPermission(player, node);
+    }
+
+    public boolean setGroup(Player player, AuthGroupType group) {
+        return permissionsManager.setGroup(player, group);
     }
 
 }

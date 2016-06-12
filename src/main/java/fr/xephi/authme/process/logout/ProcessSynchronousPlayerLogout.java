@@ -10,13 +10,12 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.BukkitService;
-
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -53,7 +52,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     }
 
     private void restoreSpeedEffect(Player player) {
-        if (Settings.isRemoveSpeedEnabled) {
+        if (service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
             player.setWalkSpeed(0.0F);
             player.setFlySpeed(0.0F);
         }
@@ -86,8 +85,8 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         player.setOp(false);
         restoreSpeedEffect(player);
         // Player is now logout... Time to fire event !
-        Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
-        if (Settings.bungee) {
+        bukkitService.callEvent(new LogoutEvent(player));
+        if (service.getProperty(HooksSettings.BUNGEECORD)) {
             sendBungeeMessage(player);
         }
         service.send(player, MessageKey.LOGOUT_SUCCESS);
