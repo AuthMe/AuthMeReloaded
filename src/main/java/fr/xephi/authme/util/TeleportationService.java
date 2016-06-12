@@ -62,7 +62,7 @@ public class TeleportationService implements Reloadable {
             return;
         }
 
-        if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN) || mustForceSpawnAfterLogin(player.getWorld())) {
+        if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN) || mustForceSpawnAfterLogin(player.getWorld().getName())) {
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
     }
@@ -72,7 +72,9 @@ public class TeleportationService implements Reloadable {
             return;
         }
 
-        if (mustForceSpawnAfterLogin(player.getWorld())) {
+        // The world in LimboPlayer is from where the player comes, before any teleportation by AuthMe
+        String worldName = limbo.getLoc().getWorld().getName();
+        if (mustForceSpawnAfterLogin(worldName)) {
             teleportToSpawn(player, true);
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && auth.getQuitLocY() != 0) {
@@ -84,21 +86,9 @@ public class TeleportationService implements Reloadable {
         }
     }
 
-    private boolean teleportToFirstSpawn(final Player player) {
-        if (player.hasPlayedBefore()) {
-            return false;
-        }
-        Location firstSpawn = spawnLoader.getFirstSpawn();
-        if (firstSpawn == null) {
-            return false;
-        }
-
-        performTeleportation(player, new FirstSpawnTeleportEvent(player, player.getLocation(), firstSpawn));
-        return true;
-    }
-
-    private static boolean isEventValid(AbstractTeleportEvent event) {
-        return !event.isCancelled() && event.getTo() != null && event.getTo().getWorld() != null;
+    private boolean mustForceSpawnAfterLogin(String worldName) {
+        return settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)
+            && spawnOnLoginWorlds.contains(worldName);
     }
 
     private Location buildLocationFromAuth(Player player, PlayerAuth auth) {
@@ -109,13 +99,26 @@ public class TeleportationService implements Reloadable {
         return new Location(world, auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
     }
 
+    private boolean teleportToFirstSpawn(final Player player) {
+        if (player.hasPlayedBefore()) {
+            return false;
+        }
+        Location firstSpawn = spawnLoader.getFirstSpawn();
+        if (firstSpawn == null) {
+            return false;
+        }
+
+        performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
+        return true;
+    }
+
     private void teleportBackFromSpawn(final Player player, final Location location) {
         performTeleportation(player, new AuthMeTeleportEvent(player, location));
     }
 
     private void teleportToSpawn(final Player player, final boolean isAuthenticated) {
         final Location spawnLoc = spawnLoader.getSpawnLocation(player);
-        performTeleportation(player, new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, isAuthenticated));
+        performTeleportation(player, new SpawnTeleportEvent(player, spawnLoc, isAuthenticated));
     }
 
     /**
@@ -137,8 +140,7 @@ public class TeleportationService implements Reloadable {
         });
     }
 
-    private boolean mustForceSpawnAfterLogin(World world) {
-        return settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)
-            && spawnOnLoginWorlds.contains(world.getName());
+    private static boolean isEventValid(AbstractTeleportEvent event) {
+        return !event.isCancelled() && event.getTo() != null && event.getTo().getWorld() != null;
     }
 }

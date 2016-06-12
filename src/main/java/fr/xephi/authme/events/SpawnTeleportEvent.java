@@ -17,13 +17,11 @@ public class SpawnTeleportEvent extends AbstractTeleportEvent {
      * Constructor.
      *
      * @param player The player
-     * @param from The location the player is being teleported away from
      * @param to The teleport destination
      * @param isAuthenticated Whether or not the player is logged in
      */
-    // TODO ljacqu 20160611: We only ever call this with from = player.getLocation() -> could be done in constructor
-    public SpawnTeleportEvent(Player player, Location from, Location to, boolean isAuthenticated) {
-        super(false, player, from, to);
+    public SpawnTeleportEvent(Player player, Location to, boolean isAuthenticated) {
+        super(false, player, to);
         this.isAuthenticated = isAuthenticated;
     }
 

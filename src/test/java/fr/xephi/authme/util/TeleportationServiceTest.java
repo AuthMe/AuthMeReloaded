@@ -133,6 +133,7 @@ public class TeleportationServiceTest {
         Player player = mock(Player.class);
         given(player.hasPlayedBefore()).willReturn(false);
         given(player.isOnline()).willReturn(true);
+        given(player.getWorld()).willReturn(mock(World.class));
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(false);
         given(spawnLoader.getFirstSpawn()).willReturn(null);
@@ -250,15 +251,15 @@ public class TeleportationServiceTest {
     public void shouldTeleportPlayerToSpawnAfterLogin() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(true);
-        World world = mock(World.class);
-        given(world.getName()).willReturn("forced1");
         Player player = mock(Player.class);
-        given(player.getWorld()).willReturn(world);
         given(player.isOnline()).willReturn(true);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         PlayerAuth auth = mock(PlayerAuth.class);
         LimboPlayer limbo = mock(LimboPlayer.class);
+        Location limboLocation = mockLocation();
+        given(limboLocation.getWorld().getName()).willReturn("forced1");
+        given(limbo.getLoc()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -274,15 +275,15 @@ public class TeleportationServiceTest {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(false);
-        World world = mock(World.class);
-        given(world.getName()).willReturn("Forced1"); // different case
         Player player = mock(Player.class);
-        given(player.getWorld()).willReturn(world);
         given(player.isOnline()).willReturn(true);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         PlayerAuth auth = mock(PlayerAuth.class);
         LimboPlayer limbo = mock(LimboPlayer.class);
+        Location limboLocation = mockLocation();
+        given(limboLocation.getWorld().getName()).willReturn("Forced1"); // different case
+        given(limbo.getLoc()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -307,6 +308,8 @@ public class TeleportationServiceTest {
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
         LimboPlayer limbo = mock(LimboPlayer.class);
+        Location limboLocation = mockLocation();
+        given(limbo.getLoc()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -334,6 +337,8 @@ public class TeleportationServiceTest {
         World world = mock(World.class);
         given(player.getWorld()).willReturn(world);
         LimboPlayer limbo = mock(LimboPlayer.class);
+        Location limboLocation = mockLocation();
+        given(limbo.getLoc()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
