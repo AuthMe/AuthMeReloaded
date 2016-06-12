@@ -11,6 +11,7 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,10 +25,8 @@ public class TempbanManager implements SettingsDependent {
 
     private final long MINUTE_IN_MILLISECONDS = 60000;
 
-    @Inject
     private BukkitService bukkitService;
 
-    @Inject
     private Messages messages;
 
     private boolean isEnabled;
@@ -36,7 +35,7 @@ public class TempbanManager implements SettingsDependent {
 
     @Inject
     TempbanManager(NewSetting settings) {
-        this.playerCounts = new ConcurrentHashMap<>();
+        playerCounts = new ConcurrentHashMap<>();
         loadSettings(settings);
     }
 
