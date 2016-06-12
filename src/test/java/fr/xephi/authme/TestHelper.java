@@ -8,6 +8,8 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,8 +33,8 @@ public final class TestHelper {
      * @return The project file
      */
     public static File getJarFile(String path) {
-        URL url = getUrlOrThrow(path);
-        return new File(url.getFile());
+        URI uri = getUriOrThrow(path);
+        return new File(uri.getPath());
     }
 
     /**
@@ -42,7 +44,7 @@ public final class TestHelper {
      * @return The Path object to the file
      */
     public static Path getJarPath(String path) {
-        String sqlFilePath = getUrlOrThrow(path).getPath();
+        String sqlFilePath = getUriOrThrow(path).getPath();
         // Windows preprends the path with a '/' or '\', which Paths cannot handle
         String appropriatePath = System.getProperty("os.name").contains("indow")
             ? sqlFilePath.substring(1)
@@ -50,12 +52,16 @@ public final class TestHelper {
         return Paths.get(appropriatePath);
     }
 
-    private static URL getUrlOrThrow(String path) {
+    private static URI getUriOrThrow(String path) {
         URL url = TestHelper.class.getResource(path);
         if (url == null) {
             throw new IllegalStateException("File '" + path + "' could not be loaded");
         }
-        return url;
+        try {
+            return new URI(url.toString());
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException("File '" + path + "' cannot be converted to a URI");
+        }
     }
 
     /**
