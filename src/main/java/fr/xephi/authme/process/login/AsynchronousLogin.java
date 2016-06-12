@@ -71,18 +71,17 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     AsynchronousLogin() { }
 
-
+    /**
+     * Queries the {@link fr.xephi.authme.cache.CaptchaManager} to
+     * see if a captcha needs to be entered in order to log in.
+     *
+     * @param player The player to check
+     * @return True if a captcha needs to be entered
+     */
     private boolean needsCaptcha(Player player) {
         final String playerName = player.getName();
-        if (captchaManager.isCaptchaRequired(playerName)) {
-            service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(playerName));
-            return true;
-        } else {
-            // Increase the count here before knowing the result of the login.
-            // If login is successful, we clear the count for the player
-            captchaManager.increaseCount(playerName);
-        }
-        return false;
+
+        return captchaManager.isCaptchaRequired(playerName);
     }
 
     /**
@@ -144,7 +143,13 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return;
         }
 
+        final String name = player.getName().toLowerCase();
         final String ip = Utils.getPlayerIp(player);
+
+        // Increase the count here before knowing the result of the login.
+        // If the login is successful, we clear the count for the player.
+        captchaManager.increaseCount(name);
+
         if ("127.0.0.1".equals(pAuth.getIp()) && !pAuth.getIp().equals(ip)) {
             pAuth.setIp(ip);
             database.updateIp(pAuth.getNickname(), ip);
@@ -153,8 +158,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
         String email = pAuth.getEmail();
         boolean passwordVerified = forceLogin || passwordSecurity.comparePassword(
             password, pAuth.getPassword(), player.getName());
-
-        final String name = player.getName().toLowerCase();
         if (passwordVerified && player.isOnline()) {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
@@ -213,6 +216,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 });
             } else {
                 service.send(player, MessageKey.WRONG_PASSWORD);
+
+                // Check again if a captcha is required to log in
+                if (needsCaptcha(player)) {
+                    service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
+                }
             }
         } else {
             ConsoleLogger.showError("Player " + name + " wasn't online during login process, aborted... ");
