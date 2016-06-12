@@ -154,13 +154,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
             // Groups logic
             Utils.setGroup(player, GroupType.UNREGISTERED);
-            teleportationService.teleportOnJoin(player);
 
             // Skip if registration is optional
             if (!service.getProperty(RegistrationSettings.FORCE)) {
                 return;
             }
 
+            teleportationService.teleportOnJoin(player);
         }
         // The user is not logged in
 
