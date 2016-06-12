@@ -9,7 +9,6 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,16 +65,11 @@ public final class Settings {
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
         isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
         isForceSpawnLocOnJoinEnabled = load(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN);
-        isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
+        isSaveQuitLocationEnabled = load(RestrictionSettings.SAVE_QUIT_LOCATION);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
-
-        getUnrestrictedName = new ArrayList<>();
-        for (String name : configFile.getStringList("settings.unrestrictions.UnrestrictedName")) {
-            getUnrestrictedName.add(name.toLowerCase());
-        }
-
+        getUnrestrictedName = load(RestrictionSettings.UNRESTRICTED_NAMES);
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);

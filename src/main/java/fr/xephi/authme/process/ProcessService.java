@@ -9,8 +9,6 @@ import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.plugin.PluginManager;
 
 import javax.inject.Inject;
 
@@ -24,9 +22,6 @@ public class ProcessService {
 
     @Inject
     private Messages messages;
-
-    @Inject
-    private PluginManager pluginManager;
 
     @Inject
     private ValidationService validationService;
@@ -93,15 +88,6 @@ public class ProcessService {
      */
     public String retrieveSingleMessage(MessageKey key) {
         return messages.retrieveSingle(key);
-    }
-
-    /**
-     * Emit an event.
-     *
-     * @param event the event to emit
-     */
-    public void callEvent(Event event) {
-        pluginManager.callEvent(event);
     }
 
     public boolean validateEmail(String email) {

@@ -4,7 +4,9 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
@@ -30,7 +32,7 @@ public class BukkitService {
     private Method getOnlinePlayers;
 
     @Inject
-    public BukkitService(AuthMe authMe) {
+    BukkitService(AuthMe authMe) {
         this.authMe = authMe;
         getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
     }
@@ -165,6 +167,27 @@ public class BukkitService {
             ConsoleLogger.logException("Could not retrieve list of online players:", e);
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Calls an event with the given details.
+     *
+     * @param event Event details
+     * @throws IllegalStateException Thrown when an asynchronous event is
+     *     fired from synchronous code.
+     */
+    public void callEvent(Event event) {
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    /**
+     * Gets the world with the given name.
+     *
+     * @param name the name of the world to retrieve
+     * @return a world with the given name, or null if none exists
+     */
+    public World getWorld(String name) {
+        return Bukkit.getWorld(name);
     }
 
     /**

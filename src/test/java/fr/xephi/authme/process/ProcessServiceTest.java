@@ -10,8 +10,6 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.plugin.PluginManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,9 +39,6 @@ public class ProcessServiceTest {
 
     @Mock
     private Messages messages;
-
-    @Mock
-    private PluginManager pluginManager;
 
     @Mock
     private PermissionsManager permissionsManager;
@@ -155,18 +150,6 @@ public class ProcessServiceTest {
         // then
         assertThat(result, equalTo(true));
         verify(validationService).isEmailFreeForRegistration(email, sender);
-    }
-
-    @Test
-    public void shouldEmitEvent() {
-        // given
-        Event event = mock(Event.class);
-
-        // when
-        processService.callEvent(event);
-
-        // then
-        verify(pluginManager).callEvent(event);
     }
 
     @Test

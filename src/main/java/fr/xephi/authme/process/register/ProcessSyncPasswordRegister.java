@@ -102,7 +102,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
             if (service.getProperty(HIDE_TABLIST_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-                service.callEvent(event);
+                bukkitService.callEvent(event);
                 if (!event.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
                 }

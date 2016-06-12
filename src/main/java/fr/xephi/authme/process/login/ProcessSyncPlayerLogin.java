@@ -7,14 +7,12 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
-import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -23,7 +21,6 @@ import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -35,6 +32,9 @@ import static fr.xephi.authme.settings.properties.PluginSettings.KEEP_COLLISIONS
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
+
+    private static final boolean RESTORE_COLLISIONS = MethodUtils
+        .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     @Inject
     private AuthMe plugin;
@@ -54,32 +54,11 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private PluginManager pluginManager;
 
-    private final boolean restoreCollisions = MethodUtils
-            .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
+    @Inject
+    private TeleportationService teleportationService;
 
     ProcessSyncPlayerLogin() { }
 
-
-    private void packQuitLocation(Player player, PlayerAuth auth) {
-        Utils.packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
-    }
-
-    private void teleportBackFromSpawn(Player player, LimboPlayer limboPlayer) {
-        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limboPlayer.getLoc());
-        pluginManager.callEvent(tpEvent);
-        if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
-            player.teleport(tpEvent.getTo());
-        }
-    }
-
-    private void teleportToSpawn(Player player) {
-        Location spawnL = plugin.getSpawnLocation(player);
-        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
-        pluginManager.callEvent(tpEvent);
-        if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
-            player.teleport(tpEvent.getTo());
-        }
-    }
 
     private void restoreSpeedEffects(Player player) {
         if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
@@ -118,23 +97,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             restoreOpState(player, limbo);
             Utils.setGroup(player, GroupType.LOGGEDIN);
 
-            if (!Settings.noTeleport) {
-                if (Settings.isTeleportToSpawnEnabled && !Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-                    if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
-                        packQuitLocation(player, auth);
-                    } else {
-                        teleportBackFromSpawn(player, limbo);
-                    }
-                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-                    teleportToSpawn(player);
-                } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
-                    packQuitLocation(player, auth);
-                } else {
-                    teleportBackFromSpawn(player, limbo);
-                }
-            }
+            teleportationService.teleportOnLogin(player, auth, limbo);
 
-            if (restoreCollisions && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
+            if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
                 player.setCollidable(true);
             }
 

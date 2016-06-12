@@ -7,10 +7,8 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -117,6 +115,7 @@ public final class Utils {
         return permsMan.addGroup(player, group);
     }
 
+    @Deprecated
     public static boolean isUnrestricted(Player player) {
         // TODO ljacqu 20160602: Checking for Settings.isAllowRestrictedIp is wrong! Nothing in the config suggests
         // that this setting has anything to do with unrestricted names
@@ -124,32 +123,7 @@ public final class Utils {
             && Settings.getUnrestrictedName.contains(player.getName().toLowerCase());
     }
 
-    public static void packCoords(double x, double y, double z, String w, final Player pl) {
-        World theWorld;
-        if (w.equals("unavailableworld")) {
-            theWorld = pl.getWorld();
-        } else {
-            theWorld = Bukkit.getWorld(w);
-        }
-        if (theWorld == null) {
-            theWorld = pl.getWorld();
-        }
-        final World world = theWorld;
-        final Location loc = new Location(world, x, y, z);
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
-                plugin.getServer().getPluginManager().callEvent(tpEvent);
-                if (!tpEvent.isCancelled()) {
-                    pl.teleport(tpEvent.getTo());
-                }
-            }
-        });
-    }
-
+    @Deprecated
     public static void teleportToSpawn(Player player) {
         if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
             Location spawn = plugin.getSpawnLocation(player);

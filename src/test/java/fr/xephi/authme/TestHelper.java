@@ -73,6 +73,20 @@ public final class TestHelper {
     }
 
     /**
+     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncDelayedTask(Runnable)}
+     * method. Note that calling this method expects that there be a runnable sent to the method and will fail
+     * otherwise.
+     *
+     * @param service The mock service
+     */
+    public static void runSyncDelayedTask(BukkitService service) {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verify(service).scheduleSyncDelayedTask(captor.capture());
+        Runnable runnable = captor.getValue();
+        runnable.run();
+    }
+
+    /**
      * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncDelayedTask(Runnable, long)}
      * method. Note that calling this method expects that there be a runnable sent to the method and will fail
      * otherwise.

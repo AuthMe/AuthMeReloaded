@@ -7,16 +7,13 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -29,8 +26,6 @@ import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -43,6 +38,9 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
 
 
 public class AsynchronousJoin implements AsynchronousProcess {
+
+    private static final boolean DISABLE_COLLISIONS = MethodUtils
+        .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     @Inject
     private AuthMe plugin;
@@ -63,23 +61,21 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private PluginHooks pluginHooks;
 
     @Inject
-    private SpawnLoader spawnLoader;
+    private TeleportationService teleportationService;
 
     @Inject
     private BukkitService bukkitService;
 
-    private static final boolean DISABLE_COLLISIONS = MethodUtils
-            .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
-
     AsynchronousJoin() { }
 
-    public void processJoin(final Player player) {
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
 
+    public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
         final String ip = Utils.getPlayerIp(player);
+
+        if (isPlayerUnrestricted(name)) {
+            return;
+        }
 
         // Prevent player collisions in 1.9
         if (DISABLE_COLLISIONS) {
@@ -113,50 +109,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        if (service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP) > 0
-                && !service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-                && !"127.0.0.1".equalsIgnoreCase(ip)
-                && !"localhost".equalsIgnoreCase(ip)
-                && hasJoinedIp(player.getName(), ip)) {
-
-            bukkitService.scheduleSyncDelayedTask(new Runnable() {
-                @Override
-                public void run() {
-                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE));
-                }
-            });
+        if (!validatePlayerCountForIp(player, ip)) {
             return;
         }
 
-        final Location spawnLoc = spawnLoader.getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
-        // TODO: continue cleanup from this -sgdc3
         if (isAuthAvailable) {
-            // Registered
-
-            // Groups logic
             Utils.setGroup(player, GroupType.NOTLOGGEDIN);
-
-            // Spawn logic
-            if (!service.getProperty(RestrictionSettings.NO_TELEPORT)) {
-                if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    bukkitService.scheduleSyncDelayedTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, playerCache.isAuthenticated(name));
-                            service.callEvent(tpEvent);
-                            if (!tpEvent.isCancelled() && player.isOnline() && tpEvent.getTo() != null
-                                && tpEvent.getTo().getWorld() != null) {
-                                player.teleport(tpEvent.getTo());
-                            }
-                        }
-                    });
-                }
-            }
-            placePlayerSafely(player, spawnLoc);
-
-            // Limbo cache
+            teleportationService.teleportOnJoin(player);
             limboCache.updateLimboPlayer(player);
 
             // Protect inventory
@@ -193,27 +154,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
             // Groups logic
             Utils.setGroup(player, GroupType.UNREGISTERED);
+            teleportationService.teleportOnJoin(player);
 
             // Skip if registration is optional
             if (!service.getProperty(RegistrationSettings.FORCE)) {
                 return;
             }
 
-            // Spawn logic
-            if (!Settings.noTeleport && !needFirstSpawn(player) && Settings.isTeleportToSpawnEnabled
-                || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                bukkitService.scheduleSyncDelayedTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, playerCache.isAuthenticated(name));
-                        service.callEvent(tpEvent);
-                        if (!tpEvent.isCancelled() && player.isOnline() && tpEvent.getTo() != null
-                            && tpEvent.getTo().getWorld() != null) {
-                            player.teleport(tpEvent.getTo());
-                        }
-                    }
-                });
-            }
         }
         // The user is not logged in
 
@@ -274,58 +221,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
     }
 
-    private boolean needFirstSpawn(final Player player) {
-        if (player.hasPlayedBefore()) {
-            return false;
-        }
-        Location firstSpawn = spawnLoader.getFirstSpawn();
-        if (firstSpawn == null) {
-            return false;
-        }
-
-        FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), firstSpawn);
-        plugin.getServer().getPluginManager().callEvent(tpEvent);
-        if (!tpEvent.isCancelled()) {
-            if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
-                final Location fLoc = tpEvent.getTo();
-                bukkitService.scheduleSyncDelayedTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        player.teleport(fLoc);
-                    }
-                });
-            }
-        }
-        return true;
-    }
-
-    private void placePlayerSafely(final Player player, final Location spawnLoc) {
-        if (spawnLoc == null || service.getProperty(RestrictionSettings.NO_TELEPORT))
-            return;
-        if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
-            return;
-        if (!player.hasPlayedBefore())
-            return;
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                if (spawnLoc.getWorld() == null) {
-                    return;
-                }
-                Material cur = player.getLocation().getBlock().getType();
-                Material top = player.getLocation().add(0, 1, 0).getBlock().getType();
-                if (cur == Material.PORTAL || cur == Material.ENDER_PORTAL
-                    || top == Material.PORTAL || top == Material.ENDER_PORTAL) {
-                    service.send(player, MessageKey.UNSAFE_QUIT_LOCATION);
-                    player.teleport(spawnLoc);
-                }
-            }
-
-        });
+    private boolean isPlayerUnrestricted(String name) {
+        return service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name);
     }
 
     /**
-     * Return whether the name is restricted based on the restriction setting.
+     * Returns whether the name is restricted based on the restriction settings.
      *
      * @param name The name to check
      * @param ip The IP address of the player
@@ -353,14 +254,39 @@ public class AsynchronousJoin implements AsynchronousProcess {
         return nameFound;
     }
 
-    private boolean hasJoinedIp(String name, String ip) {
+    /**
+     * Checks whether the maximum number of accounts has been exceeded for the given IP address (according to
+     * settings and permissions). If this is the case, the player is kicked.
+     *
+     * @param player the player to verify
+     * @param ip the ip address of the player
+     * @return true if the verification is OK (no infraction), false if player has been kicked
+     */
+    private boolean validatePlayerCountForIp(final Player player, String ip) {
+        if (service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP) > 0
+            && !service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !"127.0.0.1".equalsIgnoreCase(ip)
+            && !"localhost".equalsIgnoreCase(ip)
+            && countOnlinePlayersByIp(ip) > service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)) {
+
+            bukkitService.scheduleSyncDelayedTask(new Runnable() {
+                @Override
+                public void run() {
+                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE));
+                }
+            });
+            return false;
+        }
+        return true;
+    }
+
+    private int countOnlinePlayersByIp(String ip) {
         int count = 0;
         for (Player player : bukkitService.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
-                && !player.getName().equalsIgnoreCase(name)) {
-                count++;
+            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))) {
+                ++count;
             }
         }
-        return count >= service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP);
+        return count;
     }
 }
