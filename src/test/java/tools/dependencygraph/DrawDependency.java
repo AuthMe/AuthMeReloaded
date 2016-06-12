@@ -11,6 +11,7 @@ import fr.xephi.authme.initialization.Injection;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
+import org.bukkit.event.Listener;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -35,7 +36,7 @@ public class DrawDependency implements ToolTask {
     private static final String ROOT_PACKAGE = "fr.xephi.authme";
 
     private static final List<Class<?>> SUPER_TYPES = ImmutableList.of(ExecutableCommand.class,
-        SynchronousProcess.class, AsynchronousProcess.class, EncryptionMethod.class, Converter.class);
+        SynchronousProcess.class, AsynchronousProcess.class, EncryptionMethod.class, Converter.class, Listener.class);
 
     private boolean mapToSupertype;
     // Map with the graph's nodes: value is one of the key's dependencies

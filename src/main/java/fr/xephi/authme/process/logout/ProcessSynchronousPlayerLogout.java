@@ -4,22 +4,18 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 
@@ -35,12 +31,13 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     private ProcessService service;
 
     @Inject
-    private LimboCache limboCache;
-
-    @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private LimboPlayerTaskManager limboPlayerTaskManager;
+
     ProcessSynchronousPlayerLogout() { }
+
 
     private void sendBungeeMessage(Player player) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -64,23 +61,19 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
             plugin.sessions.get(name).cancel();
             plugin.sessions.remove(name);
         }
-        if (Settings.protectInventoryBeforeLogInEnabled) {
+        if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
             plugin.inventoryProtector.sendBlankInventoryPacket(player);
         }
-        int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-        int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-        if (timeOut != 0) {
-            BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
-            limboCache.getLimboPlayer(name).setTimeoutTask(id);
-        }
-        BukkitTask msgT = bukkitService.runTask(new MessageTask(bukkitService, plugin.getMessages(),
-            name, MessageKey.LOGIN_MESSAGE, interval));
-        limboCache.getLimboPlayer(name).setMessageTask(msgT);
+
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, MessageKey.LOGIN_MESSAGE);
+
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
         }
+        final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
         player.setOp(false);
         restoreSpeedEffect(player);

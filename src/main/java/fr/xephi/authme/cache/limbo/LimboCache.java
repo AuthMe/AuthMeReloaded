@@ -17,9 +17,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LimboCache {
 
-    @Deprecated // TODO ljacqu 20160612: Remove this field
-    private volatile static LimboCache singleton;
-
     private final ConcurrentHashMap<String, LimboPlayer> cache = new ConcurrentHashMap<>();
     private final JsonCache jsonCache = new JsonCache();
 
@@ -32,17 +29,6 @@ public class LimboCache {
     LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader) {
         this.permissionsManager = permissionsManager;
         this.spawnLoader = spawnLoader;
-
-        singleton = this;
-    }
-
-    /**
-     * @return LimboCache instance
-     * @deprecated Inject the instance properly instead
-     */
-    @Deprecated
-    public static LimboCache getInstance() {
-        return singleton;
     }
 
     /**

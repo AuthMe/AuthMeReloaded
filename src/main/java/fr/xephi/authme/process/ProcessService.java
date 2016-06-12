@@ -2,6 +2,7 @@ package fr.xephi.authme.process;
 
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -29,6 +30,9 @@ public class ProcessService {
 
     @Inject
     private PermissionsManager permissionsManager;
+
+    @Inject
+    private AuthGroupHandler authGroupHandler;
 
     /**
      * Retrieve a property's value.
@@ -104,7 +108,7 @@ public class ProcessService {
     }
 
     public boolean setGroup(Player player, AuthGroupType group) {
-        return permissionsManager.setGroup(player, group);
+        return authGroupHandler.setGroup(player, group);
     }
 
 }

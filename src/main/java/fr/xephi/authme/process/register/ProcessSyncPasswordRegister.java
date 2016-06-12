@@ -18,19 +18,16 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
 /**
  */
@@ -48,7 +45,11 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     @Inject
     private LimboCache limboCache;
 
+    @Inject
+    private LimboPlayerTaskManager limboPlayerTaskManager;
+
     ProcessSyncPasswordRegister() { }
+
 
     private void sendBungeeMessage(Player player) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -77,17 +78,11 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
         Utils.teleportToSpawn(player);
+
         limboCache.updateLimboPlayer(player);
-        int delay = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-        int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-        BukkitTask task;
-        if (delay != 0) {
-            task = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), delay);
-            limboCache.getLimboPlayer(name).setTimeoutTask(task);
-        }
-        task = bukkitService.runTask(new MessageTask(bukkitService, plugin.getMessages(),
-            name, MessageKey.LOGIN_MESSAGE, interval));
-        limboCache.getLimboPlayer(name).setMessageTask(task);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, MessageKey.LOGIN_MESSAGE);
+
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
         }

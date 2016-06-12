@@ -5,7 +5,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
@@ -15,14 +14,12 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 
@@ -51,7 +48,11 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private LimboPlayerTaskManager limboPlayerTaskManager;
+
     AsynchronousUnregister() { }
+
 
     public void unregister(Player player, String password, boolean force) {
         final String name = player.getName().toLowerCase();
@@ -61,7 +62,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 service.send(player, MessageKey.ERROR);
                 return;
             }
-            int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+
             if (service.getProperty(RegistrationSettings.FORCE)) {
                 Utils.teleportToSpawn(player);
                 player.saveData();
@@ -70,17 +71,12 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                     service.setGroup(player, AuthGroupType.UNREGISTERED);
                 }
                 limboCache.addLimboPlayer(player);
-                LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
-                int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-                if (timeOut != 0) {
-                    BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
-                    limboPlayer.setTimeoutTask(id);
-                }
-                limboPlayer.setMessageTask(bukkitService.runTask(new MessageTask(bukkitService,
-                    plugin.getMessages(), name, MessageKey.REGISTER_MESSAGE, interval)));
+                limboPlayerTaskManager.registerTimeoutTask(player);
+                limboPlayerTaskManager.registerMessageTask(name, MessageKey.REGISTER_MESSAGE);
+
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
-                return;
+                return; // TODO ljacqu 20160612: Why return here? No blind effect? Player not removed from PlayerCache?
             }
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 service.setGroup(player, AuthGroupType.UNREGISTERED);
@@ -88,8 +84,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             playerCache.removePlayer(name);
 
             // Apply blind effect
+            int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
             if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
             }
             service.send(player, MessageKey.UNREGISTERED_SUCCESS);
             ConsoleLogger.info(player.getDisplayName() + " unregistered himself");

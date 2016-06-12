@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.login;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.CaptchaManager;
 import fr.xephi.authme.cache.TempbanManager;
@@ -25,13 +24,12 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -39,9 +37,6 @@ import java.util.List;
 /**
  */
 public class AsynchronousLogin implements AsynchronousProcess {
-
-    @Inject
-    private AuthMe plugin;
 
     @Inject
     private DataSource database;
@@ -73,7 +68,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
     @Inject
     private TempbanManager tempbanManager;
 
+    @Inject
+    private LimboPlayerTaskManager limboPlayerTaskManager;
+
     AsynchronousLogin() { }
+
 
     /**
      * Queries the {@link fr.xephi.authme.cache.CaptchaManager} to
@@ -118,16 +117,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (pAuth == null) {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
 
-            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
-            if (limboPlayer != null) {
-                limboPlayer.getMessageTask().cancel();
-                String[] msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
-                    ? service.retrieveMessage(MessageKey.REGISTER_EMAIL_MESSAGE)
-                    : service.retrieveMessage(MessageKey.REGISTER_MESSAGE);
-                BukkitTask messageTask = bukkitService.runTask(new MessageTask(bukkitService,
-                    name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
-                limboPlayer.setMessageTask(messageTask);
-            }
+            // TODO ljacqu 20160612: Why is the message task being canceled and added again here?
+            MessageKey key = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
+                ? MessageKey.REGISTER_EMAIL_MESSAGE
+                : MessageKey.REGISTER_MESSAGE;
+            limboPlayerTaskManager.registerMessageTask(name, key);
             return null;
         }
 

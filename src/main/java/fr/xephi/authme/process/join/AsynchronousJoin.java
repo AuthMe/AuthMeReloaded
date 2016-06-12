@@ -5,7 +5,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
@@ -19,8 +18,7 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
@@ -30,7 +28,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 
@@ -66,6 +63,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     AsynchronousJoin() { }
 
@@ -193,17 +193,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         });
 
-        // Timeout task
-        if (registrationTimeout > 0) {
-            BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
-            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
-            if (limboPlayer != null) {
-                limboPlayer.setTimeoutTask(id);
-            }
-        }
+        // Timeout and message task
+        limboPlayerTaskManager.registerTimeoutTask(player);
 
-        // Message task
-        int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         MessageKey msg;
         if (isAuthAvailable) {
             msg = MessageKey.LOGIN_MESSAGE;
@@ -212,14 +204,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 ? MessageKey.REGISTER_EMAIL_MESSAGE
                 : MessageKey.REGISTER_MESSAGE;
         }
-        if (msgInterval > 0 && limboCache.getLimboPlayer(name) != null) {
-            BukkitTask msgTask = bukkitService.runTaskLater(new MessageTask(bukkitService, plugin.getMessages(),
-                    name, msg, msgInterval), 20L);
-            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
-            if (limboPlayer != null) {
-                limboPlayer.setMessageTask(msgTask);
-            }
-        }
+        limboPlayerTaskManager.registerMessageTask(name, msg);
     }
 
     private boolean isPlayerUnrestricted(String name) {

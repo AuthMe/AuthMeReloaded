@@ -1,8 +1,6 @@
 package fr.xephi.authme.permission;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.GroupManagerHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
@@ -10,7 +8,7 @@ import fr.xephi.authme.permission.handlers.PermissionsBukkitHandler;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 import net.milkbowl.vault.permission.Permission;
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
@@ -26,7 +24,6 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,9 +40,6 @@ import java.util.List;
  */
 public class PermissionsManager {
 
-    /**
-     * Server instance.
-     */
     private final Server server;
     private final PluginManager pluginManager;
 
@@ -317,7 +311,7 @@ public class PermissionsManager {
      * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroup(Player player, String groupName) {
-        if(groupName.isEmpty()) {
+        if (StringUtils.isEmpty(groupName)) {
             return false;
         }
 
@@ -351,61 +345,6 @@ public class PermissionsManager {
 
         // Return the result
         return result;
-    }
-
-    /**
-     * Set the group of a player, by its AuthMe group type.
-     *
-     * @param player The player.
-     * @param group  The group type.
-     *
-     * @return True if succeeded, false otherwise. False is also returned if groups aren't supported
-     * with the current permissions system.
-     */
-    public boolean setGroup(Player player, AuthGroupType group) {
-        // Check whether the permissions check is enabled
-        if (!isEnabled() || !Settings.isPermissionCheckEnabled) {
-            return false;
-        }
-
-        // Make sure group support is available
-        if (!handler.hasGroupSupport()) {
-            ConsoleLogger.showError("The current permissions system doesn't have group support, unable to set group!");
-            return false;
-        }
-
-        switch (group) {
-            case UNREGISTERED:
-                // Remove the other group type groups, set the current group
-                removeGroups(player, Arrays.asList(Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
-                return addGroup(player, Settings.unRegisteredGroup);
-
-            case REGISTERED:
-                // Remove the other group type groups, set the current group
-                removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getUnloggedinGroup));
-                return addGroup(player, Settings.getRegisteredGroup);
-
-            case NOT_LOGGED_IN:
-                // Remove the other group type groups, set the current group
-                removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup));
-                return addGroup(player, Settings.getUnloggedinGroup);
-
-            case LOGGED_IN:
-                // Get the limbo player data
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                if (limbo == null)
-                    return false;
-
-                // Get the players group
-                String realGroup = limbo.getGroup();
-
-                // Remove the other group types groups, set the real group
-                removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
-                return addGroup(player, realGroup);
-
-            default:
-                return false;
-        }
     }
 
     /**
