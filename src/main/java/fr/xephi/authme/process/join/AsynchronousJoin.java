@@ -245,24 +245,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         });
 
-        // Apply effects
-        // TODO: clenup!
-        player.setOp(false);
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setFlySpeed(0.0f);
-            player.setWalkSpeed(0.0f);
-        }
-        player.setNoDamageTicks(registrationTimeout);
-        if (pluginHooks.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
-            player.performCommand("motd");
-        }
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            // Allow infinite blindness effect
-            int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
-        }
-
         // Timeout task
         if (registrationTimeout > 0) {
             BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
