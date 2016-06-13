@@ -252,7 +252,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
     }
 
-    // TODO #423: allow translation!
     private void displayOtherAccounts(PlayerAuth auth, Player player) {
         if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auth == null) {
             return;
@@ -263,18 +262,17 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return;
         }
 
-        List<String> tmp = new ArrayList<String>();
+        List<String> formattedNames = new ArrayList<>(auths.size());
         for (String currentName : auths) {
             Player currentPlayer = bukkitService.getPlayerExact(currentName);
             if (currentPlayer != null && currentPlayer.isOnline()) {
-                tmp.add(ChatColor.GREEN + currentName);
+                formattedNames.add(ChatColor.GREEN + currentName);
             } else {
-                tmp.add(currentName);
+                formattedNames.add(currentName);
             }
         }
-        auths = tmp;
 
-        String message = ChatColor.GRAY + StringUtils.join(ChatColor.GRAY + ", ", auths) + ".";
+        String message = ChatColor.GRAY + StringUtils.join(ChatColor.GRAY + ", ", formattedNames) + ".";
 
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
             ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
@@ -284,10 +282,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(player.getName())
                 && permissionsManager.hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS)) {
-                onlinePlayer.sendMessage("You own " + auths.size() + " accounts:");
+                service.send(onlinePlayer, MessageKey.ACCOUNTS_OWNED_SELF, Integer.toString(auths.size()));
                 onlinePlayer.sendMessage(message);
             } else if (permissionsManager.hasPermission(onlinePlayer, AdminPermission.SEE_OTHER_ACCOUNTS)) {
-                onlinePlayer.sendMessage("The user " + player.getName() + " has " + auths.size() + " accounts:");
+                service.send(onlinePlayer, MessageKey.ACCOUNTS_OWNED_OTHER,
+                    player.getName(), Integer.toString(auths.size()));
                 onlinePlayer.sendMessage(message);
             }
         }

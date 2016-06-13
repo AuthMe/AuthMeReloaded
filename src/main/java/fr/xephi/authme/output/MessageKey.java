@@ -139,7 +139,11 @@ public enum MessageKey {
     
     INVALID_NAME_CASE("invalid_name_case", "%valid", "%invalid"),
 
-    TEMPBAN_MAX_LOGINS("tempban_max_logins");
+    TEMPBAN_MAX_LOGINS("tempban_max_logins"),
+
+    ACCOUNTS_OWNED_SELF("accounts_owned_self", "%count"),
+
+    ACCOUNTS_OWNED_OTHER("accounts_owned_other", "%name", "%count");
 
     private String key;
     private String[] tags;
