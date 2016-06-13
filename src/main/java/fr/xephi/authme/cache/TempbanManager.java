@@ -18,9 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Manager for handling tempbans
  */
+// TODO Gnat008 20160613: Figure out the best way to remove entries based on time
 public class TempbanManager implements SettingsDependent {
 
-    private final ConcurrentHashMap<String, Integer> playerCounts;
+    private final ConcurrentHashMap<String, Integer> ipLoginFailureCounts;
 
     private final long MINUTE_IN_MILLISECONDS = 60000;
 
@@ -34,45 +35,49 @@ public class TempbanManager implements SettingsDependent {
 
     @Inject
     TempbanManager(BukkitService bukkitService, Messages messages, NewSetting settings) {
-        this.playerCounts = new ConcurrentHashMap<>();
+        this.ipLoginFailureCounts = new ConcurrentHashMap<>();
         this.bukkitService = bukkitService;
         this.messages = messages;
         loadSettings(settings);
     }
 
     /**
-     * Increases the failure count for the given player.
+     * Increases the failure count for the given IP address.
      *
-     * @param name the player's name
+     * @param address The player's IP address
      */
-    public void increaseCount(String name) {
+    public void increaseCount(String address) {
         if (isEnabled) {
-            String nameLower = name.toLowerCase();
-            Integer count = playerCounts.get(nameLower);
+            Integer count = ipLoginFailureCounts.get(address);
 
             if (count == null) {
-                playerCounts.put(nameLower, 1);
+                ipLoginFailureCounts.put(address, 1);
             } else {
-                playerCounts.put(nameLower, count + 1);
+                ipLoginFailureCounts.put(address, count + 1);
             }
         }
     }
 
-    public void resetCount(String name) {
+    /**
+     * Set the failure count for a given IP address to 0.
+     *
+     * @param address The IP address
+     */
+    public void resetCount(String address) {
         if (isEnabled) {
-            playerCounts.remove(name.toLowerCase());
+            ipLoginFailureCounts.remove(address);
         }
     }
 
     /**
-     * Return whether the player should be tempbanned.
+     * Return whether the IP address should be tempbanned.
      *
-     * @param name The player's name
-     * @return True if the player should be tempbanned
+     * @param address The player's IP address
+     * @return True if the IP should be tempbanned
      */
-    public boolean shouldTempban(String name) {
+    public boolean shouldTempban(String address) {
         if (isEnabled) {
-            Integer count = playerCounts.get(name.toLowerCase());
+            Integer count = ipLoginFailureCounts.get(address);
             return count != null && count >= threshold;
         }
 
@@ -80,16 +85,13 @@ public class TempbanManager implements SettingsDependent {
     }
 
     /**
-     * Tempban a player for failing to log in too many times.
-     * This bans the player's IP address, and calculates the expire
-     * time based on the time the method was called.
+     * Tempban a player's IP address for failing to log in too many times.
+     * This calculates the expire time based on the time the method was called.
      *
      * @param player The player to tempban
      */
     public void tempbanPlayer(final Player player) {
         if (isEnabled) {
-            resetCount(player.getName());
-
             final String ip = Utils.getPlayerIp(player);
             final String reason = messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS);
 
@@ -104,6 +106,8 @@ public class TempbanManager implements SettingsDependent {
                     player.kickPlayer(reason);
                 }
             });
+
+            resetCount(ip);
         }
     }
 

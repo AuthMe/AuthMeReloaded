@@ -34,76 +34,76 @@ public class TempbanManagerTest {
         // given
         NewSetting settings = mockSettings(3, 60);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
-        String player = "Tester";
+        String address = "192.168.1.1";
 
         // when
         for (int i = 0; i < 2; ++i) {
-            manager.increaseCount(player);
+            manager.increaseCount(address);
         }
 
         // then
-        assertThat(manager.shouldTempban(player), equalTo(false));
-        manager.increaseCount(player);
-        assertThat(manager.shouldTempban(player), equalTo(true));
-        assertThat(manager.shouldTempban("otherPlayer"), equalTo(false));
+        assertThat(manager.shouldTempban(address), equalTo(false));
+        manager.increaseCount(address);
+        assertThat(manager.shouldTempban(address), equalTo(true));
+        assertThat(manager.shouldTempban("10.0.0.1"), equalTo(false));
     }
 
     @Test
     public void shouldIncreaseAndResetCount() {
         // given
-        String player = "plaYah";
+        String address = "192.168.1.2";
         NewSetting settings = mockSettings(3, 60);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
-        manager.increaseCount(player);
-        manager.increaseCount(player);
-        manager.increaseCount(player);
+        manager.increaseCount(address);
+        manager.increaseCount(address);
+        manager.increaseCount(address);
 
         // then
-        assertThat(manager.shouldTempban(player), equalTo(true));
-        assertHasCount(manager, player, 3);
+        assertThat(manager.shouldTempban(address), equalTo(true));
+        assertHasCount(manager, address, 3);
 
         // when 2
-        manager.resetCount(player);
+        manager.resetCount(address);
 
         // then 2
-        assertThat(manager.shouldTempban(player), equalTo(false));
-        assertHasCount(manager, player, null);
+        assertThat(manager.shouldTempban(address), equalTo(false));
+        assertHasCount(manager, address, null);
     }
 
     @Test
     public void shouldNotIncreaseCountForDisabledTempban() {
         // given
-        String player = "playah";
+        String address = "192.168.1.3";
         NewSetting settings = mockSettings(1, 5);
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
-        manager.increaseCount(player);
+        manager.increaseCount(address);
 
         // then
-        assertThat(manager.shouldTempban(player), equalTo(false));
-        assertHasCount(manager, player, null);
+        assertThat(manager.shouldTempban(address), equalTo(false));
+        assertHasCount(manager, address, null);
     }
 
     @Test
     public void shouldNotCheckCountIfTempbanIsDisabled() {
         // given
-        String player = "playah";
+        String address = "192.168.1.4";
         NewSetting settings = mockSettings(1, 5);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
 
         // when
-        manager.increaseCount(player);
+        manager.increaseCount(address);
         // assumptions
-        assertThat(manager.shouldTempban(player), equalTo(true));
-        assertHasCount(manager, player, 1);
+        assertThat(manager.shouldTempban(address), equalTo(true));
+        assertHasCount(manager, address, 1);
         // end assumptions
         manager.loadSettings(settings);
-        boolean result = manager.shouldTempban(player);
+        boolean result = manager.shouldTempban(address);
 
         // then
         assertThat(result, equalTo(false));
@@ -117,10 +117,10 @@ public class TempbanManagerTest {
         return settings;
     }
 
-    private static void assertHasCount(TempbanManager manager, String player, Integer count) {
+    private static void assertHasCount(TempbanManager manager, String address, Integer count) {
         @SuppressWarnings("unchecked")
         Map<String, Integer> playerCounts = (Map<String, Integer>) ReflectionTestUtils
-            .getFieldValue(TempbanManager.class, manager, "playerCounts");
-        assertThat(playerCounts.get(player.toLowerCase()), equalTo(count));
+            .getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
+        assertThat(playerCounts.get(address), equalTo(count));
     }
 }
