@@ -65,3 +65,4 @@ not_owner_error: 'Du bist nicht der Besitzer dieses Accounts. Bitte wähle einen
 denied_chat: '&cDu musst eingeloggt sein, um chatten zu können!'
 same_ip_online: 'Ein Spieler mit derselben IP ist bereits online!'
 denied_command: '&cUm diesen Befehl zu nutzen musst du authentifiziert sein!'
+tempban_max_logins: '&cDu bist wegen zu vielen fehlgeschlagenen Login-Versuchen temporär gebannt!'
