@@ -264,9 +264,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         List<String> tmp = new ArrayList<String>();
-        for(String currentName : auths) {
+        for (String currentName : auths) {
             Player currentPlayer = bukkitService.getPlayerExact(currentName);
-            if(currentPlayer != null && currentPlayer.isOnline()) {
+            if (currentPlayer != null && currentPlayer.isOnline()) {
                 tmp.add(ChatColor.GREEN + currentName);
             } else {
                 tmp.add(currentName);
@@ -274,9 +274,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
         auths = tmp;
 
-        String message = StringUtils.join(ChatColor.GRAY + ", ", auths) + ".";
+        String message = ChatColor.GRAY + StringUtils.join(ChatColor.GRAY + ", ", auths) + ".";
 
-        if(!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
+        if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
             ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
             ConsoleLogger.info(message);
         }
