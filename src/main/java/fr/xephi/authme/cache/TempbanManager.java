@@ -86,7 +86,7 @@ public class TempbanManager implements SettingsDependent {
      *
      * @param player The player to tempban
      */
-    public void tempbanPlayer(Player player) {
+    public void tempbanPlayer(final Player player) {
         if (isEnabled) {
             resetCount(player.getName());
 
@@ -101,6 +101,7 @@ public class TempbanManager implements SettingsDependent {
                 @Override
                 public void run() {
                     Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, "AuthMe");
+                    player.kickPlayer(reason);
                 }
             });
         }
