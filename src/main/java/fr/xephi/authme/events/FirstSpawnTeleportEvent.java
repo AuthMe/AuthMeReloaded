@@ -20,7 +20,7 @@ public class FirstSpawnTeleportEvent extends AbstractTeleportEvent {
      * @param to The teleport destination
      */
     public FirstSpawnTeleportEvent(Player player, Location to) {
-        super(true, player, to);
+        super(false, player, to);
     }
 
     /**
