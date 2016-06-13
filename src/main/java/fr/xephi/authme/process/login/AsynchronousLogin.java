@@ -29,9 +29,12 @@ import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -150,11 +153,18 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     public void login(final Player player, String password, boolean forceLogin) {
         PlayerAuth pAuth = preAuth(player);
-        if (pAuth == null || needsCaptcha(player)) {
+        if (pAuth == null) {
             return;
         }
 
         final String name = player.getName().toLowerCase();
+
+        // If Captcha is required send a message to the player and deny to login
+        if (needsCaptcha(player)) {
+            service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
+            return;
+        }
+
         final String ip = Utils.getPlayerIp(player);
 
         // Increase the counts here before knowing the result of the login.
@@ -232,7 +242,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             } else  {
                 service.send(player, MessageKey.WRONG_PASSWORD);
 
-                // Check again if a captcha is required to log in
+                // If the authentication fails check if Captcha is required and send a message to the player
                 if (needsCaptcha(player)) {
                     service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
                 }
@@ -249,14 +259,27 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         List<String> auths = database.getAllAuthsByIp(auth.getIp());
-        if (auths.size() < 2) {
+        if (auths.size() <= 1) {
             return;
         }
-        // TODO #423: color player names with green if the account is online
-        String message = StringUtils.join(", ", auths) + ".";
 
-        ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
-        ConsoleLogger.info(message);
+        List<String> tmp = new ArrayList<String>();
+        for(String currentName : auths) {
+            Player currentPlayer = bukkitService.getPlayerExact(currentName);
+            if(currentPlayer != null && currentPlayer.isOnline()) {
+                tmp.add(ChatColor.GREEN + currentName);
+            } else {
+                tmp.add(currentName);
+            }
+        }
+        auths = tmp;
+
+        String message = StringUtils.join(ChatColor.GRAY + ", ", auths) + ".";
+
+        if(!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
+            ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
+            ConsoleLogger.info(message);
+        }
 
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(player.getName())

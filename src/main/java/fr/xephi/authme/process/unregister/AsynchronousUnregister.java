@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.unregister;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -15,7 +14,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;

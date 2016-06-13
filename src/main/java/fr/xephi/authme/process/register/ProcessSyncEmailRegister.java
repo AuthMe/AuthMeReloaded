@@ -8,7 +8,6 @@ import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 

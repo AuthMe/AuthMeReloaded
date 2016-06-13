@@ -8,7 +8,6 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;

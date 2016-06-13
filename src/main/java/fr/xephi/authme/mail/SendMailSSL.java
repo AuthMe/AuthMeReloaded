@@ -131,7 +131,7 @@ public class SendMailSSL {
             .replace("<generatedpass />", newPass);
     }
 
-	private static void setPropertiesForPort(HtmlEmail email, int port, NewSetting settings)
+    private static void setPropertiesForPort(HtmlEmail email, int port, NewSetting settings)
             throws EmailException {
         switch (port) {
             case 587:
