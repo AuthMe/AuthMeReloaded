@@ -40,9 +40,6 @@ public class UnregisterAdminCommand implements ExecutableCommand {
     private PlayerCache playerCache;
 
     @Inject
-    private AuthMe authMe;
-
-    @Inject
     private BukkitService bukkitService;
 
     @Inject

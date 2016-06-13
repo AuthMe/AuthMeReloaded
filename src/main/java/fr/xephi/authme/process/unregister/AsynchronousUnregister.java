@@ -28,9 +28,6 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 public class AsynchronousUnregister implements AsynchronousProcess {
 
     @Inject
-    private AuthMe plugin;
-
-    @Inject
     private DataSource dataSource;
 
     @Inject
@@ -44,9 +41,6 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
     @Inject
     private LimboCache limboCache;
-
-    @Inject
-    private BukkitService bukkitService;
 
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;

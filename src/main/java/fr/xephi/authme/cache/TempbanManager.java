@@ -11,7 +11,6 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;

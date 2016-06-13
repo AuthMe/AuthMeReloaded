@@ -32,9 +32,6 @@ public class TeleportationService implements Reloadable {
     private NewSetting settings;
 
     @Inject
-    private Messages messages;
-
-    @Inject
     private BukkitService bukkitService;
 
     @Inject

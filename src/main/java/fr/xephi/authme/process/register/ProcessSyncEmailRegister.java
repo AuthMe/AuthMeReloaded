@@ -21,9 +21,6 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
     private ProcessService service;
 
     @Inject
-    private BukkitService bukkitService;
-
-    @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
     ProcessSyncEmailRegister() { }
