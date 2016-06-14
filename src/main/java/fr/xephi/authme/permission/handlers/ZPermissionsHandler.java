@@ -14,7 +14,12 @@ public class ZPermissionsHandler implements PermissionHandler {
 
     private ZPermissionsService zPermissionsService;
 
-    public ZPermissionsHandler(ZPermissionsService zPermissionsService) {
+    public ZPermissionsHandler() throws PermissionHandlerException {
+        // Set the zPermissions service and make sure it's valid
+        ZPermissionsService zPermissionsService = Bukkit.getServicesManager().load(ZPermissionsService.class);
+        if (zPermissionsService == null) {
+            throw new PermissionHandlerException("Failed to get the ZPermissions service!");
+        }
         this.zPermissionsService = zPermissionsService;
     }
 

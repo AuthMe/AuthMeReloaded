@@ -15,8 +15,11 @@ public class PermissionsExHandler implements PermissionHandler {
 
     private PermissionManager permissionManager;
 
-    public PermissionsExHandler(PermissionManager permissionManager) {
-        this.permissionManager = permissionManager;
+    public PermissionsExHandler() throws PermissionHandlerException {
+        permissionManager = PermissionsEx.getPermissionManager();
+        if (permissionManager == null) {
+            throw new PermissionHandlerException("Could not get manager of PermissionsEx");
+        }
     }
 
     @Override
