@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -36,7 +37,6 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.task.PurgeService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
@@ -51,6 +51,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
+import fr.xephi.authme.task.PurgeService;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -64,6 +65,8 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -126,6 +129,22 @@ public class AuthMe extends JavaPlugin {
     private SpawnLoader spawnLoader;
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
+
+    /**
+     * Constructor.
+     */
+    public AuthMe() {
+    }
+
+    /*
+     * Constructor for unit testing.
+     */
+    @VisibleForTesting
+    @SuppressWarnings("deprecation") // the super constructor is deprecated to mark it for unit testing only
+    protected AuthMe(final PluginLoader loader, final Server server, final PluginDescriptionFile description,
+                     final File dataFolder, final File file) {
+        super(loader, server, description, dataFolder, file);
+    }
 
     /**
      * Get the plugin's instance.
@@ -204,8 +223,6 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
-        messages = new Messages(newSettings.getMessagesFile(), newSettings.getDefaultMessagesFile());
-
         // Connect to the database and setup tables
         try {
             setupDatabase(newSettings);
@@ -228,21 +245,9 @@ public class AuthMe extends JavaPlugin {
 
         // Register elements we instantiate manually
         initializer.register(NewSetting.class, newSettings);
-        initializer.register(Messages.class, messages);
         initializer.register(DataSource.class, database);
 
-        // Some statically injected things
-        initializer.register(PlayerCache.class, PlayerCache.getInstance());
-
-        permsMan         = initializer.get(PermissionsManager.class);
-        bukkitService    = initializer.get(BukkitService.class);
-        pluginHooks      = initializer.get(PluginHooks.class);
-        passwordSecurity = initializer.get(PasswordSecurity.class);
-        spawnLoader      = initializer.get(SpawnLoader.class);
-        commandHandler   = initializer.get(CommandHandler.class);
-        api              = initializer.get(NewAPI.class);
-        management       = initializer.get(Management.class);
-        initializer.get(API.class);
+        instantiateServices(initializer);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(this, newSettings);
@@ -300,6 +305,22 @@ public class AuthMe extends JavaPlugin {
         purgeService.runAutoPurge();
     }
 
+    protected void instantiateServices(AuthMeServiceInitializer initializer) {
+        // Some statically injected things
+        initializer.register(PlayerCache.class, PlayerCache.getInstance());
+
+        messages         = initializer.get(Messages.class);
+        permsMan         = initializer.get(PermissionsManager.class);
+        bukkitService    = initializer.get(BukkitService.class);
+        pluginHooks      = initializer.get(PluginHooks.class);
+        passwordSecurity = initializer.get(PasswordSecurity.class);
+        spawnLoader      = initializer.get(SpawnLoader.class);
+        commandHandler   = initializer.get(CommandHandler.class);
+        api              = initializer.get(NewAPI.class);
+        management       = initializer.get(Management.class);
+        initializer.get(API.class);
+    }
+
     /**
      * Set up the mail API, if enabled.
      */
@@ -329,7 +350,7 @@ public class AuthMe extends JavaPlugin {
     /**
      * Register all event listeners.
      */
-    private void registerEventListeners(AuthMeServiceInitializer initializer) {
+    protected void registerEventListeners(AuthMeServiceInitializer initializer) {
         // Get the plugin manager instance
         PluginManager pluginManager = getServer().getPluginManager();
 

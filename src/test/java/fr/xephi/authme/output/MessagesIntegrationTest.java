@@ -53,7 +53,10 @@ public class MessagesIntegrationTest {
     @Before
     public void setUpMessages() {
         File testFile = TestHelper.getJarFile(YML_TEST_FILE);
-        messages = new Messages(testFile, YML_DEFAULT_TEST_FILE);
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getMessagesFile()).willReturn(testFile);
+        given(settings.getDefaultMessagesFile()).willReturn(YML_DEFAULT_TEST_FILE);
+        messages = new Messages(settings);
     }
 
     @Test
@@ -232,7 +235,9 @@ public class MessagesIntegrationTest {
     @Test
     public void shouldAllowNullAsDefaultFile() {
         // given
-        Messages testMessages = new Messages(TestHelper.getJarFile(YML_TEST_FILE), null);
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile(YML_TEST_FILE));
+        Messages testMessages = new Messages(settings);
         // Key not present in test file
         MessageKey key = MessageKey.TWO_FACTOR_CREATE;
 
