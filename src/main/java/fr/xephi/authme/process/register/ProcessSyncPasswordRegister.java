@@ -124,7 +124,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         // The LoginEvent now fires (as intended) after everything is processed
-        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player));
+        bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
 
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {

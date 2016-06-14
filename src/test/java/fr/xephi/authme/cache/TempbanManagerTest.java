@@ -1,21 +1,31 @@
 package fr.xephi.authme.cache;
 
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
+import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link TempbanManager}.
@@ -23,11 +33,13 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public class TempbanManagerTest {
 
-    @Mock
-    BukkitService bukkitService;
+    private static final long DATE_TOLERANCE_MILLISECONDS = 100L;
 
     @Mock
-    Messages messages;
+    private BukkitService bukkitService;
+
+    @Mock
+    private Messages messages;
 
     @Test
     public void shouldAddCounts() {
@@ -107,6 +119,71 @@ public class TempbanManagerTest {
 
         // then
         assertThat(result, equalTo(false));
+    }
+
+    @Test
+    public void shouldNotIssueBanIfDisabled() {
+        // given
+        NewSetting settings = mockSettings(0, 0);
+        given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
+        Player player = mock(Player.class);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
+
+        // when
+        manager.tempbanPlayer(player);
+
+        // then
+        verifyZeroInteractions(player, bukkitService);
+    }
+
+    @Test
+    public void shouldBanPlayerIp() {
+        // given
+        Player player = mock(Player.class);
+        String ip = "123.45.67.89";
+        TestHelper.mockPlayerIp(player, ip);
+        String banReason = "IP ban too many logins";
+        given(messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
+        NewSetting settings = mockSettings(2, 100);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
+
+        // when
+        manager.tempbanPlayer(player);
+        TestHelper.runSyncDelayedTask(bukkitService);
+
+        // then
+        verify(player).kickPlayer(banReason);
+        ArgumentCaptor<Date> captor = ArgumentCaptor.forClass(Date.class);
+        verify(bukkitService).banIp(eq(ip), eq(banReason), captor.capture(), eq("AuthMe"));
+
+        // Compute the expected expiration date and check that the actual date is within the difference tolerance
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, 100);
+        long expectedExpiration = cal.getTime().getTime();
+        assertThat(Math.abs(captor.getValue().getTime() - expectedExpiration), lessThan(DATE_TOLERANCE_MILLISECONDS));
+    }
+
+    @Test
+    public void shouldResetCountAfterBan() {
+        // given
+        Player player = mock(Player.class);
+        String ip = "22.44.66.88";
+        TestHelper.mockPlayerIp(player, ip);
+        String banReason = "kick msg";
+        given(messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
+        NewSetting settings = mockSettings(10, 60);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
+        manager.increaseCount(ip);
+        manager.increaseCount(ip);
+        manager.increaseCount(ip);
+
+        // when
+        manager.tempbanPlayer(player);
+        TestHelper.runSyncDelayedTask(bukkitService);
+
+        // then
+        verify(player).kickPlayer(banReason);
+        assertHasCount(manager, ip, null);
     }
 
     private static NewSetting mockSettings(int maxTries, int tempbanLength) {
