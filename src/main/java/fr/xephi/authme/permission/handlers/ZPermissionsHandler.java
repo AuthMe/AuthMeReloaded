@@ -4,7 +4,6 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.BookMeta;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
 
 import java.util.ArrayList;

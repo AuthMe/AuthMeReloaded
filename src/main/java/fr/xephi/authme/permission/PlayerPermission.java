@@ -58,12 +58,7 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission to use to see own other accounts.
      */
-    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts", DefaultPermission.ALLOWED),
-
-    /**
-     * Permission to bypass the purging process
-     */
-    BYPASS_PURGE("authme.player.bypasspurge", DefaultPermission.NOT_ALLOWED);
+    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts", DefaultPermission.ALLOWED);
 
     /**
      * The permission node.
