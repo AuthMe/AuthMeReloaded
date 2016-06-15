@@ -2,6 +2,8 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.BanEntry;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -15,6 +17,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -204,6 +207,22 @@ public class BukkitService {
             ConsoleLogger.showError("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
         }
         return false;
+    }
+
+    /**
+     * Adds a ban to the this list. If a previous ban exists, this will
+     * update the previous entry.
+     *
+     * @param ip the ip of the ban
+     * @param reason reason for the ban, null indicates implementation default
+     * @param expires date for the ban's expiration (unban), or null to imply
+     *     forever
+     * @param source source of the ban, null indicates implementation default
+     * @return the entry for the newly created ban, or the entry for the
+     *     (updated) previous ban
+     */
+    public BanEntry banIp(String ip, String reason, Date expires, String source) {
+        return Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, source);
     }
 
 }

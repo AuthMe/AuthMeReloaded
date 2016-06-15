@@ -3,9 +3,6 @@ package fr.xephi.authme.listener;
 import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.MessageKey;
@@ -18,7 +15,6 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -48,8 +44,6 @@ class OnJoinVerifier implements Reloadable {
     private ValidationService validationService;
     @Inject
     private BukkitService bukkitService;
-    @Inject
-    private LimboCache limboCache;
     @Inject
     private Server server;
 
@@ -187,21 +181,15 @@ class OnJoinVerifier implements Reloadable {
      * Checks if a player with the same name (case-insensitive) is already playing and refuses the
      * connection if so configured.
      *
-     * @param player the player to verify
+     * @param name the player name to check
      */
-    public void checkSingleSession(Player player) throws FailedVerificationException {
+    public void checkSingleSession(String name) throws FailedVerificationException {
         if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
             return;
         }
 
-        Player onlinePlayer = bukkitService.getPlayerExact(player.getName());
+        Player onlinePlayer = bukkitService.getPlayerExact(name);
         if (onlinePlayer != null) {
-            String name = player.getName().toLowerCase();
-            LimboPlayer limbo = limboCache.getLimboPlayer(name);
-            if (limbo != null && PlayerCache.getInstance().isAuthenticated(name)) {
-                Utils.addNormal(player, limbo.getGroup());
-                limboCache.deleteLimboPlayer(name);
-            }
             throw new FailedVerificationException(MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
         }
     }

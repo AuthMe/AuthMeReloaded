@@ -133,7 +133,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
 
         // The Login event now fires (as intended) after everything is processed
-        Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player));
+        bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
         if (service.getProperty(HooksSettings.BUNGEECORD)) {
             sendBungeeMessage(player);

@@ -217,6 +217,9 @@ public class AuthMePlayerListener implements Listener {
             onJoinVerifier.checkAntibot(name, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkIsValidName(name);
+            // Note #760: Single session must be checked here - checking with PlayerLoginEvent is too late and
+            // the first connection will have been kicked. This means this feature doesn't work on CraftBukkit.
+            onJoinVerifier.checkSingleSession(name);
         } catch (FailedVerificationException e) {
             event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -243,7 +246,6 @@ public class AuthMePlayerListener implements Listener {
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkIsValidName(name);
             onJoinVerifier.checkNameCasing(player, auth);
-            onJoinVerifier.checkSingleSession(player);
             onJoinVerifier.checkPlayerCountry(isAuthAvailable, event);
         } catch (FailedVerificationException e) {
             event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));

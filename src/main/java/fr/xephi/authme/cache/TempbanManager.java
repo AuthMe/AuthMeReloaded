@@ -7,8 +7,6 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.BanList;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -21,13 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
 // TODO Gnat008 20160613: Figure out the best way to remove entries based on time
 public class TempbanManager implements SettingsDependent {
 
+    private static final long MINUTE_IN_MILLISECONDS = 60000;
+
     private final ConcurrentHashMap<String, Integer> ipLoginFailureCounts;
-
-    private final long MINUTE_IN_MILLISECONDS = 60000;
-
-    private BukkitService bukkitService;
-
-    private Messages messages;
+    private final BukkitService bukkitService;
+    private final Messages messages;
 
     private boolean isEnabled;
     private int threshold;
@@ -102,7 +98,7 @@ public class TempbanManager implements SettingsDependent {
             bukkitService.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
-                    Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, "AuthMe");
+                    bukkitService.banIp(ip, reason, expires, "AuthMe");
                     player.kickPlayer(reason);
                 }
             });

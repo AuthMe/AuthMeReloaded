@@ -3,7 +3,6 @@ package fr.xephi.authme.listener;
 import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -66,8 +65,6 @@ public class OnJoinVerifierTest {
     private ValidationService validationService;
     @Mock
     private BukkitService bukkitService;
-    @Mock
-    private LimboCache limboCache;
     @Mock
     private Server server;
 
@@ -341,21 +338,21 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldAcceptNameThatIsNotOnline() throws FailedVerificationException {
         // given
-        Player player = newPlayerWithName("bobby");
+        String name = "bobby";
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(bukkitService.getPlayerExact("bobby")).willReturn(null);
 
         // when
-        onJoinVerifier.checkSingleSession(player);
+        onJoinVerifier.checkSingleSession(name);
 
         // then
-        verifyZeroInteractions(limboCache);
+        verify(bukkitService).getPlayerExact(name);
     }
 
     @Test
     public void shouldRejectNameAlreadyOnline() throws FailedVerificationException {
         // given
-        Player player = newPlayerWithName("Charlie");
+        String name = "Charlie";
         Player onlinePlayer = newPlayerWithName("charlie");
         given(bukkitService.getPlayerExact("Charlie")).willReturn(onlinePlayer);
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
@@ -364,22 +361,20 @@ public class OnJoinVerifierTest {
         expectValidationExceptionWith(MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
 
         // when / then
-        onJoinVerifier.checkSingleSession(player);
-        verify(limboCache).getLimboPlayer("charlie");
+        onJoinVerifier.checkSingleSession(name);
     }
 
     @Test
     public void shouldAcceptAlreadyOnlineNameForDisabledSetting() throws FailedVerificationException {
         // given
-        Player player = newPlayerWithName("Felipe");
+        String name = "Felipe";
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(false);
 
         // when
-        onJoinVerifier.checkSingleSession(player);
+        onJoinVerifier.checkSingleSession(name);
 
         // then
         verifyZeroInteractions(bukkitService);
-        verifyZeroInteractions(limboCache);
     }
 
     private static Player newPlayerWithName(String name) {

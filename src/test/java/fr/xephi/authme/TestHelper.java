@@ -1,6 +1,7 @@
 package fr.xephi.authme;
 
 import fr.xephi.authme.util.BukkitService;
+import org.bukkit.entity.Player;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -8,6 +9,8 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -15,7 +18,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -142,6 +147,19 @@ public final class TestHelper {
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    /**
+     * Configures the player mock to return the given IP address.
+     *
+     * @param player the player mock
+     * @param ip the ip address it should return
+     */
+    public static void mockPlayerIp(Player player, String ip) {
+        InetAddress inetAddress = mock(InetAddress.class);
+        given(inetAddress.getHostAddress()).willReturn(ip);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8093);
+        given(player.getAddress()).willReturn(inetSocketAddress);
     }
 
 }

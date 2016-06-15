@@ -332,11 +332,11 @@ Security:
         # information correctly without any corruption.
         kickPlayersBeforeStopping: true
     tempban:
-        # Tempban users if they enter the wrong password too many times
+        # Tempban a user's IP address if they enter the wrong password too many times
         enableTempban: false
-        # How many times a user can attempt to login before being tempbanned
+        # How many times a user can attempt to login before their IP being tempbanned
         maxLoginTries: 10
-        # The length of time a player will be tempbanned in minutes
+        # The length of time a IP address will be tempbanned in minutes
         # Default: 480 minutes, or 8 hours
         tempbanLength: 480
 Converter:

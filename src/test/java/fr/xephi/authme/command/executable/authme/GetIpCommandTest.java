@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -9,8 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.allOf;
@@ -68,10 +67,7 @@ public class GetIpCommandTest {
     private static Player mockPlayer(String name, String ip) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        InetAddress inetAddress = mock(InetAddress.class);
-        given(inetAddress.getHostAddress()).willReturn(ip);
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8093);
-        given(player.getAddress()).willReturn(inetSocketAddress);
+        TestHelper.mockPlayerIp(player, ip);
         return player;
     }
 }

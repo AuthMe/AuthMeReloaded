@@ -124,7 +124,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
-                plugin.getServer().getPluginManager().callEvent(ev);
+                bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
                     if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
