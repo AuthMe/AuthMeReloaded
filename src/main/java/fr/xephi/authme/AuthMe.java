@@ -34,6 +34,7 @@ import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
@@ -301,6 +302,12 @@ public class AuthMe extends JavaPlugin {
 
         // Successful message
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
+
+        // If server is using PermissionsBukkit, print a warning that some features may not be supported
+        if (permsMan.isEnabled() &&
+            permsMan.getHandler().getPermissionSystem() == PermissionsSystemType.PERMISSIONS_BUKKIT) {
+            ConsoleLogger.info("Warning! This server uses PermissionsBukkit for permissions! Some permissions features may not be supported!");
+        }
 
         // Purge on start if enabled
         runAutoPurge();

@@ -26,6 +26,11 @@ public class PermissionsBukkitHandler implements PermissionHandler {
     }
 
     @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        return false;
+    }
+
+    @Override
     public boolean isInGroup(Player player, String group) {
         List<String> groupNames = getGroups(player);
 

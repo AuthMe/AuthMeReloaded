@@ -217,6 +217,15 @@ public class PermissionsManager {
     }
 
     /**
+     * Get the current permissions system handler.
+     *
+     * @return The permissions system handler.
+     */
+    public PermissionHandler getHandler() {
+        return handler;
+    }
+
+    /**
      * Check if the command sender has permission for the given permissions node. If no permissions system is used or
      * if the sender is not a player (e.g. console user), the player has to be OP in order to have the permission.
      *
@@ -238,6 +247,28 @@ public class PermissionsManager {
 
         Player player = (Player) sender;
         return handler.hasPermission(player, permissionNode);
+    }
+
+    /**
+     * Check if a player has permission for the given permission node. This is for offline player checks. If no permissions
+     * system is used, then the player will not have permission.
+     *
+     * @param name           The name of the player.
+     * @param permissionNode The permission node to verify.
+     *
+     * @return
+     */
+    public boolean hasPermission(String name, PermissionNode permissionNode) {
+        // Check if the permission node is null
+        if (permissionNode == null) {
+            return true;
+        }
+
+        if (!isEnabled()) {
+            return false;
+        }
+
+        return handler.hasPermission(name, permissionNode);
     }
 
     /**

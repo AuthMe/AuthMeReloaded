@@ -2,6 +2,9 @@ package fr.xephi.authme.task;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 
@@ -15,6 +18,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import javax.inject.Inject;
 
 public class PurgeTask extends BukkitRunnable {
 

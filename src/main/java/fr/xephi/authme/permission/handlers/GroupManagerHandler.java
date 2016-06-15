@@ -3,6 +3,7 @@ package fr.xephi.authme.permission.handlers;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -33,6 +34,13 @@ public class GroupManagerHandler implements PermissionHandler {
     public boolean hasPermission(Player player, PermissionNode node) {
         final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissions(player);
         return handler != null && handler.has(player, node.getNode());
+    }
+
+    @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissionsByPlayerName(name);
+        List<String> perms = handler.getAllPlayersPermissions(name);
+        return perms.contains(node.getNode());
     }
 
     @Override

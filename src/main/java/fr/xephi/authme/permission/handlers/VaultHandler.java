@@ -32,6 +32,11 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        return vaultProvider.has("", name, node.getNode());
+    }
+
+    @Override
     public boolean isInGroup(Player player, String group) {
         return vaultProvider.playerInGroup(player, group);
     }

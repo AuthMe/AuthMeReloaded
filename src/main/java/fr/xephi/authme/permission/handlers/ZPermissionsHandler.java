@@ -4,6 +4,7 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.BookMeta;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
 
 import java.util.ArrayList;
@@ -35,6 +36,15 @@ public class ZPermissionsHandler implements PermissionHandler {
             return perms.get(node.getNode());
         else
             return node.getDefaultPermission().evaluate(player);
+    }
+
+    @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(null, null, name);
+        if (perms.containsKey(node.getNode()))
+            return perms.get(node.getNode());
+        else
+            return false;
     }
 
     @Override

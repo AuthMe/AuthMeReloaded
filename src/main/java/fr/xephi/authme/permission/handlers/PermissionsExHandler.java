@@ -43,6 +43,12 @@ public class PermissionsExHandler implements PermissionHandler {
     }
 
     @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        PermissionUser user = permissionManager.getUser(name);
+        return user.has(node.getNode());
+    }
+
+    @Override
     public boolean isInGroup(Player player, String group) {
         PermissionUser user = permissionManager.getUser(player);
         return user.inGroup(group);

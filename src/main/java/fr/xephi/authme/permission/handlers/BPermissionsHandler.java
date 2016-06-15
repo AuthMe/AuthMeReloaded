@@ -28,6 +28,11 @@ public class BPermissionsHandler implements PermissionHandler {
     }
 
     @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        return ApiLayer.hasPermission(null, CalculableType.USER, name, node.getNode());
+    }
+
+    @Override
     public boolean isInGroup(Player player, String group) {
         return ApiLayer.hasGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), group);
     }
