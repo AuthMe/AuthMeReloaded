@@ -56,8 +56,6 @@ public class CommandHandlerTest {
     @Mock
     private AuthMeServiceInitializer initializer;
     @Mock
-    private CommandInitializer commandInitializer;
-    @Mock
     private CommandMapper commandMapper;
     @Mock
     private PermissionsManager permissionsManager;

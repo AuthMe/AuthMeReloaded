@@ -316,6 +316,22 @@ public class AuthMeServiceInitializerTest {
         initializer.performReloadOnServices();
     }
 
+    @Test
+    public void shouldRetrieveExistingInstancesOnly() {
+        // given
+        initializer.get(GammaService.class);
+
+        // when
+        AlphaService alphaService = initializer.getIfAvailable(AlphaService.class);
+        BetaManager betaManager = initializer.getIfAvailable(BetaManager.class);
+
+        // then
+        // was initialized because is dependency of GammaService
+        assertThat(alphaService, not(nullValue()));
+        // nothing caused this to be initialized
+        assertThat(betaManager, nullValue());
+    }
+
     private void expectRuntimeExceptionWith(String message) {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage(containsString(message));

@@ -2,6 +2,8 @@ package fr.xephi.authme.process;
 
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.AuthGroupHandler;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
@@ -42,6 +44,9 @@ public class ProcessServiceTest {
 
     @Mock
     private PermissionsManager permissionsManager;
+
+    @Mock
+    private AuthGroupHandler authGroupHandler;
 
     @Test
     public void shouldGetProperty() {
@@ -164,6 +169,21 @@ public class ProcessServiceTest {
 
         // then
         verify(permissionsManager).hasPermission(player, permission);
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldSetPermissionGroup() {
+        // given
+        Player player = mock(Player.class);
+        AuthGroupType type = AuthGroupType.LOGGED_IN;
+        given(authGroupHandler.setGroup(player, type)).willReturn(true);
+
+        // when
+        boolean result = processService.setGroup(player, type);
+
+        // then
+        verify(authGroupHandler).setGroup(player, type);
         assertThat(result, equalTo(true));
     }
 }
