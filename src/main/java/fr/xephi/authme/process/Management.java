@@ -1,5 +1,6 @@
 package fr.xephi.authme.process;
 
+import fr.xephi.authme.process.changepassword.AsyncChangePassword;
 import fr.xephi.authme.process.email.AsyncAddEmail;
 import fr.xephi.authme.process.email.AsyncChangeEmail;
 import fr.xephi.authme.process.join.AsynchronousJoin;
@@ -36,8 +37,11 @@ public class Management {
     private AsynchronousLogin asynchronousLogin;
     @Inject
     private AsynchronousUnregister asynchronousUnregister;
+    @Inject
+    private AsyncChangePassword asyncChangePassword;
 
     Management() { }
+
 
     public void performLogin(final Player player, final String password, final boolean forceLogin) {
         runTask(new Runnable() {
@@ -107,6 +111,15 @@ public class Management {
             @Override
             public void run() {
                 asyncChangeEmail.changeEmail(player, oldEmail, newEmail);
+            }
+        });
+    }
+
+    public void performPasswordChange(final Player player, final String oldPassword, final String newPassword) {
+        runTask(new Runnable() {
+            @Override
+            public void run() {
+                asyncChangePassword.changePassword(player, oldPassword, newPassword);
             }
         });
     }

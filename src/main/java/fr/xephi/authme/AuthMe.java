@@ -737,15 +737,6 @@ public class AuthMe extends JavaPlugin {
     // Use @Inject fields instead
     // -------------
     /**
-     * @return Plugin's messages.
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public Messages getMessages() {
-        return messages;
-    }
-
-    /**
      * @return NewSetting
      * @deprecated should be used in API classes only (temporarily)
      */
