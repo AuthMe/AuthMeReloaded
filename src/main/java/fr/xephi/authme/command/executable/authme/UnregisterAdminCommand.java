@@ -93,13 +93,12 @@ public class UnregisterAdminCommand implements ExecutableCommand {
      * @param target the player that was unregistered
      */
     private void applyUnregisteredEffectsAndTasks(Player target) {
-        // TODO ljacqu 20160612: Remove use of Utils method and behave according to settings
+        // TODO #765: Remove use of Utils method and behave according to settings
         Utils.teleportToSpawn(target);
 
         limboCache.addLimboPlayer(target);
         limboPlayerTaskManager.registerTimeoutTask(target);
-        limboPlayerTaskManager.registerMessageTask(target.getName(),
-            MessageKey.REGISTER_MESSAGE);
+        limboPlayerTaskManager.registerMessageTask(target.getName(), false);
 
         final int timeout = commandService.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (commandService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

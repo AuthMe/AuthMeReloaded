@@ -64,7 +64,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 }
                 limboCache.addLimboPlayer(player);
                 limboPlayerTaskManager.registerTimeoutTask(player);
-                limboPlayerTaskManager.registerMessageTask(name, MessageKey.REGISTER_MESSAGE);
+                limboPlayerTaskManager.registerMessageTask(name, false);
 
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");

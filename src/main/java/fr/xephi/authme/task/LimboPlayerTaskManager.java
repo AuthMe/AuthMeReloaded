@@ -44,10 +44,12 @@ public class LimboPlayerTaskManager {
      * Registers a {@link MessageTask} for the given player name.
      *
      * @param name the name of the player to schedule a repeating message task for
-     * @param key the key of the message to display
+     * @param isRegistered whether the name is registered or not
+     *                     (false shows "please register", true shows "please log in")
      */
-    public void registerMessageTask(String name, MessageKey key) {
+    public void registerMessageTask(String name, boolean isRegistered) {
         final int interval = settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
+        final MessageKey key = getMessageKey(isRegistered);
         if (interval > 0) {
             final LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer == null) {
@@ -78,6 +80,22 @@ public class LimboPlayerTaskManager {
                 BukkitTask task = bukkitService.runTaskLater(new TimeoutTask(player, message, playerCache), timeout);
                 limboPlayer.setTimeoutTask(task);
             }
+        }
+    }
+
+    /**
+     * Returns the appropriate message key according to the registration status and settings.
+     *
+     * @param isRegistered whether or not the username is registered
+     * @return the message key to display to the user
+     */
+    private MessageKey getMessageKey(boolean isRegistered) {
+        if (isRegistered) {
+            return MessageKey.LOGIN_MESSAGE;
+        } else {
+            return settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
+                ? MessageKey.REGISTER_EMAIL_MESSAGE
+                : MessageKey.REGISTER_MESSAGE;
         }
     }
 

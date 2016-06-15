@@ -21,7 +21,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
@@ -33,7 +32,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,10 +106,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
 
             // TODO ljacqu 20160612: Why is the message task being canceled and added again here?
-            MessageKey key = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
-                ? MessageKey.REGISTER_EMAIL_MESSAGE
-                : MessageKey.REGISTER_MESSAGE;
-            limboPlayerTaskManager.registerMessageTask(name, key);
+            limboPlayerTaskManager.registerMessageTask(name, false);
             return null;
         }
 
