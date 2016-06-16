@@ -1,17 +1,13 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.process.purge.PurgeService;
-import fr.xephi.authme.task.PurgeTask;
+import fr.xephi.authme.task.PurgeService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Command for purging the data of players which have not been since for a given number
@@ -23,9 +19,6 @@ public class PurgeCommand implements ExecutableCommand {
 
     @Inject
     private PurgeService purgeService;
-
-    @Inject
-    private AuthMe plugin;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {

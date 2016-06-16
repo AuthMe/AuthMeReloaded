@@ -1,18 +1,16 @@
 package fr.xephi.authme.task;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.process.purge.PurgeService;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class PurgeTask extends BukkitRunnable {
 

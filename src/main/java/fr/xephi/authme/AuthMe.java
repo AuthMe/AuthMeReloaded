@@ -36,7 +36,7 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.process.purge.PurgeService;
+import fr.xephi.authme.task.PurgeService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
@@ -47,14 +47,11 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.task.PurgeTask;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
@@ -75,11 +72,9 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -131,10 +126,8 @@ public class AuthMe extends JavaPlugin {
     private DataSource database;
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
-    private boolean autoPurging;
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
-    private PurgeService purgeService;
 
     /**
      * Get the plugin's instance.
@@ -257,7 +250,6 @@ public class AuthMe extends JavaPlugin {
         api              = initializer.get(NewAPI.class);
         management       = initializer.get(Management.class);
         dataManager      = initializer.get(DataManager.class);
-        purgeService     = initializer.get(PurgeService.class);
         initializer.get(API.class);
 
         // Set up Metrics
@@ -313,6 +305,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Purge on start if enabled
+        PurgeService purgeService = initializer.get(PurgeService.class);
         purgeService.runAutoPurge();
     }
 
@@ -712,10 +705,6 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
-    }
-
-    public void notifyAutoPurgeEnd() {
-        this.autoPurging = false;
     }
 
 

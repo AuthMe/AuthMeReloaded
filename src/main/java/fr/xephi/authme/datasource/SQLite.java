@@ -1,5 +1,14 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.StringUtils;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,16 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.annotations.VisibleForTesting;
-
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
 
 /**
  */
@@ -314,13 +313,13 @@ public class SQLite implements DataSource {
     @Override
     public void purgeRecords(Set<String> toPurge) {
         String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        for (String name : toPurge) {
-            try (PreparedStatement deletePst = con.prepareStatement(delete)) {
+        try (PreparedStatement deletePst = con.prepareStatement(delete)) {
+            for (String name : toPurge) {
                 deletePst.setString(1, name);
                 deletePst.executeUpdate();
-            } catch (SQLException ex) {
-                logSqlException(ex);
             }
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
     }
 

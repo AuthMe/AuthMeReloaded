@@ -145,6 +145,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void purgeRecords(Set<String> toPurge) {
+        source.purgeRecords(toPurge);
         for (String name : toPurge) {
             cachedAuths.invalidate(name);
         }

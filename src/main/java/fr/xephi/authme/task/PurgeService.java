@@ -1,4 +1,4 @@
-package fr.xephi.authme.process.purge;
+package fr.xephi.authme.task;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
@@ -8,7 +8,6 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.task.PurgeTask;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.Utils;
@@ -72,7 +71,7 @@ public class PurgeService implements Reloadable {
      *
      * @param autoPurging True if automatically purging.
      */
-    public void setAutoPurging(boolean autoPurging) {
+    void setAutoPurging(boolean autoPurging) {
         this.autoPurging = autoPurging;
     }
 
@@ -165,7 +164,7 @@ public class PurgeService implements Reloadable {
         return toPurge;
     }
 
-    public synchronized void purgeAntiXray(Set<String> cleared) {
+    synchronized void purgeAntiXray(Set<String> cleared) {
         if (!removeAntiXrayFiles) {
             return;
         }
@@ -189,7 +188,7 @@ public class PurgeService implements Reloadable {
         ConsoleLogger.info("AutoPurge: Removed " + i + " AntiXRayData Files");
     }
 
-    public synchronized void purgeLimitedCreative(Set<String> cleared) {
+    synchronized void purgeLimitedCreative(Set<String> cleared) {
         if (!removeLimitedCreativeInventories) {
             return;
         }
@@ -230,7 +229,7 @@ public class PurgeService implements Reloadable {
         ConsoleLogger.info("AutoPurge: Removed " + i + " LimitedCreative Survival, Creative and Adventure files");
     }
 
-    public synchronized void purgeDat(Set<OfflinePlayer> cleared) {
+    synchronized void purgeDat(Set<OfflinePlayer> cleared) {
         if (!removePlayerDat) {
             return;
         }
@@ -254,7 +253,7 @@ public class PurgeService implements Reloadable {
      *
      * @param cleared List of String
      */
-    public synchronized void purgeEssentials(Set<OfflinePlayer> cleared) {
+    synchronized void purgeEssentials(Set<OfflinePlayer> cleared) {
         if (!removeEssentialsFiles && !pluginHooks.isEssentialsAvailable()) {
             return;
         }
@@ -283,7 +282,7 @@ public class PurgeService implements Reloadable {
 
     // TODO: What is this method for? Is it correct?
     // TODO: Make it work with OfflinePlayers group data.
-    public synchronized void purgePermissions(Set<OfflinePlayer> cleared) {
+    synchronized void purgePermissions(Set<OfflinePlayer> cleared) {
         if (!removePermissions) {
             return;
         }
