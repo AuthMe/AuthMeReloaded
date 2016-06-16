@@ -6,7 +6,7 @@
 
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
-    <version>5.2-BETA3</version>
+    <version>5.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>AuthMeReloaded</name>
