@@ -31,28 +31,6 @@ public class PurgeTask extends BukkitRunnable {
 
     private int currentPage = 0;
 
-    public PurgeTask(CommandSender sender, Set<String> purged
-            , boolean autoPurge, OfflinePlayer[] offlinePlayers) {
-
-        if (sender instanceof Player) {
-            this.sender = ((Player) sender).getUniqueId();
-        } else {
-            this.sender = null;
-        }
-
-        this.toPurge = purged;
-        this.totalPurgeCount = purged.size();
-        this.autoPurging = autoPurge;
-        this.offlinePlayers = offlinePlayers;
-
-        //this is commented out because I assume all players in the database already have an lowercase name
-//        toPurge = new HashSet<>(purged.size());
-        //make a new list with lowercase names to make the username test based on a hash
-//        for (String username : purged) {
-//            toPurge.add(username.toLowerCase());
-//        }
-    }
-
     public PurgeTask(PurgeService service, CommandSender sender, Set<String> toPurge, OfflinePlayer[] offlinePlayers,
                      boolean autoPurging) {
         this.purgeService = service;
