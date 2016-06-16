@@ -144,14 +144,6 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void purgeRecords(Set<String> toPurge) {
-        source.purgeRecords(toPurge);
-        for (String name : toPurge) {
-            cachedAuths.invalidate(name);
-        }
-    }
-
-    @Override
     public boolean removeAuth(String name) {
         name = name.toLowerCase();
         boolean result = source.removeAuth(name);
@@ -193,8 +185,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void purgeBanned(final Set<String> banned) {
-        source.purgeBanned(banned);
+    public void purgeRecords(final Set<String> banned) {
+        source.purgeRecords(banned);
         cachedAuths.invalidateAll(banned);
     }
 

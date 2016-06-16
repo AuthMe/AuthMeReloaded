@@ -453,19 +453,6 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void purgeBanned(Set<String> banned) {
-        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            for (String name : banned) {
-                pst.setString(1, name);
-                pst.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-    }
-
-    @Override
     public DataSourceType getType() {
         return DataSourceType.SQLITE;
     }

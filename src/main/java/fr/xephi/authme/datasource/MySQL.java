@@ -633,19 +633,6 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void purgeRecords(Set<String> toPurge) {
-        String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (Connection con = getConnection(); PreparedStatement deletePst = con.prepareStatement(delete)) {
-            for (String name : toPurge) {
-                deletePst.setString(1, name);
-                deletePst.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-    }
-
-    @Override
     public boolean removeAuth(String user) {
         user = user.toLowerCase();
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
@@ -752,10 +739,10 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void purgeBanned(Set<String> banned) {
+    public void purgeRecords(Set<String> toPurge) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            for (String name : banned) {
+            for (String name : toPurge) {
                 pst.setString(1, name);
                 pst.executeUpdate();
             }

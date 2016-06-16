@@ -23,14 +23,11 @@ public class PurgeTask extends BukkitRunnable {
     private final Set<String> toPurge;
 
     private final OfflinePlayer[] offlinePlayers;
-
-    private final boolean autoPurging;
     private final int totalPurgeCount;
 
     private int currentPage = 0;
 
-    public PurgeTask(PurgeService service, CommandSender sender, Set<String> toPurge, OfflinePlayer[] offlinePlayers,
-                     boolean autoPurging) {
+    public PurgeTask(PurgeService service, CommandSender sender, Set<String> toPurge, OfflinePlayer[] offlinePlayers) {
         this.purgeService = service;
         if (sender instanceof Player) {
             this.sender = ((Player) sender).getUniqueId();
@@ -40,7 +37,6 @@ public class PurgeTask extends BukkitRunnable {
 
         this.toPurge = toPurge;
         this.totalPurgeCount = toPurge.size();
-        this.autoPurging = autoPurging;
         this.offlinePlayers = offlinePlayers;
     }
 
@@ -101,10 +97,8 @@ public class PurgeTask extends BukkitRunnable {
         // Show a status message
         sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged correctly");
 
-        ConsoleLogger.info("AutoPurge Finished!");
-        if (autoPurging) {
-            purgeService.setAutoPurging(false);
-        }
+        ConsoleLogger.info("Purge Finished!");
+        purgeService.setPurging(false);
     }
 
     private void sendMessage(String message) {

@@ -442,37 +442,6 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public void purgeBanned(Set<String> banned) {
-        BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                try {
-                    if (banned.contains(args[0])) {
-                        lines.add(line);
-                    }
-                } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {
-                }
-            }
-            bw = new BufferedWriter(new FileWriter(source));
-            for (String l : lines) {
-                bw.write(l + "\n");
-            }
-
-        } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-
-        } finally {
-            silentClose(br);
-            silentClose(bw);
-        }
-    }
-
-    @Override
     public DataSourceType getType() {
         return DataSourceType.FILE;
     }

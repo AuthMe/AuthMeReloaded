@@ -130,13 +130,6 @@ public interface DataSource extends Reloadable {
     void close();
 
     /**
-     * Purge all given players, i.e. delete all players whose name is in the list.
-     *
-     * @param banned the list of players to delete
-     */
-    void purgeBanned(Set<String> banned);
-
-    /**
      * Return the data source type.
      *
      * @return the data source type

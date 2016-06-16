@@ -11,7 +11,6 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -46,10 +45,9 @@ public class PurgeService implements Reloadable {
     @Inject
     private Server server;
 
-    private boolean autoPurging = false;
+    private boolean isPurging = false;
 
     // Settings
-    private boolean useAutoPurge;
     private boolean removeEssentialsFiles;
     private boolean removePlayerDat;
     private boolean removeLimitedCreativeInventories;
@@ -58,55 +56,40 @@ public class PurgeService implements Reloadable {
     private int daysBeforePurge;
 
     /**
-     * Return whether an automatic purge is in progress.
+     * Return whether a purge is in progress.
      *
      * @return True if purging.
      */
-    public boolean isAutoPurging() {
-        return this.autoPurging;
+    public boolean isPurging() {
+        return this.isPurging;
     }
 
     /**
-     * Set if an automatic purge is currently in progress.
+     * Set if a purge is currently in progress.
      *
-     * @param autoPurging True if automatically purging.
+     * @param purging True if purging.
      */
-    void setAutoPurging(boolean autoPurging) {
-        this.autoPurging = autoPurging;
+    void setPurging(boolean purging) {
+        this.isPurging = purging;
     }
 
     /**
-     * Purges players from the database. Ran on startup.
+     * Purges players from the database. Run on startup if enabled.
      */
     public void runAutoPurge() {
-        if (!useAutoPurge || autoPurging) {
+        if (!settings.getProperty(PurgeSettings.USE_AUTO_PURGE)) {
+            return;
+        } else if (daysBeforePurge <= 0) {
+            ConsoleLogger.showError("Configured days before purging must be positive");
             return;
         }
 
-        this.autoPurging = true;
-
-        // Get the initial list of players to purge
         ConsoleLogger.info("Automatically purging the database...");
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, daysBeforePurge);
         long until = calendar.getTimeInMillis();
-        Set<String> initialPurge = dataSource.getRecordsToPurge(until);
 
-        if (CollectionUtils.isEmpty(initialPurge)) {
-            return;
-        }
-
-        // Remove players from the purge list if they have bypass permission
-        Set<String> toPurge = getFinalPurgeList(initialPurge);
-
-        // Purge players from the database
-        dataSource.purgeRecords(toPurge);
-        ConsoleLogger.info("Purged the database: " + toPurge.size() + " accounts removed!");
-        ConsoleLogger.info("Purging user accounts...");
-
-        // Schedule a PurgeTask
-        PurgeTask purgeTask = new PurgeTask(this, Bukkit.getConsoleSender(), toPurge, Bukkit.getOfflinePlayers(), true);
-        bukkitService.runTaskAsynchronously(purgeTask);
+        runPurge(null, until);
     }
 
     /**
@@ -119,28 +102,34 @@ public class PurgeService implements Reloadable {
         //todo: note this should may run async because it may executes a SQL-Query
         Set<String> initialPurge = dataSource.getRecordsToPurge(until);
         if (CollectionUtils.isEmpty(initialPurge)) {
+            logAndSendMessage(sender, "No players to purge");
             return;
         }
 
         Set<String> toPurge = getFinalPurgeList(initialPurge);
-
-        // Purge records from the database
-        dataSource.purgeRecords(toPurge);
-        sender.sendMessage(ChatColor.GOLD + "Deleted " + toPurge.size() + " user accounts");
-        sender.sendMessage(ChatColor.GOLD + "Purging user accounts...");
-
-        // Schedule a PurgeTask
-        PurgeTask purgeTask = new PurgeTask(this, sender, toPurge, Bukkit.getOfflinePlayers(), false);
-        bukkitService.runTaskAsynchronously(purgeTask);
+        purgePlayers(sender, toPurge, bukkitService.getOfflinePlayers());
     }
 
-    public void purgeBanned(CommandSender sender, Set<String> bannedNames, Set<OfflinePlayer> bannedPlayers) {
+    /**
+     * Purges the given list of player names.
+     *
+     * @param sender Sender running the command.
+     * @param names The names to remove.
+     * @param players Collection of OfflinePlayers (including those with the given names).
+     */
+    public void purgePlayers(CommandSender sender, Set<String> names, OfflinePlayer[] players) {
         //todo: note this should may run async because it may executes a SQL-Query
-        dataSource.purgeBanned(bannedNames);
+        if (isPurging) {
+            logAndSendMessage(sender, "Purge is already in progress! Aborting purge request");
+            return;
+        }
 
-        OfflinePlayer[] bannedPlayersArray = new OfflinePlayer[bannedPlayers.size()];
-        bannedPlayers.toArray(bannedPlayersArray);
-        PurgeTask purgeTask = new PurgeTask(this, sender, bannedNames, bannedPlayersArray, false);
+        dataSource.purgeRecords(names);
+        logAndSendMessage(sender, ChatColor.GOLD + "Deleted " + names.size() + " user accounts");
+        logAndSendMessage(sender, ChatColor.GOLD + "Purging user accounts...");
+
+        isPurging = true;
+        PurgeTask purgeTask = new PurgeTask(this, sender, names, players);
         bukkitService.runTaskAsynchronously(purgeTask);
     }
 
@@ -295,10 +284,16 @@ public class PurgeService implements Reloadable {
         ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }
 
+    private static void logAndSendMessage(CommandSender sender, String message) {
+        ConsoleLogger.info(message);
+        if (sender != null) {
+            sender.sendMessage(message);
+        }
+    }
+
     @PostConstruct
     @Override
     public void reload() {
-        this.useAutoPurge = settings.getProperty(PurgeSettings.USE_AUTO_PURGE);
         this.removeEssentialsFiles = settings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES);
         this.removePlayerDat = settings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT);
         this.removeAntiXrayFiles = settings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE);
