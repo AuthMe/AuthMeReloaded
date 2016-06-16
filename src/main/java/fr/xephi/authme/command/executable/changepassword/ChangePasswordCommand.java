@@ -47,7 +47,6 @@ public class ChangePasswordCommand extends PlayerCommand {
             return;
         }
 
-        // TODO ljacqu 20160117: Call async task via Management
         management.performPasswordChange(player, oldPassword, newPassword);
     }
 }
