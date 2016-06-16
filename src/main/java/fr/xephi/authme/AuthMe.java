@@ -107,8 +107,6 @@ public class AuthMe extends JavaPlugin {
     public NewAPI api;
     // TODO #655: Encapsulate mail
     public SendMailSSL mail;
-    // TODO #656: Encapsulate data manager
-    public DataManager dataManager;
     /*
      * Private instances
      */
@@ -249,7 +247,6 @@ public class AuthMe extends JavaPlugin {
         commandHandler   = initializer.get(CommandHandler.class);
         api              = initializer.get(NewAPI.class);
         management       = initializer.get(Management.class);
-        dataManager      = initializer.get(DataManager.class);
         initializer.get(API.class);
 
         // Set up Metrics
