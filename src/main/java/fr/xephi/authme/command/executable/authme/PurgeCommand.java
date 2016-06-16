@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.process.purge.PurgeService;
 import fr.xephi.authme.task.PurgeTask;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,7 @@ public class PurgeCommand implements ExecutableCommand {
     private static final int MINIMUM_LAST_SEEN_DAYS = 30;
 
     @Inject
-    private DataSource dataSource;
+    private PurgeService purgeService;
 
     @Inject
     private AuthMe plugin;
@@ -52,13 +53,7 @@ public class PurgeCommand implements ExecutableCommand {
         calendar.add(Calendar.DATE, -days);
         long until = calendar.getTimeInMillis();
 
-        //todo: note this should may run async because it may executes a SQL-Query
-        // Purge the data, get the purged values
-        Set<String> purged = dataSource.autoPurgeDatabase(until);
-
-        // Show a status message
-        sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
-        sender.sendMessage(ChatColor.GOLD + "Purging user accounts...");
-        new PurgeTask(plugin, sender, purged).runTaskTimer(plugin, 0, 1);
+        // Run the purge
+        purgeService.runPurge(sender, until);
     }
 }

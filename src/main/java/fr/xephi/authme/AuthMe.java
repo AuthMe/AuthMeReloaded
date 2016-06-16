@@ -36,6 +36,7 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.purge.PurgeService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
@@ -133,6 +134,7 @@ public class AuthMe extends JavaPlugin {
     private boolean autoPurging;
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
+    private PurgeService purgeService;
 
     /**
      * Get the plugin's instance.
@@ -255,6 +257,7 @@ public class AuthMe extends JavaPlugin {
         api              = initializer.get(NewAPI.class);
         management       = initializer.get(Management.class);
         dataManager      = initializer.get(DataManager.class);
+        purgeService     = initializer.get(PurgeService.class);
         initializer.get(API.class);
 
         // Set up Metrics
@@ -310,7 +313,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Purge on start if enabled
-        runAutoPurge();
+        purgeService.runAutoPurge();
     }
 
     /**
@@ -641,29 +644,6 @@ public class AuthMe extends JavaPlugin {
 
     private boolean safeIsNpc(Player player) {
         return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
-    }
-
-    // Purge inactive players from the database, as defined in the configuration
-    private void runAutoPurge() {
-        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE) || autoPurging) {
-            return;
-        }
-
-        autoPurging = true;
-
-        ConsoleLogger.info("AutoPurging the Database...");
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
-        long until = calendar.getTimeInMillis();
-        Set<String> cleared = database.autoPurgeDatabase(until);
-        if (CollectionUtils.isEmpty(cleared)) {
-            return;
-        }
-
-        ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
-        ConsoleLogger.info("Purging user accounts...");
-        new PurgeTask(plugin, Bukkit.getConsoleSender(), cleared, true, Bukkit.getOfflinePlayers())
-                .runTaskTimer(plugin, 0, 1);
     }
 
     // Return the spawn location of a player

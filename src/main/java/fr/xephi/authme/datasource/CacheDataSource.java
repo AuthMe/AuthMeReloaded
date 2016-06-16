@@ -149,6 +149,18 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public Set<String> getRecordsToPurge(long until) {
+        return source.getRecordsToPurge(until);
+    }
+
+    @Override
+    public void purgeRecords(Set<String> toPurge) {
+        for (String name : toPurge) {
+            cachedAuths.invalidate(name);
+        }
+    }
+
+    @Override
     public boolean removeAuth(String name) {
         name = name.toLowerCase();
         boolean result = source.removeAuth(name);

@@ -8,6 +8,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -260,6 +261,65 @@ public class FlatFile implements DataSource {
         }
 
         return cleared;
+    }
+
+    @Override
+    public Set<String> getRecordsToPurge(long until) {
+        BufferedReader br = null;
+        Set<String> list = new HashSet<>();
+
+        try {
+            br = new BufferedReader(new FileReader(source));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] args = line.split(":");
+                if (args.length >= 4) {
+                    if (Long.parseLong(args[3]) >= until) {
+                        list.add(args[0]);
+                        continue;
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return list;
+        } finally {
+            silentClose(br);
+        }
+
+        return list;
+    }
+
+    @Override
+    public void purgeRecords(Set<String> toPurge) {
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        ArrayList<String> lines = new ArrayList<>();
+
+        try {
+            br = new BufferedReader(new FileReader(source));
+            bw = new BufferedWriter(new FileWriter(source));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] args = line.split(":");
+                if (args.length >= 4) {
+                    if (toPurge.contains(args[0])) {
+                        lines.add(line);
+                        continue;
+                    }
+                }
+            }
+
+            for (String l : lines) {
+                bw.write(l + "\n");
+            }
+        } catch (IOException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } finally {
+            silentClose(br);
+            silentClose(bw);
+        }
     }
 
     @Override

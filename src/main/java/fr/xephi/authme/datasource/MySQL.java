@@ -636,6 +636,39 @@ public class MySQL implements DataSource {
     }
 
     @Override
+    public Set<String> getRecordsToPurge(long until) {
+        Set<String> list = new HashSet<>();
+
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        try (Connection con = getConnection();
+             PreparedStatement selectPst = con.prepareStatement(select)) {
+            selectPst.setLong(1, until);
+            try (ResultSet rs = selectPst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString(col.NAME));
+                }
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+
+        return list;
+    }
+
+    @Override
+    public void purgeRecords(Set<String> toPurge) {
+        String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement deletePst = con.prepareStatement(delete)) {
+            for (String name : toPurge) {
+                deletePst.setString(1, name);
+                deletePst.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+    }
+
+    @Override
     public boolean removeAuth(String user) {
         user = user.toLowerCase();
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";

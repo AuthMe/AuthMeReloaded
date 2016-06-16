@@ -1,12 +1,7 @@
 package fr.xephi.authme.task;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.permission.PermissionNode;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.properties.PurgeSettings;
+import fr.xephi.authme.process.purge.PurgeService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,15 +14,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.inject.Inject;
-
 public class PurgeTask extends BukkitRunnable {
+
+    private PurgeService purgeService;
 
     //how many players we should check for each tick
     private static final int INTERVALL_CHECK = 5;
-
-    private final AuthMe plugin;
-    private final NewSetting newSetting;
 
     private final UUID sender;
     private final Set<String> toPurge;
@@ -39,19 +31,8 @@ public class PurgeTask extends BukkitRunnable {
 
     private int currentPage = 0;
 
-    public PurgeTask(AuthMe plugin, CommandSender sender, Set<String> purged) {
-        this(plugin, sender, purged, false, Bukkit.getOfflinePlayers());
-    }
-
-    public PurgeTask(AuthMe plugin, CommandSender sender, Set<String> purged, Set<OfflinePlayer> offlinePlayers) {
-        this(plugin, sender, purged, false
-                , offlinePlayers.toArray(new OfflinePlayer[offlinePlayers.size()]));
-    }
-
-    public PurgeTask(AuthMe plugin, CommandSender sender, Set<String> purged
+    public PurgeTask(CommandSender sender, Set<String> purged
             , boolean autoPurge, OfflinePlayer[] offlinePlayers) {
-        this.plugin = plugin;
-        this.newSetting = plugin.getSettings();
 
         if (sender instanceof Player) {
             this.sender = ((Player) sender).getUniqueId();
@@ -70,6 +51,21 @@ public class PurgeTask extends BukkitRunnable {
 //        for (String username : purged) {
 //            toPurge.add(username.toLowerCase());
 //        }
+    }
+
+    public PurgeTask(PurgeService service, CommandSender sender, Set<String> toPurge, OfflinePlayer[] offlinePlayers,
+                     boolean autoPurging) {
+        this.purgeService = service;
+        if (sender instanceof Player) {
+            this.sender = ((Player) sender).getUniqueId();
+        } else {
+            this.sender = null;
+        }
+
+        this.toPurge = toPurge;
+        this.totalPurgeCount = toPurge.size();
+        this.autoPurging = autoPurging;
+        this.offlinePlayers = offlinePlayers;
     }
 
     @Override
@@ -116,26 +112,11 @@ public class PurgeTask extends BukkitRunnable {
 
     private void purgeData(Set<OfflinePlayer> playerPortion, Set<String> namePortion) {
         // Purge other data
-        if (newSetting.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)
-                && plugin.getPluginHooks().isEssentialsAvailable()) {
-            plugin.dataManager.purgeEssentials(playerPortion);
-        }
-
-        if (newSetting.getProperty(PurgeSettings.REMOVE_PLAYER_DAT)) {
-            plugin.dataManager.purgeDat(playerPortion);
-        }
-
-        if (newSetting.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES)) {
-            plugin.dataManager.purgeLimitedCreative(namePortion);
-        }
-
-        if (newSetting.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE)) {
-            plugin.dataManager.purgeAntiXray(namePortion);
-        }
-
-        if (newSetting.getProperty(PurgeSettings.REMOVE_PERMISSIONS)) {
-            plugin.dataManager.purgePermissions(playerPortion);
-        }
+        purgeService.purgeEssentials(playerPortion);
+        purgeService.purgeDat(playerPortion);
+        purgeService.purgeLimitedCreative(namePortion);
+        purgeService.purgeAntiXray(namePortion);
+        purgeService.purgePermissions(playerPortion);
     }
 
     private void finish() {
@@ -146,7 +127,7 @@ public class PurgeTask extends BukkitRunnable {
 
         ConsoleLogger.info("AutoPurge Finished!");
         if (autoPurging) {
-            plugin.notifyAutoPurgeEnd();
+            purgeService.setAutoPurging(false);
         }
     }
 

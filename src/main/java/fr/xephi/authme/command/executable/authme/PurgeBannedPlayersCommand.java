@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.process.purge.PurgeService;
 import fr.xephi.authme.task.PurgeTask;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.ChatColor;
@@ -21,10 +22,7 @@ import java.util.Set;
 public class PurgeBannedPlayersCommand implements ExecutableCommand {
 
     @Inject
-    private DataSource dataSource;
-
-    @Inject
-    private AuthMe plugin;
+    private PurgeService purgeService;
 
     @Inject
     private BukkitService bukkitService;
@@ -38,12 +36,6 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
             namedBanned.add(offlinePlayer.getName().toLowerCase());
         }
 
-        //todo: note this should may run async because it may executes a SQL-Query
-        // Purge the banned players
-        dataSource.purgeBanned(namedBanned);
-
-        // Show a status message
-        sender.sendMessage(ChatColor.GOLD + "Purging user accounts...");
-        new PurgeTask(plugin, sender, namedBanned, bannedPlayers).runTaskTimer(plugin, 0, 1);
+        purgeService.purgeBanned(sender, namedBanned, bannedPlayers);
     }
 }
