@@ -36,8 +36,6 @@ public class AccountsCommandTest {
     @InjectMocks
     private AccountsCommand command;
     @Mock
-    private CommandSender sender;
-    @Mock
     private CommandService service;
     @Mock
     private DataSource dataSource;
@@ -47,6 +45,7 @@ public class AccountsCommandTest {
     @Test
     public void shouldGetAccountsOfCurrentUser() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");
         List<String> arguments = Collections.emptyList();
         given(dataSource.getAuth("tester")).willReturn(authWithIp("123.45.67.89"));
@@ -65,6 +64,7 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnUnknownUserForNullAuth() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(null);
 
@@ -80,6 +80,7 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnUnregisteredMessageForEmptyAuthList() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
         given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String>emptyList());
@@ -96,6 +97,7 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnSingleAccountMessage() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(authWithIp("56.78.90.123"));
         given(dataSource.getAllAuthsByIp("56.78.90.123")).willReturn(Collections.singletonList("SomeUser"));
@@ -115,6 +117,7 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnIpUnknown() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("123.45.67.89");
         given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String>emptyList());
 
@@ -130,6 +133,7 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnSingleAccountForIpQuery() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("24.24.48.48");
         given(dataSource.getAllAuthsByIp("24.24.48.48")).willReturn(Collections.singletonList("SomeUser"));
 
@@ -145,6 +149,7 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnAccountListForIpQuery() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("98.76.41.122");
         given(dataSource.getAllAuthsByIp("98.76.41.122")).willReturn(Arrays.asList("Tester", "Lester", "Taster"));
 

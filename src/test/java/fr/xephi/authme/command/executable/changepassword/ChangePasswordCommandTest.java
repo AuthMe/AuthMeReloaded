@@ -1,13 +1,11 @@
 package fr.xephi.authme.command.executable.changepassword;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.ChangePasswordTask;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.BlockCommandSender;
@@ -16,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -26,8 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.any;
@@ -47,16 +42,16 @@ public class ChangePasswordCommandTest {
     private ChangePasswordCommand command;
 
     @Mock
-    private PlayerCache playerCache;
-
-    @Mock
     private CommandService commandService;
 
     @Mock
-    private BukkitService bukkitService;
+    private PlayerCache playerCache;
 
     @Mock
     private ValidationService validationService;
+
+    @Mock
+    private Management management;
 
     @Before
     public void setSettings() {
@@ -110,20 +105,18 @@ public class ChangePasswordCommandTest {
     @Test
     public void shouldForwardTheDataForValidPassword() {
         // given
-        CommandSender sender = initPlayerWithName("parker", true);
+        String oldPass = "oldpass";
+        String newPass = "abc123";
+        Player player = initPlayerWithName("parker", true);
         given(validationService.validatePassword("abc123", "parker")).willReturn(new ValidationResult());
 
         // when
-        command.executeCommand(sender, Arrays.asList("abc123", "abc123"));
+        command.executeCommand(player, Arrays.asList(oldPass, newPass));
 
         // then
-        verify(validationService).validatePassword("abc123", "parker");
-        verify(commandService, never()).send(eq(sender), any(MessageKey.class));
-        ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
-        verify(bukkitService).runTaskAsynchronously(taskCaptor.capture());
-        ChangePasswordTask task = taskCaptor.getValue();
-        assertThat((String) ReflectionTestUtils.getFieldValue(ChangePasswordTask.class, task, "newPassword"),
-            equalTo("abc123"));
+        verify(validationService).validatePassword(newPass, "parker");
+        verify(commandService, never()).send(eq(player), any(MessageKey.class));
+        verify(management).performPasswordChange(player, oldPass, newPass);
     }
 
     private Player initPlayerWithName(String name, boolean loggedIn) {

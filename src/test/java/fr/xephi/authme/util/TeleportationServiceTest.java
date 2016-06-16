@@ -5,7 +5,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -47,9 +46,6 @@ public class TeleportationServiceTest {
 
     @Mock
     private NewSetting settings;
-
-    @Mock
-    private Messages messages;
 
     @Mock
     private BukkitService bukkitService;

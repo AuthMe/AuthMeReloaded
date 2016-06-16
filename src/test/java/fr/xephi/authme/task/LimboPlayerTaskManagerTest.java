@@ -67,9 +67,10 @@ public class LimboPlayerTaskManagerTest {
         BukkitTask bukkiTask = mock(BukkitTask.class);
         given(bukkitService.runTask(any(MessageTask.class))).willReturn(bukkiTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(12);
+        given(settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
 
         // when
-        limboPlayerTaskManager.registerMessageTask(name, key);
+        limboPlayerTaskManager.registerMessageTask(name, false);
 
         // then
         verify(limboPlayer).setMessageTask(bukkiTask);
@@ -81,12 +82,10 @@ public class LimboPlayerTaskManagerTest {
         // given
         String name = "ghost";
         given(limboCache.getLimboPlayer(name)).willReturn(null);
-        MessageKey key = MessageKey.REGISTER_MESSAGE;
-        given(messages.retrieve(key)).willReturn(new String[]{"Please register!"});
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(5);
 
         // when
-        limboPlayerTaskManager.registerMessageTask(name, key);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         // then
         verify(limboCache).getLimboPlayer(name);
@@ -100,14 +99,12 @@ public class LimboPlayerTaskManagerTest {
         String name = "Tester1";
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
         given(limboCache.getLimboPlayer(name)).willReturn(limboPlayer);
-        MessageKey key = MessageKey.REGISTER_EMAIL_MESSAGE;
-        given(messages.retrieve(key)).willReturn(new String[]{"Please register!"});
         BukkitTask bukkiTask = mock(BukkitTask.class);
         given(bukkitService.runTask(any(MessageTask.class))).willReturn(bukkiTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(0);
 
         // when
-        limboPlayerTaskManager.registerMessageTask(name, key);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         // then
         verifyZeroInteractions(limboPlayer, bukkitService);
@@ -122,19 +119,20 @@ public class LimboPlayerTaskManagerTest {
 
         String name = "bobby";
         given(limboCache.getLimboPlayer(name)).willReturn(limboPlayer);
-        MessageKey key = MessageKey.REGISTER_EMAIL_MESSAGE;
-        given(messages.retrieve(key)).willReturn(new String[]{"Please register", "Use /register"});
+        given(messages.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE))
+            .willReturn(new String[]{"Please register", "Use /register"});
 
         BukkitTask bukkiTask = mock(BukkitTask.class);
         given(bukkitService.runTask(any(MessageTask.class))).willReturn(bukkiTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
+        given(settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
 
         // when
-        limboPlayerTaskManager.registerMessageTask(name, key);
+        limboPlayerTaskManager.registerMessageTask(name, false);
 
         // then
         verify(limboPlayer).setMessageTask(bukkiTask);
-        verify(messages).retrieve(key);
+        verify(messages).retrieve(MessageKey.REGISTER_EMAIL_MESSAGE);
         verify(existingMessageTask).cancel();
     }
 

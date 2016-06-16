@@ -1,4 +1,4 @@
-package fr.xephi.authme.task;
+package fr.xephi.authme.process.changepassword;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -6,52 +6,60 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
-public class ChangePasswordTask implements Runnable {
+import javax.inject.Inject;
 
-    private final AuthMe plugin;
-    private final Player player;
-    private final String oldPassword;
-    private final String newPassword;
-    private final PasswordSecurity passwordSecurity;
+public class AsyncChangePassword implements AsynchronousProcess {
 
-    public ChangePasswordTask(AuthMe plugin, Player player, String oldPassword, String newPassword,
-                              PasswordSecurity passwordSecurity) {
-        this.plugin = plugin;
-        this.player = player;
-        this.oldPassword = oldPassword;
-        this.newPassword = newPassword;
-        this.passwordSecurity = passwordSecurity;
-    }
+    @Inject
+    private AuthMe plugin;
 
-    @Override
-    public void run() {
-        Messages m = plugin.getMessages();
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private ProcessService processService;
+
+    @Inject
+    private PasswordSecurity passwordSecurity;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private BukkitService bukkitService;
+
+    AsyncChangePassword() { }
+
+
+    public void changePassword(final Player player, String oldPassword, String newPassword) {
         final String name = player.getName().toLowerCase();
-        PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
+        PlayerAuth auth = playerCache.getAuth(name);
         if (passwordSecurity.comparePassword(oldPassword, auth.getPassword(), player.getName())) {
             HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, name);
             auth.setPassword(hashedPassword);
 
-            if (!plugin.getDataSource().updatePassword(auth)) {
-                m.send(player, MessageKey.ERROR);
+            if (!dataSource.updatePassword(auth)) {
+                processService.send(player, MessageKey.ERROR);
                 return;
             }
 
-            PlayerCache.getInstance().updatePlayer(auth);
-            m.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
+            playerCache.updatePlayer(auth);
+            processService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             ConsoleLogger.info(player.getName() + " changed his password");
-            if (Settings.bungee) {
+            if (processService.getProperty(HooksSettings.BUNGEECORD)) {
                 final String hash = hashedPassword.getHash();
                 final String salt = hashedPassword.getSalt();
-                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
-
+                bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override
                     public void run() {
                         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -64,7 +72,7 @@ public class ChangePasswordTask implements Runnable {
                 });
             }
         } else {
-            m.send(player, MessageKey.WRONG_PASSWORD);
+            processService.send(player, MessageKey.WRONG_PASSWORD);
         }
     }
 }

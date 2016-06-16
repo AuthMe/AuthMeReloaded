@@ -33,7 +33,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
 
         limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, MessageKey.LOGIN_MESSAGE);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         player.saveData();
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {

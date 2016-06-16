@@ -1,13 +1,10 @@
 package fr.xephi.authme.command.executable.changepassword;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.task.ChangePasswordTask;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.util.ValidationService;
 import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.entity.Player;
@@ -27,14 +24,10 @@ public class ChangePasswordCommand extends PlayerCommand {
     private PlayerCache playerCache;
 
     @Inject
-    private BukkitService bukkitService;
-
-    @Inject
     private ValidationService validationService;
 
     @Inject
-    // TODO ljacqu 20160531: Remove this once change password task runs as a process (via Management)
-    private PasswordSecurity passwordSecurity;
+    private Management management;
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
@@ -54,9 +47,6 @@ public class ChangePasswordCommand extends PlayerCommand {
             return;
         }
 
-        AuthMe plugin = AuthMe.getInstance();
-        // TODO ljacqu 20160117: Call async task via Management
-        bukkitService.runTaskAsynchronously(
-            new ChangePasswordTask(plugin, player, oldPassword, newPassword, passwordSecurity));
+        management.performPasswordChange(player, oldPassword, newPassword);
     }
 }

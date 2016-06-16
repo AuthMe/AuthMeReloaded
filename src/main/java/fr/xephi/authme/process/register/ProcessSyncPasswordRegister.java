@@ -81,7 +81,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
         limboCache.updateLimboPlayer(player);
         limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, MessageKey.LOGIN_MESSAGE);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();

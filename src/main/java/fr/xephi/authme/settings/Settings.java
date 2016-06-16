@@ -2,7 +2,6 @@ package fr.xephi.authme.settings;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -26,7 +25,6 @@ public final class Settings {
     public static boolean protectInventoryBeforeLogInEnabled;
     public static boolean isStopEnabled;
     public static boolean reloadSupport;
-    public static boolean bungee;
     public static boolean forceRegLogin;
     public static boolean noTeleport;
     public static boolean isRemoveSpeedEnabled;
@@ -65,7 +63,6 @@ public final class Settings {
         protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
-        bungee = load(HooksSettings.BUNGEECORD);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
         noTeleport = load(RestrictionSettings.NO_TELEPORT);

@@ -195,16 +195,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         // Timeout and message task
         limboPlayerTaskManager.registerTimeoutTask(player);
-
-        MessageKey msg;
-        if (isAuthAvailable) {
-            msg = MessageKey.LOGIN_MESSAGE;
-        } else {
-            msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
-                ? MessageKey.REGISTER_EMAIL_MESSAGE
-                : MessageKey.REGISTER_MESSAGE;
-        }
-        limboPlayerTaskManager.registerMessageTask(name, msg);
+        limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
     }
 
     private boolean isPlayerUnrestricted(String name) {
