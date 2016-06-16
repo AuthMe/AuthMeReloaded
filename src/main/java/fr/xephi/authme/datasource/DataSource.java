@@ -70,15 +70,6 @@ public interface DataSource extends Reloadable {
     boolean updatePassword(String user, HashedPassword password);
 
     /**
-     * Purge all records in the database whose last login was longer ago than
-     * the given time if they do not have the bypass permission.
-     *
-     * @param until The minimum last login
-     * @return The account names that have been removed
-     */
-    Set<String> autoPurgeDatabase(long until);
-
-    /**
      * Get all records in the database whose last login was before the given time.
      *
      * @param until The minimum last login

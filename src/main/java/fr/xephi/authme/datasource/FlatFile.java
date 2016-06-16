@@ -230,40 +230,6 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
-        BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-        Set<String> cleared = new HashSet<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                if (args.length >= 4) {
-                    if (Long.parseLong(args[3]) >= until) {
-                        lines.add(line);
-                        continue;
-                    }
-                }
-                cleared.add(args[0]);
-            }
-            bw = new BufferedWriter(new FileWriter(source));
-            for (String l : lines) {
-                bw.write(l + "\n");
-            }
-        } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return cleared;
-        } finally {
-            silentClose(br);
-            silentClose(bw);
-        }
-
-        return cleared;
-    }
-
-    @Override
     public Set<String> getRecordsToPurge(long until) {
         BufferedReader br = null;
         Set<String> list = new HashSet<>();

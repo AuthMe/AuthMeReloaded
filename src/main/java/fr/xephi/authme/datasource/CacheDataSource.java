@@ -139,16 +139,6 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
-        Set<String> cleared = source.autoPurgeDatabase(until);
-        for (String name : cleared) {
-            cachedAuths.invalidate(name);
-        }
-
-        return cleared;
-    }
-
-    @Override
     public Set<String> getRecordsToPurge(long until) {
         return source.getRecordsToPurge(until);
     }

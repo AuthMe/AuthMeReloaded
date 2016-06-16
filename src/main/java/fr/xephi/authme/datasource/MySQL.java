@@ -613,29 +613,6 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
-        Set<String> list = new HashSet<>();
-        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        try (Connection con = getConnection();
-             PreparedStatement selectPst = con.prepareStatement(select);
-             PreparedStatement deletePst = con.prepareStatement(delete)) {
-            selectPst.setLong(1, until);
-            try (ResultSet rs = selectPst.executeQuery()) {
-                while (rs.next()) {
-                    list.add(rs.getString(col.NAME));
-                }
-            }
-            deletePst.setLong(1, until);
-            deletePst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-
-        return list;
-    }
-
-    @Override
     public Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
 
