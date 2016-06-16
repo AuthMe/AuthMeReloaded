@@ -2,11 +2,14 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,24 +23,29 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link PurgeLastPositionCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PurgeLastPositionCommandTest {
+
+    @InjectMocks
+    private PurgeLastPositionCommand command;
+
+    @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private CommandService service;
+
 
     @Test
     public void shouldPurgeLastPosOfUser() {
         // given
         String player = "_Bobby";
         PlayerAuth auth = mock(PlayerAuth.class);
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.getAuth(player)).willReturn(auth);
-        CommandService service = mock(CommandService.class);
-        given(service.getDataSource()).willReturn(dataSource);
-
         CommandSender sender = mock(CommandSender.class);
-        ExecutableCommand command = new PurgeLastPositionCommand();
 
         // when
-        command.executeCommand(sender, Collections.singletonList(player), service);
+        command.executeCommand(sender, Collections.singletonList(player));
 
         // then
         verify(dataSource).getAuth(player);
@@ -51,17 +59,11 @@ public class PurgeLastPositionCommandTest {
         String player = "_Bobby";
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn(player);
-
         PlayerAuth auth = mock(PlayerAuth.class);
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.getAuth(player)).willReturn(auth);
-        CommandService service = mock(CommandService.class);
-        given(service.getDataSource()).willReturn(dataSource);
-
-        ExecutableCommand command = new PurgeLastPositionCommand();
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(dataSource).getAuth(player);
@@ -72,16 +74,11 @@ public class PurgeLastPositionCommandTest {
     @Test
     public void shouldHandleNonExistentUser() {
         // given
-        DataSource dataSource = mock(DataSource.class);
-        CommandService service = mock(CommandService.class);
-        given(service.getDataSource()).willReturn(dataSource);
-
-        ExecutableCommand command = new PurgeLastPositionCommand();
-        CommandSender sender = mock(CommandSender.class);
         String name = "invalidPlayer";
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(name), service);
+        command.executeCommand(sender, Collections.singletonList(name));
 
         // then
         verify(dataSource).getAuth(name);
@@ -94,17 +91,11 @@ public class PurgeLastPositionCommandTest {
         PlayerAuth auth1 = mock(PlayerAuth.class);
         PlayerAuth auth2 = mock(PlayerAuth.class);
         PlayerAuth auth3 = mock(PlayerAuth.class);
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.getAllAuths()).willReturn(Arrays.asList(auth1, auth2, auth3));
-        CommandService service = mock(CommandService.class);
-        given(service.getDataSource()).willReturn(dataSource);
-
-        ExecutableCommand command = new PurgeLastPositionCommand();
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("*"), service);
+        command.executeCommand(sender, Collections.singletonList("*"));
 
         // then
         verify(dataSource).getAllAuths();

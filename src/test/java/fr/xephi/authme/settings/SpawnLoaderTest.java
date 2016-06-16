@@ -2,6 +2,7 @@ package fr.xephi.authme.settings;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
@@ -48,7 +49,8 @@ public class SpawnLoaderTest {
     @Test
     public void shouldSetSpawn() {
         // given
-        SpawnLoader spawnLoader = new SpawnLoader(testFolder, settings, mock(PluginHooks.class));
+        SpawnLoader spawnLoader =
+            new SpawnLoader(testFolder, settings, mock(PluginHooks.class), mock(DataSource.class));
         World world = mock(World.class);
         given(world.getName()).willReturn("new_world");
         Location newSpawn = new Location(world, 123, 45.0, -67.89);

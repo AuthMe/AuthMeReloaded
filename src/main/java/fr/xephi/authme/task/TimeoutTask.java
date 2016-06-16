@@ -1,34 +1,34 @@
 package fr.xephi.authme.task;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import org.bukkit.entity.Player;
 
+/**
+ * Kicks a player if he hasn't logged in (scheduled to run after a configured delay).
+ */
 public class TimeoutTask implements Runnable {
 
-    private final String name;
-    private final Messages m;
     private final Player player;
+    private final String message;
+    private final PlayerCache playerCache;
 
     /**
      * Constructor for TimeoutTask.
      *
-     * @param plugin AuthMe
-     * @param name   String
-     * @param player Player
+     * @param player the player to check
+     * @param message the kick message
+     * @param playerCache player cache instance
      */
-    public TimeoutTask(AuthMe plugin, String name, Player player) {
-        this.m = plugin.getMessages();
-        this.name = name;
+    public TimeoutTask(Player player, String message, PlayerCache playerCache) {
+        this.message = message;
         this.player = player;
+        this.playerCache = playerCache;
     }
 
     @Override
     public void run() {
-        if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            player.kickPlayer(m.retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR));
+        if (!playerCache.isAuthenticated(player.getName())) {
+            player.kickPlayer(message);
         }
     }
 }

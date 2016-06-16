@@ -1,6 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -14,7 +13,7 @@ import static java.util.Arrays.asList;
 /**
  * Command description – defines which labels ("names") will lead to a command and points to the
  * {@link ExecutableCommand} implementation that executes the logic of the command.
- *
+ * <p>
  * CommandDescription instances are built hierarchically: they have one parent, or {@code null} for base commands
  * (main commands such as {@code /authme}), and may have multiple children extending the mapping of the parent: e.g. if
  * {@code /authme} has a child whose label is {@code "register"}, then {@code /authme register} is the command that
@@ -36,9 +35,9 @@ public class CommandDescription {
      */
     private String detailedDescription;
     /**
-     * The executable command instance described by this object.
+     * The class implementing the command described by this object.
      */
-    private ExecutableCommand executableCommand;
+    private Class<? extends ExecutableCommand> executableCommand;
     /**
      * The parent command.
      */
@@ -52,13 +51,13 @@ public class CommandDescription {
      */
     private List<CommandArgumentDescription> arguments;
     /**
-     * Command permissions required to execute this command.
+     * Permission node required to execute this command.
      */
-    private CommandPermissions permissions;
+    private PermissionNode permission;
 
     /**
      * Private constructor. Use {@link CommandDescription#builder()} to create instances of this class.
-     * <p />
+     * <p>
      * Note for developers: Instances should be created with {@link CommandDescription#createInstance} to be properly
      * registered in the command tree.
      */
@@ -68,21 +67,20 @@ public class CommandDescription {
     /**
      * Create an instance.
      *
-     * @param labels              List of command labels.
-     * @param description         Command description.
-     * @param detailedDescription Detailed comment description.
-     * @param executableCommand   The executable command, or null.
-     * @param parent              Parent command.
-     * @param arguments           Command arguments.
-     * @param permissions         The permissions required to execute this command.
+     * @param labels              command labels
+     * @param description         description of the command
+     * @param detailedDescription detailed command description
+     * @param executableCommand   class of the command implementation
+     * @param parent              parent command
+     * @param arguments           command arguments
+     * @param permission          permission node required to execute this command
      *
-     * @return The created instance
+     * @return the created instance
      * @see CommandDescription#builder()
      */
     private static CommandDescription createInstance(List<String> labels, String description,
-                                                 String detailedDescription, ExecutableCommand executableCommand,
-                                                 CommandDescription parent, List<CommandArgumentDescription> arguments,
-                                                 CommandPermissions permissions) {
+            String detailedDescription, Class<? extends ExecutableCommand> executableCommand, CommandDescription parent,
+            List<CommandArgumentDescription> arguments,  PermissionNode permission) {
         CommandDescription instance = new CommandDescription();
         instance.labels = labels;
         instance.description = description;
@@ -90,7 +88,7 @@ public class CommandDescription {
         instance.executableCommand = executableCommand;
         instance.parent = parent;
         instance.arguments = arguments;
-        instance.permissions = permissions;
+        instance.permission = permission;
 
         if (parent != null) {
             parent.addChild(instance);
@@ -114,7 +112,7 @@ public class CommandDescription {
     }
 
     /**
-     * Check whether this command description has a specific command.
+     * Check whether this command description has the given label.
      *
      * @param commandLabel The label to check for.
      *
@@ -130,18 +128,18 @@ public class CommandDescription {
     }
 
     /**
-     * Return the {@link ExecutableCommand} instance defined by the command description.
+     * Return the {@link ExecutableCommand} class implementing this command.
      *
-     * @return The executable command object.
+     * @return The executable command class
      */
-    public ExecutableCommand getExecutableCommand() {
+    public Class<? extends ExecutableCommand> getExecutableCommand() {
         return executableCommand;
     }
 
     /**
      * Return the parent.
      *
-     * @return The parent command, or null for base commands.
+     * @return The parent command, or null for base commands
      */
     public CommandDescription getParent() {
         return parent;
@@ -196,12 +194,12 @@ public class CommandDescription {
     }
 
     /**
-     * Return the permissions required to execute the command.
+     * Return the permission node required to execute the command.
      *
-     * @return The command permissions, or null if none are required to execute the command.
+     * @return The permission node, or null if none are required to execute the command.
      */
-    public CommandPermissions getCommandPermissions() {
-        return permissions;
+    public PermissionNode getPermission() {
+        return permission;
     }
 
     /**
@@ -220,10 +218,10 @@ public class CommandDescription {
         private List<String> labels;
         private String description;
         private String detailedDescription;
-        private ExecutableCommand executableCommand;
+        private Class<? extends ExecutableCommand> executableCommand;
         private CommandDescription parent;
         private List<CommandArgumentDescription> arguments = new ArrayList<>();
-        private CommandPermissions permissions;
+        private PermissionNode permission;
 
         /**
          * Build a CommandDescription from the builder or throw an exception if a mandatory
@@ -239,7 +237,7 @@ public class CommandDescription {
             // parents and permissions may be null; arguments may be empty
 
             return createInstance(labels, description, detailedDescription, executableCommand,
-                                  parent, arguments, permissions);
+                                  parent, arguments, permission);
         }
 
         public CommandBuilder labels(List<String> labels) {
@@ -261,7 +259,7 @@ public class CommandDescription {
             return this;
         }
 
-        public CommandBuilder executableCommand(ExecutableCommand executableCommand) {
+        public CommandBuilder executableCommand(Class<? extends ExecutableCommand> executableCommand) {
             this.executableCommand = executableCommand;
             return this;
         }
@@ -286,9 +284,14 @@ public class CommandDescription {
             return this;
         }
 
-        public CommandBuilder permissions(DefaultPermission defaultPermission,
-                                          PermissionNode... permissionNodes) {
-            this.permissions = new CommandPermissions(asList(permissionNodes), defaultPermission);
+        /**
+         * Add a permission node that a user must have to execute the command.
+         *
+         * @param permission The PermissionNode to add
+         * @return The builder
+         */
+        public CommandBuilder permission(PermissionNode permission) {
+            this.permission = permission;
             return this;
         }
     }

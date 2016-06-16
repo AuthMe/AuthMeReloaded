@@ -1,14 +1,18 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.settings.properties.PurgeSettings;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.task.PurgeTask;
+import fr.xephi.authme.util.BukkitService;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
+import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Command for purging data of banned players. Depending on the settings
@@ -16,30 +20,30 @@ import java.util.List;
  */
 public class PurgeBannedPlayersCommand implements ExecutableCommand {
 
-    @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        final AuthMe plugin = commandService.getAuthMe();
+    @Inject
+    private DataSource dataSource;
 
+    @Inject
+    private AuthMe plugin;
+
+    @Inject
+    private BukkitService bukkitService;
+
+    @Override
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Get the list of banned players
-        List<String> bannedPlayers = new ArrayList<>();
-        for (OfflinePlayer offlinePlayer : plugin.getServer().getBannedPlayers()) {
-            bannedPlayers.add(offlinePlayer.getName().toLowerCase());
+        Set<String> namedBanned = new HashSet<>();
+        Set<OfflinePlayer> bannedPlayers = bukkitService.getBannedPlayers();
+        for (OfflinePlayer offlinePlayer : bannedPlayers) {
+            namedBanned.add(offlinePlayer.getName().toLowerCase());
         }
 
+        //todo: note this should may run async because it may executes a SQL-Query
         // Purge the banned players
-        commandService.getDataSource().purgeBanned(bannedPlayers);
-        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)
-            && commandService.getPluginHooks().isEssentialsAvailable())
-            plugin.dataManager.purgeEssentials(bannedPlayers);
-        if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
-            plugin.dataManager.purgeDat(bannedPlayers);
-        if (commandService.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
-            plugin.dataManager.purgeLimitedCreative(bannedPlayers);
-        if (commandService.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
-            plugin.dataManager.purgeAntiXray(bannedPlayers);
+        dataSource.purgeBanned(namedBanned);
 
         // Show a status message
-        sender.sendMessage("[AuthMe] Database has been purged correctly");
+        sender.sendMessage(ChatColor.GOLD + "Purging user accounts...");
+        new PurgeTask(plugin, sender, namedBanned, bannedPlayers).runTaskTimer(plugin, 0, 1);
     }
 }

@@ -4,12 +4,14 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
@@ -19,25 +21,31 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ENABLE_PAS
 
 public class RegisterCommand extends PlayerCommand {
 
+    @Inject
+    private Management management;
+
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         if (commandService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
-            commandService.getManagement().performRegister(player, "", "");
+            management.performRegister(player, "", "", true);
             return;
         }
 
         // Ensure that there is 1 argument, or 2 if confirmation is required
-        final boolean useConfirmation = isConfirmationRequired(commandService);
+        final boolean useConfirmation = isConfirmationRequired();
         if (arguments.isEmpty() || useConfirmation && arguments.size() < 2) {
             commandService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
 
         if (commandService.getProperty(USE_EMAIL_REGISTRATION)) {
-            handleEmailRegistration(player, arguments, commandService);
+            handleEmailRegistration(player, arguments);
         } else {
-            handlePasswordRegistration(player, arguments, commandService);
+            handlePasswordRegistration(player, arguments);
         }
     }
 
@@ -46,15 +54,15 @@ public class RegisterCommand extends PlayerCommand {
         return "/authme register <playername> <password>";
     }
 
-    private void handlePasswordRegistration(Player player, List<String> arguments, CommandService commandService) {
+    private void handlePasswordRegistration(Player player, List<String> arguments) {
         if (commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION) && !arguments.get(0).equals(arguments.get(1))) {
             commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
         } else {
-            commandService.getManagement().performRegister(player, arguments.get(0), "");
+            management.performRegister(player, arguments.get(0), "", true);
         }
     }
 
-    private void handleEmailRegistration(Player player, List<String> arguments, CommandService commandService) {
+    private void handleEmailRegistration(Player player, List<String> arguments) {
         if (commandService.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {
             player.sendMessage("Cannot register: no email address is set for the server. "
                 + "Please contact an administrator");
@@ -70,17 +78,16 @@ public class RegisterCommand extends PlayerCommand {
             commandService.send(player, MessageKey.USAGE_REGISTER);
         } else {
             String thePass = RandomString.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
-            commandService.getManagement().performRegister(player, thePass, email);
+            management.performRegister(player, thePass, email, true);
         }
     }
 
     /**
      * Return whether the password or email has to be confirmed.
      *
-     * @param commandService The command service
      * @return True if the confirmation is needed, false otherwise
      */
-    private boolean isConfirmationRequired(CommandService commandService) {
+    private boolean isConfirmationRequired() {
         return commandService.getProperty(USE_EMAIL_REGISTRATION)
             ? commandService.getProperty(ENABLE_CONFIRM_EMAIL)
             : commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION);

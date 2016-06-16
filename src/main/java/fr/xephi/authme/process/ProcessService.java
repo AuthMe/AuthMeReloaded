@@ -1,52 +1,38 @@
 package fr.xephi.authme.process;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.permission.AuthGroupHandler;
+import fr.xephi.authme.permission.AuthGroupType;
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Collection;
+import javax.inject.Inject;
 
 /**
  * Service for asynchronous and synchronous processes.
  */
 public class ProcessService {
 
-    private final NewSetting settings;
-    private final Messages messages;
-    private final AuthMe authMe;
-    private final DataSource dataSource;
-    private final PasswordSecurity passwordSecurity;
-    private final PluginHooks pluginHooks;
-    private final SpawnLoader spawnLoader;
-    private final ValidationService validationService;
-    private final BukkitService bukkitService;
+    @Inject
+    private NewSetting settings;
 
-    public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, DataSource dataSource,
-                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks, SpawnLoader spawnLoader,
-                          ValidationService validationService, BukkitService bukkitService) {
-        this.settings = settings;
-        this.messages = messages;
-        this.authMe = authMe;
-        this.dataSource = dataSource;
-        this.passwordSecurity = passwordSecurity;
-        this.pluginHooks = pluginHooks;
-        this.spawnLoader = spawnLoader;
-        this.validationService = validationService;
-        this.bukkitService = bukkitService;
-    }
+    @Inject
+    private Messages messages;
+
+    @Inject
+    private ValidationService validationService;
+
+    @Inject
+    private PermissionsManager permissionsManager;
+
+    @Inject
+    private AuthGroupHandler authGroupHandler;
 
     /**
      * Retrieve a property's value.
@@ -109,104 +95,6 @@ public class ProcessService {
         return messages.retrieveSingle(key);
     }
 
-    /**
-     * Run a task.
-     *
-     * @param task the task to run
-     * @return the assigned task id
-     */
-    public BukkitTask runTask(Runnable task) {
-        return authMe.getServer().getScheduler().runTask(authMe, task);
-    }
-
-    /**
-     * Run a task at a later time.
-     *
-     * @param task the task to run
-     * @param delay the delay before running the task
-     * @return the assigned task id
-     */
-    public BukkitTask runTaskLater(Runnable task, long delay) {
-        return authMe.getServer().getScheduler().runTaskLater(authMe, task, delay);
-    }
-
-    /**
-     * Schedule a synchronous delayed task.
-     *
-     * @param task the task to schedule
-     * @return the task id
-     */
-    public int scheduleSyncDelayedTask(Runnable task) {
-        return authMe.getServer().getScheduler().scheduleSyncDelayedTask(authMe, task);
-    }
-
-    /**
-     * Emit an event.
-     *
-     * @param event the event to emit
-     */
-    public void callEvent(Event event) {
-        authMe.getServer().getPluginManager().callEvent(event);
-    }
-
-    /**
-     * Return the plugin instance.
-     *
-     * @return AuthMe instance
-     */
-    public AuthMe getAuthMe() {
-        return authMe;
-    }
-
-    /**
-     * Compute the hash for the given password.
-     *
-     * @param password the password to hash
-     * @param username the user to hash for
-     * @return the resulting hash
-     */
-    public HashedPassword computeHash(String password, String username) {
-        return passwordSecurity.computeHash(password, username);
-    }
-
-    /**
-     * Return the PluginHooks manager.
-     *
-     * @return PluginHooks instance
-     */
-    public PluginHooks getPluginHooks() {
-        return pluginHooks;
-    }
-
-    /**
-     * Return the spawn manager.
-     *
-     * @return SpawnLoader instance
-     */
-    public SpawnLoader getSpawnLoader() {
-        return spawnLoader;
-    }
-
-    /**
-     * Return the plugin's datasource.
-     *
-     * @return the datasource
-     */
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    /**
-     * Verifies whether a password is valid according to the plugin settings.
-     *
-     * @param password the password to verify
-     * @param username the username the password is associated with
-     * @return message key with the password error, or {@code null} if password is valid
-     */
-    public MessageKey validatePassword(String password, String username) {
-        return validationService.validatePassword(password, username);
-    }
-
     public boolean validateEmail(String email) {
         return validationService.validateEmail(email);
     }
@@ -215,12 +103,12 @@ public class ProcessService {
         return validationService.isEmailFreeForRegistration(email, sender);
     }
 
-    public Collection<? extends Player> getOnlinePlayers() {
-        return bukkitService.getOnlinePlayers();
+    public boolean hasPermission(Player player, PermissionNode node) {
+        return permissionsManager.hasPermission(player, node);
     }
 
-    public BukkitService getBukkitService() {
-        return bukkitService;
+    public boolean setGroup(Player player, AuthGroupType group) {
+        return authGroupHandler.setGroup(player, group);
     }
 
 }

@@ -3,10 +3,13 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -14,25 +17,27 @@ import java.util.List;
  */
 public class AccountsCommand implements ExecutableCommand {
 
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private BukkitService bukkitService;
+
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments,
-                               final CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         final String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         // Assumption: a player name cannot contain '.'
-        if (!playerName.contains(".")) {
-            commandService.runTaskAsynchronously(new Runnable() {
+        if (playerName.contains(".")) {
+            bukkitService.runTaskAsynchronously(new Runnable() {
                 @Override
                 public void run() {
-                    PlayerAuth auth = commandService.getDataSource().getAuth(playerName.toLowerCase());
-                    if (auth == null) {
-                        commandService.send(sender, MessageKey.UNKNOWN_USER);
-                        return;
-                    }
-
-                    List<String> accountList = commandService.getDataSource().getAllAuthsByIp(auth.getIp());
+                    List<String> accountList = dataSource.getAllAuthsByIp(playerName);
                     if (accountList.isEmpty()) {
-                        commandService.send(sender, MessageKey.USER_NOT_REGISTERED);
+                        sender.sendMessage("[AuthMe] This IP does not exist in the database.");
                     } else if (accountList.size() == 1) {
                         sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
                     } else {
@@ -41,12 +46,18 @@ public class AccountsCommand implements ExecutableCommand {
                 }
             });
         } else {
-            commandService.runTaskAsynchronously(new Runnable() {
+            bukkitService.runTaskAsynchronously(new Runnable() {
                 @Override
                 public void run() {
-                    List<String> accountList = commandService.getDataSource().getAllAuthsByIp(playerName);
+                    PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase());
+                    if (auth == null) {
+                        commandService.send(sender, MessageKey.UNKNOWN_USER);
+                        return;
+                    }
+
+                    List<String> accountList = dataSource.getAllAuthsByIp(auth.getIp());
                     if (accountList.isEmpty()) {
-                        sender.sendMessage("[AuthMe] This IP does not exist in the database.");
+                        commandService.send(sender, MessageKey.USER_NOT_REGISTERED);
                     } else if (accountList.size() == 1) {
                         sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
                     } else {

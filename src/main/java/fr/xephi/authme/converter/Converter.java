@@ -1,7 +1,16 @@
 package fr.xephi.authme.converter;
 
+import org.bukkit.command.CommandSender;
+
 /**
- * Common supertype for AuthMe converters.
+ * Interface for AuthMe converters.
  */
-public interface Converter extends Runnable {
+public interface Converter {
+
+    /**
+     * Execute the conversion.
+     *
+     * @param sender the sender who initialized the conversion
+     */
+    void execute(CommandSender sender);
 }

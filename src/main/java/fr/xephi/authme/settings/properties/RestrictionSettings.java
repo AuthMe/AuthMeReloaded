@@ -7,6 +7,7 @@ import fr.xephi.authme.settings.domain.SettingsClass;
 import java.util.List;
 
 import static fr.xephi.authme.settings.domain.Property.newListProperty;
+import static fr.xephi.authme.settings.domain.Property.newLowercaseListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class RestrictionSettings implements SettingsClass {
@@ -22,16 +23,10 @@ public class RestrictionSettings implements SettingsClass {
     public static final Property<Boolean> HIDE_CHAT =
         newProperty("settings.restrictions.hideChat", false);
 
-    @Comment({
-       "Allow unlogged users to use all the commands if registration is not forced!",
-       "WARNING: use this only if you need it!"})
-    public static final Property<Boolean> ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL =
-        newProperty("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
-
     @Comment("Allowed commands for unauthenticated players")
     public static final Property<List<String>> ALLOW_COMMANDS =
-        newListProperty("settings.restrictions.allowCommands",
-            "login", "register", "l", "reg", "email", "captcha");
+        newLowercaseListProperty("settings.restrictions.allowCommands",
+            "/login", "/register", "/l", "/reg", "/email", "/captcha");
 
     @Comment({
         "Max number of allowed registrations per IP",
@@ -61,7 +56,14 @@ public class RestrictionSettings implements SettingsClass {
         "This is different from \"teleportUnAuthedToSpawn\" that teleport player",
         "back to his quit location after the authentication."})
     public static final Property<Boolean> FORCE_SPAWN_LOCATION_AFTER_LOGIN =
-        newProperty("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
+        newProperty("settings.restrictions.ForceSpawnLocOnJoin.enabled", false);
+
+    @Comment({
+        "WorldNames where we need to force the spawn location",
+        "Case-sensitive!"})
+    public static final Property<List<String>> FORCE_SPAWN_ON_WORLDS =
+        newListProperty("settings.restrictions.ForceSpawnLocOnJoin.worlds",
+            "world", "world_nether", "world_the_end");
 
     @Comment("This option will save the quit location of the players.")
     public static final Property<Boolean> SAVE_QUIT_LOCATION =
@@ -80,7 +82,7 @@ public class RestrictionSettings implements SettingsClass {
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1"})
     public static final Property<List<String>> ALLOWED_RESTRICTED_USERS =
-        newListProperty("settings.restrictions.AllowedRestrictedUser");
+        newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
 
     @Comment("Should unregistered players be kicked immediately?")
     public static final Property<Boolean> KICK_NON_REGISTERED =
@@ -149,13 +151,6 @@ public class RestrictionSettings implements SettingsClass {
     public static final Property<Boolean> DISPLAY_OTHER_ACCOUNTS =
         newProperty("settings.restrictions.displayOtherAccounts", true);
 
-    @Comment({
-        "WorldNames where we need to force the spawn location for ForceSpawnLocOnJoinEnabled",
-        "Case-sensitive!"})
-    public static final Property<List<String>> FORCE_SPAWN_ON_WORLDS =
-        newListProperty("settings.restrictions.ForceSpawnOnTheseWorlds",
-            "world", "world_nether", "world_the_end");
-
     @Comment("Ban ip when the ip is not the ip registered in database")
     public static final Property<Boolean> BAN_UNKNOWN_IP =
         newProperty("settings.restrictions.banUnsafedIP", false);
@@ -194,7 +189,7 @@ public class RestrictionSettings implements SettingsClass {
         "It is case-sensitive!"
     })
     public static final Property<List<String>> UNRESTRICTED_NAMES =
-        newListProperty("settings.unrestrictions.UnrestrictedName");
+        newLowercaseListProperty("settings.unrestrictions.UnrestrictedName");
 
 
     private RestrictionSettings() {

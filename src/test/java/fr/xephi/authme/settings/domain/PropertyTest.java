@@ -38,6 +38,9 @@ public class PropertyTest {
         when(configuration.isList("list.path.test")).thenReturn(true);
         when(configuration.getStringList("list.path.test")).thenReturn(Arrays.asList("test1", "Test2", "3rd test"));
         when(configuration.isList("list.path.wrong")).thenReturn(false);
+        when(configuration.isList("lowercaselist.path.test")).thenReturn(true);
+        when(configuration.getStringList("lowercaselist.path.test")).thenReturn(Arrays.asList("test1", "Test2", "3rd test"));
+        when(configuration.isList("lowercaselist.path.wrong")).thenReturn(false);
     }
 
     /* Boolean */
@@ -141,4 +144,29 @@ public class PropertyTest {
         assertThat(result, contains("default", "list", "elements"));
     }
 
+    /* Lowercase String list */
+    @Test
+    public void shouldGetLowercaseStringListValue() {
+        // given
+        Property<List<String>> property = Property.newLowercaseListProperty("lowercaselist.path.test", "1", "b");
+
+        // when
+        List<String> result = property.getFromFile(configuration);
+
+        // then
+        assertThat(result, contains("test1", "test2", "3rd test"));
+    }
+
+    @Test
+    public void shouldGetLowercaseStringListDefault() {
+        // given
+        Property<List<String>> property =
+            Property.newLowercaseListProperty("lowercaselist.path.wrong", "default", "list", "elements");
+
+        // when
+        List<String> result = property.getFromFile(configuration);
+
+        // then
+        assertThat(result, contains("default", "list", "elements"));
+    }
 }

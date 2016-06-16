@@ -39,18 +39,21 @@ public class GeoLiteAPI {
         }
         final File pluginFolder = AuthMe.getInstance().getDataFolder();
         final File data = new File(pluginFolder, "GeoIP.dat");
-        boolean dataIsOld = (System.currentTimeMillis() - data.lastModified()) > TimeUnit.DAYS.toMillis(30);
-        if (dataIsOld && !data.delete()) {
-            ConsoleLogger.showError("Failed to delete GeoLiteAPI database");
-        }
         if (data.exists()) {
-            try {
-                lookupService = new LookupService(data);
-                ConsoleLogger.info(LICENSE);
-                return true;
-            } catch (IOException e) {
-                ConsoleLogger.logException("Failed to load GeoLiteAPI database", e);
-                return false;
+            boolean dataIsOld = (System.currentTimeMillis() - data.lastModified()) > TimeUnit.DAYS.toMillis(30);
+            if (!dataIsOld) {
+                try {
+                    lookupService = new LookupService(data);
+                    ConsoleLogger.info(LICENSE);
+                    return true;
+                } catch (IOException e) {
+                    ConsoleLogger.logException("Failed to load GeoLiteAPI database", e);
+                    return false;
+                }
+            } else {
+                if (!data.delete()) {
+                    ConsoleLogger.showError("Failed to delete GeoLiteAPI database");
+                }
             }
         }
         // Ok, let's try to download the data file!

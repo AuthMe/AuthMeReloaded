@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
@@ -24,10 +23,9 @@ public class AuthMeCommandTest {
         // given
         ExecutableCommand command = new AuthMeCommand();
         CommandSender sender = mock(CommandSender.class);
-        CommandService service = mock(CommandService.class);
 
         // when
-        command.executeCommand(sender, Collections.<String> emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         ArgumentCaptor<String> messagesCaptor = ArgumentCaptor.forClass(String.class);

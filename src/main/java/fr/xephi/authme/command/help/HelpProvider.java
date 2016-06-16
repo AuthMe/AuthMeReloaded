@@ -4,16 +4,18 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.FoundCommandResult;
+import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ import static java.util.Collections.singletonList;
 /**
  * Help syntax generator for AuthMe commands.
  */
-public class HelpProvider {
+public class HelpProvider implements SettingsDependent {
 
     // --- Bit flags ---
     /** Set to <i>not</i> show the command. */
@@ -43,14 +45,15 @@ public class HelpProvider {
     public static final int ALL_OPTIONS = ~HIDE_COMMAND;
 
     private final PermissionsManager permissionsManager;
-    private final String helpHeader;
+    private String helpHeader;
 
-    public HelpProvider(PermissionsManager permissionsManager, String helpHeader) {
+    @Inject
+    HelpProvider(PermissionsManager permissionsManager, NewSetting settings) {
         this.permissionsManager = permissionsManager;
-        this.helpHeader = helpHeader;
+        loadSettings(settings);
     }
 
-    public List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
+    private List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
         if (result.getCommandDescription() == null) {
             return singletonList(ChatColor.DARK_RED + "Failed to retrieve any help information!");
         }
@@ -84,6 +87,25 @@ public class HelpProvider {
         return lines;
     }
 
+    /**
+     * Output the help for a given command.
+     *
+     * @param sender The sender to output the help to
+     * @param result The result to output information about
+     * @param options Output options, see {@link HelpProvider}
+     */
+    public void outputHelp(CommandSender sender, FoundCommandResult result, int options) {
+        List<String> lines = printHelp(sender, result, options);
+        for (String line : lines) {
+            sender.sendMessage(line);
+        }
+    }
+
+    @Override
+    public void loadSettings(NewSetting settings) {
+        helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
+    }
+
     private static void printDetailedDescription(CommandDescription command, List<String> lines) {
         lines.add(ChatColor.GOLD + "Short description: " + ChatColor.WHITE + command.getDescription());
         lines.add(ChatColor.GOLD + "Detailed description:");
@@ -110,7 +132,6 @@ public class HelpProvider {
     }
 
     private static void printAlternatives(CommandDescription command, List<String> correctLabels, List<String> lines) {
-        // TODO ljacqu 20151219: Need to show alternatives for base labels too? E.g. /r for /register
         if (command.getLabels().size() <= 1 || correctLabels.size() <= 1) {
             return;
         }
@@ -130,25 +151,22 @@ public class HelpProvider {
 
     private static void printPermissions(CommandDescription command, CommandSender sender,
                                         PermissionsManager permissionsManager, List<String> lines) {
-        CommandPermissions permissions = command.getCommandPermissions();
-        // TODO ljacqu 20151224: Isn't it possible to have a default permission but no permission nodes?
-        if (permissions == null || CollectionUtils.isEmpty(permissions.getPermissionNodes())) {
+        PermissionNode permission = command.getPermission();
+        if (permission == null) {
             return;
         }
         lines.add(ChatColor.GOLD + "Permissions:");
 
-        for (PermissionNode node : permissions.getPermissionNodes()) {
-            boolean hasPermission = permissionsManager.hasPermission(sender, node);
-            final String nodePermsString = "" + ChatColor.GRAY + ChatColor.ITALIC
-                + (hasPermission ? " (You have permission)" : " (No permission)");
-            lines.add(" " + ChatColor.YELLOW + ChatColor.ITALIC + node.getNode() + nodePermsString);
-        }
+        boolean hasPermission = permissionsManager.hasPermission(sender, permission);
+        final String nodePermsString = "" + ChatColor.GRAY + ChatColor.ITALIC
+            + (hasPermission ? " (You have permission)" : " (No permission)");
+        lines.add(" " + ChatColor.YELLOW + ChatColor.ITALIC + permission.getNode() + nodePermsString);
 
         // Addendum to the line to specify whether the sender has permission or not when default is OP_ONLY
-        final DefaultPermission defaultPermission = permissions.getDefaultPermission();
+        final DefaultPermission defaultPermission = permission.getDefaultPermission();
         String addendum = "";
         if (DefaultPermission.OP_ONLY.equals(defaultPermission)) {
-            addendum = PermissionsManager.evaluateDefaultPermission(defaultPermission, sender)
+            addendum = defaultPermission.evaluate(sender)
                 ? " (You have permission)"
                 : " (No permission)";
         }
@@ -156,7 +174,7 @@ public class HelpProvider {
             + defaultPermission.getTitle() + addendum);
 
         // Evaluate if the sender has permission to the command
-        if (permissionsManager.hasPermission(sender, command)) {
+        if (permissionsManager.hasPermission(sender, command.getPermission())) {
             lines.add(ChatColor.GOLD + " Result: " + ChatColor.GREEN + ChatColor.ITALIC + "You have permission");
         } else {
             lines.add(ChatColor.GOLD + " Result: " + ChatColor.DARK_RED + ChatColor.ITALIC + "No permission");

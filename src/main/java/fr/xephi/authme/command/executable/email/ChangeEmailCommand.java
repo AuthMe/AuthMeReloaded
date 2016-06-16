@@ -1,9 +1,10 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.process.Management;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -11,11 +12,14 @@ import java.util.List;
  */
 public class ChangeEmailCommand extends PlayerCommand {
 
+    @Inject
+    private Management management;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         String playerMailOld = arguments.get(0);
         String playerMailNew = arguments.get(1);
 
-        commandService.getManagement().performChangeEmail(player, playerMailOld, playerMailNew);
+        management.performChangeEmail(player, playerMailOld, playerMailNew);
     }
 }

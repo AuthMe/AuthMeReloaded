@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -16,8 +17,8 @@ import java.util.Arrays;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link AddEmailCommand}.
@@ -25,20 +26,25 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class AddEmailCommandTest {
 
+    @InjectMocks
+    private AddEmailCommand command;
+
     @Mock
     private CommandService commandService;
+
+    @Mock
+    private Management management;
 
     @Test
     public void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
-        AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), commandService);
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
-        verify(commandService, never()).getManagement();
+        verifyZeroInteractions(management);
     }
 
     @Test
@@ -47,12 +53,9 @@ public class AddEmailCommandTest {
         Player sender = mock(Player.class);
         String email = "mail@example";
         given(commandService.validateEmail(email)).willReturn(true);
-        Management management = mock(Management.class);
-        given(commandService.getManagement()).willReturn(management);
-        AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList(email, email), commandService);
+        command.executeCommand(sender, Arrays.asList(email, email));
 
         // then
         verify(management).performAddEmail(sender, email);
@@ -64,13 +67,12 @@ public class AddEmailCommandTest {
         Player sender = mock(Player.class);
         String email = "asdfasdf@example.com";
         given(commandService.validateEmail(email)).willReturn(true);
-        AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList(email, "wrongConf"), commandService);
+        command.executeCommand(sender, Arrays.asList(email, "wrongConf"));
 
         // then
-        verify(commandService, never()).getManagement();
+        verifyZeroInteractions(management);
         verify(commandService).send(sender, MessageKey.CONFIRM_EMAIL_MESSAGE);
     }
 

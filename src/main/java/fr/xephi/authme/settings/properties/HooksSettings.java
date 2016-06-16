@@ -25,7 +25,7 @@ public class HooksSettings implements SettingsClass {
 
     @Comment("Do we need to disable Essentials SocialSpy on join?")
     public static final Property<Boolean> DISABLE_SOCIAL_SPY =
-        newProperty("Hooks.disableSocialSpy", false);
+        newProperty("Hooks.disableSocialSpy", true);
 
     @Comment("Do we need to force /motd Essentials command on join?")
     public static final Property<Boolean> USE_ESSENTIALS_MOTD =

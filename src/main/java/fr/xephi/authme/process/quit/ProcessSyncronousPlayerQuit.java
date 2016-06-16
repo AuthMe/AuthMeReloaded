@@ -1,40 +1,12 @@
 package fr.xephi.authme.process.quit;
 
-import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.process.SynchronousProcess;
 import org.bukkit.entity.Player;
 
-/**
- */
-public class ProcessSyncronousPlayerQuit implements Runnable {
 
-    protected final AuthMe plugin;
-    protected final Player player;
-    protected final boolean isOp;
-    protected final boolean needToChange;
+public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
 
-    /**
-     * Constructor for ProcessSyncronousPlayerQuit.
-     *
-     * @param plugin       AuthMe
-     * @param player       Player
-     * @param isOp         boolean
-     * @param needToChange boolean
-     */
-    public ProcessSyncronousPlayerQuit(AuthMe plugin, Player player
-        , boolean isOp, boolean needToChange) {
-        this.plugin = plugin;
-        this.player = player;
-        this.isOp = isOp;
-        this.needToChange = needToChange;
-    }
-
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
-    @Override
-    public void run() {
+    public void processSyncQuit(Player player, boolean isOp, boolean needToChange) {
         if (needToChange) {
             player.setOp(isOp);
         }

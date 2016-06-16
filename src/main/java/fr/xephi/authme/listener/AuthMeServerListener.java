@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -16,26 +17,26 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
+import javax.inject.Inject;
+
 /**
  */
 public class AuthMeServerListener implements Listener {
 
-    private final AuthMe plugin;
-    private final Messages messages;
-    private final NewSetting settings;
-    private final PluginHooks pluginHooks;
-    private final SpawnLoader spawnLoader;
-    private final ValidationService validationService;
-
-    public AuthMeServerListener(AuthMe plugin, Messages messages, NewSetting settings, PluginHooks pluginHooks,
-                                SpawnLoader spawnLoader, ValidationService validationService) {
-        this.plugin = plugin;
-        this.messages = messages;
-        this.settings = settings;
-        this.pluginHooks = pluginHooks;
-        this.spawnLoader = spawnLoader;
-        this.validationService = validationService;
-    }
+    @Inject
+    private AuthMe plugin;
+    @Inject
+    private Messages messages;
+    @Inject
+    private NewSetting settings;
+    @Inject
+    private PluginHooks pluginHooks;
+    @Inject
+    private SpawnLoader spawnLoader;
+    @Inject
+    private ValidationService validationService;
+    @Inject
+    private PermissionsManager permissionsManager;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
@@ -54,10 +55,11 @@ public class AuthMeServerListener implements Listener {
             return;
         }
 
-        // Call the onPluginDisable method in the permissions manager
-        plugin.getPermissionsManager().onPluginDisable(event);
-
         final String pluginName = event.getPlugin().getName();
+
+        // Call the onPluginDisable method in the permissions manager
+        permissionsManager.onPluginDisable(pluginName);
+
         if ("Essentials".equalsIgnoreCase(pluginName)) {
             pluginHooks.unhookEssentials();
             ConsoleLogger.info("Essentials has been disabled: unhooking");
@@ -87,10 +89,11 @@ public class AuthMeServerListener implements Listener {
             return;
         }
 
-        // Call the onPluginEnable method in the permissions manager
-        plugin.getPermissionsManager().onPluginEnable(event);
-
         final String pluginName = event.getPlugin().getName();
+
+        // Call the onPluginEnable method in the permissions manager
+        permissionsManager.onPluginEnable(pluginName);
+
         if ("Essentials".equalsIgnoreCase(pluginName)) {
             pluginHooks.tryHookToEssentials();
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {

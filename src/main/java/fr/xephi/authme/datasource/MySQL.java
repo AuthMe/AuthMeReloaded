@@ -3,6 +3,7 @@ package fr.xephi.authme.datasource;
 import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -24,10 +25,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-/**
- */
 public class MySQL implements DataSource {
 
     private final String host;
@@ -105,34 +106,36 @@ public class MySQL implements DataSource {
         ds = hikariDataSource;
     }
 
-    private synchronized void setConnectionArguments() throws RuntimeException {
+    private void setConnectionArguments() throws RuntimeException {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
-        ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
-        ds.addDataSourceProperty("rewriteBatchedStatements", "true");
-        ds.addDataSourceProperty("jdbcCompliantTruncation", "false");
-        ds.addDataSourceProperty("cachePrepStmts", "true");
-        ds.addDataSourceProperty("prepStmtCacheSize", "250");
-        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
-        //set utf-8 as default encoding
+        // Database URL
+        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+
+        // Auth
+        ds.setUsername(this.username);
+        ds.setPassword(this.password);
+
+        // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
         ds.addDataSourceProperty("encoding","UTF-8");
         ds.addDataSourceProperty("useUnicode", "true");
 
-        ds.setUsername(this.username);
-        ds.setPassword(this.password);
-        ds.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
-        ds.setMaxLifetime(180000); // 3 Min
-        ds.setIdleTimeout(60000); // 1 Min
-        ds.setMinimumIdle(2);
-        ds.setMaximumPoolSize((Runtime.getRuntime().availableProcessors() * 2) + 1);
+        // Random stuff
+        ds.addDataSourceProperty("rewriteBatchedStatements", "true");
+        ds.addDataSourceProperty("jdbcCompliantTruncation", "false");
+
+        // Caching
+        ds.addDataSourceProperty("cachePrepStmts", "true");
+        ds.addDataSourceProperty("prepStmtCacheSize", "250");
+        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
     @Override
-    public synchronized void reload() throws RuntimeException {
+    public void reload() throws RuntimeException {
         if (ds != null) {
             ds.close();
         }
@@ -140,11 +143,11 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
-    private synchronized Connection getConnection() throws SQLException {
+    private Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 
-    private synchronized void setupConnection() throws SQLException {
+    private void setupConnection() throws SQLException {
         try (Connection con = getConnection()) {
             Statement st = con.createStatement();
             DatabaseMetaData md = con.getMetaData();
@@ -257,7 +260,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized boolean isAuthAvailable(String user) {
+    public boolean isAuthAvailable(String user) {
         String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
         ResultSet rs = null;
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -293,7 +296,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized PlayerAuth getAuth(String user) {
+    public PlayerAuth getAuth(String user) {
         String sql = "SELECT * FROM " + tableName + " WHERE " + col.NAME + "=?;";
         PlayerAuth auth;
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -327,7 +330,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized boolean saveAuth(PlayerAuth auth) {
+    public boolean saveAuth(PlayerAuth auth) {
         try (Connection con = getConnection()) {
             PreparedStatement pst;
             PreparedStatement pst2;
@@ -424,6 +427,7 @@ public class MySQL implements DataSource {
                 rs.close();
                 pst.close();
             } else if (hashAlgorithm == HashAlgorithm.WORDPRESS) {
+                // NOTE: Eclipse says pst should be closed HERE, but it's a bug, we already close it above. -sgdc3
                 pst = con.prepareStatement("SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
@@ -500,6 +504,7 @@ public class MySQL implements DataSource {
                 rs.close();
                 pst.close();
             } else if (hashAlgorithm == HashAlgorithm.XFBCRYPT) {
+                // NOTE: Eclipse says pst should be closed HERE, but it's a bug, we already close it above. -sgdc3
                 pst = con.prepareStatement("SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
@@ -528,7 +533,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized boolean updatePassword(PlayerAuth auth) {
+    public boolean updatePassword(PlayerAuth auth) {
         return updatePassword(auth.getNickname(), auth.getPassword());
     }
 
@@ -591,7 +596,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateSession(PlayerAuth auth) {
+    public boolean updateSession(PlayerAuth auth) {
         String sql = "UPDATE " + tableName + " SET "
             + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -608,8 +613,8 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized List<String> autoPurgeDatabase(long until) {
-        List<String> list = new ArrayList<>();
+    public Set<String> autoPurgeDatabase(long until) {
+        Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         try (Connection con = getConnection();
@@ -626,11 +631,12 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             logSqlException(ex);
         }
+
         return list;
     }
 
     @Override
-    public synchronized boolean removeAuth(String user) {
+    public boolean removeAuth(String user) {
         user = user.toLowerCase();
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         PreparedStatement xfSelect = null;
@@ -663,7 +669,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateQuitLoc(PlayerAuth auth) {
+    public boolean updateQuitLoc(PlayerAuth auth) {
         String sql = "UPDATE " + tableName
             + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=?"
             + " WHERE " + col.NAME + "=?;";
@@ -682,7 +688,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateEmail(PlayerAuth auth) {
+    public boolean updateEmail(PlayerAuth auth) {
         String sql = "UPDATE " + tableName + " SET " + col.EMAIL + " =? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getEmail());
@@ -696,14 +702,14 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized void close() {
+    public void close() {
         if (ds != null && !ds.isClosed()) {
             ds.close();
         }
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByIp(String ip) {
+    public List<String> getAllAuthsByIp(String ip) {
         List<String> result = new ArrayList<>();
         String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -720,7 +726,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized int countAuthsByEmail(String email) {
+    public int countAuthsByEmail(String email) {
         String sql = "SELECT COUNT(1) FROM " + tableName + " WHERE UPPER(" + col.EMAIL + ") = UPPER(?)";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, email);
@@ -736,7 +742,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized void purgeBanned(List<String> banned) {
+    public void purgeBanned(Set<String> banned) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {

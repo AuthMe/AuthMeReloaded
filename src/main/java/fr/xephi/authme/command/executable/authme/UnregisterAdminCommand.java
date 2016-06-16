@@ -1,24 +1,25 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupHandler;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
@@ -28,31 +29,53 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
  */
 public class UnregisterAdminCommand implements ExecutableCommand {
 
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private CommandService commandService;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private BukkitService bukkitService;
+
+    @Inject
+    private LimboCache limboCache;
+
+    @Inject
+    private LimboPlayerTaskManager limboPlayerTaskManager;
+
+    @Inject
+    private AuthGroupHandler authGroupHandler;
+
+
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player name
         String playerName = arguments.get(0);
         String playerNameLowerCase = playerName.toLowerCase();
 
         // Make sure the user is valid
-        if (!commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
+        if (!dataSource.isAuthAvailable(playerNameLowerCase)) {
             commandService.send(sender, MessageKey.UNKNOWN_USER);
             return;
         }
 
         // Remove the player
-        if (!commandService.getDataSource().removeAuth(playerNameLowerCase)) {
+        if (!dataSource.removeAuth(playerNameLowerCase)) {
             commandService.send(sender, MessageKey.ERROR);
             return;
         }
 
         // Unregister the player
-        Player target = commandService.getPlayer(playerNameLowerCase);
-        PlayerCache.getInstance().removePlayer(playerNameLowerCase);
-        Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
+        Player target = bukkitService.getPlayerExact(playerNameLowerCase);
+        playerCache.removePlayer(playerNameLowerCase);
+        authGroupHandler.setGroup(target, AuthGroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {
             if (commandService.getProperty(RegistrationSettings.FORCE)) {
-                applyUnregisteredEffectsAndTasks(target, commandService);
+                applyUnregisteredEffectsAndTasks(target);
             }
             commandService.send(target, MessageKey.UNREGISTERED_SUCCESS);
         }
@@ -68,27 +91,18 @@ public class UnregisterAdminCommand implements ExecutableCommand {
      * timeout kick, blindness.
      *
      * @param target the player that was unregistered
-     * @param service the command service
      */
-    private void applyUnregisteredEffectsAndTasks(Player target, CommandService service) {
-        final AuthMe plugin = service.getAuthMe();
-        final BukkitService bukkitService = service.getBukkitService();
-        final String playerNameLowerCase = target.getName().toLowerCase();
-
+    private void applyUnregisteredEffectsAndTasks(Player target) {
+        // TODO #765: Remove use of Utils method and behave according to settings
         Utils.teleportToSpawn(target);
-        LimboCache.getInstance().addLimboPlayer(target);
-        int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-        int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-        if (timeOut != 0) {
-            BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, playerNameLowerCase, target), timeOut);
-            LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTask(id);
-        }
-        LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTask(
-            bukkitService.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
-                playerNameLowerCase, MessageKey.REGISTER_MESSAGE, interval)));
 
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
+        limboCache.addLimboPlayer(target);
+        limboPlayerTaskManager.registerTimeoutTask(target);
+        limboPlayerTaskManager.registerMessageTask(target.getName(), false);
+
+        final int timeout = commandService.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+        if (commandService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+            target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
     }
 }

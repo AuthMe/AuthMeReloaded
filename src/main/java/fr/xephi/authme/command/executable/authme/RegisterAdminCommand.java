@@ -1,68 +1,85 @@
 package fr.xephi.authme.command.executable.authme;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Admin command to register a user.
  */
 public class RegisterAdminCommand implements ExecutableCommand {
 
+    @Inject
+    private PasswordSecurity passwordSecurity;
+
+    @Inject
+    private CommandService commandService;
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private BukkitService bukkitService;
+
+    @Inject
+    private ValidationService validationService;
+
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments,
-                               final CommandService commandService) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player name and password
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
         final String playerNameLowerCase = playerName.toLowerCase();
 
         // Command logic
-        MessageKey passwordError = commandService.validatePassword(playerPass, playerName);
-        if (passwordError != null) {
-            commandService.send(sender, passwordError);
+        ValidationResult passwordValidation = validationService.validatePassword(playerPass, playerName);
+        if (passwordValidation.hasError()) {
+            commandService.send(sender, passwordValidation.getMessageKey(), passwordValidation.getArgs());
             return;
         }
 
-        commandService.runTaskAsynchronously(new Runnable() {
+        bukkitService.runTaskAsynchronously(new Runnable() {
 
             @Override
             public void run() {
-                if (commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
+                if (dataSource.isAuthAvailable(playerNameLowerCase)) {
                     commandService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
                     return;
                 }
-                HashedPassword hashedPassword = commandService.getPasswordSecurity()
-                    .computeHash(playerPass, playerNameLowerCase);
+                HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerNameLowerCase)
                     .realName(playerName)
                     .password(hashedPassword)
                     .build();
 
-                if (!commandService.getDataSource().saveAuth(auth)) {
+                if (!dataSource.saveAuth(auth)) {
                     commandService.send(sender, MessageKey.ERROR);
                     return;
                 }
-                commandService.getDataSource().setUnlogged(playerNameLowerCase);
+                dataSource.setUnlogged(playerNameLowerCase);
 
                 commandService.send(sender, MessageKey.REGISTER_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
-                Player player = commandService.getPlayer(playerName);
+                final Player player = bukkitService.getPlayerExact(playerName);
                 if (player != null) {
-                    final Player p = player;
-                    p.getServer().getScheduler().scheduleSyncDelayedTask(commandService.getAuthMe(), new Runnable() {
+                    bukkitService.scheduleSyncDelayedTask(new Runnable() {
                         @Override
                         public void run() {
-                            p.kickPlayer("An admin just registered you, please log in again");
+                            player.kickPlayer("An admin just registered you, please log in again");
                         }
                     });
                 }

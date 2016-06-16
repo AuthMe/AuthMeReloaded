@@ -83,4 +83,19 @@ public enum PermissionsSystemType {
     public String toString() {
         return getName();
     }
+
+    /**
+     * Check if a given plugin is a permissions system.
+     *
+     * @param name The name of the plugin to check.
+     * @return If the plugin is a valid permissions system.
+     */
+    public static boolean isPermissionSystem(String name) {
+        for (PermissionsSystemType permissionsSystemType : values()) {
+            if (permissionsSystemType.pluginName.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

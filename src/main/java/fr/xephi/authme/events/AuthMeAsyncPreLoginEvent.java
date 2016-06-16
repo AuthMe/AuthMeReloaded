@@ -5,7 +5,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This event is called when a player uses the /login command with correct credentials.
+ * This event is called when a player uses the login command,
+ * it's fired even when a user does a /login with invalid password.
  * {@link #setCanLogin(boolean) event.setCanLogin(false)} prevents the player from logging in.
  */
 public class AuthMeAsyncPreLoginEvent extends CustomEvent {

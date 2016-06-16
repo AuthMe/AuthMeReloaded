@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -192,8 +193,8 @@ public abstract class AbstractResourceClosingTest {
         for (Class<?> paramType : method.getParameterTypes()) {
             // Checking List.class == paramType instead of Class#isAssignableFrom means we really only accept List,
             // but that is a sensible assumption and makes our life much easier later on when juggling with Type
-            Object param = (List.class == paramType)
-                ? getTypedList(method.getGenericParameterTypes()[index])
+            Object param = Collection.class.isAssignableFrom(paramType)
+                ? getTypedCollection(method.getGenericParameterTypes()[index])
                 : PARAM_VALUES.get(paramType);
             Preconditions.checkNotNull(param, "No param type for " + paramType);
             params.add(param);
@@ -203,20 +204,27 @@ public abstract class AbstractResourceClosingTest {
     }
 
     /**
-     * Return a list with some test elements that correspond to the given list type's generic type.
+     * Return a collection of the required type with some test elements that correspond to the
+     * collection's generic type.
      *
-     * @param type The list type to process and build a test list for
-     * @return Test list with sample elements of the correct type
+     * @param type The collection type to process and build a test collection for
+     * @return Test collection with sample elements of the correct type
      */
-    private static List<?> getTypedList(Type type) {
+    private static Collection<?> getTypedCollection(Type type) {
         if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
-            Preconditions.checkArgument(List.class == parameterizedType.getRawType(), type + " should be a List");
+            Preconditions.checkArgument(Collection.class.isAssignableFrom((Class<?>) parameterizedType.getRawType()),
+                type + " should extend from Collection");
             Type genericType = parameterizedType.getActualTypeArguments()[0];
 
             Object element = PARAM_VALUES.get(genericType);
             Preconditions.checkNotNull(element, "No sample element for list of generic type " + genericType);
-            return Arrays.asList(element, element, element);
+            if (List.class == parameterizedType.getRawType()) {
+                return Arrays.asList(element, element, element);
+            } else if (Set.class == parameterizedType.getRawType()) {
+                return new HashSet<>(Arrays.asList(element, element, element));
+            }
+            throw new IllegalStateException("Unknown collection type " + parameterizedType.getRawType());
         }
         throw new IllegalStateException("Cannot build list for unexpected Type: " + type);
     }

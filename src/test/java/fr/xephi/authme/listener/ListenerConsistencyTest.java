@@ -106,7 +106,11 @@ public final class ListenerConsistencyTest {
         // Exclude any methods with "$" in it: jacoco creates a "$jacocoInit" method we want to ignore, and
         // methods like "access$000" are created by the compiler when a private member is being accessed by an inner
         // class, which is not of interest for us
-        return !Modifier.isPrivate(method.getModifiers()) && !method.getName().contains("$");
+        if (Modifier.isPrivate(method.getModifiers()) || method.getName().contains("$")) {
+            return false;
+        }
+        // Skip reload() method (implementation of Reloadable interface)
+        return !"reload".equals(method.getName()) || method.getParameterTypes().length > 0;
     }
 
 }

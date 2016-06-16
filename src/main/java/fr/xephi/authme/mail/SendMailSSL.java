@@ -2,7 +2,6 @@ package fr.xephi.authme.mail;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ImageGenerator;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.EmailSettings;
@@ -132,7 +131,7 @@ public class SendMailSSL {
             .replace("<generatedpass />", newPass);
     }
 
-	private static void setPropertiesForPort(HtmlEmail email, int port, NewSetting settings)
+    private static void setPropertiesForPort(HtmlEmail email, int port, NewSetting settings)
             throws EmailException {
         switch (port) {
             case 587:
@@ -153,7 +152,6 @@ public class SendMailSSL {
                 } else {
                     email.setStartTLSEnabled(true);
                     email.setStartTLSRequired(true);
-                    email.setTLS(true);
                 }
                 break;
             case 25:
@@ -162,7 +160,7 @@ public class SendMailSSL {
                 break;
             case 465:
                 email.setSslSmtpPort(Integer.toString(port));
-                email.setSSL(true);
+                email.setSSLOnConnect(true);
                 break;
             default:
                 email.setStartTLSEnabled(true);

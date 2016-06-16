@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
 
 /**
  * Test for implementations of {@link EncryptionMethod}.
@@ -35,6 +36,14 @@ public abstract class AbstractEncryptionMethodTest {
     private static final String[] BOGUS_HASHES = {"", "test", "$t$test$", "$SHA$Test$$$$", "$$$$$",
         "asdfg:hjkl", "::test", "~#$#~~~#$#~", "d41d8cd98f00b204e9800998ecf427e",
         "$2y$7a$da641e404b982ed" };
+
+    /**
+     * Certain hash algorithms are slow by design, which has a considerable effect on these unit tests.
+     * Setting the property below to "true" will reduce the checks in these unit tests as to offer fast,
+     * partial tests during development.
+     */
+    private static final boolean SKIP_LONG_TESTS =
+        "true".equals(System.getProperty("project.skipExtendedHashTests"));
 
     /** The encryption method to test. */
     private EncryptionMethod method;
@@ -79,8 +88,10 @@ public abstract class AbstractEncryptionMethodTest {
 
     @Test
     public void testGivenPasswords() {
-        // Test all entries in GIVEN_PASSWORDS except the last one
-        for (int i = 0; i < GIVEN_PASSWORDS.length - 1; ++i) {
+        // Start with the 2nd to last password if we skip long tests
+        int start = SKIP_LONG_TESTS ? GIVEN_PASSWORDS.length - 2 : 0;
+        // Test entries in GIVEN_PASSWORDS except the last one
+        for (int i = start; i < GIVEN_PASSWORDS.length - 1; ++i) {
             String password = GIVEN_PASSWORDS[i];
             assertTrue("Hash for password '" + password + "' should match",
                 doesGivenHashMatch(password, method));
@@ -124,12 +135,14 @@ public abstract class AbstractEncryptionMethodTest {
                 assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
                     method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME));
             }
+            assumeThat(SKIP_LONG_TESTS, equalTo(false));
         }
     }
 
     /** Tests various strings to ensure that encryption methods don't rely on the hash's format too much. */
     @Test
     public void testMalformedHashes() {
+        assumeThat(SKIP_LONG_TESTS, equalTo(false));
         String salt = method.hasSeparateSalt() ? "testSalt" : null;
         for (String bogusHash : BOGUS_HASHES) {
             HashedPassword hashedPwd = new HashedPassword(bogusHash, salt);
@@ -152,7 +165,7 @@ public abstract class AbstractEncryptionMethodTest {
      *
      * @param method The method to create a test class for
      */
-    static void generateTest(EncryptionMethod method) {
+    protected static void generateTest(EncryptionMethod method) {
         String className = method.getClass().getSimpleName();
         // Create javadoc and "public class extends" and the constructor call "super(new Class(),"
         System.out.println("/**\n * Test for {@link " + className + "}.\n */");

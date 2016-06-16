@@ -2,32 +2,45 @@ package fr.xephi.authme.security;
 
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.plugin.PluginManager;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * Manager class for password-related operations.
  */
-public class PasswordSecurity {
+public class PasswordSecurity implements Reloadable {
 
-    private final NewSetting settings;
+    @Inject
+    private NewSetting settings;
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private PluginManager pluginManager;
+
+    @Inject
+    private AuthMeServiceInitializer initializer;
+
     private HashAlgorithm algorithm;
     private boolean supportOldAlgorithm;
-    private final DataSource dataSource;
-    private final PluginManager pluginManager;
 
-    public PasswordSecurity(DataSource dataSource, NewSetting settings, PluginManager pluginManager) {
-        this.settings = settings;
+    /**
+     * Load or reload the configuration.
+     */
+    @PostConstruct
+    @Override
+    public void reload() {
         this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
         this.supportOldAlgorithm = settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH);
-        this.dataSource = dataSource;
-        this.pluginManager = pluginManager;
     }
 
     /**
@@ -74,14 +87,6 @@ public class PasswordSecurity {
     }
 
     /**
-     * Reload the configuration.
-     */
-    public void reload() {
-        this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
-        this.supportOldAlgorithm = settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH);
-    }
-
-    /**
      * Compare the given hash with all available encryption methods to support
      * the migration to a new encryption method. Upon a successful match, the password
      * will be hashed with the new encryption method and persisted.
@@ -95,7 +100,7 @@ public class PasswordSecurity {
     private boolean compareWithAllEncryptionMethods(String password, HashedPassword hashedPassword, String playerName) {
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
-                EncryptionMethod method = initializeEncryptionMethod(algorithm, settings);
+                EncryptionMethod method = initializeEncryptionMethod(algorithm);
                 if (methodMatches(method, password, hashedPassword, playerName)) {
                     hashPasswordForNewAlgorithm(password, playerName);
                     return true;
@@ -133,7 +138,7 @@ public class PasswordSecurity {
      * @return The encryption method
      */
     private EncryptionMethod initializeEncryptionMethodWithEvent(HashAlgorithm algorithm, String playerName) {
-        EncryptionMethod method = initializeEncryptionMethod(algorithm, settings);
+        EncryptionMethod method = initializeEncryptionMethod(algorithm);
         PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
         pluginManager.callEvent(event);
         return event.getMethod();
@@ -143,30 +148,14 @@ public class PasswordSecurity {
      * Initialize the encryption method associated with the given hash algorithm.
      *
      * @param algorithm The algorithm to retrieve the encryption method for
-     * @param settings  The settings instance to pass to the constructor if required
      *
      * @return The associated encryption method, or null if CUSTOM / deprecated
      */
-    public static EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm,
-                                                              NewSetting settings) {
-        try {
-            if (HashAlgorithm.CUSTOM.equals(algorithm) || HashAlgorithm.PLAINTEXT.equals(algorithm)) {
-                return null;
-            }
-            Constructor<?> constructor = algorithm.getClazz().getConstructors()[0];
-            Class<?>[] parameters = constructor.getParameterTypes();
-            if (parameters.length == 0) {
-                return (EncryptionMethod) constructor.newInstance();
-            } else if (parameters.length == 1 && parameters[0] == NewSetting.class) {
-                return (EncryptionMethod) constructor.newInstance(settings);
-            } else {
-                throw new UnsupportedOperationException("Did not find default constructor or constructor with settings "
-                    + "parameter in class " + algorithm.getClazz().getSimpleName());
-            }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UnsupportedOperationException("Constructor for '" + algorithm.getClazz().getSimpleName()
-                + "' could not be invoked. (Is there no default constructor?)", e);
+    private EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm) {
+        if (HashAlgorithm.CUSTOM.equals(algorithm) || HashAlgorithm.PLAINTEXT.equals(algorithm)) {
+            return null;
         }
+        return initializer.newInstance(algorithm.getClazz());
     }
 
     private void hashPasswordForNewAlgorithm(String password, String playerName) {

@@ -2,12 +2,15 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Date;
@@ -23,26 +26,31 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link LastLoginCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class LastLoginCommandTest {
 
     private static final long HOUR_IN_MSEC = 3600 * 1000;
     private static final long DAY_IN_MSEC = 24 * HOUR_IN_MSEC;
 
+    @InjectMocks
+    private LastLoginCommand command;
+
+    @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private CommandService service;
+
+
     @Test
     public void shouldRejectNonExistentUser() {
         // given
         String player = "tester";
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.getAuth(player)).willReturn(null);
-
-        CommandService service = mock(CommandService.class);
-        given(service.getDataSource()).willReturn(dataSource);
-
         CommandSender sender = mock(CommandSender.class);
-        ExecutableCommand command = new LastLoginCommand();
 
         // when
-        command.executeCommand(sender, Collections.singletonList(player), service);
+        command.executeCommand(sender, Collections.singletonList(player));
 
         // then
         verify(dataSource).getAuth(player);
@@ -58,17 +66,11 @@ public class LastLoginCommandTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getLastLogin()).willReturn(lastLogin);
         given(auth.getIp()).willReturn("123.45.66.77");
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.getAuth(player)).willReturn(auth);
-        CommandService service = mock(CommandService.class);
-        given(service.getDataSource()).willReturn(dataSource);
-
         CommandSender sender = mock(CommandSender.class);
-        ExecutableCommand command = new LastLoginCommand();
 
         // when
-        command.executeCommand(sender, Collections.singletonList(player), service);
+        command.executeCommand(sender, Collections.singletonList(player));
 
         // then
         verify(dataSource).getAuth(player);
@@ -93,17 +95,10 @@ public class LastLoginCommandTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getLastLogin()).willReturn(lastLogin);
         given(auth.getIp()).willReturn("123.45.66.77");
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.getAuth(name)).willReturn(auth);
-        CommandService service = mock(CommandService.class);
-        given(service.getDataSource()).willReturn(dataSource);
-
-
-        ExecutableCommand command = new LastLoginCommand();
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(dataSource).getAuth(name);

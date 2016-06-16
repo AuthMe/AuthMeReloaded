@@ -69,9 +69,6 @@ settings:
         allowChat: false
         # Can not authenticated players see the chat log?
         hideChat: false
-        # WARNING: use this only if you need it!
-        # Allow unlogged users to use all the commands if registration is not forced!
-        allowAllCommandsIfRegistrationIsOptional: false
         # Commands allowed when a player is not authenticated
         allowCommands:
         - /login
@@ -88,12 +85,19 @@ settings:
         # due to "Logged in from another Location"
         # This setting will prevent potetial security exploits.
         ForceSingleSession: true
-        # If enabled, every player will be teleported to the world spawnpoint
-        # after successful authentication.
-        # The quit location of the player will be overwritten.
-        # This is different from "teleportUnAuthedToSpawn" that teleport player
-        # back to his quit location after the authentication.
-        ForceSpawnLocOnJoinEnabled: false
+        ForceSpawnLocOnJoin:
+            # If enabled, every player will be teleported to the world spawnpoint
+            # after successful authentication.
+            # The quit location of the player will be overwritten.
+            # This is different from "teleportUnAuthedToSpawn" that teleport player
+            # back to his quit location after the authentication.
+            enabled: false
+            # WorldNames where we need to force the spawn location
+            # Case-sensitive!
+            worlds:
+            - 'world'
+            - 'world_nether'
+            - 'world_the_end'
         # This option will save the quit location of the players.
         SaveQuitLocation: false
         # To activate the restricted user feature you need
@@ -101,12 +105,11 @@ settings:
         # AllowedRestrctedUser field.
         AllowRestrictedUser: false
         # The restricted user feature will kick players listed below
-        # if they dont match of the defined ip address.
+        # if they don't match of the defined ip address.
         # Example:
         #   AllowedRestrictedUser:
         #   - playername;127.0.0.1
-        AllowedRestrictedUser:
-        - playername;127.0.0.1
+        AllowedRestrictedUser: []
         # Should unregistered players be kicked immediately?
         kickNonRegistered: false
         # Should players be kicked on wrong password?
@@ -143,12 +146,6 @@ settings:
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
-        # WorldNames where we need to force the spawn location for ForceSpawnLocOnJoinEnabled
-        # CASE SENSITIVE
-        ForceSpawnOnTheseWorlds:
-        - world
-        - world_nether
-        - world_the_end
         # Ban ip when the ip is not the ip registered in database
         banUnsafedIP: false
         # Spawn Priority, Values : authme, essentials, multiverse, default
@@ -262,11 +259,11 @@ settings:
     # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
     broadcastWelcomeMessage: false
     # Should we delay the join message and display it once the player has logged in?
-    delayJoinMessage: true
+    delayJoinMessage: false
     # Should we remove join messages altogether?
-    removeJoinMessage: true
+    removeJoinMessage: false
     # Should we remove leave messages?
-    removeLeaveMessage: true
+    removeLeaveMessage: false
     # Do we need to add potion effect Blinding before login/register?
     applyBlindEffect: false
     # Do we need to prevent people to login with another case?
@@ -306,7 +303,7 @@ BackupSystem:
    # set Backup at every stop of Server
     OnServerStop: true
    # Windows only mysql installation Path
-    MysqlWindowsPath: 'C:\\Program Files\\MySQL\\MySQL Server 5.1\\'
+    MysqlWindowsPath: 'C:\Program Files\MySQL\MySQL Server 5.1\'
 Security:
     SQLProblem:
         # Stop the server if we can't contact the sql database
@@ -324,9 +321,9 @@ Security:
         # Copy AuthMe log output in a separate file as well?
         logConsole: true
     captcha:
-        # Player need to put a captcha when he fails too lot the password
+        # Enable captcha when a player uses wrong password too many times
         useCaptcha: false
-        # Max allowed tries before request a captcha
+        # Max allowed tries before a captcha is required
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5
@@ -334,6 +331,14 @@ Security:
         # Kick players before stopping the server, that allow us to save position of players, and all needed
         # information correctly without any corruption.
         kickPlayersBeforeStopping: true
+    tempban:
+        # Tempban a user's IP address if they enter the wrong password too many times
+        enableTempban: false
+        # How many times a user can attempt to login before their IP being tempbanned
+        maxLoginTries: 10
+        # The length of time a IP address will be tempbanned in minutes
+        # Default: 480 minutes, or 8 hours
+        tempbanLength: 480
 Converter:
     Rakamak:
         # Rakamak file name
@@ -359,7 +364,7 @@ Email:
     # Random password length
     RecoveryPasswordLength: 8
     # Email subject of password get
-    mailSubject: 'Your new AuthMe Password'
+    mailSubject: 'Your new AuthMe password'
     # Like maxRegPerIp but with email
     maxRegPerEmail: 1
     # Recall players to add an email?
@@ -418,8 +423,8 @@ Protection:
     countriesBlacklist:
     - 'A1'
     # Do we need to enable automatic antibot system?
-    enableAntiBot: false
+    enableAntiBot: true
     # Max number of player allowed to login in 5 secs before enable AntiBot system automatically
-    antiBotSensibility: 5
+    antiBotSensibility: 10
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10

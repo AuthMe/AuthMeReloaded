@@ -9,51 +9,58 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
+
+import javax.inject.Inject;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
 /**
  */
-public class ProcessSyncPasswordRegister implements Process {
+public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
-    private final Player player;
-    private final String name;
-    private final AuthMe plugin;
-    private final ProcessService service;
+    @Inject
+    private AuthMe plugin;
 
-    public ProcessSyncPasswordRegister(Player player, AuthMe plugin, ProcessService service) {
-        this.player = player;
-        this.name = player.getName().toLowerCase();
-        this.plugin = plugin;
-        this.service = service;
-    }
+    @Inject
+    private ProcessService service;
 
-    private void sendBungeeMessage() {
+    @Inject
+    private BukkitService bukkitService;
+
+    @Inject
+    private LimboCache limboCache;
+
+    @Inject
+    private LimboPlayerTaskManager limboPlayerTaskManager;
+
+    ProcessSyncPasswordRegister() { }
+
+
+    private void sendBungeeMessage(Player player) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
         out.writeUTF("AuthMe");
-        out.writeUTF("register;" + name);
+        out.writeUTF("register;" + player.getName());
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
-    private void forceCommands() {
+    private void forceCommands(Player player) {
         for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS)) {
             player.performCommand(command.replace("%p", player.getName()));
         }
@@ -69,27 +76,21 @@ public class ProcessSyncPasswordRegister implements Process {
      * @param player the player
      */
     private void requestLogin(Player player) {
+        final String name = player.getName().toLowerCase();
         Utils.teleportToSpawn(player);
-        LimboCache cache = LimboCache.getInstance();
-        cache.updateLimboPlayer(player);
-        int delay = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-        int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-        BukkitTask task;
-        if (delay != 0) {
-            task = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
-            cache.getLimboPlayer(name).setTimeoutTask(task);
-        }
-        task = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
-            name, MessageKey.LOGIN_MESSAGE, interval));
-        cache.getLimboPlayer(name).setMessageTask(task);
+
+        limboCache.updateLimboPlayer(player);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, true);
+
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
         }
     }
 
-    @Override
-    public void run() {
-        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+    public void processPasswordRegister(Player player) {
+        final String name = player.getName().toLowerCase();
+        LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (limbo != null) {
             if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
                 plugin.tablistHider.sendTablist(player);
@@ -99,17 +100,17 @@ public class ProcessSyncPasswordRegister implements Process {
 
             if (service.getProperty(HIDE_TABLIST_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-                service.callEvent(event);
+                bukkitService.callEvent(event);
                 if (!event.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
                 }
             }
 
-            LimboCache.getInstance().deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(name);
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.setGroup(player, Utils.GroupType.REGISTERED);
+            service.setGroup(player, AuthGroupType.REGISTERED);
         }
 
         service.send(player, MessageKey.REGISTER_SUCCESS);
@@ -123,7 +124,7 @@ public class ProcessSyncPasswordRegister implements Process {
         }
 
         // The LoginEvent now fires (as intended) after everything is processed
-        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player));
+        bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
 
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
@@ -137,7 +138,7 @@ public class ProcessSyncPasswordRegister implements Process {
         }
 
         // Register is now finished; we can force all commands
-        forceCommands();
+        forceCommands(player);
 
         // Request login after registration
         if (service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)) {
@@ -146,13 +147,13 @@ public class ProcessSyncPasswordRegister implements Process {
         }
 
         if (service.getProperty(HooksSettings.BUNGEECORD)) {
-            sendBungeeMessage();
+            sendBungeeMessage(player);
         }
 
-        sendTo();
+        sendTo(player);
     }
 
-    private void sendTo() {
+    private void sendTo(Player player) {
         if (!service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Connect");

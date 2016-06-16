@@ -27,7 +27,7 @@ public final class ReflectionTestUtils {
             Field field = getField(clazz, instance, fieldName);
             field.set(instance, value);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(
+            throw new UnsupportedOperationException(
                 format("Could not set value to field '%s' for instance '%s' of class '%s'",
                     fieldName, instance, clazz.getName()), e);
         }
@@ -39,7 +39,7 @@ public final class ReflectionTestUtils {
             field.setAccessible(true);
             return field;
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(format("Could not get field '%s' for instance '%s' of class '%s'",
+            throw new UnsupportedOperationException(format("Could not get field '%s' for instance '%s' of class '%s'",
                 fieldName, instance, clazz.getName()), e);
         }
     }
@@ -50,7 +50,7 @@ public final class ReflectionTestUtils {
         try {
             return field.get(instance);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Could not get value of field '" + fieldName + "'");
+            throw new UnsupportedOperationException("Could not get value of field '" + fieldName + "'");
         }
     }
 
@@ -69,7 +69,7 @@ public final class ReflectionTestUtils {
             method.setAccessible(true);
             return method;
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Could not retrieve method '" + methodName + "' from class '"
+            throw new UnsupportedOperationException("Could not retrieve method '" + methodName + "' from class '"
                 + clazz.getName() + "'");
         }
     }

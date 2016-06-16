@@ -1,32 +1,36 @@
 package fr.xephi.authme.command.executable.authme;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.util.Arrays;
-
+import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashedPassword;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link RegisterAdminCommand}.
@@ -34,10 +38,23 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterAdminCommandTest {
 
+    @InjectMocks
+    private RegisterAdminCommand command;
+
     @Mock
-    private CommandSender sender;
+    private PasswordSecurity passwordSecurity;
+
+    @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private BukkitService bukkitService;
+
     @Mock
     private CommandService commandService;
+
+    @Mock
+    private ValidationService validationService;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -49,16 +66,17 @@ public class RegisterAdminCommandTest {
         // given
         String user = "tester";
         String password = "myPassword";
-        given(commandService.validatePassword(password, user)).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
-        ExecutableCommand command = new RegisterAdminCommand();
+        given(validationService.validatePassword(password, user))
+            .willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
 
         // then
-        verify(commandService).validatePassword(password, user);
-        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        verify(commandService, never()).runTaskAsynchronously(any(Runnable.class));
+        verify(validationService).validatePassword(password, user);
+        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, new String[0]);
+        verify(bukkitService, never()).runTaskAsynchronously(any(Runnable.class));
     }
 
     @Test
@@ -66,18 +84,16 @@ public class RegisterAdminCommandTest {
         // given
         String user = "my_name55";
         String password = "@some-pass@";
-        given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
+        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
         given(dataSource.isAuthAvailable(user)).willReturn(true);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        ExecutableCommand command = new RegisterAdminCommand();
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
+        TestHelper.runInnerRunnable(bukkitService);
 
         // then
-        verify(commandService).validatePassword(password, user);
+        verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.NAME_ALREADY_REGISTERED);
         verify(dataSource, never()).saveAuth(any(PlayerAuth.class));
     }
@@ -87,23 +103,19 @@ public class RegisterAdminCommandTest {
         // given
         String user = "test-test";
         String password = "afdjhfkt";
-        given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
+        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(false);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = new HashedPassword("235sdf4w5udsgf");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        given(commandService.getPasswordSecurity()).willReturn(passwordSecurity);
-        ExecutableCommand command = new RegisterAdminCommand();
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
+        TestHelper.runInnerRunnable(bukkitService);
 
         // then
-        verify(commandService).validatePassword(password, user);
+        verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.ERROR);
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
@@ -115,24 +127,20 @@ public class RegisterAdminCommandTest {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
-        given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
+        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        given(commandService.getPasswordSecurity()).willReturn(passwordSecurity);
-        given(commandService.getPlayer(user)).willReturn(null);
-        ExecutableCommand command = new RegisterAdminCommand();
+        given(bukkitService.getPlayerExact(user)).willReturn(null);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
+        TestHelper.runInnerRunnable(bukkitService);
 
         // then
-        verify(commandService).validatePassword(password, user);
+        verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
@@ -145,33 +153,40 @@ public class RegisterAdminCommandTest {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
-        given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
+        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        given(commandService.getPasswordSecurity()).willReturn(passwordSecurity);
-        ExecutableCommand command = new RegisterAdminCommand();
+        Player player = mock(Player.class);
+        given(bukkitService.getPlayerExact(user)).willReturn(player);
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        command.executeCommand(sender, Arrays.asList(user, password));
+        TestHelper.runInnerRunnable(bukkitService);
+        runSyncDelayedTask(bukkitService);
 
         // then
-        verify(commandService).validatePassword(password, user);
+        verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
         verify(dataSource).setUnlogged(user);
+        verify(player).kickPlayer(argThat(containsString("please log in again")));
     }
 
     private void assertAuthHasInfo(PlayerAuth auth, String name, HashedPassword hashedPassword) {
         assertThat(auth.getRealName(), equalTo(name));
         assertThat(auth.getNickname(), equalTo(name.toLowerCase()));
         assertThat(auth.getPassword(), equalTo(hashedPassword));
+    }
+
+    private static void runSyncDelayedTask(BukkitService bukkitService) {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verify(bukkitService).scheduleSyncDelayedTask(captor.capture());
+        Runnable runnable = captor.getValue();
+        runnable.run();
     }
 }

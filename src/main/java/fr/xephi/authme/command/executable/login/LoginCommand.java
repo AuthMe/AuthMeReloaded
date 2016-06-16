@@ -1,9 +1,10 @@
 package fr.xephi.authme.command.executable.login;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.process.Management;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -11,9 +12,12 @@ import java.util.List;
  */
 public class LoginCommand extends PlayerCommand {
 
+    @Inject
+    private Management management;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         final String password = arguments.get(0);
-        commandService.getManagement().performLogin(player, password, false);
+        management.performLogin(player, password, false);
     }
 }

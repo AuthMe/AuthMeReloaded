@@ -1,55 +1,47 @@
 package fr.xephi.authme.command.executable.captcha;
 
-import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.CaptchaManager;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class CaptchaCommand extends PlayerCommand {
 
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private CaptchaManager captchaManager;
+
+    @Inject
+    private CommandService commandService;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
-        final String playerNameLowerCase = player.getName().toLowerCase();
-        final String captcha = arguments.get(0);
-        final AuthMe plugin = commandService.getAuthMe();
-        PlayerCache playerCache = PlayerCache.getInstance();
+    public void runCommand(Player player, List<String> arguments) {
+        final String playerName = player.getName().toLowerCase();
 
-        // Command logic
-        if (playerCache.isAuthenticated(playerNameLowerCase)) {
+        if (playerCache.isAuthenticated(playerName)) {
             commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-            return;
-        }
-
-        if (!commandService.getProperty(SecuritySettings.USE_CAPTCHA)) {
+        } else if (!captchaManager.isCaptchaRequired(playerName)) {
             commandService.send(player, MessageKey.USAGE_LOGIN);
-            return;
+        } else {
+            checkCaptcha(player, arguments.get(0));
         }
+    }
 
-        if (!plugin.cap.containsKey(playerNameLowerCase)) {
-            commandService.send(player, MessageKey.USAGE_LOGIN);
-            return;
+    private void checkCaptcha(Player player, String captchaCode) {
+        final boolean isCorrectCode = captchaManager.checkCode(player.getName(), captchaCode);
+        if (isCorrectCode) {
+            commandService.send(player, MessageKey.CAPTCHA_SUCCESS);
+            commandService.send(player, MessageKey.LOGIN_MESSAGE);
+        } else {
+            String newCode = captchaManager.generateCode(player.getName());
+            commandService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
-
-        if (!captcha.equals(plugin.cap.get(playerNameLowerCase))) {
-            plugin.cap.remove(playerNameLowerCase);
-            int captchaLength = commandService.getProperty(SecuritySettings.CAPTCHA_LENGTH);
-            String randStr = RandomString.generate(captchaLength);
-            plugin.cap.put(playerNameLowerCase, randStr);
-            commandService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, plugin.cap.get(playerNameLowerCase));
-            return;
-        }
-
-        plugin.captcha.remove(playerNameLowerCase);
-        plugin.cap.remove(playerNameLowerCase);
-
-        // Show a status message
-        commandService.send(player, MessageKey.CAPTCHA_SUCCESS);
-        commandService.send(player, MessageKey.LOGIN_MESSAGE);
     }
 }

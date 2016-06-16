@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Mandatory migration from the deprecated flat file datasource to SQLite.
  */
-public class ForceFlatToSqlite implements Converter {
+public class ForceFlatToSqlite {
 
     private final DataSource source;
     private final DataSource destination;
@@ -31,7 +31,6 @@ public class ForceFlatToSqlite implements Converter {
     /**
      * Perform the conversion.
      */
-    @Override
     public void run() {
         List<String> skippedPlayers = new ArrayList<>();
         for (PlayerAuth auth : source.getAllAuths()) {

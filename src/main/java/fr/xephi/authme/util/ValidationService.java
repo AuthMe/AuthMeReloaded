@@ -1,6 +1,7 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -12,22 +13,32 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Validation service.
  */
-public class ValidationService {
+public class ValidationService implements Reloadable {
 
     private final NewSetting settings;
     private final DataSource dataSource;
     private final PermissionsManager permissionsManager;
+    private Pattern passwordRegex;
 
+    @Inject
     public ValidationService(NewSetting settings, DataSource dataSource, PermissionsManager permissionsManager) {
         this.settings = settings;
         this.dataSource = dataSource;
         this.permissionsManager = permissionsManager;
+        reload();
+    }
+
+    @Override
+    public void reload() {
+        passwordRegex = Pattern.compile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
     }
 
     /**
@@ -35,23 +46,21 @@ public class ValidationService {
      *
      * @param password the password to verify
      * @param username the username the password is associated with
-     * @return message key with the password error, or {@code null} if password is valid
+     * @return the validation result
      */
-    public MessageKey validatePassword(String password, String username) {
+    public ValidationResult validatePassword(String password, String username) {
         String passLow = password.toLowerCase();
-        if (!passLow.matches(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX))) {
-            return MessageKey.PASSWORD_MATCH_ERROR;
+        if (!passwordRegex.matcher(passLow).matches()) {
+            return new ValidationResult(MessageKey.PASSWORD_CHARACTERS_ERROR, passwordRegex.pattern());
         } else if (passLow.equalsIgnoreCase(username)) {
-            return MessageKey.PASSWORD_IS_USERNAME_ERROR;
+            return new ValidationResult(MessageKey.PASSWORD_IS_USERNAME_ERROR);
         } else if (password.length() < settings.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)
             || password.length() > settings.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
-            return MessageKey.INVALID_PASSWORD_LENGTH;
+            return new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH);
         } else if (settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(passLow)) {
-            // TODO #602 20160312: The UNSAFE_PASSWORDS should be all lowercase
-            // -> introduce a lowercase String list property type
-            return MessageKey.PASSWORD_UNSAFE_ERROR;
+            return new ValidationResult(MessageKey.PASSWORD_UNSAFE_ERROR);
         }
-        return null;
+        return new ValidationResult();
     }
 
     /**
@@ -129,5 +138,45 @@ public class ValidationService {
             }
         }
         return false;
+    }
+
+    public static final class ValidationResult {
+        private final MessageKey messageKey;
+        private final String[] args;
+
+        /**
+         * Constructor for a successful validation.
+         */
+        public ValidationResult() {
+            this.messageKey = null;
+            this.args = null;
+        }
+
+        /**
+         * Constructor for a failed validation.
+         *
+         * @param messageKey message key of the validation error
+         * @param args arguments for the message key
+         */
+        public ValidationResult(MessageKey messageKey, String... args) {
+            this.messageKey = messageKey;
+            this.args = args;
+        }
+
+        /**
+         * Returns whether an error was found during the validation, i.e. whether the validation failed.
+         *
+         * @return true if there is an error, false if the validation was successful
+         */
+        public boolean hasError() {
+            return messageKey != null;
+        }
+
+        public MessageKey getMessageKey() {
+            return messageKey;
+        }
+        public String[] getArgs() {
+            return args;
+        }
     }
 }

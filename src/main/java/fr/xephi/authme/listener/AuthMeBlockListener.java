@@ -5,18 +5,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import javax.inject.Inject;
+
 public class AuthMeBlockListener implements Listener {
+
+    @Inject
+    private ListenerService listenerService;
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (ListenerService.shouldCancelEvent(event.getPlayer())) {
+        if (listenerService.shouldCancelEvent(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (ListenerService.shouldCancelEvent(event.getPlayer())) {
+        if (listenerService.shouldCancelEvent(event.getPlayer())) {
             event.setCancelled(true);
         }
     }

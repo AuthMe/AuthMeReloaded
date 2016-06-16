@@ -2,16 +2,22 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.BanEntry;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -28,7 +34,8 @@ public class BukkitService {
     private final boolean getOnlinePlayersIsCollection;
     private Method getOnlinePlayers;
 
-    public BukkitService(AuthMe authMe) {
+    @Inject
+    BukkitService(AuthMe authMe) {
         this.authMe = authMe;
         getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
     }
@@ -156,13 +163,34 @@ public class BukkitService {
             } else if (obj instanceof Player[]) {
                 return Arrays.asList((Player[]) obj);
             } else {
-                String type = (obj != null) ? obj.getClass().getName() : "null";
+                String type = (obj == null) ? "null" : obj.getClass().getName();
                 ConsoleLogger.showError("Unknown list of online players of type " + type);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             ConsoleLogger.logException("Could not retrieve list of online players:", e);
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Calls an event with the given details.
+     *
+     * @param event Event details
+     * @throws IllegalStateException Thrown when an asynchronous event is
+     *     fired from synchronous code.
+     */
+    public void callEvent(Event event) {
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    /**
+     * Gets the world with the given name.
+     *
+     * @param name the name of the world to retrieve
+     * @return a world with the given name, or null if none exists
+     */
+    public World getWorld(String name) {
+        return Bukkit.getWorld(name);
     }
 
     /**
@@ -179,6 +207,22 @@ public class BukkitService {
             ConsoleLogger.showError("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
         }
         return false;
+    }
+
+    /**
+     * Adds a ban to the this list. If a previous ban exists, this will
+     * update the previous entry.
+     *
+     * @param ip the ip of the ban
+     * @param reason reason for the ban, null indicates implementation default
+     * @param expires date for the ban's expiration (unban), or null to imply
+     *     forever
+     * @param source source of the ban, null indicates implementation default
+     * @return the entry for the newly created ban, or the entry for the
+     *     (updated) previous ban
+     */
+    public BanEntry banIp(String ip, String reason, Date expires, String source) {
+        return Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, source);
     }
 
 }

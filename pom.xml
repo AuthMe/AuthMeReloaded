@@ -6,7 +6,7 @@
 
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
-    <version>5.2-BETA2</version>
+    <version>5.2-BETA3</version>
     <packaging>jar</packaging>
 
     <name>AuthMeReloaded</name>
@@ -21,9 +21,9 @@
     </organization>
 
     <scm>
-        <connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
-        <developerConnection>scm:git:git@github.com:Xephi/AuthMeReloaded.git</developerConnection>
-        <url>https://github.com/Xephi/AuthMeReloaded</url>
+        <connection>scm:git:https://github.com/AuthMe-Team/AuthMeReloaded.git</connection>
+        <developerConnection>scm:git:git@github.com:AuthMe-Team/AuthMeReloaded.git</developerConnection>
+        <url>https://github.com/AuthMe-Team/AuthMeReloaded</url>
     </scm>
 
     <ciManagement>
@@ -49,22 +49,24 @@
     </prerequisites>
 
     <properties>
-        <!-- Project Properties -->
-        <projectEncoding>UTF-8</projectEncoding>
-        <project.build.sourceEncoding>${projectEncoding}</project.build.sourceEncoding>
-        <project.build.outputEncoding>${projectEncoding}</project.build.outputEncoding>
-        <jdkVersion>1.7</jdkVersion>
-        <testJreVersion>1.7</testJreVersion>
+        <!-- Project properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.jdkVersion>1.7</project.jdkVersion>
 
         <!-- Output properties -->
-        <pluginName>AuthMe</pluginName>
-        <jarName>${pluginName}-${project.version}</jarName>
-        <mainClass>${project.groupId}.${project.artifactId}.${pluginName}</mainClass>
-        <pluginAuthors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</pluginAuthors>
-        <buildNumber>Unknown</buildNumber>
+        <project.outputName>AuthMe</project.outputName>
+        <project.buildNumber>CUSTOM</project.buildNumber>
+        <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
+        <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
+        <project.finalName>${project.outputName}-${project.version}</project.finalName>
+
+        <!-- BukkitPlugin properties -->
+        <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
+        <bukkitplugin.main>${project.groupId}.${project.artifactId}.${bukkitplugin.name}</bukkitplugin.main>
+        <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkitVersion>1.9.2-R0.1-SNAPSHOT</bukkitVersion>
+        <bukkit.version>1.10-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
     <!-- Jenkins profile (add the real buildNumber to the version string) -->
@@ -77,47 +79,44 @@
                 </property>
             </activation>
             <properties>
-                <buildNumber>${env.BUILD_NUMBER}</buildNumber>
+                <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
+            </properties>
+        </profile>
+        <profile>
+            <id>skipLongHashTests</id>
+            <activation>
+                <property>
+                    <name>skipLongHashTests</name>
+                </property>
+            </activation>
+            <properties>
+                <project.skipExtendedHashTests>true</project.skipExtendedHashTests>
             </properties>
         </profile>
     </profiles>
 
     <build>
-        <finalName>${jarName}-noshade</finalName>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <!-- Name of the NOSHADE jar (no shaded/relocated libraries) -->
+        <finalName>${project.finalName}-noshade</finalName>
 
         <resources>
             <resource>
-                <targetPath>.</targetPath>
-                <filtering>false</filtering>
                 <directory>.</directory>
+                <filtering>false</filtering>
                 <includes>
                     <include>LICENSE</include>
                 </includes>
             </resource>
             <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
                 <directory>src/main/resources/</directory>
-                <includes>
-                    <include>*</include>
-                </includes>
+                <filtering>true</filtering>
             </resource>
             <resource>
+                <directory>src/main/resources/messages/</directory>
                 <targetPath>./messages/</targetPath>
                 <filtering>false</filtering>
-                <directory>src/main/resources/messages/</directory>
-                <includes>
-                    <include>*.yml</include>
-                </includes>
             </resource>
         </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-        </testResources>
 
         <plugins>
             <!-- Maven Java Compiler -->
@@ -126,10 +125,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>${jdkVersion}</source>
-                    <target>${jdkVersion}</target>
-                    <testSource>${testJreVersion}</testSource>
-                    <testTarget>${testJreVersion}</testTarget>
+                    <source>${project.jdkVersion}</source>
+                    <target>${project.jdkVersion}</target>
                 </configuration>
             </plugin>
             <!-- Test Plugin -->
@@ -138,21 +135,30 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <argLine>-Dfile.encoding=${projectEncoding} ${argLine}</argLine>
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{argLine}</argLine>
+                    <systemPropertyVariables>
+                        <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <!-- Libs Shading and Relocation -->
             <plugin>
-                <!--Relocate all lib we use in order to fix class loading errors if we use different versions
-                than already loaded libs (i.e. by Mojang -> gson)-->
+                <!--
+                Relocate all lib we use in order to fix class loading errors if we use different versions
+                than already loaded libs (i.e. by Mojang -> gson)
+                -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.4.3</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <!--
+                    Let's try to remove this!
                     <minimizeJar>false</minimizeJar>
+                    -->
                 </configuration>
                 <executions>
+                    <!-- Spigot 1.8+ -->
                     <execution>
                         <id>spigot-shade</id>
                         <phase>package</phase>
@@ -160,6 +166,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <!-- Exclude guava (already included into spigot) -->
                             <artifactSet>
                                 <excludes>
                                     <exclude>com.google.guava:guava</exclude>
@@ -187,15 +194,20 @@
                                     <pattern>net.ricecode.similarity</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>javax.inject</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.inject</shadedPattern>
+                                </relocation>
                                 <!-- MCStats.org metrics -->
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
                                     <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <outputFile>target/${jarName}-spigot.jar</outputFile>
+                            <outputFile>target/${project.finalName}-spigot.jar</outputFile>
                         </configuration>
                     </execution>
+                    <!-- 1.7.10 and lower -->
                     <execution>
                         <id>legacy-shade</id>
                         <phase>package</phase>
@@ -225,22 +237,41 @@
                                     <pattern>net.ricecode.similarity</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>javax.inject</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.inject</shadedPattern>
+                                </relocation>
                                 <!-- MCStats.org metrics -->
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
                                     <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <outputFile>target/${jarName}-legacy.jar</outputFile>
+                            <outputFile>target/${project.finalName}-legacy.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Exec Tools -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <classpathScope>test</classpathScope>
+                    <workingDirectory>${project.basedir}/target/test-classes</workingDirectory>
+                    <mainClass>tools.ToolsRunner</mainClass>
+                    <arguments>
+                        <argument>updateDocs</argument>
+                    </arguments>
+                    <includeProjectDependencies>true</includeProjectDependencies>
+                </configuration>
             </plugin>
             <!-- Test coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.6.201602180812</version>
+                <version>0.7.7.201606060606</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -254,7 +285,7 @@
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
-                <version>4.1.0</version>
+                <version>4.2.0</version>
                 <configuration>
                     <failOnServiceError>false</failOnServiceError>
                 </configuration>
@@ -264,11 +295,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
+                <version>2.10.4</version>
                 <configuration>
-                    <charset>UTF-8</charset>
-                    <docencoding>UTF-8</docencoding>
-                    <docfilessubdirs>true</docfilessubdirs>
                     <show>public</show>
                     <failOnError>false</failOnError>
                 </configuration>
@@ -354,19 +382,6 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
-        <!-- JDBC drivers for datasource integration tests -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.8.11.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.191</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Log4J Logger (required by the console filter) -->
         <dependency>
@@ -375,7 +390,6 @@
             <!-- Can't use newer versions due to api changes! -->
             <version>2.0-beta9</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
 
         <!-- Java Email Library -->
@@ -396,11 +410,20 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Guava (required to provide 1.7.10 and below compatibility) -->
+        <!-- Guava (the version provided by the latest bukkit version) -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>17.0</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Inject API -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -429,21 +452,12 @@
             <optional>true</optional>
         </dependency>
 
-		<!--Spigot API-->
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.9.2-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
-        <!-- Bukkit API, http://www.spigotmc.org/ or http://bukkit.org/ -->
+        <!-- Spigot API, http://www.spigotmc.org/ or http://bukkit.org/ -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>${bukkitVersion}</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${bukkit.version}</version>
             <scope>provided</scope>
-            <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <artifactId>junit</artifactId>
@@ -465,6 +479,10 @@
                     <artifactId>guava</artifactId>
                     <groupId>com.google.guava</groupId>
                 </exclusion>
+                <exclusion>
+                	<artifactId>bungeecord-chat</artifactId>
+                	<groupId>net.md-5</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -474,7 +492,6 @@
             <artifactId>ProtocolLib</artifactId>
             <version>3.6.5-SNAPSHOT</version>
             <scope>provided</scope>
-            <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <artifactId>cglib-nodep</artifactId>
@@ -591,14 +608,13 @@
                     <artifactId>craftbukkit</artifactId>
                 </exclusion>
             </exclusions>
-            <optional>true</optional>
         </dependency>
 
         <!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
-            <version>2.5</version>
+            <version>2.5.0-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
             <exclusions>
@@ -646,8 +662,15 @@
                     <artifactId>junit</artifactId>
                     <groupId>junit</groupId>
                 </exclusion>
+                <exclusion>
+                	<artifactId>spigot-api</artifactId>
+                	<groupId>org.spigotmc</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>jettison</artifactId>
+                	<groupId>org.codehaus.jettison</groupId>
+                </exclusion>
             </exclusions>
-            <optional>true</optional>
         </dependency>
 
         <!-- Essentials plugin -->
@@ -666,7 +689,6 @@
                     <artifactId>craftbukkit</artifactId>
                 </exclusion>
             </exclusions>
-            <optional>true</optional>
         </dependency>
 
         <!-- Anti-PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
@@ -741,7 +763,6 @@
                     <groupId>org.mcstats.bukkit</groupId>
                 </exclusion>
             </exclusions>
-            <optional>true</optional>
         </dependency>
 
         <!-- XAuth, another authentication plugin, required by the database converter -->
@@ -784,36 +805,6 @@
                     <groupId>org.apache.logging.log4j</groupId>
                 </exclusion>
             </exclusions>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Unit Testing Libraries -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-            <version>4.12</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>java-hamcrest</artifactId>
-            <scope>test</scope>
-            <version>2.0.0.0</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-            <version>2.0.5-beta</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hamcrest-core</artifactId>
-                    <groupId>org.hamcrest</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- String comparison library. Used for dynamic help system. -->
@@ -823,6 +814,45 @@
             <version>1.0.0</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Unit Testing Libraries -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>java-hamcrest</artifactId>
+            <scope>test</scope>
+            <version>2.0.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+            <version>2.0.5-beta</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hamcrest-core</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- JDBC drivers for datasource integration tests -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.8.11.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.192</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -7,7 +7,7 @@ import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
-import static fr.xephi.authme.settings.domain.Property.newListProperty;
+import static fr.xephi.authme.settings.domain.Property.newLowercaseListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class SecuritySettings implements SettingsClass {
@@ -34,11 +34,11 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<Boolean> USE_LOGGING =
         newProperty("Security.console.logConsole", true);
 
-    @Comment("Player need to put a captcha when he fails too lot the password")
+    @Comment("Enable captcha when a player uses wrong password too many times")
     public static final Property<Boolean> USE_CAPTCHA =
         newProperty("Security.captcha.useCaptcha", false);
 
-    @Comment("Max allowed tries before request a captcha")
+    @Comment("Max allowed tries before a captcha is required")
     public static final Property<Integer> MAX_LOGIN_TRIES_BEFORE_CAPTCHA =
         newProperty("Security.captcha.maxLoginTry", 5);
 
@@ -98,7 +98,20 @@ public class SecuritySettings implements SettingsClass {
         "- '123456'",
         "- 'password'"})
     public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321");
+        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321");
+
+    @Comment("Tempban a user's IP address if they enter the wrong password too many times")
+    public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =
+        newProperty("Security.tempban.enableTempban", false);
+
+    @Comment("How many times a user can attempt to login before their IP being tempbanned")
+    public static final Property<Integer> MAX_LOGIN_TEMPBAN =
+        newProperty("Security.tempban.maxLoginTries", 10);
+
+    @Comment({"The length of time a IP address will be tempbanned in minutes",
+        "Default: 480 minutes, or 8 hours"})
+    public static final Property<Integer> TEMPBAN_LENGTH =
+        newProperty("Security.tempban.tempbanLength", 480);
 
     private SecuritySettings() {
     }

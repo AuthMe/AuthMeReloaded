@@ -1,46 +1,34 @@
 package fr.xephi.authme.cache.limbo;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.backup.PlayerData;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
+ * Manages all {@link LimboPlayer} instances.
  */
 public class LimboCache {
 
-    private volatile static LimboCache singleton;
-    private final ConcurrentHashMap<String, LimboPlayer> cache;
-    private final AuthMe plugin;
-    private final JsonCache jsonCache;
+    private final ConcurrentHashMap<String, LimboPlayer> cache = new ConcurrentHashMap<>();
+    private final JsonCache jsonCache = new JsonCache();
 
-    /**
-     * Constructor for LimboCache.
-     *
-     * @param plugin AuthMe
-     */
-    private LimboCache(AuthMe plugin) {
-        this.plugin = plugin;
-        this.cache = new ConcurrentHashMap<>();
-        this.jsonCache = new JsonCache();
-    }
+    @Inject
+    private PermissionsManager permissionsManager;
+    @Inject
+    private SpawnLoader spawnLoader;
 
-    /**
-     * Method getInstance.
-     *
-     * @return LimboCache
-     */
-    public static LimboCache getInstance() {
-        if (singleton == null) {
-            singleton = new LimboCache(AuthMe.getInstance());
-        }
-        return singleton;
+    @Inject
+    LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader) {
+        this.permissionsManager = permissionsManager;
+        this.spawnLoader = spawnLoader;
     }
 
     /**
@@ -50,13 +38,12 @@ public class LimboCache {
      */
     public void addLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
-        Location loc = player.getLocation();
+        Location location = player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
         boolean operator = player.isOp();
         boolean flyEnabled = player.getAllowFlight();
         String playerGroup = "";
-        PermissionsManager permsMan = plugin.getPermissionsManager();
-        if (permsMan.hasGroupSupport()) {
-            playerGroup = permsMan.getPrimaryGroup(player);
+        if (permissionsManager.hasGroupSupport()) {
+            playerGroup = permissionsManager.getPrimaryGroup(player);
         }
 
         if (jsonCache.doesCacheExist(player)) {
@@ -68,11 +55,8 @@ public class LimboCache {
             }
         }
 
-        if (player.isDead()) {
-            loc = plugin.getSpawnLocation(player);
-        }
 
-        cache.put(name, new LimboPlayer(name, loc, operator, playerGroup, flyEnabled));
+        cache.put(name, new LimboPlayer(name, location, operator, playerGroup, flyEnabled));
     }
 
     /**
@@ -83,9 +67,9 @@ public class LimboCache {
     public void deleteLimboPlayer(String name) {
         checkNotNull(name);
         name = name.toLowerCase();
-        if (cache.containsKey(name)) {
-            cache.get(name).clearTasks();
-            cache.remove(name);
+        LimboPlayer cachedPlayer = cache.remove(name);
+        if (cachedPlayer != null) {
+            cachedPlayer.clearTasks();
         }
     }
 

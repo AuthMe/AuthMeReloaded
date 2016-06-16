@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
@@ -10,18 +10,30 @@ import fr.xephi.authme.converter.RoyalAuthConverter;
 import fr.xephi.authme.converter.SqliteToSql;
 import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * Converter command: launches conversion based on its parameters.
+ */
 public class ConverterCommand implements ExecutableCommand {
 
-    @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
+    @Inject
+    private CommandService commandService;
 
+    @Inject
+    private BukkitService bukkitService;
+
+    @Inject
+    private AuthMeServiceInitializer initializer;
+
+    @Override
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the conversion job
         String job = arguments.get(0);
 
@@ -33,49 +45,35 @@ public class ConverterCommand implements ExecutableCommand {
         }
 
         // Get the proper converter instance
-        Converter converter = null;
-        switch (jobType) {
-            case XAUTH:
-                converter = new xAuthConverter(plugin, sender);
-                break;
-            case CRAZYLOGIN:
-                converter = new CrazyLoginConverter(plugin, sender);
-                break;
-            case RAKAMAK:
-                converter = new RakamakConverter(plugin, sender);
-                break;
-            case ROYALAUTH:
-                converter = new RoyalAuthConverter(plugin);
-                break;
-            case VAUTH:
-                converter = new vAuthConverter(plugin, sender);
-                break;
-            case SQLITETOSQL:
-                converter = new SqliteToSql(plugin, sender, commandService.getSettings());
-                break;
-            default:
-                break;
-        }
+        final Converter converter = initializer.newInstance(jobType.getConverterClass());
 
         // Run the convert job
-        commandService.runTaskAsynchronously(converter);
+        bukkitService.runTaskAsynchronously(new Runnable() {
+            @Override
+            public void run() {
+                converter.execute(sender);
+            }
+        });
 
         // Show a status message
         sender.sendMessage("[AuthMe] Successfully converted from " + jobType.getName());
     }
 
-    public enum ConvertType {
-        XAUTH("xauth"),
-        CRAZYLOGIN("crazylogin"),
-        RAKAMAK("rakamak"),
-        ROYALAUTH("royalauth"),
-        VAUTH("vauth"),
-        SQLITETOSQL("sqlitetosql");
+    @VisibleForTesting
+    enum ConvertType {
+        XAUTH("xauth", xAuthConverter.class),
+        CRAZYLOGIN("crazylogin", CrazyLoginConverter.class),
+        RAKAMAK("rakamak", RakamakConverter.class),
+        ROYALAUTH("royalauth", RoyalAuthConverter.class),
+        VAUTH("vauth", vAuthConverter.class),
+        SQLITETOSQL("sqlitetosql", SqliteToSql.class);
 
-        final String name;
+        private final String name;
+        private final Class<? extends Converter> converterClass;
 
-        ConvertType(String name) {
+        ConvertType(String name, Class<? extends Converter> converterClass) {
             this.name = name;
+            this.converterClass = converterClass;
         }
 
         public static ConvertType fromName(String name) {
@@ -87,8 +85,12 @@ public class ConverterCommand implements ExecutableCommand {
             return null;
         }
 
-        String getName() {
+        public String getName() {
             return this.name;
+        }
+
+        public Class<? extends Converter> getConverterClass() {
+            return converterClass;
         }
     }
 }

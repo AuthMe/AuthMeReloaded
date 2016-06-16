@@ -6,7 +6,9 @@ import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +17,7 @@ import static fr.xephi.authme.command.FoundResultStatus.MISSING_BASE_COMMAND;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 
 /**
- * The AuthMe command handler, responsible for mapping incoming
- * command parts to the correct {@link CommandDescription}.
+ * Maps incoming command parts to the correct {@link CommandDescription}.
  */
 public class CommandMapper {
 
@@ -28,8 +29,9 @@ public class CommandMapper {
     private final Set<CommandDescription> baseCommands;
     private final PermissionsManager permissionsManager;
 
-    public CommandMapper(Set<CommandDescription> baseCommands, PermissionsManager permissionsManager) {
-        this.baseCommands = baseCommands;
+    @Inject
+    public CommandMapper(CommandInitializer commandInitializer, PermissionsManager permissionsManager) {
+        this.baseCommands = commandInitializer.getCommands();
         this.permissionsManager = permissionsManager;
     }
 
@@ -65,6 +67,23 @@ public class CommandMapper {
         }
 
         return getCommandWithSmallestDifference(base, parts);
+    }
+
+    /**
+     * Return all {@link ExecutableCommand} classes referenced in {@link CommandDescription} objects.
+     *
+     * @return all classes
+     * @see CommandInitializer#getCommands
+     */
+    public Set<Class<? extends ExecutableCommand>> getCommandClasses() {
+        Set<Class<? extends ExecutableCommand>> classes = new HashSet<>(50);
+        for (CommandDescription command : baseCommands) {
+            classes.add(command.getExecutableCommand());
+            for (CommandDescription child : command.getChildren()) {
+                classes.add(child.getExecutableCommand());
+            }
+        }
+        return classes;
     }
 
     private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
@@ -139,7 +158,7 @@ public class CommandMapper {
 
     private static FoundCommandResult transformResultForHelp(FoundCommandResult result) {
         if (result.getCommandDescription() != null
-            && HELP_COMMAND_CLASS.isAssignableFrom(result.getCommandDescription().getExecutableCommand().getClass())) {
+            && HELP_COMMAND_CLASS == result.getCommandDescription().getExecutableCommand()) {
             // For "/authme help register" we have labels = [authme, help] and arguments = [register]
             // But for the help command we want labels = [authme, help] and arguments = [authme, register],
             // so we can use the arguments as the labels to the command to show help for
@@ -152,7 +171,7 @@ public class CommandMapper {
     }
 
     private FoundResultStatus getPermissionAwareStatus(CommandSender sender, CommandDescription command) {
-        if (sender != null && !permissionsManager.hasPermission(sender, command)) {
+        if (sender != null && !permissionsManager.hasPermission(sender, command.getPermission())) {
             return FoundResultStatus.NO_PERMISSION;
         }
         return FoundResultStatus.SUCCESS;

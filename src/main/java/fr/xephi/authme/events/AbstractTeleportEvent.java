@@ -19,25 +19,13 @@ public abstract class AbstractTeleportEvent extends CustomEvent implements Cance
      *
      * @param isAsync Whether to fire the event asynchronously or not
      * @param player The player
-     * @param from The location the player is being teleported away from
-     * @param to The teleport destination
-     */
-    public AbstractTeleportEvent(boolean isAsync, Player player, Location from, Location to) {
-        super(isAsync);
-        this.player = player;
-        this.from = from;
-        this.to = to;
-    }
-
-    /**
-     * Constructor, using the player's current location as "from" location.
-     *
-     * @param isAsync Whether to fire the event asynchronously or not
-     * @param player The player
      * @param to The teleport destination
      */
     public AbstractTeleportEvent(boolean isAsync, Player player, Location to) {
-        this(isAsync, player, player.getLocation(), to);
+        super(isAsync);
+        this.player = player;
+        this.from = player.getLocation();
+        this.to = to;
     }
 
     /**

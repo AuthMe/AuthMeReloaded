@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
 
 import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -36,8 +34,9 @@ public class CommandInitializerTest {
     private static Set<CommandDescription> commands;
 
     @BeforeClass
-    public static void initializeCommandManager() {
-        commands = CommandInitializer.buildCommands();
+    public static void initializeCommandCollection() {
+        CommandInitializer commandInitializer = new CommandInitializer();
+        commands = commandInitializer.getCommands();
     }
 
     @Test
@@ -157,34 +156,6 @@ public class CommandInitializerTest {
         walkThroughCommands(commands, descriptionTester);
     }
 
-    /**
-     * Check that the implementation of {@link ExecutableCommand} a command points to is the same for each type:
-     * it is inefficient to instantiate the same type multiple times.
-     */
-    @Test
-    public void shouldNotHaveMultipleInstancesOfSameExecutableCommandSubType() {
-        // given
-        final Map<Class<? extends ExecutableCommand>, ExecutableCommand> implementations = new HashMap<>();
-        BiConsumer descriptionTester = new BiConsumer() {
-            @Override
-            public void accept(CommandDescription command, int depth) {
-                assertThat(command.getExecutableCommand(), not(nullValue()));
-                ExecutableCommand commandExec = command.getExecutableCommand();
-                ExecutableCommand storedExec = implementations.get(command.getExecutableCommand().getClass());
-                if (storedExec != null) {
-                    assertThat("has same implementation of '" + storedExec.getClass().getName() + "' for command with "
-                        + "parent " + (command.getParent() == null ? "null" : command.getParent().getLabels()),
-                        storedExec == commandExec, equalTo(true));
-                } else {
-                    implementations.put(commandExec.getClass(), commandExec);
-                }
-            }
-        };
-
-        // when/then
-        walkThroughCommands(commands, descriptionTester);
-    }
-
     @Test
     public void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
         // given
@@ -195,7 +166,7 @@ public class CommandInitializerTest {
                 for (CommandArgumentDescription argument : command.getArguments()) {
                     if (argument.isOptional()) {
                         encounteredOptionalArg = true;
-                    } else if (!argument.isOptional() && encounteredOptionalArg) {
+                    } else if (encounteredOptionalArg) {
                         fail("Mandatory arguments should come before optional ones for command with labels '"
                             + command.getLabels() + "'");
                     }
@@ -239,22 +210,16 @@ public class CommandInitializerTest {
         BiConsumer adminPermissionChecker = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
-                CommandPermissions permissions = command.getCommandPermissions();
-                if (permissions != null && OP_ONLY.equals(permissions.getDefaultPermission())) {
-                    if (!hasAdminNode(permissions)) {
-                        fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
-                            + "permission but no permission node on admin level");
-                    }
+                PermissionNode permission = command.getPermission();
+                if (permission != null && OP_ONLY.equals(permission.getDefaultPermission())
+                    && !hasAdminNode(permission)) {
+                    fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
+                        + "permission but no permission node on admin level");
                 }
             }
 
-            private boolean hasAdminNode(CommandPermissions permissions) {
-                for (PermissionNode node : permissions.getPermissionNodes()) {
-                    if (node instanceof AdminPermission) {
-                        return true;
-                    }
-                }
-                return false;
+            private boolean hasAdminNode(PermissionNode permission) {
+                return permission instanceof AdminPermission;
             }
         };
 
@@ -280,15 +245,15 @@ public class CommandInitializerTest {
             }
             private void testCollectionForCommand(CommandDescription command, int argCount,
                                                   Map<Class<? extends ExecutableCommand>, Integer> collection) {
-                final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand().getClass();
+                final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand();
                 Integer existingCount = collection.get(clazz);
-                if (existingCount != null) {
+                if (existingCount == null) {
+                    collection.put(clazz, argCount);
+                } else {
                     String commandDescription = "Command with label '" + command.getLabels().get(0) + "' and parent '"
-                        + (command.getParent() != null ? command.getLabels().get(0) : "null") + "' ";
+                        + (command.getParent() == null ? "null" : command.getLabels().get(0)) + "' ";
                     assertThat(commandDescription + "should point to " + clazz + " with arguments consistent to others",
                         argCount, equalTo(existingCount));
-                } else {
-                    collection.put(clazz, argCount);
                 }
             }
         };

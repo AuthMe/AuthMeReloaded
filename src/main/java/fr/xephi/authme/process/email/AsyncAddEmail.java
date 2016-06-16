@@ -5,33 +5,30 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
+
 /**
  * Async task to add an email to an account.
  */
-public class AsyncAddEmail implements Process {
+public class AsyncAddEmail implements AsynchronousProcess {
 
-    private final Player player;
-    private final String email;
-    private final ProcessService service;
-    private final DataSource dataSource;
-    private final PlayerCache playerCache;
+    @Inject
+    private ProcessService service;
 
-    public AsyncAddEmail(Player player, String email, DataSource dataSource, PlayerCache playerCache,
-                         ProcessService service) {
-        this.player = player;
-        this.email = email;
-        this.dataSource = dataSource;
-        this.playerCache = playerCache;
-        this.service = service;
-    }
+    @Inject
+    private DataSource dataSource;
 
-    @Override
-    public void run() {
+    @Inject
+    private PlayerCache playerCache;
+
+    AsyncAddEmail() { }
+
+    public void addEmail(Player player, String email) {
         String playerName = player.getName().toLowerCase();
 
         if (playerCache.isAuthenticated(playerName)) {
@@ -55,11 +52,11 @@ public class AsyncAddEmail implements Process {
                 }
             }
         } else {
-            sendUnloggedMessage(dataSource);
+            sendUnloggedMessage(player);
         }
     }
 
-    private void sendUnloggedMessage(DataSource dataSource) {
+    private void sendUnloggedMessage(Player player) {
         if (dataSource.isAuthAvailable(player.getName())) {
             service.send(player, MessageKey.LOGIN_MESSAGE);
         } else if (service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)) {

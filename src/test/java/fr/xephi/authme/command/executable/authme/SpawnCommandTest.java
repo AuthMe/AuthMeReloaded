@@ -1,11 +1,13 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -21,21 +23,25 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link SpawnCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SpawnCommandTest {
+
+    @InjectMocks
+    private SpawnCommand command;
+
+    @Mock
+    private SpawnLoader spawnLoader;
+
 
     @Test
     public void shouldTeleportToSpawn() {
         // given
         Location spawn = mock(Location.class);
-        SpawnLoader spawnLoader = mock(SpawnLoader.class);
         given(spawnLoader.getSpawn()).willReturn(spawn);
-        CommandService service = mock(CommandService.class);
-        given(service.getSpawnLoader()).willReturn(spawnLoader);
         Player player = mock(Player.class);
-        ExecutableCommand command = new SpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
         verify(player).teleport(spawn);
@@ -45,15 +51,11 @@ public class SpawnCommandTest {
     @Test
     public void shouldHandleMissingSpawn() {
         // given
-        SpawnLoader spawnLoader = mock(SpawnLoader.class);
         given(spawnLoader.getSpawn()).willReturn(null);
-        CommandService service = mock(CommandService.class);
-        given(service.getSpawnLoader()).willReturn(spawnLoader);
         Player player = mock(Player.class);
-        ExecutableCommand command = new SpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList());
 
         // then
         verify(player).sendMessage(argThat(containsString("Spawn has failed")));

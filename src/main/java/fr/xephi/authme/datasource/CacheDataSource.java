@@ -8,6 +8,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -15,12 +16,11 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-/**
- */
 public class CacheDataSource implements DataSource {
 
     private final DataSource source;
@@ -41,7 +41,8 @@ public class CacheDataSource implements DataSource {
                 .build())
         );
         cachedAuths = CacheBuilder.newBuilder()
-            .refreshAfterWrite(8, TimeUnit.MINUTES)
+            .refreshAfterWrite(5, TimeUnit.MINUTES)
+            .expireAfterAccess(15, TimeUnit.MINUTES)
             .build(new CacheLoader<String, Optional<PlayerAuth>>() {
                 @Override
                 public Optional<PlayerAuth> load(String key) {
@@ -53,6 +54,7 @@ public class CacheDataSource implements DataSource {
                     return executorService.submit(new Callable<Optional<PlayerAuth>>() {
                         @Override
                         public Optional<PlayerAuth> call() {
+                            ConsoleLogger.debug("REFRESH " + key);
                             return load(key);
                         }
                     });
@@ -70,7 +72,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean isAuthAvailable(String user) {
+    public boolean isAuthAvailable(String user) {
         return getAuth(user) != null;
     }
 
@@ -85,13 +87,13 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized PlayerAuth getAuth(String user) {
+    public PlayerAuth getAuth(String user) {
         user = user.toLowerCase();
         return cachedAuths.getUnchecked(user).orNull();
     }
 
     @Override
-    public synchronized boolean saveAuth(PlayerAuth auth) {
+    public boolean saveAuth(PlayerAuth auth) {
         boolean result = source.saveAuth(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -100,7 +102,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updatePassword(PlayerAuth auth) {
+    public boolean updatePassword(PlayerAuth auth) {
         boolean result = source.updatePassword(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -137,16 +139,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public List<String> autoPurgeDatabase(long until) {
-        List<String> cleared = source.autoPurgeDatabase(until);
+    public Set<String> autoPurgeDatabase(long until) {
+        Set<String> cleared = source.autoPurgeDatabase(until);
         for (String name : cleared) {
             cachedAuths.invalidate(name);
         }
+
         return cleared;
     }
 
     @Override
-    public synchronized boolean removeAuth(String name) {
+    public boolean removeAuth(String name) {
         name = name.toLowerCase();
         boolean result = source.removeAuth(name);
         if (result) {
@@ -156,7 +159,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized void close() {
+    public void close() {
         source.close();
         cachedAuths.invalidateAll();
         executorService.shutdown();
@@ -168,7 +171,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean updateEmail(final PlayerAuth auth) {
+    public boolean updateEmail(final PlayerAuth auth) {
         boolean result = source.updateEmail(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -177,17 +180,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByIp(final String ip) {
+    public List<String> getAllAuthsByIp(final String ip) {
         return source.getAllAuthsByIp(ip);
     }
 
     @Override
-    public synchronized int countAuthsByEmail(final String email) {
+    public int countAuthsByEmail(final String email) {
         return source.countAuthsByEmail(email);
     }
 
     @Override
-    public synchronized void purgeBanned(final List<String> banned) {
+    public void purgeBanned(final Set<String> banned) {
         source.purgeBanned(banned);
         cachedAuths.invalidateAll(banned);
     }

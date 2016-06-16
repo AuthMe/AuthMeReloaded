@@ -3,6 +3,8 @@ package fr.xephi.authme.api;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
@@ -12,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import javax.inject.Inject;
+
 /**
  * Deprecated API of AuthMe. Please use {@link NewAPI} instead.
  */
@@ -20,7 +24,9 @@ public class API {
 
     public static final String newline = System.getProperty("line.separator");
     public static AuthMe instance;
+    private static DataSource dataSource;
     private static PasswordSecurity passwordSecurity;
+    private static Management management;
 
     /**
      * Constructor for the deprecated API.
@@ -28,9 +34,12 @@ public class API {
      * @param instance AuthMe
      */
     @Deprecated
-    public API(AuthMe instance) {
+    @Inject
+    API(AuthMe instance, DataSource dataSource, PasswordSecurity passwordSecurity, Management management) {
         API.instance = instance;
-        passwordSecurity = instance.getPasswordSecurity();
+        API.dataSource = dataSource;
+        API.passwordSecurity = passwordSecurity;
+        API.management = management;
     }
 
     /**
@@ -109,7 +118,7 @@ public class API {
     @Deprecated
     public static boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
-        return instance.getDataSource().isAuthAvailable(player);
+        return dataSource.isAuthAvailable(player);
     }
 
     /**
@@ -144,7 +153,7 @@ public class API {
             .lastLogin(0)
             .realName(playerName)
             .build();
-        return instance.getDataSource().saveAuth(auth);
+        return dataSource.saveAuth(auth);
     }
 
     /**
@@ -154,7 +163,7 @@ public class API {
      */
     @Deprecated
     public static void forceLogin(Player player) {
-        instance.getManagement().performLogin(player, "dontneed", true);
+        management.performLogin(player, "dontneed", true);
     }
 
     @Deprecated
@@ -170,7 +179,7 @@ public class API {
      */
     @Deprecated
     public boolean isNPC(Player player) {
-        return Utils.isNPC(player);
+        return instance.getPluginHooks().isNpc(player);
     }
 
 }

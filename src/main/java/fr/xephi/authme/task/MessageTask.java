@@ -2,53 +2,51 @@ package fr.xephi.authme.task;
 
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+
 /**
+ * Message shown to a player in a regular interval as long as he is not logged in.
  */
 public class MessageTask implements Runnable {
 
-    private final BukkitService bukkitService;
     private final String name;
-    private final String[] msg;
+    private final String[] message;
     private final int interval;
+    private final BukkitService bukkitService;
+    private final LimboCache limboCache;
+    private final PlayerCache playerCache;
 
     /*
      * Constructor.
      */
-    public MessageTask(BukkitService bukkitService, String name, String[] lines, int interval) {
-        this.bukkitService = bukkitService;
+    public MessageTask(String name, String[] lines, int interval, BukkitService bukkitService,
+                       LimboCache limboCache, PlayerCache playerCache) {
         this.name = name;
-        this.msg = lines;
+        this.message = lines;
         this.interval = interval;
-    }
-
-    /*
-     * Constructor.
-     */
-    public MessageTask(BukkitService bukkitService, Messages messages, String name, MessageKey messageKey,
-                       int interval) {
-        this(bukkitService, name, messages.retrieve(messageKey), interval);
+        this.bukkitService = bukkitService;
+        this.limboCache = limboCache;
+        this.playerCache = playerCache;
     }
 
     @Override
     public void run() {
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (playerCache.isAuthenticated(name)) {
             return;
         }
 
         for (Player player : bukkitService.getOnlinePlayers()) {
             if (player.getName().equalsIgnoreCase(name)) {
-                for (String ms : msg) {
+                for (String ms : message) {
                     player.sendMessage(ms);
                 }
-                BukkitTask nextTask = bukkitService.runTaskLater(this, interval * 20);
-                if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTask(nextTask);
+                BukkitTask nextTask = bukkitService.runTaskLater(this, interval * TICKS_PER_SECOND);
+                if (limboCache.hasLimboPlayer(name)) {
+                    limboCache.getLimboPlayer(name).setMessageTask(nextTask);
                 }
                 return;
             }

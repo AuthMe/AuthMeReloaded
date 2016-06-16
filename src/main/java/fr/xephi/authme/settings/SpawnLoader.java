@@ -3,7 +3,11 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -14,6 +18,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
@@ -25,10 +30,12 @@ import java.io.IOException;
  * should be taken from. In AuthMe, we can distinguish between the regular spawn and a "first spawn",
  * to which players will be teleported who have joined for the first time.
  */
-public class SpawnLoader {
+public class SpawnLoader implements Reloadable {
 
     private final File authMeConfigurationFile;
+    private final NewSetting settings;
     private final PluginHooks pluginHooks;
+    private final DataSource dataSource;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
@@ -39,22 +46,26 @@ public class SpawnLoader {
      * @param pluginFolder The AuthMe data folder
      * @param settings The setting instance
      * @param pluginHooks The plugin hooks instance
+     * @param dataSource The plugin auth database instance
      */
-    public SpawnLoader(File pluginFolder, NewSetting settings, PluginHooks pluginHooks) {
+    @Inject
+    public SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
+                       DataSource dataSource) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
+        this.settings = settings;
         this.pluginHooks = pluginHooks;
-        initialize(settings);
+        this.dataSource = dataSource;
+        reload();
     }
 
     /**
-     * Retrieve the relevant settings and load the AuthMe spawn.yml file.
-     *
-     * @param settings The settings instance
+     * (Re)loads the spawn file and relevant settings.
      */
-    public void initialize(NewSetting settings) {
+    @Override
+    public void reload() {
         spawnPriority = settings.getProperty(RestrictionSettings.SPAWN_PRIORITY).split(",");
         authMeConfiguration = YamlConfiguration.loadConfiguration(authMeConfigurationFile);
         loadEssentialsSpawn();
@@ -149,7 +160,7 @@ public class SpawnLoader {
                     }
                     break;
                 case "multiverse":
-                    if (Settings.multiverse) {
+                    if (settings.getProperty(HooksSettings.MULTIVERSE)) {
                         spawnLoc = pluginHooks.getMultiverseSpawn(world);
                     }
                     break;
@@ -161,7 +172,7 @@ public class SpawnLoader {
                     if (PlayerCache.getInstance().isAuthenticated(playerNameLower)) {
                         spawnLoc = getSpawn();
                     } else if (getFirstSpawn() != null && (!player.hasPlayedBefore() ||
-                        !plugin.getDataSource().isAuthAvailable(playerNameLower))) {
+                        !dataSource.isAuthAvailable(playerNameLower))) {
                         spawnLoc = getFirstSpawn();
                     } else {
                         spawnLoc = getSpawn();
@@ -196,7 +207,6 @@ public class SpawnLoader {
     }
 
     private boolean saveAuthMeConfig() {
-        // TODO ljacqu 20160312: Investigate whether this utility should be put in a Utils class
         try {
             authMeConfiguration.save(authMeConfigurationFile);
             return true;

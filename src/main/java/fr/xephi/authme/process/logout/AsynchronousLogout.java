@@ -1,79 +1,69 @@
 package fr.xephi.authme.process.logout;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.permission.AuthGroupType;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.entity.Player;
 
-/**
- */
-public class AsynchronousLogout implements Process {
+import javax.inject.Inject;
 
-    private final Player player;
-    private final String name;
-    private final AuthMe plugin;
-    private final DataSource database;
-    private boolean canLogout = true;
-    private final ProcessService service;
+public class AsynchronousLogout implements AsynchronousProcess {
 
-    /**
-     * Constructor for AsynchronousLogout.
-     *
-     * @param player   Player
-     * @param plugin   AuthMe
-     * @param database DataSource
-     * @param service  The process service
-     */
-    public AsynchronousLogout(Player player, AuthMe plugin, DataSource database, ProcessService service) {
-        this.player = player;
-        this.plugin = plugin;
-        this.database = database;
-        this.name = player.getName().toLowerCase();
-        this.service = service;
-    }
+    @Inject
+    private DataSource database;
 
-    private void preLogout() {
-        if (!PlayerCache.getInstance().isAuthenticated(name)) {
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private LimboCache limboCache;
+
+    @Inject
+    private SyncProcessManager syncProcessManager;
+
+    @Inject
+    private BukkitService bukkitService;
+
+    AsynchronousLogout() { }
+
+    public void logout(final Player player) {
+        final String name = player.getName().toLowerCase();
+        if (!playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.NOT_LOGGED_IN);
-            canLogout = false;
-        }
-    }
-
-    @Override
-    public void run() {
-        preLogout();
-        if (!canLogout) {
             return;
         }
-        final Player p = player;
-        PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
+        PlayerAuth auth = playerCache.getAuth(name);
         database.updateSession(auth);
-        auth.setQuitLocX(p.getLocation().getX());
-        auth.setQuitLocY(p.getLocation().getY());
-        auth.setQuitLocZ(p.getLocation().getZ());
-        auth.setWorld(p.getWorld().getName());
+        auth.setQuitLocX(player.getLocation().getX());
+        auth.setQuitLocY(player.getLocation().getY());
+        auth.setQuitLocZ(player.getLocation().getZ());
+        auth.setWorld(player.getWorld().getName());
         database.updateQuitLoc(auth);
 
-        PlayerCache.getInstance().removePlayer(name);
+        playerCache.removePlayer(name);
         database.setUnlogged(name);
-        service.scheduleSyncDelayedTask(new Runnable() {
+        bukkitService.scheduleSyncDelayedTask(new Runnable() {
             @Override
             public void run() {
-                Utils.teleportToSpawn(p);
+                Utils.teleportToSpawn(player);
             }
         });
-        if (LimboCache.getInstance().hasLimboPlayer(name)) {
-            LimboCache.getInstance().deleteLimboPlayer(name);
+        if (limboCache.hasLimboPlayer(name)) {
+            limboCache.deleteLimboPlayer(name);
         }
-        LimboCache.getInstance().addLimboPlayer(player);
-        Utils.setGroup(player, GroupType.NOTLOGGEDIN);
-        service.scheduleSyncDelayedTask(new ProcessSynchronousPlayerLogout(p, plugin, service));
+        limboCache.addLimboPlayer(player);
+        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
+        syncProcessManager.processSyncPlayerLogout(player);
     }
 }

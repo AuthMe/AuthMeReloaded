@@ -3,6 +3,7 @@ package fr.xephi.authme.settings.domain;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +32,17 @@ public abstract class Property<T> {
     public static Property<List<String>> newListProperty(String path, String... defaultValues) {
         // does not have the same name as not to clash with #newProperty(String, String)
         return new StringListProperty(path, defaultValues);
+    }
+
+    /**
+     * Create a new String list property where all values are lowercase.
+     *
+     * @param path The property's path
+     * @param defaultValues The items in the default list
+     * @return The created list property
+     */
+    public static Property<List<String>> newLowercaseListProperty(String path, String... defaultValues) {
+        return new LowercaseStringListProperty(path, defaultValues);
     }
 
     /**
@@ -165,7 +177,7 @@ public abstract class Property<T> {
     /**
      * String list property.
      */
-    private static final class StringListProperty extends Property<List<String>> {
+    private static class StringListProperty extends Property<List<String>> {
 
         public StringListProperty(String path, String[] defaultValues) {
             super(path, Arrays.asList(defaultValues));
@@ -196,4 +208,28 @@ public abstract class Property<T> {
         }
     }
 
+    /**
+     * Lowercase String list property.
+     */
+    private static final class LowercaseStringListProperty extends StringListProperty {
+
+        public LowercaseStringListProperty(String path, String[] defaultValues) {
+            super(path, defaultValues);
+        }
+
+        @Override
+        public List<String> getFromFile(FileConfiguration configuration) {
+            if (!configuration.isList(getPath())) {
+                return getDefaultValue();
+            }
+
+            // make sure all elements are lowercase
+            List<String> lowercaseList = new ArrayList<>();
+            for (String element : configuration.getStringList(getPath())) {
+                lowercaseList.add(element.toLowerCase());
+            }
+
+            return lowercaseList;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package fr.xephi.authme.util;
 
+import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import java.io.File;
@@ -144,5 +145,10 @@ public class StringUtilsTest {
 
         // then
         assertThat(result, equalTo("path" + File.separator + "to" + File.separator + "test-file.txt"));
+    }
+
+    @Test
+    public void shouldHaveHiddenConstructor() {
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(StringUtils.class);
     }
 }

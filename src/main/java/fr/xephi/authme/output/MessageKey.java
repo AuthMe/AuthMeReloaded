@@ -5,6 +5,12 @@ package fr.xephi.authme.output;
  */
 public enum MessageKey {
 
+    DENIED_COMMAND("denied_command"),
+
+    SAME_IP_ONLINE("same_ip_online"),
+
+    DENIED_CHAT("denied_chat"),
+
     KICK_ANTIBOT("kick_antibot"),
 
     UNKNOWN_USER("unknown_user"),
@@ -56,6 +62,8 @@ public enum MessageKey {
     PASSWORD_IS_USERNAME_ERROR("password_error_nick"),
 
     PASSWORD_UNSAFE_ERROR("password_error_unsafe"),
+
+    PASSWORD_CHARACTERS_ERROR("password_error_chars", "REG_EX"),
 
     SESSION_EXPIRED("invalid_session"),
 
@@ -129,7 +137,13 @@ public enum MessageKey {
 
     NOT_OWNER_ERROR("not_owner_error"),
     
-    INVALID_NAME_CASE("invalid_name_case", "%valid", "%invalid");
+    INVALID_NAME_CASE("invalid_name_case", "%valid", "%invalid"),
+
+    TEMPBAN_MAX_LOGINS("tempban_max_logins"),
+
+    ACCOUNTS_OWNED_SELF("accounts_owned_self", "%count"),
+
+    ACCOUNTS_OWNED_OTHER("accounts_owned_other", "%name", "%count");
 
     private String key;
     private String[] tags;

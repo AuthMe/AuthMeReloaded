@@ -4,10 +4,14 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,38 +26,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link AccountsCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AccountsCommandTest {
 
+    @InjectMocks
     private AccountsCommand command;
-    private CommandSender sender;
+    @Mock
     private CommandService service;
+    @Mock
     private DataSource dataSource;
-
-    @Before
-    public void setUpMocks() {
-        command = new AccountsCommand();
-        sender = mock(CommandSender.class);
-        dataSource = mock(DataSource.class);
-        service = mock(CommandService.class);
-        when(service.getDataSource()).thenReturn(dataSource);
-    }
+    @Mock
+    private BukkitService bukkitService;
 
     @Test
     public void shouldGetAccountsOfCurrentUser() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");
         List<String> arguments = Collections.emptyList();
         given(dataSource.getAuth("tester")).willReturn(authWithIp("123.45.67.89"));
         given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Arrays.asList("Toaster", "Pester"));
 
         // when
-        command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        command.executeCommand(sender, arguments);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 2);
@@ -64,12 +64,13 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnUnknownUserForNullAuth() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(null);
 
         // when
-        command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        command.executeCommand(sender, arguments);
+        runInnerRunnable(bukkitService);
 
         // then
         verify(service).send(sender, MessageKey.UNKNOWN_USER);
@@ -79,13 +80,14 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnUnregisteredMessageForEmptyAuthList() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
         given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String>emptyList());
 
         // when
-        command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        command.executeCommand(sender, arguments);
+        runInnerRunnable(bukkitService);
 
         // then
         verify(service).send(sender, MessageKey.USER_NOT_REGISTERED);
@@ -95,13 +97,14 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnSingleAccountMessage() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(authWithIp("56.78.90.123"));
         given(dataSource.getAllAuthsByIp("56.78.90.123")).willReturn(Collections.singletonList("SomeUser"));
 
         // when
-        command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        command.executeCommand(sender, arguments);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 1);
@@ -114,12 +117,13 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnIpUnknown() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("123.45.67.89");
         given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String>emptyList());
 
         // when
-        command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        command.executeCommand(sender, arguments);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 1);
@@ -129,12 +133,13 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnSingleAccountForIpQuery() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("24.24.48.48");
         given(dataSource.getAllAuthsByIp("24.24.48.48")).willReturn(Collections.singletonList("SomeUser"));
 
         // when
-        command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        command.executeCommand(sender, arguments);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 1);
@@ -144,12 +149,13 @@ public class AccountsCommandTest {
     @Test
     public void shouldReturnAccountListForIpQuery() {
         // given
+        CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("98.76.41.122");
         given(dataSource.getAllAuthsByIp("98.76.41.122")).willReturn(Arrays.asList("Tester", "Lester", "Taster"));
 
         // when
-        command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        command.executeCommand(sender, arguments);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 2);

@@ -1,9 +1,10 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.HelpCommand;
-import fr.xephi.authme.permission.DefaultPermission;
+import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PlayerPermission;
+import org.bukkit.command.CommandSender;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Set;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.mock;
 
 /**
  * Util class for generating and retrieving test commands.
@@ -29,22 +29,24 @@ public final class TestCommandsUtil {
      */
     public static Set<CommandDescription> generateCommands() {
         // Register /authme
-        CommandDescription authMeBase = createCommand(null, null, singletonList("authme"));
+        CommandDescription authMeBase = createCommand(null, null, singletonList("authme"), ExecutableCommand.class);
         // Register /authme login <password>
-        createCommand(PlayerPermission.LOGIN, authMeBase, singletonList("login"), newArgument("password", false));
+        createCommand(PlayerPermission.LOGIN, authMeBase, singletonList("login"),
+            TestLoginCommand.class, newArgument("password", false));
         // Register /authme register <password> <confirmation>, aliases: /authme reg, /authme r
-        createCommand(PlayerPermission.LOGIN, authMeBase, asList("register", "reg", "r"),
+        createCommand(PlayerPermission.LOGIN, authMeBase, asList("register", "reg", "r"), TestRegisterCommand.class,
             newArgument("password", false), newArgument("confirmation", false));
 
         // Register /email [player]
-        CommandDescription emailBase = createCommand(null, null, singletonList("email"), newArgument("player", true));
+        CommandDescription emailBase = createCommand(null, null, singletonList("email"), ExecutableCommand.class,
+            newArgument("player", true));
         // Register /email helptest -- use only to test for help command arguments special case
-        CommandDescription.builder().parent(emailBase).labels("helptest").executableCommand(mock(HelpCommand.class))
+        CommandDescription.builder().parent(emailBase).labels("helptest").executableCommand(HelpCommand.class)
             .description("test").detailedDescription("Test.").withArgument("Query", "", false).build();
 
         // Register /unregister <player>, alias: /unreg
-        CommandDescription unregisterBase = createCommand(null, null, asList("unregister", "unreg"),
-            newArgument("player", false));
+        CommandDescription unregisterBase = createCommand(AdminPermission.UNREGISTER, null,
+            asList("unregister", "unreg"), TestUnregisterCommand.class, newArgument("player", false));
 
         return newHashSet(authMeBase, emailBase, unregisterBase);
     }
@@ -83,22 +85,15 @@ public final class TestCommandsUtil {
 
     /** Shortcut command to initialize a new test command. */
     private static CommandDescription createCommand(PermissionNode permission, CommandDescription parent,
-                                                    List<String> labels, CommandArgumentDescription... arguments) {
-        PermissionNode[] notNullPermission;
-        if (permission != null) {
-            notNullPermission = new PermissionNode[1];
-            notNullPermission[0] = permission;
-        } else {
-            notNullPermission = new PermissionNode[0];
-        }
-
+                                                    List<String> labels, Class<? extends ExecutableCommand> commandClass,
+                                                    CommandArgumentDescription... arguments) {
         CommandDescription.CommandBuilder command = CommandDescription.builder()
             .labels(labels)
             .parent(parent)
-            .permissions(DefaultPermission.OP_ONLY, notNullPermission)
+            .permission(permission)
             .description(labels.get(0) + " cmd")
             .detailedDescription("'" + labels.get(0) + "' test command")
-            .executableCommand(mock(ExecutableCommand.class));
+            .executableCommand(commandClass);
 
         if (arguments != null && arguments.length > 0) {
             for (CommandArgumentDescription argument : arguments) {
@@ -112,6 +107,27 @@ public final class TestCommandsUtil {
     /** Shortcut command to initialize a new argument description. */
     private static CommandArgumentDescription newArgument(String label, boolean isOptional) {
         return new CommandArgumentDescription(label, "'" + label + "' argument description", isOptional);
+    }
+
+    public static class TestLoginCommand implements ExecutableCommand {
+        @Override
+        public void executeCommand(CommandSender sender, List<String> arguments) {
+            // noop
+        }
+    }
+
+    public static class TestRegisterCommand implements ExecutableCommand {
+        @Override
+        public void executeCommand(CommandSender sender, List<String> arguments) {
+            // noop
+        }
+    }
+
+    public static class TestUnregisterCommand implements ExecutableCommand {
+        @Override
+        public void executeCommand(CommandSender sender, List<String> arguments) {
+            // noop
+        }
     }
 
 }

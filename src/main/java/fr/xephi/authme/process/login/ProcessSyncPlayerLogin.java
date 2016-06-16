@@ -4,177 +4,121 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
-import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.Utils.GroupType;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
+import javax.inject.Inject;
+
 import static fr.xephi.authme.settings.properties.PluginSettings.KEEP_COLLISIONS_DISABLED;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
-public class ProcessSyncPlayerLogin implements Process {
+public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
-    private final LimboPlayer limbo;
-    private final Player player;
-    private final String name;
-    private final PlayerAuth auth;
-    private final AuthMe plugin;
-    private final PluginManager pm;
-    private final JsonCache playerCache;
-    private final ProcessService service;
+    private static final boolean RESTORE_COLLISIONS = MethodUtils
+        .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
-    private final boolean restoreCollisions = MethodUtils
-            .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
+    @Inject
+    private AuthMe plugin;
 
-    /**
-     * Constructor for ProcessSyncPlayerLogin.
-     *
-     * @param player Player
-     * @param plugin AuthMe
-     * @param database DataSource
-     * @param service The process service
-     */
-    public ProcessSyncPlayerLogin(Player player, AuthMe plugin, DataSource database, ProcessService service) {
-        this.plugin = plugin;
-        this.pm = plugin.getServer().getPluginManager();
-        this.player = player;
-        this.name = player.getName().toLowerCase();
-        this.limbo = LimboCache.getInstance().getLimboPlayer(name);
-        this.auth = database.getAuth(name);
-        this.playerCache = new JsonCache();
-        this.service = service;
-    }
+    @Inject
+    private ProcessService service;
 
-    public LimboPlayer getLimbo() {
-        return limbo;
-    }
+    @Inject
+    private LimboCache limboCache;
 
-    private void restoreOpState() {
-        player.setOp(limbo.isOperator());
-    }
+    @Inject
+    private DataSource dataSource;
 
-    private void packQuitLocation() {
-        Utils.packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
-    }
+    @Inject
+    private BukkitService bukkitService;
 
-    private void teleportBackFromSpawn() {
-        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-        pm.callEvent(tpEvent);
-        if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
-            player.teleport(tpEvent.getTo());
-        }
-    }
+    @Inject
+    private PluginManager pluginManager;
 
-    private void teleportToSpawn() {
-        Location spawnL = plugin.getSpawnLocation(player);
-        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
-        pm.callEvent(tpEvent);
-        if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
-            player.teleport(tpEvent.getTo());
-        }
-    }
+    @Inject
+    private TeleportationService teleportationService;
 
-    private void restoreSpeedEffects() {
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT) && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+    ProcessSyncPlayerLogin() { }
+
+
+    private void restoreSpeedEffects(Player player) {
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
             player.setWalkSpeed(0.2F);
             player.setFlySpeed(0.1F);
         }
     }
 
-    private void restoreInventory() {
+    private void restoreInventory(Player player) {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-        pm.callEvent(event);
+        pluginManager.callEvent(event);
         if (!event.isCancelled() && plugin.inventoryProtector != null) {
             plugin.inventoryProtector.sendInventoryPacket(player);
         }
     }
 
-    private void forceCommands() {
+    private void forceCommands(Player player) {
         for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS)) {
             player.performCommand(command.replace("%p", player.getName()));
         }
         for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS_AS_CONSOLE)) {
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
+            Bukkit.getServer().dispatchCommand(
+                Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
         }
     }
 
-    private void sendBungeeMessage() {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ALL");
-        out.writeUTF("AuthMe");
-        out.writeUTF("login;" + name);
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-    }
-
-    @Override
-    public void run() {
+    public void processPlayerLogin(Player player) {
+        final String name = player.getName().toLowerCase();
         // Limbo contains the State of the Player before /login
+        final LimboPlayer limbo = limboCache.getLimboPlayer(name);
+        final PlayerAuth auth = dataSource.getAuth(name);
+
         if (limbo != null) {
             // Restore Op state and Permission Group
-            restoreOpState();
-            Utils.setGroup(player, GroupType.LOGGEDIN);
+            restoreOpState(player, limbo);
+            service.setGroup(player, AuthGroupType.LOGGED_IN);
 
-            if (!Settings.noTeleport) {
-                if (Settings.isTeleportToSpawnEnabled && !Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-                    if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
-                        packQuitLocation();
-                    } else {
-                        teleportBackFromSpawn();
-                    }
-                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-                    teleportToSpawn();
-                } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
-                    packQuitLocation();
-                } else {
-                    teleportBackFromSpawn();
-                }
-            }
+            teleportationService.teleportOnLogin(player, auth, limbo);
 
-            if (restoreCollisions && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
+            if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
                 player.setCollidable(true);
             }
 
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                restoreInventory();
+                restoreInventory(player);
             }
 
             if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
                 plugin.tablistHider.sendTablist(player);
             }
 
-            // Cleanup no longer used temporary data
-            LimboCache.getInstance().deleteLimboPlayer(name);
-            if (playerCache.doesCacheExist(player)) {
-                playerCache.removeCache(player);
-            }
+            // Clean up no longer used temporary data
+            limboCache.deleteLimboPlayer(name);
         }
 
         // We can now display the join message (if delayed)
         String jm = AuthMePlayerListener.joinMessage.get(name);
         if (jm != null) {
             if (!jm.isEmpty()) {
-                for (Player p : service.getOnlinePlayers()) {
+                for (Player p : bukkitService.getOnlinePlayers()) {
                     if (p.isOnline()) {
                         p.sendMessage(jm);
                     }
@@ -183,16 +127,16 @@ public class ProcessSyncPlayerLogin implements Process {
             AuthMePlayerListener.joinMessage.remove(name);
         }
 
-        restoreSpeedEffects();
+        restoreSpeedEffects(player);
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
         // The Login event now fires (as intended) after everything is processed
-        Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player));
+        bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
         if (service.getProperty(HooksSettings.BUNGEECORD)) {
-            sendBungeeMessage();
+            sendBungeeMessage(player);
         }
         // Login is done, display welcome message
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
@@ -208,12 +152,16 @@ public class ProcessSyncPlayerLogin implements Process {
         }
 
         // Login is now finished; we can force all commands
-        forceCommands();
+        forceCommands(player);
 
-        sendTo();
+        sendTo(player);
     }
 
-    private void sendTo() {
+    private void restoreOpState(Player player, LimboPlayer limboPlayer) {
+        player.setOp(limboPlayer.isOperator());
+    }
+
+    private void sendTo(Player player) {
         if (!service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Connect");
@@ -221,4 +169,14 @@ public class ProcessSyncPlayerLogin implements Process {
             player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         }
     }
+
+    private void sendBungeeMessage(Player player) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("AuthMe");
+        out.writeUTF("login;" + player.getName());
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+    }
+
 }

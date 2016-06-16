@@ -1,9 +1,9 @@
 package fr.xephi.authme.command;
 
-import java.util.List;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * Common base type for player-only commands, handling the verification that the command sender is indeed a player.
@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 public abstract class PlayerCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         if (sender instanceof Player) {
-            runCommand((Player) sender, arguments, commandService);
+            runCommand((Player) sender, arguments);
         } else {
             String alternative = getAlternativeCommand();
             if (alternative != null) {
@@ -25,19 +25,18 @@ public abstract class PlayerCommand implements ExecutableCommand {
     }
 
     /**
-     * Run the command with the given player and arguments.
+     * Runs the command with the given player and arguments.
      *
-     * @param player         The player who initiated the command
-     * @param arguments      The arguments supplied with the command
-     * @param commandService The command service
+     * @param player     the player who initiated the command
+     * @param arguments  the arguments supplied with the command
      */
-    protected abstract void runCommand(Player player, List<String> arguments, CommandService commandService);
+    protected abstract void runCommand(Player player, List<String> arguments);
 
     /**
-     * Return an alternative command (textual representation) that is not restricted to players only.
-     * Example: {@code "authme register <playerName> <password>"}
+     * Returns an alternative command (textual representation) that is not restricted to players only.
+     * Example: {@code "/authme register <playerName> <password>"}
      *
-     * @return Alternative command not only for players, or null if not applicable
+     * @return Alternative command not restricted to players, or null if not applicable
      */
     protected String getAlternativeCommand() {
         return null;

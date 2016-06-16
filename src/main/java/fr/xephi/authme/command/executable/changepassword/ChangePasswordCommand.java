@@ -1,13 +1,15 @@
 package fr.xephi.authme.command.executable.changepassword;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.task.ChangePasswordTask;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -15,27 +17,37 @@ import java.util.List;
  */
 public class ChangePasswordCommand extends PlayerCommand {
 
+    @Inject
+    private CommandService commandService;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private ValidationService validationService;
+
+    @Inject
+    private Management management;
+
     @Override
-    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments) {
         String oldPassword = arguments.get(0);
         String newPassword = arguments.get(1);
 
         String name = player.getName().toLowerCase();
-        final PlayerCache playerCache = commandService.getPlayerCache();
         if (!playerCache.isAuthenticated(name)) {
             commandService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }
 
         // Make sure the password is allowed
-        MessageKey passwordError = commandService.validatePassword(newPassword, name);
-        if (passwordError != null) {
-            commandService.send(player, passwordError);
+        ValidationResult passwordValidation = validationService.validatePassword(newPassword, name);
+        if (passwordValidation.hasError()) {
+            commandService.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
             return;
         }
 
-        AuthMe plugin = AuthMe.getInstance();
         // TODO ljacqu 20160117: Call async task via Management
-        commandService.runTaskAsynchronously(new ChangePasswordTask(plugin, player, oldPassword, newPassword));
+        management.performPasswordChange(player, oldPassword, newPassword);
     }
 }

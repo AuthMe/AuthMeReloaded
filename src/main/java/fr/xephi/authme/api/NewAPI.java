@@ -1,16 +1,16 @@
 package fr.xephi.authme.api;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import javax.inject.Inject;
 
 /**
  * The current API of AuthMe. Recommended method of retrieving the API object:
@@ -28,17 +28,9 @@ public class NewAPI {
      *
      * @param plugin The AuthMe plugin instance
      */
+    @Inject
     public NewAPI(AuthMe plugin) {
         this.plugin = plugin;
-    }
-
-    /**
-     * Constructor for NewAPI.
-     *
-     * @param server The server instance
-     */
-    public NewAPI(Server server) {
-        this.plugin = (AuthMe) server.getPluginManager().getPlugin("AuthMe");
     }
 
     /**
@@ -96,7 +88,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return Utils.isNPC(player);
+        return plugin.getPluginHooks().isNpc(player);
     }
 
     /**
@@ -148,10 +140,11 @@ public class NewAPI {
     }
 
     /**
-     * Register a player with the given password.
+     * Register an OFFLINE/ONLINE player with the given password.
      *
      * @param playerName The player to register
      * @param password   The password to register the player with
+     * 
      * @return true if the player was registered successfully
      */
     public boolean registerPlayer(String playerName, String password) {
@@ -187,13 +180,24 @@ public class NewAPI {
     }
 
     /**
-     * Register a player with the given password.
+     * Force an ONLINE player to register.
+     *
+     * @param player    The player to register
+     * @param password  The password to use
+     * @param autoLogin Should the player be authenticated automatically after the registration?
+     */
+    public void forceRegister(Player player, String password, boolean autoLogin) {
+        plugin.getManagement().performRegister(player, password, null, autoLogin);
+    }
+
+    /**
+     * Register an ONLINE player with the given password.
      *
      * @param player   The player to register
      * @param password The password to use
      */
     public void forceRegister(Player player, String password) {
-        plugin.getManagement().performRegister(player, password, null);
+        forceRegister(player, password, true);
     }
 
     /**

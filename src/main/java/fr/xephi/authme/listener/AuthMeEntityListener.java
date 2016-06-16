@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -14,29 +15,32 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.projectiles.ProjectileSource;
 
+import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 
 public class AuthMeEntityListener implements Listener {
 
-    private static Method getShooter;
-    private static boolean shooterIsProjectileSource;
+    private final ListenerService listenerService;
+    private Method getShooter;
+    private boolean shooterIsLivingEntity;
 
-    public AuthMeEntityListener() {
+    @Inject
+    AuthMeEntityListener(ListenerService listenerService) {
+        this.listenerService = listenerService;
         try {
-            Method m = Projectile.class.getDeclaredMethod("getShooter");
-            shooterIsProjectileSource = m.getReturnType() != LivingEntity.class;
-        } catch (Exception ignored) {
+            getShooter = Projectile.class.getDeclaredMethod("getShooter");
+            shooterIsLivingEntity = getShooter.getReturnType() == LivingEntity.class;
+        } catch (NoSuchMethodException | SecurityException e) {
+            ConsoleLogger.logException("Cannot load getShooter() method on Projectile class", e);
         }
     }
 
     // Note #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.getEntity().setFireTicks(0);
             event.setDamage(0);
             event.setCancelled(true);
@@ -45,7 +49,7 @@ public class AuthMeEntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setTarget(null);
             event.setCancelled(true);
         }
@@ -53,21 +57,21 @@ public class AuthMeEntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void entityRegainHealthEvent(EntityRegainHealthEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setAmount(0);
             event.setCancelled(true);
         }
@@ -75,53 +79,48 @@ public class AuthMeEntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
-    // TODO #568: Need to check this, player can't throw snowball but the item is taken.
+    // TODO #733: Player can't throw snowball but the item is taken.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() == null) {
             return;
         }
 
-        Player player = null;
         Projectile projectile = event.getEntity();
-        if (shooterIsProjectileSource) {
-            ProjectileSource shooter = projectile.getShooter();
-            if (shooter == null || !(shooter instanceof Player)) {
-                return;
-            }
-            player = (Player) shooter;
-        } else {
-            // TODO #568 20151220: Invoking getShooter() with null but method isn't static
+        // In the Bukkit API prior to 1.7, getShooter() returns a LivingEntity instead of a ProjectileSource
+        Object shooterRaw = null;
+        if (shooterIsLivingEntity) {
             try {
                 if (getShooter == null) {
                     getShooter = Projectile.class.getMethod("getShooter");
                 }
-                Object obj = getShooter.invoke(null);
-                player = (Player) obj;
-            } catch (Exception ignored) {
+                shooterRaw = getShooter.invoke(projectile);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                ConsoleLogger.logException("Error getting shooter", e);
             }
+        } else {
+            shooterRaw = projectile.getShooter();
         }
-
-        if (ListenerService.shouldCancelEvent(player)) {
+        if (shooterRaw instanceof Player && listenerService.shouldCancelEvent((Player) shooterRaw)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onShoot(EntityShootBowEvent event) {
-        if (shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }

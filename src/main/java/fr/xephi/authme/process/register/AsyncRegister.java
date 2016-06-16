@@ -5,10 +5,12 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
 import fr.xephi.authme.settings.Settings;
@@ -18,40 +20,46 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-
+import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
-/**
- */
-public class AsyncRegister implements Process {
+import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
 
-    private final Player player;
-    private final String name;
-    private final String password;
-    private final String ip;
-    private final String email;
-    private final AuthMe plugin;
-    private final DataSource database;
-    private final PlayerCache playerCache;
-    private final ProcessService service;
+public class AsyncRegister implements AsynchronousProcess {
 
-    public AsyncRegister(Player player, String password, String email, AuthMe plugin, DataSource data,
-                         PlayerCache playerCache, ProcessService service) {
-        this.player = player;
-        this.password = password;
-        this.name = player.getName().toLowerCase();
-        this.email = email;
-        this.plugin = plugin;
-        this.database = data;
-        this.ip = Utils.getPlayerIp(player);
-        this.playerCache = playerCache;
-        this.service = service;
-    }
+    @Inject
+    private AuthMe plugin;
 
-    private boolean preRegisterCheck() {
+    @Inject
+    private DataSource database;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private PasswordSecurity passwordSecurity;
+
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private SyncProcessManager syncProcessManager;
+
+    @Inject
+    private PermissionsManager permissionsManager;
+
+    @Inject
+    private ValidationService validationService;
+
+    AsyncRegister() { }
+
+    private boolean preRegisterCheck(Player player, String password) {
+        final String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return false;
@@ -62,9 +70,9 @@ public class AsyncRegister implements Process {
 
         //check the password safety only if it's not a automatically generated password
         if (service.getProperty(SecuritySettings.PASSWORD_HASH) != HashAlgorithm.TWO_FACTOR) {
-            MessageKey passwordError = service.validatePassword(password, player.getName());
-            if (passwordError != null) {
-                service.send(player, passwordError);
+            ValidationResult passwordValidation = validationService.validatePassword(password, player.getName());
+            if (passwordValidation.hasError()) {
+                service.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
                 return false;
             }
         }
@@ -76,10 +84,11 @@ public class AsyncRegister implements Process {
         }
 
         final int maxRegPerIp = service.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP);
+        final String ip = Utils.getPlayerIp(player);
         if (maxRegPerIp > 0
             && !"127.0.0.1".equalsIgnoreCase(ip)
             && !"localhost".equalsIgnoreCase(ip)
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+            && !permissionsManager.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
             if (otherAccounts.size() >= maxRegPerIp) {
                 service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerIp),
@@ -90,21 +99,20 @@ public class AsyncRegister implements Process {
         return true;
     }
 
-    @Override
-    public void run() {
-        if (preRegisterCheck()) {
+    public void register(Player player, String password, String email, boolean autoLogin) {
+        if (preRegisterCheck(player, password)) {
             if (!StringUtils.isEmpty(email)) {
-                emailRegister();
+                emailRegister(player, password, email);
             } else {
-                passwordRegister();
+                passwordRegister(player, password, autoLogin);
             }
         }
     }
 
-    private void emailRegister() {
+    private void emailRegister(Player player, String password, String email) {
+        final String name = player.getName().toLowerCase();
         final int maxRegPerEmail = service.getProperty(EmailSettings.MAX_REG_PER_EMAIL);
-        if (maxRegPerEmail > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+        if (maxRegPerEmail > 0 && !permissionsManager.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
             int otherAccounts = database.countAuthsByEmail(email);
             if (otherAccounts >= maxRegPerEmail) {
                 service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerEmail),
@@ -113,7 +121,8 @@ public class AsyncRegister implements Process {
             }
         }
 
-        final HashedPassword hashedPassword = service.computeHash(password, name);
+        final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
+        final String ip = Utils.getPlayerIp(player);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
@@ -130,13 +139,13 @@ public class AsyncRegister implements Process {
         database.updateEmail(auth);
         database.updateSession(auth);
         plugin.mail.main(auth, password);
-        ProcessSyncEmailRegister sync = new ProcessSyncEmailRegister(player, service);
-        service.scheduleSyncDelayedTask(sync);
-
+        syncProcessManager.processSyncEmailRegister(player);
     }
 
-    private void passwordRegister() {
-        final HashedPassword hashedPassword = service.computeHash(password, name);
+    private void passwordRegister(Player player, String password, boolean autoLogin) {
+        final String name = player.getName().toLowerCase();
+        final String ip = Utils.getPlayerIp(player);
+        final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
@@ -150,15 +159,13 @@ public class AsyncRegister implements Process {
             return;
         }
 
-        if (!Settings.forceRegLogin) {
+        if (!Settings.forceRegLogin && autoLogin) {
             //PlayerCache.getInstance().addPlayer(auth);
             //database.setLogged(name);
             // TODO: check this...
             plugin.getManagement().performLogin(player, "dontneed", true);
         }
-
-        ProcessSyncPasswordRegister sync = new ProcessSyncPasswordRegister(player, plugin, service);
-        service.scheduleSyncDelayedTask(sync);
+        syncProcessManager.processSyncPasswordRegister(player);
 
         //give the user the secret code to setup their app code generation
         if (service.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {

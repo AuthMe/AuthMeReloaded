@@ -1,14 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import com.google.common.annotations.VisibleForTesting;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,7 +7,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.annotations.VisibleForTesting;
+
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.StringUtils;
 
 /**
  */
@@ -61,14 +64,13 @@ public class SQLite implements DataSource {
         ConsoleLogger.logException("Error while executing SQL statement:", e);
     }
 
-    private synchronized void connect() throws ClassNotFoundException, SQLException {
+    private void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
-
     }
 
-    private synchronized void setup() throws SQLException {
+    private void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
         try {
@@ -131,11 +133,17 @@ public class SQLite implements DataSource {
 
     @Override
     public void reload() {
-        // TODO 20160309: Implement reloading
+        close(con);
+        try {
+            this.connect();
+            this.setup();
+        } catch (ClassNotFoundException | SQLException ex) {
+            ConsoleLogger.logException("Error during SQLite initialization:", ex);
+        }
     }
 
     @Override
-    public synchronized boolean isAuthAvailable(String user) {
+    public boolean isAuthAvailable(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
@@ -173,7 +181,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized PlayerAuth getAuth(String user) {
+    public PlayerAuth getAuth(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
@@ -193,7 +201,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean saveAuth(PlayerAuth auth) {
+    public boolean saveAuth(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
             HashedPassword password = auth.getPassword();
@@ -234,7 +242,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized boolean updatePassword(PlayerAuth auth) {
+    public boolean updatePassword(PlayerAuth auth) {
         return updatePassword(auth.getNickname(), auth.getPassword());
     }
 
@@ -285,8 +293,8 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public List<String> autoPurgeDatabase(long until) {
-        List<String> list = new ArrayList<>();
+    public Set<String> autoPurgeDatabase(long until) {
+        Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         try (PreparedStatement selectPst = con.prepareStatement(select);
@@ -302,11 +310,12 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             logSqlException(ex);
         }
+
         return list;
     }
 
     @Override
-    public synchronized boolean removeAuth(String user) {
+    public boolean removeAuth(String user) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
@@ -356,7 +365,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized void close() {
+    public void close() {
         try {
             if (con != null && !con.isClosed()) {
                 con.close();
@@ -370,6 +379,16 @@ public class SQLite implements DataSource {
         if (st != null) {
             try {
                 st.close();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            }
+        }
+    }
+
+    private void close(Connection con) {
+        if (con != null) {
+            try {
+                con.close();
             } catch (SQLException ex) {
                 logSqlException(ex);
             }
@@ -425,7 +444,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void purgeBanned(List<String> banned) {
+    public void purgeBanned(Set<String> banned) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {
