@@ -63,7 +63,7 @@
         <!-- BukkitPlugin properties -->
         <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
         <bukkitplugin.main>${project.groupId}.${project.artifactId}.${bukkitplugin.name}</bukkitplugin.main>
-        <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</bukkitplugin.authors>
+        <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
         <bukkit.version>1.10-R0.1-SNAPSHOT</bukkit.version>
