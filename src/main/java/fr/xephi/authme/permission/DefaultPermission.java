@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -13,6 +14,11 @@ public enum DefaultPermission {
         public boolean evaluate(CommandSender sender) {
             return false;
         }
+
+        @Override
+        public boolean evaluateOffline(String name) {
+            return false;
+        }
     },
 
     /** Only players with OP status have permission. */
@@ -21,12 +27,23 @@ public enum DefaultPermission {
         public boolean evaluate(CommandSender sender) {
             return sender.isOp();
         }
+
+        @Override
+        public boolean evaluateOffline(String name) {
+            // TODO Gnat008 20160617: Is this safe?
+            return Bukkit.getOfflinePlayer(name).isOp();
+        }
     },
 
     /** Everyone is granted permission. */
     ALLOWED("Everyone allowed") {
         @Override
         public boolean evaluate(CommandSender sender) {
+            return true;
+        }
+
+        @Override
+        public boolean evaluateOffline(String name) {
             return true;
         }
     };
@@ -49,6 +66,14 @@ public enum DefaultPermission {
      * @return true if the sender has permission, false otherwise
      */
     public abstract boolean evaluate(CommandSender sender);
+
+    /**
+     * Evaluate whether permission is granted to an offline user.
+     *
+     * @param name The name to check
+     * @return True if the user has permission, false otherwise
+     */
+    public abstract boolean evaluateOffline(String name);
 
     /**
      * Return the textual representation.

@@ -145,7 +145,7 @@ public class PurgeService implements Reloadable {
         Set<String> toPurge = new HashSet<>();
 
         for (String name : initial) {
-            if (!permissionsManager.hasPermission(name, PlayerStatePermission.BYPASS_PURGE)) {
+            if (!permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_PURGE)) {
                 toPurge.add(name);
             }
         }

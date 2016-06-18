@@ -258,14 +258,14 @@ public class PermissionsManager {
      *
      * @return
      */
-    public boolean hasPermission(String name, PermissionNode permissionNode) {
+    public boolean hasPermissionOffline(String name, PermissionNode permissionNode) {
         // Check if the permission node is null
         if (permissionNode == null) {
             return true;
         }
 
         if (!isEnabled()) {
-            return false;
+            return permissionNode.getDefaultPermission().evaluateOffline(name);
         }
 
         return handler.hasPermission(name, permissionNode);
