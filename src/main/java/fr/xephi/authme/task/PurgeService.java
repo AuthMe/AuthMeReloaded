@@ -48,11 +48,6 @@ public class PurgeService implements Reloadable {
     private boolean isPurging = false;
 
     // Settings
-    private boolean removeEssentialsFiles;
-    private boolean removePlayerDat;
-    private boolean removeLimitedCreativeInventories;
-    private boolean removeAntiXrayFiles;
-    private boolean removePermissions;
     private int daysBeforePurge;
 
     /**
@@ -86,7 +81,7 @@ public class PurgeService implements Reloadable {
 
         ConsoleLogger.info("Automatically purging the database...");
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, daysBeforePurge);
+        calendar.add(Calendar.DATE, -daysBeforePurge);
         long until = calendar.getTimeInMillis();
 
         runPurge(null, until);
@@ -154,7 +149,7 @@ public class PurgeService implements Reloadable {
     }
 
     synchronized void purgeAntiXray(Set<String> cleared) {
-        if (!removeAntiXrayFiles) {
+        if (!settings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE)) {
             return;
         }
 
@@ -178,7 +173,7 @@ public class PurgeService implements Reloadable {
     }
 
     synchronized void purgeLimitedCreative(Set<String> cleared) {
-        if (!removeLimitedCreativeInventories) {
+        if (!settings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES)) {
             return;
         }
 
@@ -219,7 +214,7 @@ public class PurgeService implements Reloadable {
     }
 
     synchronized void purgeDat(Set<OfflinePlayer> cleared) {
-        if (!removePlayerDat) {
+        if (!settings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT)) {
             return;
         }
 
@@ -243,7 +238,7 @@ public class PurgeService implements Reloadable {
      * @param cleared List of String
      */
     synchronized void purgeEssentials(Set<OfflinePlayer> cleared) {
-        if (!removeEssentialsFiles && !pluginHooks.isEssentialsAvailable()) {
+        if (!settings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && !pluginHooks.isEssentialsAvailable()) {
             return;
         }
 
@@ -272,7 +267,7 @@ public class PurgeService implements Reloadable {
     // TODO: What is this method for? Is it correct?
     // TODO: Make it work with OfflinePlayers group data.
     synchronized void purgePermissions(Set<OfflinePlayer> cleared) {
-        if (!removePermissions) {
+        if (!settings.getProperty(PurgeSettings.REMOVE_PERMISSIONS)) {
             return;
         }
 
@@ -294,11 +289,6 @@ public class PurgeService implements Reloadable {
     @PostConstruct
     @Override
     public void reload() {
-        this.removeEssentialsFiles = settings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES);
-        this.removePlayerDat = settings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT);
-        this.removeAntiXrayFiles = settings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE);
-        this.removeLimitedCreativeInventories = settings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES);
-        this.removePermissions = settings.getProperty(PurgeSettings.REMOVE_PERMISSIONS);
         this.daysBeforePurge = settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER);
     }
 }
