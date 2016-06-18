@@ -54,7 +54,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
->- Spigot or CraftBukkit (1.7.10, 1.8.X or 1.9-pre1)
+>- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X or 1.9.X)
 >- ProtocolLib (optional, required by the protectInventory feature)
 
 <hr>
@@ -114,11 +114,11 @@ typing commands or using the inventory. It can also kick players with uncommonly
 ####Email Recovery Dependency
 <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-configure-email-recovery-system/">How to configure email recovery system?</a>
 ####Commands
-<a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/command/">Command list and usage</a>
+<a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/commands.md">Command list and usage</a>
 ####Permissions
 <ul><li>authme.player.* - for all user commands
 </li><li>authme.admin.* - for all admin commands
-</li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/permissions/">List of all single permissions</a>
+</li><li><a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/permission_nodes.md">List of all single permissions</a>
 </li></ul>
 ####How To
 <ul><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">How to Install and Setup</a>
