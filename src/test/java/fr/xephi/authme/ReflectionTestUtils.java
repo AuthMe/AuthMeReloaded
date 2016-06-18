@@ -1,6 +1,7 @@
 package fr.xephi.authme;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static java.lang.String.format;
@@ -33,6 +34,15 @@ public final class ReflectionTestUtils {
         }
     }
 
+    public static void setField(Field field, Object instance, Object value) {
+        try {
+            field.setAccessible(true);
+            field.set(instance, value);
+        } catch (IllegalAccessException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
     private static <T> Field getField(Class<T> clazz, T instance, String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
@@ -44,13 +54,23 @@ public final class ReflectionTestUtils {
         }
     }
 
+    public static Object getFieldValue(Field field, Object instance) {
+        try {
+            field.setAccessible(true);
+            return field.get(instance);
+        } catch (IllegalAccessException e) {
+            throw new UnsupportedOperationException("Cannot get value of field '"
+                + field + "' for '" + instance + "'", e);
+        }
+    }
+
 
     public static <T> Object getFieldValue(Class<T> clazz, T instance, String fieldName) {
         Field field = getField(clazz, instance, fieldName);
         try {
             return field.get(instance);
         } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("Could not get value of field '" + fieldName + "'");
+            throw new UnsupportedOperationException("Could not get value of field '" + fieldName + "'", e);
         }
     }
 
@@ -71,6 +91,15 @@ public final class ReflectionTestUtils {
         } catch (NoSuchMethodException e) {
             throw new UnsupportedOperationException("Could not retrieve method '" + methodName + "' from class '"
                 + clazz.getName() + "'");
+        }
+    }
+
+    public static Object invokeMethod(Method method, Object instance, Object... parameters) {
+        method.setAccessible(true);
+        try {
+            return method.invoke(instance, parameters);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new UnsupportedOperationException("Could not invoke method '" + method + "'", e);
         }
     }
 }

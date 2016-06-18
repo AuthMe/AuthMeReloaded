@@ -1,5 +1,7 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.DelayedInject;
+import fr.xephi.authme.DelayedInjectionRunner;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
@@ -10,6 +12,8 @@ import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import java.util.List;
 import java.util.Set;
@@ -32,11 +36,19 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link CommandMapper}.
  */
+@RunWith(DelayedInjectionRunner.class)
 public class CommandMapperTest {
 
     private static Set<CommandDescription> commands;
+
+    @DelayedInject
     private CommandMapper mapper;
+
+    @Mock
     private PermissionsManager permissionsManager;
+
+    @Mock
+    private CommandInitializer commandInitializer;
 
     @BeforeClass
     public static void setUpCommandHandler() {
@@ -45,10 +57,7 @@ public class CommandMapperTest {
 
     @Before
     public void setUpMocks() {
-        permissionsManager = mock(PermissionsManager.class);
-        CommandInitializer initializer = mock(CommandInitializer.class);
-        given(initializer.getCommands()).willReturn(commands);
-        mapper = new CommandMapper(initializer, permissionsManager);
+        given(commandInitializer.getCommands()).willReturn(commands);
     }
 
     // -----------

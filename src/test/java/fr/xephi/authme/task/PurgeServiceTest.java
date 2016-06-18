@@ -1,10 +1,11 @@
 package fr.xephi.authme.task;
 
+import fr.xephi.authme.DelayedInject;
+import fr.xephi.authme.DelayedInjectionRunner;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.initialization.FieldInjection;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.NewSetting;
@@ -21,15 +22,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,9 +49,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link PurgeService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class PurgeServiceTest {
 
+    @DelayedInject
     private PurgeService purgeService;
 
     @Mock
@@ -88,7 +84,6 @@ public class PurgeServiceTest {
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(false);
 
         // when
-        initPurgeService();
         purgeService.runAutoPurge();
 
         // then
@@ -102,7 +97,6 @@ public class PurgeServiceTest {
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(0);
 
         // when
-        initPurgeService();
         purgeService.runAutoPurge();
 
         // then
@@ -120,7 +114,6 @@ public class PurgeServiceTest {
         mockHasBypassPurgePermission("bravo", "delta");
 
         // when
-        initPurgeService();
         purgeService.runAutoPurge();
 
         // then
@@ -140,7 +133,6 @@ public class PurgeServiceTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        initPurgeService();
         purgeService.runPurge(sender, delay);
 
         // then
@@ -162,7 +154,6 @@ public class PurgeServiceTest {
         given(sender.getUniqueId()).willReturn(uuid);
 
         // when
-        initPurgeService();
         purgeService.runPurge(sender, delay);
 
         // then
@@ -175,7 +166,6 @@ public class PurgeServiceTest {
     @Test
     public void shouldRunPurgeIfProcessIsAlreadyRunning() {
         // given
-        initPurgeService();
         purgeService.setPurging(true);
         CommandSender sender = mock(CommandSender.class);
         OfflinePlayer[] players = mockReturnedOfflinePlayers();
@@ -238,36 +228,5 @@ public class PurgeServiceTest {
         Set<String> namesInTask = (Set<String>) ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "toPurge");
         assertThat(senderInTask, Matchers.<Object>equalTo(uuid));
         assertThat(namesInTask, containsInAnyOrder(names));
-    }
-
-    // ---------------
-    // TODO ljacqu 20160618: Create a delayed injection test runner instead
-    private void initPurgeService() {
-        FieldInjection<PurgeService> injection = FieldInjection.provide(PurgeService.class).get();
-        purgeService = injection.instantiateWith(getFields(injection.getDependencies()));
-        purgeService.reload(); // because annotated with @PostConstruct
-    }
-
-    private Object[] getFields(Class<?>[] classes) {
-        Map<Class<?>, Object> mocksByType = orderMocksByType();
-        List<Object> orderedMocks = new ArrayList<>(classes.length);
-        for (Class<?> clazz : classes) {
-            orderedMocks.add(mocksByType.get(clazz));
-        }
-        return orderedMocks.toArray();
-    }
-
-    private Map<Class<?>, Object> orderMocksByType() {
-        Map<Class<?>, Object> mocksByType = new HashMap<>();
-        for (Field field : PurgeServiceTest.class.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Mock.class)) {
-                try {
-                    mocksByType.put(field.getType(), field.get(this));
-                } catch (IllegalAccessException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-        }
-        return mocksByType;
     }
 }
