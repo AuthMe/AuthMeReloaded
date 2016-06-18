@@ -1,10 +1,11 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.DelayedInject;
-import fr.xephi.authme.DelayedInjectionRunner;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.runner.BeforeInjecting;
+import fr.xephi.authme.runner.InjectDelayed;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -13,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(DelayedInjectionRunner.class)
 public class ListenerServiceTest {
 
-    @DelayedInject
+    @InjectDelayed
     private ListenerService listenerService;
 
     @Mock
@@ -48,8 +48,8 @@ public class ListenerServiceTest {
     @Mock
     private PlayerCache playerCache;
 
-    @Before
-    public void initializeTestSetup() {
+    @BeforeInjecting
+    public void initializeDefaultSettings() {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(
             Arrays.asList("npc1", "npc2", "npc3"));
@@ -127,6 +127,7 @@ public class ListenerServiceTest {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
+        listenerService.loadSettings(settings);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);

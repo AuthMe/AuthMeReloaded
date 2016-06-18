@@ -1,13 +1,14 @@
 package fr.xephi.authme.task;
 
-import fr.xephi.authme.DelayedInject;
-import fr.xephi.authme.DelayedInjectionRunner;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.runner.BeforeInjecting;
+import fr.xephi.authme.runner.InjectDelayed;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
@@ -16,7 +17,6 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matchers;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(DelayedInjectionRunner.class)
 public class PurgeServiceTest {
 
-    @DelayedInject
+    @InjectDelayed
     private PurgeService purgeService;
 
     @Mock
@@ -73,7 +73,7 @@ public class PurgeServiceTest {
         TestHelper.setupLogger();
     }
 
-    @Before
+    @BeforeInjecting
     public void initSettingDefaults() {
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
     }
@@ -95,6 +95,7 @@ public class PurgeServiceTest {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(true);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(0);
+        purgeService.reload();
 
         // when
         purgeService.runAutoPurge();
