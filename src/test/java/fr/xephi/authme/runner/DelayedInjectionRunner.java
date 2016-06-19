@@ -1,6 +1,5 @@
 package fr.xephi.authme.runner;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.initialization.Injection;
 import fr.xephi.authme.initialization.InjectionHelper;
 import org.junit.runner.notification.RunNotifier;
@@ -11,13 +10,9 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.runners.util.FrameworkUsageValidator;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Custom JUnit runner which adds support for {@link InjectDelayed} and {@link BeforeInjecting}.
@@ -63,7 +58,7 @@ public class DelayedInjectionRunner extends BlockJUnit4ClassRunner {
     @Override
     public void run(final RunNotifier notifier) {
         // add listener that validates framework usage at the end of each test
-        notifier.addListener(new FrameworkUsageValidator(notifier));
+        notifier.addListener(new DelayedInjectionRunnerValidator(notifier, getTestClass()));
         super.run(notifier);
     }
 
@@ -87,53 +82,23 @@ public class DelayedInjectionRunner extends BlockJUnit4ClassRunner {
 
         List<PendingInjection> pendingInjections = new ArrayList<>(delayedFields.size());
         for (FrameworkField field : delayedFields) {
-            pendingInjections.add(createPendingInjection(target, field.getField()));
+            pendingInjections.add(new PendingInjection(field.getField(), getInjection(field)));
         }
-        return new RunDelayedInjects(statement, pendingInjections, target);
+        InjectionResolver injectionResolver = new InjectionResolver(getTestClass(), target);
+        return new RunDelayedInjects(statement, pendingInjections, target, injectionResolver);
     }
 
     /**
-     * Creates a {@link PendingInjection} for the given field's type, using the target's values.
+     * Gets the injection method for the given field's type and ensures an injection method has been found.
      *
-     * @param target the target to get dependencies from
-     * @param field the field to prepare an injection for
-     * @return the resulting object
+     * @param field the field to get the injection for
+     * @return the injection
      */
-    private PendingInjection createPendingInjection(Object target, Field field) {
+    private static Injection<?> getInjection(FrameworkField field) {
         final Injection<?> injection = InjectionHelper.getInjection(field.getType());
         if (injection == null) {
             throw new IllegalStateException("No injection method available for field '" + field.getName() + "'");
         }
-        final Object[] dependencies = fulfillDependencies(target, injection.getDependencies());
-        return new PendingInjection(field, injection, dependencies);
-    }
-
-    /**
-     * Returns a list of all objects for the given list of dependencies, retrieved from the given
-     * target's {@link @Mock} fields.
-     *
-     * @param target the target to get the required dependencies from
-     * @param dependencies the required dependency types
-     * @return the resolved dependencies
-     */
-    private Object[] fulfillDependencies(Object target, Class<?>[] dependencies) {
-        List<FrameworkField> availableMocks = getTestClass().getAnnotatedFields(Mock.class);
-        Map<Class<?>, Object> mocksByType = new HashMap<>();
-        for (FrameworkField frameworkField : availableMocks) {
-            Field field = frameworkField.getField();
-            Object fieldValue = ReflectionTestUtils.getFieldValue(field, target);
-            mocksByType.put(field.getType(), fieldValue);
-        }
-
-        Object[] resolvedValues = new Object[dependencies.length];
-        for (int i = 0; i < dependencies.length; ++i) {
-            Object o = mocksByType.get(dependencies[i]);
-            if (o == null) {
-                throw new IllegalStateException("No mock found for '" + dependencies[i] + "'. "
-                    + "All dependencies of @InjectDelayed must be provided as @Mock fields");
-            }
-            resolvedValues[i] = o;
-        }
-        return resolvedValues;
+        return injection;
     }
 }

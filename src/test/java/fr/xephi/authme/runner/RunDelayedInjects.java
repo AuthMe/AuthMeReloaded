@@ -13,21 +13,28 @@ class RunDelayedInjects extends Statement {
 
     private final Statement next;
     private final Object target;
-    private final List<PendingInjection> pendingInjections;
+    private List<PendingInjection> pendingInjections;
+    private InjectionResolver injectionResolver;
 
-    public RunDelayedInjects(Statement next, List<PendingInjection> pendingInjections, Object target) {
+    public RunDelayedInjects(Statement next, List<PendingInjection> pendingInjections, Object target,
+                             InjectionResolver injectionResolver) {
         this.next = next;
         this.pendingInjections = pendingInjections;
         this.target = target;
+        this.injectionResolver = injectionResolver;
     }
 
     @Override
     public void evaluate() throws Throwable {
         for (PendingInjection pendingInjection : pendingInjections) {
-            Object object = pendingInjection.instantiate();
+            if (ReflectionTestUtils.getFieldValue(pendingInjection.getField(), target) != null) {
+                throw new IllegalStateException("Field with @InjectDelayed must be null on startup");
+            }
+            Object object = injectionResolver.instantiate(pendingInjection.getInjection());
             ReflectionTestUtils.setField(pendingInjection.getField(), target, object);
-            pendingInjection.clearFields();
         }
+        this.pendingInjections = null;
+        this.injectionResolver = null;
         next.evaluate();
     }
 }

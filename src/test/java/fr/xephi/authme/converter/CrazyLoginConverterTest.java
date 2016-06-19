@@ -3,16 +3,17 @@ package fr.xephi.authme.converter;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
+import fr.xephi.authme.runner.InjectDelayed;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.util.List;
@@ -31,9 +32,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link CrazyLoginConverter}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class CrazyLoginConverterTest {
 
+    @InjectDelayed
     private CrazyLoginConverter crazyLoginConverter;
 
     @Mock
@@ -42,16 +44,12 @@ public class CrazyLoginConverterTest {
     @Mock
     private NewSetting settings;
 
+    @DataFolder
     private File dataFolder = TestHelper.getJarFile("/converter/");
 
     @BeforeClass
     public static void initializeLogger() {
         TestHelper.setupLogger();
-    }
-
-    @Before
-    public void instantiateConverter() {
-        crazyLoginConverter = new CrazyLoginConverter(dataFolder, dataSource, settings);
     }
 
     @Test

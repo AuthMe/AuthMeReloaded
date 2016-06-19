@@ -7,14 +7,15 @@ import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.runner.BeforeInjecting;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
+import fr.xephi.authme.runner.InjectDelayed;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -48,9 +49,10 @@ import static org.mockito.Mockito.verify;
 // Justification: It's more readable to use asList() everywhere in the test when we often generated two lists where one
 // often consists of only one element, e.g. myMethod(asList("authme"), asList("my", "args"), ...)
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class CommandHandlerTest {
 
+    @InjectDelayed
     private CommandHandler handler;
 
     @Mock
@@ -64,13 +66,12 @@ public class CommandHandlerTest {
 
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
 
-    @Before
+    @BeforeInjecting
     @SuppressWarnings("unchecked")
     public void initializeCommandMapper() {
-        given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(ExecutableCommand.class,
-            TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
+        given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(
+            ExecutableCommand.class, TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
         setInjectorToMockExecutableCommandClasses();
-        handler = new CommandHandler(initializer, commandMapper, permissionsManager, helpProvider);
     }
 
     /**

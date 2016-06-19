@@ -7,7 +7,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.listener.AuthMeBlockListener;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
@@ -106,7 +105,6 @@ public class AuthMeInitializationTest {
         initializer.register(AuthMe.class, authMe);
         initializer.register(NewSetting.class, settings);
         initializer.register(DataSource.class, mock(DataSource.class));
-        initializer.register(Messages.class, mock(Messages.class));
 
         // when
         authMe.instantiateServices(initializer);

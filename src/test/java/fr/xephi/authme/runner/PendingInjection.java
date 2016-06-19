@@ -1,36 +1,29 @@
 package fr.xephi.authme.runner;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.initialization.Injection;
-import fr.xephi.authme.initialization.InjectionHelper;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
- * Contains all necessary information to initialize a {@link InjectDelayed} field.
+ * Contains an injection and the field it's for.
  */
 class PendingInjection {
 
-    private Field field;
-    private Object[] dependencies;
-    private Injection<?> injection;
+    private final Field field;
+    private final Injection<?> injection;
 
-    public PendingInjection(Field field, Injection<?> injection, Object[] dependencies) {
+    public PendingInjection(Field field, Injection<?> injection) {
         this.field = field;
         this.injection = injection;
-        this.dependencies = dependencies;
     }
 
     /**
-     * Constructs an object with the stored injection information.
+     * Returns the injection to perform.
      *
-     * @return the constructed object
+     * @return the injection
      */
-    public Object instantiate() {
-        Object object = injection.instantiateWith(dependencies);
-        executePostConstructMethod(object);
-        return object;
+    public Injection<?> getInjection() {
+        return injection;
     }
 
     /**
@@ -42,26 +35,4 @@ class PendingInjection {
         return field;
     }
 
-    /**
-     * Clears all fields (avoids keeping a reference to all dependencies).
-     */
-    public void clearFields() {
-        field = null;
-        dependencies = null;
-        injection = null;
-    }
-
-    /**
-     * Executes the class' PostConstruct method if available. Validates that all rules for
-     * {@link javax.annotation.PostConstruct} are met.
-     *
-     * @param object the object whose PostConstruct method should be run, if available
-     * @see InjectionHelper#getAndValidatePostConstructMethod
-     */
-    private static void executePostConstructMethod(Object object) {
-        Method postConstructMethod = InjectionHelper.getAndValidatePostConstructMethod(object.getClass());
-        if (postConstructMethod != null) {
-            ReflectionTestUtils.invokeMethod(postConstructMethod, object);
-        }
-    }
 }
