@@ -709,14 +709,6 @@ public class AuthMe extends JavaPlugin {
     // Service getters (deprecated)
     // Use @Inject fields instead
     // -------------
-    /**
-     * @return NewSetting
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public NewSetting getSettings() {
-        return newSettings;
-    }
 
     /**
      * @return permission manager

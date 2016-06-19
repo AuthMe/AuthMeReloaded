@@ -11,7 +11,7 @@ import java.util.List;
  * after Mockito's &#064;Mock, &#064;Spy and &#064;InjectMocks have taken effect,
  * but before {@link InjectDelayed} fields are handled.
  */
-public class RunBeforeInjectings extends Statement {
+class RunBeforeInjectings extends Statement {
 
     private final Statement next;
     private final List<FrameworkMethod> beforeInjectings;

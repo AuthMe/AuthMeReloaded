@@ -9,7 +9,7 @@ import java.util.List;
  * Statement for initializing {@link InjectDelayed} fields. These fields are
  * constructed after {@link BeforeInjecting} and before JUnit's &#064;Before.
  */
-public class RunDelayedInjects extends Statement {
+class RunDelayedInjects extends Statement {
 
     private final Statement next;
     private final Object target;

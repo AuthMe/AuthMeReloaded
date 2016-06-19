@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /**
  * Contains all necessary information to initialize a {@link InjectDelayed} field.
  */
-public class PendingInjection {
+class PendingInjection {
 
     private Field field;
     private Object[] dependencies;
