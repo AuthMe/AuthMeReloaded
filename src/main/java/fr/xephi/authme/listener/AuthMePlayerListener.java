@@ -235,13 +235,14 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
+        final String lowerName = name.toLowerCase();
         final PlayerAuth auth = dataSource.getAuth(player.getName());
         final boolean isAuthAvailable = (auth != null);
 
         try {
-            onJoinVerifier.checkSingleSession(name);
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            onJoinVerifier.checkSingleSession(lowerName);
+            onJoinVerifier.checkAntibot(lowerName, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkIsValidName(name);
             onJoinVerifier.checkNameCasing(player, auth);
