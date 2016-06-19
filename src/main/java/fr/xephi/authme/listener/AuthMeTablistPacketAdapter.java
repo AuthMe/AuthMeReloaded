@@ -7,13 +7,13 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.google.common.collect.Lists;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -22,10 +22,14 @@ import fr.xephi.authme.util.BukkitService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import javax.inject.Inject;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class AuthMeTablistPacketAdapter extends PacketAdapter {
@@ -40,15 +44,28 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
     }
 
     @Override
-    public void onPacketSending(PacketEvent event) {
-        if (event.getPacketType() == PacketType.Play.Server.PLAYER_INFO) {
+    public void onPacketSending(PacketEvent packetEvent) {
+        if (packetEvent.getPacketType() == PacketType.Play.Server.PLAYER_INFO
+                && PlayerCache.getInstance().isAuthenticated(packetEvent.getPlayer().getName().toLowerCase())) {
             //this hides the tablist for the new joining players. Already playing users will see the new player
             try {
-                if (!PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase())) {
-                    event.setCancelled(true);
+                PacketContainer packet = packetEvent.getPacket();
+                PlayerInfoAction playerInfoAction = packet.getPlayerInfoAction().read(0);
+                if (playerInfoAction == PlayerInfoAction.ADD_PLAYER) {
+                    List<PlayerInfoData> playerInfoList = Lists.newArrayList(packet.getPlayerInfoDataLists().read(0));
+                    for (Iterator<PlayerInfoData> iterator = playerInfoList.iterator(); iterator.hasNext();) {
+                        PlayerInfoData current = iterator.next();
+                        UUID uuid = current.getProfile().getUUID();
+                        if (Bukkit.getPlayer(uuid) == null) {
+                            //player is not online -> a NPC
+                            iterator.remove();
+                        }
+                    }
+
+                    packet.getPlayerInfoDataLists().write(0, playerInfoList);
                 }
-            } catch (FieldAccessException e) {
-                ConsoleLogger.logException("Couldn't access field", e);
+            } catch (Exception ex) {
+                ConsoleLogger.logException("Couldn't modify outgoing tablist packet", ex);
             }
         }
     }
