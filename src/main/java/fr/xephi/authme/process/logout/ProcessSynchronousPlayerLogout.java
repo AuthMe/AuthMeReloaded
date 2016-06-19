@@ -49,9 +49,10 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     }
 
     private void restoreSpeedEffect(Player player) {
-        if (service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setWalkSpeed(0.0F);
-            player.setFlySpeed(0.0F);
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+                && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+            player.setFlySpeed(0.0f);
+            player.setWalkSpeed(0.0f);
         }
     }
 

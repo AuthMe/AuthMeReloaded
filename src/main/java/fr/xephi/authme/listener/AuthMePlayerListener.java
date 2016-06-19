@@ -192,31 +192,28 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        if (player != null) {
-            // Schedule login task so works after the prelogin
-            // (Fix found by Koolaid5000)
-            bukkitService.runTask(new Runnable() {
-                @Override
-                public void run() {
-                    management.performJoin(player);
-                }
-            });
-        }
+        management.performJoin(player);
     }
 
     // Note ljacqu 20160528: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
     // e.g. CraftBukkit does not. So we need to run crucial things in onPlayerLogin, too
+
+    // Note sgdc3 20160619: No performance improvements if we do the same thing on the Sync method
+    // let's try to remove this, about the single session issue,
+    // i tried to use the low priority to the sync handler
+
+    /*
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
-        final boolean isAuthAvailable = dataSource.isAuthAvailable(event.getName());
+        //final boolean isAuthAvailable = dataSource.isAuthAvailable(event.getName());
 
         try {
             // Potential performance improvement: make checkAntiBot not require `isAuthAvailable` info and use
             // "checkKickNonRegistered" as last -> no need to query the DB before checking antibot / name
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
-            onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
-            onJoinVerifier.checkIsValidName(name);
+            // onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            // onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+            // onJoinVerifier.checkIsValidName(name);
             // Note #760: Single session must be checked here - checking with PlayerLoginEvent is too late and
             // the first connection will have been kicked. This means this feature doesn't work on CraftBukkit.
             onJoinVerifier.checkSingleSession(name);
@@ -225,8 +222,9 @@ public class AuthMePlayerListener implements Listener {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
         }
     }
+    */
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         if (Utils.isUnrestricted(player)) {
@@ -237,12 +235,14 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
+        final String lowerName = name.toLowerCase();
         final PlayerAuth auth = dataSource.getAuth(player.getName());
         final boolean isAuthAvailable = (auth != null);
 
         try {
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            onJoinVerifier.checkSingleSession(lowerName);
+            onJoinVerifier.checkAntibot(lowerName, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkIsValidName(name);
             onJoinVerifier.checkNameCasing(player, auth);

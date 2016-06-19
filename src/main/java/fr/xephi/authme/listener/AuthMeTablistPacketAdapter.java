@@ -14,20 +14,24 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.util.BukkitService;
-import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+
+import org.bukkit.entity.Player;
+
 public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
     private final BukkitService bukkitService;
+    private boolean isRegistered;
 
     @Inject
     public AuthMeTablistPacketAdapter(AuthMe plugin, BukkitService bukkitService) {
@@ -50,6 +54,10 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
     }
 
     public void sendTablist(Player receiver) {
+        if (!isRegistered) {
+            return;
+        }
+
         WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(receiver);
 
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
@@ -85,6 +93,7 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
     public void register() {
         if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.BOUNTIFUL_UPDATE)) {
             ProtocolLibrary.getProtocolManager().addPacketListener(this);
+            isRegistered = true;
         } else {
             ConsoleLogger.info("The hideTablist feature is not compatible with your minecraft version");
             ConsoleLogger.info("It requires 1.8+. Disabling the hideTablist feature...");
@@ -93,5 +102,6 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
     public void unregister() {
         ProtocolLibrary.getProtocolManager().removePacketListener(this);
+        isRegistered = false;
     }
 }
