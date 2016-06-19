@@ -217,12 +217,12 @@ public class PermissionsManager {
     }
 
     /**
-     * Get the current permissions system handler.
+     * Return the permissions system that is hooked into.
      *
-     * @return The permissions system handler.
+     * @return The permissions system, or null.
      */
-    public PermissionHandler getHandler() {
-        return handler;
+    public PermissionsSystemType getPermissionSystem() {
+        return isEnabled() ? handler.getPermissionSystem() : null;
     }
 
     /**

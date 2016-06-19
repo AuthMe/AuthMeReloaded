@@ -14,11 +14,10 @@ import java.util.UUID;
 
 public class PurgeTask extends BukkitRunnable {
 
-    private PurgeService purgeService;
-
     //how many players we should check for each tick
     private static final int INTERVALL_CHECK = 5;
 
+    private final PurgeService purgeService;
     private final UUID sender;
     private final Set<String> toPurge;
 
@@ -52,15 +51,14 @@ public class PurgeTask extends BukkitRunnable {
         Set<String> namePortion = new HashSet<String>(INTERVALL_CHECK);
         for (int i = 0; i < INTERVALL_CHECK; i++) {
             int nextPosition = (currentPage * INTERVALL_CHECK) + i;
-            if (offlinePlayers.length >= nextPosition) {
+            if (offlinePlayers.length <= nextPosition) {
                 //no more offline players on this page
                 break;
             }
 
             OfflinePlayer offlinePlayer = offlinePlayers[nextPosition];
-            String offlineName = offlinePlayer.getName();
             //remove to speed up later lookups
-            if (toPurge.remove(offlineName.toLowerCase())) {
+            if (toPurge.remove(offlinePlayer.getName().toLowerCase())) {
                 playerPortion.add(offlinePlayer);
                 namePortion.add(offlinePlayer.getName());
             }

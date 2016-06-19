@@ -1,6 +1,5 @@
 package fr.xephi.authme.permission;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -30,8 +29,8 @@ public enum DefaultPermission {
 
         @Override
         public boolean evaluateOffline(String name) {
-            // TODO Gnat008 20160617: Is this safe?
-            return Bukkit.getOfflinePlayer(name).isOp();
+            // TODO #784: Check if there is an elegant way to evaluate OP status
+            return false;
         }
     },
 

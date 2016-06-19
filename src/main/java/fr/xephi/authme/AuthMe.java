@@ -234,11 +234,6 @@ public class AuthMe extends JavaPlugin {
         // Some statically injected things
         initializer.register(PlayerCache.class, PlayerCache.getInstance());
 
-        // Note ljacqu 20160612: Instantiate LimboCache first to make sure it is instantiated
-        // (because sometimes it's used via LimboCache.getInstance())
-        // Once LimboCache#getInstance() no longer exists this can be removed!
-        initializer.get(LimboCache.class);
-
         permsMan         = initializer.get(PermissionsManager.class);
         bukkitService    = initializer.get(BukkitService.class);
         pluginHooks      = initializer.get(PluginHooks.class);
@@ -296,8 +291,7 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
 
         // If server is using PermissionsBukkit, print a warning that some features may not be supported
-        if (permsMan.isEnabled() &&
-            permsMan.getHandler().getPermissionSystem() == PermissionsSystemType.PERMISSIONS_BUKKIT) {
+        if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
             ConsoleLogger.info("Warning! This server uses PermissionsBukkit for permissions! Some permissions features may not be supported!");
         }
 
@@ -497,7 +491,7 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.showError("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
             getServer().shutdown();
         } else {
-            getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 

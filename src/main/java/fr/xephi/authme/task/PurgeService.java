@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -238,7 +239,7 @@ public class PurgeService implements Reloadable {
      * @param cleared List of String
      */
     synchronized void purgeEssentials(Set<OfflinePlayer> cleared) {
-        if (!settings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && !pluginHooks.isEssentialsAvailable()) {
+        if (!settings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)) {
             return;
         }
 
@@ -281,7 +282,8 @@ public class PurgeService implements Reloadable {
 
     private static void logAndSendMessage(CommandSender sender, String message) {
         ConsoleLogger.info(message);
-        if (sender != null) {
+        // Make sure sender is not console user, which will see the message from ConsoleLogger already
+        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(message);
         }
     }
