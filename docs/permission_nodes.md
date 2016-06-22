@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Apr 07 17:17:24 CEST 2016. See permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Wed Jun 22 17:39:29 EDT 2016. See permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -28,6 +28,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.allowmultipleaccounts** – Permission to be able to register multiple accounts.
 - **authme.bypassantibot** – Permission node to bypass AntiBot protection.
 - **authme.bypassforcesurvival** – Permission for users to bypass force-survival mode.
+- **authme.bypasspurge** – Permission to bypass the purging process
 - **authme.player.*** – Permission to use all player (non-admin) commands.
 - **authme.player.canbeforced** – Permission for users a login can be forced to.
 - **authme.player.captcha** – Command permission to use captcha.
@@ -42,6 +43,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.player.unregister** – Command permission to unregister.
 - **authme.vip** – Permission node to identify VIP users.
 
+
 ---
 
-This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Thu Apr 07 17:17:24 CEST 2016
+This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Wed Jun 22 17:39:29 EDT 2016

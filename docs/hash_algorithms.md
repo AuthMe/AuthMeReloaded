@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Apr 07 17:17:22 CEST 2016. See hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Wed Jun 22 17:39:16 EDT 2016. See hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -35,6 +35,7 @@ WHIRLPOOL | Do not use | 128 |  | | None |  |
 WORDPRESS | Acceptable | 34 |  | | Text | 9 | 
 XAUTH | Recommended | 140 |  | | Text | 12 | 
 XFBCRYPT |  | 60 |  | |  |  | 
+
 CUSTOM |  |  |  |  |  |  |  |
 
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
@@ -82,4 +83,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Thu Apr 07 17:17:22 CEST 2016
+This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Wed Jun 22 17:39:16 EDT 2016
