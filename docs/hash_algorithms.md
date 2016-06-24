@@ -35,7 +35,6 @@ WHIRLPOOL | Do not use | 128 |  | | None |  |
 WORDPRESS | Acceptable | 34 |  | | Text | 9 | 
 XAUTH | Recommended | 140 |  | | Text | 12 | 
 XFBCRYPT |  | 60 |  | |  |  | 
-
 CUSTOM |  |  |  |  |  |  |  |
 
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->

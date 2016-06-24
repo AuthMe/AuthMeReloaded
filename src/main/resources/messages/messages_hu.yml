@@ -66,3 +66,5 @@ denied_command: '&cAmíg nem vagy bejelentkezve, nem használhatod ezt a parancs
 same_ip_online: 'Már valaki csatlakozott a szerverhez ezzel az IP címmel!'
 password_error_chars: '&4A választott jelszó nem engedélyezett karaktereket tartalmaz. Engedélyezett karakterek: REG_EX'
 tempban_max_logins: '&cIdeiglenesen ki lettél tiltva mert túl sok alkalommal rontottad el a jelszavad!'
+# TODO accounts_owned_other: 'The player %name has %count accounts:'
+# TODO accounts_owned_self: 'You own %count accounts:'
