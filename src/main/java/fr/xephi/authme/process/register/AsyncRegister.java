@@ -13,7 +13,6 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -159,10 +158,7 @@ public class AsyncRegister implements AsynchronousProcess {
             return;
         }
 
-        if (!Settings.forceRegLogin && autoLogin) {
-            //PlayerCache.getInstance().addPlayer(auth);
-            //database.setLogged(name);
-            // TODO: check this...
+        if (!service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER) && autoLogin) {
             plugin.getManagement().performLogin(player, "dontneed", true);
         }
         syncProcessManager.processSyncPasswordRegister(player);

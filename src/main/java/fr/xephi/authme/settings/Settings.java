@@ -3,7 +3,6 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,7 +24,6 @@ public final class Settings {
     public static boolean protectInventoryBeforeLogInEnabled;
     public static boolean isStopEnabled;
     public static boolean reloadSupport;
-    public static boolean forceRegLogin;
     public static boolean noTeleport;
     public static boolean isRemoveSpeedEnabled;
     public static String getUnloggedinGroup;
@@ -64,7 +62,6 @@ public final class Settings {
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
-        forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
         noTeleport = load(RestrictionSettings.NO_TELEPORT);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
     }
