@@ -115,6 +115,7 @@ public class AuthMe extends JavaPlugin {
     private SpawnLoader spawnLoader;
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
+    private GeoLiteAPI geoLiteApi;
 
     /*
      * Private instances (mail and ProtocolLib)
@@ -256,9 +257,6 @@ public class AuthMe extends JavaPlugin {
         // Set console filter
         setupConsoleFilter();
 
-        // Download and load GeoIp.dat file if absent
-        GeoLiteAPI.isDataAvailable();
-
         // Set up the mail API
         setupMailApi();
 
@@ -313,6 +311,7 @@ public class AuthMe extends JavaPlugin {
         commandHandler   = initializer.get(CommandHandler.class);
         api              = initializer.get(NewAPI.class);
         management       = initializer.get(Management.class);
+        geoLiteApi       = initializer.get(GeoLiteAPI.class);
         initializer.get(API.class);
     }
 
@@ -678,7 +677,7 @@ public class AuthMe extends JavaPlugin {
             .replace("{WORLD}", player.getWorld().getName())
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
-            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(ipAddress));
+            .replace("{COUNTRY}", geoLiteApi.getCountryName(ipAddress));
     }
 
 

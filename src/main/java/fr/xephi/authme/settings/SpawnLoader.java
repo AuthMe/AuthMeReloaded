@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -145,8 +144,7 @@ public class SpawnLoader implements Reloadable {
      * @see RestrictionSettings#SPAWN_PRIORITY
      */
     public Location getSpawnLocation(Player player) {
-        AuthMe plugin = AuthMe.getInstance();
-        if (plugin == null || player == null || player.getWorld() == null) {
+        if (player == null || player.getWorld() == null) {
             return null;
         }
 

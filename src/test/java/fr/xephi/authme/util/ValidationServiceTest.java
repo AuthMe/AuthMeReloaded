@@ -5,17 +5,18 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.runner.BeforeInjecting;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
+import fr.xephi.authme.runner.InjectDelayed;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,9 +29,10 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link ValidationService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class ValidationServiceTest {
 
+    @InjectDelayed
     private ValidationService validationService;
     @Mock
     private NewSetting settings;
@@ -38,8 +40,10 @@ public class ValidationServiceTest {
     private DataSource dataSource;
     @Mock
     private PermissionsManager permissionsManager;
+    @Mock
+    private GeoLiteAPI geoLiteApi;
 
-    @Before
+    @BeforeInjecting
     public void createService() {
         given(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).willReturn("[a-zA-Z]+");
         given(settings.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(3);
@@ -47,7 +51,6 @@ public class ValidationServiceTest {
         given(settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
             .willReturn(Arrays.asList("unsafe", "other-unsafe"));
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
-        validationService = new ValidationService(settings, dataSource, permissionsManager);
     }
 
     @Test
