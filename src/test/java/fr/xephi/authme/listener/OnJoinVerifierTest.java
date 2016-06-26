@@ -36,6 +36,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -375,6 +376,51 @@ public class OnJoinVerifierTest {
 
         // then
         verifyZeroInteractions(bukkitService);
+    }
+
+    @Test
+    public void shouldCheckAntiBot() throws FailedVerificationException {
+        // given
+        String name = "user123";
+        boolean hasAuth = false;
+        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.LISTENING);
+
+        // when
+        onJoinVerifier.checkAntibot(name, hasAuth);
+
+        // then
+        verify(antiBot).getAntiBotStatus();
+    }
+
+    @Test
+    public void shouldAllowUserWithAuth() throws FailedVerificationException {
+        // given
+        String name = "Bobby";
+        boolean hasAuth = true;
+        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.ACTIVE);
+
+        // when
+        onJoinVerifier.checkAntibot(name, hasAuth);
+
+        // then
+        verify(antiBot).getAntiBotStatus();
+    }
+
+    @Test
+    public void shouldThrowForActiveAntiBot() {
+        // given
+        String name = "Bobby";
+        boolean hasAuth = false;
+        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.ACTIVE);
+
+        // when / then
+        try {
+            onJoinVerifier.checkAntibot(name, hasAuth);
+            fail("Expected exception to be thrown");
+        } catch (FailedVerificationException e) {
+            assertThat(e, exceptionWithData(MessageKey.KICK_ANTIBOT));
+            verify(antiBot).addPlayerKick(name);
+        }
     }
 
     private static Player newPlayerWithName(String name) {

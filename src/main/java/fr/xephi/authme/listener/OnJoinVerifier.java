@@ -15,6 +15,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -56,13 +57,7 @@ class OnJoinVerifier implements Reloadable {
     @Override
     public void reload() {
         String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
-        try {
-            nicknamePattern = Pattern.compile(nickRegEx);
-        } catch (Exception e) {
-            nicknamePattern = Pattern.compile(".*?");
-            ConsoleLogger.showError("Nickname pattern is not a valid regular expression! "
-                + "Fallback to allowing all nicknames");
-        }
+        nicknamePattern = Utils.safePatternCompile(nickRegEx);
     }
 
     /**
@@ -73,7 +68,7 @@ class OnJoinVerifier implements Reloadable {
      */
     public void checkAntibot(String playerName, boolean isAuthAvailable) throws FailedVerificationException {
         if (antiBot.getAntiBotStatus() == AntiBot.AntiBotStatus.ACTIVE && !isAuthAvailable) {
-            antiBot.antibotKicked.addIfAbsent(playerName);
+            antiBot.addPlayerKick(playerName);
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }
     }

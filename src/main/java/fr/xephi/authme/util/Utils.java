@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for various operations used in the codebase.
@@ -76,6 +77,15 @@ public final class Utils {
             return player.getUniqueId().toString();
         } catch (Exception ignore) {
             return player.getName();
+        }
+    }
+
+    public static Pattern safePatternCompile(String pattern) {
+        try {
+            return Pattern.compile(pattern);
+        } catch (Exception e) {
+            ConsoleLogger.showError("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
+            return Pattern.compile(".*?");
         }
     }
 

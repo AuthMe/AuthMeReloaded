@@ -38,7 +38,7 @@ public class ValidationService implements Reloadable {
 
     @Override
     public void reload() {
-        passwordRegex = Pattern.compile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
+        passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
     }
 
     /**
