@@ -135,9 +135,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         // The Login event now fires (as intended) after everything is processed
         bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
-        if (service.getProperty(HooksSettings.BUNGEECORD)) {
-            sendBungeeMessage(player);
-        }
+        sendBungeeMessage(player);
         // Login is done, display welcome message
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
             if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
@@ -162,15 +160,24 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     }
 
     private void sendTo(Player player) {
-        if (!service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("Connect");
-            out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
-            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        if(!service.getProperty(HooksSettings.BUNGEECORD)) {
+            return;
         }
+        if(service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
+            return;
+        }
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
     private void sendBungeeMessage(Player player) {
+        if(!service.getProperty(HooksSettings.BUNGEECORD)) {
+            return;
+        }
+
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
@@ -178,5 +185,4 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         out.writeUTF("login;" + player.getName());
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
-
 }

@@ -69,6 +69,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -90,45 +91,45 @@ import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
  */
 public class AuthMe extends JavaPlugin {
 
-    // Defines the name of the plugin.
+    // Name of the plugin.
     private static final String PLUGIN_NAME = "AuthMeReloaded";
 
     // Default version and build number values;
     private static String pluginVersion = "N/D";
     private static String pluginBuildNumber = "Unknown";
 
-    // Private Instances
-    private static AuthMe plugin;
-    /*
-     *  Maps and stuff
-     */
-    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-
-    /*
-     * Public instances
-     */
-    public NewAPI api;
-    // TODO #655: Encapsulate mail
-    public SendMailSSL mail;
     /*
      * Private instances
      */
-    // TODO #604: Encapsulate ProtocolLib members
-    public AuthMeInventoryPacketAdapter inventoryProtector;
-    public AuthMeTabCompletePacketAdapter tabComplete;
-    public AuthMeTablistPacketAdapter tablistHider;
+
+    // Plugin instance
+    private static AuthMe plugin;
+
+    private NewAPI api;
     private Management management;
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
     private NewSetting newSettings;
     private Messages messages;
-    private JsonCache playerBackup;
     private PasswordSecurity passwordSecurity;
     private DataSource database;
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
+
+    /*
+     * Public instances
+     */
+    
+    // TODO: Encapsulate session management
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    // TODO #655: Encapsulate mail
+    public SendMailSSL mail;
+    // TODO #604: Encapsulate ProtocolLib members
+    public AuthMeInventoryPacketAdapter inventoryProtector;
+    public AuthMeTabCompletePacketAdapter tabComplete;
+    public AuthMeTablistPacketAdapter tablistHider;
 
     /**
      * Constructor.
@@ -184,7 +185,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Get version and build number of the plugin
-    private void setPluginInfos() {
+    private void loadPluginInfo() {
         String versionRaw = this.getDescription().getVersion();
         int index = versionRaw.lastIndexOf("-");
         if (index != -1) {
@@ -201,19 +202,24 @@ public class AuthMe extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        // Set various instances
+        // Set the plugin instance and load plugin info from the plugin description.
         plugin = this;
+        loadPluginInfo();
+
+        // Set the Logger instance and log file path
         ConsoleLogger.setLogger(getLogger());
-        setPluginInfos();
+        ConsoleLogger.setLogFile(new File(getDataFolder(), "authme.log"));
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
         newSettings = createNewSetting();
         if (newSettings == null) {
             getLogger().warning("Could not load configuration. Aborting.");
             getServer().shutdown();
+            setEnabled(false);
             return;
         }
-        ConsoleLogger.setLogFile(new File(getDataFolder(), "authme.log"));
+
+        // Apply settings to the logger
         ConsoleLogger.setLoggingOptions(newSettings);
 
         // Old settings manager
@@ -232,10 +238,12 @@ public class AuthMe extends JavaPlugin {
             stopOrUnload();
             return;
         }
+        // Convert deprecated PLAINTEXT hash entries
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
 
-
+        // Injector initialization
         initializer = new AuthMeServiceInitializer("fr.xephi.authme");
+
         // Register elements of the Bukkit / JavaPlugin environment
         initializer.register(AuthMe.class, this);
         initializer.register(Server.class, getServer());
@@ -261,21 +269,15 @@ public class AuthMe extends JavaPlugin {
         // Set up the mail API
         setupMailApi();
 
-        // Check if the ProtocolLib is available. If so we could listen for
-        // inventory protection
+        // Check if the ProtocolLib is available
         checkProtocolLib();
-        // End of Hooks
 
         // Do a backup on start
+        // TODO: maybe create a backup manager?
         new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.START);
 
-
-        // Setup the inventory backup
-        playerBackup = new JsonCache();
-
-
         // Set up the BungeeCord hook
-        setupBungeeCordHook(newSettings, initializer);
+        setupBungeeCordHook();
 
         // Reload support hook
         reloadSupportHook();
@@ -396,11 +398,11 @@ public class AuthMe extends JavaPlugin {
     /**
      * Set up the BungeeCord hook.
      */
-    private void setupBungeeCordHook(NewSetting settings, AuthMeServiceInitializer initializer) {
-        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(
-                this, "BungeeCord", initializer.get(BungeeCordMessage.class));
+    private void setupBungeeCordHook() {
+        if (newSettings.getProperty(HooksSettings.BUNGEECORD)) {
+            Messenger messenger = Bukkit.getMessenger();
+            messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+            messenger.registerIncomingPluginChannel(plugin, "BungeeCord", initializer.get(BungeeCordMessage.class));
         }
     }
 
@@ -434,18 +436,20 @@ public class AuthMe extends JavaPlugin {
      * Set up the console filter.
      */
     private void setupConsoleFilter() {
-        if (newSettings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
+        if (!newSettings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
+            return;
+        }
+        // Try to set the log4j filter
+        try {
+            Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
+            setLog4JFilter();
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            // log4j is not available
+            ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
             ConsoleFilter filter = new ConsoleFilter();
             getLogger().setFilter(filter);
             Bukkit.getLogger().setFilter(filter);
             Logger.getLogger("Minecraft").setFilter(filter);
-            // Set Log4J Filter
-            try {
-                Class.forName("org.apache.logging.log4j.core.Filter");
-                setLog4JFilter();
-            } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
-            }
         }
     }
 
@@ -570,16 +574,9 @@ public class AuthMe extends JavaPlugin {
 
     // Set the console filter to remove the passwords
     private void setLog4JFilter() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            @Override
-            public void run() {
-                org.apache.logging.log4j.core.Logger logger;
-                logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-                logger.addFilter(new Log4JFilter());
-                logger = (org.apache.logging.log4j.core.Logger) LogManager.getLogger("net.minecraft");
-                logger.addFilter(new Log4JFilter());
-            }
-        });
+        org.apache.logging.log4j.core.Logger logger;
+        logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        logger.addFilter(new Log4JFilter());
     }
 
     // Check the presence of the ProtocolLib plugin
@@ -640,9 +637,6 @@ public class AuthMe extends JavaPlugin {
             player.setOp(limbo.isOperator());
             limbo.getTimeoutTask().cancel();
             limboCache.deleteLimboPlayer(name);
-            if (this.playerBackup.doesCacheExist(player)) {
-                this.playerBackup.removeCache(player);
-            }
         }
         PlayerCache.getInstance().removePlayer(name);
     }
@@ -718,7 +712,6 @@ public class AuthMe extends JavaPlugin {
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
     }
-
 
     // -------------
     // Service getters (deprecated)

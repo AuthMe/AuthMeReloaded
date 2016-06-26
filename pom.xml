@@ -7,7 +7,6 @@
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
     <version>5.2-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
     <name>AuthMeReloaded</name>
     <description>The first authentication plugin for the Bukkit API!</description>
@@ -44,10 +43,6 @@
         </license>
     </licenses>
 
-    <prerequisites>
-        <maven>3.3.3</maven>
-    </prerequisites>
-
     <properties>
         <!-- Project properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,6 +57,7 @@
 
         <!-- BukkitPlugin properties -->
         <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
+        <bukkitplugin.version>${project.versionCode}</bukkitplugin.version>
         <bukkitplugin.main>${project.groupId}.${project.artifactId}.${bukkitplugin.name}</bukkitplugin.main>
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</bukkitplugin.authors>
 
@@ -69,8 +65,9 @@
         <bukkit.version>1.10-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
-    <!-- Jenkins profile (add the real buildNumber to the version string) -->
+    <!-- Jenkins profile -->
     <profiles>
+        <!-- Set the buildNumber using the jenkins env. variable -->
         <profile>
             <id>jenkins</id>
             <activation>
@@ -82,6 +79,7 @@
                 <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
             </properties>
         </profile>
+        <!-- Skip long hash tests, reduce the test time of 20-30 seconds -->
         <profile>
             <id>skipLongHashTests</id>
             <activation>
@@ -96,7 +94,7 @@
     </profiles>
 
     <build>
-        <!-- Name of the NOSHADE jar (no shaded/relocated libraries) -->
+        <!-- Name of the unshaded jar (no shaded/relocated libraries) -->
         <finalName>${project.finalName}-noshade</finalName>
 
         <resources>
@@ -135,6 +133,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
+                    <!-- Force the right file encoding during unit testing -->
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{argLine}</argLine>
                     <systemPropertyVariables>
                         <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
@@ -143,20 +142,16 @@
             </plugin>
             <!-- Libs Shading and Relocation -->
             <plugin>
-                <!--
-                Relocate all lib we use in order to fix class loading errors if we use different versions
-                than already loaded libs (i.e. by Mojang -> gson)
-                -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.4.3</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <!--
-                    Let's try to remove this!
-                    <minimizeJar>false</minimizeJar>
-                    -->
                 </configuration>
+                <!--
+                Relocate all lib we use in order to fix class loading errors if we use different versions
+                than already loaded libs (i.e. by Mojang -> gson)
+                -->
                 <executions>
                     <!-- Spigot 1.8+ -->
                     <execution>
@@ -173,36 +168,36 @@
                                 </excludes>
                             </artifactSet>
                             <relocations>
-                                <!-- We use a newer version of gson so we need to include it! -->
+                                <!-- We use a newer version of gson so we need to include and relocate it! -->
                                 <relocation>
                                     <pattern>com.google.gson</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
+                                    <shadedPattern>fr.xephi.authme.libs.google.gson</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.maxmind.geoip</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>net.ricecode.similarity</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.inject</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.inject</shadedPattern>
-                                </relocation>
-                                <!-- MCStats.org metrics -->
-                                <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>fr.xephi.authme</shadedPattern>
-                                </relocation>
+		                        <relocation>
+		                            <pattern>com.zaxxer.hikari</pattern>
+		                            <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
+		                        </relocation>
+		                        <relocation>
+		                            <pattern>org.slf4j</pattern>
+		                            <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
+		                        </relocation>
+		                        <relocation>
+		                            <pattern>com.maxmind.geoip</pattern>
+		                            <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
+		                        </relocation>
+		                        <relocation>
+		                            <pattern>net.ricecode.similarity</pattern>
+		                            <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
+		                        </relocation>
+		                        <relocation>
+		                            <pattern>javax.inject</pattern>
+		                            <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
+		                        </relocation>
+		                        <!-- MCStats.org metrics -->
+		                        <relocation>
+		                            <pattern>org.mcstats</pattern>
+		                            <shadedPattern>fr.xephi.authme</shadedPattern>
+		                        </relocation>
                             </relocations>
                             <outputFile>target/${project.finalName}-spigot.jar</outputFile>
                         </configuration>
@@ -215,31 +210,31 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <!-- Include all google libraries, because they are not available before 1.8 -->
                             <relocations>
+                                <!-- Include all google libraries, because they are not available before 1.8 -->
                                 <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
+                                    <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.slf4j</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
+                                    <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.maxmind.geoip</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
+                                    <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>net.ricecode.similarity</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
+                                    <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.inject</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.inject</shadedPattern>
+                                    <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
                                 </relocation>
                                 <!-- MCStats.org metrics -->
                                 <relocation>
@@ -252,7 +247,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Exec Tools -->
+            <!-- Exec Plugin (Tools runner) -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -267,7 +262,7 @@
                     <includeProjectDependencies>true</includeProjectDependencies>
                 </configuration>
             </plugin>
-            <!-- Test coverage -->
+            <!-- Coverage report generator -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -281,7 +276,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Coveralls data -->
+            <!-- Coverage report uploader -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
@@ -289,9 +284,9 @@
                 <configuration>
                     <failOnServiceError>false</failOnServiceError>
                 </configuration>
-                <!-- The secret token is provided by console! -->
+                <!-- The secret token is provided with a command-line parameter! -->
             </plugin>
-            <!-- Javadocs settings -->
+            <!-- JavaDocs generator -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -305,9 +300,9 @@
     </build>
 
     <repositories>
-        <!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
+        <!-- SpigotAPI Repo -->
         <repository>
-            <id>spigot-repo</id>
+            <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
 
@@ -319,7 +314,7 @@
 
         <!-- CombatTagPlus Repo -->
         <repository>
-            <id>minelink-thirdparty</id>
+            <id>minelink-repo</id>
             <url>http://repo.minelink.net/content/repositories/public</url>
         </repository>
 
@@ -331,32 +326,26 @@
 
         <!-- Multiverse Repo -->
         <repository>
-            <id>onarandombox</id>
+            <id>onarandombox-repo</id>
             <url>http://repo.onarandombox.com/content/groups/public</url>
         </repository>
 
         <!-- Vault Repo -->
         <repository>
-            <id>vault-repo</id>
+            <id>theyeticave-repo</id>
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
         </repository>
 
         <!-- XAuth Repo -->
         <repository>
-            <id>luricos-releases</id>
+            <id>luricos-repo</id>
             <url>http://repo.luricos.de/content/repositories/releases</url>
         </repository>
 
-        <!-- Xephi Repo -->
+        <!-- Our Repo (Many libs) -->
         <repository>
             <id>xephi-repo</id>
             <url>http://ci.xephi.fr/plugin/repository/everything/</url>
-        </repository>
-
-        <!-- PermissionsEx Repo (Re-added, since Xephi's repo was down) -->
-        <repository>
-            <id>pex-repo</id>
-            <url>https://pex-repo.aoeu.xyz/</url>
         </repository>
     </repositories>
 
@@ -375,6 +364,7 @@
             </exclusions>
             <optional>true</optional>
         </dependency>
+        <!-- HikariCP Logger -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -387,8 +377,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <!-- Can't use newer versions due to api changes! -->
-            <version>2.0-beta9</version>
+            <version>2.5</version>
             <scope>provided</scope>
         </dependency>
 
