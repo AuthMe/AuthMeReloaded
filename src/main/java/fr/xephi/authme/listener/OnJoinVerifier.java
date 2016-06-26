@@ -68,7 +68,7 @@ class OnJoinVerifier implements Reloadable {
      */
     public void checkAntibot(String playerName, boolean isAuthAvailable) throws FailedVerificationException {
         if (antiBot.getAntiBotStatus() == AntiBot.AntiBotStatus.ACTIVE && !isAuthAvailable) {
-            antiBot.antibotKicked.addIfAbsent(playerName);
+            antiBot.addPlayerKick(playerName);
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }
     }

@@ -239,7 +239,7 @@ public class AuthMePlayerListener implements Listener {
             event.setQuitMessage(null);
         }
 
-        if (antiBot.antibotKicked.contains(player.getName())) {
+        if (antiBot.wasPlayerKicked(player.getName())) {
             return;
         }
 
@@ -250,7 +250,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
 
-        if (!antiBot.antibotKicked.contains(player.getName())) {
+        if (!antiBot.wasPlayerKicked(player.getName())) {
             management.performQuit(player, true);
         }
     }
