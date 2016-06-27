@@ -106,8 +106,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
                 restoreInventory(player);
             }
 
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
-                plugin.tablistHider.sendTablist(player);
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.getTablistHider() != null) {
+                plugin.getTablistHider().sendTablist(player);
             }
 
             // Clean up no longer used temporary data

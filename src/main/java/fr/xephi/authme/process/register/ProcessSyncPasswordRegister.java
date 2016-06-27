@@ -92,17 +92,17 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         final String name = player.getName().toLowerCase();
         LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (limbo != null) {
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
-                plugin.tablistHider.sendTablist(player);
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.getTablistHider() != null) {
+                plugin.getTablistHider().sendTablist(player);
             }
 
             Utils.teleportToSpawn(player);
 
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.getInventoryProtector() != null) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 bukkitService.callEvent(event);
                 if (!event.isCancelled()) {
-                    plugin.inventoryProtector.sendInventoryPacket(player);
+                    plugin.getInventoryProtector().sendInventoryPacket(player);
                 }
             }
 

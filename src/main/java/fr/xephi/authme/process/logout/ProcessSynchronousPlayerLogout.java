@@ -58,12 +58,12 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
-        if (plugin.sessions.containsKey(name)) {
-            plugin.sessions.get(name).cancel();
-            plugin.sessions.remove(name);
+        if (plugin.getSessions().containsKey(name)) {
+            plugin.getSessions().get(name).cancel();
+            plugin.getSessions().remove(name);
         }
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
-            plugin.inventoryProtector.sendBlankInventoryPacket(player);
+            plugin.getInventoryProtector().sendBlankInventoryPacket(player);
         }
 
         limboPlayerTaskManager.registerTimeoutTask(player);

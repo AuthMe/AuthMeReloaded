@@ -5,7 +5,6 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.command.CommandHandler;
@@ -119,17 +118,13 @@ public class AuthMe extends JavaPlugin {
     private AuthMeServiceInitializer initializer;
 
     /*
-     * Public instances
+     * Private instances (sessions, mail, and ProtocolLib)
      */
-    
-    // TODO: Encapsulate session management
-    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    // TODO #655: Encapsulate mail
-    public SendMailSSL mail;
-    // TODO #604: Encapsulate ProtocolLib members
-    public AuthMeInventoryPacketAdapter inventoryProtector;
-    public AuthMeTabCompletePacketAdapter tabComplete;
-    public AuthMeTablistPacketAdapter tablistHider;
+    private final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    private SendMailSSL mail;
+    private AuthMeInventoryPacketAdapter inventoryProtector;
+    private AuthMeTabCompletePacketAdapter tabComplete;
+    private AuthMeTablistPacketAdapter tablistHider;
 
     /**
      * Constructor.
@@ -711,6 +706,60 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
+    }
+
+    /**
+     * Get all current player sessions.
+     *
+     * @return A concurrent hashmap containing the sessions.
+     */
+    public ConcurrentHashMap<String, BukkitTask> getSessions() {
+        return this.sessions;
+    }
+
+    /**
+     * Get the mailing instance.
+     *
+     * @return The send mail instance.
+     */
+    public SendMailSSL getMail() {
+        return this.mail;
+    }
+
+    /**
+     * Get the ProtocolLib inventory packet adapter.
+     *
+     * @return The inventory packet adapter.
+     */
+    public AuthMeInventoryPacketAdapter getInventoryProtector() {
+        return inventoryProtector;
+    }
+
+    /**
+     * Get the ProtocolLib tab complete packet adapter.
+     *
+     * @return The tab complete packet adapter.
+     */
+    public AuthMeTabCompletePacketAdapter getTabComplete() {
+        return tabComplete;
+    }
+
+    /**
+     * Get the ProtocolLib tab list packet adapter.
+     *
+     * @return The tab list packet adapter.
+     */
+    public AuthMeTablistPacketAdapter getTablistHider() {
+        return tablistHider;
+    }
+
+    /**
+     * Disables instances should the ProtocolLib plugin be disabled on the server.
+     */
+    public void disableProtocolLib() {
+        this.inventoryProtector = null;
+        this.tablistHider = null;
+        this.tabComplete = null;
     }
 
     // -------------

@@ -75,9 +75,7 @@ public class AuthMeServerListener implements Listener {
         }
 
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
-            plugin.inventoryProtector = null;
-            plugin.tablistHider = null;
-            plugin.tabComplete = null;
+            plugin.disableProtocolLib();
             ConsoleLogger.showError("ProtocolLib has been disabled, unhook packet inventory protection!");
         }
     }

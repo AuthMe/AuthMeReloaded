@@ -137,7 +137,7 @@ public class AsyncRegister implements AsynchronousProcess {
         }
         database.updateEmail(auth);
         database.updateSession(auth);
-        plugin.mail.main(auth, password);
+        plugin.getMail().main(auth, password);
         syncProcessManager.processSyncEmailRegister(player);
     }
 

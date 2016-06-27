@@ -122,11 +122,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
             limboCache.updateLimboPlayer(player);
 
             // Protect inventory
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.getInventoryProtector() != null) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
-                    plugin.inventoryProtector.sendInventoryPacket(player);
+                    plugin.getInventoryProtector().sendInventoryPacket(player);
                     if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                     }
@@ -135,9 +135,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
             // Session logic
             if (service.getProperty(PluginSettings.SESSIONS_ENABLED) && (playerCache.isAuthenticated(name) || database.isLogged(name))) {
-                if (plugin.sessions.containsKey(name)) {
-                    plugin.sessions.get(name).cancel();
-                    plugin.sessions.remove(name);
+                if (plugin.getSessions().containsKey(name)) {
+                    plugin.getSessions().get(name).cancel();
+                    plugin.getSessions().remove(name);
                 }
                 PlayerAuth auth = database.getAuth(name);
                 database.setUnlogged(name);

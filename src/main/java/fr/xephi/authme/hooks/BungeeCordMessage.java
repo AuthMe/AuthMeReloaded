@@ -61,9 +61,9 @@ public class BungeeCordMessage implements PluginMessageListener {
                         playerCache.updatePlayer(auth);
                         dataSource.setLogged(name);
                         //START 03062016 sgdc3: should fix #731 but we need to recode this mess
-                        if (plugin.sessions.containsKey(name)) {
-                            plugin.sessions.get(name).cancel();
-                            plugin.sessions.remove(name);
+                        if (plugin.getSessions().containsKey(name)) {
+                            plugin.getSessions().get(name).cancel();
+                            plugin.getSessions().remove(name);
                         }
                         //END
 

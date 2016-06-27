@@ -94,7 +94,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
 
                     }, Settings.getSessionTimeout * TICKS_PER_MINUTE);
 
-                    plugin.sessions.put(name, task);
+                    plugin.getSessions().put(name, task);
                 } else {
                     //plugin is disabled; we cannot schedule more tasks so run it directly here
                     postLogout(name);
@@ -117,6 +117,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
     private void postLogout(String name) {
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
-        plugin.sessions.remove(name);
+        plugin.getSessions().remove(name);
     }
 }
