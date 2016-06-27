@@ -70,8 +70,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private void restoreInventory(Player player) {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pluginManager.callEvent(event);
-        if (!event.isCancelled() && plugin.inventoryProtector != null) {
-            plugin.inventoryProtector.sendInventoryPacket(player);
+        if (!event.isCancelled()) {
+            player.updateInventory();
         }
     }
 
