@@ -9,6 +9,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -69,6 +70,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
+    private ProtocolLibService protocolLibService;
+
+    @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
     AsynchronousJoin() { }
@@ -126,11 +130,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
             limboCache.updateLimboPlayer(player);
 
             // Protect inventory
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.getInventoryProtector() != null) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
-                    plugin.getInventoryProtector().sendInventoryPacket(player);
+                    protocolLibService.sendInventoryPacket(player);
                     if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                     }

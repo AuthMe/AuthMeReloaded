@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.xephi.authme.listener;
+package fr.xephi.authme.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -22,22 +22,19 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.logging.Level;
-
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import org.apache.commons.lang.reflect.MethodUtils;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.logging.Level;
 
 public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 

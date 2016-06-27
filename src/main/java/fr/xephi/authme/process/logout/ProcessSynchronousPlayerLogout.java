@@ -6,6 +6,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.events.LogoutEvent;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -33,6 +34,9 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private ProtocolLibService protocolLibService;
 
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
@@ -66,7 +70,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
             sessionManager.cancelSession(name);
         }
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
-            plugin.getInventoryProtector().sendBlankInventoryPacket(player);
+            protocolLibService.sendBlankInventoryPacket(player);
         }
 
         limboPlayerTaskManager.registerTimeoutTask(player);

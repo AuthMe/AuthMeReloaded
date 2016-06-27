@@ -10,6 +10,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -49,6 +50,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private ProtocolLibService protocolLibService;
 
     @Inject
     private PluginManager pluginManager;
@@ -106,8 +110,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
                 restoreInventory(player);
             }
 
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.getTablistHider() != null) {
-                plugin.getTablistHider().sendTablist(player);
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN)) {
+                protocolLibService.sendTabList(player);
             }
 
             // Clean up no longer used temporary data

@@ -21,13 +21,10 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
-import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
@@ -121,9 +118,6 @@ public class AuthMe extends JavaPlugin {
      * Private instances (mail and ProtocolLib)
      */
     private SendMailSSL mail;
-    private AuthMeInventoryPacketAdapter inventoryProtector;
-    private AuthMeTabCompletePacketAdapter tabComplete;
-    private AuthMeTablistPacketAdapter tablistHider;
 
     /**
      * Constructor.
@@ -259,9 +253,6 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the mail API
         setupMailApi();
-
-        // Check if the ProtocolLib is available
-        checkProtocolLib();
 
         // Do a backup on start
         // TODO: maybe create a backup manager?
@@ -571,41 +562,6 @@ public class AuthMe extends JavaPlugin {
         logger.addFilter(new Log4JFilter());
     }
 
-    // Check the presence of the ProtocolLib plugin
-    public void checkProtocolLib() {
-        if (!getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-            if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
-                Settings.protectInventoryBeforeLogInEnabled = false;
-                newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
-                newSettings.save();
-            }
-            return;
-        }
-
-        if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN) && inventoryProtector == null) {
-            inventoryProtector = new AuthMeInventoryPacketAdapter(this);
-            inventoryProtector.register();
-        } else if (inventoryProtector != null) {
-            inventoryProtector.unregister();
-            inventoryProtector = null;
-        }
-        if (newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN) && tabComplete == null) {
-            tabComplete = new AuthMeTabCompletePacketAdapter(this);
-            tabComplete.register();
-        } else if (tabComplete != null) {
-            tabComplete.unregister();
-            tabComplete = null;
-        }
-        if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
-            tablistHider = new AuthMeTablistPacketAdapter(this, bukkitService);
-            tablistHider.register();
-        } else if (tablistHider != null) {
-            tablistHider.unregister();
-            tablistHider = null;
-        }
-    }
-
     // Save Player Data
     private void savePlayer(Player player, LimboCache limboCache) {
         if (safeIsNpc(player) || Utils.isUnrestricted(player)) {
@@ -712,42 +668,6 @@ public class AuthMe extends JavaPlugin {
      */
     public SendMailSSL getMail() {
         return this.mail;
-    }
-
-    /**
-     * Get the ProtocolLib inventory packet adapter.
-     *
-     * @return The inventory packet adapter.
-     */
-    public AuthMeInventoryPacketAdapter getInventoryProtector() {
-        return inventoryProtector;
-    }
-
-    /**
-     * Get the ProtocolLib tab complete packet adapter.
-     *
-     * @return The tab complete packet adapter.
-     */
-    public AuthMeTabCompletePacketAdapter getTabComplete() {
-        return tabComplete;
-    }
-
-    /**
-     * Get the ProtocolLib tab list packet adapter.
-     *
-     * @return The tab list packet adapter.
-     */
-    public AuthMeTablistPacketAdapter getTablistHider() {
-        return tablistHider;
-    }
-
-    /**
-     * Disables instances should the ProtocolLib plugin be disabled on the server.
-     */
-    public void disableProtocolLib() {
-        this.inventoryProtector = null;
-        this.tablistHider = null;
-        this.tabComplete = null;
     }
 
     // -------------

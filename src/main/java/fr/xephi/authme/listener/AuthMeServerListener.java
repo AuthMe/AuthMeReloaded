@@ -3,6 +3,7 @@ package fr.xephi.authme.listener;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -33,6 +34,8 @@ public class AuthMeServerListener implements Listener {
     private PluginHooks pluginHooks;
     @Inject
     private SpawnLoader spawnLoader;
+    @Inject
+    private ProtocolLibService protocolLibService;
     @Inject
     private ValidationService validationService;
     @Inject
@@ -75,8 +78,8 @@ public class AuthMeServerListener implements Listener {
         }
 
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
-            plugin.disableProtocolLib();
-            ConsoleLogger.showError("ProtocolLib has been disabled, unhook packet inventory protection!");
+            protocolLibService.disable();
+            ConsoleLogger.showError("ProtocolLib has been disabled, unhooking packet adapters!");
         }
     }
 
@@ -103,7 +106,7 @@ public class AuthMeServerListener implements Listener {
         }
 
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
-            plugin.checkProtocolLib();
+            protocolLibService.setup();
         }
     }
 }

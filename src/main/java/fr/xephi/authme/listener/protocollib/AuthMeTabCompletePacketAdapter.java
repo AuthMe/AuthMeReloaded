@@ -1,4 +1,4 @@
-package fr.xephi.authme.listener;
+package fr.xephi.authme.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

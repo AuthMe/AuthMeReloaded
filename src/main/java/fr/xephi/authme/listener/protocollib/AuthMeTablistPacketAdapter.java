@@ -1,4 +1,4 @@
-package fr.xephi.authme.listener;
+package fr.xephi.authme.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -14,23 +14,20 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.google.common.collect.Lists;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.util.BukkitService;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-
-import javax.inject.Inject;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
