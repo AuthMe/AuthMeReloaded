@@ -78,7 +78,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
@@ -118,9 +117,8 @@ public class AuthMe extends JavaPlugin {
     private AuthMeServiceInitializer initializer;
 
     /*
-     * Private instances (sessions, mail, and ProtocolLib)
+     * Private instances (mail and ProtocolLib)
      */
-    private final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
     private SendMailSSL mail;
     private AuthMeInventoryPacketAdapter inventoryProtector;
     private AuthMeTabCompletePacketAdapter tabComplete;
@@ -706,15 +704,6 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
-    }
-
-    /**
-     * Get all current player sessions.
-     *
-     * @return A concurrent hashmap containing the sessions.
-     */
-    public ConcurrentHashMap<String, BukkitTask> getSessions() {
-        return this.sessions;
     }
 
     /**

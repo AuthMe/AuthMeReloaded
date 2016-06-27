@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.ProcessService;
@@ -36,6 +37,9 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
+    @Inject
+    private SessionManager sessionManager;
+
     ProcessSynchronousPlayerLogout() { }
 
 
@@ -58,9 +62,8 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
-        if (plugin.getSessions().containsKey(name)) {
-            plugin.getSessions().get(name).cancel();
-            plugin.getSessions().remove(name);
+        if (sessionManager.hasSession(name)) {
+            sessionManager.cancelSession(name);
         }
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
             plugin.getInventoryProtector().sendBlankInventoryPacket(player);

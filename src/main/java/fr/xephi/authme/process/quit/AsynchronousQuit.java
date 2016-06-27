@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -42,6 +43,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private SyncProcessManager syncProcessManager;
 
+    @Inject
+    private SessionManager sessionManager;
+
     AsynchronousQuit() { }
 
 
@@ -82,23 +86,21 @@ public class AsynchronousQuit implements AsynchronousProcess {
             isOp = limbo.isOperator();
             limboCache.deleteLimboPlayer(name);
         }
-        if (Settings.isSessionsEnabled && !isKick) {
-            if (Settings.getSessionTimeout != 0) {
-                if (plugin.isEnabled()) {
-                    BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        if (!isKick) {
+            if (plugin.isEnabled()) {
+                BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
-                        @Override
-                        public void run() {
-                            postLogout(name);
-                        }
+                    @Override
+                    public void run() {
+                        postLogout(name);
+                    }
 
-                    }, Settings.getSessionTimeout * TICKS_PER_MINUTE);
+                }, Settings.getSessionTimeout * TICKS_PER_MINUTE);
 
-                    plugin.getSessions().put(name, task);
-                } else {
-                    //plugin is disabled; we cannot schedule more tasks so run it directly here
-                    postLogout(name);
-                }
+                sessionManager.addSession(name, task);
+            } else {
+                //plugin is disabled; we cannot schedule more tasks so run it directly here
+                postLogout(name);
             }
         } else {
             playerCache.removePlayer(name);
@@ -117,6 +119,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
     private void postLogout(String name) {
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
-        plugin.getSessions().remove(name);
+        sessionManager.removeSession(name);
     }
 }
