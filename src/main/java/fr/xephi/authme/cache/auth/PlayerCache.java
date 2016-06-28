@@ -1,6 +1,5 @@
 package fr.xephi.authme.cache.auth;
 
-import fr.xephi.authme.ConsoleLogger;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +33,6 @@ public class PlayerCache {
      * @param auth PlayerAuth
      */
     public void addPlayer(PlayerAuth auth) {
-        ConsoleLogger.debug("ADDED PLAYER TO CACHE " + auth.getNickname());
         cache.put(auth.getNickname().toLowerCase(), auth);
     }
 
@@ -44,7 +42,6 @@ public class PlayerCache {
      * @param auth PlayerAuth
      */
     public void updatePlayer(PlayerAuth auth) {
-        ConsoleLogger.debug("UPDATE PLAYER " + auth.getNickname());
         cache.put(auth.getNickname(), auth);
     }
 
@@ -54,7 +51,6 @@ public class PlayerCache {
      * @param user String
      */
     public void removePlayer(String user) {
-        ConsoleLogger.debug("REMOVE PLAYER " + user);
         cache.remove(user.toLowerCase());
     }
 

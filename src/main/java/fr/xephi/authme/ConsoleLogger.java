@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -22,7 +21,6 @@ public final class ConsoleLogger {
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("[MM-dd HH:mm:ss]");
     private static Logger logger;
-    private static boolean enableDebug = false;
     private static boolean useLogging = false;
     private static File logFile;
     private static FileWriter fileWriter;
@@ -40,7 +38,6 @@ public final class ConsoleLogger {
 
     public static void setLoggingOptions(NewSetting settings) {
         ConsoleLogger.useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
-        ConsoleLogger.enableDebug = !settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         if (useLogging) {
             if (fileWriter == null) {
                 try {
@@ -65,19 +62,6 @@ public final class ConsoleLogger {
             writeLog(message);
         }
 
-    }
-
-    public static void debug(String message) {
-        if (enableDebug) {
-            //creating and filling an exception is a expensive call
-            //TODO #419 20160601: ->so it should be removed as soon #419 is fixed
-            //logger.isLoggable does not work because the plugin logger is always ALL
-            logger.log(Level.FINE, message + ' ' + Thread.currentThread().getName(), new Exception());
-
-            if (useLogging) {
-                writeLog("Debug: " + Thread.currentThread().getName() + ':' + message);
-            }
-        }
     }
 
     /**

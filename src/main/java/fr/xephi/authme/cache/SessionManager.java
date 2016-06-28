@@ -51,10 +51,9 @@ public class SessionManager implements SettingsDependent {
      * @param name The name of the player who's session to cancel.
      */
     public void cancelSession(String name) {
-        BukkitTask task = sessions.get(name);
+        BukkitTask task = sessions.remove(name);
         if (task != null) {
             task.cancel();
-            removeSession(name);
         }
     }
 
