@@ -25,12 +25,9 @@ import com.comphenix.protocol.events.PacketEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -44,10 +41,6 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
     private static final int ARMOR_SIZE = 4;
     private static final int MAIN_SIZE = 27;
     private static final int HOTBAR_SIZE = 9;
-    private static final int OFF_HAND_POSITION = 45;
-
-    private final boolean offHandSupported = MethodUtils
-            .getAccessibleMethod(PlayerInventory.class, "getItemInOffHand", new Class[]{}) != null;
 
     public AuthMeInventoryPacketAdapter(AuthMe plugin) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);

@@ -3,7 +3,6 @@ package fr.xephi.authme.hooks;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -32,9 +31,6 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     @Inject
     private SessionManager sessionManager;
-
-    @Inject
-    private AuthMe plugin;
     
     @Inject
     private NewSetting settings;

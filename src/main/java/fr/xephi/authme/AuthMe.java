@@ -100,7 +100,6 @@ public class AuthMe extends JavaPlugin {
     // Plugin instance
     private static AuthMe plugin;
 
-    private NewAPI api;
     private Management management;
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
@@ -300,9 +299,9 @@ public class AuthMe extends JavaPlugin {
         passwordSecurity = initializer.get(PasswordSecurity.class);
         spawnLoader      = initializer.get(SpawnLoader.class);
         commandHandler   = initializer.get(CommandHandler.class);
-        api              = initializer.get(NewAPI.class);
         management       = initializer.get(Management.class);
         geoLiteApi       = initializer.get(GeoLiteAPI.class);
+        initializer.get(NewAPI.class);
         initializer.get(API.class);
     }
 
