@@ -42,8 +42,9 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent packetEvent) {
+        Player receiver = packetEvent.getPlayer();
         if (packetEvent.getPacketType() == PacketType.Play.Server.PLAYER_INFO
-                && PlayerCache.getInstance().isAuthenticated(packetEvent.getPlayer().getName().toLowerCase())) {
+                && !PlayerCache.getInstance().isAuthenticated(receiver.getName().toLowerCase())) {
             //this hides the tablist for the new joining players. Already playing users will see the new player
             try {
                 PacketContainer packet = packetEvent.getPacket();
