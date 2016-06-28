@@ -11,7 +11,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
@@ -90,7 +90,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         //always unauthenticate the player - use session only for auto logins on the same ip
         playerCache.removePlayer(name);
 
-        if (plugin.isEnabled() && Settings.isSessionsEnabled) {
+        if (plugin.isEnabled() && service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
             BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
                 @Override
@@ -98,7 +98,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
                     postLogout(name);
                 }
 
-            }, Settings.getSessionTimeout * TICKS_PER_MINUTE);
+            }, service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * TICKS_PER_MINUTE);
 
             sessionManager.addSession(name, task);
         } else {
