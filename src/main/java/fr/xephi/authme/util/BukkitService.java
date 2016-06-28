@@ -136,6 +136,15 @@ public class BukkitService {
     }
 
     /**
+     * Gets every player that has ever played on this server.
+     *
+     * @return an array containing all previous players
+     */
+    public OfflinePlayer[] getOfflinePlayers() {
+        return Bukkit.getOfflinePlayers();
+    }
+
+    /**
      * Safe way to retrieve the list of online players from the server. Depending on the
      * implementation of the server, either an array of {@link Player} instances is being returned,
      * or a Collection. Always use this wrapper to retrieve online players instead of {@link

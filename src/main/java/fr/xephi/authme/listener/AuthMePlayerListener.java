@@ -23,7 +23,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -192,41 +191,15 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        if (player != null) {
-            // Schedule login task so works after the prelogin
-            // (Fix found by Koolaid5000)
-            bukkitService.runTask(new Runnable() {
-                @Override
-                public void run() {
-                    management.performJoin(player);
-                }
-            });
-        }
+        management.performJoin(player);
     }
 
-    // Note ljacqu 20160528: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
+    // Note: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
     // e.g. CraftBukkit does not. So we need to run crucial things in onPlayerLogin, too
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPreLogin(AsyncPlayerPreLoginEvent event) {
-        final String name = event.getName().toLowerCase();
-        final boolean isAuthAvailable = dataSource.isAuthAvailable(event.getName());
+    // We have no performance improvements if we do the same thing on two different events
+    // Important: the single session feature works if we use the low priority to the sync handler
 
-        try {
-            // Potential performance improvement: make checkAntiBot not require `isAuthAvailable` info and use
-            // "checkKickNonRegistered" as last -> no need to query the DB before checking antibot / name
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
-            onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
-            onJoinVerifier.checkIsValidName(name);
-            // Note #760: Single session must be checked here - checking with PlayerLoginEvent is too late and
-            // the first connection will have been kicked. This means this feature doesn't work on CraftBukkit.
-            onJoinVerifier.checkSingleSession(name);
-        } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         if (Utils.isUnrestricted(player)) {
@@ -237,12 +210,14 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
+        final String lowerName = name.toLowerCase();
         final PlayerAuth auth = dataSource.getAuth(player.getName());
         final boolean isAuthAvailable = (auth != null);
 
         try {
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            onJoinVerifier.checkSingleSession(lowerName);
+            onJoinVerifier.checkAntibot(lowerName, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkIsValidName(name);
             onJoinVerifier.checkNameCasing(player, auth);
@@ -264,7 +239,7 @@ public class AuthMePlayerListener implements Listener {
             event.setQuitMessage(null);
         }
 
-        if (antiBot.antibotKicked.contains(player.getName())) {
+        if (antiBot.wasPlayerKicked(player.getName())) {
             return;
         }
 
@@ -275,7 +250,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
 
-        if (!antiBot.antibotKicked.contains(player.getName())) {
+        if (!antiBot.wasPlayerKicked(player.getName())) {
             management.performQuit(player, true);
         }
     }

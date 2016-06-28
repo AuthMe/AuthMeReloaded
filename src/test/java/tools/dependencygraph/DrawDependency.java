@@ -5,9 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
-import fr.xephi.authme.initialization.ConstructorInjection;
-import fr.xephi.authme.initialization.FieldInjection;
 import fr.xephi.authme.initialization.Injection;
+import fr.xephi.authme.initialization.InjectionHelper;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
@@ -144,11 +143,7 @@ public class DrawDependency implements ToolTask {
     }
 
     private List<String> getDependencies(Class<?> clazz) {
-        Injection<?> injection = ConstructorInjection.provide(clazz).get();
-        if (injection != null) {
-            return formatInjectionDependencies(injection);
-        }
-        injection = FieldInjection.provide(clazz).get();
+        Injection<?> injection = InjectionHelper.getInjection(clazz);
         return injection == null ? null : formatInjectionDependencies(injection);
     }
 

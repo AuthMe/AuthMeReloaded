@@ -3,7 +3,9 @@ package fr.xephi.authme.permission.handlers;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,8 +14,24 @@ public class VaultHandler implements PermissionHandler {
 
     private Permission vaultProvider;
 
-    public VaultHandler(Permission vaultProvider) {
-        this.vaultProvider = vaultProvider;
+    public VaultHandler(Server server) throws PermissionHandlerException {
+        this.vaultProvider = getVaultPermission(server);
+    }
+
+    private static Permission getVaultPermission(Server server) throws PermissionHandlerException {
+        // Get the permissions provider service
+        RegisteredServiceProvider<Permission> permissionProvider = server
+            .getServicesManager().getRegistration(Permission.class);
+        if (permissionProvider == null) {
+            throw new PermissionHandlerException("Could not load permissions provider service");
+        }
+
+        // Get the Vault provider and make sure it's valid
+        Permission vaultPerms = permissionProvider.getProvider();
+        if (vaultPerms == null) {
+            throw new PermissionHandlerException("Could not load Vault permissions provider");
+        }
+        return vaultPerms;
     }
 
     @Override
@@ -29,6 +47,11 @@ public class VaultHandler implements PermissionHandler {
     @Override
     public boolean hasPermission(Player player, PermissionNode node) {
         return vaultProvider.has(player, node.getNode());
+    }
+
+    @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        return vaultProvider.has("", name, node.getNode());
     }
 
     @Override

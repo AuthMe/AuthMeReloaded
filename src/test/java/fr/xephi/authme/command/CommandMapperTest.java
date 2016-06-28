@@ -6,10 +6,14 @@ import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.runner.BeforeInjecting;
+import fr.xephi.authme.runner.InjectDelayed;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import java.util.List;
 import java.util.Set;
@@ -32,23 +36,28 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link CommandMapper}.
  */
+@RunWith(DelayedInjectionRunner.class)
 public class CommandMapperTest {
 
     private static Set<CommandDescription> commands;
+
+    @InjectDelayed
     private CommandMapper mapper;
+
+    @Mock
     private PermissionsManager permissionsManager;
+
+    @Mock
+    private CommandInitializer commandInitializer;
 
     @BeforeClass
     public static void setUpCommandHandler() {
         commands = TestCommandsUtil.generateCommands();
     }
 
-    @Before
+    @BeforeInjecting
     public void setUpMocks() {
-        permissionsManager = mock(PermissionsManager.class);
-        CommandInitializer initializer = mock(CommandInitializer.class);
-        given(initializer.getCommands()).willReturn(commands);
-        mapper = new CommandMapper(initializer, permissionsManager);
+        given(commandInitializer.getCommands()).willReturn(commands);
     }
 
     // -----------

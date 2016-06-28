@@ -199,12 +199,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // processed in other order.
             LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer != null) {
-                if (limboPlayer.getTimeoutTask() != null) {
-                    limboPlayer.getTimeoutTask().cancel();
-                }
-                if (limboPlayer.getMessageTask() != null) {
-                    limboPlayer.getMessageTask().cancel();
-                }
+                limboPlayer.clearTasks();
             }
             syncProcessManager.processSyncPlayerLogin(player);
         } else if (player.isOnline()) {

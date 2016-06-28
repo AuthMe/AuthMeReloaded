@@ -1,10 +1,10 @@
 package fr.xephi.authme;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.command.CommandHandler;
@@ -21,19 +21,17 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
-import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
@@ -45,14 +43,12 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.task.PurgeTask;
+import fr.xephi.authme.task.PurgeService;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
@@ -65,20 +61,20 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
@@ -90,48 +86,54 @@ import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
  */
 public class AuthMe extends JavaPlugin {
 
-    // Defines the name of the plugin.
+    // Name of the plugin.
     private static final String PLUGIN_NAME = "AuthMeReloaded";
 
     // Default version and build number values;
     private static String pluginVersion = "N/D";
     private static String pluginBuildNumber = "Unknown";
 
-    // Private Instances
-    private static AuthMe plugin;
-    /*
-     *  Maps and stuff
-     */
-    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-
-    /*
-     * Public instances
-     */
-    public NewAPI api;
-    // TODO #655: Encapsulate mail
-    public SendMailSSL mail;
-    // TODO #656: Encapsulate data manager
-    public DataManager dataManager;
     /*
      * Private instances
      */
-    // TODO #604: Encapsulate ProtocolLib members
-    public AuthMeInventoryPacketAdapter inventoryProtector;
-    public AuthMeTabCompletePacketAdapter tabComplete;
-    public AuthMeTablistPacketAdapter tablistHider;
+
+    // Plugin instance
+    private static AuthMe plugin;
+
+    private NewAPI api;
     private Management management;
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
     private NewSetting newSettings;
     private Messages messages;
-    private JsonCache playerBackup;
     private PasswordSecurity passwordSecurity;
     private DataSource database;
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
-    private boolean autoPurging;
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
+    private GeoLiteAPI geoLiteApi;
+
+    /*
+     * Private instances (mail and ProtocolLib)
+     */
+    private SendMailSSL mail;
+
+    /**
+     * Constructor.
+     */
+    public AuthMe() {
+    }
+
+    /*
+     * Constructor for unit testing.
+     */
+    @VisibleForTesting
+    @SuppressWarnings("deprecation") // the super constructor is deprecated to mark it for unit testing only
+    protected AuthMe(final PluginLoader loader, final Server server, final PluginDescriptionFile description,
+                     final File dataFolder, final File file) {
+        super(loader, server, description, dataFolder, file);
+    }
 
     /**
      * Get the plugin's instance.
@@ -171,7 +173,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Get version and build number of the plugin
-    private void setPluginInfos() {
+    private void loadPluginInfo() {
         String versionRaw = this.getDescription().getVersion();
         int index = versionRaw.lastIndexOf("-");
         if (index != -1) {
@@ -188,19 +190,24 @@ public class AuthMe extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        // Set various instances
+        // Set the plugin instance and load plugin info from the plugin description.
         plugin = this;
+        loadPluginInfo();
+
+        // Set the Logger instance and log file path
         ConsoleLogger.setLogger(getLogger());
-        setPluginInfos();
+        ConsoleLogger.setLogFile(new File(getDataFolder(), "authme.log"));
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
         newSettings = createNewSetting();
         if (newSettings == null) {
             getLogger().warning("Could not load configuration. Aborting.");
             getServer().shutdown();
+            setEnabled(false);
             return;
         }
-        ConsoleLogger.setLogFile(new File(getDataFolder(), "authme.log"));
+
+        // Apply settings to the logger
         ConsoleLogger.setLoggingOptions(newSettings);
 
         // Old settings manager
@@ -209,8 +216,6 @@ public class AuthMe extends JavaPlugin {
             setEnabled(false);
             return;
         }
-
-        messages = new Messages(newSettings.getMessagesFile(), newSettings.getDefaultMessagesFile());
 
         // Connect to the database and setup tables
         try {
@@ -221,10 +226,12 @@ public class AuthMe extends JavaPlugin {
             stopOrUnload();
             return;
         }
+        // Convert deprecated PLAINTEXT hash entries
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
 
-
+        // Injector initialization
         initializer = new AuthMeServiceInitializer("fr.xephi.authme");
+
         // Register elements of the Bukkit / JavaPlugin environment
         initializer.register(AuthMe.class, this);
         initializer.register(Server.class, getServer());
@@ -234,27 +241,9 @@ public class AuthMe extends JavaPlugin {
 
         // Register elements we instantiate manually
         initializer.register(NewSetting.class, newSettings);
-        initializer.register(Messages.class, messages);
         initializer.register(DataSource.class, database);
 
-        // Some statically injected things
-        initializer.register(PlayerCache.class, PlayerCache.getInstance());
-
-        // Note ljacqu 20160612: Instantiate LimboCache first to make sure it is instantiated
-        // (because sometimes it's used via LimboCache.getInstance())
-        // Once LimboCache#getInstance() no longer exists this can be removed!
-        initializer.get(LimboCache.class);
-
-        permsMan         = initializer.get(PermissionsManager.class);
-        bukkitService    = initializer.get(BukkitService.class);
-        pluginHooks      = initializer.get(PluginHooks.class);
-        passwordSecurity = initializer.get(PasswordSecurity.class);
-        spawnLoader      = initializer.get(SpawnLoader.class);
-        commandHandler   = initializer.get(CommandHandler.class);
-        api              = initializer.get(NewAPI.class);
-        management       = initializer.get(Management.class);
-        dataManager      = initializer.get(DataManager.class);
-        initializer.get(API.class);
+        instantiateServices(initializer);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(this, newSettings);
@@ -262,27 +251,15 @@ public class AuthMe extends JavaPlugin {
         // Set console filter
         setupConsoleFilter();
 
-        // Download and load GeoIp.dat file if absent
-        GeoLiteAPI.isDataAvailable();
-
         // Set up the mail API
         setupMailApi();
 
-        // Check if the ProtocolLib is available. If so we could listen for
-        // inventory protection
-        checkProtocolLib();
-        // End of Hooks
-
         // Do a backup on start
+        // TODO: maybe create a backup manager?
         new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.START);
 
-
-        // Setup the inventory backup
-        playerBackup = new JsonCache();
-
-
         // Set up the BungeeCord hook
-        setupBungeeCordHook(newSettings, initializer);
+        setupBungeeCordHook();
 
         // Reload support hook
         reloadSupportHook();
@@ -302,8 +279,31 @@ public class AuthMe extends JavaPlugin {
         // Successful message
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
 
+        // If server is using PermissionsBukkit, print a warning that some features may not be supported
+        if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
+            ConsoleLogger.info("Warning! This server uses PermissionsBukkit for permissions! Some permissions features may not be supported!");
+        }
+
         // Purge on start if enabled
-        runAutoPurge();
+        PurgeService purgeService = initializer.get(PurgeService.class);
+        purgeService.runAutoPurge();
+    }
+
+    protected void instantiateServices(AuthMeServiceInitializer initializer) {
+        // Some statically injected things
+        initializer.register(PlayerCache.class, PlayerCache.getInstance());
+
+        messages = initializer.get(Messages.class);
+        permsMan = initializer.get(PermissionsManager.class);
+        bukkitService = initializer.get(BukkitService.class);
+        pluginHooks = initializer.get(PluginHooks.class);
+        passwordSecurity = initializer.get(PasswordSecurity.class);
+        spawnLoader = initializer.get(SpawnLoader.class);
+        commandHandler = initializer.get(CommandHandler.class);
+        api = initializer.get(NewAPI.class);
+        management = initializer.get(Management.class);
+        geoLiteApi = initializer.get(GeoLiteAPI.class);
+        initializer.get(API.class);
     }
 
     /**
@@ -335,13 +335,13 @@ public class AuthMe extends JavaPlugin {
     /**
      * Register all event listeners.
      */
-    private void registerEventListeners(AuthMeServiceInitializer initializer) {
+    protected void registerEventListeners(AuthMeServiceInitializer initializer) {
         // Get the plugin manager instance
         PluginManager pluginManager = getServer().getPluginManager();
 
         // Register event listeners
         pluginManager.registerEvents(initializer.get(AuthMePlayerListener.class), this);
-        pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class),  this);
+        pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class), this);
         pluginManager.registerEvents(initializer.get(AuthMeEntityListener.class), this);
         pluginManager.registerEvents(initializer.get(AuthMeServerListener.class), this);
 
@@ -381,11 +381,11 @@ public class AuthMe extends JavaPlugin {
     /**
      * Set up the BungeeCord hook.
      */
-    private void setupBungeeCordHook(NewSetting settings, AuthMeServiceInitializer initializer) {
-        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(
-                this, "BungeeCord", initializer.get(BungeeCordMessage.class));
+    private void setupBungeeCordHook() {
+        if (newSettings.getProperty(HooksSettings.BUNGEECORD)) {
+            Messenger messenger = Bukkit.getMessenger();
+            messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+            messenger.registerIncomingPluginChannel(plugin, "BungeeCord", initializer.get(BungeeCordMessage.class));
         }
     }
 
@@ -419,18 +419,20 @@ public class AuthMe extends JavaPlugin {
      * Set up the console filter.
      */
     private void setupConsoleFilter() {
-        if (newSettings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
+        if (!newSettings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
+            return;
+        }
+        // Try to set the log4j filter
+        try {
+            Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
+            setLog4JFilter();
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            // log4j is not available
+            ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
             ConsoleFilter filter = new ConsoleFilter();
             getLogger().setFilter(filter);
             Bukkit.getLogger().setFilter(filter);
             Logger.getLogger("Minecraft").setFilter(filter);
-            // Set Log4J Filter
-            try {
-                Class.forName("org.apache.logging.log4j.core.Filter");
-                setLog4JFilter();
-            } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
-            }
         }
     }
 
@@ -497,7 +499,7 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.showError("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
             getServer().shutdown();
         } else {
-            getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 
@@ -555,51 +557,9 @@ public class AuthMe extends JavaPlugin {
 
     // Set the console filter to remove the passwords
     private void setLog4JFilter() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            @Override
-            public void run() {
-                org.apache.logging.log4j.core.Logger logger;
-                logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-                logger.addFilter(new Log4JFilter());
-                logger = (org.apache.logging.log4j.core.Logger) LogManager.getLogger("net.minecraft");
-                logger.addFilter(new Log4JFilter());
-            }
-        });
-    }
-
-    // Check the presence of the ProtocolLib plugin
-    public void checkProtocolLib() {
-        if (!getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-            if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
-                Settings.protectInventoryBeforeLogInEnabled = false;
-                newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
-                newSettings.save();
-            }
-            return;
-        }
-
-        if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN) && inventoryProtector == null) {
-            inventoryProtector = new AuthMeInventoryPacketAdapter(this);
-            inventoryProtector.register();
-        } else if (inventoryProtector != null) {
-            inventoryProtector.unregister();
-            inventoryProtector = null;
-        }
-        if (newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN) && tabComplete == null) {
-            tabComplete = new AuthMeTabCompletePacketAdapter(this);
-            tabComplete.register();
-        } else if (tabComplete != null) {
-            tabComplete.unregister();
-            tabComplete = null;
-        }
-        if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
-            tablistHider = new AuthMeTablistPacketAdapter(this, bukkitService);
-            tablistHider.register();
-        } else if (tablistHider != null) {
-            tablistHider.unregister();
-            tablistHider = null;
-        }
+        org.apache.logging.log4j.core.Logger logger;
+        logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        logger.addFilter(new Log4JFilter());
     }
 
     // Save Player Data
@@ -608,25 +568,31 @@ public class AuthMe extends JavaPlugin {
             return;
         }
         String name = player.getName().toLowerCase();
-        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-            final PlayerAuth auth = PlayerAuth.builder()
-                .name(player.getName().toLowerCase())
-                .realName(player.getName())
-                .location(player.getLocation()).build();
-            database.updateQuitLoc(auth);
-        }
         if (limboCache.hasLimboPlayer(name)) {
             LimboPlayer limbo = limboCache.getLimboPlayer(name);
-            if (!Settings.noTeleport) {
+            if (!newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 player.teleport(limbo.getLoc());
             }
-
             Utils.addNormal(player, limbo.getGroup());
             player.setOp(limbo.isOperator());
-            limbo.getTimeoutTask().cancel();
-            limboCache.deleteLimboPlayer(name);
-            if (this.playerBackup.doesCacheExist(player)) {
-                this.playerBackup.removeCache(player);
+            player.setAllowFlight(limbo.isCanFly());
+            player.setWalkSpeed(limbo.getWalkSpeed());
+            limbo.clearTasks();
+            limboCache.deleteLimboPlayer(player);
+        }
+        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
+            if (Settings.isSaveQuitLocationEnabled) {
+
+                final PlayerAuth auth = PlayerAuth.builder()
+                    .name(player.getName().toLowerCase())
+                    .realName(player.getName())
+                    .location(player.getLocation()).build();
+                database.updateQuitLoc(auth);
+            }
+            if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
+                && !newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+                limboCache.getJsonCache().writeCache(player);
+                player.teleport(spawnLoader.getSpawnLocation(player));
             }
         }
         PlayerCache.getInstance().removePlayer(name);
@@ -634,29 +600,6 @@ public class AuthMe extends JavaPlugin {
 
     private boolean safeIsNpc(Player player) {
         return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
-    }
-
-    // Purge inactive players from the database, as defined in the configuration
-    private void runAutoPurge() {
-        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE) || autoPurging) {
-            return;
-        }
-
-        autoPurging = true;
-
-        ConsoleLogger.info("AutoPurging the Database...");
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
-        long until = calendar.getTimeInMillis();
-        Set<String> cleared = database.autoPurgeDatabase(until);
-        if (CollectionUtils.isEmpty(cleared)) {
-            return;
-        }
-
-        ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
-        ConsoleLogger.info("Purging user accounts...");
-        new PurgeTask(plugin, Bukkit.getConsoleSender(), cleared, true, Bukkit.getOfflinePlayers())
-                .runTaskTimer(plugin, 0, 1);
     }
 
     // Return the spawn location of a player
@@ -699,9 +642,8 @@ public class AuthMe extends JavaPlugin {
             .replace("{WORLD}", player.getWorld().getName())
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
-            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(ipAddress));
+            .replace("{COUNTRY}", geoLiteApi.getCountryName(ipAddress));
     }
-
 
 
     /**
@@ -727,26 +669,23 @@ public class AuthMe extends JavaPlugin {
         return commandHandler.processCommand(sender, commandLabel, args);
     }
 
-    public void notifyAutoPurgeEnd() {
-        this.autoPurging = false;
+    /**
+     * Get the mailing instance.
+     *
+     * @return The send mail instance.
+     */
+    public SendMailSSL getMail() {
+        return this.mail;
     }
-
 
     // -------------
     // Service getters (deprecated)
     // Use @Inject fields instead
     // -------------
-    /**
-     * @return NewSetting
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public NewSetting getSettings() {
-        return newSettings;
-    }
 
     /**
      * @return permission manager
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -756,6 +695,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return process manager
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -765,6 +705,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return the datasource
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -774,6 +715,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return password manager
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -783,6 +725,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return plugin hooks
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated

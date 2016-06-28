@@ -15,8 +15,11 @@ public class PermissionsExHandler implements PermissionHandler {
 
     private PermissionManager permissionManager;
 
-    public PermissionsExHandler(PermissionManager permissionManager) {
-        this.permissionManager = permissionManager;
+    public PermissionsExHandler() throws PermissionHandlerException {
+        permissionManager = PermissionsEx.getPermissionManager();
+        if (permissionManager == null) {
+            throw new PermissionHandlerException("Could not get manager of PermissionsEx");
+        }
     }
 
     @Override
@@ -39,6 +42,12 @@ public class PermissionsExHandler implements PermissionHandler {
     @Override
     public boolean hasPermission(Player player, PermissionNode node) {
         PermissionUser user = permissionManager.getUser(player);
+        return user.has(node.getNode());
+    }
+
+    @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        PermissionUser user = permissionManager.getUser(name);
         return user.has(node.getNode());
     }
 

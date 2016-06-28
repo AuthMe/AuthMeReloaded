@@ -1,5 +1,14 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.StringUtils;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,16 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.annotations.VisibleForTesting;
-
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
 
 /**
  */
@@ -293,25 +292,35 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
+    public Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
+
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        try (PreparedStatement selectPst = con.prepareStatement(select);
-             PreparedStatement deletePst = con.prepareStatement(delete)) {
+        try (PreparedStatement selectPst = con.prepareStatement(select)) {
             selectPst.setLong(1, until);
             try (ResultSet rs = selectPst.executeQuery()) {
                 while (rs.next()) {
                     list.add(rs.getString(col.NAME));
                 }
             }
-            deletePst.setLong(1, until);
-            deletePst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
 
         return list;
+    }
+
+    @Override
+    public void purgeRecords(Set<String> toPurge) {
+        String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (PreparedStatement deletePst = con.prepareStatement(delete)) {
+            for (String name : toPurge) {
+                deletePst.setString(1, name);
+                deletePst.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
     }
 
     @Override
@@ -441,19 +450,6 @@ public class SQLite implements DataSource {
             logSqlException(ex);
         }
         return 0;
-    }
-
-    @Override
-    public void purgeBanned(Set<String> banned) {
-        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            for (String name : banned) {
-                pst.setString(1, name);
-                pst.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
     }
 
     @Override

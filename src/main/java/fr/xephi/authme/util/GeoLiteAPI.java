@@ -1,9 +1,11 @@
 package fr.xephi.authme.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.maxmind.geoip.LookupService;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.DataFolder;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,10 +21,22 @@ public class GeoLiteAPI {
         "[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com";
     private static final String GEOIP_URL =
         "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
-    private static LookupService lookupService;
-    private static Thread downloadTask;
+    private LookupService lookupService;
+    private Thread downloadTask;
 
-    private GeoLiteAPI() {
+    private final File dataFile;
+
+    @Inject
+    GeoLiteAPI(@DataFolder File dataFolder) {
+        this.dataFile = new File(dataFolder, "GeoIP.dat");
+        // Fires download of recent data or the initialization of the look up service
+        isDataAvailable();
+    }
+
+    @VisibleForTesting
+    GeoLiteAPI(@DataFolder File dataFolder, LookupService lookupService) {
+        this.dataFile = dataFolder;
+        this.lookupService = lookupService;
     }
 
     /**
@@ -30,20 +44,19 @@ public class GeoLiteAPI {
      *
      * @return True if the data is available, false otherwise.
      */
-    public synchronized static boolean isDataAvailable() {
+    private synchronized boolean isDataAvailable() {
         if (downloadTask != null && downloadTask.isAlive()) {
             return false;
         }
         if (lookupService != null) {
             return true;
         }
-        final File pluginFolder = AuthMe.getInstance().getDataFolder();
-        final File data = new File(pluginFolder, "GeoIP.dat");
-        if (data.exists()) {
-            boolean dataIsOld = (System.currentTimeMillis() - data.lastModified()) > TimeUnit.DAYS.toMillis(30);
+
+        if (dataFile.exists()) {
+            boolean dataIsOld = (System.currentTimeMillis() - dataFile.lastModified()) > TimeUnit.DAYS.toMillis(30);
             if (!dataIsOld) {
                 try {
-                    lookupService = new LookupService(data);
+                    lookupService = new LookupService(dataFile);
                     ConsoleLogger.info(LICENSE);
                     return true;
                 } catch (IOException e) {
@@ -51,13 +64,19 @@ public class GeoLiteAPI {
                     return false;
                 }
             } else {
-                if (!data.delete()) {
+                if (!dataFile.delete()) {
                     ConsoleLogger.showError("Failed to delete GeoLiteAPI database");
                 }
             }
         }
         // Ok, let's try to download the data file!
-        downloadTask = new Thread(new Runnable() {
+        downloadTask = createDownloadTask();
+        downloadTask.start();
+        return false;
+    }
+
+    private Thread createDownloadTask() {
+        return new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -69,7 +88,7 @@ public class GeoLiteAPI {
                     if (conn.getURL().toString().endsWith(".gz")) {
                         input = new GZIPInputStream(input);
                     }
-                    OutputStream output = new FileOutputStream(data);
+                    OutputStream output = new FileOutputStream(dataFile);
                     byte[] buffer = new byte[2048];
                     int length = input.read(buffer);
                     while (length >= 0) {
@@ -83,8 +102,6 @@ public class GeoLiteAPI {
                 }
             }
         });
-        downloadTask.start();
-        return false;
     }
 
     /**
@@ -94,7 +111,7 @@ public class GeoLiteAPI {
      *
      * @return two-character ISO 3166-1 alpha code for the country.
      */
-    public static String getCountryCode(String ip) {
+    public String getCountryCode(String ip) {
         if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
             return lookupService.getCountry(ip).getCode();
         }
@@ -108,7 +125,7 @@ public class GeoLiteAPI {
      *
      * @return The name of the country.
      */
-    public static String getCountryName(String ip) {
+    public String getCountryName(String ip) {
         if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
             return lookupService.getCountry(ip).getName();
         }

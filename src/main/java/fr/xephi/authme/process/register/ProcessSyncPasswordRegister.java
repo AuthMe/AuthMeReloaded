@@ -8,6 +8,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
@@ -27,7 +28,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.settings.properties.RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 /**
  */
@@ -41,6 +42,9 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private ProtocolLibService protocolLibService;
 
     @Inject
     private LimboCache limboCache;
@@ -92,21 +96,21 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         final String name = player.getName().toLowerCase();
         LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (limbo != null) {
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
-                plugin.tablistHider.sendTablist(player);
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN)) {
+                protocolLibService.sendTabList(player);
             }
 
             Utils.teleportToSpawn(player);
 
-            if (service.getProperty(HIDE_TABLIST_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 bukkitService.callEvent(event);
                 if (!event.isCancelled()) {
-                    plugin.inventoryProtector.sendInventoryPacket(player);
+                    player.updateInventory();
                 }
             }
 
-            limboCache.deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(player);
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {

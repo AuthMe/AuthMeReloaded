@@ -613,21 +613,18 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
+    public Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
+
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         try (Connection con = getConnection();
-             PreparedStatement selectPst = con.prepareStatement(select);
-             PreparedStatement deletePst = con.prepareStatement(delete)) {
+             PreparedStatement selectPst = con.prepareStatement(select)) {
             selectPst.setLong(1, until);
             try (ResultSet rs = selectPst.executeQuery()) {
                 while (rs.next()) {
                     list.add(rs.getString(col.NAME));
                 }
             }
-            deletePst.setLong(1, until);
-            deletePst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -742,10 +739,10 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void purgeBanned(Set<String> banned) {
+    public void purgeRecords(Set<String> toPurge) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            for (String name : banned) {
+            for (String name : toPurge) {
                 pst.setString(1, name);
                 pst.executeUpdate();
             }

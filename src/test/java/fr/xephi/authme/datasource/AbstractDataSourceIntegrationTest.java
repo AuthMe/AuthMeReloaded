@@ -5,13 +5,13 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
-import java.util.HashSet;
-import java.util.Set;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -227,7 +227,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         assumeThat(dataSource.getAccountsRegistered(), equalTo(2));
 
         // when
-        dataSource.purgeBanned(playersToDelete);
+        dataSource.purgeRecords(playersToDelete);
 
         // then
         assertThat(dataSource.getAccountsRegistered(), equalTo(1));

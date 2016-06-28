@@ -4,8 +4,11 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.events.LogoutEvent;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -34,7 +37,13 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
+    private ProtocolLibService protocolLibService;
+
+    @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
+
+    @Inject
+    private SessionManager sessionManager;
 
     ProcessSynchronousPlayerLogout() { }
 
@@ -48,21 +57,13 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
-    private void restoreSpeedEffect(Player player) {
-        if (service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setWalkSpeed(0.0F);
-            player.setFlySpeed(0.0F);
-        }
-    }
-
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
-        if (plugin.sessions.containsKey(name)) {
-            plugin.sessions.get(name).cancel();
-            plugin.sessions.remove(name);
+        if (sessionManager.hasSession(name)) {
+            sessionManager.cancelSession(name);
         }
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
-            plugin.inventoryProtector.sendBlankInventoryPacket(player);
+            protocolLibService.sendBlankInventoryPacket(player);
         }
 
         limboPlayerTaskManager.registerTimeoutTask(player);
@@ -75,8 +76,16 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
+
+        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
         player.setOp(false);
-        restoreSpeedEffect(player);
+        // Remove speed
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+            player.setFlySpeed(0.0f);
+            player.setWalkSpeed(0.0f);
+        }
+
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
         if (service.getProperty(HooksSettings.BUNGEECORD)) {

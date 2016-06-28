@@ -10,20 +10,22 @@ import org.bukkit.scheduler.BukkitTask;
 public class LimboPlayer {
 
     private final String name;
-    private final boolean fly;
-    private Location loc = null;
+    private final boolean canFly;
+    private final boolean operator;
+    private final String group;
+    private final Location loc;
+    private final float walkSpeed;
     private BukkitTask timeoutTask = null;
     private BukkitTask messageTask = null;
-    private boolean operator = false;
-    private String group;
 
     public LimboPlayer(String name, Location loc, boolean operator,
-                       String group, boolean fly) {
+                       String group, boolean fly, float walkSpeed) {
         this.name = name;
         this.loc = loc;
         this.operator = operator;
         this.group = group;
-        this.fly = fly;
+        this.canFly = fly;
+        this.walkSpeed = walkSpeed;
     }
 
     /**
@@ -62,8 +64,12 @@ public class LimboPlayer {
         return group;
     }
 
-    public boolean isFly() {
-        return fly;
+    public boolean isCanFly() {
+        return canFly;
+    }
+
+    public float getWalkSpeed() {
+        return walkSpeed;
     }
 
     /**

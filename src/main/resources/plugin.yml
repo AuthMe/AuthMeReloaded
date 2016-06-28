@@ -3,7 +3,7 @@ authors: [${bukkitplugin.authors}]
 website: ${project.url}
 description: ${project.description}
 main: ${bukkitplugin.main}
-version: ${project.versionCode}
+version: ${bukkitplugin.versionCode}
 softdepend:
     - Vault
     - PermissionsBukkit

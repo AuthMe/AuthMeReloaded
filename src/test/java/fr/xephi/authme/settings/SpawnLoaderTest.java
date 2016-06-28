@@ -4,14 +4,19 @@ import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.runner.BeforeInjecting;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
+import fr.xephi.authme.runner.InjectDelayed;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,15 +29,28 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link SpawnLoader}.
  */
+@RunWith(DelayedInjectionRunner.class)
 public class SpawnLoaderTest {
+
+    @InjectDelayed
+    private SpawnLoader spawnLoader;
+
+    @Mock
+    private NewSetting settings;
+
+    @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private PluginHooks pluginHooks;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+    @DataFolder
     private File testFolder;
-    private NewSetting settings;
 
-    @Before
+    @BeforeInjecting
     public void setup() throws IOException {
         // Copy test config into a new temporary folder
         testFolder = temporaryFolder.newFolder();
@@ -41,7 +59,6 @@ public class SpawnLoaderTest {
         Files.copy(source, destination);
 
         // Create a settings mock with default values
-        settings = mock(NewSetting.class);
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY))
             .willReturn("authme, essentials, multiverse, default");
     }
@@ -49,8 +66,6 @@ public class SpawnLoaderTest {
     @Test
     public void shouldSetSpawn() {
         // given
-        SpawnLoader spawnLoader =
-            new SpawnLoader(testFolder, settings, mock(PluginHooks.class), mock(DataSource.class));
         World world = mock(World.class);
         given(world.getName()).willReturn("new_world");
         Location newSpawn = new Location(world, 123, 45.0, -67.89);

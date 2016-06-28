@@ -22,7 +22,8 @@ public class FileUtils {
      * Copy a resource file (from the JAR) to the given file if it doesn't exist.
      *
      * @param destinationFile The file to check and copy to (outside of JAR)
-     * @param resourcePath Absolute path to the resource file (path to file within JAR)
+     * @param resourcePath    Absolute path to the resource file (path to file within JAR)
+     *
      * @return False if the file does not exist and could not be copied, true otherwise
      */
     public static boolean copyFileFromResource(File destinationFile, String resourcePath) {
@@ -48,5 +49,26 @@ public class FileUtils {
                 resourcePath, destinationFile.getPath()), e);
         }
         return false;
+    }
+
+    /**
+     * Delete a given directory and all its content.
+     *
+     * @param directory The directory to remove
+     */
+    public static void purgeDirectory(File directory) {
+        if (!directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File target : files) {
+            if (target.isDirectory()) {
+                purgeDirectory(target);
+            }
+            target.delete();
+        }
     }
 }

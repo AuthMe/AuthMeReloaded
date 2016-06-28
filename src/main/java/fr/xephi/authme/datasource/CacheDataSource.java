@@ -139,13 +139,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
-        Set<String> cleared = source.autoPurgeDatabase(until);
-        for (String name : cleared) {
-            cachedAuths.invalidate(name);
-        }
-
-        return cleared;
+    public Set<String> getRecordsToPurge(long until) {
+        return source.getRecordsToPurge(until);
     }
 
     @Override
@@ -190,8 +185,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void purgeBanned(final Set<String> banned) {
-        source.purgeBanned(banned);
+    public void purgeRecords(final Set<String> banned) {
+        source.purgeRecords(banned);
         cachedAuths.invalidateAll(banned);
     }
 

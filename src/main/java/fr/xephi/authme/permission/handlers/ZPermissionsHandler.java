@@ -14,7 +14,12 @@ public class ZPermissionsHandler implements PermissionHandler {
 
     private ZPermissionsService zPermissionsService;
 
-    public ZPermissionsHandler(ZPermissionsService zPermissionsService) {
+    public ZPermissionsHandler() throws PermissionHandlerException {
+        // Set the zPermissions service and make sure it's valid
+        ZPermissionsService zPermissionsService = Bukkit.getServicesManager().load(ZPermissionsService.class);
+        if (zPermissionsService == null) {
+            throw new PermissionHandlerException("Failed to get the ZPermissions service!");
+        }
         this.zPermissionsService = zPermissionsService;
     }
 
@@ -35,6 +40,15 @@ public class ZPermissionsHandler implements PermissionHandler {
             return perms.get(node.getNode());
         else
             return node.getDefaultPermission().evaluate(player);
+    }
+
+    @Override
+    public boolean hasPermission(String name, PermissionNode node) {
+        Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(null, null, name);
+        if (perms.containsKey(node.getNode()))
+            return perms.get(node.getNode());
+        else
+            return false;
     }
 
     @Override

@@ -2,9 +2,9 @@ package fr.xephi.authme.output;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
 
 /**
@@ -12,7 +12,8 @@ import org.apache.logging.log4j.message.Message;
  *
  * @author Xephi59
  */
-public class Log4JFilter implements Filter {
+@SuppressWarnings("serial")
+public class Log4JFilter extends AbstractFilter {
 
     /**
      * Constructor.
@@ -50,42 +51,30 @@ public class Log4JFilter implements Filter {
     }
 
     @Override
-    public Result filter(LogEvent record) {
-        if (record == null) {
-            return Result.NEUTRAL;
+    public Result filter(LogEvent event) {
+        Message candidate = null;
+        if(event != null) {
+            candidate = event.getMessage();
         }
-        return validateMessage(record.getMessage());
+        return validateMessage(candidate);
     }
 
     @Override
-    public Result filter(Logger arg0, Level arg1, Marker arg2, String message, Object... arg4) {
-        if (message == null) {        
-            return Result.NEUTRAL;        
+    public Result filter(Logger logger, Level level, Marker marker, Message msg, Throwable t) {
+        return validateMessage(msg);
+    }
+
+    @Override
+    public Result filter(Logger logger, Level level, Marker marker, String msg, Object... params) {
+        return validateMessage(msg);
+    }
+
+    @Override
+    public Result filter(Logger logger, Level level, Marker marker, Object msg, Throwable t) {
+        String candidate = null;
+        if(msg != null) {
+            candidate = msg.toString();
         }
-        return validateMessage(message);
+        return validateMessage(candidate);
     }
-
-    @Override
-    public Result filter(Logger arg0, Level arg1, Marker arg2, Object message, Throwable arg4) {
-        if (message == null) {        
-            return Result.NEUTRAL;        
-        }
-        return validateMessage(message.toString());
-    }
-
-    @Override
-    public Result filter(Logger arg0, Level arg1, Marker arg2, Message message, Throwable arg4) {
-        return validateMessage(message);
-    }
-
-    @Override
-    public Result getOnMatch() {
-        return Result.NEUTRAL;
-    }
-
-    @Override
-    public Result getOnMismatch() {
-        return Result.NEUTRAL;
-    }
-
 }

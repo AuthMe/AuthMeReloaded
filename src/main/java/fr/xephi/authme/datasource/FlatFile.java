@@ -229,11 +229,10 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
+    public Set<String> getRecordsToPurge(long until) {
         BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-        Set<String> cleared = new HashSet<>();
+        Set<String> list = new HashSet<>();
+
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -241,25 +240,51 @@ public class FlatFile implements DataSource {
                 String[] args = line.split(":");
                 if (args.length >= 4) {
                     if (Long.parseLong(args[3]) >= until) {
+                        list.add(args[0]);
+                        continue;
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return list;
+        } finally {
+            silentClose(br);
+        }
+
+        return list;
+    }
+
+    @Override
+    public void purgeRecords(Set<String> toPurge) {
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        ArrayList<String> lines = new ArrayList<>();
+
+        try {
+            br = new BufferedReader(new FileReader(source));
+            bw = new BufferedWriter(new FileWriter(source));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] args = line.split(":");
+                if (args.length >= 4) {
+                    if (toPurge.contains(args[0])) {
                         lines.add(line);
                         continue;
                     }
                 }
-                cleared.add(args[0]);
             }
-            bw = new BufferedWriter(new FileWriter(source));
+
             for (String l : lines) {
                 bw.write(l + "\n");
             }
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return cleared;
+            return;
         } finally {
             silentClose(br);
             silentClose(bw);
         }
-
-        return cleared;
     }
 
     @Override
@@ -414,37 +439,6 @@ public class FlatFile implements DataSource {
             }
         }
         return 0;
-    }
-
-    @Override
-    public void purgeBanned(Set<String> banned) {
-        BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                try {
-                    if (banned.contains(args[0])) {
-                        lines.add(line);
-                    }
-                } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {
-                }
-            }
-            bw = new BufferedWriter(new FileWriter(source));
-            for (String l : lines) {
-                bw.write(l + "\n");
-            }
-
-        } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-
-        } finally {
-            silentClose(br);
-            silentClose(bw);
-        }
     }
 
     @Override

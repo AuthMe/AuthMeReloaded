@@ -41,7 +41,7 @@ public class RecoverEmailCommand extends PlayerCommand {
         final String playerMail = arguments.get(0);
         final String playerName = player.getName();
 
-        if (plugin.mail == null) {
+        if (plugin.getMail() == null) {
             ConsoleLogger.showError("Mail API is not set");
             commandService.send(player, MessageKey.ERROR);
             return;
@@ -76,7 +76,7 @@ public class RecoverEmailCommand extends PlayerCommand {
             }
             auth.setPassword(hashNew);
             dataSource.updatePassword(auth);
-            plugin.mail.main(auth, thePass);
+            plugin.getMail().main(auth, thePass);
             commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
         } else {
             commandService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);

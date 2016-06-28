@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Functionality for constructor injection.
  */
-public class ConstructorInjection<T> implements Injection<T> {
+class ConstructorInjection<T> implements Injection<T> {
 
     private final Constructor<T> constructor;
 

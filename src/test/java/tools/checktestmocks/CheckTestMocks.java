@@ -3,9 +3,8 @@ package tools.checktestmocks;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
-import fr.xephi.authme.initialization.ConstructorInjection;
-import fr.xephi.authme.initialization.FieldInjection;
 import fr.xephi.authme.initialization.Injection;
+import fr.xephi.authme.initialization.InjectionHelper;
 import fr.xephi.authme.util.StringUtils;
 import org.mockito.Mock;
 import tools.utils.AutoToolTask;
@@ -139,11 +138,7 @@ public class CheckTestMocks implements AutoToolTask {
     }
 
     private static Set<Class<?>> getRealClassDependencies(Class<?> realClass) {
-        Injection<?> injection = ConstructorInjection.provide(realClass).get();
-        if (injection != null) {
-            return Sets.newHashSet(injection.getDependencies());
-        }
-        injection = FieldInjection.provide(realClass).get();
+        Injection<?> injection = InjectionHelper.getInjection(realClass);
         return injection == null
             ? Collections.<Class<?>>emptySet()
             : Sets.newHashSet(injection.getDependencies());

@@ -13,6 +13,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
@@ -23,22 +24,23 @@ import java.util.regex.Pattern;
  */
 public class ValidationService implements Reloadable {
 
-    private final NewSetting settings;
-    private final DataSource dataSource;
-    private final PermissionsManager permissionsManager;
+    @Inject
+    private NewSetting settings;
+    @Inject
+    private DataSource dataSource;
+    @Inject
+    private PermissionsManager permissionsManager;
+    @Inject
+    private GeoLiteAPI geoLiteApi;
+
     private Pattern passwordRegex;
 
-    @Inject
-    public ValidationService(NewSetting settings, DataSource dataSource, PermissionsManager permissionsManager) {
-        this.settings = settings;
-        this.dataSource = dataSource;
-        this.permissionsManager = permissionsManager;
-        reload();
-    }
+    ValidationService() { }
 
+    @PostConstruct
     @Override
     public void reload() {
-        passwordRegex = Pattern.compile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
+        passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
     }
 
     /**
@@ -105,7 +107,7 @@ public class ValidationService implements Reloadable {
             return true;
         }
 
-        String countryCode = GeoLiteAPI.getCountryCode(hostAddress);
+        String countryCode = geoLiteApi.getCountryCode(hostAddress);
         return validateWhitelistAndBlacklist(countryCode,
             ProtectionSettings.COUNTRIES_WHITELIST,
             ProtectionSettings.COUNTRIES_BLACKLIST);

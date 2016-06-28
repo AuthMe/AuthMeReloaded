@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
  * Fallback instantiation method for classes with an accessible no-args constructor
  * and no elements whatsoever annotated with {@link Inject} or {@link PostConstruct}.
  */
-public class InstantiationFallback<T> implements Injection<T> {
+class InstantiationFallback<T> implements Injection<T> {
 
     private final Constructor<T> constructor;
 

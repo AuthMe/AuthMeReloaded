@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,12 +27,12 @@ public class Messages implements SettingsDependent {
     /**
      * Constructor.
      *
-     * @param messageFile The messages file to use
-     * @param defaultFile The file with messages to use as default if missing
+     * @param settings The settings
      */
-    public Messages(File messageFile, String defaultFile) {
-        initializeFile(messageFile);
-        this.defaultFile = defaultFile;
+    @Inject
+    Messages(NewSetting settings) {
+        loadSettings(settings);
+        this.defaultFile = settings.getDefaultMessagesFile();
     }
 
     /**
@@ -118,10 +119,7 @@ public class Messages implements SettingsDependent {
 
     @Override
     public void loadSettings(NewSetting settings) {
-        initializeFile(settings.getMessagesFile());
-    }
-
-    private void initializeFile(File messageFile) {
+        File messageFile = settings.getMessagesFile();
         this.configuration = YamlConfiguration.loadConfiguration(messageFile);
         this.fileName = messageFile.getName();
     }

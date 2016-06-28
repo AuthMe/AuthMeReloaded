@@ -3,6 +3,9 @@ package fr.xephi.authme.listener;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.runner.BeforeInjecting;
+import fr.xephi.authme.runner.InjectDelayed;
+import fr.xephi.authme.runner.DelayedInjectionRunner;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -11,15 +14,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -32,9 +30,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link ListenerService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class ListenerServiceTest {
 
+    @InjectDelayed
     private ListenerService listenerService;
 
     @Mock
@@ -49,25 +48,11 @@ public class ListenerServiceTest {
     @Mock
     private PlayerCache playerCache;
 
-    @SuppressWarnings("rawtypes")
-    @Before
-    public void initializeTestSetup() {
+    @BeforeInjecting
+    public void initializeDefaultSettings() {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(
             Arrays.asList("npc1", "npc2", "npc3"));
-
-        // Note ljacqu 20160602: We use a hacky way to avoid having to instantiate the service in each test:
-        // the listenerService test is initialized as a mock that will answer to any method invocation by creating an
-        // actual service object (with the @Mock fields) and then invoking the method on that actual service.
-        // As long as there is no interaction with listenerService all of the mock setups will have effect.
-        listenerService = mock(ListenerService.class, new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Exception {
-                Method method = invocation.getMethod();
-                ListenerService service = new ListenerService(settings, dataSource, pluginHooks, playerCache);
-                return method.invoke(service, invocation.getArguments());
-            }
-        });
     }
 
     @Test
@@ -142,6 +127,7 @@ public class ListenerServiceTest {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
+        listenerService.loadSettings(settings);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);

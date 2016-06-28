@@ -2,12 +2,14 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -56,6 +58,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
+    private SessionManager sessionManager;
+
+    @Inject
     private PluginHooks pluginHooks;
 
     @Inject
@@ -63,6 +68,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private ProtocolLibService protocolLibService;
 
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
@@ -122,11 +130,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
             limboCache.updateLimboPlayer(player);
 
             // Protect inventory
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
-                    plugin.inventoryProtector.sendInventoryPacket(player);
+                    player.updateInventory();
                     if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                     }
@@ -135,9 +143,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
             // Session logic
             if (service.getProperty(PluginSettings.SESSIONS_ENABLED) && (playerCache.isAuthenticated(name) || database.isLogged(name))) {
-                if (plugin.sessions.containsKey(name)) {
-                    plugin.sessions.get(name).cancel();
-                    plugin.sessions.remove(name);
+                if (sessionManager.hasSession(name)) {
+                    sessionManager.cancelSession(name);
                 }
                 PlayerAuth auth = database.getAuth(name);
                 database.setUnlogged(name);

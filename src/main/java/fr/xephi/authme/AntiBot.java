@@ -24,7 +24,7 @@ public class AntiBot {
     private final Messages messages;
     private final PermissionsManager permissionsManager;
     private final BukkitService bukkitService;
-    public final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<String>();
+    private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<String>();
     private final CopyOnWriteArrayList<String> antibotPlayers = new CopyOnWriteArrayList<String>();
     private AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
@@ -110,6 +110,27 @@ public class AntiBot {
                 antibotPlayers.remove(player.getName().toLowerCase());
             }
         }, 15 * TICKS_PER_SECOND);
+    }
+
+    /**
+     * Returns whether the player was kicked because of activated antibot. The list is reset
+     * when antibot is deactivated.
+     *
+     * @param name the name to check
+     * @return true if the given name has been kicked because of Antibot
+     */
+    public boolean wasPlayerKicked(String name) {
+        return antibotKicked.contains(name.toLowerCase());
+    }
+
+    /**
+     * Adds a name to the list of players kicked by antibot. Should only be used when a player
+     * is determined to be kicked because of failed antibot verification.
+     *
+     * @param name the name to add
+     */
+    public void addPlayerKick(String name) {
+        antibotKicked.addIfAbsent(name.toLowerCase());
     }
 
     public enum AntiBotStatus {

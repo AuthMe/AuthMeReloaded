@@ -13,7 +13,7 @@ password_error_unsafe: '&fJe kunt geen onveilige wachtwoorden gebruiken'
 vb_nonActiv: Je accound is nog niet geactiveerd, controleer je mailbox!
 user_regged: '&cGebruikersnaam is al geregistreerd'
 usage_reg: '&cGebruik: /register <wachtwoord> <herhaalWachtwoord>'
-# TODO max_reg: Missing tags %reg_count, %max_acc, %reg_names
+# TODO max_reg: Missing tags %reg_count, %reg_names, %max_acc
 max_reg: Je hebt de maximale registraties van jouw account overschreden.
 no_perm: '&cGeen toegang!'
 error: 'Error: neem contact op met een administrator!'
@@ -59,11 +59,14 @@ antibot_auto_disabled: '[AuthMe] AntiBotMod automatisch uitgezet na %m minuten, 
 kick_antibot: 'AntiBot is aangezet! Wacht alsjeblieft enkele minuten voor je met de server verbindt.'
 # TODO two_factor_create: Missing tag %url
 two_factor_create: '&2Je geheime code is %code'
-# TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
 # TODO email_already_used: '&4The email address is already being used'
-# TODO denied_command: '&cIn order to use this command you must be authenticated!'
-# TODO same_ip_online: 'A player with the same IP is already in game!'
-# TODO reg_email_msg: '&3Please, register to the server with the command "/register <email> <confirmEmail>"'
 # TODO denied_chat: '&cIn order to chat you must be authenticated!'
 # TODO email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+# TODO same_ip_online: 'A player with the same IP is already in game!'
+# TODO denied_command: '&cIn order to use this command you must be authenticated!'
 # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
+# TODO accounts_owned_other: 'The player %name has %count accounts:'
+# TODO reg_email_msg: '&3Please, register to the server with the command "/register <email> <confirmEmail>"'
+# TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
+# TODO accounts_owned_self: 'You own %count accounts:'
+# TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'

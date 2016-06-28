@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Apr 07 17:17:20 CEST 2016. See commands/commands.tpl.md -->
+<!-- File auto-generated on Wed Jun 22 17:39:14 EDT 2016. See commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -55,9 +55,9 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/register** [password] [verifyPassword]: Command to register using AuthMeReloaded.
   <br />Requires `authme.player.register`
 - **/register help** [query]: View detailed help for /register commands.
-- **/unreg** &lt;password>: Command to unregister using AuthMeReloaded.
+- **/unregister** &lt;password>: Command to unregister using AuthMeReloaded.
   <br />Requires `authme.player.unregister`
-- **/unreg help** [query]: View detailed help for /unreg commands.
+- **/unregister help** [query]: View detailed help for /unregister commands.
 - **/changepassword** &lt;oldPassword> &lt;newPassword>: Command to change your password using AuthMeReloaded.
   <br />Requires `authme.player.changepassword`
 - **/changepassword help** [query]: View detailed help for /changepassword commands.
@@ -73,6 +73,7 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help for /captcha commands.
 
+
 ---
 
-This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Thu Apr 07 17:17:20 CEST 2016
+This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Wed Jun 22 17:39:14 EDT 2016

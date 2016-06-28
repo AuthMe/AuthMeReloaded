@@ -10,6 +10,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -51,6 +52,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
+    private ProtocolLibService protocolLibService;
+
+    @Inject
     private PluginManager pluginManager;
 
     @Inject
@@ -58,20 +62,11 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     ProcessSyncPlayerLogin() { }
 
-
-    private void restoreSpeedEffects(Player player) {
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setWalkSpeed(0.2F);
-            player.setFlySpeed(0.1F);
-        }
-    }
-
     private void restoreInventory(Player player) {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pluginManager.callEvent(event);
-        if (!event.isCancelled() && plugin.inventoryProtector != null) {
-            plugin.inventoryProtector.sendInventoryPacket(player);
+        if (!event.isCancelled()) {
+            player.updateInventory();
         }
     }
 
@@ -93,8 +88,18 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         if (limbo != null) {
             // Restore Op state and Permission Group
-            restoreOpState(player, limbo);
+            player.setOp(limbo.isOperator());
+            // Restore primary group
             service.setGroup(player, AuthGroupType.LOGGED_IN);
+            // Restore can-fly state
+            player.setAllowFlight(limbo.isCanFly());
+
+            // Restore speed
+            if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+                && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+                player.setWalkSpeed(limbo.getWalkSpeed());
+                player.setFlySpeed(0.2F);
+            }
 
             teleportationService.teleportOnLogin(player, auth, limbo);
 
@@ -106,12 +111,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
                 restoreInventory(player);
             }
 
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
-                plugin.tablistHider.sendTablist(player);
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN)) {
+                protocolLibService.sendTabList(player);
             }
 
             // Clean up no longer used temporary data
-            limboCache.deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(player);
         }
 
         // We can now display the join message (if delayed)
@@ -127,7 +132,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             AuthMePlayerListener.joinMessage.remove(name);
         }
 
-        restoreSpeedEffects(player);
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
@@ -135,9 +139,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         // The Login event now fires (as intended) after everything is processed
         bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
-        if (service.getProperty(HooksSettings.BUNGEECORD)) {
-            sendBungeeMessage(player);
-        }
+        sendBungeeMessage(player);
+
         // Login is done, display welcome message
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
             if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
@@ -157,20 +160,25 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         sendTo(player);
     }
 
-    private void restoreOpState(Player player, LimboPlayer limboPlayer) {
-        player.setOp(limboPlayer.isOperator());
-    }
-
     private void sendTo(Player player) {
-        if (!service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("Connect");
-            out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
-            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        if(!service.getProperty(HooksSettings.BUNGEECORD)) {
+            return;
         }
+        if(service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
+            return;
+        }
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
     private void sendBungeeMessage(Player player) {
+        if(!service.getProperty(HooksSettings.BUNGEECORD)) {
+            return;
+        }
+
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
@@ -178,5 +186,4 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         out.writeUTF("login;" + player.getName());
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
-
 }
