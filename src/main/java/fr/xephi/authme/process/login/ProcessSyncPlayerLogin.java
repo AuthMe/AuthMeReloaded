@@ -2,6 +2,7 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -19,6 +20,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
+
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -75,7 +77,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pluginManager.callEvent(event);
         if (!event.isCancelled()) {
-            player.updateInventory();
+            protocolLibService.sendInventoryPacket(player);
         }
     }
 

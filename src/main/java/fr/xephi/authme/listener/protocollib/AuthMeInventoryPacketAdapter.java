@@ -33,7 +33,6 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.logging.Level;
 
 public class AuthMeInventoryPacketAdapter extends PacketAdapter {
@@ -75,49 +74,7 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
     }
 
     public void sendInventoryPacket(Player player) {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);
-
-        // we are sending our own inventory
-        inventoryPacket.getIntegers().write(0, PLAYER_INVENTORY);
-
-        ItemStack[] playerCrafting = new ItemStack[CRAFTING_SIZE];
-        Arrays.fill(playerCrafting, new ItemStack(Material.AIR));
-        ItemStack[] armorContents = player.getInventory().getArmorContents();
-        ItemStack[] mainInventory = player.getInventory().getContents();
-
-        // bukkit saves the armor in reversed order
-        Collections.reverse(Arrays.asList(armorContents));
-
-        // same main inventory. The hotbar is at the beginning but it should be at the end of the array
-        ItemStack[] hotbar = Arrays.copyOfRange(mainInventory, 0, HOTBAR_SIZE);
-        ItemStack[] storedInventory = Arrays.copyOfRange(mainInventory, HOTBAR_SIZE, mainInventory.length);
-
-        // concat all parts of the inventory together
-        int inventorySize = CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE + HOTBAR_SIZE;
-        if (offHandSupported) {
-            inventorySize++;
-        }
-
-        ItemStack[] completeInventory = new ItemStack[inventorySize];
-
-        System.arraycopy(playerCrafting, 0, completeInventory, 0, CRAFTING_SIZE);
-        System.arraycopy(armorContents, 0, completeInventory, CRAFTING_SIZE, ARMOR_SIZE);
-
-        // storedInventory and hotbar
-        System.arraycopy(storedInventory, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE, MAIN_SIZE);
-        System.arraycopy(hotbar, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE, HOTBAR_SIZE);
-
-        if (offHandSupported) {
-            completeInventory[OFF_HAND_POSITION] = player.getInventory().getItemInOffHand();
-        }
-
-        inventoryPacket.getItemArrayModifier().write(0, completeInventory);
-        try {
-            protocolManager.sendServerPacket(player, inventoryPacket, false);
-        } catch (InvocationTargetException invocationExc) {
-            plugin.getLogger().log(Level.WARNING, "Error during inventory recovery", invocationExc);
-        }
+        player.updateInventory();
     }
 
     public void sendBlankInventoryPacket(Player player) {
