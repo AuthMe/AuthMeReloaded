@@ -83,6 +83,8 @@ public class JsonCache {
         LimboPlayer limboPlayer = new LimboPlayer(name, location, operator, group, canFly, walkSpeed);
         try {
             File file = new File(cacheDir, id + File.separator + "cache.json");
+            Files.createParentDirs(file);
+            Files.touch(file);
             Files.write(gson.toJson(limboPlayer), file, Charsets.UTF_8);
         } catch (IOException e) {
             ConsoleLogger.logException("Failed to write " + player.getName() + " cache.", e);
