@@ -28,9 +28,10 @@ public class LimboCache {
     private SpawnLoader spawnLoader;
 
     @Inject
-    LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader) {
+    LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader, JsonCache jsonCache) {
         this.permissionsManager = permissionsManager;
         this.spawnLoader = spawnLoader;
+        this.jsonCache = jsonCache;
     }
 
     /**

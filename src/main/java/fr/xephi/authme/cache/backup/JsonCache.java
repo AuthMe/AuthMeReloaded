@@ -39,7 +39,12 @@ public class JsonCache {
     private BukkitService bukkitService;
 
     @Inject
-    public JsonCache(@DataFolder File dataFolder) {
+    public JsonCache(@DataFolder File dataFolder, PermissionsManager permsMan,
+                     SpawnLoader spawnLoader, BukkitService bukkitService) {
+        this.permissionsManager = permsMan;
+        this.spawnLoader = spawnLoader;
+        this.bukkitService = bukkitService;
+
         cacheDir = new File(dataFolder, "cache");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
             ConsoleLogger.showError("Failed to create cache directory.");
