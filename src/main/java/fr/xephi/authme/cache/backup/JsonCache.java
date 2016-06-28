@@ -10,9 +10,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.util.BukkitService;
@@ -32,16 +32,15 @@ public class JsonCache {
     private final Gson gson;
     private final File cacheDir;
     @Inject
-    private AuthMe plugin;
-    @Inject
     private PermissionsManager permissionsManager;
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
     private BukkitService bukkitService;
 
-    public JsonCache() {
-        cacheDir = new File(plugin.getDataFolder(), "cache");
+    @Inject
+    public JsonCache(@DataFolder File dataFolder) {
+        cacheDir = new File(dataFolder, "cache");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
             ConsoleLogger.showError("Failed to create cache directory.");
         }

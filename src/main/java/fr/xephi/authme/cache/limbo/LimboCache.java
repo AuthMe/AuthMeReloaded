@@ -17,10 +17,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class LimboCache {
 
     private final ConcurrentHashMap<String, LimboPlayer> cache = new ConcurrentHashMap<>();
-    private final JsonCache jsonCache = new JsonCache();
+
+    @Inject
+    private JsonCache jsonCache;
 
     @Inject
     private PermissionsManager permissionsManager;
+
     @Inject
     private SpawnLoader spawnLoader;
 
@@ -28,10 +31,6 @@ public class LimboCache {
     LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader) {
         this.permissionsManager = permissionsManager;
         this.spawnLoader = spawnLoader;
-    }
-
-    public JsonCache getJsonCache() {
-        return jsonCache;
     }
 
     /**

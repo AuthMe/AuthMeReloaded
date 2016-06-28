@@ -5,6 +5,7 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.command.CommandHandler;
@@ -591,8 +592,11 @@ public class AuthMe extends JavaPlugin {
             }
             if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
                 && !newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-                limboCache.getJsonCache().writeCache(player);
-                player.teleport(spawnLoader.getSpawnLocation(player));
+                JsonCache jsonCache = initializer.getIfAvailable(JsonCache.class);
+                if (jsonCache != null) {
+                    jsonCache.writeCache(player);
+                    player.teleport(spawnLoader.getSpawnLocation(player));
+                }
             }
         }
         PlayerCache.getInstance().removePlayer(name);
