@@ -44,7 +44,8 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private SessionManager sessionManager;
 
-    AsynchronousQuit() { }
+    AsynchronousQuit() {
+    }
 
 
     public void processQuit(Player player, boolean isKick) {
@@ -72,9 +73,11 @@ public class AsynchronousQuit implements AsynchronousProcess {
             database.updateSession(auth);
         }
 
-        if (!isKick) {
-            if (plugin.isEnabled()) {
-                BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        //always unauthenticate the player - use session only for auto logins on the same ip
+        playerCache.removePlayer(name);
+
+        if (plugin.isEnabled() && service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
                 @Override
                 public void run() {
