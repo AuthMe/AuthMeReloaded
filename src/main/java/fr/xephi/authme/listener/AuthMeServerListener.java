@@ -1,6 +1,5 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
@@ -24,8 +23,6 @@ import javax.inject.Inject;
  */
 public class AuthMeServerListener implements Listener {
 
-    @Inject
-    private AuthMe plugin;
     @Inject
     private Messages messages;
     @Inject

@@ -10,7 +10,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Location;
@@ -76,22 +76,21 @@ public class AsynchronousQuit implements AsynchronousProcess {
             if (plugin.isEnabled()) {
                 BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
-                    @Override
-                    public void run() {
-                        postLogout(name);
-                    }
+                @Override
+                public void run() {
+                    postLogout(name);
+                }
 
-                }, Settings.getSessionTimeout * TICKS_PER_MINUTE);
+            }, service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * TICKS_PER_MINUTE);
 
-                sessionManager.addSession(name, task);
-            } else {
-                //plugin is disabled; we cannot schedule more tasks so run it directly here
-                postLogout(name);
-            }
+            sessionManager.addSession(name, task);
         } else {
-            playerCache.removePlayer(name);
-            database.setUnlogged(name);
+            //plugin is disabled; we cannot schedule more tasks so run it directly here
+            postLogout(name);
         }
+
+        //always update the database when the player quit the game
+        database.setUnlogged(name);
 
         if (plugin.isEnabled()) {
             syncProcessManager.processSyncPlayerQuit(player);
@@ -103,8 +102,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
     }
 
     private void postLogout(String name) {
-        PlayerCache.getInstance().removePlayer(name);
-        database.setUnlogged(name);
         sessionManager.removeSession(name);
     }
 }

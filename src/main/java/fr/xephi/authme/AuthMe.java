@@ -101,7 +101,6 @@ public class AuthMe extends JavaPlugin {
     // Plugin instance
     private static AuthMe plugin;
 
-    private NewAPI api;
     private Management management;
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
@@ -294,16 +293,16 @@ public class AuthMe extends JavaPlugin {
         // Some statically injected things
         initializer.register(PlayerCache.class, PlayerCache.getInstance());
 
-        messages = initializer.get(Messages.class);
-        permsMan = initializer.get(PermissionsManager.class);
-        bukkitService = initializer.get(BukkitService.class);
-        pluginHooks = initializer.get(PluginHooks.class);
+        messages         = initializer.get(Messages.class);
+        permsMan         = initializer.get(PermissionsManager.class);
+        bukkitService    = initializer.get(BukkitService.class);
+        pluginHooks      = initializer.get(PluginHooks.class);
         passwordSecurity = initializer.get(PasswordSecurity.class);
-        spawnLoader = initializer.get(SpawnLoader.class);
-        commandHandler = initializer.get(CommandHandler.class);
-        api = initializer.get(NewAPI.class);
-        management = initializer.get(Management.class);
-        geoLiteApi = initializer.get(GeoLiteAPI.class);
+        spawnLoader      = initializer.get(SpawnLoader.class);
+        commandHandler   = initializer.get(CommandHandler.class);
+        management       = initializer.get(Management.class);
+        geoLiteApi       = initializer.get(GeoLiteAPI.class);
+        initializer.get(NewAPI.class);
         initializer.get(API.class);
     }
 
