@@ -134,7 +134,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
-                    protocolLibService.sendInventoryPacket(player);
+                    player.updateInventory();
                     if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                     }

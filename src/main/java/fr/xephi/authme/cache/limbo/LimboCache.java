@@ -1,7 +1,6 @@
 package fr.xephi.authme.cache.limbo;
 
 import fr.xephi.authme.cache.backup.JsonCache;
-import fr.xephi.authme.cache.backup.PlayerData;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
@@ -41,36 +40,40 @@ public class LimboCache {
         Location location = player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
         boolean operator = player.isOp();
         boolean flyEnabled = player.getAllowFlight();
+        float walkSpeed = player.getWalkSpeed();
         String playerGroup = "";
         if (permissionsManager.hasGroupSupport()) {
             playerGroup = permissionsManager.getPrimaryGroup(player);
         }
 
         if (jsonCache.doesCacheExist(player)) {
-            PlayerData cache = jsonCache.readCache(player);
+            LimboPlayer cache = jsonCache.readCache(player);
             if (cache != null) {
+                location = cache.getLoc();
                 playerGroup = cache.getGroup();
-                operator = cache.getOperator();
-                flyEnabled = cache.isFlyEnabled();
+                operator = cache.isOperator();
+                flyEnabled = cache.isCanFly();
+                walkSpeed = cache.getWalkSpeed();
             }
+        } else {
+            jsonCache.writeCache(player);
         }
 
-
-        cache.put(name, new LimboPlayer(name, location, operator, playerGroup, flyEnabled));
+        cache.put(name, new LimboPlayer(name, location, operator, playerGroup, flyEnabled, walkSpeed));
     }
 
     /**
      * Method deleteLimboPlayer.
      *
-     * @param name String
+     * @param player Player player to remove.
      */
-    public void deleteLimboPlayer(String name) {
-        checkNotNull(name);
-        name = name.toLowerCase();
+    public void deleteLimboPlayer(Player player) {
+        String name = player.getName().toLowerCase();
         LimboPlayer cachedPlayer = cache.remove(name);
         if (cachedPlayer != null) {
             cachedPlayer.clearTasks();
         }
+        jsonCache.removeCache(player);
     }
 
     /**
@@ -104,7 +107,7 @@ public class LimboCache {
      */
     public void updateLimboPlayer(Player player) {
         checkNotNull(player);
-        deleteLimboPlayer(player.getName().toLowerCase());
+        deleteLimboPlayer(player);
         addLimboPlayer(player);
     }
 

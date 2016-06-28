@@ -5,7 +5,6 @@ import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -13,7 +12,6 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -74,18 +72,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
             database.updateSession(auth);
         }
 
-        boolean needToChange = false;
-        boolean isOp = false;
-
-        LimboPlayer limbo = limboCache.getLimboPlayer(name);
-        if (limbo != null) {
-            if (!StringUtils.isEmpty(limbo.getGroup())) {
-                Utils.addNormal(player, limbo.getGroup());
-            }
-            needToChange = true;
-            isOp = limbo.isOperator();
-            limboCache.deleteLimboPlayer(name);
-        }
         if (!isKick) {
             if (plugin.isEnabled()) {
                 BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
@@ -108,7 +94,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         }
 
         if (plugin.isEnabled()) {
-            syncProcessManager.processSyncPlayerQuit(player, isOp, needToChange);
+            syncProcessManager.processSyncPlayerQuit(player);
         }
         // remove player from cache
         if (database instanceof CacheDataSource) {

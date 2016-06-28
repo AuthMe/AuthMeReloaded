@@ -99,19 +99,6 @@ public class ProtocolLibService implements SettingsDependent {
     }
 
     /**
-     * Send a packet to the player to give them an inventory.
-     *
-     * @param player The player to send the packet to.
-     */
-    public void sendInventoryPacket(Player player) {
-        if (!isEnabled || inventoryPacketAdapter == null) {
-            return;
-        }
-
-        inventoryPacketAdapter.sendInventoryPacket(player);
-    }
-
-    /**
      * Send a packet to the player to give them a blank inventory.
      *
      * @param player The player to send the packet to.

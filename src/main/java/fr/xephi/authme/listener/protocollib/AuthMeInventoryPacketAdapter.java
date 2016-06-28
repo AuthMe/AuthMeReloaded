@@ -73,10 +73,6 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().removePacketListener(this);
     }
 
-    public void sendInventoryPacket(Player player) {
-        player.updateInventory();
-    }
-
     public void sendBlankInventoryPacket(Player player) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);

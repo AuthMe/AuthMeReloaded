@@ -2,7 +2,6 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -20,7 +19,6 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
-
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -77,7 +75,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pluginManager.callEvent(event);
         if (!event.isCancelled()) {
-            protocolLibService.sendInventoryPacket(player);
+            player.updateInventory();
         }
     }
 
@@ -99,8 +97,13 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         if (limbo != null) {
             // Restore Op state and Permission Group
-            restoreOpState(player, limbo);
+            player.setOp(limbo.isOperator());
+            // Restore primary group
             service.setGroup(player, AuthGroupType.LOGGED_IN);
+            // Restore can-fly state
+            player.setAllowFlight(limbo.isCanFly());
+            // Restore walk speed
+            player.setWalkSpeed(limbo.getWalkSpeed());
 
             teleportationService.teleportOnLogin(player, auth, limbo);
 
@@ -117,7 +120,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             }
 
             // Clean up no longer used temporary data
-            limboCache.deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(player);
         }
 
         // We can now display the join message (if delayed)
@@ -142,6 +145,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
         sendBungeeMessage(player);
+
         // Login is done, display welcome message
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
             if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
@@ -159,10 +163,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         forceCommands(player);
 
         sendTo(player);
-    }
-
-    private void restoreOpState(Player player, LimboPlayer limboPlayer) {
-        player.setOp(limboPlayer.isOperator());
     }
 
     private void sendTo(Player player) {

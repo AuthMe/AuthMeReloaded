@@ -71,11 +71,11 @@ public class SyncProcessManager {
         });
     }
 
-    public void processSyncPlayerQuit(final Player player, final boolean isOp, final boolean needToChange) {
+    public void processSyncPlayerQuit(final Player player) {
         runTask(new Runnable() {
             @Override
             public void run() {
-                processSyncronousPlayerQuit.processSyncQuit(player, isOp, needToChange);
+                processSyncronousPlayerQuit.processSyncQuit(player);
             }
         });
     }

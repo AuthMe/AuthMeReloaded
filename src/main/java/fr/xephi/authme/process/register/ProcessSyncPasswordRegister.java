@@ -106,11 +106,11 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 bukkitService.callEvent(event);
                 if (!event.isCancelled()) {
-                    protocolLibService.sendInventoryPacket(player);
+                    player.updateInventory();
                 }
             }
 
-            limboCache.deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(player);
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {

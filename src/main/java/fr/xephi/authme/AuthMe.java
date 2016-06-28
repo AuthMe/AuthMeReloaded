@@ -580,11 +580,12 @@ public class AuthMe extends JavaPlugin {
             if (!Settings.noTeleport) {
                 player.teleport(limbo.getLoc());
             }
-
             Utils.addNormal(player, limbo.getGroup());
             player.setOp(limbo.isOperator());
-            limbo.getTimeoutTask().cancel();
-            limboCache.deleteLimboPlayer(name);
+            player.setAllowFlight(limbo.isCanFly());
+            player.setWalkSpeed(limbo.getWalkSpeed());
+            limbo.clearTasks();
+            limboCache.deleteLimboPlayer(player);
         }
         PlayerCache.getInstance().removePlayer(name);
     }

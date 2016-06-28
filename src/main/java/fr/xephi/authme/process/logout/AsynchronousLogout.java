@@ -60,7 +60,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
             }
         });
         if (limboCache.hasLimboPlayer(name)) {
-            limboCache.deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(player);
         }
         limboCache.addLimboPlayer(player);
         service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
