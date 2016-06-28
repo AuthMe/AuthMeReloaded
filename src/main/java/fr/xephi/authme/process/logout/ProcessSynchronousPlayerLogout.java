@@ -8,6 +8,7 @@ import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -56,14 +57,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
-    private void restoreSpeedEffect(Player player) {
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-                && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setFlySpeed(0.0f);
-            player.setWalkSpeed(0.0f);
-        }
-    }
-
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
         if (sessionManager.hasSession(name)) {
@@ -83,8 +76,16 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
+
+        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
         player.setOp(false);
-        restoreSpeedEffect(player);
+        // Remove speed
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+            player.setFlySpeed(0.0f);
+            player.setWalkSpeed(0.0f);
+        }
+
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
         if (service.getProperty(HooksSettings.BUNGEECORD)) {

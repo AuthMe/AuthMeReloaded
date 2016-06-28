@@ -5,7 +5,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
@@ -59,11 +58,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
                 Utils.teleportToSpawn(player);
             }
         });
-        if (limboCache.hasLimboPlayer(name)) {
-            limboCache.deleteLimboPlayer(player);
-        }
-        limboCache.addLimboPlayer(player);
-        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
+        limboCache.updateLimboPlayer(player);
         syncProcessManager.processSyncPlayerLogout(player);
     }
 }

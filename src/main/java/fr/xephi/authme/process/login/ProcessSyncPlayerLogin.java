@@ -62,15 +62,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     ProcessSyncPlayerLogin() { }
 
-
-    private void restoreSpeedEffects(Player player) {
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setWalkSpeed(0.2F);
-            player.setFlySpeed(0.1F);
-        }
-    }
-
     private void restoreInventory(Player player) {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pluginManager.callEvent(event);
@@ -102,8 +93,13 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             service.setGroup(player, AuthGroupType.LOGGED_IN);
             // Restore can-fly state
             player.setAllowFlight(limbo.isCanFly());
-            // Restore walk speed
-            player.setWalkSpeed(limbo.getWalkSpeed());
+
+            // Restore speed
+            if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+                && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+                player.setWalkSpeed(limbo.getWalkSpeed());
+                player.setFlySpeed(0.2F);
+            }
 
             teleportationService.teleportOnLogin(player, auth, limbo);
 
@@ -136,7 +132,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             AuthMePlayerListener.joinMessage.remove(name);
         }
 
-        restoreSpeedEffects(player);
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }

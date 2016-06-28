@@ -30,6 +30,10 @@ public class LimboCache {
         this.spawnLoader = spawnLoader;
     }
 
+    public JsonCache getJsonCache() {
+        return jsonCache;
+    }
+
     /**
      * Add a limbo player.
      *
@@ -110,5 +114,4 @@ public class LimboCache {
         deleteLimboPlayer(player);
         addLimboPlayer(player);
     }
-
 }
