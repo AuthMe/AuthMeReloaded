@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -65,19 +64,6 @@ public final class ConsoleLogger {
             writeLog(message);
         }
 
-    }
-
-    public static void debug(String message) {
-        if (enableDebug) {
-            //creating and filling an exception is a expensive call
-            //TODO #419 20160601: ->so it should be removed as soon #419 is fixed
-            //logger.isLoggable does not work because the plugin logger is always ALL
-            logger.log(Level.FINE, message + ' ' + Thread.currentThread().getName(), new Exception());
-
-            if (useLogging) {
-                writeLog("Debug: " + Thread.currentThread().getName() + ':' + message);
-            }
-        }
     }
 
     /**
