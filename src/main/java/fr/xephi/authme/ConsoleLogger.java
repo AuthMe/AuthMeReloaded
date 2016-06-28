@@ -21,7 +21,6 @@ public final class ConsoleLogger {
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("[MM-dd HH:mm:ss]");
     private static Logger logger;
-    private static boolean enableDebug = false;
     private static boolean useLogging = false;
     private static File logFile;
     private static FileWriter fileWriter;
@@ -39,7 +38,6 @@ public final class ConsoleLogger {
 
     public static void setLoggingOptions(NewSetting settings) {
         ConsoleLogger.useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
-        ConsoleLogger.enableDebug = !settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         if (useLogging) {
             if (fileWriter == null) {
                 try {

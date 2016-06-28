@@ -28,9 +28,6 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     @Inject
     private PlayerCache playerCache;
-
-    @Inject
-    private SessionManager sessionManager;
     
     @Inject
     private NewSetting settings;
