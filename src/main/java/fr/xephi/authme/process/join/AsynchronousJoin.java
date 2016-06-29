@@ -66,9 +66,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private ProtocolLibService protocolLibService;
-
-    @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
     AsynchronousJoin() {

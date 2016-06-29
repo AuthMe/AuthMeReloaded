@@ -20,9 +20,6 @@ public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
     private JsonCache jsonCache;
 
     @Inject
-    private DataSource database;
-
-    @Inject
     private ProcessService service;
 
     @Inject

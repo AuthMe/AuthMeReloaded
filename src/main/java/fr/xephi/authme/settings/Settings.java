@@ -18,10 +18,7 @@ public final class Settings {
     public static List<String> getUnrestrictedName;
     public static boolean isPermissionCheckEnabled;
     public static boolean isTeleportToSpawnEnabled;
-    public static boolean isSessionsEnabled;
     public static boolean isAllowRestrictedIp;
-    public static boolean isSaveQuitLocationEnabled;
-    public static boolean protectInventoryBeforeLogInEnabled;
     public static boolean isStopEnabled;
     public static boolean reloadSupport;
     public static boolean noTeleport;
@@ -31,7 +28,6 @@ public final class Settings {
     public static String getRegisteredGroup;
     public static String defaultWorld;
     public static String crazyloginFileName;
-    public static int getSessionTimeout;
     public static int getNonActivatedGroup;
     private static FileConfiguration configFile;
 
@@ -48,17 +44,13 @@ public final class Settings {
     private static void loadVariables() {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
-        isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
-        getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
         isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
-        isSaveQuitLocationEnabled = load(RestrictionSettings.SAVE_QUIT_LOCATION);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
         getUnrestrictedName = load(RestrictionSettings.UNRESTRICTED_NAMES);
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
-        protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
