@@ -3,7 +3,6 @@ package fr.xephi.authme.process.quit;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.RestrictionSettings;

@@ -6,6 +6,8 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
+
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -51,18 +53,18 @@ public class AuthGroupHandler {
         switch (group) {
             case UNREGISTERED:
                 // Remove the other group type groups, set the current group
-                permissionsManager.removeGroups(player, Arrays.asList(Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
+                permissionsManager.removeGroups(player, Arrays.asList(Settings.getRegisteredGroup, settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP)));
                 return permissionsManager.addGroup(player, Settings.unRegisteredGroup);
 
             case REGISTERED:
                 // Remove the other group type groups, set the current group
-                permissionsManager.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getUnloggedinGroup));
+                permissionsManager.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP)));
                 return permissionsManager.addGroup(player, Settings.getRegisteredGroup);
 
             case NOT_LOGGED_IN:
                 // Remove the other group type groups, set the current group
                 permissionsManager.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup));
-                return permissionsManager.addGroup(player, Settings.getUnloggedinGroup);
+                return permissionsManager.addGroup(player, settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP));
 
             case LOGGED_IN:
                 // Get the limbo player data
@@ -76,7 +78,7 @@ public class AuthGroupHandler {
 
                 // Remove the other group types groups, set the real group
                 permissionsManager.removeGroups(player,
-                    Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, Settings.getUnloggedinGroup)
+                    Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP))
                 );
                 return permissionsManager.addGroup(player, realGroup);
             default:

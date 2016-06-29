@@ -9,7 +9,6 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
