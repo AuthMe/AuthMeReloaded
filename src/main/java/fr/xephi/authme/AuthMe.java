@@ -293,15 +293,15 @@ public class AuthMe extends JavaPlugin {
         // Some statically injected things
         initializer.register(PlayerCache.class, PlayerCache.getInstance());
 
-        messages         = initializer.get(Messages.class);
-        permsMan         = initializer.get(PermissionsManager.class);
-        bukkitService    = initializer.get(BukkitService.class);
-        pluginHooks      = initializer.get(PluginHooks.class);
+        messages = initializer.get(Messages.class);
+        permsMan = initializer.get(PermissionsManager.class);
+        bukkitService = initializer.get(BukkitService.class);
+        pluginHooks = initializer.get(PluginHooks.class);
         passwordSecurity = initializer.get(PasswordSecurity.class);
-        spawnLoader      = initializer.get(SpawnLoader.class);
-        commandHandler   = initializer.get(CommandHandler.class);
-        management       = initializer.get(Management.class);
-        geoLiteApi       = initializer.get(GeoLiteAPI.class);
+        spawnLoader = initializer.get(SpawnLoader.class);
+        commandHandler = initializer.get(CommandHandler.class);
+        management = initializer.get(Management.class);
+        geoLiteApi = initializer.get(GeoLiteAPI.class);
         initializer.get(NewAPI.class);
         initializer.get(API.class);
     }
@@ -577,24 +577,26 @@ public class AuthMe extends JavaPlugin {
             player.setOp(limbo.isOperator());
             player.setAllowFlight(limbo.isCanFly());
             player.setWalkSpeed(limbo.getWalkSpeed());
-            limbo.clearTasks();
-            limboCache.deleteLimboPlayer(player);
-        }
-        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
-            if (Settings.isSaveQuitLocationEnabled) {
-
+            if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)) {
+                limboCache.removeLimboPlayer(player);
+            } else {
+                limboCache.deleteLimboPlayer(player);
+            }
+        } else {
+            if (newSettings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
+                Location loc =
+                    player.isOnline() && player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
                 final PlayerAuth auth = PlayerAuth.builder()
                     .name(player.getName().toLowerCase())
                     .realName(player.getName())
-                    .location(player.getLocation()).build();
+                    .location(loc).build();
                 database.updateQuitLoc(auth);
             }
             if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
                 && !newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 JsonCache jsonCache = initializer.getIfAvailable(JsonCache.class);
-                if (jsonCache != null) {
+                if (jsonCache != null && !jsonCache.doesCacheExist(player)) {
                     jsonCache.writeCache(player);
-                    player.teleport(spawnLoader.getSpawnLocation(player));
                 }
             }
         }

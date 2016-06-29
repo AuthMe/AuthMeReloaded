@@ -31,16 +31,13 @@ public class JsonCache {
 
     private final Gson gson;
     private final File cacheDir;
-    @Inject
     private PermissionsManager permissionsManager;
-    @Inject
     private SpawnLoader spawnLoader;
-    @Inject
     private BukkitService bukkitService;
 
     @Inject
-    public JsonCache(@DataFolder File dataFolder, PermissionsManager permsMan,
-                     SpawnLoader spawnLoader, BukkitService bukkitService) {
+    JsonCache(@DataFolder File dataFolder, PermissionsManager permsMan,
+              SpawnLoader spawnLoader, BukkitService bukkitService) {
         this.permissionsManager = permsMan;
         this.spawnLoader = spawnLoader;
         this.bukkitService = bukkitService;
@@ -75,7 +72,8 @@ public class JsonCache {
     public void writeCache(Player player) {
         String id = Utils.getUUIDorName(player);
         String name = player.getName().toLowerCase();
-        Location location = player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
+        Location location =
+            player.isOnline() && player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
         String group = permissionsManager.getPrimaryGroup(player);
         boolean operator = player.isOp();
         boolean canFly = player.getAllowFlight();

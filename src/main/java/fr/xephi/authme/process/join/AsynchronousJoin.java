@@ -22,7 +22,6 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
@@ -64,9 +63,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private PluginHooks pluginHooks;
 
     @Inject
-    private TeleportationService teleportationService;
-
-    @Inject
     private BukkitService bukkitService;
 
     @Inject
@@ -75,7 +71,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
-    AsynchronousJoin() { }
+    AsynchronousJoin() {
+    }
 
 
     public void processJoin(final Player player) {
@@ -122,12 +119,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
+        limboCache.updateLimboPlayer(player);
+
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
             service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
-            teleportationService.teleportOnJoin(player);
-            limboCache.updateLimboPlayer(player);
 
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
@@ -166,13 +163,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (!service.getProperty(RegistrationSettings.FORCE)) {
                 return;
             }
-
-            teleportationService.teleportOnJoin(player);
-        }
-        // The user is not logged in
-
-        if (!limboCache.hasLimboPlayer(name)) {
-            limboCache.addLimboPlayer(player);
         }
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
@@ -211,11 +201,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
     /**
      * Returns whether the name is restricted based on the restriction settings.
      *
-     * @param name The name to check
-     * @param ip The IP address of the player
+     * @param name   The name to check
+     * @param ip     The IP address of the player
      * @param domain The hostname of the IP address
+     *
      * @return True if the name is restricted (IP/domain is not allowed for the given name),
-     *         false if the restrictions are met or if the name has no restrictions to it
+     * false if the restrictions are met or if the name has no restrictions to it
      */
     private boolean isNameRestricted(String name, String ip, String domain) {
         if (!service.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)) {
@@ -242,7 +233,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * settings and permissions). If this is the case, the player is kicked.
      *
      * @param player the player to verify
-     * @param ip the ip address of the player
+     * @param ip     the ip address of the player
+     *
      * @return true if the verification is OK (no infraction), false if player has been kicked
      */
     private boolean validatePlayerCountForIp(final Player player, String ip) {

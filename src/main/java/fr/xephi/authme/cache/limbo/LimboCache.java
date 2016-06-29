@@ -18,13 +18,8 @@ public class LimboCache {
 
     private final ConcurrentHashMap<String, LimboPlayer> cache = new ConcurrentHashMap<>();
 
-    @Inject
     private JsonCache jsonCache;
-
-    @Inject
     private PermissionsManager permissionsManager;
-
-    @Inject
     private SpawnLoader spawnLoader;
 
     @Inject
@@ -67,17 +62,26 @@ public class LimboCache {
     }
 
     /**
-     * Method deleteLimboPlayer.
+     * Remove LimboPlayer and delete cache.json from disk.
      *
      * @param player Player player to remove.
      */
     public void deleteLimboPlayer(Player player) {
+        removeLimboPlayer(player);
+        jsonCache.removeCache(player);
+    }
+
+    /**
+     * Remove LimboPlayer from cache, without deleting cache.json file.
+     *
+     * @param player Player player to remove.
+     */
+    public void removeLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
         LimboPlayer cachedPlayer = cache.remove(name);
         if (cachedPlayer != null) {
             cachedPlayer.clearTasks();
         }
-        jsonCache.removeCache(player);
     }
 
     /**
@@ -111,7 +115,7 @@ public class LimboCache {
      */
     public void updateLimboPlayer(Player player) {
         checkNotNull(player);
-        deleteLimboPlayer(player);
+        removeLimboPlayer(player);
         addLimboPlayer(player);
     }
 }

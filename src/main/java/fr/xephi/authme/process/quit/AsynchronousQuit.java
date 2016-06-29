@@ -4,12 +4,12 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.Utils;
@@ -36,13 +36,13 @@ public class AsynchronousQuit implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
-    private LimboCache limboCache;
-
-    @Inject
     private SyncProcessManager syncProcessManager;
 
     @Inject
     private SessionManager sessionManager;
+
+    @Inject
+    private SpawnLoader spawnLoader;
 
     AsynchronousQuit() {
     }
@@ -55,10 +55,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
 
         String ip = Utils.getPlayerIp(player);
-
         if (playerCache.isAuthenticated(name)) {
             if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-                Location loc = player.getLocation();
+                Location loc = player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(name).location(loc)
                     .realName(player.getName()).build();
