@@ -69,22 +69,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         limboPlayerTaskManager.registerTimeoutTask(player);
         limboPlayerTaskManager.registerMessageTask(name, true);
 
-        if (player.isInsideVehicle() && player.getVehicle() != null) {
-            player.getVehicle().eject();
-        }
-        final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
-        }
-
-        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
-        player.setOp(false);
-        // Remove speed
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setFlySpeed(0.0f);
-            player.setWalkSpeed(0.0f);
-        }
+        applyLogoutEffect(player);
 
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
@@ -93,6 +78,30 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         }
         service.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
+    }
+
+    private void applyLogoutEffect(Player player) {
+        // dismount player
+        if (player.isInsideVehicle() && player.getVehicle() != null) {
+            player.getVehicle().eject();
+        }
+
+        // Apply Blindness effect
+        final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
+        }
+
+        // Set player's data to unauthenticated
+        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
+        player.setOp(false);
+        player.setAllowFlight(false);
+        // Remove speed
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+            player.setFlySpeed(0.0f);
+            player.setWalkSpeed(0.0f);
+        }
     }
 
 }

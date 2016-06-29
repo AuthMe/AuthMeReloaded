@@ -41,8 +41,12 @@ public class TeleportationService implements Reloadable {
 
     private Set<String> spawnOnLoginWorlds;
 
-    TeleportationService() { }
+    TeleportationService() {
+    }
 
+    private static boolean isEventValid(AbstractTeleportEvent event) {
+        return !event.isCancelled() && event.getTo() != null && event.getTo().getWorld() != null;
+    }
 
     @PostConstruct
     @Override
@@ -51,16 +55,21 @@ public class TeleportationService implements Reloadable {
         spawnOnLoginWorlds = new HashSet<>(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS));
     }
 
-    public void teleportOnJoin(final Player player) {
+    public void teleportOnLoginEvent(final Player player) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-            return;
-        } else if (teleportToFirstSpawn(player)) {
             return;
         }
 
         if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN) || mustForceSpawnAfterLogin(player.getWorld().getName())) {
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
+    }
+
+    public void teleportOnJoin(final Player player) {
+        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+            return;
+        }
+        teleportToFirstSpawn(player);
     }
 
     public void teleportOnLogin(final Player player, PlayerAuth auth, LimboPlayer limbo) {
@@ -122,7 +131,7 @@ public class TeleportationService implements Reloadable {
      * by external listeners). Note that not teleportation is performed if the event's location is empty.
      *
      * @param player the player to teleport
-     * @param event the event to emit and according to which to teleport
+     * @param event  the event to emit and according to which to teleport
      */
     private void performTeleportation(final Player player, final AbstractTeleportEvent event) {
         bukkitService.scheduleSyncDelayedTask(new Runnable() {
@@ -134,9 +143,5 @@ public class TeleportationService implements Reloadable {
                 }
             }
         });
-    }
-
-    private static boolean isEventValid(AbstractTeleportEvent event) {
-        return !event.isCancelled() && event.getTo() != null && event.getTo().getWorld() != null;
     }
 }
