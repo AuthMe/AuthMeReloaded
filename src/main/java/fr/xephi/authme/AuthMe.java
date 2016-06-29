@@ -67,7 +67,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -80,6 +79,9 @@ import java.util.logging.Logger;
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
+import java.util.Iterator;
+import java.util.logging.Level;
+import org.bukkit.scheduler.BukkitWorker;
 
 /**
  * The AuthMe main class.
@@ -452,35 +454,50 @@ public class AuthMe extends JavaPlugin {
         if (newSettings != null) {
             new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
-        final AuthMe pluginInstance = this;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 List<Integer> pendingTasks = new ArrayList<>();
-                for (BukkitTask pendingTask : getServer().getScheduler().getPendingTasks()) {
-                    if (pendingTask.getOwner().equals(pluginInstance) && !pendingTask.isSync()) {
+                //returns only the async takss
+                for (BukkitWorker pendingTask : getServer().getScheduler().getActiveWorkers()) {
+                    if (pendingTask.getOwner().equals(AuthMe.this)
+                            //it's not a peridic task
+                            && !getServer().getScheduler().isQueued(pendingTask.getTaskId())) {
                         pendingTasks.add(pendingTask.getTaskId());
                     }
                 }
-                getLogger().info("Waiting for " + pendingTasks.size() + " tasks to finish");
+
+                getLogger().log(Level.INFO, "Waiting for {0} tasks to finish", pendingTasks.size());
                 int progress = 0;
-                for (int taskId : pendingTasks) {
-                    int maxTries = 5;
-                    while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
-                        if (maxTries <= 0) {
-                            getLogger().info("Async task " + taskId + " times out after to many tries");
-                            break;
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ignored) {
-                        }
-                        maxTries--;
+
+                //one minute + some time checking the running state
+                int tries = 60;
+                while (!pendingTasks.isEmpty()) {
+                    if (tries <= 0) {
+                        getLogger().log(Level.INFO, "Async tasks times out after to many tries {0}", pendingTasks);
+                        break;
                     }
 
-                    progress++;
-                    getLogger().info("Progress: " + progress + " / " + pendingTasks.size());
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+
+                    for (Iterator<Integer> iterator = pendingTasks.iterator(); iterator.hasNext();) {
+                        int taskId = iterator.next();
+                        if (!getServer().getScheduler().isCurrentlyRunning(taskId)) {
+                            iterator.remove();
+                            progress++;
+                            getLogger().log(Level.INFO, "Progress: {0} / {1}", new Object[]{progress, pendingTasks.size()});
+                        }
+                    }
+
+                    tries--;
                 }
+
                 if (database != null) {
                     database.close();
                 }
