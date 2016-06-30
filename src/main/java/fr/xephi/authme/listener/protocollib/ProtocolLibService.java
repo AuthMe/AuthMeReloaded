@@ -104,11 +104,9 @@ public class ProtocolLibService implements SettingsDependent {
      * @param player The player to send the packet to.
      */
     public void sendInventoryPacket(Player player) {
-        if (!isEnabled || inventoryPacketAdapter == null) {
-            return;
+        if (isEnabled && inventoryPacketAdapter != null) {
+            inventoryPacketAdapter.sendInventoryPacket(player);
         }
-
-        inventoryPacketAdapter.sendInventoryPacket(player);
     }
 
     /**
@@ -117,11 +115,9 @@ public class ProtocolLibService implements SettingsDependent {
      * @param player The player to send the packet to.
      */
     public void sendBlankInventoryPacket(Player player) {
-        if (!isEnabled || inventoryPacketAdapter == null) {
-            return;
+        if (isEnabled && inventoryPacketAdapter != null) {
+            inventoryPacketAdapter.sendBlankInventoryPacket(player);
         }
-
-        inventoryPacketAdapter.sendBlankInventoryPacket(player);
     }
 
     /**
@@ -130,11 +126,9 @@ public class ProtocolLibService implements SettingsDependent {
      * @param player The player to send the packet to.
      */
     public void sendTabList(Player player) {
-        if (!isEnabled || tablistPacketAdapter == null) {
-            return;
+        if (isEnabled && tablistPacketAdapter != null) {
+            tablistPacketAdapter.sendTablist(player);
         }
-
-        tablistPacketAdapter.sendTablist(player);
     }
 
     @Override

@@ -6,16 +6,12 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FieldAccessException;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
-import javax.inject.Inject;
+class AuthMeTabCompletePacketAdapter extends PacketAdapter {
 
-public class AuthMeTabCompletePacketAdapter extends PacketAdapter {
-
-    @Inject
     public AuthMeTabCompletePacketAdapter(AuthMe plugin) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.TAB_COMPLETE);
     }

@@ -67,21 +67,21 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitWorker;
 
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
-import java.util.Iterator;
-import java.util.logging.Level;
-import org.bukkit.scheduler.BukkitWorker;
 
 /**
  * The AuthMe main class.
@@ -114,10 +114,6 @@ public class AuthMe extends JavaPlugin {
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
     private GeoLiteAPI geoLiteApi;
-
-    /*
-     * Private instances (mail and ProtocolLib)
-     */
     private SendMailSSL mail;
 
     /**

@@ -21,5 +21,5 @@ This can be found by running `/authme version`
 ### Error Log:
 Pastebin/Hastebin/Gist link of the error logo or stacktrace (if any)
 
-### COnfiguration:
-Pastebin/Hastebin/Gist link of your config.yml file (remember to delete any sesible data)
+### Configuration:
+Pastebin/Hastebin/Gist link of your config.yml file (remember to delete any sensible data)
