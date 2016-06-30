@@ -44,10 +44,6 @@ public class TeleportationService implements Reloadable {
     TeleportationService() {
     }
 
-    private static boolean isEventValid(AbstractTeleportEvent event) {
-        return !event.isCancelled() && event.getTo() != null && event.getTo().getWorld() != null;
-    }
-
     @PostConstruct
     @Override
     public void reload() {
@@ -55,7 +51,18 @@ public class TeleportationService implements Reloadable {
         spawnOnLoginWorlds = new HashSet<>(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS));
     }
 
-    public void teleportOnLoginEvent(final Player player) {
+    /**
+     * Teleports the player according to the settings when he joins.
+     * <p>
+     * Note: this is triggered by Bukkit's PlayerLoginEvent, during which you cannot use
+     * {@link Player#hasPlayedBefore()}: it always returns {@code false}. We trigger teleportation
+     * from the PlayerLoginEvent and not the PlayerJoinEvent to ensure that the location is overridden
+     * as fast as possible (cf. <a href="https://github.com/Xephi/AuthMeReloaded/issues/682">AuthMe #682</a>).
+     *
+     * @param player the player to process
+     * @see <a href="https://bukkit.atlassian.net/browse/BUKKIT-3521">BUKKIT-3521: Player.hasPlayedBefore() always false</a>
+     */
+    public void teleportOnJoin(final Player player) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }
@@ -65,13 +72,30 @@ public class TeleportationService implements Reloadable {
         }
     }
 
-    public void teleportOnJoin(final Player player) {
-        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+    /**
+     * Teleports the player to the first spawn if he is new and the first spawn is configured.
+     *
+     * @param player the player to process
+     */
+    public void teleportNewPlayerToFirstSpawn(final Player player) {
+        if (settings.getProperty(RestrictionSettings.NO_TELEPORT) || player.hasPlayedBefore()) {
             return;
         }
-        teleportToFirstSpawn(player);
+        Location firstSpawn = spawnLoader.getFirstSpawn();
+        if (firstSpawn == null) {
+            return;
+        }
+
+        performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
     }
 
+    /**
+     * Teleports the player according to the settings after having successfully logged in.
+     *
+     * @param player the player
+     * @param auth corresponding PlayerAuth object
+     * @param limbo corresponding LimboPlayer object
+     */
     public void teleportOnLogin(final Player player, PlayerAuth auth, LimboPlayer limbo) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
@@ -104,19 +128,6 @@ public class TeleportationService implements Reloadable {
         return new Location(world, auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
     }
 
-    private boolean teleportToFirstSpawn(final Player player) {
-        if (player.hasPlayedBefore()) {
-            return false;
-        }
-        Location firstSpawn = spawnLoader.getFirstSpawn();
-        if (firstSpawn == null) {
-            return false;
-        }
-
-        performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
-        return true;
-    }
-
     private void teleportBackFromSpawn(final Player player, final Location location) {
         performTeleportation(player, new AuthMeTeleportEvent(player, location));
     }
@@ -143,5 +154,9 @@ public class TeleportationService implements Reloadable {
                 }
             }
         });
+    }
+
+    private static boolean isEventValid(AbstractTeleportEvent event) {
+        return !event.isCancelled() && event.getTo() != null && event.getTo().getWorld() != null;
     }
 }

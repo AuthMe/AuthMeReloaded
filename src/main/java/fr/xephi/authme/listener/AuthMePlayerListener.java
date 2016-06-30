@@ -194,7 +194,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        teleportationService.teleportOnJoin(player);
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
         management.performJoin(player);
     }
 
@@ -233,7 +233,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         antiBot.handlePlayerJoin(player);
-        teleportationService.teleportOnLoginEvent(player);
+        teleportationService.teleportOnJoin(player);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

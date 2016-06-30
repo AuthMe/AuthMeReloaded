@@ -38,7 +38,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link TeleportationService}.
  */
-// TODO: Correct me!
 @RunWith(MockitoJUnitRunner.class)
 public class TeleportationServiceTest {
 
@@ -56,20 +55,6 @@ public class TeleportationServiceTest {
 
     @Mock
     private PlayerCache playerCache;
-
-    // We check that the World in Location is set, this method creates a mock World in Location for us
-    private static Location mockLocation() {
-        Location location = mock(Location.class);
-        given(location.getWorld()).willReturn(mock(World.class));
-        return location;
-    }
-
-    private static PlayerAuth createAuthWithLocation() {
-        return PlayerAuth.builder()
-            .name("bobby")
-            .locX(123.45).locY(23.4).locZ(-4.567)
-            .build();
-    }
 
     @Before
     public void setUpForcedWorlds() {
@@ -107,7 +92,7 @@ public class TeleportationServiceTest {
         given(spawnLoader.getFirstSpawn()).willReturn(firstSpawn);
 
         // when
-        teleportationService.teleportOnJoin(player);
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
         runSyncDelayedTask(bukkitService);
 
         // then
@@ -122,13 +107,12 @@ public class TeleportationServiceTest {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         Player player = mock(Player.class);
-        given(player.hasPlayedBefore()).willReturn(true);
         given(player.isOnline()).willReturn(true);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
 
         // when
-        teleportationService.teleportOnLoginEvent(player);
+        teleportationService.teleportOnJoin(player);
         runSyncDelayedTask(bukkitService);
 
         // then
@@ -150,8 +134,7 @@ public class TeleportationServiceTest {
         given(spawnLoader.getFirstSpawn()).willReturn(null);
 
         // when
-        teleportationService.teleportOnLoginEvent(player);
-        teleportationService.teleportOnJoin(player);
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
 
         // then
         verify(player, never()).teleport(any(Location.class));
@@ -161,10 +144,39 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerDueToForcedWorld() {
+    public void shouldNotTeleportPlayerToFirstSpawnIfNoTeleportEnabled() {
+        // given
+        Player player = mock(Player.class);
+        given(player.hasPlayedBefore()).willReturn(false);
+        given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
+
+        // when
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
+
+        // then
+        verify(player, never()).teleport(any(Location.class));
+        verifyZeroInteractions(bukkitService);
+    }
+
+    @Test
+    public void shouldNotTeleportNotNewPlayerToFirstSpawn() {
         // given
         Player player = mock(Player.class);
         given(player.hasPlayedBefore()).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
+
+        // when
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
+
+        // then
+        verify(player, never()).teleport(any(Location.class));
+        verifyZeroInteractions(bukkitService);
+    }
+
+    @Test
+    public void shouldTeleportPlayerDueToForcedWorld() {
+        // given
+        Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
 
         World playerWorld = mock(World.class);
@@ -177,7 +189,6 @@ public class TeleportationServiceTest {
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
 
         // when
-        teleportationService.teleportOnLoginEvent(player);
         teleportationService.teleportOnJoin(player);
         runSyncDelayedTask(bukkitService);
 
@@ -191,7 +202,6 @@ public class TeleportationServiceTest {
     public void shouldNotTeleportPlayerForRemovedLocationInEvent() {
         // given
         final Player player = mock(Player.class);
-        given(player.hasPlayedBefore()).willReturn(true);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
@@ -206,7 +216,6 @@ public class TeleportationServiceTest {
         }).when(bukkitService).callEvent(any(SpawnTeleportEvent.class));
 
         // when
-        teleportationService.teleportOnLoginEvent(player);
         teleportationService.teleportOnJoin(player);
         runSyncDelayedTask(bukkitService);
 
@@ -219,7 +228,6 @@ public class TeleportationServiceTest {
     public void shouldNotTeleportPlayerForCanceledEvent() {
         // given
         final Player player = mock(Player.class);
-        given(player.hasPlayedBefore()).willReturn(true);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
@@ -234,7 +242,6 @@ public class TeleportationServiceTest {
         }).when(bukkitService).callEvent(any(SpawnTeleportEvent.class));
 
         // when
-        teleportationService.teleportOnLoginEvent(player);
         teleportationService.teleportOnJoin(player);
         runSyncDelayedTask(bukkitService);
 
@@ -415,11 +422,25 @@ public class TeleportationServiceTest {
         verify(player).teleport(location);
     }
 
-    private void assertCorrectLocation(Location location, PlayerAuth auth, World world) {
+    private static void assertCorrectLocation(Location location, PlayerAuth auth, World world) {
         assertThat(location.getX(), equalTo(auth.getQuitLocX()));
         assertThat(location.getY(), equalTo(auth.getQuitLocY()));
         assertThat(location.getZ(), equalTo(auth.getQuitLocZ()));
         assertThat(location.getWorld(), equalTo(world));
+    }
+
+    // We check that the World in Location is set, this method creates a mock World in Location for us
+    private static Location mockLocation() {
+        Location location = mock(Location.class);
+        given(location.getWorld()).willReturn(mock(World.class));
+        return location;
+    }
+
+    private static PlayerAuth createAuthWithLocation() {
+        return PlayerAuth.builder()
+            .name("bobby")
+            .locX(123.45).locY(23.4).locZ(-4.567)
+            .build();
     }
 
 }
