@@ -92,10 +92,10 @@ public class SettingsMigrationService {
 
         final File emailFile = new File(pluginFolder, "email.html");
         final String mailText = configuration.getString(oldSettingPath)
-            .replace("<playername>", "<playername />")
-            .replace("<servername>", "<servername />")
-            .replace("<generatedpass>", "<generatedpass />")
-            .replace("<image>", "<image />");
+            .replace("<playername>", "<playername />").replace("%playername%", "<playername />")
+            .replace("<servername>", "<servername />").replace("%servername%", "<servername />")
+            .replace("<generatedpass>", "<generatedpass />").replace("%generatedpass%", "<generatedpass />")
+            .replace("<image>", "<image />").replace("%image%", "<image />");
         if (!emailFile.exists()) {
             try (FileWriter fw = new FileWriter(emailFile)) {
                 fw.write(mailText);
