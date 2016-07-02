@@ -32,11 +32,11 @@ import static org.junit.Assert.assertThat;
 public class NewSettingIntegrationTest {
 
     /** File name of the sample config including all {@link TestConfiguration} values. */
-    private static final String COMPLETE_FILE = "/config-sample-values.yml";
+    private static final String COMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-sample-values.yml";
     /** File name of the sample config missing certain {@link TestConfiguration} values. */
-    private static final String INCOMPLETE_FILE = "/config-incomplete-sample.yml";
+    private static final String INCOMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-incomplete-sample.yml";
     /** File name for testing difficult values. */
-    private static final String DIFFICULT_FILE = "/config-difficult-values.yml";
+    private static final String DIFFICULT_FILE = TestHelper.PROJECT_ROOT + "settings/config-difficult-values.yml";
 
     private static PropertyMap propertyMap = TestConfiguration.generatePropertyMap();
 

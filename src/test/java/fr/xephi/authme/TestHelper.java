@@ -28,6 +28,8 @@ import static org.mockito.Mockito.verify;
  */
 public final class TestHelper {
 
+    public static final String PROJECT_ROOT = "/fr/xephi/authme/";
+
     private TestHelper() {
     }
 

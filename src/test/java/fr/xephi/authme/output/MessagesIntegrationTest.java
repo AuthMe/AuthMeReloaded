@@ -33,8 +33,8 @@ import static org.mockito.Mockito.verify;
  */
 public class MessagesIntegrationTest {
 
-    private static final String YML_TEST_FILE = "/messages_test.yml";
-    private static final String YML_DEFAULT_TEST_FILE = "/messages_default.yml";
+    private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + "output/messages_test.yml";
+    private static final String YML_DEFAULT_TEST_FILE = TestHelper.PROJECT_ROOT + "output/messages_default.yml";
     private Messages messages;
 
     @BeforeClass
@@ -255,7 +255,8 @@ public class MessagesIntegrationTest {
         // assumption: message comes back as defined in messages_test.yml
         assumeThat(messages.retrieveSingle(key), equalTo("§cWrong password!"));
         NewSetting settings = mock(NewSetting.class);
-        given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile("/messages_test2.yml"));
+        given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile(
+            TestHelper.PROJECT_ROOT + "output/messages_test2.yml"));
 
         // when
         messages.loadSettings(settings);

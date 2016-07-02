@@ -31,34 +31,23 @@ import java.util.Set;
 
 public class MySQL implements DataSource {
 
-    private final String host;
-    private final String port;
-    private final String username;
-    private final String password;
-    private final String database;
-    private final String tableName;
-    private final List<String> columnOthers;
-    private final Columns col;
-    private final HashAlgorithm hashAlgorithm;
+    private String host;
+    private String port;
+    private String username;
+    private String password;
+    private String database;
+    private String tableName;
+    private List<String> columnOthers;
+    private Columns col;
+    private HashAlgorithm hashAlgorithm;
     private HikariDataSource ds;
 
-    private final String phpBbPrefix;
-    private final int phpBbGroup;
-    private final String wordpressPrefix;
+    private String phpBbPrefix;
+    private int phpBbGroup;
+    private String wordpressPrefix;
 
     public MySQL(NewSetting settings) throws ClassNotFoundException, SQLException, PoolInitializationException {
-        this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
-        this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
-        this.username = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
-        this.password = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
-        this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
-        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
-        this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
-        this.col = new Columns(settings);
-        this.hashAlgorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
-        this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
-        this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
-        this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
+        setParameters(settings);
 
         // Set the connection arguments (and check if connection is ok)
         try {
@@ -67,7 +56,7 @@ public class MySQL implements DataSource {
             if (e instanceof IllegalArgumentException) {
                 ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
                 ConsoleLogger.showError("If this error persists, please report it to the developer!");
-                throw new IllegalArgumentException(e);
+                throw e;
             }
             if (e instanceof PoolInitializationException) {
                 ConsoleLogger.showError("Can't initialize database connection! Please check your configuration!");
@@ -80,17 +69,22 @@ public class MySQL implements DataSource {
 
         // Initialize the database
         try {
-            this.setupConnection();
+            setupConnection();
         } catch (SQLException e) {
-            this.close();
-            ConsoleLogger.showError("Can't initialize the MySQL database... Please check your database settings in the config.yml file! SHUTDOWN...");
-            ConsoleLogger.showError("If this error persists, please report it to the developer!");
+            close();
+            ConsoleLogger.logException("Can't initialize the MySQL database:", e);
+            ConsoleLogger.showError("Please check your database settings in the config.yml file!");
             throw e;
         }
     }
 
     @VisibleForTesting
     MySQL(NewSetting settings, HikariDataSource hikariDataSource) {
+        ds = hikariDataSource;
+        setParameters(settings);
+    }
+
+    private void setParameters(NewSetting settings) {
         this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
         this.username = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
@@ -103,7 +97,6 @@ public class MySQL implements DataSource {
         this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
-        ds = hikariDataSource;
     }
 
     private void setConnectionArguments() throws RuntimeException {
@@ -148,16 +141,14 @@ public class MySQL implements DataSource {
     }
 
     private void setupConnection() throws SQLException {
-        try (Connection con = getConnection()) {
-            Statement st = con.createStatement();
-            DatabaseMetaData md = con.getMetaData();
+        try (Connection con = getConnection(); Statement st = con.createStatement()) {
             // Create table if not exists.
             String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
-                + col.ID + " INTEGER AUTO_INCREMENT,"
+                + col.ID + " MEDIUMINT(8) UNSIGNED AUTO_INCREMENT,"
                 + col.NAME + " VARCHAR(255) NOT NULL UNIQUE,"
                 + col.REAL_NAME + " VARCHAR(255) NOT NULL,"
-                + col.PASSWORD + " VARCHAR(255) NOT NULL,"
-                + col.IP + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
+                + col.PASSWORD + " VARCHAR(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,"
+                + col.IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT '127.0.0.1',"
                 + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0,"
                 + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0',"
                 + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0',"
@@ -165,98 +156,79 @@ public class MySQL implements DataSource {
                 + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "',"
                 + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com',"
                 + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0',"
-                + "CONSTRAINT table_const_prim PRIMARY KEY (" + col.ID + ")"
-                + ");";
+                + "PRIMARY KEY (" + col.ID + ")"
+                + ") CHARACTER SET = utf8";
             st.executeUpdate(sql);
 
-            ResultSet rs = md.getColumns(null, null, tableName, col.NAME);
-            if (!rs.next()) {
+            DatabaseMetaData md = con.getMetaData();
+            if (isColumnMissing(md, col.NAME)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.NAME + " VARCHAR(255) NOT NULL UNIQUE AFTER " + col.ID + ";");
             }
-            rs.close();
 
-            rs = md.getColumns(null, null, tableName, col.REAL_NAME);
-            if (!rs.next()) {
+            if (isColumnMissing(md, col.REAL_NAME)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.REAL_NAME + " VARCHAR(255) NOT NULL AFTER " + col.NAME + ";");
             }
-            rs.close();
 
-            rs = md.getColumns(null, null, tableName, col.PASSWORD);
-            if (!rs.next()) {
+            if (isColumnMissing(md, col.PASSWORD)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) NOT NULL;");
-            }
-            rs.close();
-
-            if (!col.SALT.isEmpty()) {
-                rs = md.getColumns(null, null, tableName, col.SALT);
-                if (!rs.next()) {
-                    st.executeUpdate("ALTER TABLE " + tableName
-                        + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
-                }
-                rs.close();
+                    + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL;");
             }
 
-            rs = md.getColumns(null, null, tableName, col.IP);
-            if (!rs.next()) {
+            if (!col.SALT.isEmpty() && isColumnMissing(md, col.SALT)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.IP + " VARCHAR(40) NOT NULL;");
+                    + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
             }
-            rs.close();
 
-            rs = md.getColumns(null, null, tableName, col.LAST_LOGIN);
-            if (!rs.next()) {
+            if (isColumnMissing(md, col.IP)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL;");
+            }
+
+            if (isColumnMissing(md, col.LAST_LOGIN)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0;");
             } else {
-                migrateLastLoginColumnToBigInt(con, rs);
+                migrateLastLoginColumnToBigInt(con, md);
             }
-            rs.close();
 
-            rs = md.getColumns(null, null, tableName, col.LASTLOC_X);
-            if (!rs.next()) {
+            if (isColumnMissing(md, col.LASTLOC_X)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + col.LAST_LOGIN + " , ADD "
                     + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + col.LASTLOC_X + " , ADD "
                     + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + col.LASTLOC_Y);
-            }
-            rs.close();
-
-            rs = md.getColumns(null, null, tableName, col.LASTLOC_X);
-            if (rs.next()) {
+            } else {
                 st.executeUpdate("ALTER TABLE " + tableName + " MODIFY "
                     + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY "
                     + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY "
                     + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
-            rs.close();
 
-            rs = md.getColumns(null, null, tableName, col.LASTLOC_WORLD);
-            if (!rs.next()) {
+            if (isColumnMissing(md, col.LASTLOC_WORLD)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + col.LASTLOC_Z);
             }
-            rs.close();
 
-            rs = md.getColumns(null, null, tableName, col.EMAIL);
-            if (!rs.next()) {
+            if (isColumnMissing(md, col.EMAIL)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com' AFTER " + col.LASTLOC_WORLD);
             }
-            rs.close();
 
-            rs = md.getColumns(null, null, tableName, col.IS_LOGGED);
-            if (!rs.next()) {
+            if (isColumnMissing(md, col.IS_LOGGED)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.EMAIL);
             }
-            rs.close();
 
             st.close();
         }
         ConsoleLogger.info("MySQL setup finished");
+    }
+
+    private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+            return !rs.next();
+        }
     }
 
     @Override
@@ -933,10 +905,18 @@ public class MySQL implements DataSource {
      * Check if the lastlogin column is of type timestamp and, if so, revert it to the bigint format.
      *
      * @param con Connection to the database
-     * @param rs ResultSet containing meta data for the lastlogin column
+     * @param metaData metaData meta data of the database
      */
-    private void migrateLastLoginColumnToBigInt(Connection con, ResultSet rs) throws SQLException {
-        final int columnType = rs.getInt("DATA_TYPE");
+    private void migrateLastLoginColumnToBigInt(Connection con, DatabaseMetaData metaData) throws SQLException {
+        final int columnType;
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
+            if (!rs.next()) {
+                ConsoleLogger.showError("Could not get LAST_LOGIN meta data. This should never happen!");
+                return;
+            }
+            columnType = rs.getInt("DATA_TYPE");
+        }
+
         if (columnType == Types.TIMESTAMP) {
             ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
             final String lastLoginOld = col.LAST_LOGIN + "_old";

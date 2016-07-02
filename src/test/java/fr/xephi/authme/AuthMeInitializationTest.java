@@ -72,7 +72,7 @@ public class AuthMeInitializationTest {
     public void initAuthMe() throws IOException {
         dataFolder = temporaryFolder.newFolder();
         settingsFile = new File(dataFolder, "config.yml");
-        Files.copy(TestHelper.getJarFile("/initialization/config.test.yml"), settingsFile);
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
 
         // Mock / wire various Bukkit components
         given(server.getLogger()).willReturn(mock(Logger.class));

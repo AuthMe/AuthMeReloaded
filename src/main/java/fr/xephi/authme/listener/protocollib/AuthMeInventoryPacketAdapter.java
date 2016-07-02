@@ -31,7 +31,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.logging.Level;
 
-public class AuthMeInventoryPacketAdapter extends PacketAdapter {
+class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
     private static final int PLAYER_INVENTORY = 0;
     // http://wiki.vg/Inventory#Inventory (0-4 crafting, 5-8 armor, 9-35 main inventory, 36-44 hotbar, 45 off hand)
