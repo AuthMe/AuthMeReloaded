@@ -54,7 +54,6 @@ settings:
         # hasn't expired, he will not need to authenticate.
         enabled: false
         # After how many minutes a session should expire?
-        # 0 for unlimited time (Very dangerous, use it at your own risk!)
         # Consider that session will end only after the timeout time, and
         # if the player's ip has changed but the timeout hasn't expired,
         # player will be kicked out of sever due to invalidSession!
