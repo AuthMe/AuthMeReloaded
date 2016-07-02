@@ -146,7 +146,7 @@ public class RegisterCommandTest {
         command.executeCommand(player, Collections.singletonList("myMail@example.tld"));
 
         // then
-        verify(player).sendMessage(argThat(containsString("not all required settings are set for sending emails")));
+        verify(commandService).send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
         verify(sendMailSsl).hasAllInformation();
         verifyZeroInteractions(management);
     }

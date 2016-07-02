@@ -42,7 +42,7 @@ public class RecoverEmailCommand extends PlayerCommand {
 
         if (!sendMailSsl.hasAllInformation()) {
             ConsoleLogger.showError("Mail API is not set");
-            commandService.send(player, MessageKey.ERROR);
+            commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
         }
         if (dataSource.isAuthAvailable(playerName)) {

@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 
+import static fr.xephi.authme.output.MessageKey.INCOMPLETE_EMAIL_SETTINGS;
 import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.ENABLE_CONFIRM_EMAIL;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.USE_EMAIL_REGISTRATION;
@@ -68,8 +69,7 @@ public class RegisterCommand extends PlayerCommand {
 
     private void handleEmailRegistration(Player player, List<String> arguments) {
         if (!sendMailSsl.hasAllInformation()) {
-            player.sendMessage("Cannot register: not all required settings are set for sending emails. "
-                + "Please contact an administrator");
+            commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             ConsoleLogger.showError("Cannot register player '" + player.getName() + "': no email or password is set "
                 + "to send emails from. Please adjust your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
             return;

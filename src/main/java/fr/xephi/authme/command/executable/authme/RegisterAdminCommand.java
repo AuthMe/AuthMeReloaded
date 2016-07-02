@@ -79,7 +79,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     bukkitService.scheduleSyncDelayedTask(new Runnable() {
                         @Override
                         public void run() {
-                            player.kickPlayer("An admin just registered you, please log in again");
+                            player.kickPlayer(commandService.retrieveSingle(MessageKey.KICK_FOR_ADMIN_REGISTER));
                         }
                     });
                 }

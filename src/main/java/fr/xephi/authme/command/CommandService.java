@@ -54,6 +54,16 @@ public class CommandService {
     }
 
     /**
+     * Retrieve a message as a single String by its message key.
+     *
+     * @param key The message to retrieve
+     * @return The message
+     */
+    public String retrieveSingle(MessageKey key) {
+        return messages.retrieveSingle(key);
+    }
+
+    /**
      * Retrieve the given property's value.
      *
      * @param property The property to retrieve

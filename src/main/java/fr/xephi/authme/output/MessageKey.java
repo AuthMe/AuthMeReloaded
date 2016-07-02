@@ -143,7 +143,11 @@ public enum MessageKey {
 
     ACCOUNTS_OWNED_SELF("accounts_owned_self", "%count"),
 
-    ACCOUNTS_OWNED_OTHER("accounts_owned_other", "%name", "%count");
+    ACCOUNTS_OWNED_OTHER("accounts_owned_other", "%name", "%count"),
+
+    KICK_FOR_ADMIN_REGISTER("kicked_admin_registered"),
+
+    INCOMPLETE_EMAIL_SETTINGS("incomplete_email_settings");
 
     private String key;
     private String[] tags;
