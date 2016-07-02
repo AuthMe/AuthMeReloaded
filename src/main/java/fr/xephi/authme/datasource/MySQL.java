@@ -69,11 +69,11 @@ public class MySQL implements DataSource {
 
         // Initialize the database
         try {
-            this.setupConnection();
+            setupConnection();
         } catch (SQLException e) {
-            this.close();
-            ConsoleLogger.showError("Can't initialize the MySQL database... Please check your database settings in the config.yml file! SHUTDOWN...");
-            ConsoleLogger.showError("If this error persists, please report it to the developer!");
+            close();
+            ConsoleLogger.logException("Can't initialize the MySQL database:", e);
+            ConsoleLogger.showError("Please check your database settings in the config.yml file!");
             throw e;
         }
     }
@@ -144,11 +144,11 @@ public class MySQL implements DataSource {
         try (Connection con = getConnection(); Statement st = con.createStatement()) {
             // Create table if not exists.
             String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
-                + col.ID + " INTEGER AUTO_INCREMENT,"
+                + col.ID + " MEDIUMINT(8) UNSIGNED AUTO_INCREMENT,"
                 + col.NAME + " VARCHAR(255) NOT NULL UNIQUE,"
                 + col.REAL_NAME + " VARCHAR(255) NOT NULL,"
-                + col.PASSWORD + " VARCHAR(255) NOT NULL,"
-                + col.IP + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
+                + col.PASSWORD + " VARCHAR(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,"
+                + col.IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT '127.0.0.1',"
                 + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0,"
                 + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0',"
                 + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0',"
@@ -156,8 +156,8 @@ public class MySQL implements DataSource {
                 + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "',"
                 + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com',"
                 + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0',"
-                + "CONSTRAINT table_const_prim PRIMARY KEY (" + col.ID + ")"
-                + ");";
+                + "PRIMARY KEY (" + col.ID + ")"
+                + ") CHARACTER SET = utf8";
             st.executeUpdate(sql);
 
             DatabaseMetaData md = con.getMetaData();
@@ -173,7 +173,7 @@ public class MySQL implements DataSource {
 
             if (isColumnMissing(md, col.PASSWORD)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) NOT NULL;");
+                    + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL;");
             }
 
             if (!col.SALT.isEmpty() && isColumnMissing(md, col.SALT)) {
@@ -183,7 +183,7 @@ public class MySQL implements DataSource {
 
             if (isColumnMissing(md, col.IP)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.IP + " VARCHAR(40) NOT NULL;");
+                    + " ADD COLUMN " + col.IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL;");
             }
 
             if (isColumnMissing(md, col.LAST_LOGIN)) {
@@ -909,7 +909,11 @@ public class MySQL implements DataSource {
      */
     private void migrateLastLoginColumnToBigInt(Connection con, DatabaseMetaData metaData) throws SQLException {
         final int columnType;
-        try (ResultSet rs =  metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
+            if (!rs.next()) {
+                ConsoleLogger.showError("Could not get LAST_LOGIN meta data. This should never happen!");
+                return;
+            }
             columnType = rs.getInt("DATA_TYPE");
         }
 
