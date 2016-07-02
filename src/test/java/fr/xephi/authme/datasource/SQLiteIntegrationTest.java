@@ -120,11 +120,6 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         assertThat(sqLite.getAllAuths(), hasSize(1));
     }
 
-    @Test
-    public void shouldCreate2() throws SQLException {
-        con.createStatement().execute("SELECT 1 from authme");
-    }
-
     @Override
     protected DataSource getDataSource(String saltColumn) {
         when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);

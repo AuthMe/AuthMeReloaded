@@ -54,12 +54,10 @@ public class MySQL implements DataSource {
             if (e instanceof IllegalArgumentException) {
                 ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
                 ConsoleLogger.showError("If this error persists, please report it to the developer!");
-                throw e;
             }
             if (e instanceof PoolInitializationException) {
                 ConsoleLogger.showError("Can't initialize database connection! Please check your configuration!");
                 ConsoleLogger.showError("If this error persists, please report it to the developer!");
-                throw new PoolInitializationException(e);
             }
             ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
             throw e;

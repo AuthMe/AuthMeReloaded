@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -54,6 +55,9 @@ public class AsyncRegister implements AsynchronousProcess {
 
     @Inject
     private ValidationService validationService;
+
+    @Inject
+    private SendMailSSL sendMailSsl;
 
     AsyncRegister() { }
 
@@ -137,7 +141,7 @@ public class AsyncRegister implements AsynchronousProcess {
         }
         database.updateEmail(auth);
         database.updateSession(auth);
-        plugin.getMail().main(auth, password);
+        sendMailSsl.sendPasswordMail(auth, password);
         syncProcessManager.processSyncEmailRegister(player);
     }
 

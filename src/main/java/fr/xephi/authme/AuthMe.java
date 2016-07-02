@@ -25,7 +25,6 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
@@ -79,8 +78,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
-import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
 
 /**
@@ -114,7 +111,6 @@ public class AuthMe extends JavaPlugin {
     private BukkitService bukkitService;
     private AuthMeServiceInitializer initializer;
     private GeoLiteAPI geoLiteApi;
-    private SendMailSSL mail;
 
     /**
      * Constructor.
@@ -248,9 +244,6 @@ public class AuthMe extends JavaPlugin {
         // Set console filter
         setupConsoleFilter();
 
-        // Set up the mail API
-        setupMailApi();
-
         // Do a backup on start
         // TODO: maybe create a backup manager?
         new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.START);
@@ -301,16 +294,6 @@ public class AuthMe extends JavaPlugin {
         geoLiteApi       = initializer.get(GeoLiteAPI.class);
         initializer.get(NewAPI.class);
         initializer.get(API.class);
-    }
-
-    /**
-     * Set up the mail API, if enabled.
-     */
-    private void setupMailApi() {
-        // Make sure the mail API is enabled
-        if (!newSettings.getProperty(MAIL_ACCOUNT).isEmpty() && !newSettings.getProperty(MAIL_PASSWORD).isEmpty()) {
-            this.mail = new SendMailSSL(this, newSettings);
-        }
     }
 
     /**
@@ -671,15 +654,6 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
-    }
-
-    /**
-     * Get the mailing instance.
-     *
-     * @return The send mail instance.
-     */
-    public SendMailSSL getMail() {
-        return this.mail;
     }
 
     // -------------
