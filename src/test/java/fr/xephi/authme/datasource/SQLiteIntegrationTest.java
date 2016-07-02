@@ -1,11 +1,14 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -17,6 +20,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,7 +66,6 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     @Before
     public void initializeConnectionAndTable() throws SQLException {
-        silentClose(con);
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS authme");
@@ -70,6 +74,55 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             }
         }
         con = connection;
+    }
+
+    @After
+    public void closeConnection() {
+        silentClose(con);
+    }
+
+    @Test
+    public void shouldSetUpTableIfMissing() throws SQLException {
+        // given
+        Statement st = con.createStatement();
+        // table is absent
+        st.execute("DROP TABLE authme");
+        SQLite sqLite = new SQLite(settings, con);
+
+        // when
+        sqLite.setup();
+
+        // then
+        // Save some player to verify database is operational
+        sqLite.saveAuth(PlayerAuth.builder().name("Name").build());
+        assertThat(sqLite.getAllAuths(), hasSize(1));
+    }
+
+    @Test
+    public void shouldCreateMissingColumns() throws SQLException {
+        // given
+        Statement st = con.createStatement();
+        // drop table and create one with only some of the columns: SQLite doesn't support ALTER TABLE t DROP COLUMN c
+        st.execute("DROP TABLE authme");
+        st.execute("CREATE TABLE authme ("
+            + "id bigint, "
+            + "username varchar(255) unique, "
+            + "password varchar(255) not null, "
+            + "primary key (id));");
+        SQLite sqLite = new SQLite(settings, con);
+
+        // when
+        sqLite.setup();
+
+        // then
+        // Save some player to verify database is operational
+        sqLite.saveAuth(PlayerAuth.builder().name("Name").build());
+        assertThat(sqLite.getAllAuths(), hasSize(1));
+    }
+
+    @Test
+    public void shouldCreate2() throws SQLException {
+        con.createStatement().execute("SELECT 1 from authme");
     }
 
     @Override
