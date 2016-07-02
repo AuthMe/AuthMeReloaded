@@ -112,10 +112,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
                 restoreInventory(player);
             }
 
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN)) {
-                protocolLibService.sendTabList(player);
-            }
-
             // Clean up no longer used temporary data
             limboCache.deleteLimboPlayer(name);
         }

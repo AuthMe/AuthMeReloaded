@@ -17,7 +17,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
@@ -96,10 +95,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         final String name = player.getName().toLowerCase();
         LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (limbo != null) {
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN)) {
-                protocolLibService.sendTabList(player);
-            }
-
             Utils.teleportToSpawn(player);
 
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {

@@ -141,8 +141,6 @@ settings:
         ProtectInventoryBeforeLogIn: true
         # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
         DenyTabCompleteBeforeLogin: true
-        # Should we hide the tablist before logging in? Requires ProtocolLib.
-        HideTablistBeforeLogin: true
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
