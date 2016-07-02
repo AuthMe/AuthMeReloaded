@@ -278,7 +278,7 @@ public class AuthMe extends JavaPlugin {
 
         // If server is using PermissionsBukkit, print a warning that some features may not be supported
         if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
-            ConsoleLogger.info("Warning! This server uses PermissionsBukkit for permissions! Some permissions features may not be supported!");
+            ConsoleLogger.showError("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
         }
 
         // Purge on start if enabled
