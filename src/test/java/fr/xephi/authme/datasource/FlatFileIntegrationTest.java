@@ -35,7 +35,7 @@ public class FlatFileIntegrationTest {
 
     @Before
     public void copyFileToTemporaryFolder() throws IOException {
-        File originalFile = TestHelper.getJarFile("/datasource-integration/flatfile-test.txt");
+        File originalFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "datasource/flatfile-test.txt");
         File copy = temporaryFolder.newFile();
         Files.copy(originalFile, copy);
         dataSource = new FlatFile(copy);

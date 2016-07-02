@@ -54,7 +54,7 @@ public class SpawnLoaderTest {
     public void setup() throws IOException {
         // Copy test config into a new temporary folder
         testFolder = temporaryFolder.newFolder();
-        File source = TestHelper.getJarFile("/spawn/spawn-firstspawn.yml");
+        File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/spawn-firstspawn.yml");
         File destination = new File(testFolder, "spawn.yml");
         Files.copy(source, destination);
 

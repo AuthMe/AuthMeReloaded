@@ -41,7 +41,7 @@ public class ForceFlatToSqliteTest {
 
     @Before
     public void copyFile() throws IOException {
-        File source = TestHelper.getJarFile("/datasource-integration/flatfile-test.txt");
+        File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "datasource/flatfile-test.txt");
         File destination = temporaryFolder.newFile();
         Files.copy(source, destination);
         flatFile = new FlatFile(destination);

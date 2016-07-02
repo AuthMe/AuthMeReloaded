@@ -45,7 +45,7 @@ public class CrazyLoginConverterTest {
     private NewSetting settings;
 
     @DataFolder
-    private File dataFolder = TestHelper.getJarFile("/converter/");
+    private File dataFolder = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "converter/");
 
     @BeforeClass
     public static void initializeLogger() {
