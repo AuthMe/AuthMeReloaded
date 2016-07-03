@@ -3,6 +3,7 @@ package fr.xephi.authme.process.quit;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -24,6 +25,9 @@ public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
     @Inject
     private LimboCache limboCache;
 
+    @Inject
+    private AuthGroupHandler authGroupHandler;
+
     public void processSyncQuit(Player player) {
         LimboPlayer limbo = limboCache.getLimboPlayer(player.getName().toLowerCase());
         if (limbo != null) { // it mean player is not authenticated
@@ -33,7 +37,7 @@ public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
             } else {
                 // Restore data if its about to delete LimboPlayer
                 if (!StringUtils.isEmpty(limbo.getGroup())) {
-                    Utils.addNormal(player, limbo.getGroup());
+                    authGroupHandler.addNormal(player, limbo.getGroup());
                 }
                 player.setOp(limbo.isOperator());
                 player.setAllowFlight(limbo.isCanFly());

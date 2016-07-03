@@ -3,9 +3,7 @@ package fr.xephi.authme.security.crypts;
 /**
  * Public interface for custom password encryption methods.
  * <p>
- * Note that {@link fr.xephi.authme.security.PasswordSecurity} requires classes implementing this interface
- * to either have the default constructor or an accessible constructor with one parameter of type
- * {@link fr.xephi.authme.settings.NewSetting}.
+ * Instantiation of these methods is done via automatic dependency injection.
  */
 public interface EncryptionMethod {
 

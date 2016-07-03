@@ -90,4 +90,10 @@ public class UtilsTest {
         // then
         assertThat(result, equalTo(name));
     }
+
+    @Test
+    public void shouldHavePrivateConstructorOnly() {
+        // given / when / then
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(Utils.class);
+    }
 }

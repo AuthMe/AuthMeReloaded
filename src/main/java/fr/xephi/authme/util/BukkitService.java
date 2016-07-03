@@ -107,6 +107,23 @@ public class BukkitService {
     }
 
     /**
+     * <b>Asynchronous tasks should never access any API in Bukkit. Great care
+     * should be taken to assure the thread-safety of asynchronous tasks.</b>
+     * <p>
+     * Returns a task that will run asynchronously after the specified number
+     * of server ticks.
+     *
+     * @param task the task to be run
+     * @param delay the ticks to wait before running the task
+     * @return a BukkitTask that contains the id number
+     * @throws IllegalArgumentException if plugin is null
+     * @throws IllegalArgumentException if task is null
+     */
+    public BukkitTask runTaskLaterAsynchronously(Runnable task, long delay) {
+        return Bukkit.getScheduler().runTaskLaterAsynchronously(authMe, task, delay);
+    }
+
+    /**
      * Broadcast a message to all players.
      *
      * @param message the message

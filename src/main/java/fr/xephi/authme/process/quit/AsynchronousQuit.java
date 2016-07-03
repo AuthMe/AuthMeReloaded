@@ -12,6 +12,7 @@ import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -43,6 +44,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
 
     @Inject
     private SpawnLoader spawnLoader;
+
+    @Inject
+    private BukkitService bukkitService;
 
     AsynchronousQuit() {
     }
@@ -76,7 +80,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         playerCache.removePlayer(name);
 
         if (plugin.isEnabled() && service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+            BukkitTask task = bukkitService.runTaskLaterAsynchronously(new Runnable() {
 
                 @Override
                 public void run() {

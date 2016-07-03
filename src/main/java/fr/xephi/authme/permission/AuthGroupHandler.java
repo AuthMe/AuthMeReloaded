@@ -86,4 +86,28 @@ public class AuthGroupHandler {
         }
     }
 
+    /**
+     * TODO: This method requires better explanation.
+     * <p>
+     * Set the normal group of a player.
+     *
+     * @param player The player.
+     * @param group  The normal group.
+     *
+     * @return True on success, false on failure.
+     */
+    public boolean addNormal(Player player, String group) {
+        // Check whether the permissions check is enabled
+        if (!settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)) {
+            return false;
+        }
+
+        // Remove old groups
+        permissionsManager.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup,
+            Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
+
+        // Add the normal group, return the result
+        return permissionsManager.addGroup(player, group);
+    }
+
 }

@@ -13,6 +13,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,6 +50,9 @@ public class UnregisterAdminCommand implements ExecutableCommand {
 
     @Inject
     private AuthGroupHandler authGroupHandler;
+
+    @Inject
+    private TeleportationService teleportationService;
 
 
     @Override
@@ -93,8 +97,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
      * @param target the player that was unregistered
      */
     private void applyUnregisteredEffectsAndTasks(Player target) {
-        // TODO #765: Remove use of Utils method and behave according to settings
-        Utils.teleportToSpawn(target);
+        teleportationService.teleportOnJoin(target);
 
         limboCache.addLimboPlayer(target);
         limboPlayerTaskManager.registerTimeoutTask(target);

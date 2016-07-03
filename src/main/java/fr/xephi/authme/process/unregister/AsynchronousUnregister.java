@@ -14,7 +14,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -43,6 +43,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
+    @Inject
+    private TeleportationService teleportationService;
+
     AsynchronousUnregister() { }
 
 
@@ -56,7 +59,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             }
 
             if (service.getProperty(RegistrationSettings.FORCE)) {
-                Utils.teleportToSpawn(player);
+                teleportationService.teleportOnJoin(player);
                 player.saveData();
                 playerCache.removePlayer(player.getName().toLowerCase());
                 if (!Settings.getRegisteredGroup.isEmpty()) {

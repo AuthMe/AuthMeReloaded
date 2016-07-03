@@ -46,7 +46,6 @@ public final class Settings {
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
         isSaveQuitLocationEnabled = load(RestrictionSettings.SAVE_QUIT_LOCATION);
-        isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
