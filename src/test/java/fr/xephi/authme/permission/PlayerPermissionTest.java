@@ -33,10 +33,9 @@ public class PlayerPermissionTest {
 
         // when/then
         for (PlayerPermission permission : PlayerPermission.values()) {
-            if (nodes.contains(permission.getNode())) {
+            if (!nodes.add(permission.getNode())) {
                 fail("More than one enum value defines the node '" + permission.getNode() + "'");
             }
-            nodes.add(permission.getNode());
         }
     }
 }

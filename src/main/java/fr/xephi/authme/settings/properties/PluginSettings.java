@@ -25,7 +25,6 @@ public class PluginSettings implements SettingsClass {
 
     @Comment({
         "After how many minutes should a session expire?",
-        "0 for unlimited time (Very dangerous, use it at your own risk!)",
         "Remember that sessions will end only after the timeout, and",
         "if the player's IP has changed but the timeout hasn't expired,",
         "the player will be kicked from the server due to invalid session"

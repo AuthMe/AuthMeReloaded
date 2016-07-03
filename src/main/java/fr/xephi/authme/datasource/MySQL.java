@@ -3,14 +3,12 @@ package fr.xephi.authme.datasource;
 import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.XFBCRYPT;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -56,12 +54,10 @@ public class MySQL implements DataSource {
             if (e instanceof IllegalArgumentException) {
                 ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
                 ConsoleLogger.showError("If this error persists, please report it to the developer!");
-                throw e;
             }
             if (e instanceof PoolInitializationException) {
                 ConsoleLogger.showError("Can't initialize database connection! Please check your configuration!");
                 ConsoleLogger.showError("If this error persists, please report it to the developer!");
-                throw new PoolInitializationException(e);
             }
             ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
             throw e;
@@ -69,7 +65,7 @@ public class MySQL implements DataSource {
 
         // Initialize the database
         try {
-            setupConnection();
+            checkTablesAndColumns();
         } catch (SQLException e) {
             close();
             ConsoleLogger.logException("Can't initialize the MySQL database:", e);
@@ -140,24 +136,13 @@ public class MySQL implements DataSource {
         return ds.getConnection();
     }
 
-    private void setupConnection() throws SQLException {
+    private void checkTablesAndColumns() throws SQLException {
         try (Connection con = getConnection(); Statement st = con.createStatement()) {
-            // Create table if not exists.
+            // Create table with ID column if it doesn't exist
             String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
                 + col.ID + " MEDIUMINT(8) UNSIGNED AUTO_INCREMENT,"
-                + col.NAME + " VARCHAR(255) NOT NULL UNIQUE,"
-                + col.REAL_NAME + " VARCHAR(255) NOT NULL,"
-                + col.PASSWORD + " VARCHAR(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,"
-                + col.IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT '127.0.0.1',"
-                + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0,"
-                + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0',"
-                + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0',"
-                + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0',"
-                + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "',"
-                + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com',"
-                + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0',"
                 + "PRIMARY KEY (" + col.ID + ")"
-                + ") CHARACTER SET = utf8";
+                + ") CHARACTER SET = utf8;";
             st.executeUpdate(sql);
 
             DatabaseMetaData md = con.getMetaData();
@@ -177,8 +162,7 @@ public class MySQL implements DataSource {
             }
 
             if (!col.SALT.isEmpty() && isColumnMissing(md, col.SALT)) {
-                st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
             }
 
             if (isColumnMissing(md, col.IP)) {
@@ -219,8 +203,6 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.EMAIL);
             }
-
-            st.close();
         }
         ConsoleLogger.info("MySQL setup finished");
     }

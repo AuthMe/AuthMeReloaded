@@ -15,12 +15,10 @@ public class ProtocolLibService implements SettingsDependent {
     /* Packet Adapters */
     private AuthMeInventoryPacketAdapter inventoryPacketAdapter;
     private AuthMeTabCompletePacketAdapter tabCompletePacketAdapter;
-    private AuthMeTablistPacketAdapter tablistPacketAdapter;
 
     /* Settings */
     private boolean protectInvBeforeLogin;
     private boolean denyTabCompleteBeforeLogin;
-    private boolean hideTablistBeforeLogin;
 
     /* Service */
     private boolean isEnabled;
@@ -44,11 +42,9 @@ public class ProtocolLibService implements SettingsDependent {
             if (protectInvBeforeLogin) {
                 ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
             }
+            
             if (denyTabCompleteBeforeLogin) {
                 ConsoleLogger.showError("WARNING! The denyTabComplete feature requires ProtocolLib! Disabling it...");
-            }
-            if (hideTablistBeforeLogin) {
-                ConsoleLogger.showError("WARNING! The hideTablist feature requires ProtocolLib! Disabling it...");
             }
 
             this.isEnabled = false;
@@ -70,13 +66,6 @@ public class ProtocolLibService implements SettingsDependent {
             tabCompletePacketAdapter.unregister();
             tabCompletePacketAdapter = null;
         }
-        if (hideTablistBeforeLogin && tablistPacketAdapter == null) {
-            tablistPacketAdapter = new AuthMeTablistPacketAdapter(plugin, bukkitService);
-            tablistPacketAdapter.register();
-        } else if (tablistPacketAdapter != null) {
-            tablistPacketAdapter.unregister();
-            tablistPacketAdapter = null;
-        }
 
         this.isEnabled = true;
     }
@@ -92,10 +81,6 @@ public class ProtocolLibService implements SettingsDependent {
             tabCompletePacketAdapter.unregister();
             tabCompletePacketAdapter = null;
         }
-        if (tablistPacketAdapter != null) {
-            tablistPacketAdapter.unregister();
-            tablistPacketAdapter = null;
-        }
     }
 
     /**
@@ -109,21 +94,9 @@ public class ProtocolLibService implements SettingsDependent {
         }
     }
 
-    /**
-     * Send a tab list packet to a player.
-     *
-     * @param player The player to send the packet to.
-     */
-    public void sendTabList(Player player) {
-        if (isEnabled && tablistPacketAdapter != null) {
-            tablistPacketAdapter.sendTablist(player);
-        }
-    }
-
     @Override
     public void loadSettings(NewSetting settings) {
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
-        this.hideTablistBeforeLogin = settings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN);
     }
 }

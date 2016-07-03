@@ -6,6 +6,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.invocation.InvocationOnMock;
@@ -60,7 +61,6 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     @Before
     public void initializeConnectionAndTable() throws SQLException {
-        silentClose(hikariSource);
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
         config.setConnectionTestQuery("VALUES 1");
@@ -75,6 +75,11 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
             st.execute(sqlInitialize);
         }
         hikariSource = ds;
+    }
+
+    @After
+    public void closeConnection() {
+        silentClose(hikariSource);
     }
 
     @Override

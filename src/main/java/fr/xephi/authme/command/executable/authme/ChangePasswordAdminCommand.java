@@ -75,7 +75,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
 
                 if (dataSource.updatePassword(auth)) {
                     commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
-                    ConsoleLogger.info(playerNameLowerCase + "'s password changed");
+                    ConsoleLogger.info(sender.getName() + " changed password of " + playerNameLowerCase);
                 } else {
                     commandService.send(sender, MessageKey.ERROR);
                 }

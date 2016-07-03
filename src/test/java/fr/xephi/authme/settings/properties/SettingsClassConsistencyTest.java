@@ -74,10 +74,9 @@ public class SettingsClassConsistencyTest {
                 if (Property.class.isAssignableFrom(field.getType())) {
                     Property<?> property =
                         (Property<?>) ReflectionTestUtils.getFieldValue(clazz, null, field.getName());
-                    if (paths.contains(property.getPath())) {
+                    if (!paths.add(property.getPath())) {
                         fail("Path '" + property.getPath() + "' should be used by only one constant");
                     }
-                    paths.add(property.getPath());
                 }
             }
         }

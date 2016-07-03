@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
@@ -51,7 +52,11 @@ public class ConverterCommand implements ExecutableCommand {
         bukkitService.runTaskAsynchronously(new Runnable() {
             @Override
             public void run() {
-                converter.execute(sender);
+                try {
+                    converter.execute(sender);
+                } catch (Exception e) {
+                    ConsoleLogger.logException("Error during conversion:", e);
+                }
             }
         });
 
