@@ -5,7 +5,7 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
@@ -18,7 +18,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -49,7 +49,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
     ProcessSyncPasswordRegister() { }
 
@@ -82,9 +82,9 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         final String name = player.getName().toLowerCase();
         Utils.teleportToSpawn(player);
 
-        limboCache.updateLimboPlayer(player);
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
+        limboCache.updatePlayerData(player);
+        playerDataTaskManager.registerTimeoutTask(player);
+        playerDataTaskManager.registerMessageTask(name, true);
 
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -93,7 +93,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     public void processPasswordRegister(Player player) {
         final String name = player.getName().toLowerCase();
-        LimboPlayer limbo = limboCache.getLimboPlayer(name);
+        PlayerData limbo = limboCache.getPlayerData(name);
         if (limbo != null) {
             Utils.teleportToSpawn(player);
 
@@ -105,7 +105,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
                 }
             }
 
-            limboCache.deleteLimboPlayer(player);
+            limboCache.deletePlayerData(player);
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {

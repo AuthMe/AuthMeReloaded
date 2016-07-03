@@ -6,7 +6,7 @@ import fr.xephi.authme.cache.TempbanManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.output.MessageKey;
@@ -23,7 +23,7 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
@@ -70,7 +70,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private TempbanManager tempbanManager;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
     AsynchronousLogin() { }
 
@@ -106,7 +106,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
 
             // TODO ljacqu 20160612: Why is the message task being canceled and added again here?
-            limboPlayerTaskManager.registerMessageTask(name, false);
+            playerDataTaskManager.registerMessageTask(name, false);
             return null;
         }
 
@@ -197,9 +197,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
-            if (limboPlayer != null) {
-                limboPlayer.clearTasks();
+            PlayerData playerData = limboCache.getPlayerData(name);
+            if (playerData != null) {
+                playerData.clearTasks();
             }
             syncProcessManager.processSyncPlayerLogin(player);
         } else if (player.isOnline()) {

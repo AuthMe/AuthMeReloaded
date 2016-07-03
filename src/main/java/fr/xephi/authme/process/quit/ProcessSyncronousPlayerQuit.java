@@ -1,8 +1,8 @@
 package fr.xephi.authme.process.quit;
 
-import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
 public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
 
     @Inject
-    private JsonCache jsonCache;
+    private PlayerDataStorage playerDataStorage;
 
     @Inject
     private ProcessService service;
@@ -25,26 +25,26 @@ public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
     private LimboCache limboCache;
 
     public void processSyncQuit(Player player) {
-        LimboPlayer limbo = limboCache.getLimboPlayer(player.getName().toLowerCase());
+        PlayerData limbo = limboCache.getPlayerData(player.getName().toLowerCase());
         if (limbo != null) { // it mean player is not authenticated
             // Only delete if we don't need player's last location
             if (service.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)) {
-                limboCache.removeLimboPlayer(player);
+                limboCache.removePlayerData(player);
             } else {
-                // Restore data if its about to delete LimboPlayer
+                // Restore data if its about to delete PlayerData
                 if (!StringUtils.isEmpty(limbo.getGroup())) {
                     Utils.addNormal(player, limbo.getGroup());
                 }
                 player.setOp(limbo.isOperator());
                 player.setAllowFlight(limbo.isCanFly());
                 player.setWalkSpeed(limbo.getWalkSpeed());
-                limboCache.deleteLimboPlayer(player);
+                limboCache.deletePlayerData(player);
             }
         } else {
             // Write player's location, so we could retrieve it later on player next join
             if (service.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)) {
-                if (!jsonCache.doesCacheExist(player)) {
-                    jsonCache.writeCache(player);
+                if (!playerDataStorage.hasData(player)) {
+                    playerDataStorage.saveData(player);
                 }
             }
         }

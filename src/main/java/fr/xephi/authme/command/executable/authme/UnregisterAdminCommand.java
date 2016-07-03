@@ -11,7 +11,7 @@ import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
@@ -45,7 +45,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
     private LimboCache limboCache;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
     @Inject
     private AuthGroupHandler authGroupHandler;
@@ -96,9 +96,9 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         // TODO #765: Remove use of Utils method and behave according to settings
         Utils.teleportToSpawn(target);
 
-        limboCache.addLimboPlayer(target);
-        limboPlayerTaskManager.registerTimeoutTask(target);
-        limboPlayerTaskManager.registerMessageTask(target.getName(), false);
+        limboCache.addPlayerData(target);
+        playerDataTaskManager.registerTimeoutTask(target);
+        playerDataTaskManager.registerMessageTask(target.getName(), false);
 
         final int timeout = commandService.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (commandService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

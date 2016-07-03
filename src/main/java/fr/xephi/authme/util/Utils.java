@@ -72,7 +72,16 @@ public final class Utils {
         }
     }
 
+    /**
+     * Get player's UUID if can, name otherwise.
+     *
+     * @param player Player to retrieve
+     *
+     * @return player's UUID or Name in String.
+     */
     public static String getUUIDorName(OfflinePlayer player) {
+        // We may made this configurable in future
+        // so we can have uuid support.
         try {
             return player.getUniqueId().toString();
         } catch (Exception ignore) {
@@ -80,6 +89,13 @@ public final class Utils {
         }
     }
 
+    /**
+     * Compile Pattern sneaky without throwing Exception.
+     *
+     * @param pattern pattern string to compile
+     *
+     * @return the given regex compiled into Pattern object.
+     */
     public static Pattern safePatternCompile(String pattern) {
         try {
             return Pattern.compile(pattern);

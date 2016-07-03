@@ -11,7 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -27,7 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-public class JsonCache {
+/**
+ * Class used to store player's data (OP, flying, speed, position) to disk.
+ */
+public class PlayerDataStorage {
 
     private final Gson gson;
     private final File cacheDir;
@@ -36,60 +39,77 @@ public class JsonCache {
     private BukkitService bukkitService;
 
     @Inject
-    JsonCache(@DataFolder File dataFolder, PermissionsManager permsMan,
-              SpawnLoader spawnLoader, BukkitService bukkitService) {
+    PlayerDataStorage(@DataFolder File dataFolder, PermissionsManager permsMan,
+                      SpawnLoader spawnLoader, BukkitService bukkitService) {
         this.permissionsManager = permsMan;
         this.spawnLoader = spawnLoader;
         this.bukkitService = bukkitService;
 
-        cacheDir = new File(dataFolder, "cache");
+        cacheDir = new File(dataFolder, "playerdata");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
-            ConsoleLogger.showError("Failed to create cache directory.");
+            ConsoleLogger.showError("Failed to create userdata directory.");
         }
         gson = new GsonBuilder()
-            .registerTypeAdapter(LimboPlayer.class, new LimboPlayerSerializer())
-            .registerTypeAdapter(LimboPlayer.class, new LimboPlayerDeserializer())
+            .registerTypeAdapter(PlayerData.class, new PlayerDataSerializer())
+            .registerTypeAdapter(PlayerData.class, new PlayerDataDeserializer())
             .setPrettyPrinting()
             .create();
     }
 
-    public LimboPlayer readCache(Player player) {
+    /**
+     * Read and construct new PlayerData from existing player data.
+     *
+     * @param player player to read
+     *
+     * @return PlayerData object if the data is exist, null otherwise.
+     */
+    public PlayerData readData(Player player) {
         String id = Utils.getUUIDorName(player);
-        File file = new File(cacheDir, id + File.separator + "cache.json");
+        File file = new File(cacheDir, id + File.separator + "data.json");
         if (!file.exists()) {
             return null;
         }
 
         try {
             String str = Files.toString(file, Charsets.UTF_8);
-            return gson.fromJson(str, LimboPlayer.class);
+            return gson.fromJson(str, PlayerData.class);
         } catch (IOException e) {
             ConsoleLogger.writeStackTrace(e);
             return null;
         }
     }
 
-    public void writeCache(Player player) {
+    /**
+     * Save player data (OP, flying, location, etc) to disk.
+     *
+     * @param player player to save
+     */
+    public void saveData(Player player) {
         String id = Utils.getUUIDorName(player);
-        String name = player.getName().toLowerCase();
-        Location location =
-            player.isOnline() && player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
+        Location location = spawnLoader.getPlayerLocationOrSpawn(player);
         String group = permissionsManager.getPrimaryGroup(player);
         boolean operator = player.isOp();
         boolean canFly = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
-        LimboPlayer limboPlayer = new LimboPlayer(name, location, operator, group, canFly, walkSpeed);
+        float flySpeed = player.getFlySpeed();
+        PlayerData playerData = new PlayerData(location, operator, group, canFly, walkSpeed, flySpeed);
         try {
-            File file = new File(cacheDir, id + File.separator + "cache.json");
+            File file = new File(cacheDir, id + File.separator + "data.json");
             Files.createParentDirs(file);
             Files.touch(file);
-            Files.write(gson.toJson(limboPlayer), file, Charsets.UTF_8);
+            Files.write(gson.toJson(playerData), file, Charsets.UTF_8);
         } catch (IOException e) {
-            ConsoleLogger.logException("Failed to write " + player.getName() + " cache.", e);
+            ConsoleLogger.logException("Failed to write " + player.getName() + " data.", e);
         }
     }
 
-    public void removeCache(Player player) {
+    /**
+     * Remove player data, this will delete
+     * "playerdata/&lt;uuid or name&gt;/" folder from disk.
+     *
+     * @param player player to remove
+     */
+    public void removeData(Player player) {
         String id = Utils.getUUIDorName(player);
         File file = new File(cacheDir, id);
         if (file.exists()) {
@@ -100,16 +120,23 @@ public class JsonCache {
         }
     }
 
-    public boolean doesCacheExist(Player player) {
+    /**
+     * Use to check is player data is exist.
+     *
+     * @param player player to check
+     *
+     * @return true if data exist, false otherwise.
+     */
+    public boolean hasData(Player player) {
         String id = Utils.getUUIDorName(player);
-        File file = new File(cacheDir, id + File.separator + "cache.json");
+        File file = new File(cacheDir, id + File.separator + "data.json");
         return file.exists();
     }
 
-    private class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
+    private class PlayerDataDeserializer implements JsonDeserializer<PlayerData> {
         @Override
-        public LimboPlayer deserialize(JsonElement jsonElement, Type type,
-                                       JsonDeserializationContext context) {
+        public PlayerData deserialize(JsonElement jsonElement, Type type,
+                                      JsonDeserializationContext context) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             if (jsonObject == null) {
                 return null;
@@ -120,6 +147,7 @@ public class JsonCache {
             boolean operator = false;
             boolean canFly = false;
             float walkSpeed = 0.2f;
+            float flySpeed = 0.2f;
 
             JsonElement e;
             if ((e = jsonObject.getAsJsonObject("location")) != null) {
@@ -146,19 +174,22 @@ public class JsonCache {
             if ((e = jsonObject.get("walk-speed")) != null) {
                 walkSpeed = e.getAsFloat();
             }
+            if ((e = jsonObject.get("fly-speed")) != null) {
+                flySpeed = e.getAsFloat();
+            }
 
-            return new LimboPlayer("", loc, operator, group, canFly, walkSpeed);
+            return new PlayerData(loc, operator, group, canFly, walkSpeed, flySpeed);
         }
     }
 
-    private class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
+    private class PlayerDataSerializer implements JsonSerializer<PlayerData> {
         @Override
-        public JsonElement serialize(LimboPlayer limboPlayer, Type type,
+        public JsonElement serialize(PlayerData playerData, Type type,
                                      JsonSerializationContext context) {
             JsonObject obj = new JsonObject();
-            obj.addProperty("group", limboPlayer.getGroup());
+            obj.addProperty("group", playerData.getGroup());
 
-            Location loc = limboPlayer.getLoc();
+            Location loc = playerData.getLoc();
             JsonObject obj2 = new JsonObject();
             obj2.addProperty("world", loc.getWorld().getName());
             obj2.addProperty("x", loc.getX());
@@ -168,9 +199,10 @@ public class JsonCache {
             obj2.addProperty("pitch", loc.getPitch());
             obj.add("location", obj2);
 
-            obj.addProperty("operator", limboPlayer.isOperator());
-            obj.addProperty("can-fly", limboPlayer.isCanFly());
-            obj.addProperty("walk-speed", limboPlayer.getWalkSpeed());
+            obj.addProperty("operator", playerData.isOperator());
+            obj.addProperty("can-fly", playerData.isCanFly());
+            obj.addProperty("walk-speed", playerData.getWalkSpeed());
+            obj.addProperty("fly-speed", playerData.getFlySpeed());
             return obj;
         }
     }

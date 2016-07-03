@@ -19,8 +19,6 @@ public final class Settings {
     public static boolean isPermissionCheckEnabled;
     public static boolean isTeleportToSpawnEnabled;
     public static boolean isAllowRestrictedIp;
-    public static boolean isSaveQuitLocationEnabled;
-    public static boolean protectInventoryBeforeLogInEnabled;
     public static boolean isStopEnabled;
     public static boolean reloadSupport;
     public static boolean noTeleport;
@@ -45,8 +43,6 @@ public final class Settings {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
-        isSaveQuitLocationEnabled = load(RestrictionSettings.SAVE_QUIT_LOCATION);
-        isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");

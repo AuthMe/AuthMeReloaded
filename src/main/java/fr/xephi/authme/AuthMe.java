@@ -5,9 +5,9 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
@@ -564,8 +564,8 @@ public class AuthMe extends JavaPlugin {
             return;
         }
         String name = player.getName().toLowerCase();
-        if (limboCache.hasLimboPlayer(name)) {
-            LimboPlayer limbo = limboCache.getLimboPlayer(name);
+        if (limboCache.hasPlayerData(name)) {
+            PlayerData limbo = limboCache.getPlayerData(name);
             if (!newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 player.teleport(limbo.getLoc());
             }
@@ -574,14 +574,13 @@ public class AuthMe extends JavaPlugin {
             player.setAllowFlight(limbo.isCanFly());
             player.setWalkSpeed(limbo.getWalkSpeed());
             if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)) {
-                limboCache.removeLimboPlayer(player);
+                limboCache.removePlayerData(player);
             } else {
-                limboCache.deleteLimboPlayer(player);
+                limboCache.deletePlayerData(player);
             }
         } else {
             if (newSettings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-                Location loc =
-                    player.isOnline() && player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
+                Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
                 final PlayerAuth auth = PlayerAuth.builder()
                     .name(player.getName().toLowerCase())
                     .realName(player.getName())
@@ -590,9 +589,9 @@ public class AuthMe extends JavaPlugin {
             }
             if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
                 && !newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-                JsonCache jsonCache = initializer.getIfAvailable(JsonCache.class);
-                if (jsonCache != null && !jsonCache.doesCacheExist(player)) {
-                    jsonCache.writeCache(player);
+                PlayerDataStorage playerDataStorage = initializer.getIfAvailable(PlayerDataStorage.class);
+                if (playerDataStorage != null && !playerDataStorage.hasData(player)) {
+                    playerDataStorage.saveData(player);
                 }
             }
         }

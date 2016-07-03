@@ -2,12 +2,11 @@ package fr.xephi.authme.permission;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -68,7 +67,7 @@ public class AuthGroupHandler {
 
             case LOGGED_IN:
                 // Get the limbo player data
-                LimboPlayer limbo = limboCache.getLimboPlayer(player.getName().toLowerCase());
+                PlayerData limbo = limboCache.getPlayerData(player.getName().toLowerCase());
                 if (limbo == null) {
                     return false;
                 }

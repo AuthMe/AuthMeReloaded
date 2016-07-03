@@ -4,6 +4,7 @@ package fr.xephi.authme.cache.auth;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Used to manage player's Authenticated status
  */
 public class PlayerCache {
 
@@ -55,11 +56,11 @@ public class PlayerCache {
     }
 
     /**
-     * Method isAuthenticated.
+     * get player's authenticated status.
      *
-     * @param user String
+     * @param user player's name
      *
-     * @return boolean
+     * @return true if player is logged in, false otherwise.
      */
     public boolean isAuthenticated(String user) {
         return cache.containsKey(user.toLowerCase());

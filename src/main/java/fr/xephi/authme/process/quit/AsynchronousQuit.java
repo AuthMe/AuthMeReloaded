@@ -57,7 +57,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         String ip = Utils.getPlayerIp(player);
         if (playerCache.isAuthenticated(name)) {
             if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-                Location loc = player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
+                Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(name).location(loc)
                     .realName(player.getName()).build();

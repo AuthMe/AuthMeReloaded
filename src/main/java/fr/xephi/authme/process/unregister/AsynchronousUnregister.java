@@ -13,7 +13,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -41,7 +41,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
     AsynchronousUnregister() { }
 
@@ -62,9 +62,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 if (!Settings.getRegisteredGroup.isEmpty()) {
                     service.setGroup(player, AuthGroupType.UNREGISTERED);
                 }
-                limboCache.addLimboPlayer(player);
-                limboPlayerTaskManager.registerTimeoutTask(player);
-                limboPlayerTaskManager.registerMessageTask(name, false);
+                limboCache.addPlayerData(player);
+                playerDataTaskManager.registerTimeoutTask(player);
+                playerDataTaskManager.registerMessageTask(name, false);
 
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");

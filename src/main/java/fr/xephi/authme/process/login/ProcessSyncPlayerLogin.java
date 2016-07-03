@@ -5,7 +5,7 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
@@ -83,7 +83,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     public void processPlayerLogin(Player player) {
         final String name = player.getName().toLowerCase();
         // Limbo contains the State of the Player before /login
-        final LimboPlayer limbo = limboCache.getLimboPlayer(name);
+        final PlayerData limbo = limboCache.getPlayerData(name);
         final PlayerAuth auth = dataSource.getAuth(name);
 
         if (limbo != null) {
@@ -112,7 +112,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             }
 
             // Clean up no longer used temporary data
-            limboCache.deleteLimboPlayer(player);
+            limboCache.deletePlayerData(player);
         }
 
         // We can now display the join message (if delayed)

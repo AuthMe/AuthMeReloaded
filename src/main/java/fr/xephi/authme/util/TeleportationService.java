@@ -2,7 +2,7 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.events.AbstractTeleportEvent;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
@@ -94,14 +94,14 @@ public class TeleportationService implements Reloadable {
      *
      * @param player the player
      * @param auth corresponding PlayerAuth object
-     * @param limbo corresponding LimboPlayer object
+     * @param limbo corresponding PlayerData object
      */
-    public void teleportOnLogin(final Player player, PlayerAuth auth, LimboPlayer limbo) {
+    public void teleportOnLogin(final Player player, PlayerAuth auth, PlayerData limbo) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }
 
-        // The world in LimboPlayer is from where the player comes, before any teleportation by AuthMe
+        // The world in PlayerData is from where the player comes, before any teleportation by AuthMe
         String worldName = limbo.getLoc().getWorld().getName();
         if (mustForceSpawnAfterLogin(worldName)) {
             teleportToSpawn(player, true);

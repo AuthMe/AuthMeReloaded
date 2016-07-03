@@ -7,7 +7,7 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
@@ -20,7 +20,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
     private ProcessService service;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
     ProcessSyncEmailRegister() { }
 
@@ -32,8 +32,8 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         }
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
 
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
+        playerDataTaskManager.registerTimeoutTask(player);
+        playerDataTaskManager.registerMessageTask(name, true);
 
         player.saveData();
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {

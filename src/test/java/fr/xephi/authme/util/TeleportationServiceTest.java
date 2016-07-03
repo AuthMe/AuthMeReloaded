@@ -2,7 +2,7 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.settings.NewSetting;
@@ -259,7 +259,7 @@ public class TeleportationServiceTest {
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
         Player player = mock(Player.class);
         PlayerAuth auth = mock(PlayerAuth.class);
-        LimboPlayer limbo = mock(LimboPlayer.class);
+        PlayerData limbo = mock(PlayerData.class);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -277,7 +277,7 @@ public class TeleportationServiceTest {
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         PlayerAuth auth = mock(PlayerAuth.class);
-        LimboPlayer limbo = mock(LimboPlayer.class);
+        PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("forced1");
         given(limbo.getLoc()).willReturn(limboLocation);
@@ -301,7 +301,7 @@ public class TeleportationServiceTest {
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         PlayerAuth auth = mock(PlayerAuth.class);
-        LimboPlayer limbo = mock(LimboPlayer.class);
+        PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("Forced1"); // different case
         given(limbo.getLoc()).willReturn(limboLocation);
@@ -328,7 +328,7 @@ public class TeleportationServiceTest {
 
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
-        LimboPlayer limbo = mock(LimboPlayer.class);
+        PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
         given(limbo.getLoc()).willReturn(limboLocation);
 
@@ -357,7 +357,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         World world = mock(World.class);
         given(player.getWorld()).willReturn(world);
-        LimboPlayer limbo = mock(LimboPlayer.class);
+        PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
         given(limbo.getLoc()).willReturn(limboLocation);
 
@@ -385,7 +385,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         World world = mock(World.class);
         given(player.getWorld()).willReturn(world);
-        LimboPlayer limbo = mock(LimboPlayer.class);
+        PlayerData limbo = mock(PlayerData.class);
         Location location = mockLocation();
         given(limbo.getLoc()).willReturn(location);
 
@@ -410,7 +410,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         World world = mock(World.class);
         given(player.getWorld()).willReturn(world);
-        LimboPlayer limbo = mock(LimboPlayer.class);
+        PlayerData limbo = mock(PlayerData.class);
         Location location = mockLocation();
         given(limbo.getLoc()).willReturn(location);
 
