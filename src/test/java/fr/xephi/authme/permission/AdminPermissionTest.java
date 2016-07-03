@@ -33,10 +33,9 @@ public class AdminPermissionTest {
 
         // when/then
         for (AdminPermission permission : AdminPermission.values()) {
-            if (nodes.contains(permission.getNode())) {
+            if (!nodes.add(permission.getNode())) {
                 fail("More than one enum value defines the node '" + permission.getNode() + "'");
             }
-            nodes.add(permission.getNode());
         }
     }
 

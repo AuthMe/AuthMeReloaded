@@ -43,10 +43,9 @@ public class HashAlgorithmIntegrationTest {
         // when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
-                if (classes.contains(algorithm.getClazz())) {
+                if (!classes.add(algorithm.getClazz())) {
                     fail("Found class '" + algorithm.getClazz() + "' twice!");
                 }
-                classes.add(algorithm.getClazz());
             }
         }
     }
