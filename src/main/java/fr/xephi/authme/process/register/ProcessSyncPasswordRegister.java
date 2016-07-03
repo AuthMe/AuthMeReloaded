@@ -80,9 +80,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
      */
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
-        // TODO #765: Check if teleportation is needed here, and how
-        // Utils.teleportToSpawn(player);
-
         limboCache.updateLimboPlayer(player);
         limboPlayerTaskManager.registerTimeoutTask(player);
         limboPlayerTaskManager.registerMessageTask(name, true);
@@ -96,9 +93,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         final String name = player.getName().toLowerCase();
         LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (limbo != null) {
-            // TODO #765: Check if teleportation is needed here, and how
-            // Utils.teleportToSpawn(player);
-
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 bukkitService.callEvent(event);

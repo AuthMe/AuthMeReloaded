@@ -70,7 +70,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 limboPlayerTaskManager.registerMessageTask(name, false);
 
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
-                ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
+                ConsoleLogger.info(player.getName() + " unregistered himself");
                 return; // TODO ljacqu 20160612: Why return here? No blind effect? Player not removed from PlayerCache?
             }
             if (!Settings.unRegisteredGroup.isEmpty()) {
@@ -84,7 +84,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
             }
             service.send(player, MessageKey.UNREGISTERED_SUCCESS);
-            ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
+            ConsoleLogger.info(player.getName() + " unregistered himself");
         } else {
             service.send(player, MessageKey.WRONG_PASSWORD);
         }
