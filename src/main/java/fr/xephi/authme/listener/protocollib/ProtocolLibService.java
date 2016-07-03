@@ -2,6 +2,7 @@ package fr.xephi.authme.listener.protocollib;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -107,7 +108,18 @@ public class ProtocolLibService implements SettingsDependent {
 
     @Override
     public void loadSettings(NewSetting settings) {
+        boolean oldProtectInventory = this.protectInvBeforeLogin;
+
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
+
+        //it was true and will be deactivated now, so we need to restore the inventory for every player
+        if (oldProtectInventory && !protectInvBeforeLogin) {
+            for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
+                if (!PlayerCache.getInstance().isAuthenticated(onlinePlayer.getName())) {
+                    sendInventoryPacket(onlinePlayer);
+                }
+            }
+        }
     }
 }
