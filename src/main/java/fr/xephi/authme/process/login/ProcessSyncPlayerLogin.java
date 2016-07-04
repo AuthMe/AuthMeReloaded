@@ -4,17 +4,14 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -42,19 +39,10 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
-    private DataSource dataSource;
-
-    @Inject
     private BukkitService bukkitService;
 
     @Inject
-    private ProtocolLibService protocolLibService;
-
-    @Inject
     private PluginManager pluginManager;
-
-    @Inject
-    private TeleportationService teleportationService;
 
     ProcessSyncPlayerLogin() {
     }

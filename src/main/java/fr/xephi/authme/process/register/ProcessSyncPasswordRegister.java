@@ -7,7 +7,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
-import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
@@ -19,7 +18,6 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -35,18 +33,18 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
     private AuthMe plugin;
+
     @Inject
     private ProcessService service;
+
     @Inject
     private BukkitService bukkitService;
-    @Inject
-    private ProtocolLibService protocolLibService;
+
     @Inject
     private LimboCache limboCache;
+
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
-    @Inject
-    private TeleportationService teleportationService;
 
     ProcessSyncPasswordRegister() {
     }

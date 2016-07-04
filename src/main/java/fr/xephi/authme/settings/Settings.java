@@ -2,7 +2,6 @@ package fr.xephi.authme.settings;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,16 +15,12 @@ import java.util.List;
 public final class Settings {
 
     public static List<String> getUnrestrictedName;
-    public static boolean isPermissionCheckEnabled;
-    public static boolean isTeleportToSpawnEnabled;
     public static boolean isAllowRestrictedIp;
     public static boolean isStopEnabled;
     public static boolean reloadSupport;
-    public static boolean noTeleport;
     public static String getUnloggedinGroup;
     public static String unRegisteredGroup;
     public static String getRegisteredGroup;
-    public static String defaultWorld;
     public static int getNonActivatedGroup;
     private static FileConfiguration configFile;
 
@@ -40,8 +35,6 @@ public final class Settings {
     }
 
     private static void loadVariables() {
-        isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
-        isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
@@ -50,8 +43,6 @@ public final class Settings {
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
-        defaultWorld = configFile.getString("Purge.defaultWorld", "world");
-        noTeleport = load(RestrictionSettings.NO_TELEPORT);
     }
 
     /**

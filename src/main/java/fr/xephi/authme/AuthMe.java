@@ -592,12 +592,6 @@ public class AuthMe extends JavaPlugin {
         return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
     }
 
-    // Return the spawn location of a player
-    @Deprecated
-    public Location getSpawnLocation(Player player) {
-        return spawnLoader.getSpawnLocation(player);
-    }
-
     private void scheduleRecallEmailTask() {
         if (!newSettings.getProperty(RECALL_PLAYERS)) {
             return;

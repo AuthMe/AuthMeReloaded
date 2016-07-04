@@ -52,7 +52,6 @@ public class AsynchronousLogout implements AsynchronousProcess {
 
         limboCache.addPlayerData(player);
         playerCache.removePlayer(name);
-        // TODO LJ: No more teleport here?
         database.setUnlogged(name);
         syncProcessManager.processSyncPlayerLogout(player);
     }

@@ -73,20 +73,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     AsynchronousLogin() { }
 
-
-    /**
-     * Queries the {@link fr.xephi.authme.cache.CaptchaManager} to
-     * see if a captcha needs to be entered in order to log in.
-     *
-     * @param player The player to check
-     * @return True if a captcha needs to be entered
-     */
-    private boolean needsCaptcha(Player player) {
-        final String playerName = player.getName();
-
-        return captchaManager.isCaptchaRequired(playerName);
-    }
-
     /**
      * Checks the precondition for authentication (like user known) and returns
      * the playerAuth-State
@@ -141,7 +127,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
 
         // If Captcha is required send a message to the player and deny to login
-        if (needsCaptcha(player)) {
+        if (captchaManager.isCaptchaRequired(name)) {
             service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
             return;
         }
@@ -218,7 +204,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 service.send(player, MessageKey.WRONG_PASSWORD);
 
                 // If the authentication fails check if Captcha is required and send a message to the player
-                if (needsCaptcha(player)) {
+                if (captchaManager.isCaptchaRequired(name)) {
                     service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
                 }
             }
