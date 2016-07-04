@@ -5,7 +5,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -23,12 +22,10 @@ public class ProtocolLibService implements SettingsDependent {
     /* Service */
     private boolean isEnabled;
     private AuthMe plugin;
-    private BukkitService bukkitService;
 
     @Inject
-    ProtocolLibService(AuthMe plugin, BukkitService bukkitService, NewSetting settings) {
+    ProtocolLibService(AuthMe plugin, NewSetting settings) {
         this.plugin = plugin;
-        this.bukkitService = bukkitService;
         loadSettings(settings);
         setup();
     }
