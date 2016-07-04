@@ -1,7 +1,6 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
@@ -34,7 +33,6 @@ public class SpawnLoader implements Reloadable {
     private final File authMeConfigurationFile;
     private final NewSetting settings;
     private final PluginHooks pluginHooks;
-    private final DataSource dataSource;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
@@ -48,15 +46,14 @@ public class SpawnLoader implements Reloadable {
      * @param dataSource   The plugin auth database instance
      */
     @Inject
-    public SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
-                       DataSource dataSource) {
+    SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
+                DataSource dataSource) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
         this.settings = settings;
         this.pluginHooks = pluginHooks;
-        this.dataSource = dataSource;
         reload();
     }
 
@@ -170,15 +167,7 @@ public class SpawnLoader implements Reloadable {
                     spawnLoc = essentialsSpawn;
                     break;
                 case "authme":
-                    String playerNameLower = player.getName().toLowerCase();
-                    if (PlayerCache.getInstance().isAuthenticated(playerNameLower)) {
-                        spawnLoc = getSpawn();
-                    } else if (getFirstSpawn() != null && (!player.hasPlayedBefore() ||
-                        !dataSource.isAuthAvailable(playerNameLower))) {
-                        spawnLoc = getFirstSpawn();
-                    } else {
-                        spawnLoc = getSpawn();
-                    }
+                    spawnLoc = getSpawn();
                     break;
             }
             if (spawnLoc != null) {

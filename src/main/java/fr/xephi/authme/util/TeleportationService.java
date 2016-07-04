@@ -3,6 +3,7 @@ package fr.xephi.authme.util;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AbstractTeleportEvent;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
@@ -38,6 +39,9 @@ public class TeleportationService implements Reloadable {
 
     @Inject
     private PlayerCache playerCache;
+
+    @Inject
+    private DataSource dataSource;
 
     private Set<String> spawnOnLoginWorlds;
 
@@ -78,15 +82,18 @@ public class TeleportationService implements Reloadable {
      * @param player the player to process
      */
     public void teleportNewPlayerToFirstSpawn(final Player player) {
-        if (settings.getProperty(RestrictionSettings.NO_TELEPORT) || player.hasPlayedBefore()) {
+        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }
+
         Location firstSpawn = spawnLoader.getFirstSpawn();
         if (firstSpawn == null) {
             return;
         }
 
-        performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
+        if (!player.hasPlayedBefore() || !dataSource.isAuthAvailable(player.getName())) {
+            performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
+        }
     }
 
     /**
