@@ -33,7 +33,7 @@ public class PlayerData {
      *
      * @return The player's location
      */
-    public Location getLoc() {
+    public Location getLocation() {
         return loc;
     }
 

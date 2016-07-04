@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
@@ -20,6 +19,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -35,23 +35,21 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
     private AuthMe plugin;
-
     @Inject
     private ProcessService service;
-
     @Inject
     private BukkitService bukkitService;
-
     @Inject
     private ProtocolLibService protocolLibService;
-
     @Inject
     private LimboCache limboCache;
-
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
+    @Inject
+    private TeleportationService teleportationService;
 
-    ProcessSyncPasswordRegister() { }
+    ProcessSyncPasswordRegister() {
+    }
 
 
     private void sendBungeeMessage(Player player) {
@@ -69,7 +67,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
         for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS_AS_CONSOLE)) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                    command.replace("%p", player.getName()));
+                command.replace("%p", player.getName()));
         }
     }
 
@@ -93,10 +91,8 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     public void processPasswordRegister(Player player) {
         final String name = player.getName().toLowerCase();
-        PlayerData limbo = limboCache.getPlayerData(name);
-        if (limbo != null) {
-            Utils.teleportToSpawn(player);
-
+        if (limboCache.hasPlayerData(name)) {
+            teleportationService.teleportOnJoin(player);
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 bukkitService.callEvent(event);
@@ -104,7 +100,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
                     player.updateInventory();
                 }
             }
-
+            limboCache.restoreData(player);
             limboCache.deletePlayerData(player);
         }
 

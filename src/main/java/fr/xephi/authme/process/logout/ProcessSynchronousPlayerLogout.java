@@ -45,7 +45,8 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     @Inject
     private SessionManager sessionManager;
 
-    ProcessSynchronousPlayerLogout() { }
+    ProcessSynchronousPlayerLogout() {
+    }
 
 
     private void sendBungeeMessage(Player player) {
@@ -82,9 +83,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     private void applyLogoutEffect(Player player) {
         // dismount player
-        if (player.isInsideVehicle() && player.getVehicle() != null) {
-            player.getVehicle().eject();
-        }
+        player.leaveVehicle();
 
         // Apply Blindness effect
         final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;

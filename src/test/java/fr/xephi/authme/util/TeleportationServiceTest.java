@@ -280,7 +280,7 @@ public class TeleportationServiceTest {
         PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("forced1");
-        given(limbo.getLoc()).willReturn(limboLocation);
+        given(limbo.getLocation()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -304,7 +304,7 @@ public class TeleportationServiceTest {
         PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("Forced1"); // different case
-        given(limbo.getLoc()).willReturn(limboLocation);
+        given(limbo.getLocation()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -330,7 +330,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
-        given(limbo.getLoc()).willReturn(limboLocation);
+        given(limbo.getLocation()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -359,7 +359,7 @@ public class TeleportationServiceTest {
         given(player.getWorld()).willReturn(world);
         PlayerData limbo = mock(PlayerData.class);
         Location limboLocation = mockLocation();
-        given(limbo.getLoc()).willReturn(limboLocation);
+        given(limbo.getLocation()).willReturn(limboLocation);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -387,7 +387,7 @@ public class TeleportationServiceTest {
         given(player.getWorld()).willReturn(world);
         PlayerData limbo = mock(PlayerData.class);
         Location location = mockLocation();
-        given(limbo.getLoc()).willReturn(location);
+        given(limbo.getLocation()).willReturn(location);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -412,7 +412,7 @@ public class TeleportationServiceTest {
         given(player.getWorld()).willReturn(world);
         PlayerData limbo = mock(PlayerData.class);
         Location location = mockLocation();
-        given(limbo.getLoc()).willReturn(location);
+        given(limbo.getLocation()).willReturn(location);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);

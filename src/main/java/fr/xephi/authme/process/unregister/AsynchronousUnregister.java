@@ -62,6 +62,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 if (!Settings.getRegisteredGroup.isEmpty()) {
                     service.setGroup(player, AuthGroupType.UNREGISTERED);
                 }
+                limboCache.deletePlayerData(player);
                 limboCache.addPlayerData(player);
                 playerDataTaskManager.registerTimeoutTask(player);
                 playerDataTaskManager.registerMessageTask(name, false);

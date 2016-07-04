@@ -66,14 +66,14 @@ public class AuthGroupHandler {
                 return permissionsManager.addGroup(player, settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP));
 
             case LOGGED_IN:
-                // Get the limbo player data
-                PlayerData limbo = limboCache.getPlayerData(player.getName().toLowerCase());
-                if (limbo == null) {
+                // Get the player data
+                PlayerData data = limboCache.getPlayerData(player.getName().toLowerCase());
+                if (data == null) {
                     return false;
                 }
 
                 // Get the players group
-                String realGroup = limbo.getGroup();
+                String realGroup = data.getGroup();
 
                 // Remove the other group types groups, set the real group
                 permissionsManager.removeGroups(player,

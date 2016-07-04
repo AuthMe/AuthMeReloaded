@@ -102,7 +102,7 @@ public class TeleportationService implements Reloadable {
         }
 
         // The world in PlayerData is from where the player comes, before any teleportation by AuthMe
-        String worldName = limbo.getLoc().getWorld().getName();
+        String worldName = limbo.getLocation().getWorld().getName();
         if (mustForceSpawnAfterLogin(worldName)) {
             teleportToSpawn(player, true);
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
@@ -110,7 +110,7 @@ public class TeleportationService implements Reloadable {
                 Location location = buildLocationFromAuth(player, auth);
                 teleportBackFromSpawn(player, location);
             } else {
-                teleportBackFromSpawn(player, limbo.getLoc());
+                teleportBackFromSpawn(player, limbo.getLocation());
             }
         }
     }

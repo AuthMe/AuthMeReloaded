@@ -115,11 +115,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        limboCache.updatePlayerData(player);
 
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
+            limboCache.addPlayerData(player);
             service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
 
             // Protect inventory
@@ -150,7 +150,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
         } else {
-            // Not Registered
+            // Not Registered. Delete old data, load default one.
+            limboCache.deletePlayerData(player);
+            limboCache.addPlayerData(player);
 
             // Groups logic
             service.setGroup(player, AuthGroupType.UNREGISTERED);

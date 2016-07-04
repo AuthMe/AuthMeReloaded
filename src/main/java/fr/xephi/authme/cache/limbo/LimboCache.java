@@ -2,7 +2,11 @@ package fr.xephi.authme.cache.limbo;
 
 import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -19,18 +23,21 @@ public class LimboCache {
     private final ConcurrentHashMap<String, PlayerData> cache = new ConcurrentHashMap<>();
 
     private PlayerDataStorage playerDataStorage;
+    private NewSetting settings;
     private PermissionsManager permissionsManager;
     private SpawnLoader spawnLoader;
 
     @Inject
-    LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader, PlayerDataStorage playerDataStorage) {
+    LimboCache(NewSetting settings, PermissionsManager permissionsManager,
+               SpawnLoader spawnLoader, PlayerDataStorage playerDataStorage) {
+        this.settings = settings;
         this.permissionsManager = permissionsManager;
         this.spawnLoader = spawnLoader;
         this.playerDataStorage = playerDataStorage;
     }
 
     /**
-     * Add a limbo player.
+     * Load player data if exist, otherwise current player's data will be stored.
      *
      * @param player Player instance to add.
      */
@@ -49,7 +56,7 @@ public class LimboCache {
         if (playerDataStorage.hasData(player)) {
             PlayerData cache = playerDataStorage.readData(player);
             if (cache != null) {
-                location = cache.getLoc();
+                location = cache.getLocation();
                 playerGroup = cache.getGroup();
                 operator = cache.isOperator();
                 flyEnabled = cache.isCanFly();
@@ -64,21 +71,42 @@ public class LimboCache {
     }
 
     /**
-     * Remove PlayerData and delete cache.json from disk.
+     * Restore player's data to player if exist.
+     *
+     * @param player Player instance to restore
+     */
+    public void restoreData(Player player) {
+        String lowerName = player.getName().toLowerCase();
+        if (cache.containsKey(lowerName)) {
+            PlayerData data = cache.get(lowerName);
+            player.setOp(data.isOperator());
+            player.setAllowFlight(data.isCanFly());
+            player.setWalkSpeed(data.getWalkSpeed());
+            player.setFlySpeed(data.getFlySpeed());
+            restoreGroup(player, data.getGroup());
+            if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+                player.teleport(data.getLocation());
+            }
+            data.clearTasks();
+        }
+    }
+
+    /**
+     * Remove PlayerData from cache and disk.
      *
      * @param player Player player to remove.
      */
     public void deletePlayerData(Player player) {
-        removePlayerData(player);
+        removeFromCache(player);
         playerDataStorage.removeData(player);
     }
 
     /**
-     * Remove PlayerData from cache, without deleting cache.json file.
+     * Remove PlayerData from cache.
      *
-     * @param player Player player to remove.
+     * @param player player to remove.
      */
-    public void removePlayerData(Player player) {
+    public void removeFromCache(Player player) {
         String name = player.getName().toLowerCase();
         PlayerData cachedPlayer = cache.remove(name);
         if (cachedPlayer != null) {
@@ -117,7 +145,15 @@ public class LimboCache {
      */
     public void updatePlayerData(Player player) {
         checkNotNull(player);
-        removePlayerData(player);
+        removeFromCache(player);
         addPlayerData(player);
+    }
+
+    private void restoreGroup(Player player, String group) {
+        if (!settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)
+            || !permissionsManager.hasGroupSupport() || StringUtils.isEmpty(group)) {
+            return;
+        }
+        permissionsManager.setGroup(player, group);
     }
 }

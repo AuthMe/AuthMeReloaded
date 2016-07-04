@@ -189,7 +189,7 @@ public class PlayerDataStorage {
             JsonObject obj = new JsonObject();
             obj.addProperty("group", playerData.getGroup());
 
-            Location loc = playerData.getLoc();
+            Location loc = playerData.getLocation();
             JsonObject obj2 = new JsonObject();
             obj2.addProperty("world", loc.getWorld().getName());
             obj2.addProperty("x", loc.getX());

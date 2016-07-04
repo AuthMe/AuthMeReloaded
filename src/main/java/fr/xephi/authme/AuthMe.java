@@ -7,7 +7,6 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
@@ -442,8 +441,8 @@ public class AuthMe extends JavaPlugin {
                 //returns only the async takss
                 for (BukkitWorker pendingTask : getServer().getScheduler().getActiveWorkers()) {
                     if (pendingTask.getOwner().equals(AuthMe.this)
-                            //it's not a peridic task
-                            && !getServer().getScheduler().isQueued(pendingTask.getTaskId())) {
+                        //it's not a peridic task
+                        && !getServer().getScheduler().isQueued(pendingTask.getTaskId())) {
                         pendingTasks.add(pendingTask.getTaskId());
                     }
                 }
@@ -466,7 +465,7 @@ public class AuthMe extends JavaPlugin {
                         break;
                     }
 
-                    for (Iterator<Integer> iterator = pendingTasks.iterator(); iterator.hasNext();) {
+                    for (Iterator<Integer> iterator = pendingTasks.iterator(); iterator.hasNext(); ) {
                         int taskId = iterator.next();
                         if (!getServer().getScheduler().isCurrentlyRunning(taskId)) {
                             iterator.remove();
@@ -565,19 +564,8 @@ public class AuthMe extends JavaPlugin {
         }
         String name = player.getName().toLowerCase();
         if (limboCache.hasPlayerData(name)) {
-            PlayerData limbo = limboCache.getPlayerData(name);
-            if (!newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-                player.teleport(limbo.getLoc());
-            }
-            Utils.addNormal(player, limbo.getGroup());
-            player.setOp(limbo.isOperator());
-            player.setAllowFlight(limbo.isCanFly());
-            player.setWalkSpeed(limbo.getWalkSpeed());
-            if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)) {
-                limboCache.removePlayerData(player);
-            } else {
-                limboCache.deletePlayerData(player);
-            }
+            limboCache.restoreData(player);
+            limboCache.removeFromCache(player);
         } else {
             if (newSettings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
                 Location loc = spawnLoader.getPlayerLocationOrSpawn(player);

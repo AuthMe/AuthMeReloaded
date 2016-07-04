@@ -50,7 +50,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
             database.updateQuitLoc(auth);
         }
 
-        limboCache.updatePlayerData(player);
+        limboCache.addPlayerData(player);
         playerCache.removePlayer(name);
         database.setUnlogged(name);
         syncProcessManager.processSyncPlayerLogout(player);

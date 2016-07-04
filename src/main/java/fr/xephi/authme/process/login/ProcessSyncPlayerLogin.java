@@ -3,20 +3,16 @@ package fr.xephi.authme.process.login;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -60,7 +56,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private TeleportationService teleportationService;
 
-    ProcessSyncPlayerLogin() { }
+    ProcessSyncPlayerLogin() {
+    }
 
     private void restoreInventory(Player player) {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
@@ -83,26 +80,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     public void processPlayerLogin(Player player) {
         final String name = player.getName().toLowerCase();
         // Limbo contains the State of the Player before /login
-        final PlayerData limbo = limboCache.getPlayerData(name);
-        final PlayerAuth auth = dataSource.getAuth(name);
-
-        if (limbo != null) {
-            // Restore Op state and Permission Group
-            player.setOp(limbo.isOperator());
-            // Restore primary group
-            service.setGroup(player, AuthGroupType.LOGGED_IN);
-            // Restore can-fly state
-            player.setAllowFlight(limbo.isCanFly());
-
-            // Restore speed
-            if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-                && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-                player.setWalkSpeed(limbo.getWalkSpeed());
-                player.setFlySpeed(0.2F);
-            }
-
-            teleportationService.teleportOnLogin(player, auth, limbo);
-
+        if (limboCache.hasPlayerData(name)) {
+            limboCache.restoreData(player);
+            limboCache.deletePlayerData(player);
+            // do we really need to use location from database for now?
+            // because LimboCache#restoreData teleport player to last location.
+            //teleportationService.teleportOnLogin(player, auth, limbo);
             if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
                 player.setCollidable(true);
             }
@@ -110,9 +93,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 restoreInventory(player);
             }
-
-            // Clean up no longer used temporary data
-            limboCache.deletePlayerData(player);
         }
 
         // We can now display the join message (if delayed)
@@ -157,10 +137,10 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     }
 
     private void sendTo(Player player) {
-        if(!service.getProperty(HooksSettings.BUNGEECORD)) {
+        if (!service.getProperty(HooksSettings.BUNGEECORD)) {
             return;
         }
-        if(service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
+        if (service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
             return;
         }
 
@@ -171,7 +151,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     }
 
     private void sendBungeeMessage(Player player) {
-        if(!service.getProperty(HooksSettings.BUNGEECORD)) {
+        if (!service.getProperty(HooksSettings.BUNGEECORD)) {
             return;
         }
 
