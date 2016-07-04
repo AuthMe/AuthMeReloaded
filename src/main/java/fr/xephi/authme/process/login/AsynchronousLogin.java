@@ -27,7 +27,6 @@ import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -126,7 +125,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
-        Bukkit.getServer().getPluginManager().callEvent(event);
+        bukkitService.callEvent(event);
         if (!event.canLogin()) {
             return null;
         }

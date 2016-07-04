@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
@@ -53,6 +54,9 @@ public class RegisterAdminCommandTest {
 
     @Mock
     private ValidationService validationService;
+
+    @Mock
+    private LimboCache limboCache;
 
     @BeforeClass
     public static void setUpLogger() {
