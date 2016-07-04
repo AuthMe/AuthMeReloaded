@@ -14,7 +14,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -43,6 +43,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
 
+    @Inject
+    private TeleportationService teleportationService;
+
     AsynchronousUnregister() { }
 
 
@@ -56,7 +59,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             }
 
             if (service.getProperty(RegistrationSettings.FORCE)) {
-                Utils.teleportToSpawn(player);
+                teleportationService.teleportOnJoin(player);
                 player.saveData();
                 playerCache.removePlayer(player.getName().toLowerCase());
                 if (!Settings.getRegisteredGroup.isEmpty()) {
@@ -68,7 +71,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 playerDataTaskManager.registerMessageTask(name, false);
 
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
-                ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
+                ConsoleLogger.info(player.getName() + " unregistered himself");
                 return; // TODO ljacqu 20160612: Why return here? No blind effect? Player not removed from PlayerCache?
             }
             if (!Settings.unRegisteredGroup.isEmpty()) {
@@ -82,7 +85,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
             }
             service.send(player, MessageKey.UNREGISTERED_SUCCESS);
-            ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
+            ConsoleLogger.info(player.getName() + " unregistered himself");
         } else {
             service.send(player, MessageKey.WRONG_PASSWORD);
         }

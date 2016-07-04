@@ -78,8 +78,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
      */
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
-        Utils.teleportToSpawn(player);
-
         limboCache.updatePlayerData(player);
         playerDataTaskManager.registerTimeoutTask(player);
         playerDataTaskManager.registerMessageTask(name, true);
@@ -92,7 +90,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     public void processPasswordRegister(Player player) {
         final String name = player.getName().toLowerCase();
         if (limboCache.hasPlayerData(name)) {
-            teleportationService.teleportOnJoin(player);
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 bukkitService.callEvent(event);

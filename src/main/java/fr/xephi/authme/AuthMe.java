@@ -29,6 +29,7 @@ import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
@@ -421,11 +422,12 @@ public class AuthMe extends JavaPlugin {
         // Save player data
         BukkitService bukkitService = initializer.getIfAvailable(BukkitService.class);
         LimboCache limboCache = initializer.getIfAvailable(LimboCache.class);
+        AuthGroupHandler authGroupHandler = initializer.getIfAvailable(AuthGroupHandler.class);
 
         if (bukkitService != null && limboCache != null) {
             Collection<? extends Player> players = bukkitService.getOnlinePlayers();
             for (Player player : players) {
-                savePlayer(player, limboCache);
+                savePlayer(player, limboCache, authGroupHandler);
             }
         }
 
@@ -558,7 +560,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Save Player Data
-    private void savePlayer(Player player, LimboCache limboCache) {
+    private void savePlayer(Player player, LimboCache limboCache, AuthGroupHandler authGroupHandler) {
         if (safeIsNpc(player) || Utils.isUnrestricted(player)) {
             return;
         }
