@@ -3,6 +3,7 @@ package fr.xephi.authme.listener.protocollib;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -11,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-public class ProtocolLibService implements SettingsDependent {
+public class ProtocolLibService implements SettingsDependent, Reloadable {
 
     /* Packet Adapters */
     private AuthMeInventoryPacketAdapter inventoryPacketAdapter;
@@ -115,11 +116,17 @@ public class ProtocolLibService implements SettingsDependent {
 
         //it was true and will be deactivated now, so we need to restore the inventory for every player
         if (oldProtectInventory && !protectInvBeforeLogin) {
+            inventoryPacketAdapter.unregister();
             for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
                 if (!PlayerCache.getInstance().isAuthenticated(onlinePlayer.getName())) {
                     sendInventoryPacket(onlinePlayer);
                 }
             }
         }
+    }
+
+    @Override
+    public void reload() {
+        setup();
     }
 }
