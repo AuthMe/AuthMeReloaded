@@ -7,6 +7,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -24,10 +25,14 @@ public class ProtocolLibService implements SettingsDependent, Reloadable {
     /* Service */
     private boolean isEnabled;
     private AuthMe plugin;
+    private BukkitService bukkitService;
+    private PlayerCache playerCache;
 
     @Inject
-    ProtocolLibService(AuthMe plugin, NewSetting settings) {
+    ProtocolLibService(AuthMe plugin, NewSetting settings, BukkitService bukkitService, PlayerCache playerCache) {
         this.plugin = plugin;
+        this.bukkitService = bukkitService;
+        this.playerCache = playerCache;
         loadSettings(settings);
         setup();
     }
@@ -104,8 +109,8 @@ public class ProtocolLibService implements SettingsDependent, Reloadable {
         if (oldProtectInventory && !protectInvBeforeLogin) {
             inventoryPacketAdapter.unregister();
             for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
-                if (!PlayerCache.getInstance().isAuthenticated(onlinePlayer.getName())) {
-                    sendInventoryPacket(onlinePlayer);
+                if (!playerCache.isAuthenticated(onlinePlayer.getName())) {
+                    onlinePlayer.updateInventory();
                 }
             }
         }
