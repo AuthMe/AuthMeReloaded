@@ -148,11 +148,13 @@ public class AuthMeServiceInitializer {
             throw new IllegalStateException("Settings instance is null");
         }
         for (Object object : objects.values()) {
-            if (object instanceof Reloadable) {
-                ((Reloadable) object).reload();
-            } else if (object instanceof SettingsDependent) {
+            if (object instanceof SettingsDependent) {
                 ((SettingsDependent) object).loadSettings(settings);
             }
+
+            if (object instanceof Reloadable) {
+                ((Reloadable) object).reload();
+            } 
         }
     }
 
