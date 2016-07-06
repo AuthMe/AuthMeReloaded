@@ -1,7 +1,6 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
@@ -34,7 +33,6 @@ public class SpawnLoader implements Reloadable {
     private final File authMeConfigurationFile;
     private final NewSetting settings;
     private final PluginHooks pluginHooks;
-    private final DataSource dataSource;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
@@ -43,20 +41,19 @@ public class SpawnLoader implements Reloadable {
      * Constructor.
      *
      * @param pluginFolder The AuthMe data folder
-     * @param settings The setting instance
-     * @param pluginHooks The plugin hooks instance
-     * @param dataSource The plugin auth database instance
+     * @param settings     The setting instance
+     * @param pluginHooks  The plugin hooks instance
+     * @param dataSource   The plugin auth database instance
      */
     @Inject
-    public SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
-                       DataSource dataSource) {
+    SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
+                DataSource dataSource) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
         this.settings = settings;
         this.pluginHooks = pluginHooks;
-        this.dataSource = dataSource;
         reload();
     }
 
@@ -83,6 +80,7 @@ public class SpawnLoader implements Reloadable {
      * Set the AuthMe spawn point.
      *
      * @param location The location to use
+     *
      * @return True upon success, false otherwise
      */
     public boolean setSpawn(Location location) {
@@ -102,6 +100,7 @@ public class SpawnLoader implements Reloadable {
      * Set the AuthMe first spawn location.
      *
      * @param location The location to use
+     *
      * @return True upon success, false otherwise
      */
     public boolean setFirstSpawn(Location location) {
@@ -140,7 +139,9 @@ public class SpawnLoader implements Reloadable {
      * depending on the spawn priority setting.
      *
      * @param player The player to retrieve the spawn point for
+     *
      * @return The spawn location, or the default spawn location upon failure
+     *
      * @see RestrictionSettings#SPAWN_PRIORITY
      */
     public Location getSpawnLocation(Player player) {
@@ -166,15 +167,7 @@ public class SpawnLoader implements Reloadable {
                     spawnLoc = essentialsSpawn;
                     break;
                 case "authme":
-                    String playerNameLower = player.getName().toLowerCase();
-                    if (PlayerCache.getInstance().isAuthenticated(playerNameLower)) {
-                        spawnLoc = getSpawn();
-                    } else if (getFirstSpawn() != null && (!player.hasPlayedBefore() ||
-                        !dataSource.isAuthAvailable(playerNameLower))) {
-                        spawnLoc = getFirstSpawn();
-                    } else {
-                        spawnLoc = getSpawn();
-                    }
+                    spawnLoc = getSpawn();
                     break;
             }
             if (spawnLoc != null) {
@@ -187,8 +180,9 @@ public class SpawnLoader implements Reloadable {
     /**
      * Save the location under the given prefix.
      *
-     * @param prefix The prefix to save the spawn under
+     * @param prefix   The prefix to save the spawn under
      * @param location The location to persist
+     *
      * @return True upon success, false otherwise
      */
     private boolean setLocation(String prefix, Location location) {
@@ -215,10 +209,25 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
+     * Return player's location if player is alive, or player's spawn location if dead.
+     *
+     * @param player player to retrieve
+     *
+     * @return location of the given player if alive, spawn location if dead.
+     */
+    public Location getPlayerLocationOrSpawn(Player player) {
+        if (player.isOnline() && player.isDead()) {
+            return getSpawnLocation(player);
+        }
+        return player.getLocation();
+    }
+
+    /**
      * Build a {@link Location} object from the given path in the file configuration.
      *
      * @param configuration The file configuration to read from
-     * @param pathPrefix The path to get the spawn point from
+     * @param pathPrefix    The path to get the spawn point from
+     *
      * @return Location corresponding to the values in the path
      */
     private static Location getLocationFromConfiguration(FileConfiguration configuration, String pathPrefix) {
@@ -240,7 +249,8 @@ public class SpawnLoader implements Reloadable {
      * under the given path.
      *
      * @param configuration The file configuration to use
-     * @param pathPrefix The path to verify
+     * @param pathPrefix    The path to verify
+     *
      * @return True if all spawn fields are present, false otherwise
      */
     private static boolean containsAllSpawnFields(FileConfiguration configuration, String pathPrefix) {
@@ -257,7 +267,8 @@ public class SpawnLoader implements Reloadable {
      * Retrieve a property as a float from the given file configuration.
      *
      * @param configuration The file configuration to use
-     * @param path The path of the property to retrieve
+     * @param path          The path of the property to retrieve
+     *
      * @return The float
      */
     private static float getFloat(FileConfiguration configuration, String path) {

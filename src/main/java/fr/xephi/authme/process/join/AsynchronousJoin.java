@@ -9,7 +9,6 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -20,9 +19,8 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
@@ -64,18 +62,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private PluginHooks pluginHooks;
 
     @Inject
-    private TeleportationService teleportationService;
-
-    @Inject
     private BukkitService bukkitService;
 
     @Inject
-    private ProtocolLibService protocolLibService;
+    private PlayerDataTaskManager playerDataTaskManager;
 
-    @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
-
-    AsynchronousJoin() { }
+    AsynchronousJoin() {
+    }
 
 
     public void processJoin(final Player player) {
@@ -122,19 +115,19 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
+
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
+            limboCache.addPlayerData(player);
             service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
-            teleportationService.teleportOnJoin(player);
-            limboCache.updateLimboPlayer(player);
 
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
-                    protocolLibService.sendInventoryPacket(player);
+                    player.updateInventory();
                     if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                     }
@@ -157,7 +150,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
         } else {
-            // Not Registered
+            // Not Registered. Delete old data, load default one.
+            limboCache.deletePlayerData(player);
+            limboCache.addPlayerData(player);
 
             // Groups logic
             service.setGroup(player, AuthGroupType.UNREGISTERED);
@@ -166,13 +161,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (!service.getProperty(RegistrationSettings.FORCE)) {
                 return;
             }
-
-            teleportationService.teleportOnJoin(player);
-        }
-        // The user is not logged in
-
-        if (!limboCache.hasLimboPlayer(name)) {
-            limboCache.addLimboPlayer(player);
         }
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
@@ -200,8 +188,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         });
 
         // Timeout and message task
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
+        playerDataTaskManager.registerTimeoutTask(player);
+        playerDataTaskManager.registerMessageTask(name, isAuthAvailable);
     }
 
     private boolean isPlayerUnrestricted(String name) {
@@ -211,11 +199,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
     /**
      * Returns whether the name is restricted based on the restriction settings.
      *
-     * @param name The name to check
-     * @param ip The IP address of the player
+     * @param name   The name to check
+     * @param ip     The IP address of the player
      * @param domain The hostname of the IP address
+     *
      * @return True if the name is restricted (IP/domain is not allowed for the given name),
-     *         false if the restrictions are met or if the name has no restrictions to it
+     * false if the restrictions are met or if the name has no restrictions to it
      */
     private boolean isNameRestricted(String name, String ip, String domain) {
         if (!service.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)) {
@@ -242,7 +231,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * settings and permissions). If this is the case, the player is kicked.
      *
      * @param player the player to verify
-     * @param ip the ip address of the player
+     * @param ip     the ip address of the player
+     *
      * @return true if the verification is OK (no infraction), false if player has been kicked
      */
     private boolean validatePlayerCountForIp(final Player player, String ip) {

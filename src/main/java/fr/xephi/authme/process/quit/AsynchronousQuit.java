@@ -4,16 +4,15 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -38,15 +37,19 @@ public class AsynchronousQuit implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
-    private LimboCache limboCache;
-
-    @Inject
     private SyncProcessManager syncProcessManager;
 
     @Inject
     private SessionManager sessionManager;
 
-    AsynchronousQuit() { }
+    @Inject
+    private SpawnLoader spawnLoader;
+
+    @Inject
+    private BukkitService bukkitService;
+
+    AsynchronousQuit() {
+    }
 
 
     public void processQuit(Player player, boolean isKick) {
@@ -56,10 +59,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
 
         String ip = Utils.getPlayerIp(player);
-
         if (playerCache.isAuthenticated(name)) {
             if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-                Location loc = player.getLocation();
+                Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(name).location(loc)
                     .realName(player.getName()).build();
@@ -74,24 +76,11 @@ public class AsynchronousQuit implements AsynchronousProcess {
             database.updateSession(auth);
         }
 
-        boolean needToChange = false;
-        boolean isOp = false;
-
-        LimboPlayer limbo = limboCache.getLimboPlayer(name);
-        if (limbo != null) {
-            if (!StringUtils.isEmpty(limbo.getGroup())) {
-                Utils.addNormal(player, limbo.getGroup());
-            }
-            needToChange = true;
-            isOp = limbo.isOperator();
-            limboCache.deleteLimboPlayer(name);
-        }
-
         //always unauthenticate the player - use session only for auto logins on the same ip
         playerCache.removePlayer(name);
 
         if (plugin.isEnabled() && service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+            BukkitTask task = bukkitService.runTaskLaterAsynchronously(new Runnable() {
 
                 @Override
                 public void run() {
@@ -110,7 +99,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         database.setUnlogged(name);
 
         if (plugin.isEnabled()) {
-            syncProcessManager.processSyncPlayerQuit(player, isOp, needToChange);
+            syncProcessManager.processSyncPlayerQuit(player);
         }
         // remove player from cache
         if (database instanceof CacheDataSource) {

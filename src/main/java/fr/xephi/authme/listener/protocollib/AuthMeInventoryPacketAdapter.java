@@ -24,7 +24,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.settings.Settings;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -52,8 +51,7 @@ class AuthMeInventoryPacketAdapter extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         byte windowId = packet.getIntegers().read(0).byteValue();
-        if (windowId == PLAYER_INVENTORY && Settings.protectInventoryBeforeLogInEnabled
-            && !PlayerCache.getInstance().isAuthenticated(player.getName())) {
+        if (windowId == PLAYER_INVENTORY && !PlayerCache.getInstance().isAuthenticated(player.getName())) {
             packetEvent.setCancelled(true);
         }
     }
@@ -64,10 +62,6 @@ class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
     public void unregister() {
         ProtocolLibrary.getProtocolManager().removePacketListener(this);
-    }
-
-    public void sendInventoryPacket(Player player) {
-        player.updateInventory();
     }
 
     public void sendBlankInventoryPacket(Player player) {

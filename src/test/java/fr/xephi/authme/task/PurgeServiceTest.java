@@ -126,6 +126,7 @@ public class PurgeServiceTest {
         verifyScheduledPurgeTask(null, "alpha", "charlie");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldRecognizeNoPlayersToPurge() {
         // given

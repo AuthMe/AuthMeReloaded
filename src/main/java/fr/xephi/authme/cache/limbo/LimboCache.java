@@ -1,9 +1,12 @@
 package fr.xephi.authme.cache.limbo;
 
-import fr.xephi.authme.cache.backup.JsonCache;
-import fr.xephi.authme.cache.backup.PlayerData;
+import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -13,99 +16,144 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Manages all {@link LimboPlayer} instances.
+ * Manages all {@link PlayerData} instances.
  */
 public class LimboCache {
 
-    private final ConcurrentHashMap<String, LimboPlayer> cache = new ConcurrentHashMap<>();
-    private final JsonCache jsonCache = new JsonCache();
+    private final ConcurrentHashMap<String, PlayerData> cache = new ConcurrentHashMap<>();
 
-    @Inject
+    private PlayerDataStorage playerDataStorage;
+    private NewSetting settings;
     private PermissionsManager permissionsManager;
-    @Inject
     private SpawnLoader spawnLoader;
 
     @Inject
-    LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader) {
+    LimboCache(NewSetting settings, PermissionsManager permissionsManager,
+               SpawnLoader spawnLoader, PlayerDataStorage playerDataStorage) {
+        this.settings = settings;
         this.permissionsManager = permissionsManager;
         this.spawnLoader = spawnLoader;
+        this.playerDataStorage = playerDataStorage;
     }
 
     /**
-     * Add a limbo player.
+     * Load player data if exist, otherwise current player's data will be stored.
      *
      * @param player Player instance to add.
      */
-    public void addLimboPlayer(Player player) {
+    public void addPlayerData(Player player) {
         String name = player.getName().toLowerCase();
-        Location location = player.isDead() ? spawnLoader.getSpawnLocation(player) : player.getLocation();
+        Location location = spawnLoader.getPlayerLocationOrSpawn(player);
         boolean operator = player.isOp();
         boolean flyEnabled = player.getAllowFlight();
+        float walkSpeed = player.getWalkSpeed();
+        float flySpeed = player.getFlySpeed();
         String playerGroup = "";
         if (permissionsManager.hasGroupSupport()) {
             playerGroup = permissionsManager.getPrimaryGroup(player);
         }
 
-        if (jsonCache.doesCacheExist(player)) {
-            PlayerData cache = jsonCache.readCache(player);
+        if (playerDataStorage.hasData(player)) {
+            PlayerData cache = playerDataStorage.readData(player);
             if (cache != null) {
+                location = cache.getLocation();
                 playerGroup = cache.getGroup();
-                operator = cache.getOperator();
-                flyEnabled = cache.isFlyEnabled();
+                operator = cache.isOperator();
+                flyEnabled = cache.isCanFly();
+                walkSpeed = cache.getWalkSpeed();
+                flySpeed = cache.getFlySpeed();
             }
+        } else {
+            playerDataStorage.saveData(player);
         }
 
-
-        cache.put(name, new LimboPlayer(name, location, operator, playerGroup, flyEnabled));
+        cache.put(name, new PlayerData(location, operator, playerGroup, flyEnabled, walkSpeed, flySpeed));
     }
 
     /**
-     * Method deleteLimboPlayer.
+     * Restore player's data to player if exist.
      *
-     * @param name String
+     * @param player Player instance to restore
      */
-    public void deleteLimboPlayer(String name) {
-        checkNotNull(name);
-        name = name.toLowerCase();
-        LimboPlayer cachedPlayer = cache.remove(name);
+    public void restoreData(Player player) {
+        String lowerName = player.getName().toLowerCase();
+        if (cache.containsKey(lowerName)) {
+            PlayerData data = cache.get(lowerName);
+            player.setOp(data.isOperator());
+            player.setAllowFlight(data.isCanFly());
+            player.setWalkSpeed(data.getWalkSpeed());
+            player.setFlySpeed(data.getFlySpeed());
+            restoreGroup(player, data.getGroup());
+            if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+                player.teleport(data.getLocation());
+            }
+            data.clearTasks();
+        }
+    }
+
+    /**
+     * Remove PlayerData from cache and disk.
+     *
+     * @param player Player player to remove.
+     */
+    public void deletePlayerData(Player player) {
+        removeFromCache(player);
+        playerDataStorage.removeData(player);
+    }
+
+    /**
+     * Remove PlayerData from cache.
+     *
+     * @param player player to remove.
+     */
+    public void removeFromCache(Player player) {
+        String name = player.getName().toLowerCase();
+        PlayerData cachedPlayer = cache.remove(name);
         if (cachedPlayer != null) {
             cachedPlayer.clearTasks();
         }
     }
 
     /**
-     * Method getLimboPlayer.
+     * Method getPlayerData.
      *
      * @param name String
      *
-     * @return LimboPlayer
+     * @return PlayerData
      */
-    public LimboPlayer getLimboPlayer(String name) {
+    public PlayerData getPlayerData(String name) {
         checkNotNull(name);
         return cache.get(name.toLowerCase());
     }
 
     /**
-     * Method hasLimboPlayer.
+     * Method hasPlayerData.
      *
      * @param name String
      *
      * @return boolean
      */
-    public boolean hasLimboPlayer(String name) {
+    public boolean hasPlayerData(String name) {
         checkNotNull(name);
         return cache.containsKey(name.toLowerCase());
     }
 
     /**
-     * Method updateLimboPlayer.
+     * Method updatePlayerData.
      *
      * @param player Player
      */
-    public void updateLimboPlayer(Player player) {
+    public void updatePlayerData(Player player) {
         checkNotNull(player);
-        deleteLimboPlayer(player.getName().toLowerCase());
-        addLimboPlayer(player);
+        removeFromCache(player);
+        addPlayerData(player);
     }
 
+    private void restoreGroup(Player player, String group) {
+        if (!settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)
+            || !permissionsManager.hasGroupSupport() || StringUtils.isEmpty(group)) {
+            return;
+        }
+        permissionsManager.setGroup(player, group);
+    }
 }

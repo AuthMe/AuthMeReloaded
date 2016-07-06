@@ -7,32 +7,25 @@ import org.bukkit.scheduler.BukkitTask;
  * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
  * which may be revoked from the player until he has logged in or registered.
  */
-public class LimboPlayer {
+public class PlayerData {
 
-    private final String name;
-    private final boolean fly;
+    private final boolean canFly;
     private final boolean operator;
     private final String group;
     private final Location loc;
+    private final float walkSpeed;
+    private final float flySpeed;
     private BukkitTask timeoutTask = null;
     private BukkitTask messageTask = null;
 
-    public LimboPlayer(String name, Location loc, boolean operator,
-                       String group, boolean fly) {
-        this.name = name;
+    public PlayerData(Location loc, boolean operator,
+                      String group, boolean fly, float walkSpeed, float flySpeed) {
         this.loc = loc;
         this.operator = operator;
         this.group = group;
-        this.fly = fly;
-    }
-
-    /**
-     * Return the name of the player.
-     *
-     * @return The player's name
-     */
-    public String getName() {
-        return name;
+        this.canFly = fly;
+        this.walkSpeed = walkSpeed;
+        this.flySpeed = flySpeed;
     }
 
     /**
@@ -40,7 +33,7 @@ public class LimboPlayer {
      *
      * @return The player's location
      */
-    public Location getLoc() {
+    public Location getLocation() {
         return loc;
     }
 
@@ -62,8 +55,16 @@ public class LimboPlayer {
         return group;
     }
 
-    public boolean isFly() {
-        return fly;
+    public boolean isCanFly() {
+        return canFly;
+    }
+
+    public float getWalkSpeed() {
+        return walkSpeed;
+    }
+
+    public float getFlySpeed() {
+        return flySpeed;
     }
 
     /**

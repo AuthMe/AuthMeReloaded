@@ -7,7 +7,6 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -25,12 +24,10 @@ public class ProtocolLibService implements SettingsDependent, Reloadable {
     /* Service */
     private boolean isEnabled;
     private AuthMe plugin;
-    private BukkitService bukkitService;
 
     @Inject
-    ProtocolLibService(AuthMe plugin, BukkitService bukkitService, NewSetting settings) {
+    ProtocolLibService(AuthMe plugin, NewSetting settings) {
         this.plugin = plugin;
-        this.bukkitService = bukkitService;
         loadSettings(settings);
         setup();
     }
@@ -82,17 +79,6 @@ public class ProtocolLibService implements SettingsDependent, Reloadable {
         if (tabCompletePacketAdapter != null) {
             tabCompletePacketAdapter.unregister();
             tabCompletePacketAdapter = null;
-        }
-    }
-
-    /**
-     * Send a packet to the player to give them an inventory.
-     *
-     * @param player The player to send the packet to.
-     */
-    public void sendInventoryPacket(Player player) {
-        if (isEnabled && inventoryPacketAdapter != null) {
-            inventoryPacketAdapter.sendInventoryPacket(player);
         }
     }
 

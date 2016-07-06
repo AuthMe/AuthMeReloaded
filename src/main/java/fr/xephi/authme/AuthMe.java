@@ -5,8 +5,8 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
@@ -29,6 +29,7 @@ import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
@@ -283,15 +284,15 @@ public class AuthMe extends JavaPlugin {
         // Some statically injected things
         initializer.register(PlayerCache.class, PlayerCache.getInstance());
 
-        messages         = initializer.get(Messages.class);
-        permsMan         = initializer.get(PermissionsManager.class);
-        bukkitService    = initializer.get(BukkitService.class);
-        pluginHooks      = initializer.get(PluginHooks.class);
+        messages = initializer.get(Messages.class);
+        permsMan = initializer.get(PermissionsManager.class);
+        bukkitService = initializer.get(BukkitService.class);
+        pluginHooks = initializer.get(PluginHooks.class);
         passwordSecurity = initializer.get(PasswordSecurity.class);
-        spawnLoader      = initializer.get(SpawnLoader.class);
-        commandHandler   = initializer.get(CommandHandler.class);
-        management       = initializer.get(Management.class);
-        geoLiteApi       = initializer.get(GeoLiteAPI.class);
+        spawnLoader = initializer.get(SpawnLoader.class);
+        commandHandler = initializer.get(CommandHandler.class);
+        management = initializer.get(Management.class);
+        geoLiteApi = initializer.get(GeoLiteAPI.class);
         initializer.get(NewAPI.class);
         initializer.get(API.class);
     }
@@ -321,7 +322,7 @@ public class AuthMe extends JavaPlugin {
 
         // Register event listeners
         pluginManager.registerEvents(initializer.get(AuthMePlayerListener.class), this);
-        pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class),  this);
+        pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class), this);
         pluginManager.registerEvents(initializer.get(AuthMeEntityListener.class), this);
         pluginManager.registerEvents(initializer.get(AuthMeServerListener.class), this);
 
@@ -421,11 +422,12 @@ public class AuthMe extends JavaPlugin {
         // Save player data
         BukkitService bukkitService = initializer.getIfAvailable(BukkitService.class);
         LimboCache limboCache = initializer.getIfAvailable(LimboCache.class);
+        AuthGroupHandler authGroupHandler = initializer.getIfAvailable(AuthGroupHandler.class);
 
         if (bukkitService != null && limboCache != null) {
             Collection<? extends Player> players = bukkitService.getOnlinePlayers();
             for (Player player : players) {
-                savePlayer(player, limboCache);
+                savePlayer(player, limboCache, authGroupHandler);
             }
         }
 
@@ -441,8 +443,8 @@ public class AuthMe extends JavaPlugin {
                 //returns only the async takss
                 for (BukkitWorker pendingTask : getServer().getScheduler().getActiveWorkers()) {
                     if (pendingTask.getOwner().equals(AuthMe.this)
-                            //it's not a peridic task
-                            && !getServer().getScheduler().isQueued(pendingTask.getTaskId())) {
+                        //it's not a peridic task
+                        && !getServer().getScheduler().isQueued(pendingTask.getTaskId())) {
                         pendingTasks.add(pendingTask.getTaskId());
                     }
                 }
@@ -465,7 +467,7 @@ public class AuthMe extends JavaPlugin {
                         break;
                     }
 
-                    for (Iterator<Integer> iterator = pendingTasks.iterator(); iterator.hasNext();) {
+                    for (Iterator<Integer> iterator = pendingTasks.iterator(); iterator.hasNext(); ) {
                         int taskId = iterator.next();
                         if (!getServer().getScheduler().isCurrentlyRunning(taskId)) {
                             iterator.remove();
@@ -558,40 +560,36 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Save Player Data
-    private void savePlayer(Player player, LimboCache limboCache) {
+    private void savePlayer(Player player, LimboCache limboCache, AuthGroupHandler authGroupHandler) {
         if (safeIsNpc(player) || Utils.isUnrestricted(player)) {
             return;
         }
         String name = player.getName().toLowerCase();
-        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-            final PlayerAuth auth = PlayerAuth.builder()
-                .name(player.getName().toLowerCase())
-                .realName(player.getName())
-                .location(player.getLocation()).build();
-            database.updateQuitLoc(auth);
-        }
-        if (limboCache.hasLimboPlayer(name)) {
-            LimboPlayer limbo = limboCache.getLimboPlayer(name);
-            if (!Settings.noTeleport) {
-                player.teleport(limbo.getLoc());
+        if (limboCache.hasPlayerData(name)) {
+            limboCache.restoreData(player);
+            limboCache.removeFromCache(player);
+        } else {
+            if (newSettings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
+                Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
+                final PlayerAuth auth = PlayerAuth.builder()
+                    .name(player.getName().toLowerCase())
+                    .realName(player.getName())
+                    .location(loc).build();
+                database.updateQuitLoc(auth);
             }
-
-            Utils.addNormal(player, limbo.getGroup());
-            player.setOp(limbo.isOperator());
-            limbo.getTimeoutTask().cancel();
-            limboCache.deleteLimboPlayer(name);
+            if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
+                && !newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+                PlayerDataStorage playerDataStorage = initializer.getIfAvailable(PlayerDataStorage.class);
+                if (playerDataStorage != null && !playerDataStorage.hasData(player)) {
+                    playerDataStorage.saveData(player);
+                }
+            }
         }
         PlayerCache.getInstance().removePlayer(name);
     }
 
     private boolean safeIsNpc(Player player) {
         return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
-    }
-
-    // Return the spawn location of a player
-    @Deprecated
-    public Location getSpawnLocation(Player player) {
-        return spawnLoader.getSpawnLocation(player);
     }
 
     private void scheduleRecallEmailTask() {
@@ -632,7 +630,6 @@ public class AuthMe extends JavaPlugin {
     }
 
 
-
     /**
      * Handle Bukkit commands.
      *
@@ -663,6 +660,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return permission manager
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -672,6 +670,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return process manager
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -681,6 +680,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return the datasource
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -690,6 +690,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return password manager
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated
@@ -699,6 +700,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * @return plugin hooks
+     *
      * @deprecated should be used in API classes only (temporarily)
      */
     @Deprecated

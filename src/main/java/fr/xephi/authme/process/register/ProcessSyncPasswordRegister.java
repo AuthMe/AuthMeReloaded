@@ -5,10 +5,8 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
-import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
@@ -18,7 +16,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -43,15 +41,13 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private ProtocolLibService protocolLibService;
-
-    @Inject
     private LimboCache limboCache;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
-    ProcessSyncPasswordRegister() { }
+    ProcessSyncPasswordRegister() {
+    }
 
 
     private void sendBungeeMessage(Player player) {
@@ -69,7 +65,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
         for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS_AS_CONSOLE)) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                    command.replace("%p", player.getName()));
+                command.replace("%p", player.getName()));
         }
     }
 
@@ -80,11 +76,9 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
      */
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
-        Utils.teleportToSpawn(player);
-
-        limboCache.updateLimboPlayer(player);
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
+        limboCache.updatePlayerData(player);
+        playerDataTaskManager.registerTimeoutTask(player);
+        playerDataTaskManager.registerMessageTask(name, true);
 
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -93,19 +87,16 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     public void processPasswordRegister(Player player) {
         final String name = player.getName().toLowerCase();
-        LimboPlayer limbo = limboCache.getLimboPlayer(name);
-        if (limbo != null) {
-            Utils.teleportToSpawn(player);
-
+        if (limboCache.hasPlayerData(name)) {
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 bukkitService.callEvent(event);
                 if (!event.isCancelled()) {
-                    protocolLibService.sendInventoryPacket(player);
+                    player.updateInventory();
                 }
             }
-
-            limboCache.deleteLimboPlayer(name);
+            limboCache.restoreData(player);
+            limboCache.deletePlayerData(player);
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {

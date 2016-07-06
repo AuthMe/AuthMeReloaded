@@ -45,8 +45,8 @@ public class MessageTask implements Runnable {
                     player.sendMessage(ms);
                 }
                 BukkitTask nextTask = bukkitService.runTaskLater(this, interval * TICKS_PER_SECOND);
-                if (limboCache.hasLimboPlayer(name)) {
-                    limboCache.getLimboPlayer(name).setMessageTask(nextTask);
+                if (limboCache.hasPlayerData(name)) {
+                    limboCache.getPlayerData(name).setMessageTask(nextTask);
                 }
                 return;
             }

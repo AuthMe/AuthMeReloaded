@@ -12,6 +12,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -72,6 +73,8 @@ public class AuthMePlayerListener implements Listener {
     private OnJoinVerifier onJoinVerifier;
     @Inject
     private ListenerService listenerService;
+    @Inject
+    private TeleportationService teleportationService;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -191,6 +194,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
         management.performJoin(player);
     }
 
@@ -229,6 +233,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         antiBot.handlePlayerJoin(player);
+        teleportationService.teleportOnJoin(player);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

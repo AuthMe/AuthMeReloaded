@@ -27,7 +27,7 @@ public class SessionManager implements SettingsDependent {
      * @return True if a session is found.
      */
     public boolean hasSession(String name) {
-        return sessions.containsKey(name);
+        return enabled && sessions.containsKey(name);
     }
 
     /**
