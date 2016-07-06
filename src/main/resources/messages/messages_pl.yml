@@ -69,3 +69,5 @@ antibot_auto_enabled: '&4[AntiBotService] AntyBot wlaczony z powodu duzej liczby
 accounts_owned_self: 'Posiadasz %count kont:'
 two_factor_create: '&2Twoj sekretny kod to %code. Mozesz zeskanowac go tutaj %url'
 not_owner_error: 'Nie jestes wlascicielem tego konta, wybierz inny nick!'
+# TODO incomplete_email_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
+# TODO kicked_admin_registered: 'An admin just registered you; please log in again'
