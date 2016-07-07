@@ -86,15 +86,15 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
             // Apply blind effect
             final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-            bukktiService.runTask(new Runnable() {
-                @Override
-                public void run() {
-                    if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+            if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+                bukktiService.runTask(new Runnable() {
+                    @Override
+                    public void run() {
                         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
                     }
-                }
-            });
-            
+                });
+            }
+
             service.send(player, MessageKey.UNREGISTERED_SUCCESS);
             ConsoleLogger.info(player.getName() + " unregistered himself");
         } else {
