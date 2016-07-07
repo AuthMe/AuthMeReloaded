@@ -14,7 +14,9 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
+
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -38,6 +40,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
+    private BukkitService bukktiService;
+
+    @Inject
     private LimboCache limboCache;
 
     @Inject
@@ -49,7 +54,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     AsynchronousUnregister() { }
 
 
-    public void unregister(Player player, String password, boolean force) {
+    public void unregister(final Player player, String password, boolean force) {
         final String name = player.getName().toLowerCase();
         PlayerAuth cachedAuth = playerCache.getAuth(name);
         if (force || passwordSecurity.comparePassword(password, cachedAuth.getPassword(), player.getName())) {
@@ -80,10 +85,16 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             playerCache.removePlayer(name);
 
             // Apply blind effect
-            int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-            if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
-            }
+            final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+            bukktiService.runTask(new Runnable() {
+                @Override
+                public void run() {
+                    if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
+                    }
+                }
+            });
+            
             service.send(player, MessageKey.UNREGISTERED_SUCCESS);
             ConsoleLogger.info(player.getName() + " unregistered himself");
         } else {
