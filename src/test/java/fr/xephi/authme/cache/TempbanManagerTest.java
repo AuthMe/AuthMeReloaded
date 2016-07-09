@@ -114,7 +114,7 @@ public class TempbanManagerTest {
         assertThat(manager.shouldTempban(address), equalTo(true));
         assertHasCount(manager, address, 1);
         // end assumptions
-        manager.loadSettings(settings);
+        manager.reload(settings);
         boolean result = manager.shouldTempban(address);
 
         // then

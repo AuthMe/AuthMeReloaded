@@ -3,7 +3,6 @@ package fr.xephi.authme.listener.protocollib;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -12,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-public class ProtocolLibService implements SettingsDependent, Reloadable {
+public class ProtocolLibService implements SettingsDependent {
 
     /* Packet Adapters */
     private AuthMeInventoryPacketAdapter inventoryPacketAdapter;
@@ -33,7 +32,7 @@ public class ProtocolLibService implements SettingsDependent, Reloadable {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         this.playerCache = playerCache;
-        loadSettings(settings);
+        reload(settings);
         setup();
     }
 
@@ -99,7 +98,7 @@ public class ProtocolLibService implements SettingsDependent, Reloadable {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         boolean oldProtectInventory = this.protectInvBeforeLogin;
 
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
@@ -114,10 +113,7 @@ public class ProtocolLibService implements SettingsDependent, Reloadable {
                 }
             }
         }
-    }
-
-    @Override
-    public void reload() {
         setup();
     }
+
 }

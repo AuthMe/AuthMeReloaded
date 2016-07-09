@@ -31,7 +31,7 @@ public class Messages implements SettingsDependent {
      */
     @Inject
     Messages(NewSetting settings) {
-        loadSettings(settings);
+        reload(settings);
         this.defaultFile = settings.getDefaultMessagesFile();
     }
 
@@ -118,7 +118,7 @@ public class Messages implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         File messageFile = settings.getMessagesFile();
         this.configuration = YamlConfiguration.loadConfiguration(messageFile);
         this.fileName = messageFile.getName();

@@ -34,7 +34,7 @@ public class TempbanManager implements SettingsDependent {
         this.ipLoginFailureCounts = new ConcurrentHashMap<>();
         this.bukkitService = bukkitService;
         this.messages = messages;
-        loadSettings(settings);
+        reload(settings);
     }
 
     /**
@@ -108,7 +108,7 @@ public class TempbanManager implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         this.isEnabled = settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN);
         this.length = settings.getProperty(SecuritySettings.TEMPBAN_LENGTH);

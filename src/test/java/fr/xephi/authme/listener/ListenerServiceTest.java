@@ -127,7 +127,7 @@ public class ListenerServiceTest {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
-        listenerService.loadSettings(settings);
+        listenerService.reload(settings);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);

@@ -33,7 +33,7 @@ class ListenerService implements SettingsDependent {
         this.dataSource = dataSource;
         this.pluginHooks = pluginHooks;
         this.playerCache = playerCache;
-        loadSettings(settings);
+        reload(settings);
     }
 
     /**
@@ -74,7 +74,7 @@ class ListenerService implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         isRegistrationForced = settings.getProperty(RegistrationSettings.FORCE);
         // Keep unrestricted names as Set for more efficient contains()
         unrestrictedNames = new HashSet<>(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES));

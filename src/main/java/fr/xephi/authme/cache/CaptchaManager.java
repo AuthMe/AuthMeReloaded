@@ -24,7 +24,7 @@ public class CaptchaManager implements SettingsDependent {
     CaptchaManager(NewSetting settings) {
         this.playerCounts = new ConcurrentHashMap<>();
         this.captchaCodes = new ConcurrentHashMap<>();
-        loadSettings(settings);
+        reload(settings);
     }
 
     /**
@@ -123,7 +123,7 @@ public class CaptchaManager implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         this.isEnabled = settings.getProperty(SecuritySettings.USE_CAPTCHA);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TRIES_BEFORE_CAPTCHA);
         this.captchaLength = settings.getProperty(SecuritySettings.CAPTCHA_LENGTH);

@@ -259,7 +259,7 @@ public class MessagesIntegrationTest {
             TestHelper.PROJECT_ROOT + "output/messages_test2.yml"));
 
         // when
-        messages.loadSettings(settings);
+        messages.reload(settings);
 
         // then
         assertThat(messages.retrieveSingle(key), equalTo("test2 - wrong password"));

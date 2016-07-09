@@ -50,7 +50,7 @@ public class HelpProvider implements SettingsDependent {
     @Inject
     HelpProvider(PermissionsManager permissionsManager, NewSetting settings) {
         this.permissionsManager = permissionsManager;
-        loadSettings(settings);
+        reload(settings);
     }
 
     private List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
@@ -102,7 +102,7 @@ public class HelpProvider implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
     }
 

@@ -33,7 +33,7 @@ public class PostConstructTestClass implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         if (settings != null) {
             wasReloaded = true;
         }

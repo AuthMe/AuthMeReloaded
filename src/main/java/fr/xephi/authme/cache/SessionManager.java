@@ -17,7 +17,7 @@ public class SessionManager implements SettingsDependent {
 
     @Inject
     SessionManager(NewSetting settings) {
-        loadSettings(settings);
+        reload(settings);
     }
 
     /**
@@ -67,7 +67,7 @@ public class SessionManager implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(NewSetting settings) {
         this.enabled = settings.getProperty(PluginSettings.SESSIONS_ENABLED);
         this.sessionTimeout = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
     }

@@ -137,7 +137,7 @@ public class CaptchaManagerTest {
         assertThat(manager.isCaptchaRequired(player), equalTo(true));
         assertHasCount(manager, player, 1);
         // end assumptions
-        manager.loadSettings(settings);
+        manager.reload(settings);
         boolean result = manager.isCaptchaRequired(player);
 
         // then

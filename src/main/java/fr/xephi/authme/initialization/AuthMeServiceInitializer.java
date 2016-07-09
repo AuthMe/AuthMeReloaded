@@ -149,7 +149,7 @@ public class AuthMeServiceInitializer {
         }
         for (Object object : objects.values()) {
             if (object instanceof SettingsDependent) {
-                ((SettingsDependent) object).loadSettings(settings);
+                ((SettingsDependent) object).reload(settings);
             }
 
             if (object instanceof Reloadable) {

@@ -8,9 +8,9 @@ import fr.xephi.authme.settings.NewSetting;
 public interface SettingsDependent {
 
     /**
-     * Loads the needed settings.
+     * Performs a reload with the provided settings instance.
      *
      * @param settings the settings instance
      */
-    void loadSettings(NewSetting settings);
+    void reload(NewSetting settings);
 }
