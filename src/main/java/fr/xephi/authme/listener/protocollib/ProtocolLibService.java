@@ -33,7 +33,6 @@ public class ProtocolLibService implements SettingsDependent {
         this.bukkitService = bukkitService;
         this.playerCache = playerCache;
         reload(settings);
-        setup();
     }
 
     /**
