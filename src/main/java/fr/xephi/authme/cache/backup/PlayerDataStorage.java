@@ -74,7 +74,7 @@ public class PlayerDataStorage {
             String str = Files.toString(file, Charsets.UTF_8);
             return gson.fromJson(str, PlayerData.class);
         } catch (IOException e) {
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.logException("Could not read player data on disk for '" + player.getName() + "'", e);
             return null;
         }
     }

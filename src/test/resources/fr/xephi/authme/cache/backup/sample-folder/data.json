@@ -1,0 +1,15 @@
+{
+  "location": {
+    "world": "nether",
+    "x": -113.219,
+    "y": 72.0,
+    "z": 130.637,
+    "yaw": -292.484,
+    "pitch": 24.15
+  },
+  "operator": true,
+  "can-fly": true,
+  "walk-speed": 0.2,
+  "fly-speed": 0.1,
+  "group": "players"
+}
