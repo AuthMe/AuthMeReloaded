@@ -7,7 +7,7 @@
  * verification). Don't forget to update the AUTHME_TABLE value and your     *
  * database credentials in getAuthmeMySqli().                                *
  *                                                                           *
- * Source: https://github.com/AuthMe-Team/AuthMeReloaded/                    *
+ * Source: https://github.com/AuthMe/AuthMeReloaded/                         *
  *****************************************************************************/
 abstract class AuthMeController {
 

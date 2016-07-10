@@ -16,7 +16,7 @@ public final class ToolsConstants {
 
     public static final String DOCS_FOLDER = "docs/";
 
-    public static final String DOCS_FOLDER_URL = "https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/";
+    public static final String DOCS_FOLDER_URL = "https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/";
 
     private ToolsConstants() {
     }

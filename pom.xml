@@ -16,13 +16,13 @@
 
     <organization>
         <name>AuthMe-Team</name>
-        <url>https://github.com/AuthMe-Team</url>
+        <url>https://github.com/AuthMe</url>
     </organization>
 
     <scm>
-        <connection>scm:git:https://github.com/AuthMe-Team/AuthMeReloaded.git</connection>
-        <developerConnection>scm:git:git@github.com:AuthMe-Team/AuthMeReloaded.git</developerConnection>
-        <url>https://github.com/AuthMe-Team/AuthMeReloaded</url>
+        <connection>scm:git:https://github.com/AuthMe/AuthMeReloaded.git</connection>
+        <developerConnection>scm:git:git@github.com:AuthMe/AuthMeReloaded.git</developerConnection>
+        <url>https://github.com/AuthMe/AuthMeReloaded</url>
     </scm>
 
     <ciManagement>
