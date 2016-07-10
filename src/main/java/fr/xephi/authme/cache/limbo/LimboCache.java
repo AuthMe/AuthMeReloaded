@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -19,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LimboCache {
 
-    private final ConcurrentHashMap<String, PlayerData> cache = new ConcurrentHashMap<>();
+    private final Map<String, PlayerData> cache = new ConcurrentHashMap<>();
 
     private PlayerDataStorage playerDataStorage;
     private NewSetting settings;
