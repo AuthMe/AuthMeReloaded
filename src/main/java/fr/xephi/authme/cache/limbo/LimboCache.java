@@ -5,7 +5,6 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -84,9 +83,6 @@ public class LimboCache {
             player.setWalkSpeed(data.getWalkSpeed());
             player.setFlySpeed(data.getFlySpeed());
             restoreGroup(player, data.getGroup());
-            if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-                player.teleport(data.getLocation());
-            }
             data.clearTasks();
         }
     }

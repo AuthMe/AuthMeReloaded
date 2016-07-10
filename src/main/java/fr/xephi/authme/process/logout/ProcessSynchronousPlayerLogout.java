@@ -16,6 +16,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -44,6 +45,9 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     @Inject
     private SessionManager sessionManager;
+
+    @Inject
+    private TeleportationService teleportationService;
 
     ProcessSynchronousPlayerLogout() {
     }
@@ -84,6 +88,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     private void applyLogoutEffect(Player player) {
         // dismount player
         player.leaveVehicle();
+        teleportationService.teleportOnJoin(player);
 
         // Apply Blindness effect
         final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;

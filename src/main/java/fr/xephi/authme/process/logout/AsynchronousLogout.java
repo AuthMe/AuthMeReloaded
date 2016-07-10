@@ -43,10 +43,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
         PlayerAuth auth = playerCache.getAuth(name);
         database.updateSession(auth);
         if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-            auth.setQuitLocX(player.getLocation().getX());
-            auth.setQuitLocY(player.getLocation().getY());
-            auth.setQuitLocZ(player.getLocation().getZ());
-            auth.setWorld(player.getWorld().getName());
+            auth.setQuitLocation(player.getLocation());
             database.updateQuitLoc(auth);
         }
 

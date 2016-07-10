@@ -3,7 +3,10 @@ package fr.xephi.authme.process.login;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
@@ -12,6 +15,7 @@ import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -44,6 +48,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private PluginManager pluginManager;
 
+    @Inject
+    private TeleportationService teleportationService;
+
+    @Inject
+    private DataSource dataSource;
+
     ProcessSyncPlayerLogin() {
     }
 
@@ -67,13 +77,15 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     public void processPlayerLogin(Player player) {
         final String name = player.getName().toLowerCase();
+
+        final PlayerData limbo = limboCache.getPlayerData(name);
         // Limbo contains the State of the Player before /login
-        if (limboCache.hasPlayerData(name)) {
+        if (limbo != null) {
             limboCache.restoreData(player);
             limboCache.deletePlayerData(player);
             // do we really need to use location from database for now?
             // because LimboCache#restoreData teleport player to last location.
-            //teleportationService.teleportOnLogin(player, auth, limbo);
+
             if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
                 player.setCollidable(true);
             }
@@ -82,6 +94,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
                 restoreInventory(player);
             }
         }
+
+        final PlayerAuth auth = dataSource.getAuth(name);
+        teleportationService.teleportOnLogin(player, auth, limbo);
 
         // We can now display the join message (if delayed)
         String jm = AuthMePlayerListener.joinMessage.get(name);
