@@ -139,7 +139,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         captchaManager.increaseCount(name);
         tempbanManager.increaseCount(ip);
 
-        if ("127.0.0.1".equals(pAuth.getIp()) && !pAuth.getIp().equals(ip)) {
+        if (!pAuth.getIp().equals(ip)) {
             pAuth.setIp(ip);
             database.updateIp(pAuth.getNickname(), ip);
         }
