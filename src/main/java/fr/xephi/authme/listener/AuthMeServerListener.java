@@ -39,16 +39,6 @@ public class AuthMeServerListener implements Listener {
     private PermissionsManager permissionsManager;
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onServerPing(ServerListPingEvent event) {
-        if (settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)) {
-            String playerIp = event.getAddress().getHostAddress();
-            if (!validationService.isCountryAdmitted(playerIp)) {
-                event.setMotd(messages.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
         // Make sure the plugin instance isn't null
         if (event.getPlugin() == null) {
