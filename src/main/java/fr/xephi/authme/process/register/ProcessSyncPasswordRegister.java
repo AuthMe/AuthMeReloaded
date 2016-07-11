@@ -6,7 +6,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.events.LoginEvent;
-import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
@@ -25,7 +24,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 /**
  */
@@ -88,13 +86,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     public void processPasswordRegister(Player player) {
         final String name = player.getName().toLowerCase();
         if (limboCache.hasPlayerData(name)) {
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-                bukkitService.callEvent(event);
-                if (!event.isCancelled()) {
-                    player.updateInventory();
-                }
-            }
             limboCache.restoreData(player);
             limboCache.deletePlayerData(player);
         }

@@ -85,14 +85,14 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             limboCache.deletePlayerData(player);
             // do we really need to use location from database for now?
             // because LimboCache#restoreData teleport player to last location.
+        }
 
-            if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
-                player.setCollidable(true);
-            }
+        if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
+            player.setCollidable(true);
+        }
 
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                restoreInventory(player);
-            }
+        if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
+            restoreInventory(player);
         }
 
         final PlayerAuth auth = dataSource.getAuth(name);
