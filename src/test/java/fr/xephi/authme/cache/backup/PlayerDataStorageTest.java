@@ -122,4 +122,30 @@ public class PlayerDataStorageTest {
         assertThat(playerDataStorage.hasData(player2), equalTo(false));
     }
 
+    @Test
+    public void shouldSavePlayerData() {
+        // given
+        Player player = mock(Player.class);
+        UUID uuid = UUID.nameUUIDFromBytes("New player".getBytes());
+        given(player.getUniqueId()).willReturn(uuid);
+        given(permissionsManager.getPrimaryGroup(player)).willReturn("primary-grp");
+        given(player.isOp()).willReturn(true);
+        given(player.getWalkSpeed()).willReturn(1.2f);
+        given(player.getFlySpeed()).willReturn(0.8f);
+        given(player.getAllowFlight()).willReturn(true);
+
+        World world = mock(World.class);
+        given(world.getName()).willReturn("player-world");
+        Location location = new Location(world, 0.2, 102.25, -89.28, 3.02f, 90.13f);
+        given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(location);
+
+        // when
+        playerDataStorage.saveData(player);
+
+        // then
+        File playerFile = new File(dataFolder, StringUtils.makePath("playerdata", uuid.toString(), "data.json"));
+        assertThat(playerFile.exists(), equalTo(true));
+        // TODO ljacqu 20160711: Check contents of file
+    }
+
 }

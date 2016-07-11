@@ -188,6 +188,17 @@ public class LimboCacheTest {
         verify(playerDataStorage).removeData(player);
     }
 
+    @Test
+    public void shouldReturnIfHasData() {
+        // given
+        String name = "tester";
+        getCache().put(name, mock(PlayerData.class));
+
+        // when / then
+        assertThat(limboCache.hasPlayerData(name), equalTo(true));
+        assertThat(limboCache.hasPlayerData("someone_else"), equalTo(false));
+    }
+
     @SuppressWarnings("unchecked")
     private Map<String, PlayerData> getCache() {
         return (Map<String, PlayerData>) ReflectionTestUtils.getFieldValue(LimboCache.class, limboCache, "cache");
