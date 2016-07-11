@@ -1,7 +1,5 @@
 package fr.xephi.authme.process.logout;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.SessionManager;
@@ -11,7 +9,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
@@ -30,6 +28,9 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     @Inject
     private AuthMe plugin;
+
+    @Inject
+    private BungeeService bungeeService;
 
     @Inject
     private ProcessService service;
@@ -52,16 +53,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     ProcessSynchronousPlayerLogout() {
     }
 
-
-    private void sendBungeeMessage(Player player) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ALL");
-        out.writeUTF("AuthMe");
-        out.writeUTF("logout;" + player.getName());
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-    }
-
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
         if (sessionManager.hasSession(name)) {
@@ -78,9 +69,9 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
-        if (service.getProperty(HooksSettings.BUNGEECORD)) {
-            sendBungeeMessage(player);
-        }
+        // Send Bungee stuff. The service will check if it is enabled or not.
+        bungeeService.sendBungeeMessage(player, "logout");
+
         service.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
     }

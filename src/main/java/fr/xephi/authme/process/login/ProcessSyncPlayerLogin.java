@@ -1,7 +1,5 @@
 package fr.xephi.authme.process.login;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -12,7 +10,7 @@ import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
@@ -35,6 +33,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
     private AuthMe plugin;
+
+    @Inject
+    private BungeeService bungeeService;
 
     @Inject
     private ProcessService service;
@@ -118,7 +119,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         // The Login event now fires (as intended) after everything is processed
         bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
-        sendBungeeMessage(player);
+        bungeeService.sendBungeeMessage(player, "login");
 
         // Login is done, display welcome message
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
@@ -136,33 +137,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         // Login is now finished; we can force all commands
         forceCommands(player);
 
-        sendTo(player);
-    }
-
-    private void sendTo(Player player) {
-        if (!service.getProperty(HooksSettings.BUNGEECORD)) {
-            return;
-        }
-        if (service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
-            return;
-        }
-
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Connect");
-        out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-    }
-
-    private void sendBungeeMessage(Player player) {
-        if (!service.getProperty(HooksSettings.BUNGEECORD)) {
-            return;
-        }
-
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ALL");
-        out.writeUTF("AuthMe");
-        out.writeUTF("login;" + player.getName());
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        // Send Bungee stuff. The service will check if it is enabled or not.
+        bungeeService.connectPlayer(player);
     }
 }
