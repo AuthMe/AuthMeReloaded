@@ -3,20 +3,13 @@ package fr.xephi.authme.listener;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.settings.properties.ProtectionSettings;
-import fr.xephi.authme.util.ValidationService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.event.server.ServerListPingEvent;
-
 import javax.inject.Inject;
 
 /**
@@ -24,17 +17,11 @@ import javax.inject.Inject;
 public class AuthMeServerListener implements Listener {
 
     @Inject
-    private Messages messages;
-    @Inject
-    private NewSetting settings;
-    @Inject
     private PluginHooks pluginHooks;
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
     private ProtocolLibService protocolLibService;
-    @Inject
-    private ValidationService validationService;
     @Inject
     private PermissionsManager permissionsManager;
 
