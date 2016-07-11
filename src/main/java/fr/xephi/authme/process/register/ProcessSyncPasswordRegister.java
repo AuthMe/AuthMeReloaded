@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
@@ -16,14 +15,11 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
-
 
 /**
  */
@@ -34,9 +30,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
     private ProcessService service;
-
-    @Inject
-    private BukkitService bukkitService;
 
     @Inject
     private LimboCache limboCache;
@@ -84,12 +77,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     }
 
     public void processPasswordRegister(Player player) {
-        final String name = player.getName().toLowerCase();
-        if (limboCache.hasPlayerData(name)) {
-            limboCache.restoreData(player);
-            limboCache.deletePlayerData(player);
-        }
-
         if (!Settings.getRegisteredGroup.isEmpty()) {
             service.setGroup(player, AuthGroupType.REGISTERED);
         }
@@ -100,12 +87,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
             service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
         }
 
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            player.removePotionEffect(PotionEffectType.BLINDNESS);
-        }
-
-        // The LoginEvent now fires (as intended) after everything is processed
-        bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
 
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
