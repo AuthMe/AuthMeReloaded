@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.logout;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.events.LogoutEvent;
@@ -25,9 +24,6 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
 
 public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
-
-    @Inject
-    private AuthMe plugin;
 
     @Inject
     private BungeeService bungeeService;

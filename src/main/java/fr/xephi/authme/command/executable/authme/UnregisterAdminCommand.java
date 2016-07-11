@@ -2,7 +2,6 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
@@ -10,9 +9,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -37,16 +34,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
     private BukkitService bukkitService;
 
     @Inject
-    private LimboCache limboCache;
-
-    @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
-
-    @Inject
     private AuthGroupHandler authGroupHandler;
-
-    @Inject
-    private TeleportationService teleportationService;
 
     @Inject
     private Management management;

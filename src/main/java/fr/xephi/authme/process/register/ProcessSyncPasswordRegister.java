@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.output.MessageKey;
@@ -22,9 +21,6 @@ import javax.inject.Inject;
 /**
  */
 public class ProcessSyncPasswordRegister implements SynchronousProcess {
-
-    @Inject
-    private AuthMe plugin;
 
     @Inject
     private BungeeService bungeeService;

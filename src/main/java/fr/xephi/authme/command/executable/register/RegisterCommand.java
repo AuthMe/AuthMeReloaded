@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 
-import static fr.xephi.authme.output.MessageKey.INCOMPLETE_EMAIL_SETTINGS;
 import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.ENABLE_CONFIRM_EMAIL;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.USE_EMAIL_REGISTRATION;

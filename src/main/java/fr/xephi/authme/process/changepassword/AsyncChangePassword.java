@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.changepassword;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -11,15 +10,11 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BungeeService;
-import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
 public class AsyncChangePassword implements AsynchronousProcess {
-
-    @Inject
-    private AuthMe plugin;
 
     @Inject
     private BungeeService bungeeService;
@@ -35,9 +30,6 @@ public class AsyncChangePassword implements AsynchronousProcess {
 
     @Inject
     private PlayerCache playerCache;
-
-    @Inject
-    private BukkitService bukkitService;
 
     AsyncChangePassword() { }
 
