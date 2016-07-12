@@ -4,19 +4,21 @@
 
 #####Development tools:
 
-- DEVELOPMENT TEAM REPO (**please send PRs here!**): [Github Development Page](https://github.com/AuthMe/AuthMeReloaded)
+- MAIN REPO (**release sources, issue tracker!**): [Github Development Page](https://github.com/Xephi/AuthMeReloaded)
+
+- DEVELOPMENT TEAM REPO (**latest sources, please send PRs here!**): [Github Development Page](https://github.com/AuthMe/AuthMeReloaded)
 
 - Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 - Build Server (**DEVELOPMENT BUILDS**): [Xephi's Jenkins](http://ci.xephi.fr/job/AuthMeReloaded)
 
-- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
+- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/5617ca36a193340f28000222/badge.svg)
 
 - Build status (CircleCI): [![Circle CI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 - Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
-- JitPack (just in case): [![](https://jitpack.io/v/AuthMe-Team/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe-Team/AuthMeReloaded)
+- JitPack (just in case): [![](https://jitpack.io/v/AuthMe/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe/AuthMeReloaded)
 
-- Code Coverage: [![Coverage Status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
+- Code Coverage: [![Coverage Status](https://coveralls.io/repos/AuthMe/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe/AuthMeReloaded?branch=master)
 
 - Issue Tracking : [![Stories in Ready](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=ready&title=Ready)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in Bugs](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=bugs&title=Bugs)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in In%20Progress](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=in%20progress&title=In%20Progress)](https://waffle.io/Xephi/AuthMeReloaded)
 
@@ -35,6 +37,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 <img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
 
 #####Development history:
+Outdated!
 [![Gource AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
 
 <hr>
@@ -49,8 +52,8 @@ McStats: http://mcstats.org/plugin/AuthMe
 >- Execute command "mvn clean install"
 
 #####Running Requirements:
->- Java 1.7 (should work also with Java 1.8)
->- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X or 1.9.X)
+>- Java 1.7 or 1.8
+>- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X, 1.9.X, 1.10.X)
 >- ProtocolLib (optional, required by the protectInventory feature)
 
 <hr>
