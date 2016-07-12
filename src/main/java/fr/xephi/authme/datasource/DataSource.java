@@ -187,15 +187,6 @@ public interface DataSource extends Reloadable {
     boolean updateRealName(String user, String realName);
 
     /**
-     * Update a player's IP address.
-     *
-     * @param user The name of the user (lowercase)
-     * @param ip The IP address to save
-     * @return True upon success, false upon failure
-     */
-    boolean updateIp(String user, String ip);
-
-    /**
      * Return all players of the database.
      *
      * @return List of all players

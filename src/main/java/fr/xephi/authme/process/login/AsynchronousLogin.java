@@ -139,11 +139,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
         captchaManager.increaseCount(name);
         tempbanManager.increaseCount(ip);
 
-        if (!pAuth.getIp().equals(ip)) {
-            pAuth.setIp(ip);
-            database.updateIp(pAuth.getNickname(), ip);
-        }
-
         String email = pAuth.getEmail();
         boolean passwordVerified = forceLogin || passwordSecurity.comparePassword(
             password, pAuth.getPassword(), player.getName());

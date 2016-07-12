@@ -487,11 +487,6 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public boolean updateIp(String user, String ip) {
-        throw new UnsupportedOperationException("Flat file no longer supported");
-    }
-
-    @Override
     public List<PlayerAuth> getAllAuths() {
         BufferedReader br = null;
         List<PlayerAuth> auths = new ArrayList<>();

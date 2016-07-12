@@ -272,22 +272,6 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateIp() {
-        // given
-        DataSource dataSource = getDataSource();
-        String ip = "250.230.67.73";
-
-        // when
-        boolean response1 = dataSource.updateIp("bobby", ip);
-        boolean response2 = dataSource.updateIp("bogus", "123.123.123.123");
-
-
-        // then
-        assertThat(response1 && response2, equalTo(true));
-        assertThat(dataSource.getAllAuths(), hasItem(hasAuthBasicData("bobby", "Bobby", "your@email.com", ip)));
-    }
-
-    @Test
     public void shouldCountAuths() {
         // given
         DataSource dataSource = getDataSource();
