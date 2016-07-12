@@ -4,7 +4,7 @@
 
 #####Development tools:
 
-- MAIN REPO (**release sources, issue tracker!**): [Github Development Page](https://github.com/Xephi/AuthMeReloaded)
+- MAIN REPO (**release sources, issue tracker!**): [Github Main Page](https://github.com/Xephi/AuthMeReloaded)
 
 - DEVELOPMENT TEAM REPO (**latest sources, please send PRs here!**): [Github Development Page](https://github.com/AuthMe/AuthMeReloaded)
 
