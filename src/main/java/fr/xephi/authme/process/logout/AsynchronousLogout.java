@@ -52,7 +52,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
             database.updateQuitLoc(auth);
         }
 
-        if (service.getProperty(PluginSettings.SESSIONS_ENABLED) && (sessionManager.hasSession(name) || database.isLogged(name))) {
+        if (sessionManager.hasSession(name) || (service.getProperty(PluginSettings.SESSIONS_ENABLED) && database.isLogged(name))) {
             sessionManager.cancelSession(name);
             service.send(player, MessageKey.SESSION_EXPIRED);
         }
