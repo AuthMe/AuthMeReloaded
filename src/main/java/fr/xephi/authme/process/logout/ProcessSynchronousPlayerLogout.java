@@ -51,9 +51,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
-        if (sessionManager.hasSession(name)) {
-            sessionManager.cancelSession(name);
-        }
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
             protocolLibService.sendBlankInventoryPacket(player);
         }
