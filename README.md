@@ -12,7 +12,9 @@
 
 - Build Server (**DEVELOPMENT BUILDS**): [Xephi's Jenkins](http://ci.xephi.fr/job/AuthMeReloaded)
 
-- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/5617ca36a193340f28000222/badge.svg)]
+- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded)
+
+- Dependencies: [![Dependency Status](https://www.versioneye.com/user/projects/5617ca36a193340f28000222/badge.svg)](https://www.versioneye.com/user/projects/5617ca36a193340f28000222)
 
 - Build status (CircleCI): [![Circle CI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 - Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
