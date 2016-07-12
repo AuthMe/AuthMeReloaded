@@ -12,13 +12,13 @@
 
 - Build Server (**DEVELOPMENT BUILDS**): [Xephi's Jenkins](http://ci.xephi.fr/job/AuthMeReloaded)
 
-- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/5617ca36a193340f28000222/badge.svg)
+- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/5617ca36a193340f28000222/badge.svg)]
 
 - Build status (CircleCI): [![Circle CI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 - Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
 - JitPack (just in case): [![](https://jitpack.io/v/AuthMe/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe/AuthMeReloaded)
 
-- Code Coverage: [![Coverage Status](https://coveralls.io/repos/AuthMe/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe/AuthMeReloaded?branch=master)
+- Code Coverage: [![Coverage Status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
 
 - Issue Tracking : [![Stories in Ready](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=ready&title=Ready)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in Bugs](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=bugs&title=Bugs)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in In%20Progress](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=in%20progress&title=In%20Progress)](https://waffle.io/Xephi/AuthMeReloaded)
 
