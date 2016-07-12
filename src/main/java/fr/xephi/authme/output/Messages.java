@@ -75,7 +75,7 @@ public class Messages implements SettingsDependent {
         String message = configuration.getString(code);
 
         if (message == null) {
-            ConsoleLogger.showError("Error getting message with key '" + code + "'. "
+            ConsoleLogger.warning("Error getting message with key '" + code + "'. "
                 + "Please verify your config file at '" + fileName + "'");
             return formatMessage(getDefault(code));
         }
@@ -112,7 +112,7 @@ public class Messages implements SettingsDependent {
                 message = message.replace(tags[i], replacements[i]);
             }
         } else {
-            ConsoleLogger.showError("Invalid number of replacements for message key '" + key + "'");
+            ConsoleLogger.warning("Invalid number of replacements for message key '" + key + "'");
         }
         return message;
     }

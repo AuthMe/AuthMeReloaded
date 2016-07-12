@@ -36,7 +36,7 @@ public class IPB4 implements EncryptionMethod {
         try {
             return hash.getHash().length() > 3 && BCryptService.checkpw(password, hash.getHash());
         } catch (IllegalArgumentException e) {
-            ConsoleLogger.showError("Bcrypt checkpw() returned " + StringUtils.formatException(e));
+            ConsoleLogger.warning("Bcrypt checkpw() returned " + StringUtils.formatException(e));
         }
         return false;
     }

@@ -60,7 +60,7 @@ public class PerformBackup {
         if (!settings.getProperty(BackupSettings.ENABLED)) {
             // Print a warning if the backup was requested via command or by another plugin
             if (cause == BackupCause.COMMAND || cause == BackupCause.OTHER) {
-                ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: "
+                ConsoleLogger.warning("Can't perform a Backup: disabled in configuration. Cause of the Backup: "
                     + cause.name());
             }
             return;
@@ -76,7 +76,7 @@ public class PerformBackup {
         if (doBackup()) {
             ConsoleLogger.info("A backup has been performed successfully. Cause of the Backup: " + cause.name());
         } else {
-            ConsoleLogger.showError("Error while performing a backup! Cause of the Backup: " + cause.name());
+            ConsoleLogger.warning("Error while performing a backup! Cause of the Backup: " + cause.name());
         }
     }
 
@@ -90,7 +90,7 @@ public class PerformBackup {
             case SQLITE:
                 return fileBackup(dbName + ".db");
             default:
-                ConsoleLogger.showError("Unknown data source type '" + dataSourceType + "' for backup");
+                ConsoleLogger.warning("Unknown data source type '" + dataSourceType + "' for backup");
         }
 
         return false;
@@ -113,7 +113,7 @@ public class PerformBackup {
                     ConsoleLogger.info("Backup created successfully.");
                     return true;
                 } else {
-                    ConsoleLogger.showError("Could not create the backup! (Windows)");
+                    ConsoleLogger.warning("Could not create the backup! (Windows)");
                 }
             } catch (IOException | InterruptedException e) {
                 ConsoleLogger.logException("Error during Windows backup:", e);
@@ -128,7 +128,7 @@ public class PerformBackup {
                     ConsoleLogger.info("Backup created successfully.");
                     return true;
                 } else {
-                    ConsoleLogger.showError("Could not create the backup!");
+                    ConsoleLogger.warning("Could not create the backup!");
                 }
             } catch (IOException | InterruptedException e) {
                 ConsoleLogger.logException("Error during backup:", e);
@@ -147,8 +147,7 @@ public class PerformBackup {
             copy("plugins" + File.separator + "AuthMe" + File.separator + backend, path + ".db");
             return true;
         } catch (IOException ex) {
-            ConsoleLogger.showError("Encountered an error during file backup: " + StringUtils.formatException(ex));
-            ConsoleLogger.writeStackTrace(ex);
+            ConsoleLogger.logException("Encountered an error during file backup:", ex);
         }
         return false;
     }
@@ -166,7 +165,7 @@ public class PerformBackup {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
                 return true;
             } else {
-                ConsoleLogger.showError("Mysql Windows Path is incorrect. Please check it");
+                ConsoleLogger.warning("Mysql Windows Path is incorrect. Please check it");
                 return false;
             }
         }

@@ -160,7 +160,7 @@ public class CacheDataSource implements DataSource {
         try {
             executorService.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.logException("Could not close executor service:", e);
         }
     }
 

@@ -89,7 +89,7 @@ public class RakamakConverter implements Converter {
             ConsoleLogger.info("Rakamak database has been imported correctly");
             sender.sendMessage("Rakamak database has been imported correctly");
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             sender.sendMessage("Can't open the rakamak database file! Does it exist?");
         }
     }

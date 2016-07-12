@@ -59,7 +59,7 @@ public final class ConsoleLogger {
     public static void info(String message) {
         logger.info(message);
         if (useLogging) {
-            writeLog(message);
+            writeLog("[INFO] " + message);
         }
 
     }
@@ -69,10 +69,10 @@ public final class ConsoleLogger {
      *
      * @param message String
      */
-    public static void showError(String message) {
+    public static void warning(String message) {
         logger.warning(message);
         if (useLogging) {
-            writeLog("ERROR: " + message);
+            writeLog("[WARN] " + message);
         }
     }
 
@@ -97,25 +97,16 @@ public final class ConsoleLogger {
     }
 
     /**
-     * Write a StackTrace into the log.
-     *
-     * @param th The Throwable whose stack trace should be logged
-     */
-    public static void writeStackTrace(Throwable th) {
-        if (useLogging) {
-            writeLog(Throwables.getStackTraceAsString(th));
-        }
-    }
-
-    /**
      * Logs a Throwable with the provided message and saves the stack trace to the log file.
      *
      * @param message The message to accompany the exception
      * @param th      The Throwable to log
      */
     public static void logException(String message, Throwable th) {
-        showError(message + " " + StringUtils.formatException(th));
-        writeStackTrace(th);
+        warning(message + " " + StringUtils.formatException(th));
+        if (useLogging) {
+            writeLog(Throwables.getStackTraceAsString(th));
+        }
     }
 
     public static void close() {

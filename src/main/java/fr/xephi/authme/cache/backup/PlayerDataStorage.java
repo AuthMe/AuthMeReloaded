@@ -47,7 +47,7 @@ public class PlayerDataStorage {
 
         cacheDir = new File(dataFolder, "playerdata");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
-            ConsoleLogger.showError("Failed to create userdata directory.");
+            ConsoleLogger.warning("Failed to create userdata directory.");
         }
         gson = new GsonBuilder()
             .registerTypeAdapter(PlayerData.class, new PlayerDataSerializer())
@@ -115,7 +115,7 @@ public class PlayerDataStorage {
         if (file.exists()) {
             FileUtils.purgeDirectory(file);
             if (!file.delete()) {
-                ConsoleLogger.showError("Failed to remove " + player.getName() + " cache.");
+                ConsoleLogger.warning("Failed to remove " + player.getName() + " cache.");
             }
         }
     }

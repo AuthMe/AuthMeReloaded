@@ -272,7 +272,7 @@ public class AuthMe extends JavaPlugin {
 
         // If server is using PermissionsBukkit, print a warning that some features may not be supported
         if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
-            ConsoleLogger.showError("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
+            ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
         }
 
         // Purge on start if enabled
@@ -303,13 +303,13 @@ public class AuthMe extends JavaPlugin {
     private void showSettingsWarnings() {
         // Force single session disabled
         if (!newSettings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
-            ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
+            ConsoleLogger.warning("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
 
         // Session timeout disabled
         if (newSettings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
             && newSettings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-            ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
+            ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
         }
     }
 
@@ -493,7 +493,7 @@ public class AuthMe extends JavaPlugin {
     // Stop/unload the server/plugin as defined in the configuration
     public void stopOrUnload() {
         if (Settings.isStopEnabled) {
-            ConsoleLogger.showError("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
+            ConsoleLogger.warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
             getServer().shutdown();
         } else {
             getServer().getPluginManager().disablePlugin(this);
@@ -544,7 +544,7 @@ public class AuthMe extends JavaPlugin {
                 public void run() {
                     int accounts = database.getAccountsRegistered();
                     if (accounts >= 4000) {
-                        ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH "
+                        ConsoleLogger.warning("YOU'RE USING THE SQLITE DATABASE WITH "
                             + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
                     }
                 }

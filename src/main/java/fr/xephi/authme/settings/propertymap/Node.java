@@ -77,7 +77,7 @@ final class Node {
         }
 
         if (commonNode == null) {
-            ConsoleLogger.showError("Could not find common node for '" + fullPath1 + "' at index " + commonCount);
+            ConsoleLogger.warning("Could not find common node for '" + fullPath1 + "' at index " + commonCount);
             return fullPath1.compareTo(fullPath2); // fallback
         } else if (commonCount >= path1.length || commonCount >= path2.length) {
             return Integer.compare(path1.length, path2.length);

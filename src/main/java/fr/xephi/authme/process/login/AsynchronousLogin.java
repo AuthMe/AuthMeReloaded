@@ -204,7 +204,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 }
             }
         } else {
-            ConsoleLogger.showError("Player " + name + " wasn't online during login process, aborted... ");
+            ConsoleLogger.warning("Player " + name + " wasn't online during login process, aborted... ");
         }
     }
 

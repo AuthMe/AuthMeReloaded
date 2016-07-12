@@ -76,7 +76,7 @@ public class PurgeService implements Reloadable {
         if (!settings.getProperty(PurgeSettings.USE_AUTO_PURGE)) {
             return;
         } else if (daysBeforePurge <= 0) {
-            ConsoleLogger.showError("Did not run auto purge: configured days before purging must be positive");
+            ConsoleLogger.warning("Did not run auto purge: configured days before purging must be positive");
             return;
         }
 

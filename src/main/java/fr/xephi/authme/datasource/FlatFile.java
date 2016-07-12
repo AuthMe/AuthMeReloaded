@@ -50,7 +50,7 @@ public class FlatFile implements DataSource {
         } catch (IOException e) {
             ConsoleLogger.logException("Cannot open flatfile", e);
             if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use FLAT FILE... SHUTDOWN...");
+                ConsoleLogger.warning("Can't use FLAT FILE... SHUTDOWN...");
                 instance.getServer().shutdown();
             }
             if (!Settings.isStopEnabled) {
@@ -82,7 +82,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -109,7 +109,7 @@ public class FlatFile implements DataSource {
             bw = new BufferedWriter(new FileWriter(source, true));
             bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(bw);
@@ -145,7 +145,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -179,7 +179,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -216,7 +216,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -246,7 +246,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return list;
         } finally {
             silentClose(br);
@@ -279,7 +279,7 @@ public class FlatFile implements DataSource {
                 bw.write(l + "\n");
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return;
         } finally {
             silentClose(br);
@@ -309,7 +309,7 @@ public class FlatFile implements DataSource {
                 bw.write(l + "\n");
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -331,7 +331,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return null;
         } finally {
             silentClose(br);
@@ -364,10 +364,10 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             if (br != null) {
@@ -399,10 +399,10 @@ public class FlatFile implements DataSource {
             }
             return countIp;
         } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return new ArrayList<>();
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return new ArrayList<>();
         } finally {
             if (br != null) {
@@ -429,7 +429,7 @@ public class FlatFile implements DataSource {
             }
             return countEmail;
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
         } finally {
             if (br != null) {
                 try {
@@ -473,7 +473,7 @@ public class FlatFile implements DataSource {
                 result++;
             }
         } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return result;
         } finally {
             silentClose(br);

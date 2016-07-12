@@ -69,7 +69,7 @@ public class RegisterCommand extends PlayerCommand {
     private void handleEmailRegistration(Player player, List<String> arguments) {
         if (!sendMailSsl.hasAllInformation()) {
             commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
-            ConsoleLogger.showError("Cannot register player '" + player.getName() + "': no email or password is set "
+            ConsoleLogger.warning("Cannot register player '" + player.getName() + "': no email or password is set "
                 + "to send emails from. Please adjust your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
             return;
         }

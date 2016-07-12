@@ -61,7 +61,7 @@ public class CrazyLoginConverter implements Converter {
             }
             ConsoleLogger.info("CrazyLogin database has been imported correctly");
         } catch (IOException ex) {
-            ConsoleLogger.showError("Can't open the crazylogin database file! Does it exist?");
+            ConsoleLogger.warning("Can't open the crazylogin database file! Does it exist?");
             ConsoleLogger.logException("Encountered", ex);
         }
     }

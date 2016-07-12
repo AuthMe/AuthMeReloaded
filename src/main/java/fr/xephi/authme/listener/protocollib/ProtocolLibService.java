@@ -42,11 +42,11 @@ public class ProtocolLibService implements SettingsDependent {
         // Check if ProtocolLib is enabled on the server.
         if (!plugin.getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
             if (protectInvBeforeLogin) {
-                ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
+                ConsoleLogger.warning("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
             }
             
             if (denyTabCompleteBeforeLogin) {
-                ConsoleLogger.showError("WARNING! The denyTabComplete feature requires ProtocolLib! Disabling it...");
+                ConsoleLogger.warning("WARNING! The denyTabComplete feature requires ProtocolLib! Disabling it...");
             }
 
             this.isEnabled = false;

@@ -53,7 +53,7 @@ public class AuthMeServerListener implements Listener {
 
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
             protocolLibService.disable();
-            ConsoleLogger.showError("ProtocolLib has been disabled, unhooking packet adapters!");
+            ConsoleLogger.warning("ProtocolLib has been disabled, unhooking packet adapters!");
         }
     }
 

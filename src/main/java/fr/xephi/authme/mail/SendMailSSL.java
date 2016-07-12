@@ -58,7 +58,7 @@ public class SendMailSSL {
      */
     public void sendPasswordMail(final PlayerAuth auth, final String newPass) {
         if (!hasAllInformation()) {
-            ConsoleLogger.showError("Cannot perform email registration: not all email settings are complete");
+            ConsoleLogger.warning("Cannot perform email registration: not all email settings are complete");
             return;
         }
 

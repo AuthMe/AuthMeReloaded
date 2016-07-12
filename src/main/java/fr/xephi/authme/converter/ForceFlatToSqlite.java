@@ -43,7 +43,7 @@ public class ForceFlatToSqlite {
         }
 
         if (!skippedPlayers.isEmpty()) {
-            ConsoleLogger.showError("Warning: skipped conversion for players which were already in SQLite: "
+            ConsoleLogger.warning("Warning: skipped conversion for players which were already in SQLite: "
                 + StringUtils.join(", ", skippedPlayers));
         }
         ConsoleLogger.info("Database successfully converted from " + source.getClass().getSimpleName()

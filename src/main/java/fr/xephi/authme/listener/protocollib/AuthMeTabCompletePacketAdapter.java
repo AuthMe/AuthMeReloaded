@@ -24,7 +24,7 @@ class AuthMeTabCompletePacketAdapter extends PacketAdapter {
                     event.setCancelled(true);
                 }
             } catch (FieldAccessException e) {
-                ConsoleLogger.showError("Couldn't access field.");
+                ConsoleLogger.warning("Couldn't access field.");
             }
         }
     }

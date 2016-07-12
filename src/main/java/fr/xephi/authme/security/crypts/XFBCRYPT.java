@@ -31,7 +31,7 @@ public class XFBCRYPT implements EncryptionMethod {
         try {
             return hash.getHash().length() > 3 && BCryptService.checkpw(password, hash.getHash());
         } catch (IllegalArgumentException e) {
-            ConsoleLogger.showError("XfBCrypt checkpw() returned " + StringUtils.formatException(e));
+            ConsoleLogger.warning("XfBCrypt checkpw() returned " + StringUtils.formatException(e));
         }
         return false;
     }

@@ -45,7 +45,7 @@ public class AuthGroupHandler {
 
         // Make sure group support is available
         if (!permissionsManager.hasGroupSupport()) {
-            ConsoleLogger.showError("The current permissions system doesn't have group support, unable to set group!");
+            ConsoleLogger.warning("The current permissions system doesn't have group support, unable to set group!");
             return false;
         }
 

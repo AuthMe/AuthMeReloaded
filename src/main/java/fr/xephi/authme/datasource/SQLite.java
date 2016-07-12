@@ -157,7 +157,7 @@ public class SQLite implements DataSource {
             rs = pst.executeQuery();
             return rs.next();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             close(rs);
@@ -212,7 +212,7 @@ public class SQLite implements DataSource {
             HashedPassword password = auth.getPassword();
             if (col.SALT.isEmpty()) {
                 if (!StringUtils.isEmpty(auth.getPassword().getSalt())) {
-                    ConsoleLogger.showError("Warning! Detected hashed password with separate salt but the salt column "
+                    ConsoleLogger.warning("Warning! Detected hashed password with separate salt but the salt column "
                         + "is not set in the config!");
                 }
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD +

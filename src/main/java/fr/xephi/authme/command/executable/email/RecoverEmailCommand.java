@@ -41,7 +41,7 @@ public class RecoverEmailCommand extends PlayerCommand {
         final String playerName = player.getName();
 
         if (!sendMailSsl.hasAllInformation()) {
-            ConsoleLogger.showError("Mail API is not set");
+            ConsoleLogger.warning("Mail API is not set");
             commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
         }
@@ -63,7 +63,7 @@ public class RecoverEmailCommand extends PlayerCommand {
                 return;
             }
             if (StringUtils.isEmpty(commandService.getProperty(EmailSettings.MAIL_ACCOUNT))) {
-                ConsoleLogger.showError("No mail account set in settings");
+                ConsoleLogger.warning("No mail account set in settings");
                 commandService.send(player, MessageKey.ERROR);
                 return;
             }

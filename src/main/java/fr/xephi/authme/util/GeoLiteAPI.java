@@ -65,7 +65,7 @@ public class GeoLiteAPI {
                 }
             } else {
                 if (!dataFile.delete()) {
-                    ConsoleLogger.showError("Failed to delete GeoLiteAPI database");
+                    ConsoleLogger.warning("Failed to delete GeoLiteAPI database");
                 }
             }
         }

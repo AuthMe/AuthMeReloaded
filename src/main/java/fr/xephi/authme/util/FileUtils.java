@@ -30,7 +30,7 @@ public class FileUtils {
         if (destinationFile.exists()) {
             return true;
         } else if (!destinationFile.getParentFile().exists() && !destinationFile.getParentFile().mkdirs()) {
-            ConsoleLogger.showError("Cannot create parent directories for '" + destinationFile + "'");
+            ConsoleLogger.warning("Cannot create parent directories for '" + destinationFile + "'");
             return false;
         }
 
@@ -38,7 +38,7 @@ public class FileUtils {
         final String normalizedPath = resourcePath.replace("\\", "/");
         try (InputStream is = AuthMe.class.getClassLoader().getResourceAsStream(normalizedPath)) {
             if (is == null) {
-                ConsoleLogger.showError(format("Cannot copy resource '%s' to file '%s': cannot load resource",
+                ConsoleLogger.warning(format("Cannot copy resource '%s' to file '%s': cannot load resource",
                     resourcePath, destinationFile.getPath()));
             } else {
                 Files.copy(is, destinationFile.toPath());

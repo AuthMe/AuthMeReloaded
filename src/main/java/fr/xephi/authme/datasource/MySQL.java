@@ -52,14 +52,14 @@ public class MySQL implements DataSource {
             this.setConnectionArguments();
         } catch (RuntimeException e) {
             if (e instanceof IllegalArgumentException) {
-                ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
-                ConsoleLogger.showError("If this error persists, please report it to the developer!");
+                ConsoleLogger.warning("Invalid database arguments! Please check your configuration!");
+                ConsoleLogger.warning("If this error persists, please report it to the developer!");
             }
             if (e instanceof PoolInitializationException) {
-                ConsoleLogger.showError("Can't initialize database connection! Please check your configuration!");
-                ConsoleLogger.showError("If this error persists, please report it to the developer!");
+                ConsoleLogger.warning("Can't initialize database connection! Please check your configuration!");
+                ConsoleLogger.warning("If this error persists, please report it to the developer!");
             }
-            ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
+            ConsoleLogger.warning("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
             throw e;
         }
 
@@ -69,7 +69,7 @@ public class MySQL implements DataSource {
         } catch (SQLException e) {
             close();
             ConsoleLogger.logException("Can't initialize the MySQL database:", e);
-            ConsoleLogger.showError("Please check your database settings in the config.yml file!");
+            ConsoleLogger.warning("Please check your database settings in the config.yml file!");
             throw e;
         }
     }
@@ -879,7 +879,7 @@ public class MySQL implements DataSource {
         final int columnType;
         try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
             if (!rs.next()) {
-                ConsoleLogger.showError("Could not get LAST_LOGIN meta data. This should never happen!");
+                ConsoleLogger.warning("Could not get LAST_LOGIN meta data. This should never happen!");
                 return;
             }
             columnType = rs.getInt("DATA_TYPE");

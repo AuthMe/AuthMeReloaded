@@ -47,7 +47,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
                     playerCache.updatePlayer(auth);
                     service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
-                    ConsoleLogger.showError("Could not save email for player '" + player + "'");
+                    ConsoleLogger.warning("Could not save email for player '" + player + "'");
                     service.send(player, MessageKey.ERROR);
                 }
             }

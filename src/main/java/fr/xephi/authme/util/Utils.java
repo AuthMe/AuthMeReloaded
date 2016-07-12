@@ -51,7 +51,7 @@ public final class Utils {
         try {
             return Pattern.compile(pattern);
         } catch (Exception e) {
-            ConsoleLogger.showError("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
+            ConsoleLogger.warning("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
             return Pattern.compile(".*?");
         }
     }

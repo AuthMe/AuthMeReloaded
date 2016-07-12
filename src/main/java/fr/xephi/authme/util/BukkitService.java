@@ -190,7 +190,7 @@ public class BukkitService {
                 return Arrays.asList((Player[]) obj);
             } else {
                 String type = (obj == null) ? "null" : obj.getClass().getName();
-                ConsoleLogger.showError("Unknown list of online players of type " + type);
+                ConsoleLogger.warning("Unknown list of online players of type " + type);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             ConsoleLogger.logException("Could not retrieve list of online players:", e);
@@ -230,7 +230,7 @@ public class BukkitService {
             Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
             return method.getReturnType() == Collection.class;
         } catch (NoSuchMethodException e) {
-            ConsoleLogger.showError("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
+            ConsoleLogger.warning("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
         }
         return false;
     }
