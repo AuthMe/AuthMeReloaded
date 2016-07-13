@@ -165,7 +165,7 @@
                             <artifactSet>
                                 <excludes>
                                     <exclude>com.google.guava:guava</exclude>
-                                    <exclude>com.google.gson:gson</exclude>
+                                    <exclude>com.google.code.gson:gson</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
