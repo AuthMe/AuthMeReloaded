@@ -165,14 +165,10 @@
                             <artifactSet>
                                 <excludes>
                                     <exclude>com.google.guava:guava</exclude>
+                                    <exclude>com.google.gson:gson</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
-                                <!-- We use a newer version of gson so we need to include and relocate it! -->
-                                <relocation>
-                                    <pattern>com.google.gson</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.google.gson</shadedPattern>
-                                </relocation>
 		                        <relocation>
 		                            <pattern>com.zaxxer.hikari</pattern>
 		                            <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
@@ -390,11 +386,11 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- GSON (required to provide 1.7.10 and below compatibility) -->
+        <!-- GSON (version included in spigot 1.8+, required to provide 1.7.10 and below compatibility) -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.7</version>
+            <version>2.2.4</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -457,10 +453,6 @@
                     <groupId>com.googlecode.json-simple</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>gson</artifactId>
-                    <groupId>com.google.code.gson</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>persistence-api</artifactId>
                     <groupId>javax.persistence</groupId>
                 </exclusion>
@@ -471,6 +463,10 @@
                 <exclusion>
                 	<artifactId>bungeecord-chat</artifactId>
                 	<groupId>net.md-5</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>gson</artifactId>
+                	<groupId>com.google.code.gson</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
