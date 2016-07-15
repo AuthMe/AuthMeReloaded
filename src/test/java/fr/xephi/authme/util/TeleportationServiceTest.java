@@ -32,6 +32,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -420,6 +421,25 @@ public class TeleportationServiceTest {
 
         // then
         verify(player).teleport(location);
+    }
+
+    @Test
+    public void shouldNotTeleportForNullLocationInLimboPlayer() {
+        // given
+        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(false);
+
+        PlayerAuth auth = PlayerAuth.builder().name("bobby").build();
+        Player player = mock(Player.class);
+        PlayerData limbo = mock(PlayerData.class);
+
+        // when
+        teleportationService.teleportOnLogin(player, auth, limbo);
+
+        // then
+        verifyZeroInteractions(player);
+        verify(limbo, times(2)).getLocation();
     }
 
     private static void assertCorrectLocation(Location location, PlayerAuth auth, World world) {

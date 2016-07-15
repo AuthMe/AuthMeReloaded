@@ -108,22 +108,26 @@ public class TeleportationService implements Reloadable {
             return;
         }
 
+        // #856: If PlayerData comes from a persisted file, the Location might be null
+        String worldName = (limbo.getLocation() != null)
+            ? limbo.getLocation().getWorld().getName()
+            : null;
+
         // The world in PlayerData is from where the player comes, before any teleportation by AuthMe
-        String worldName = limbo.getLocation().getWorld().getName();
         if (mustForceSpawnAfterLogin(worldName)) {
             teleportToSpawn(player, true);
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && auth.getQuitLocY() != 0) {
                 Location location = buildLocationFromAuth(player, auth);
                 teleportBackFromSpawn(player, location);
-            } else {
+            } else if (limbo.getLocation() != null) {
                 teleportBackFromSpawn(player, limbo.getLocation());
             }
         }
     }
 
     private boolean mustForceSpawnAfterLogin(String worldName) {
-        return settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)
+        return worldName != null && settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)
             && spawnOnLoginWorlds.contains(worldName);
     }
 
