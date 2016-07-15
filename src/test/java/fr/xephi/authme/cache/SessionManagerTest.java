@@ -1,11 +1,13 @@
 package fr.xephi.authme.cache;
 
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.bukkit.scheduler.BukkitTask;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -24,10 +26,9 @@ public class SessionManagerTest {
         NewSetting settings = mockSettings(true, 10);
         SessionManager manager = new SessionManager(settings);
         String player = "playah";
-        BukkitTask task = mock(BukkitTask.class);
 
         // when
-        manager.addSession(player, task);
+        manager.addSession(player);
 
         // then
         assertThat(manager.hasSession(player), equalTo(true));
@@ -45,30 +46,14 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldAddSession() {
-        // given
-        NewSetting settings = mockSettings(true, 10);
-        SessionManager manager = new SessionManager(settings);
-        String player = "playah";
-        BukkitTask task = mock(BukkitTask.class);
-
-        // when
-        manager.addSession(player, task);
-
-        // then
-        assertThat(manager.hasSession(player), equalTo(true));
-    }
-
-    @Test
     public void shouldNotAddSessionBecauseDisabled() {
         // given
         NewSetting settings = mockSettings(false, 10);
         SessionManager manager = new SessionManager(settings);
         String player = "playah";
-        BukkitTask task = mock(BukkitTask.class);
 
         // when
-        manager.addSession(player, task);
+        manager.addSession(player);
 
         // then
         assertThat(manager.hasSession(player), equalTo(false));
@@ -80,13 +65,47 @@ public class SessionManagerTest {
         NewSetting settings = mockSettings(true, 0);
         SessionManager manager = new SessionManager(settings);
         String player = "playah";
-        BukkitTask task = mock(BukkitTask.class);
 
         // when
-        manager.addSession(player, task);
+        manager.addSession(player);
 
         // then
         assertThat(manager.hasSession(player), equalTo(false));
+    }
+
+    @Test
+    public void shouldRemoveSession() {
+        // given
+        NewSetting settings = mockSettings(true, 10);
+        String player = "user";
+        SessionManager manager = new SessionManager(settings);
+        manager.addSession(player);
+
+        // when
+        manager.removeSession(player);
+
+        // then
+        assertThat(manager.hasSession(player), equalTo(false));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldDenySessionIfTimeoutHasExpired() {
+        // given
+        int timeout = 20;
+        NewSetting settings = mockSettings(true, timeout);
+        String player = "patrick";
+        SessionManager manager = new SessionManager(settings);
+        Map<String, Long> sessions = (Map<String, Long>) ReflectionTestUtils
+            .getFieldValue(SessionManager.class, manager, "sessions");
+        // Add session entry for player that just has expired
+        sessions.put(player, System.currentTimeMillis() - 1000);
+
+        // when
+        boolean result = manager.hasSession(player);
+
+        // then
+        assertThat(result, equalTo(false));
     }
 
     private static NewSetting mockSettings(boolean isEnabled, int sessionTimeout) {

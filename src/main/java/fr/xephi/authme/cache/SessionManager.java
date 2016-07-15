@@ -3,17 +3,23 @@ package fr.xephi.authme.cache;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Manages sessions, allowing players to be automatically logged in if they join again
+ * within a configurable amount of time.
+ */
 public class SessionManager implements SettingsDependent {
 
-    private final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    private static final int MINUTE_IN_MILLIS = 60_000;
+    // Player -> expiration of session in milliseconds
+    private final Map<String, Long> sessions = new ConcurrentHashMap<>();
 
     private boolean enabled;
-    private int sessionTimeout;
+    private int timeoutInMinutes;
 
     @Inject
     SessionManager(NewSetting settings) {
@@ -21,39 +27,30 @@ public class SessionManager implements SettingsDependent {
     }
 
     /**
-     * Check if a session for a player is currently being cached.
+     * Check if a session is available for the given player.
      *
      * @param name The name to check.
      * @return True if a session is found.
      */
     public boolean hasSession(String name) {
-        return enabled && sessions.containsKey(name);
+        if (enabled) {
+            Long timeout = sessions.get(name.toLowerCase());
+            if (timeout != null) {
+                return System.currentTimeMillis() <= timeout;
+            }
+        }
+        return false;
     }
 
     /**
      * Add a player session to the cache.
      *
      * @param name The name of the player.
-     * @param task The task to run.
      */
-    public void addSession(String name, BukkitTask task) {
-        if (!enabled || sessionTimeout == 0) {
-            return;
-        }
-
-        this.sessions.put(name, task);
-    }
-
-    /**
-     * Cancels a player's session. After the task is cancelled, it will be removed from
-     * the cache.
-     *
-     * @param name The name of the player who's session to cancel.
-     */
-    public void cancelSession(String name) {
-        BukkitTask task = sessions.remove(name);
-        if (task != null) {
-            task.cancel();
+    public void addSession(String name) {
+        if (enabled) {
+            long timeout = System.currentTimeMillis() + timeoutInMinutes * MINUTE_IN_MILLIS;
+            sessions.put(name.toLowerCase(), timeout);
         }
     }
 
@@ -63,12 +60,12 @@ public class SessionManager implements SettingsDependent {
      * @param name The name of the player.
      */
     public void removeSession(String name) {
-        this.sessions.remove(name);
+        this.sessions.remove(name.toLowerCase());
     }
 
     @Override
     public void reload(NewSetting settings) {
-        this.enabled = settings.getProperty(PluginSettings.SESSIONS_ENABLED);
-        this.sessionTimeout = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
+        timeoutInMinutes = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
+        enabled = timeoutInMinutes > 0 && settings.getProperty(PluginSettings.SESSIONS_ENABLED);
     }
 }

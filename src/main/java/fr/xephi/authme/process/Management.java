@@ -88,11 +88,11 @@ public class Management {
         });
     }
 
-    public void performQuit(final Player player, final boolean isKick) {
+    public void performQuit(final Player player) {
         runTask(new Runnable() {
             @Override
             public void run() {
-                asynchronousQuit.processQuit(player, isKick);
+                asynchronousQuit.processQuit(player);
             }
         });
     }

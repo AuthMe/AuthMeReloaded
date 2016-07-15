@@ -252,7 +252,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        management.performQuit(player, false);
+        management.performQuit(player);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -260,7 +260,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
 
         if (!antiBot.wasPlayerKicked(player.getName())) {
-            management.performQuit(player, true);
+            management.performQuit(player);
         }
     }
 

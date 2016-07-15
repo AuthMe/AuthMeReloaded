@@ -135,9 +135,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
 
             // Session logic
-            if (service.getProperty(PluginSettings.SESSIONS_ENABLED) && (sessionManager.hasSession(name) || database.isLogged(name))) {
-                sessionManager.cancelSession(name);
-
+            if (sessionManager.hasSession(name) || database.isLogged(name)) {
                 PlayerAuth auth = database.getAuth(name);
                 database.setUnlogged(name);
                 playerCache.removePlayer(name);
