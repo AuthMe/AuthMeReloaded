@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Map;
 
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -96,8 +97,7 @@ public class SessionManagerTest {
         NewSetting settings = mockSettings(true, timeout);
         String player = "patrick";
         SessionManager manager = new SessionManager(settings);
-        Map<String, Long> sessions = (Map<String, Long>) ReflectionTestUtils
-            .getFieldValue(SessionManager.class, manager, "sessions");
+        Map<String, Long> sessions = getSessionsMap(manager);
         // Add session entry for player that just has expired
         sessions.put(player, System.currentTimeMillis() - 1000);
 
@@ -107,6 +107,28 @@ public class SessionManagerTest {
         // then
         assertThat(result, equalTo(false));
     }
+
+    @Test
+    public void shouldClearAllSessionsAfterDisable() {
+        // given
+        NewSetting settings = mockSettings(true, 10);
+        SessionManager manager = new SessionManager(settings);
+        manager.addSession("player01");
+        manager.addSession("player02");
+
+        // when
+        manager.reload(mockSettings(false, 20));
+
+        // then
+        assertThat(getSessionsMap(manager), anEmptyMap());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Long> getSessionsMap(SessionManager manager) {
+        return (Map<String, Long>) ReflectionTestUtils
+            .getFieldValue(SessionManager.class, manager, "sessions");
+    }
+
 
     private static NewSetting mockSettings(boolean isEnabled, int sessionTimeout) {
         NewSetting settings = mock(NewSetting.class);

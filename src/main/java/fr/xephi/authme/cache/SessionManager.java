@@ -66,6 +66,12 @@ public class SessionManager implements SettingsDependent {
     @Override
     public void reload(NewSetting settings) {
         timeoutInMinutes = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
+        boolean oldEnabled = enabled;
         enabled = timeoutInMinutes > 0 && settings.getProperty(PluginSettings.SESSIONS_ENABLED);
+
+        // With this reload, the sessions feature has just been disabled, so clear all stored sessions
+        if (oldEnabled && !enabled) {
+            sessions.clear();
+        }
     }
 }
