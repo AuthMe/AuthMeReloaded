@@ -4,21 +4,20 @@ import com.google.common.escape.Escaper;
 import com.google.common.io.BaseEncoding;
 import com.google.common.net.UrlEscapers;
 import com.google.common.primitives.Ints;
-
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 @Recommendation(Usage.DOES_NOT_WORK)
 @HasSalt(SaltType.NONE)
@@ -58,12 +57,13 @@ public class TwoFactor extends UnsaltedMethod {
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
         try {
             return checkPassword(hashedPassword.getHash(), password);
-        } catch (NoSuchAlgorithmException | InvalidKeyException encryptionException) {
-            throw new UnsupportedOperationException("Failed to compare passwords", encryptionException);
+        } catch (Exception e) {
+            ConsoleLogger.logException("Failed to verify two auth code:", e);
+            return false;
         }
     }
 
-    public boolean checkPassword(String secretKey, String userInput)
+    private boolean checkPassword(String secretKey, String userInput)
             throws NoSuchAlgorithmException, InvalidKeyException {
         Integer code = Ints.tryParse(userInput);
         if (code == null) {
