@@ -410,6 +410,8 @@ Purge:
 Protection:
     # Enable some servers protection ( country based login, antibot )
     enableProtection: false
+    # Apply the protection also to registered usernames
+    enableProtectionRegistered: true
     # Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes
     # PLEASE USE QUOTES!
     countries:

@@ -90,7 +90,6 @@ public class SessionManagerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldDenySessionIfTimeoutHasExpired() {
         // given
         int timeout = 20;

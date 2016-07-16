@@ -11,7 +11,6 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -40,9 +39,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
 
     @Inject
     private SpawnLoader spawnLoader;
-
-    @Inject
-    private BukkitService bukkitService;
 
     AsynchronousQuit() {
     }

@@ -16,6 +16,10 @@ public class ProtectionSettings implements SettingsClass {
     public static final Property<Boolean> ENABLE_PROTECTION =
         newProperty("Protection.enableProtection", false);
 
+    @Comment("Apply the protection also to registered usernames")
+    public static final Property<Boolean> ENABLE_PROTECTION_REGISTERED =
+        newProperty("Protection.enableProtectionRegistered", true);
+
     @Comment({"Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes",
             "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_WHITELIST =
