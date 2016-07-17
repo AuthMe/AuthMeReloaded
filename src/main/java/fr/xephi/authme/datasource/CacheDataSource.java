@@ -15,6 +15,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -184,7 +185,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void purgeRecords(final Set<String> banned) {
+    public void purgeRecords(final Collection<String> banned) {
         source.purgeRecords(banned);
         cachedAuths.invalidateAll(banned);
     }

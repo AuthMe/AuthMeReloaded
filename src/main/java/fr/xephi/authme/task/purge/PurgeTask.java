@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class PurgeTask extends BukkitRunnable {
+class PurgeTask extends BukkitRunnable {
 
     //how many players we should check for each tick
     private static final int INTERVAL_CHECK = 5;
@@ -38,8 +38,8 @@ public class PurgeTask extends BukkitRunnable {
      * @param toPurge lowercase names to purge
      * @param offlinePlayers offline players to map to the names
      */
-    public PurgeTask(PurgeService service, PermissionsManager permissionsManager, CommandSender sender,
-                     Set<String> toPurge, OfflinePlayer[] offlinePlayers) {
+    PurgeTask(PurgeService service, PermissionsManager permissionsManager, CommandSender sender,
+              Set<String> toPurge, OfflinePlayer[] offlinePlayers) {
         this.purgeService = service;
         this.permissionsManager = permissionsManager;
 
@@ -93,20 +93,11 @@ public class PurgeTask extends BukkitRunnable {
         }
 
         currentPage++;
-        purgeData(playerPortion, namePortion);
+        purgeService.executePurge(playerPortion, namePortion);
         if (currentPage % 20 == 0) {
             int completed = totalPurgeCount - toPurge.size();
             sendMessage("[AuthMe] Purge progress " + completed + '/' + totalPurgeCount);
         }
-    }
-
-    private void purgeData(Set<OfflinePlayer> playerPortion, Set<String> namePortion) {
-        // Purge other data
-        purgeService.purgeEssentials(playerPortion);
-        purgeService.purgeDat(playerPortion);
-        purgeService.purgeLimitedCreative(namePortion);
-        purgeService.purgeAntiXray(namePortion);
-        purgeService.purgePermissions(playerPortion);
     }
 
     private void finish() {

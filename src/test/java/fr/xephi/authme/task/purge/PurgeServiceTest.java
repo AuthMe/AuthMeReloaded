@@ -3,7 +3,6 @@ package fr.xephi.authme.task.purge;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.runner.BeforeInjecting;
 import fr.xephi.authme.runner.DelayedInjectionRunner;
@@ -12,7 +11,6 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matchers;
@@ -61,9 +59,7 @@ public class PurgeServiceTest {
     @Mock
     private PermissionsManager permissionsManager;
     @Mock
-    private PluginHooks pluginHooks;
-    @Mock
-    private Server server;
+    private PurgeExecutor executor;
 
     @BeforeClass
     public static void initLogger() {
@@ -116,7 +112,6 @@ public class PurgeServiceTest {
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
         verify(dataSource).getRecordsToPurge(captor.capture());
         assertCorrectPurgeTimestamp(captor.getValue(), 60);
-        verify(dataSource).purgeRecords(playerNames);
         assertThat(Boolean.TRUE.equals(
             ReflectionTestUtils.getFieldValue(PurgeService.class, purgeService, "isPurging")), equalTo(true));
         verifyScheduledPurgeTask(null, playerNames);
@@ -156,9 +151,6 @@ public class PurgeServiceTest {
 
         // then
         verify(dataSource).getRecordsToPurge(delay);
-        verify(dataSource).purgeRecords(playerNames);
-        // FIXME #784: Deleting accounts needs to be handled differently
-        verify(sender).sendMessage(argThat(containsString("Deleted 4 user accounts")));
         verifyScheduledPurgeTask(uuid, playerNames);
     }
 

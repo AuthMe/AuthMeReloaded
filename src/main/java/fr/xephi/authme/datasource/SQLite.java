@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -317,7 +318,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void purgeRecords(Set<String> toPurge) {
+    public void purgeRecords(Collection<String> toPurge) {
         String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement deletePst = con.prepareStatement(delete)) {
             for (String name : toPurge) {

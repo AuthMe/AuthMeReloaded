@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -256,7 +257,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public void purgeRecords(Set<String> toPurge) {
+    public void purgeRecords(Collection<String> toPurge) {
         BufferedReader br = null;
         BufferedWriter bw = null;
         ArrayList<String> lines = new ArrayList<>();

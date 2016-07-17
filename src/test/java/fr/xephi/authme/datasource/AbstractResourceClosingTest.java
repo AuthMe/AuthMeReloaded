@@ -219,7 +219,7 @@ public abstract class AbstractResourceClosingTest {
 
             Object element = PARAM_VALUES.get(genericType);
             Preconditions.checkNotNull(element, "No sample element for list of generic type " + genericType);
-            if (List.class == parameterizedType.getRawType()) {
+            if (isAssignableFrom(parameterizedType.getRawType(), List.class)) {
                 return Arrays.asList(element, element, element);
             } else if (Set.class == parameterizedType.getRawType()) {
                 return new HashSet<>(Arrays.asList(element, element, element));
@@ -227,6 +227,11 @@ public abstract class AbstractResourceClosingTest {
             throw new IllegalStateException("Unknown collection type " + parameterizedType.getRawType());
         }
         throw new IllegalStateException("Cannot build list for unexpected Type: " + type);
+    }
+
+    private static boolean isAssignableFrom(Type type, Class<?> fromType) {
+        return (type instanceof Class<?>)
+            && ((Class<?>) type).isAssignableFrom(fromType);
     }
 
     /* Initialize the map of test values to pass to methods to satisfy their signature. */
