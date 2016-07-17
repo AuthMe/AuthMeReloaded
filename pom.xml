@@ -792,6 +792,13 @@
             </exclusions>
         </dependency>
 
+        <!-- Injector -->
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>injector</artifactId>
+            <version>0.2</version>
+        </dependency>
+
         <!-- String comparison library. Used for dynamic help system. -->
         <dependency>
             <groupId>net.ricecode</groupId>

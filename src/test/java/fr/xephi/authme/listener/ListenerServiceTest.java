@@ -1,11 +1,11 @@
 package fr.xephi.authme.listener;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.runner.BeforeInjecting;
-import fr.xephi.authme.runner.InjectDelayed;
-import fr.xephi.authme.runner.DelayedInjectionRunner;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;

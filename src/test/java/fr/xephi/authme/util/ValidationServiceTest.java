@@ -1,13 +1,13 @@
 package fr.xephi.authme.util;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.base.Strings;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.runner.BeforeInjecting;
-import fr.xephi.authme.runner.DelayedInjectionRunner;
-import fr.xephi.authme.runner.InjectDelayed;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;

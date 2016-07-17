@@ -1,12 +1,12 @@
 package fr.xephi.authme.cache.backup;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.runner.BeforeInjecting;
-import fr.xephi.authme.runner.DelayedInjectionRunner;
-import fr.xephi.authme.runner.InjectDelayed;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;

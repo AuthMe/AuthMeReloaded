@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener.protocollib;
 
+import ch.jalu.injector.annotations.NoFieldScan;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
+@NoFieldScan
 public class ProtocolLibService implements SettingsDependent {
 
     /* Packet Adapters */
