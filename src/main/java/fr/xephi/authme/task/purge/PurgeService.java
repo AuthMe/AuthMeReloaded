@@ -91,7 +91,7 @@ public class PurgeService {
 
         isPurging = true;
         PurgeTask purgeTask = new PurgeTask(this, permissionsManager, sender, names, players);
-        bukkitService.runTaskAsynchronously(purgeTask);
+        bukkitService.runTaskTimer(purgeTask, 0, 1);
     }
 
     /**

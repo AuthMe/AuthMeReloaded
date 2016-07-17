@@ -49,7 +49,7 @@ class PurgeExecutor {
      * players and names.
      *
      * @param players the players to purge
-     * @param names names to purge (lowercase)
+     * @param names names to purge
      */
     public void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
         // Purge other data

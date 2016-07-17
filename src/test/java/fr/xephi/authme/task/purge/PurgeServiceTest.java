@@ -4,9 +4,6 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.runner.BeforeInjecting;
-import fr.xephi.authme.runner.DelayedInjectionRunner;
-import fr.xephi.authme.runner.InjectDelayed;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
@@ -18,10 +15,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +37,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,10 +46,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link PurgeService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class PurgeServiceTest {
 
-    @InjectDelayed
+    @InjectMocks
     private PurgeService purgeService;
 
     @Mock
@@ -66,15 +68,11 @@ public class PurgeServiceTest {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
-    public void initSettingDefaults() {
-        given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
-    }
-
     @Test
     public void shouldNotRunAutoPurge() {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(false);
+        given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
 
         // when
         purgeService.runAutoPurge();
@@ -112,8 +110,8 @@ public class PurgeServiceTest {
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
         verify(dataSource).getRecordsToPurge(captor.capture());
         assertCorrectPurgeTimestamp(captor.getValue(), 60);
-        assertThat(Boolean.TRUE.equals(
-            ReflectionTestUtils.getFieldValue(PurgeService.class, purgeService, "isPurging")), equalTo(true));
+        assertThat(Boolean.TRUE, equalTo(
+            ReflectionTestUtils.getFieldValue(PurgeService.class, purgeService, "isPurging")));
         verifyScheduledPurgeTask(null, playerNames);
     }
 
@@ -169,6 +167,19 @@ public class PurgeServiceTest {
         verifyZeroInteractions(bukkitService, dataSource, permissionsManager);
     }
 
+    @Test
+    public void shouldExecutePurgeActions() {
+        // given
+        List<OfflinePlayer> players = Arrays.asList(mockReturnedOfflinePlayers());
+        List<String> names = Arrays.asList("alpha", "bravo", "foxtrot");
+
+        // when
+        purgeService.executePurge(players, names);
+
+        // then
+        verify(executor).executePurge(players, names);
+    }
+
     /**
      * Returns mock OfflinePlayer objects with names corresponding to A - G of the NATO phonetic alphabet,
      * in various casing.
@@ -198,14 +209,14 @@ public class PurgeServiceTest {
     }
 
     @SuppressWarnings("unchecked")
-    private void verifyScheduledPurgeTask(UUID uuid, Set<String> names) {
+    private void verifyScheduledPurgeTask(UUID senderUuid, Set<String> names) {
         ArgumentCaptor<PurgeTask> captor = ArgumentCaptor.forClass(PurgeTask.class);
-        verify(bukkitService).runTaskAsynchronously(captor.capture());
+        verify(bukkitService).runTaskTimer(captor.capture(), eq(0L), eq(1L));
         PurgeTask task = captor.getValue();
 
         Object senderInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "sender");
         Set<String> namesInTask = (Set<String>) ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "toPurge");
-        assertThat(senderInTask, Matchers.<Object>equalTo(uuid));
+        assertThat(senderInTask, Matchers.<Object>equalTo(senderUuid));
         assertThat(namesInTask, containsInAnyOrder(names.toArray()));
     }
 }

@@ -104,9 +104,9 @@ class PurgeTask extends BukkitRunnable {
         cancel();
 
         // Show a status message
-        sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged correctly");
+        sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged successfully");
 
-        ConsoleLogger.info("Purge Finished!");
+        ConsoleLogger.info("Purge finished!");
         purgeService.setPurging(false);
     }
 
