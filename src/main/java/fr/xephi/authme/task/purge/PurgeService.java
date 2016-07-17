@@ -1,11 +1,9 @@
-package fr.xephi.authme.task;
+package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
@@ -17,16 +15,14 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Set;
 
 import static fr.xephi.authme.util.StringUtils.makePath;
 
-public class PurgeService implements Reloadable {
+public class PurgeService {
 
     @Inject
     private BukkitService bukkitService;
@@ -48,17 +44,6 @@ public class PurgeService implements Reloadable {
 
     private boolean isPurging = false;
 
-    // Settings
-    private int daysBeforePurge;
-
-    /**
-     * Return whether a purge is in progress.
-     *
-     * @return True if purging.
-     */
-    public boolean isPurging() {
-        return this.isPurging;
-    }
 
     /**
      * Set if a purge is currently in progress.
@@ -70,9 +55,10 @@ public class PurgeService implements Reloadable {
     }
 
     /**
-     * Purges players from the database. Run on startup if enabled.
+     * Purges players from the database. Runs on startup if enabled.
      */
     public void runAutoPurge() {
+        int daysBeforePurge = settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER);
         if (!settings.getProperty(PurgeSettings.USE_AUTO_PURGE)) {
             return;
         } else if (daysBeforePurge <= 0) {
@@ -89,29 +75,27 @@ public class PurgeService implements Reloadable {
     }
 
     /**
-     * Run a purge with a specified time.
+     * Runs a purge with a specified last login threshold. Players who haven't logged in since the threshold
+     * will be purged.
      *
-     * @param sender Sender running the command.
-     * @param until The minimum last login.
+     * @param sender Sender running the command
+     * @param until The last login threshold in milliseconds
      */
     public void runPurge(CommandSender sender, long until) {
         //todo: note this should may run async because it may executes a SQL-Query
-        Set<String> initialPurge = dataSource.getRecordsToPurge(until);
-        if (CollectionUtils.isEmpty(initialPurge)) {
+        Set<String> toPurge = dataSource.getRecordsToPurge(until);
+        if (CollectionUtils.isEmpty(toPurge)) {
             logAndSendMessage(sender, "No players to purge");
             return;
         }
 
-        Set<String> toPurge = getFinalPurgeList(initialPurge);
         purgePlayers(sender, toPurge, bukkitService.getOfflinePlayers());
     }
 
     /**
-     * Purges the given list of player names.
+     * Purges all banned players.
      *
-     * @param sender Sender running the command.
-     * @param names The names to remove.
-     * @param players Collection of OfflinePlayers (including those with the given names).
+     * @param sender Sender running the command
      */
     public void purgePlayers(CommandSender sender, Set<String> names, OfflinePlayer[] players) {
         //todo: note this should may run async because it may executes a SQL-Query
@@ -120,33 +104,15 @@ public class PurgeService implements Reloadable {
             return;
         }
 
+        // FIXME #784: We can no longer delete records here -> permission check happens inside PurgeTask
         dataSource.purgeRecords(names);
+        // TODO ljacqu 20160717: We shouldn't output namedBanned.size() but the actual total that was deleted
         logAndSendMessage(sender, ChatColor.GOLD + "Deleted " + names.size() + " user accounts");
         logAndSendMessage(sender, ChatColor.GOLD + "Purging user accounts...");
 
         isPurging = true;
-        PurgeTask purgeTask = new PurgeTask(this, sender, names, players);
+        PurgeTask purgeTask = new PurgeTask(this, permissionsManager, sender, names, players);
         bukkitService.runTaskAsynchronously(purgeTask);
-    }
-
-    /**
-     * Check each name in the initial purge findings to remove any player from the purge list
-     * that has the bypass permission.
-     *
-     * @param initial The initial list of players to purge.
-     *
-     * @return The list of players to purge after permission check.
-     */
-    private Set<String> getFinalPurgeList(Set<String> initial) {
-        Set<String> toPurge = new HashSet<>();
-
-        for (String name : initial) {
-            if (!permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_PURGE)) {
-                toPurge.add(name);
-            }
-        }
-
-        return toPurge;
     }
 
     synchronized void purgeAntiXray(Set<String> cleared) {
@@ -286,11 +252,5 @@ public class PurgeService implements Reloadable {
         if (sender != null && !(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(message);
         }
-    }
-
-    @PostConstruct
-    @Override
-    public void reload() {
-        this.daysBeforePurge = settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER);
     }
 }

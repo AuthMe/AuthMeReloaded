@@ -47,7 +47,7 @@ public interface PermissionHandler {
      *
      * @return True if the player has permission.
      */
-    boolean hasPermission(String name, PermissionNode node);
+    boolean hasPermissionOffline(String name, PermissionNode node);
 
     /**
      * Check whether the player is in the specified group.

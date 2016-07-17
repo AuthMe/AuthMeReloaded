@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.task.PurgeService;
+import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
 import org.junit.runner.RunWith;
