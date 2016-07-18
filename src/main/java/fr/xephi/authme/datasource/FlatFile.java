@@ -258,34 +258,7 @@ public class FlatFile implements DataSource {
 
     @Override
     public void purgeRecords(Collection<String> toPurge) {
-        BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-
-        try {
-            br = new BufferedReader(new FileReader(source));
-            bw = new BufferedWriter(new FileWriter(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                if (args.length >= 4) {
-                    if (toPurge.contains(args[0])) {
-                        lines.add(line);
-                        continue;
-                    }
-                }
-            }
-
-            for (String l : lines) {
-                bw.write(l + "\n");
-            }
-        } catch (IOException ex) {
-            ConsoleLogger.warning(ex.getMessage());
-            return;
-        } finally {
-            silentClose(br);
-            silentClose(bw);
-        }
+        throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
     @Override

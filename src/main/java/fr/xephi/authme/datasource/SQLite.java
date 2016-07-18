@@ -322,7 +322,7 @@ public class SQLite implements DataSource {
         String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement deletePst = con.prepareStatement(delete)) {
             for (String name : toPurge) {
-                deletePst.setString(1, name);
+                deletePst.setString(1, name.toLowerCase());
                 deletePst.executeUpdate();
             }
         } catch (SQLException ex) {

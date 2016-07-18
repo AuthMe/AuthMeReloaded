@@ -698,7 +698,7 @@ public class MySQL implements DataSource {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : toPurge) {
-                pst.setString(1, name);
+                pst.setString(1, name.toLowerCase());
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
