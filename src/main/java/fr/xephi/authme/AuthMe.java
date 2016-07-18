@@ -1,5 +1,7 @@
 package fr.xephi.authme;
 
+import ch.jalu.injector.Injector;
+import ch.jalu.injector.InjectorBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -16,7 +18,6 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
 import fr.xephi.authme.listener.AuthMeBlockListener;
@@ -110,7 +111,7 @@ public class AuthMe extends JavaPlugin {
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
     private BukkitService bukkitService;
-    private AuthMeServiceInitializer initializer;
+    private Injector injector;
     private GeoLiteAPI geoLiteApi;
 
     /**
@@ -224,20 +225,20 @@ public class AuthMe extends JavaPlugin {
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
 
         // Injector initialization
-        initializer = new AuthMeServiceInitializer("fr.xephi.authme");
+        injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
 
         // Register elements of the Bukkit / JavaPlugin environment
-        initializer.register(AuthMe.class, this);
-        initializer.register(Server.class, getServer());
-        initializer.register(PluginManager.class, getServer().getPluginManager());
-        initializer.register(BukkitScheduler.class, getServer().getScheduler());
-        initializer.provide(DataFolder.class, getDataFolder());
+        injector.register(AuthMe.class, this);
+        injector.register(Server.class, getServer());
+        injector.register(PluginManager.class, getServer().getPluginManager());
+        injector.register(BukkitScheduler.class, getServer().getScheduler());
+        injector.provide(DataFolder.class, getDataFolder());
 
         // Register elements we instantiate manually
-        initializer.register(NewSetting.class, newSettings);
-        initializer.register(DataSource.class, database);
+        injector.register(NewSetting.class, newSettings);
+        injector.register(DataSource.class, database);
 
-        instantiateServices(initializer);
+        instantiateServices(injector);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(this, newSettings);
@@ -256,7 +257,7 @@ public class AuthMe extends JavaPlugin {
         reloadSupportHook();
 
         // Register event listeners
-        registerEventListeners(initializer);
+        registerEventListeners(injector);
         // Start Email recall task if needed
         scheduleRecallEmailTask();
 
@@ -276,25 +277,25 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Purge on start if enabled
-        PurgeService purgeService = initializer.get(PurgeService.class);
+        PurgeService purgeService = injector.getSingleton(PurgeService.class);
         purgeService.runAutoPurge();
     }
 
-    protected void instantiateServices(AuthMeServiceInitializer initializer) {
+    protected void instantiateServices(Injector injector) {
         // Some statically injected things
-        initializer.register(PlayerCache.class, PlayerCache.getInstance());
+        injector.register(PlayerCache.class, PlayerCache.getInstance());
 
-        messages = initializer.get(Messages.class);
-        permsMan = initializer.get(PermissionsManager.class);
-        bukkitService = initializer.get(BukkitService.class);
-        pluginHooks = initializer.get(PluginHooks.class);
-        passwordSecurity = initializer.get(PasswordSecurity.class);
-        spawnLoader = initializer.get(SpawnLoader.class);
-        commandHandler = initializer.get(CommandHandler.class);
-        management = initializer.get(Management.class);
-        geoLiteApi = initializer.get(GeoLiteAPI.class);
-        initializer.get(NewAPI.class);
-        initializer.get(API.class);
+        messages = injector.getSingleton(Messages.class);
+        permsMan = injector.getSingleton(PermissionsManager.class);
+        bukkitService = injector.getSingleton(BukkitService.class);
+        pluginHooks = injector.getSingleton(PluginHooks.class);
+        passwordSecurity = injector.getSingleton(PasswordSecurity.class);
+        spawnLoader = injector.getSingleton(SpawnLoader.class);
+        commandHandler = injector.getSingleton(CommandHandler.class);
+        management = injector.getSingleton(Management.class);
+        geoLiteApi = injector.getSingleton(GeoLiteAPI.class);
+        injector.getSingleton(NewAPI.class);
+        injector.getSingleton(API.class);
     }
 
     /**
@@ -316,27 +317,27 @@ public class AuthMe extends JavaPlugin {
     /**
      * Register all event listeners.
      */
-    protected void registerEventListeners(AuthMeServiceInitializer initializer) {
+    protected void registerEventListeners(Injector injector) {
         // Get the plugin manager instance
         PluginManager pluginManager = getServer().getPluginManager();
 
         // Register event listeners
-        pluginManager.registerEvents(initializer.get(AuthMePlayerListener.class), this);
-        pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class), this);
-        pluginManager.registerEvents(initializer.get(AuthMeEntityListener.class), this);
-        pluginManager.registerEvents(initializer.get(AuthMeServerListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(AuthMePlayerListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(AuthMeBlockListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(AuthMeEntityListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(AuthMeServerListener.class), this);
 
         // Try to register 1.6 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
-            pluginManager.registerEvents(initializer.get(AuthMePlayerListener16.class), this);
+            pluginManager.registerEvents(injector.getSingleton(AuthMePlayerListener16.class), this);
         } catch (ClassNotFoundException ignore) {
         }
 
         // Try to register 1.8 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
-            pluginManager.registerEvents(initializer.get(AuthMePlayerListener18.class), this);
+            pluginManager.registerEvents(injector.getSingleton(AuthMePlayerListener18.class), this);
         } catch (ClassNotFoundException ignore) {
         }
     }
@@ -365,8 +366,8 @@ public class AuthMe extends JavaPlugin {
     private void setupBungeeCordHook() {
         if (newSettings.getProperty(HooksSettings.BUNGEECORD)) {
             Messenger messenger = Bukkit.getMessenger();
-            messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
-            messenger.registerIncomingPluginChannel(plugin, "BungeeCord", initializer.get(BungeeCordMessage.class));
+            messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+            messenger.registerIncomingPluginChannel(this, "BungeeCord", injector.getSingleton(BungeeCordMessage.class));
         }
     }
 
@@ -420,9 +421,9 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onDisable() {
         // Save player data
-        BukkitService bukkitService = initializer.getIfAvailable(BukkitService.class);
-        LimboCache limboCache = initializer.getIfAvailable(LimboCache.class);
-        AuthGroupHandler authGroupHandler = initializer.getIfAvailable(AuthGroupHandler.class);
+        BukkitService bukkitService = injector.getIfAvailable(BukkitService.class);
+        LimboCache limboCache = injector.getIfAvailable(LimboCache.class);
+        AuthGroupHandler authGroupHandler = injector.getIfAvailable(AuthGroupHandler.class);
 
         if (bukkitService != null && limboCache != null) {
             Collection<? extends Player> players = bukkitService.getOnlinePlayers();
@@ -579,7 +580,7 @@ public class AuthMe extends JavaPlugin {
             }
             if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
                 && !newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-                PlayerDataStorage playerDataStorage = initializer.getIfAvailable(PlayerDataStorage.class);
+                PlayerDataStorage playerDataStorage = injector.getIfAvailable(PlayerDataStorage.class);
                 if (playerDataStorage != null && !playerDataStorage.hasData(player)) {
                     playerDataStorage.saveData(player);
                 }

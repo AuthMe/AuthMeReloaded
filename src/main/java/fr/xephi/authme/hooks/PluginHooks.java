@@ -1,5 +1,6 @@
 package fr.xephi.authme.hooks;
 
+import ch.jalu.injector.annotations.NoFieldScan;
 import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
@@ -17,6 +18,7 @@ import java.io.File;
 /**
  * Hooks into third-party plugins and allows to perform actions on them.
  */
+@NoFieldScan
 public class PluginHooks {
 
     private final PluginManager pluginManager;

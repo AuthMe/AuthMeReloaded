@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.injector.Injector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.converter.RakamakConverter;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
@@ -43,7 +43,7 @@ public class ConverterCommandTest {
     private BukkitService bukkitService;
 
     @Mock
-    private AuthMeServiceInitializer initializer;
+    private Injector injector;
 
     @Test
     public void shouldHandleUnknownConversionType() {
@@ -56,7 +56,7 @@ public class ConverterCommandTest {
         // then
         verify(commandService).send(sender, MessageKey.ERROR);
         verifyNoMoreInteractions(commandService);
-        verifyZeroInteractions(initializer);
+        verifyZeroInteractions(injector);
         verifyZeroInteractions(bukkitService);
     }
 
@@ -87,7 +87,7 @@ public class ConverterCommandTest {
         // given
         ConverterCommand.ConvertType type = ConverterCommand.ConvertType.RAKAMAK;
         RakamakConverter converter = mock(RakamakConverter.class);
-        given(initializer.newInstance(RakamakConverter.class)).willReturn(converter);
+        given(injector.newInstance(RakamakConverter.class)).willReturn(converter);
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -97,8 +97,8 @@ public class ConverterCommandTest {
         // then
         verify(converter).execute(sender);
         verifyNoMoreInteractions(converter);
-        verify(initializer).newInstance(type.getConverterClass());
-        verifyNoMoreInteractions(initializer);
+        verify(injector).newInstance(type.getConverterClass());
+        verifyNoMoreInteractions(injector);
     }
 
 }

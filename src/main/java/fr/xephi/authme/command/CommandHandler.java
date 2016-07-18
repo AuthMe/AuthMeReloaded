@@ -1,8 +1,8 @@
 package fr.xephi.authme.command;
 
+import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
@@ -37,12 +37,12 @@ public class CommandHandler {
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> commands = new HashMap<>();
 
     @Inject
-    public CommandHandler(AuthMeServiceInitializer initializer, CommandMapper commandMapper,
+    public CommandHandler(Injector injector, CommandMapper commandMapper,
                           PermissionsManager permissionsManager, HelpProvider helpProvider) {
         this.commandMapper = commandMapper;
         this.permissionsManager = permissionsManager;
         this.helpProvider = helpProvider;
-        initializeCommands(initializer, commandMapper.getCommandClasses());
+        initializeCommands(injector, commandMapper.getCommandClasses());
     }
 
     /**
@@ -90,12 +90,13 @@ public class CommandHandler {
     /**
      * Initialize all required ExecutableCommand objects.
      *
+     * @param injector the injector
      * @param commandClasses the classes to instantiate
      */
-    private void initializeCommands(AuthMeServiceInitializer initializer,
+    private void initializeCommands(Injector injector,
                                     Set<Class<? extends ExecutableCommand>> commandClasses) {
         for (Class<? extends ExecutableCommand> clazz : commandClasses) {
-            commands.put(clazz, initializer.newInstance(clazz));
+            commands.put(clazz, injector.newInstance(clazz));
         }
     }
 

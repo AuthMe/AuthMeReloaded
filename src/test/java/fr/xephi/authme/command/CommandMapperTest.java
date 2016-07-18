@@ -1,14 +1,14 @@
 package fr.xephi.authme.command;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.runner.BeforeInjecting;
-import fr.xephi.authme.runner.InjectDelayed;
-import fr.xephi.authme.runner.DelayedInjectionRunner;
 import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
 import org.junit.Test;

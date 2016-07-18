@@ -141,7 +141,7 @@ public class CheckTestMocks implements AutoToolTask {
         Injection<?> injection = InjectionHelper.getInjection(realClass);
         return injection == null
             ? Collections.<Class<?>>emptySet()
-            : Sets.newHashSet(injection.getDependencies());
+            : Sets.<Class<?>>newHashSet(injection.getDependencies());
     }
 
     private static boolean isTestClassWithMocks(Class<?> clazz) {

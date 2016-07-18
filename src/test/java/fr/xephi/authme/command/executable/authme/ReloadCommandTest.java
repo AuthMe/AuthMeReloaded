@@ -1,11 +1,13 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
+import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -19,14 +21,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -42,7 +48,7 @@ public class ReloadCommandTest {
     private AuthMe authMe;
 
     @Mock
-    private AuthMeServiceInitializer initializer;
+    private Injector injector;
 
     @Mock
     private NewSetting settings;
@@ -71,13 +77,19 @@ public class ReloadCommandTest {
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
+        List<Reloadable> reloadables = Arrays.asList(
+            mock(Reloadable.class), mock(Reloadable.class), mock(Reloadable.class));
+        List<SettingsDependent> dependents = Arrays.asList(
+            mock(SettingsDependent.class), mock(SettingsDependent.class));
+        given(injector.retrieveAllOfType(Reloadable.class)).willReturn(reloadables);
+        given(injector.retrieveAllOfType(SettingsDependent.class)).willReturn(dependents);
 
         // when
         command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(settings).reload();
-        verify(initializer).performReloadOnServices();
+        verifyReloadingCalls(reloadables, dependents);
         verify(commandService).send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
     }
 
@@ -85,7 +97,7 @@ public class ReloadCommandTest {
     public void shouldHandleReloadError() {
         // given
         CommandSender sender = mock(CommandSender.class);
-        doThrow(IllegalStateException.class).when(initializer).performReloadOnServices();
+        doThrow(IllegalStateException.class).when(injector).retrieveAllOfType(Reloadable.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
 
@@ -94,8 +106,8 @@ public class ReloadCommandTest {
 
         // then
         verify(settings).reload();
-        verify(initializer).performReloadOnServices();
-        verify(sender).sendMessage(matches("Error occurred.*"));
+        verify(injector).retrieveAllOfType(Reloadable.class);
+        verify(sender).sendMessage(argThat(containsString("Error occurred")));
         verify(authMe).stopOrUnload();
     }
 
@@ -105,13 +117,24 @@ public class ReloadCommandTest {
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.SQLITE);
+        given(injector.retrieveAllOfType(Reloadable.class)).willReturn(new ArrayList<Reloadable>());
+        given(injector.retrieveAllOfType(SettingsDependent.class)).willReturn(new ArrayList<SettingsDependent>());
 
         // when
         command.executeCommand(sender, Collections.<String>emptyList());
 
         // then
         verify(settings).reload();
-        verify(initializer).performReloadOnServices();
+        verify(injector, times(2)).retrieveAllOfType(any(Class.class));
         verify(sender).sendMessage(argThat(containsString("cannot change database type")));
+    }
+
+    private void verifyReloadingCalls(List<Reloadable> reloadables, List<SettingsDependent> dependents) {
+        for (Reloadable reloadable : reloadables) {
+            verify(reloadable).reload();
+        }
+        for (SettingsDependent dependent : dependents) {
+            verify(dependent).reload(settings);
+        }
     }
 }
