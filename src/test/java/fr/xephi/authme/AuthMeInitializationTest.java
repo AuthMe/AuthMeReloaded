@@ -1,10 +1,11 @@
 package fr.xephi.authme;
 
+import ch.jalu.injector.Injector;
+import ch.jalu.injector.InjectorBuilder;
 import com.google.common.io.Files;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Integration test verifying that all services can be initialized in {@link AuthMe}
- * with the {@link AuthMeServiceInitializer}.
+ * with the {@link Injector}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AuthMeInitializationTest {
@@ -97,29 +98,29 @@ public class AuthMeInitializationTest {
         // We only require it right now because of usages of AuthMe#getInstance()
         ReflectionTestUtils.setField(AuthMe.class, null, "plugin", authMe);
 
-        AuthMeServiceInitializer initializer = new AuthMeServiceInitializer("fr.xephi.authme");
-        initializer.provide(DataFolder.class, dataFolder);
-        initializer.register(Server.class, server);
-        initializer.register(PluginManager.class, pluginManager);
+        Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
+        injector.provide(DataFolder.class, dataFolder);
+        injector.register(Server.class, server);
+        injector.register(PluginManager.class, pluginManager);
 
-        initializer.register(AuthMe.class, authMe);
-        initializer.register(NewSetting.class, settings);
-        initializer.register(DataSource.class, mock(DataSource.class));
+        injector.register(AuthMe.class, authMe);
+        injector.register(NewSetting.class, settings);
+        injector.register(DataSource.class, mock(DataSource.class));
 
         // when
-        authMe.instantiateServices(initializer);
-        authMe.registerEventListeners(initializer);
+        authMe.instantiateServices(injector);
+        authMe.registerEventListeners(injector);
 
         // then
         // Take a few samples and ensure that they are not null
-        assertThat(initializer.getIfAvailable(AuthMeBlockListener.class), not(nullValue()));
-        assertThat(initializer.getIfAvailable(CommandHandler.class), not(nullValue()));
-        assertThat(initializer.getIfAvailable(Management.class), not(nullValue()));
-        assertThat(initializer.getIfAvailable(NewAPI.class), not(nullValue()));
-        assertThat(initializer.getIfAvailable(PasswordSecurity.class), not(nullValue()));
-        assertThat(initializer.getIfAvailable(PermissionsManager.class), not(nullValue()));
-        assertThat(initializer.getIfAvailable(ProcessSyncPlayerLogin.class), not(nullValue()));
-        assertThat(initializer.getIfAvailable(PurgeService.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(AuthMeBlockListener.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(CommandHandler.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(Management.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(NewAPI.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(PasswordSecurity.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(PermissionsManager.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(ProcessSyncPlayerLogin.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(PurgeService.class), not(nullValue()));
     }
 
 }

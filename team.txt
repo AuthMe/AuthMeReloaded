@@ -1,13 +1,15 @@
 AuthMe-Team:
 
 Active staff:
-Xephi (Xephi59) - Leader, Main developer
+ljacqu - Main Developer
 DNx5 - Developer
-ljacqu - Developer
 TimVisee - Developer
 games647 - Developer
 Gnat008 - Developer
 Gabriele C. (sgdc3) - Project Manager, Contributor
+
+Inactive staff:
+Xephi (Xephi59) - Original developer
 
 Retired staff:
 Maxetto - Ticket Manager, IT translator

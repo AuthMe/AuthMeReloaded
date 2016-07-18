@@ -1,6 +1,7 @@
 package tools.hashmethods;
 
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
+import ch.jalu.injector.Injector;
+import ch.jalu.injector.InjectorBuilder;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
@@ -33,7 +34,7 @@ public class EncryptionMethodInfoGatherer {
     private final static Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
         newHashSet(HasSalt.class, Recommendation.class, AsciiRestricted.class);
 
-    private static AuthMeServiceInitializer initializer = createInitializer();
+    private static Injector injector = createInitializer();
 
     private Map<HashAlgorithm, MethodDescription> descriptions;
 
@@ -57,7 +58,7 @@ public class EncryptionMethodInfoGatherer {
 
     private static MethodDescription createDescription(HashAlgorithm algorithm) {
         Class<? extends EncryptionMethod> clazz = algorithm.getClazz();
-        EncryptionMethod method = initializer.newInstance(clazz);
+        EncryptionMethod method = injector.newInstance(clazz);
         if (method == null) {
             throw new NullPointerException("Method for '" + algorithm + "' is null");
         }
@@ -138,7 +139,7 @@ public class EncryptionMethodInfoGatherer {
     }
 
     @SuppressWarnings("unchecked")
-    private static AuthMeServiceInitializer createInitializer() {
+    private static Injector createInitializer() {
         NewSetting settings = mock(NewSetting.class);
         // Return the default value for any property
         when(settings.getProperty(any(Property.class))).thenAnswer(new Answer<Object>() {
@@ -149,11 +150,11 @@ public class EncryptionMethodInfoGatherer {
             }
         });
 
-        // By not passing any "allowed package" to the constructor, the initializer will throw if it needs to
+        // By passing some bogus "package" to the constructor, the injector will throw if it needs to
         // instantiate any dependency other than what we provide.
-        AuthMeServiceInitializer initializer = new AuthMeServiceInitializer();
-        initializer.register(NewSetting.class, settings);
-        return initializer;
+        Injector injector = new InjectorBuilder().addDefaultHandlers("!!No package!!").create();
+        injector.register(NewSetting.class, settings);
+        return injector;
     }
 
 }

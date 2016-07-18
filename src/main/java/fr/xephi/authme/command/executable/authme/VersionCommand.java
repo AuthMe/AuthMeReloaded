@@ -31,11 +31,13 @@ public class VersionCommand implements ExecutableCommand {
             + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");
         Collection<? extends Player> onlinePlayers = bukkitService.getOnlinePlayers();
-        printDeveloper(sender, "Xephi", "xephi59", "Lead Developer", onlinePlayers);
+        printDeveloper(sender, "Alexandre Vanhecke", "xephi59", "Original Author", onlinePlayers);
+        printDeveloper(sender, "Lucas J.", "ljacqu", "Main Developer", onlinePlayers);
+        printDeveloper(sender, "Gnat008", "gnat008", "Developer", onlinePlayers);
         printDeveloper(sender, "DNx5", "DNx5", "Developer", onlinePlayers);
         printDeveloper(sender, "games647", "games647", "Developer", onlinePlayers);
         printDeveloper(sender, "Tim Visee", "timvisee", "Developer", onlinePlayers);
-        printDeveloper(sender, "Sgdc3", "sgdc3", "Project manager, Contributor", onlinePlayers);
+        printDeveloper(sender, "Gabriele C.", "sgdc3", "Project manager, Contributor", onlinePlayers);
         sender.sendMessage(ChatColor.GOLD + "Website: " + ChatColor.WHITE +
             "http://dev.bukkit.org/bukkit-plugins/authme-reloaded/");
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0"
