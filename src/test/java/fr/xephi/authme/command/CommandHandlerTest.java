@@ -1,9 +1,6 @@
 package fr.xephi.authme.command;
 
 import ch.jalu.injector.Injector;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.collect.Sets;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
@@ -11,11 +8,13 @@ import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -49,10 +48,9 @@ import static org.mockito.Mockito.verify;
 // Justification: It's more readable to use asList() everywhere in the test when we often generated two lists where one
 // often consists of only one element, e.g. myMethod(asList("authme"), asList("my", "args"), ...)
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
-@RunWith(DelayedInjectionRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CommandHandlerTest {
 
-    @InjectDelayed
     private CommandHandler handler;
 
     @Mock
@@ -66,12 +64,14 @@ public class CommandHandlerTest {
 
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
 
-    @BeforeInjecting
+    @Before
     @SuppressWarnings("unchecked")
     public void initializeCommandMapper() {
         given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(
             ExecutableCommand.class, TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
         setInjectorToMockExecutableCommandClasses();
+
+        handler = new CommandHandler(injector, commandMapper, permissionsManager, helpProvider);
     }
 
     /**
