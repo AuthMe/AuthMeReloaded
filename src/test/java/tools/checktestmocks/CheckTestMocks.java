@@ -3,18 +3,16 @@ package tools.checktestmocks;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
-import fr.xephi.authme.initialization.Injection;
-import fr.xephi.authme.initialization.InjectionHelper;
 import fr.xephi.authme.util.StringUtils;
 import org.mockito.Mock;
 import tools.utils.AutoToolTask;
+import tools.utils.InjectorUtils;
 import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -76,8 +74,10 @@ public class CheckTestMocks implements AutoToolTask {
         Class<?> realClass = returnRealClass(testClass);
         if (realClass != null) {
             Set<Class<?>> mockFields = getMocks(testClass);
-            Set<Class<?>> injectFields = getRealClassDependencies(realClass);
-            if (!injectFields.containsAll(mockFields)) {
+            Set<Class<?>> injectFields = InjectorUtils.getDependencies(realClass);
+            if (injectFields == null) {
+                addErrorEntry(testClass, "Could not find instantiation method");
+            } else if (!injectFields.containsAll(mockFields)) {
                 addErrorEntry(testClass, "Error - Found the following mocks absent as @Inject: "
                     + formatClassList(Sets.difference(mockFields, injectFields)));
             } else if (!mockFields.containsAll(injectFields)) {
@@ -135,13 +135,6 @@ public class CheckTestMocks implements AutoToolTask {
             System.out.format("Real class '%s' not found for test class '%s'%n", realClassName, testClassName);
             return null;
         }
-    }
-
-    private static Set<Class<?>> getRealClassDependencies(Class<?> realClass) {
-        Injection<?> injection = InjectionHelper.getInjection(realClass);
-        return injection == null
-            ? Collections.<Class<?>>emptySet()
-            : Sets.<Class<?>>newHashSet(injection.getDependencies());
     }
 
     private static boolean isTestClassWithMocks(Class<?> clazz) {
