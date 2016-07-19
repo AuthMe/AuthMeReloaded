@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
@@ -17,6 +18,7 @@ import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,6 +39,10 @@ public class DrawDependency implements ToolTask {
 
     private static final List<Class<?>> SUPER_TYPES = ImmutableList.of(ExecutableCommand.class,
         SynchronousProcess.class, AsynchronousProcess.class, EncryptionMethod.class, Converter.class, Listener.class);
+
+    /** Annotation types by which dependencies are identified. */
+    private static final List<Class<? extends Annotation>> ANNOTATION_TYPES =
+        ImmutableList.<Class<? extends Annotation>>of(DataFolder.class);
 
     private boolean mapToSupertype;
     // Map with the graph's nodes: value is one of the key's dependencies
@@ -163,7 +169,7 @@ public class DrawDependency implements ToolTask {
         Class<?>[] annotations = new Class<?>[totalDependencies];
         for (int i = 0; i < descriptions.size(); ++i) {
             dependencies[i] = descriptions.get(i).getType();
-            annotations[i] = null; // FIXME #835 descriptions.get(i).getAnnotations();
+            annotations[i] = getRelevantAnnotationClass(descriptions.get(i).getAnnotations());
         }
 
         List<String> result = new ArrayList<>(dependencies.length);
@@ -175,6 +181,15 @@ public class DrawDependency implements ToolTask {
             }
         }
         return result;
+    }
+
+    private static Class<? extends Annotation> getRelevantAnnotationClass(Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            if (ANNOTATION_TYPES.contains(annotation.annotationType())) {
+                return annotation.annotationType();
+            }
+        }
+        return null;
     }
 
     /**
