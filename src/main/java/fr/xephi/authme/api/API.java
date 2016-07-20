@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -27,19 +28,19 @@ public class API {
     private static DataSource dataSource;
     private static PasswordSecurity passwordSecurity;
     private static Management management;
+    private static PluginHooks pluginHooks;
 
-    /**
-     * Constructor for the deprecated API.
-     *
-     * @param instance AuthMe
+    /*
+     * Constructor.
      */
-    @Deprecated
     @Inject
-    API(AuthMe instance, DataSource dataSource, PasswordSecurity passwordSecurity, Management management) {
+    API(AuthMe instance, DataSource dataSource, PasswordSecurity passwordSecurity, Management management,
+        PluginHooks pluginHooks) {
         API.instance = instance;
         API.dataSource = dataSource;
         API.passwordSecurity = passwordSecurity;
         API.management = management;
+        API.pluginHooks = pluginHooks;
     }
 
     /**
@@ -47,7 +48,6 @@ public class API {
      *
      * @return AuthMe instance
      */
-    @Deprecated
     public static AuthMe hookAuthMe() {
         if (instance != null) {
             return instance;
@@ -66,7 +66,6 @@ public class API {
      * @param player The player to verify
      * @return true if the player is authenticated
      */
-    @Deprecated
     public static boolean isAuthenticated(Player player) {
         return PlayerCache.getInstance().isAuthenticated(player.getName());
     }
@@ -77,12 +76,10 @@ public class API {
      * @param player The player to verify
      * @return true if the player is unrestricted
      */
-    @Deprecated
     public static boolean isUnrestricted(Player player) {
         return Utils.isUnrestricted(player);
     }
 
-    @Deprecated
     public static Location getLastLocation(Player player) {
         try {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
@@ -99,7 +96,6 @@ public class API {
         }
     }
 
-    @Deprecated
     public static void setPlayerInventory(Player player, ItemStack[] content,
                                           ItemStack[] armor) {
         try {
@@ -115,7 +111,6 @@ public class API {
      * @param playerName The player name to verify
      * @return true if player is registered
      */
-    @Deprecated
     public static boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
         return dataSource.isAuthAvailable(player);
@@ -128,7 +123,6 @@ public class API {
      * @param passwordToCheck The password to check
      * @return true if the password is correct, false otherwise
      */
-    @Deprecated
     public static boolean checkPassword(String playerName, String passwordToCheck) {
         return isRegistered(playerName) && passwordSecurity.comparePassword(passwordToCheck, playerName);
     }
@@ -140,7 +134,6 @@ public class API {
      * @param password   The password
      * @return true if the player was registered correctly
      */
-    @Deprecated
     public static boolean registerPlayer(String playerName, String password) {
         String name = playerName.toLowerCase();
         HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
@@ -161,12 +154,10 @@ public class API {
      *
      * @param player The player to log in
      */
-    @Deprecated
     public static void forceLogin(Player player) {
         management.performLogin(player, "dontneed", true);
     }
 
-    @Deprecated
     public AuthMe getPlugin() {
         return instance;
     }
@@ -177,9 +168,8 @@ public class API {
      * @param player The player to verify
      * @return true if player is an npc
      */
-    @Deprecated
     public boolean isNPC(Player player) {
-        return instance.getPluginHooks().isNpc(player);
+        return pluginHooks.isNpc(player);
     }
 
 }

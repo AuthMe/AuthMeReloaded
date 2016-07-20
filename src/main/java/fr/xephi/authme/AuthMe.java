@@ -660,16 +660,6 @@ public class AuthMe extends JavaPlugin {
     // -------------
 
     /**
-     * @return permission manager
-     *
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public PermissionsManager getPermissionsManager() {
-        return this.permsMan;
-    }
-
-    /**
      * @return process manager
      *
      * @deprecated should be used in API classes only (temporarily)
@@ -677,35 +667,5 @@ public class AuthMe extends JavaPlugin {
     @Deprecated
     public Management getManagement() {
         return management;
-    }
-
-    /**
-     * @return the datasource
-     *
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public DataSource getDataSource() {
-        return database;
-    }
-
-    /**
-     * @return password manager
-     *
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public PasswordSecurity getPasswordSecurity() {
-        return passwordSecurity;
-    }
-
-    /**
-     * @return plugin hooks
-     *
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public PluginHooks getPluginHooks() {
-        return pluginHooks;
     }
 }

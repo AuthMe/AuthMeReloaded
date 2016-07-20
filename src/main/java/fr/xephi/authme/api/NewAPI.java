@@ -3,12 +3,15 @@ package fr.xephi.authme.api;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
 
@@ -23,14 +26,22 @@ public class NewAPI {
     public static NewAPI singleton;
     public final AuthMe plugin;
 
-    /**
+    private static PluginHooks pluginHooks;
+    private static DataSource dataSource;
+    private static PasswordSecurity passwordSecurity;
+    private static Management management;
+
+    /*
      * Constructor for NewAPI.
-     *
-     * @param plugin The AuthMe plugin instance
      */
     @Inject
-    public NewAPI(AuthMe plugin) {
+    NewAPI(AuthMe plugin, PluginHooks pluginHooks, DataSource dataSource, PasswordSecurity passwordSecurity,
+           Management management) {
         this.plugin = plugin;
+        NewAPI.pluginHooks = pluginHooks;
+        NewAPI.dataSource = dataSource;
+        NewAPI.passwordSecurity = passwordSecurity;
+        NewAPI.management = management;
     }
 
     /**
@@ -43,13 +54,9 @@ public class NewAPI {
         if (singleton != null) {
             return singleton;
         }
-        Plugin p = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
-        if (p == null || !(p instanceof AuthMe)) {
-            return null;
-        }
-        AuthMe authme = (AuthMe) p;
-        singleton = new NewAPI(authme);
-        return singleton;
+        // NewAPI is initialized in AuthMe#onEnable -> if singleton is null,
+        // it means AuthMe isn't initialized (yet)
+        return null;
     }
 
     /**
@@ -88,7 +95,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return plugin.getPluginHooks().isNpc(player);
+        return pluginHooks.isNpc(player);
     }
 
     /**
@@ -125,7 +132,7 @@ public class NewAPI {
      */
     public boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
-        return plugin.getDataSource().isAuthAvailable(player);
+        return dataSource.isAuthAvailable(player);
     }
 
     /**
@@ -136,7 +143,7 @@ public class NewAPI {
      * @return true if the password is correct, false otherwise
      */
     public boolean checkPassword(String playerName, String passwordToCheck) {
-        return isRegistered(playerName) && plugin.getPasswordSecurity().comparePassword(passwordToCheck, playerName);
+        return isRegistered(playerName) && passwordSecurity.comparePassword(passwordToCheck, playerName);
     }
 
     /**
@@ -149,7 +156,7 @@ public class NewAPI {
      */
     public boolean registerPlayer(String playerName, String password) {
         String name = playerName.toLowerCase();
-        HashedPassword result = plugin.getPasswordSecurity().computeHash(password, name);
+        HashedPassword result = passwordSecurity.computeHash(password, name);
         if (isRegistered(name)) {
             return false;
         }
@@ -158,7 +165,7 @@ public class NewAPI {
             .password(result)
             .realName(playerName)
             .build();
-        return plugin.getDataSource().saveAuth(auth);
+        return dataSource.saveAuth(auth);
     }
 
     /**
@@ -167,7 +174,7 @@ public class NewAPI {
      * @param player The player to log in
      */
     public void forceLogin(Player player) {
-        plugin.getManagement().performLogin(player, "dontneed", true);
+        management.performLogin(player, "dontneed", true);
     }
 
     /**
@@ -176,7 +183,7 @@ public class NewAPI {
      * @param player The player to log out
      */
     public void forceLogout(Player player) {
-        plugin.getManagement().performLogout(player);
+        management.performLogout(player);
     }
 
     /**
@@ -187,7 +194,7 @@ public class NewAPI {
      * @param autoLogin Should the player be authenticated automatically after the registration?
      */
     public void forceRegister(Player player, String password, boolean autoLogin) {
-        plugin.getManagement().performRegister(player, password, null, autoLogin);
+        management.performRegister(player, password, null, autoLogin);
     }
 
     /**
@@ -206,6 +213,6 @@ public class NewAPI {
      * @param player The player to unregister
      */
     public void forceUnregister(Player player) {
-        plugin.getManagement().performUnregister(player, "", true);
+        management.performUnregister(player, "", true);
     }
 }
