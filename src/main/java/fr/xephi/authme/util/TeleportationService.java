@@ -1,5 +1,6 @@
 package fr.xephi.authme.util;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
@@ -109,7 +110,7 @@ public class TeleportationService implements Reloadable {
         }
 
         // #856: If PlayerData comes from a persisted file, the Location might be null
-        String worldName = (limbo.getLocation() != null)
+        String worldName = (limbo != null && limbo.getLocation() != null)
             ? limbo.getLocation().getWorld().getName()
             : null;
 
@@ -120,8 +121,11 @@ public class TeleportationService implements Reloadable {
             if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && auth.getQuitLocY() != 0) {
                 Location location = buildLocationFromAuth(player, auth);
                 teleportBackFromSpawn(player, location);
-            } else if (limbo.getLocation() != null) {
+            } else if (limbo != null && limbo.getLocation() != null) {
                 teleportBackFromSpawn(player, limbo.getLocation());
+            } else if (limbo == null) {
+                // TODO #867: Remove this after investigating why LimboPlayer is null sometimes
+                ConsoleLogger.warning("LimboPlayer is null for '" + player.getName() + "'");
             }
         }
     }
