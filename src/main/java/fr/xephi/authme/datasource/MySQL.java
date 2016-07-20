@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -693,11 +694,11 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void purgeRecords(Set<String> toPurge) {
+    public void purgeRecords(Collection<String> toPurge) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : toPurge) {
-                pst.setString(1, name);
+                pst.setString(1, name.toLowerCase());
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {

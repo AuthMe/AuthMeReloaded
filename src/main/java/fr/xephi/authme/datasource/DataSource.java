@@ -4,6 +4,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -82,7 +83,7 @@ public interface DataSource extends Reloadable {
      *
      * @param toPurge The players to purge
      */
-    void purgeRecords(Set<String> toPurge);
+    void purgeRecords(Collection<String> toPurge);
 
     /**
      * Remove a user record from the database.

@@ -36,7 +36,7 @@ public class GroupManagerHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermission(String name, PermissionNode node) {
+    public boolean hasPermissionOffline(String name, PermissionNode node) {
         final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissionsByPlayerName(name);
         List<String> perms = handler.getAllPlayersPermissions(name);
         return perms.contains(node.getNode());

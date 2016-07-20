@@ -28,7 +28,7 @@ public class BPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermission(String name, PermissionNode node) {
+    public boolean hasPermissionOffline(String name, PermissionNode node) {
         return ApiLayer.hasPermission(null, CalculableType.USER, name, node.getNode());
     }
 

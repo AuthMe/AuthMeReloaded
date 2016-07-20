@@ -1,6 +1,8 @@
-package fr.xephi.authme.task;
+package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -12,12 +14,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class PurgeTask extends BukkitRunnable {
+class PurgeTask extends BukkitRunnable {
 
     //how many players we should check for each tick
-    private static final int INTERVALL_CHECK = 5;
+    private static final int INTERVAL_CHECK = 5;
 
     private final PurgeService purgeService;
+    private final PermissionsManager permissionsManager;
     private final UUID sender;
     private final Set<String> toPurge;
 
@@ -26,8 +29,20 @@ public class PurgeTask extends BukkitRunnable {
 
     private int currentPage = 0;
 
-    public PurgeTask(PurgeService service, CommandSender sender, Set<String> toPurge, OfflinePlayer[] offlinePlayers) {
+    /**
+     * Constructor.
+     *
+     * @param service the purge service
+     * @param permissionsManager the permissions manager
+     * @param sender the sender who initiated the purge, or null
+     * @param toPurge lowercase names to purge
+     * @param offlinePlayers offline players to map to the names
+     */
+    PurgeTask(PurgeService service, PermissionsManager permissionsManager, CommandSender sender,
+              Set<String> toPurge, OfflinePlayer[] offlinePlayers) {
         this.purgeService = service;
+        this.permissionsManager = permissionsManager;
+
         if (sender instanceof Player) {
             this.sender = ((Player) sender).getUniqueId();
         } else {
@@ -47,20 +62,21 @@ public class PurgeTask extends BukkitRunnable {
             return;
         }
 
-        Set<OfflinePlayer> playerPortion = new HashSet<OfflinePlayer>(INTERVALL_CHECK);
-        Set<String> namePortion = new HashSet<String>(INTERVALL_CHECK);
-        for (int i = 0; i < INTERVALL_CHECK; i++) {
-            int nextPosition = (currentPage * INTERVALL_CHECK) + i;
+        Set<OfflinePlayer> playerPortion = new HashSet<>(INTERVAL_CHECK);
+        Set<String> namePortion = new HashSet<>(INTERVAL_CHECK);
+        for (int i = 0; i < INTERVAL_CHECK; i++) {
+            int nextPosition = (currentPage * INTERVAL_CHECK) + i;
             if (offlinePlayers.length <= nextPosition) {
                 //no more offline players on this page
                 break;
             }
 
             OfflinePlayer offlinePlayer = offlinePlayers[nextPosition];
-            //remove to speed up later lookups
             if (toPurge.remove(offlinePlayer.getName().toLowerCase())) {
-                playerPortion.add(offlinePlayer);
-                namePortion.add(offlinePlayer.getName());
+                if (!permissionsManager.hasPermissionOffline(offlinePlayer, PlayerStatePermission.BYPASS_PURGE)) {
+                    playerPortion.add(offlinePlayer);
+                    namePortion.add(offlinePlayer.getName());
+                }
             }
         }
 
@@ -68,34 +84,29 @@ public class PurgeTask extends BukkitRunnable {
             ConsoleLogger.info("Finished lookup up offlinePlayers. Begin looking purging player names only");
 
             //we went through all offlineplayers but there are still names remaining
-            namePortion.addAll(toPurge);
+            for (String name : toPurge) {
+                if (!permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_PURGE)) {
+                    namePortion.add(name);
+                }
+            }
             toPurge.clear();
         }
 
         currentPage++;
-        purgeData(playerPortion, namePortion);
+        purgeService.executePurge(playerPortion, namePortion);
         if (currentPage % 20 == 0) {
             int completed = totalPurgeCount - toPurge.size();
             sendMessage("[AuthMe] Purge progress " + completed + '/' + totalPurgeCount);
         }
     }
 
-    private void purgeData(Set<OfflinePlayer> playerPortion, Set<String> namePortion) {
-        // Purge other data
-        purgeService.purgeEssentials(playerPortion);
-        purgeService.purgeDat(playerPortion);
-        purgeService.purgeLimitedCreative(namePortion);
-        purgeService.purgeAntiXray(namePortion);
-        purgeService.purgePermissions(playerPortion);
-    }
-
     private void finish() {
         cancel();
 
         // Show a status message
-        sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged correctly");
+        sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged successfully");
 
-        ConsoleLogger.info("Purge Finished!");
+        ConsoleLogger.info("Purge finished!");
         purgeService.setPurging(false);
     }
 

@@ -9,6 +9,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
@@ -121,6 +124,22 @@ public class BukkitService {
      */
     public BukkitTask runTaskLaterAsynchronously(Runnable task, long delay) {
         return Bukkit.getScheduler().runTaskLaterAsynchronously(authMe, task, delay);
+    }
+
+    /**
+     * Schedules the given task to repeatedly run until cancelled, starting after the
+     * specified number of server ticks.
+     *
+     * @param task the task to schedule
+     * @param delay the ticks to wait before running the task
+     * @param period the ticks to wait between runs
+     * @return a BukkitTask that contains the id number
+     * @throws IllegalArgumentException if plugin is null
+     * @throws IllegalStateException if this was already scheduled
+     * @see BukkitScheduler#runTaskTimer(Plugin, Runnable, long, long)
+     */
+    public BukkitTask runTaskTimer(BukkitRunnable task, long delay, long period) {
+        return task.runTaskTimer(authMe, period, delay);
     }
 
     /**

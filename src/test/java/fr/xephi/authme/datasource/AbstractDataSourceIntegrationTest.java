@@ -369,4 +369,17 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(dataSource.getLoggedPlayers(), empty());
     }
 
+    @Test
+    public void shouldPerformPurgeOperation() {
+        // given
+        List<String> names = Arrays.asList("Bobby", "USER", "DoesnotExist");
+        DataSource dataSource = getDataSource();
+
+        // when
+        dataSource.purgeRecords(names);
+
+        // then
+        assertThat(dataSource.getAllAuths(), empty());
+    }
+
 }

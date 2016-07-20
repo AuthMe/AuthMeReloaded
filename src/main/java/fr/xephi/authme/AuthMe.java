@@ -48,7 +48,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.task.PurgeService;
+import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
