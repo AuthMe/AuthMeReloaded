@@ -6,6 +6,7 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,6 +67,16 @@ public class ConsoleLoggerTest {
     @After
     public void closeFileHandlers() {
         ConsoleLogger.close();
+    }
+
+    /**
+     * Resets the ConsoleLogger back to its defaults after running all tests. Especially important
+     * is that we no longer enable logging to a file as the log file we've supplied will no longer
+     * be around after this test class has finished.
+     */
+    @AfterClass
+    public static void resetConsoleToDefault() {
+        ConsoleLogger.setLoggingOptions(newSettings(false, LogLevel.FINE));
     }
 
     @Test
