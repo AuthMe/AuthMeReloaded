@@ -111,6 +111,7 @@ public class ReloadCommandTest {
         verify(authMe).stopOrUnload();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldIssueWarningForChangedDatasourceSetting() {
         // given

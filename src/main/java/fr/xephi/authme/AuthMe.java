@@ -106,7 +106,6 @@ public class AuthMe extends JavaPlugin {
     private PermissionsManager permsMan;
     private NewSetting newSettings;
     private Messages messages;
-    private PasswordSecurity passwordSecurity;
     private DataSource database;
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
@@ -289,7 +288,7 @@ public class AuthMe extends JavaPlugin {
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         pluginHooks = injector.getSingleton(PluginHooks.class);
-        passwordSecurity = injector.getSingleton(PasswordSecurity.class);
+        injector.getSingleton(PasswordSecurity.class);
         spawnLoader = injector.getSingleton(SpawnLoader.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         management = injector.getSingleton(Management.class);
