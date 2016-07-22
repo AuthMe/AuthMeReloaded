@@ -13,8 +13,6 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
@@ -240,20 +239,5 @@ public class RegisterCommandTest {
 
         // then
         verify(management).performRegister(player, "myPass", "", true);
-    }
-
-
-    private static TypeSafeMatcher<String> stringWithLength(final int length) {
-        return new TypeSafeMatcher<String>() {
-            @Override
-            protected boolean matchesSafely(String item) {
-                return item != null && item.length() == length;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("String with length " + length);
-            }
-        };
     }
 }

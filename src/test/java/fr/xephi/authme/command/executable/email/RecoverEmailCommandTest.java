@@ -11,9 +11,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.entity.Player;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +22,7 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 
+import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
@@ -197,21 +195,6 @@ public class RecoverEmailCommandTest {
             .name("tester")
             .email(email)
             .build();
-    }
-
-    private static Matcher<String> stringWithLength(final int length) {
-        return new TypeSafeMatcher<String>() {
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("String of length " + length);
-            }
-
-            @Override
-            protected boolean matchesSafely(String s) {
-                return s.length() == length;
-            }
-        };
     }
 
 }

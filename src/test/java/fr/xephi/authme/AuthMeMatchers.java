@@ -81,4 +81,18 @@ public final class AuthMeMatchers {
         };
     }
 
+    public static Matcher<String> stringWithLength(final int length) {
+        return new TypeSafeMatcher<String>() {
+            @Override
+            protected boolean matchesSafely(String item) {
+                return item != null && item.length() == length;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("String with length " + length);
+            }
+        };
+    }
+
 }
