@@ -6,7 +6,6 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
@@ -36,9 +35,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         playerDataTaskManager.registerMessageTask(name, true);
 
         player.saveData();
-        if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-            ConsoleLogger.info(player.getName() + " registered " + Utils.getPlayerIp(player));
-        }
+        ConsoleLogger.fine(player.getName() + " registered " + Utils.getPlayerIp(player));
     }
 
 }

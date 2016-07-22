@@ -22,7 +22,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
@@ -165,9 +164,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
-            if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                ConsoleLogger.info(player.getName() + " logged in!");
-            }
+            ConsoleLogger.fine(player.getName() + " logged in!");
 
             // makes player isLoggedin via API
             playerCache.addPlayer(auth);
@@ -183,9 +180,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             }
             syncProcessManager.processSyncPlayerLogin(player);
         } else if (player.isOnline()) {
-            if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                ConsoleLogger.info(player.getName() + " used the wrong password");
-            }
+            ConsoleLogger.fine(player.getName() + " used the wrong password");
             if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
                 bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override
@@ -230,10 +225,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
         String message = ChatColor.GRAY + StringUtils.join(ChatColor.GRAY + ", ", formattedNames) + ".";
 
-        if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-            ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
-            ConsoleLogger.info(message);
-        }
+        ConsoleLogger.fine("The user " + player.getName() + " has " + auths.size() + " accounts:");
+        ConsoleLogger.fine(message);
 
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(player.getName())

@@ -2,14 +2,12 @@ package fr.xephi.authme.hooks;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -56,21 +54,13 @@ public class BungeeCordMessage implements PluginMessageListener {
                     if ("login".equals(act)) {
                         playerCache.updatePlayer(auth);
                         dataSource.setLogged(name);
-
-                        if (!settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                            ConsoleLogger.info("Player " + auth.getNickname() + " has logged in from one of your server!");
-                        }
+                        ConsoleLogger.fine("Player " + auth.getNickname() + " has logged in from one of your server!");
                     } else if ("logout".equals(act)) {
                         playerCache.removePlayer(name);
                         dataSource.setUnlogged(name);
-
-                        if (!settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                            ConsoleLogger.info("Player " + auth.getNickname() + " has logged out from one of your server!");
-                        }
+                        ConsoleLogger.fine("Player " + auth.getNickname() + " has logged out from one of your server!");
                     } else if ("register".equals(act)) {
-                        if (!settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                            ConsoleLogger.info("Player " + auth.getNickname() + " has registered out from one of your server!");
-                        }
+                        ConsoleLogger.fine("Player " + auth.getNickname() + " has registered out from one of your server!");
                     } else if ("changepassword".equals(act)) {
                         final String password = args[2];
                         final String salt = args.length >= 4 ? args[3] : null;

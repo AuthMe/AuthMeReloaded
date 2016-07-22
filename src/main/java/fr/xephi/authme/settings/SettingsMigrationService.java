@@ -1,7 +1,9 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -48,7 +50,8 @@ public class SettingsMigrationService {
         return changes
             | performMailTextToFileMigration(configuration, pluginFolder)
             | migrateJoinLeaveMessages(configuration)
-            | migrateForceSpawnSettings(configuration);
+            | migrateForceSpawnSettings(configuration)
+            | changeBooleanSettingToLogLevelProperty(configuration);
     }
 
     public boolean containsAllSettings(FileConfiguration configuration, PropertyMap propertyMap) {
@@ -139,6 +142,25 @@ public class SettingsMigrationService {
 
         return moveProperty(oldForceLocEnabled, FORCE_SPAWN_LOCATION_AFTER_LOGIN, configuration)
             | moveProperty(oldForceWorlds, FORCE_SPAWN_ON_WORLDS, configuration);
+    }
+
+    /**
+     * Changes the old boolean property "hide spam from console" to the new property specifying
+     * the log level.
+     *
+     * @param configuration The file configuration
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean changeBooleanSettingToLogLevelProperty(FileConfiguration configuration) {
+        final String oldPath = "Security.console.noConsoleSpam";
+        final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
+        if (!newProperty.isPresent(configuration) && configuration.contains(oldPath)) {
+            ConsoleLogger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
+            LogLevel level = configuration.getBoolean(oldPath) ? LogLevel.INFO : LogLevel.FINE;
+            configuration.set(newProperty.getPath(), level.name());
+            return true;
+        }
+        return false;
     }
 
     /**

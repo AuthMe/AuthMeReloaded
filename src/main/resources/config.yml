@@ -266,6 +266,10 @@ settings:
     # Do we need to prevent people to login with another case?
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
     preventOtherCase: false
+    # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
+    # FINE for some additional detailed ones (like password failed),
+    # and DEBUG for debug messages
+    logLevel: 'FINE'
 ExternalBoardOptions:
     # MySQL column for the salt, needed for some forum/cms support
     mySQLColumnSalt: ''
@@ -311,8 +315,6 @@ Security:
         # /reload support
         useReloadCommandSupport: true
     console:
-        # Remove spam console
-        noConsoleSpam: false
         # Replace passwords in the console when player type a command like /login
         removePassword: true
         # Copy AuthMe log output in a separate file as well?

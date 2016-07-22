@@ -1,5 +1,6 @@
 package fr.xephi.authme.settings.properties;
 
+import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.SettingsClass;
@@ -58,6 +59,14 @@ public class PluginSettings implements SettingsClass {
     })
     public static final Property<Boolean> KEEP_COLLISIONS_DISABLED =
         newProperty("settings.restrictions.keepCollisionsDisabled", false);
+
+    @Comment({
+        "Log level: INFO, FINE, DEBUG. Use INFO for general messages,",
+        "FINE for some additional detailed ones (like password failed),",
+        "and DEBUG for debugging"
+    })
+    public static final Property<LogLevel> LOG_LEVEL =
+        newProperty(LogLevel.class, "settings.logLevel", LogLevel.FINE);
 
     private PluginSettings() {
     }

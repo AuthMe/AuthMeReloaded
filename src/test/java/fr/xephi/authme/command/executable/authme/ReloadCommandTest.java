@@ -8,9 +8,11 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -67,7 +69,7 @@ public class ReloadCommandTest {
     @Before
     public void setDefaultSettings() {
         // Mock properties retrieved by ConsoleLogger
-        given(settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)).willReturn(false);
+        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(false);
     }
 

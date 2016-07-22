@@ -22,10 +22,6 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<Boolean> USE_RELOAD_COMMAND_SUPPORT =
         newProperty("Security.ReloadCommand.useReloadCommandSupport", true);
 
-    @Comment("Remove spam from console?")
-    public static final Property<Boolean> REMOVE_SPAM_FROM_CONSOLE =
-        newProperty("Security.console.noConsoleSpam", false);
-
     @Comment("Remove passwords from console?")
     public static final Property<Boolean> REMOVE_PASSWORD_FROM_CONSOLE =
         newProperty("Security.console.removePassword", true);

@@ -18,7 +18,6 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
@@ -128,9 +127,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
                     player.updateInventory();
-                    if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                        ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
-                    }
+                    ConsoleLogger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                 }
             }
 

@@ -12,7 +12,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -46,13 +45,11 @@ public class RecoverEmailCommand extends PlayerCommand {
             return;
         }
         if (dataSource.isAuthAvailable(playerName)) {
-            if (PlayerCache.getInstance().isAuthenticated(playerName)) {
+            if (playerCache.isAuthenticated(playerName)) {
                 commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return;
             }
 
-            String thePass = RandomString.generate(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH));
-            HashedPassword hashNew = passwordSecurity.computeHash(thePass, playerName);
             PlayerAuth auth;
             if (playerCache.isAuthenticated(playerName)) {
                 auth = playerCache.getAuth(playerName);
@@ -62,17 +59,15 @@ public class RecoverEmailCommand extends PlayerCommand {
                 commandService.send(player, MessageKey.UNKNOWN_USER);
                 return;
             }
-            if (StringUtils.isEmpty(commandService.getProperty(EmailSettings.MAIL_ACCOUNT))) {
-                ConsoleLogger.warning("No mail account set in settings");
-                commandService.send(player, MessageKey.ERROR);
-                return;
-            }
 
             if (!playerMail.equalsIgnoreCase(auth.getEmail()) || "your@email.com".equalsIgnoreCase(playerMail)
                 || "your@email.com".equalsIgnoreCase(auth.getEmail())) {
                 commandService.send(player, MessageKey.INVALID_EMAIL);
                 return;
             }
+
+            String thePass = RandomString.generate(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH));
+            HashedPassword hashNew = passwordSecurity.computeHash(thePass, playerName);
             auth.setPassword(hashNew);
             dataSource.updatePassword(auth);
             sendMailSsl.sendPasswordMail(auth, thePass);
