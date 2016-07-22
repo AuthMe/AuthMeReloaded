@@ -44,36 +44,27 @@ public class RecoverEmailCommand extends PlayerCommand {
             commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
         }
-        if (dataSource.isAuthAvailable(playerName)) {
-            if (playerCache.isAuthenticated(playerName)) {
-                commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-                return;
-            }
-
-            PlayerAuth auth;
-            if (playerCache.isAuthenticated(playerName)) {
-                auth = playerCache.getAuth(playerName);
-            } else if (dataSource.isAuthAvailable(playerName)) {
-                auth = dataSource.getAuth(playerName);
-            } else {
-                commandService.send(player, MessageKey.UNKNOWN_USER);
-                return;
-            }
-
-            if (!playerMail.equalsIgnoreCase(auth.getEmail()) || "your@email.com".equalsIgnoreCase(playerMail)
-                || "your@email.com".equalsIgnoreCase(auth.getEmail())) {
-                commandService.send(player, MessageKey.INVALID_EMAIL);
-                return;
-            }
-
-            String thePass = RandomString.generate(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH));
-            HashedPassword hashNew = passwordSecurity.computeHash(thePass, playerName);
-            auth.setPassword(hashNew);
-            dataSource.updatePassword(auth);
-            sendMailSsl.sendPasswordMail(auth, thePass);
-            commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
-        } else {
-            commandService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+        if (playerCache.isAuthenticated(playerName)) {
+            commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            return;
         }
+
+        PlayerAuth auth = dataSource.getAuth(playerName);
+        if (auth == null) {
+            commandService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+            return;
+        }
+
+        if (!playerMail.equalsIgnoreCase(auth.getEmail()) || "your@email.com".equalsIgnoreCase(auth.getEmail())) {
+            commandService.send(player, MessageKey.INVALID_EMAIL);
+            return;
+        }
+
+        String thePass = RandomString.generate(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH));
+        HashedPassword hashNew = passwordSecurity.computeHash(thePass, playerName);
+        auth.setPassword(hashNew);
+        dataSource.updatePassword(auth);
+        sendMailSsl.sendPasswordMail(auth, thePass);
+        commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
     }
 }

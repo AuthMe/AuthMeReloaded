@@ -52,7 +52,7 @@ public final class TestHelper {
      */
     public static Path getJarPath(String path) {
         String sqlFilePath = getUriOrThrow(path).getPath();
-        // Windows preprends the path with a '/' or '\', which Paths cannot handle
+        // Windows prepends the path with a '/' or '\', which Paths cannot handle
         String appropriatePath = System.getProperty("os.name").contains("indow")
             ? sqlFilePath.substring(1)
             : sqlFilePath;
