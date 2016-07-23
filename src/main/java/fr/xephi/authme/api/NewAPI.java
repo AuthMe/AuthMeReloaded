@@ -25,11 +25,10 @@ public class NewAPI {
 
     public static NewAPI singleton;
     public final AuthMe plugin;
-
-    private static PluginHooks pluginHooks;
-    private static DataSource dataSource;
-    private static PasswordSecurity passwordSecurity;
-    private static Management management;
+    private final PluginHooks pluginHooks;
+    private final DataSource dataSource;
+    private final PasswordSecurity passwordSecurity;
+    private final Management management;
 
     /*
      * Constructor for NewAPI.
@@ -38,17 +37,17 @@ public class NewAPI {
     NewAPI(AuthMe plugin, PluginHooks pluginHooks, DataSource dataSource, PasswordSecurity passwordSecurity,
            Management management) {
         this.plugin = plugin;
-        NewAPI.pluginHooks = pluginHooks;
-        NewAPI.dataSource = dataSource;
-        NewAPI.passwordSecurity = passwordSecurity;
-        NewAPI.management = management;
+        this.pluginHooks = pluginHooks;
+        this.dataSource = dataSource;
+        this.passwordSecurity = passwordSecurity;
+        this.management = management;
+        NewAPI.singleton = this;
     }
 
     /**
      * Get the API object for AuthMe.
      *
-     * @return The API object, or null if the AuthMe plugin instance could not be retrieved
-     * from the server environment
+     * @return The API object, or null if the AuthMe plugin is not enabled or not fully initialized yet
      */
     public static NewAPI getInstance() {
         if (singleton != null) {
