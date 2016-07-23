@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.util.StringUtils;
 
@@ -38,7 +38,7 @@ public class SQLite implements DataSource {
      * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
      */
-    public SQLite(NewSetting settings) throws ClassNotFoundException, SQLException {
+    public SQLite(Settings settings) throws ClassNotFoundException, SQLException {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
@@ -53,7 +53,7 @@ public class SQLite implements DataSource {
     }
 
     @VisibleForTesting
-    SQLite(NewSetting settings, Connection connection) {
+    SQLite(Settings settings, Connection connection) {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);

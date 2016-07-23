@@ -3,7 +3,7 @@ package fr.xephi.authme.datasource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
-    private static NewSetting settings;
+    private static Settings settings;
     /** SQL statement to execute before running a test. */
     private static String sqlInitialize;
     /** Connection to the H2 test database. */
@@ -44,7 +44,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         // Check that we have an H2 driver
         Class.forName("org.h2.jdbcx.JdbcDataSource");
 
-        settings = mock(NewSetting.class);
+        settings = mock(Settings.class);
         when(settings.getProperty(any(Property.class))).thenAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {

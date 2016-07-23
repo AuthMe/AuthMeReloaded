@@ -2,7 +2,7 @@ package fr.xephi.authme.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -20,7 +20,7 @@ public class MySqlResourceClosingTest extends AbstractResourceClosingTest {
     }
 
     @Override
-    protected DataSource createDataSource(NewSetting settings, Connection connection) throws Exception {
+    protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {
         HikariDataSource hikariDataSource = mock(HikariDataSource.class);
         given(hikariDataSource.getConnection()).willReturn(connection);
         return new MySQL(settings, hikariDataSource);

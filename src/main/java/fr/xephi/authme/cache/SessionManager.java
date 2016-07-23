@@ -1,7 +1,7 @@
 package fr.xephi.authme.cache;
 
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ public class SessionManager implements SettingsDependent {
     private int timeoutInMinutes;
 
     @Inject
-    SessionManager(NewSetting settings) {
+    SessionManager(Settings settings) {
         reload(settings);
     }
 
@@ -64,7 +64,7 @@ public class SessionManager implements SettingsDependent {
     }
 
     @Override
-    public void reload(NewSetting settings) {
+    public void reload(Settings settings) {
         timeoutInMinutes = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
         boolean oldEnabled = enabled;
         enabled = timeoutInMinutes > 0 && settings.getProperty(PluginSettings.SESSIONS_ENABLED);

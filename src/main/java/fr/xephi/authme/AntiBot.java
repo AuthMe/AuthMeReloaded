@@ -4,7 +4,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
  */
 public class AntiBot {
 
-    private final NewSetting settings;
+    private final Settings settings;
     private final Messages messages;
     private final PermissionsManager permissionsManager;
     private final BukkitService bukkitService;
@@ -29,7 +29,7 @@ public class AntiBot {
     private AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
     @Inject
-    AntiBot(NewSetting settings, Messages messages, PermissionsManager permissionsManager,
+    AntiBot(Settings settings, Messages messages, PermissionsManager permissionsManager,
             BukkitService bukkitService) {
         this.settings = settings;
         this.messages = messages;

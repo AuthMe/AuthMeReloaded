@@ -3,7 +3,7 @@ package fr.xephi.authme.cache;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
@@ -30,7 +30,7 @@ public class TempbanManager implements SettingsDependent {
     private int length;
 
     @Inject
-    TempbanManager(BukkitService bukkitService, Messages messages, NewSetting settings) {
+    TempbanManager(BukkitService bukkitService, Messages messages, Settings settings) {
         this.ipLoginFailureCounts = new ConcurrentHashMap<>();
         this.bukkitService = bukkitService;
         this.messages = messages;
@@ -108,7 +108,7 @@ public class TempbanManager implements SettingsDependent {
     }
 
     @Override
-    public void reload(NewSetting settings) {
+    public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN);
         this.length = settings.getProperty(SecuritySettings.TEMPBAN_LENGTH);

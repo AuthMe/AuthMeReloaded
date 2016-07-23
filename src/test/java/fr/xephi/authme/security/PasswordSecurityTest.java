@@ -9,7 +9,7 @@ import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.JOOMLA;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.event.Event;
@@ -45,7 +45,7 @@ public class PasswordSecurityTest {
     private Injector injector;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private PluginManager pluginManager;
@@ -81,7 +81,7 @@ public class PasswordSecurityTest {
             }
         }).when(pluginManager).callEvent(any(Event.class));
         injector = new InjectorBuilder().addDefaultHandlers("!! impossible package !!").create();
-        injector.register(NewSetting.class, settings);
+        injector.register(Settings.class, settings);
         injector.register(DataSource.class, dataSource);
         injector.register(PluginManager.class, pluginManager);
     }

@@ -9,7 +9,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 class OnJoinVerifier implements Reloadable {
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
     @Inject
     private DataSource dataSource;
     @Inject

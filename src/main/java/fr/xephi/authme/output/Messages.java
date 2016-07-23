@@ -2,7 +2,7 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -30,7 +30,7 @@ public class Messages implements SettingsDependent {
      * @param settings The settings
      */
     @Inject
-    Messages(NewSetting settings) {
+    Messages(Settings settings) {
         reload(settings);
         this.defaultFile = settings.getDefaultMessagesFile();
     }
@@ -118,7 +118,7 @@ public class Messages implements SettingsDependent {
     }
 
     @Override
-    public void reload(NewSetting settings) {
+    public void reload(Settings settings) {
         File messageFile = settings.getMessagesFile();
         this.configuration = YamlConfiguration.loadConfiguration(messageFile);
         this.fileName = messageFile.getName();

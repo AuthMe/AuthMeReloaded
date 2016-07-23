@@ -8,7 +8,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.Before;
@@ -72,7 +72,7 @@ public abstract class AbstractResourceClosingTest {
     private static final Map<String, HashAlgorithm[]> CUSTOM_ALGORITHMS = getCustomAlgorithmList();
 
     /** Mock of a settings instance. */
-    private static NewSetting settings;
+    private static Settings settings;
 
     /** The datasource to test. */
     private DataSource dataSource;
@@ -101,7 +101,7 @@ public abstract class AbstractResourceClosingTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BeforeClass
     public static void initializeSettings() throws IOException, ClassNotFoundException {
-        settings = mock(NewSetting.class);
+        settings = mock(Settings.class);
         given(settings.getProperty(any(Property.class))).willAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) {
@@ -152,7 +152,7 @@ public abstract class AbstractResourceClosingTest {
     }
 
     /* Create a DataSource instance with the given mock settings and mock connection. */
-    protected abstract DataSource createDataSource(NewSetting settings, Connection connection) throws Exception;
+    protected abstract DataSource createDataSource(Settings settings, Connection connection) throws Exception;
 
     /* Get all methods of the DataSource interface, minus the ones in the ignored list. */
     private static List<Method> getDataSourceMethods() {

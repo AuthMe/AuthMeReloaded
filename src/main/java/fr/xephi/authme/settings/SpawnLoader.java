@@ -31,7 +31,7 @@ import java.io.IOException;
 public class SpawnLoader implements Reloadable {
 
     private final File authMeConfigurationFile;
-    private final NewSetting settings;
+    private final Settings settings;
     private final PluginHooks pluginHooks;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
@@ -46,7 +46,7 @@ public class SpawnLoader implements Reloadable {
      * @param dataSource   The plugin auth database instance
      */
     @Inject
-    SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks,
+    SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHooks pluginHooks,
                 DataSource dataSource) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not

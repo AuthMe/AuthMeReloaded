@@ -1,7 +1,7 @@
 package fr.xephi.authme.cache;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class CaptchaManagerTest {
     @Test
     public void shouldAddCounts() {
         // given
-        NewSetting settings = mockSettings(3, 4);
+        Settings settings = mockSettings(3, 4);
         CaptchaManager manager = new CaptchaManager(settings);
         String player = "tester";
 
@@ -41,7 +41,7 @@ public class CaptchaManagerTest {
     public void shouldCreateAndCheckCaptcha() {
         // given
         String player = "Miner";
-        NewSetting settings = mockSettings(1, 4);
+        Settings settings = mockSettings(1, 4);
         CaptchaManager manager = new CaptchaManager(settings);
         String captchaCode = manager.getCaptchaCodeOrGenerateNew(player);
 
@@ -66,7 +66,7 @@ public class CaptchaManagerTest {
     public void shouldHaveSameCodeAfterGeneration() {
         // given
         String player = "Tester";
-        NewSetting settings = mockSettings(1, 5);
+        Settings settings = mockSettings(1, 5);
         CaptchaManager manager = new CaptchaManager(settings);
 
         // when
@@ -88,7 +88,7 @@ public class CaptchaManagerTest {
     public void shouldIncreaseAndResetCount() {
         // given
         String player = "plaYer";
-        NewSetting settings = mockSettings(2, 3);
+        Settings settings = mockSettings(2, 3);
         CaptchaManager manager = new CaptchaManager(settings);
 
         // when
@@ -111,7 +111,7 @@ public class CaptchaManagerTest {
     public void shouldNotIncreaseCountForDisabledCaptcha() {
         // given
         String player = "someone_";
-        NewSetting settings = mockSettings(1, 3);
+        Settings settings = mockSettings(1, 3);
         given(settings.getProperty(SecuritySettings.USE_CAPTCHA)).willReturn(false);
         CaptchaManager manager = new CaptchaManager(settings);
 
@@ -127,7 +127,7 @@ public class CaptchaManagerTest {
     public void shouldNotCheckCountIfCaptchaIsDisabled() {
         // given
         String player = "Robert001";
-        NewSetting settings = mockSettings(1, 5);
+        Settings settings = mockSettings(1, 5);
         CaptchaManager manager = new CaptchaManager(settings);
         given(settings.getProperty(SecuritySettings.USE_CAPTCHA)).willReturn(false);
 
@@ -144,8 +144,8 @@ public class CaptchaManagerTest {
         assertThat(result, equalTo(false));
     }
 
-    private static NewSetting mockSettings(int maxTries, int captchaLength) {
-        NewSetting settings = mock(NewSetting.class);
+    private static Settings mockSettings(int maxTries, int captchaLength) {
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.USE_CAPTCHA)).willReturn(true);
         given(settings.getProperty(SecuritySettings.MAX_LOGIN_TRIES_BEFORE_CAPTCHA)).willReturn(maxTries);
         given(settings.getProperty(SecuritySettings.CAPTCHA_LENGTH)).willReturn(captchaLength);

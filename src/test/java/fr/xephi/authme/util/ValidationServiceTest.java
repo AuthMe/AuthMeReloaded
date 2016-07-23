@@ -8,7 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -35,7 +35,7 @@ public class ValidationServiceTest {
     @InjectDelayed
     private ValidationService validationService;
     @Mock
-    private NewSetting settings;
+    private Settings settings;
     @Mock
     private DataSource dataSource;
     @Mock

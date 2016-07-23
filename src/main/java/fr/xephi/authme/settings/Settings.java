@@ -28,9 +28,9 @@ import java.util.Map;
 import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 
 /**
- * The new settings manager.
+ * The AuthMe settings manager.
  */
-public class NewSetting {
+public class Settings {
 
     private final File pluginFolder;
     private final File configFile;
@@ -50,8 +50,8 @@ public class NewSetting {
      * @param propertyMap Collection of all available settings
      * @param migrationService Migration service to check the settings file with
      */
-    public NewSetting(File configFile, File pluginFolder, PropertyMap propertyMap,
-                      SettingsMigrationService migrationService) {
+    public Settings(File configFile, File pluginFolder, PropertyMap propertyMap,
+                    SettingsMigrationService migrationService) {
         this.configuration = YamlConfiguration.loadConfiguration(configFile);
         this.configFile = configFile;
         this.pluginFolder = pluginFolder;
@@ -70,8 +70,8 @@ public class NewSetting {
      * @param migrationService Migration service, or null to skip migration checks
      */
     @VisibleForTesting
-    NewSetting(FileConfiguration configuration, File configFile, File pluginFolder, PropertyMap propertyMap,
-               SettingsMigrationService migrationService) {
+    Settings(FileConfiguration configuration, File configFile, File pluginFolder, PropertyMap propertyMap,
+             SettingsMigrationService migrationService) {
         this.configuration = configuration;
         this.configFile = configFile;
         this.pluginFolder = pluginFolder;

@@ -5,7 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
@@ -46,7 +46,7 @@ public class TeleportationServiceTest {
     private TeleportationService teleportationService;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private BukkitService bukkitService;

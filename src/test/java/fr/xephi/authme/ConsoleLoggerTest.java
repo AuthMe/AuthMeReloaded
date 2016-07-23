@@ -1,7 +1,7 @@
 package fr.xephi.authme;
 
 import fr.xephi.authme.output.LogLevel;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
@@ -45,7 +45,7 @@ public class ConsoleLoggerTest {
     private Logger logger;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -144,8 +144,8 @@ public class ConsoleLoggerTest {
         TestHelper.validateHasOnlyPrivateEmptyConstructor(ConsoleLogger.class);
     }
 
-    private static NewSetting newSettings(boolean logToFile, LogLevel logLevel) {
-        NewSetting settings = mock(NewSetting.class);
+    private static Settings newSettings(boolean logToFile, LogLevel logLevel) {
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(logToFile);
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(logLevel);
         return settings;

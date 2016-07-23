@@ -1,6 +1,6 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
 /**
@@ -23,7 +23,7 @@ public final class Columns {
     public final String ID;
     public final String IS_LOGGED;
 
-    public Columns(NewSetting settings) {
+    public Columns(Settings settings) {
         NAME          = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
         REAL_NAME     = settings.getProperty(DatabaseSettings.MYSQL_COL_REALNAME);
         PASSWORD      = settings.getProperty(DatabaseSettings.MYSQL_COL_PASSWORD);

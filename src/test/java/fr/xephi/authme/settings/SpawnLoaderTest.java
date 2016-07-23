@@ -36,7 +36,7 @@ public class SpawnLoaderTest {
     private SpawnLoader spawnLoader;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private DataSource dataSource;

@@ -12,7 +12,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -92,7 +92,7 @@ public class AuthMeInitializationTest {
     @Test
     public void shouldInitializeAllServices() {
         // given
-        NewSetting settings = new NewSetting(settingsFile, dataFolder, getAllPropertyFields(), alwaysFulfilled());
+        Settings settings = new Settings(settingsFile, dataFolder, getAllPropertyFields(), alwaysFulfilled());
 
         // TODO ljacqu 20160619: At some point setting the "plugin" field should no longer be necessary
         // We only require it right now because of usages of AuthMe#getInstance()
@@ -104,7 +104,7 @@ public class AuthMeInitializationTest {
         injector.register(PluginManager.class, pluginManager);
 
         injector.register(AuthMe.class, authMe);
-        injector.register(NewSetting.class, settings);
+        injector.register(Settings.class, settings);
         injector.register(DataSource.class, mock(DataSource.class));
 
         // when

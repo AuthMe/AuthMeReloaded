@@ -3,7 +3,7 @@ package fr.xephi.authme.cache.limbo;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.Location;
@@ -35,7 +35,7 @@ public class LimboCacheTest {
     private LimboCache limboCache;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private PermissionsManager permissionsManager;

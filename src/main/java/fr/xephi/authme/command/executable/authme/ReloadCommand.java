@@ -9,7 +9,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.bukkit.command.CommandSender;
 
@@ -29,7 +29,7 @@ public class ReloadCommand implements ExecutableCommand {
     private Injector injector;
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
 
     @Inject
     private DataSource dataSource;

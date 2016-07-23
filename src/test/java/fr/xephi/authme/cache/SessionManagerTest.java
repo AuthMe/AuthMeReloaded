@@ -1,7 +1,7 @@
 package fr.xephi.authme.cache;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +24,7 @@ public class SessionManagerTest {
     @Test
     public void shouldHaveSession() {
         // given
-        NewSetting settings = mockSettings(true, 10);
+        Settings settings = mockSettings(true, 10);
         SessionManager manager = new SessionManager(settings);
         String player = "playah";
 
@@ -38,7 +38,7 @@ public class SessionManagerTest {
     @Test
     public void shouldNotHaveSession() {
         // given
-        NewSetting settings = mockSettings(true, 10);
+        Settings settings = mockSettings(true, 10);
         SessionManager manager = new SessionManager(settings);
         String player = "playah";
 
@@ -49,7 +49,7 @@ public class SessionManagerTest {
     @Test
     public void shouldNotAddSessionBecauseDisabled() {
         // given
-        NewSetting settings = mockSettings(false, 10);
+        Settings settings = mockSettings(false, 10);
         SessionManager manager = new SessionManager(settings);
         String player = "playah";
 
@@ -63,7 +63,7 @@ public class SessionManagerTest {
     @Test
     public void shouldNotAddSessionBecauseTimeoutIsZero() {
         // given
-        NewSetting settings = mockSettings(true, 0);
+        Settings settings = mockSettings(true, 0);
         SessionManager manager = new SessionManager(settings);
         String player = "playah";
 
@@ -77,7 +77,7 @@ public class SessionManagerTest {
     @Test
     public void shouldRemoveSession() {
         // given
-        NewSetting settings = mockSettings(true, 10);
+        Settings settings = mockSettings(true, 10);
         String player = "user";
         SessionManager manager = new SessionManager(settings);
         manager.addSession(player);
@@ -93,7 +93,7 @@ public class SessionManagerTest {
     public void shouldDenySessionIfTimeoutHasExpired() {
         // given
         int timeout = 20;
-        NewSetting settings = mockSettings(true, timeout);
+        Settings settings = mockSettings(true, timeout);
         String player = "patrick";
         SessionManager manager = new SessionManager(settings);
         Map<String, Long> sessions = getSessionsMap(manager);
@@ -110,7 +110,7 @@ public class SessionManagerTest {
     @Test
     public void shouldClearAllSessionsAfterDisable() {
         // given
-        NewSetting settings = mockSettings(true, 10);
+        Settings settings = mockSettings(true, 10);
         SessionManager manager = new SessionManager(settings);
         manager.addSession("player01");
         manager.addSession("player02");
@@ -129,8 +129,8 @@ public class SessionManagerTest {
     }
 
 
-    private static NewSetting mockSettings(boolean isEnabled, int sessionTimeout) {
-        NewSetting settings = mock(NewSetting.class);
+    private static Settings mockSettings(boolean isEnabled, int sessionTimeout) {
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(isEnabled);
         given(settings.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(sessionTimeout);
         return settings;

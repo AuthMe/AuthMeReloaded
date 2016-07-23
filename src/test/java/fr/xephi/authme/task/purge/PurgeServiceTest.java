@@ -4,7 +4,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.OfflinePlayer;
@@ -57,7 +57,7 @@ public class PurgeServiceTest {
     @Mock
     private DataSource dataSource;
     @Mock
-    private NewSetting settings;
+    private Settings settings;
     @Mock
     private PermissionsManager permissionsManager;
     @Mock

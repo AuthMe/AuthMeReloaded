@@ -8,7 +8,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
@@ -53,7 +53,7 @@ public class OnJoinVerifierTest {
     private OnJoinVerifier onJoinVerifier;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
     @Mock
     private DataSource dataSource;
     @Mock

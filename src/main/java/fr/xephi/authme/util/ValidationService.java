@@ -5,7 +5,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class ValidationService implements Reloadable {
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
     @Inject
     private DataSource dataSource;
     @Inject

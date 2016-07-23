@@ -1,7 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -16,7 +16,7 @@ public class SQLiteResourceClosingTest extends AbstractResourceClosingTest {
     }
 
     @Override
-    protected DataSource createDataSource(NewSetting settings, Connection connection) throws Exception {
+    protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {
         return new SQLite(settings, connection);
     }
 

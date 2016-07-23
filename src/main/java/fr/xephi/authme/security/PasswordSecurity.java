@@ -6,7 +6,7 @@ import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.plugin.PluginManager;
 
@@ -19,7 +19,7 @@ import javax.inject.Inject;
 public class PasswordSecurity implements Reloadable {
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
 
     @Inject
     private DataSource dataSource;

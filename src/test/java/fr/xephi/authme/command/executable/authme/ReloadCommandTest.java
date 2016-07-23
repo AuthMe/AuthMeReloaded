@@ -10,7 +10,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -53,7 +53,7 @@ public class ReloadCommandTest {
     private Injector injector;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private DataSource dataSource;

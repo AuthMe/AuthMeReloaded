@@ -2,7 +2,7 @@ package fr.xephi.authme.cache;
 
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ public class CaptchaManager implements SettingsDependent {
     private int captchaLength;
 
     @Inject
-    CaptchaManager(NewSetting settings) {
+    CaptchaManager(Settings settings) {
         this.playerCounts = new ConcurrentHashMap<>();
         this.captchaCodes = new ConcurrentHashMap<>();
         reload(settings);
@@ -123,7 +123,7 @@ public class CaptchaManager implements SettingsDependent {
     }
 
     @Override
-    public void reload(NewSetting settings) {
+    public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(SecuritySettings.USE_CAPTCHA);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TRIES_BEFORE_CAPTCHA);
         this.captchaLength = settings.getProperty(SecuritySettings.CAPTCHA_LENGTH);

@@ -34,7 +34,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.crypts.SHA256;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -103,7 +103,7 @@ public class AuthMe extends JavaPlugin {
     private Management management;
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
-    private NewSetting newSettings;
+    private Settings settings;
     private Messages messages;
     private DataSource database;
     private PluginHooks pluginHooks;
@@ -193,8 +193,8 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.setLogFile(new File(getDataFolder(), "authme.log"));
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
-        newSettings = createNewSetting();
-        if (newSettings == null) {
+        settings = createSettings();
+        if (settings == null) {
             getLogger().warning("Could not load configuration. Aborting.");
             getServer().shutdown();
             setEnabled(false);
@@ -202,11 +202,11 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Apply settings to the logger
-        ConsoleLogger.setLoggingOptions(newSettings);
+        ConsoleLogger.setLoggingOptions(settings);
 
         // Connect to the database and setup tables
         try {
-            setupDatabase(newSettings);
+            setupDatabase(settings);
         } catch (Exception e) {
             ConsoleLogger.logException("Fatal error occurred during database connection! "
                 + "Authme initialization aborted!", e);
@@ -214,7 +214,7 @@ public class AuthMe extends JavaPlugin {
             return;
         }
         // Convert deprecated PLAINTEXT hash entries
-        MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
+        MigrationService.changePlainTextToSha256(settings, database, new SHA256());
 
         // Injector initialization
         injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
@@ -227,20 +227,20 @@ public class AuthMe extends JavaPlugin {
         injector.provide(DataFolder.class, getDataFolder());
 
         // Register elements we instantiate manually
-        injector.register(NewSetting.class, newSettings);
+        injector.register(Settings.class, settings);
         injector.register(DataSource.class, database);
 
         instantiateServices(injector);
 
         // Set up Metrics
-        MetricsStarter.setupMetrics(this, newSettings);
+        MetricsStarter.setupMetrics(this, settings);
 
         // Set console filter
         setupConsoleFilter();
 
         // Do a backup on start
         // TODO: maybe create a backup manager?
-        new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.START);
+        new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.START);
 
         // Set up the BungeeCord hook
         setupBungeeCordHook();
@@ -297,13 +297,13 @@ public class AuthMe extends JavaPlugin {
      */
     private void showSettingsWarnings() {
         // Force single session disabled
-        if (!newSettings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
+        if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
             ConsoleLogger.warning("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
 
         // Session timeout disabled
-        if (newSettings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
-            && newSettings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+        if (settings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
+            && settings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
             ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
         }
     }
@@ -341,7 +341,7 @@ public class AuthMe extends JavaPlugin {
             int playersOnline = bukkitService.getOnlinePlayers().size();
             if (playersOnline < 1) {
                 database.purgeLogged();
-            } else if (newSettings.getProperty(SecuritySettings.USE_RELOAD_COMMAND_SUPPORT)) {
+            } else if (settings.getProperty(SecuritySettings.USE_RELOAD_COMMAND_SUPPORT)) {
                 for (PlayerAuth auth : database.getLoggedPlayers()) {
                     if (auth != null) {
                         auth.setLastLogin(new Date().getTime());
@@ -357,7 +357,7 @@ public class AuthMe extends JavaPlugin {
      * Set up the BungeeCord hook.
      */
     private void setupBungeeCordHook() {
-        if (newSettings.getProperty(HooksSettings.BUNGEECORD)) {
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
             Messenger messenger = Bukkit.getMessenger();
             messenger.registerOutgoingPluginChannel(this, "BungeeCord");
             messenger.registerIncomingPluginChannel(this, "BungeeCord", injector.getSingleton(BungeeCordMessage.class));
@@ -369,12 +369,12 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The settings instance, or null if it could not be constructed
      */
-    private NewSetting createNewSetting() {
+    private Settings createSettings() {
         File configFile = new File(getDataFolder(), "config.yml");
         PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
         SettingsMigrationService migrationService = new SettingsMigrationService();
         return FileUtils.copyFileFromResource(configFile, "config.yml")
-            ? new NewSetting(configFile, getDataFolder(), properties, migrationService)
+            ? new Settings(configFile, getDataFolder(), properties, migrationService)
             : null;
     }
 
@@ -382,7 +382,7 @@ public class AuthMe extends JavaPlugin {
      * Set up the console filter.
      */
     private void setupConsoleFilter() {
-        if (!newSettings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
+        if (!settings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
             return;
         }
         // Try to set the log4j filter
@@ -414,8 +414,8 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Do backup on stop if enabled
-        if (newSettings != null) {
-            new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.STOP);
+        if (settings != null) {
+            new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.STOP);
         }
 
         new Thread(new Runnable() {
@@ -474,7 +474,7 @@ public class AuthMe extends JavaPlugin {
 
     // Stop/unload the server/plugin as defined in the configuration
     public void stopOrUnload() {
-        if (newSettings == null || newSettings.getProperty(SecuritySettings.STOP_SERVER_ON_PROBLEM)) {
+        if (settings == null || settings.getProperty(SecuritySettings.STOP_SERVER_ON_PROBLEM)) {
             ConsoleLogger.warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
             getServer().shutdown();
         } else {
@@ -492,7 +492,7 @@ public class AuthMe extends JavaPlugin {
      * @throws IOException            if flat file cannot be read
      * @see AuthMe#database
      */
-    public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException, IOException {
+    public void setupDatabase(Settings settings) throws ClassNotFoundException, SQLException, IOException {
         if (this.database != null) {
             this.database.close();
         }
@@ -552,7 +552,7 @@ public class AuthMe extends JavaPlugin {
             limboCache.restoreData(player);
             limboCache.removeFromCache(player);
         } else {
-            if (newSettings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
+            if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
                 Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
                 final PlayerAuth auth = PlayerAuth.builder()
                     .name(player.getName().toLowerCase())
@@ -560,8 +560,8 @@ public class AuthMe extends JavaPlugin {
                     .location(loc).build();
                 database.updateQuitLoc(auth);
             }
-            if (newSettings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
-                && !newSettings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+            if (settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
+                && !settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 PlayerDataStorage playerDataStorage = injector.getIfAvailable(PlayerDataStorage.class);
                 if (playerDataStorage != null && !playerDataStorage.hasData(player)) {
                     playerDataStorage.saveData(player);
@@ -576,7 +576,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     private void scheduleRecallEmailTask() {
-        if (!newSettings.getProperty(RECALL_PLAYERS)) {
+        if (!settings.getProperty(RECALL_PLAYERS)) {
             return;
         }
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
@@ -592,7 +592,7 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             }
-        }, 1, 1200 * newSettings.getProperty(EmailSettings.DELAY_RECALL));
+        }, 1, 1200 * settings.getProperty(EmailSettings.DELAY_RECALL));
     }
 
     public String replaceAllInfo(String message, Player player) {

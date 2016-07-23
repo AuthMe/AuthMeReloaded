@@ -8,7 +8,7 @@ import fr.xephi.authme.security.crypts.HexSaltedMethod;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -140,7 +140,7 @@ public class EncryptionMethodInfoGatherer {
 
     @SuppressWarnings("unchecked")
     private static Injector createInitializer() {
-        NewSetting settings = mock(NewSetting.class);
+        Settings settings = mock(Settings.class);
         // Return the default value for any property
         when(settings.getProperty(any(Property.class))).thenAnswer(new Answer<Object>() {
             @Override
@@ -153,7 +153,7 @@ public class EncryptionMethodInfoGatherer {
         // By passing some bogus "package" to the constructor, the injector will throw if it needs to
         // instantiate any dependency other than what we provide.
         Injector injector = new InjectorBuilder().addDefaultHandlers("!!No package!!").create();
-        injector.register(NewSetting.class, settings);
+        injector.register(Settings.class, settings);
         return injector;
     }
 

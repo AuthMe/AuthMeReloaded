@@ -4,7 +4,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 public class AntiBotTest {
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
     @Mock
     private Messages messages;
     @Mock

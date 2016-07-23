@@ -6,7 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
 
@@ -24,12 +24,12 @@ import java.util.Map.Entry;
 public class RakamakConverter implements Converter {
 
     private final DataSource database;
-    private final NewSetting settings;
+    private final Settings settings;
     private final File pluginFolder;
     private final PasswordSecurity passwordSecurity;
 
     @Inject
-    RakamakConverter(@DataFolder File dataFolder, DataSource dataSource, NewSetting settings,
+    RakamakConverter(@DataFolder File dataFolder, DataSource dataSource, Settings settings,
                      PasswordSecurity passwordSecurity) {
         this.database = dataSource;
         this.settings = settings;

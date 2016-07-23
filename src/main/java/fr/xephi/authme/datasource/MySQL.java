@@ -8,7 +8,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.XFBCRYPT;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -45,7 +45,7 @@ public class MySQL implements DataSource {
     private int phpBbGroup;
     private String wordpressPrefix;
 
-    public MySQL(NewSetting settings) throws ClassNotFoundException, SQLException, PoolInitializationException {
+    public MySQL(Settings settings) throws ClassNotFoundException, SQLException, PoolInitializationException {
         setParameters(settings);
 
         // Set the connection arguments (and check if connection is ok)
@@ -76,12 +76,12 @@ public class MySQL implements DataSource {
     }
 
     @VisibleForTesting
-    MySQL(NewSetting settings, HikariDataSource hikariDataSource) {
+    MySQL(Settings settings, HikariDataSource hikariDataSource) {
         ds = hikariDataSource;
         setParameters(settings);
     }
 
-    private void setParameters(NewSetting settings) {
+    private void setParameters(Settings settings) {
         this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
         this.username = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);

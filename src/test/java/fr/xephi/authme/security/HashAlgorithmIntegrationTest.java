@@ -4,7 +4,7 @@ import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
@@ -29,11 +29,11 @@ public class HashAlgorithmIntegrationTest {
 
     @BeforeClass
     public static void setUpConfigAndInjector() {
-        NewSetting settings = mock(NewSetting.class);
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
         injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
-        injector.register(NewSetting.class, settings);
+        injector.register(Settings.class, settings);
     }
 
     @Test

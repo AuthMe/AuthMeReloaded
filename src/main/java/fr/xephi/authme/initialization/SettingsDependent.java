@@ -1,6 +1,6 @@
 package fr.xephi.authme.initialization;
 
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 
 /**
  * Interface for classes that keep a local copy of certain settings.
@@ -12,5 +12,5 @@ public interface SettingsDependent {
      *
      * @param settings the settings instance
      */
-    void reload(NewSetting settings);
+    void reload(Settings settings);
 }

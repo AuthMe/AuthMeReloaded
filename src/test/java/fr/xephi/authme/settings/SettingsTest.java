@@ -38,9 +38,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link NewSetting}.
+ * Unit tests for {@link Settings}.
  */
-public class NewSettingTest {
+public class SettingsTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -71,7 +71,7 @@ public class NewSettingTest {
         setReturnValue(configuration, TestConfiguration.SYSTEM_NAME, "myTestSys");
 
         // when / then
-        NewSetting settings = new NewSetting(configuration, null, null, null, null);
+        Settings settings = new Settings(configuration, null, null, null, null);
 
         assertThat(settings.getProperty(TestConfiguration.VERSION_NUMBER), equalTo(20));
         assertThat(settings.getProperty(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
@@ -87,7 +87,7 @@ public class NewSettingTest {
     public void shouldReturnDefaultFile() throws IOException {
         // given
         YamlConfiguration configuration = mock(YamlConfiguration.class);
-        NewSetting settings = new NewSetting(configuration, null, null, null, null);
+        Settings settings = new Settings(configuration, null, null, null, null);
 
         // when
         String defaultFile = settings.getDefaultMessagesFile();
@@ -103,7 +103,7 @@ public class NewSettingTest {
     public void shouldSetProperty() {
         // given
         YamlConfiguration configuration = mock(YamlConfiguration.class);
-        NewSetting settings = new NewSetting(configuration, null, null, null, null);
+        Settings settings = new Settings(configuration, null, null, null, null);
 
         // when
         settings.setProperty(TestConfiguration.DUST_LEVEL, -4);
@@ -123,7 +123,7 @@ public class NewSettingTest {
         YamlConfiguration configuration = mock(YamlConfiguration.class);
         given(configuration.contains(anyString())).willReturn(true);
         setReturnValue(configuration, MESSAGES_LANGUAGE, languageCode);
-        NewSetting settings = new NewSetting(configuration, null, testPluginFolder,
+        Settings settings = new Settings(configuration, null, testPluginFolder,
             TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
@@ -140,7 +140,7 @@ public class NewSettingTest {
         YamlConfiguration configuration = mock(YamlConfiguration.class);
         given(configuration.contains(anyString())).willReturn(true);
         setReturnValue(configuration, MESSAGES_LANGUAGE, "doesntexist");
-        NewSetting settings = new NewSetting(configuration, null, testPluginFolder,
+        Settings settings = new Settings(configuration, null, testPluginFolder,
             TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
@@ -161,7 +161,7 @@ public class NewSettingTest {
 
         YamlConfiguration configuration = mock(YamlConfiguration.class);
         setReturnValue(configuration, RegistrationSettings.USE_WELCOME_MESSAGE, true);
-        NewSetting settings = new NewSetting(configuration, null, testPluginFolder,
+        Settings settings = new Settings(configuration, null, testPluginFolder,
             TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
@@ -182,7 +182,7 @@ public class NewSettingTest {
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
         YamlConfiguration configuration = mock(YamlConfiguration.class);
-        NewSetting settings = new NewSetting(configuration, null, testPluginFolder,
+        Settings settings = new Settings(configuration, null, testPluginFolder,
             TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
@@ -207,7 +207,7 @@ public class NewSettingTest {
         }
     }
 
-    private static void assertDefaultValue(Property<?> property, NewSetting setting) {
+    private static void assertDefaultValue(Property<?> property, Settings setting) {
         assertThat(property.getPath() + " has default value",
             setting.getProperty(property).equals(property.getDefaultValue()), equalTo(true));
     }

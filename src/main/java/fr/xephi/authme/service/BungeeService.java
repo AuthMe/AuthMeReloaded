@@ -5,7 +5,7 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
@@ -30,7 +30,7 @@ public class BungeeService implements SettingsDependent {
      * @param settings AuthMe settings.
      */
     @Inject
-    BungeeService(AuthMe plugin, BukkitService bukkitService, NewSetting settings) {
+    BungeeService(AuthMe plugin, BukkitService bukkitService, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         reload(settings);
@@ -100,7 +100,7 @@ public class BungeeService implements SettingsDependent {
     }
 
     @Override
-    public void reload(NewSetting settings) {
+    public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         this.bungeeServer = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
     }

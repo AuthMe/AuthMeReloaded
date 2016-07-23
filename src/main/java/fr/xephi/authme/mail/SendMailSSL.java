@@ -3,7 +3,7 @@ package fr.xephi.authme.mail;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
@@ -33,7 +33,7 @@ public class SendMailSSL {
     @Inject
     private AuthMe plugin;
     @Inject
-    private NewSetting settings;
+    private Settings settings;
     @Inject
     private BukkitService bukkitService;
 

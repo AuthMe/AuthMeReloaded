@@ -6,7 +6,7 @@ import fr.xephi.authme.command.FoundResultStatus;
 import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -57,7 +57,7 @@ public class HelpProviderTest {
     @Before
     public void setUpHelpProvider() {
         permissionsManager = mock(PermissionsManager.class);
-        NewSetting settings = mock(NewSetting.class);
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.HELP_HEADER)).willReturn(HELP_HEADER);
         helpProvider = new HelpProvider(permissionsManager, settings);
         sender = mock(CommandSender.class);

@@ -6,7 +6,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
@@ -40,7 +40,7 @@ public class PlayerDataTaskManagerTest {
     private Messages messages;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private BukkitService bukkitService;

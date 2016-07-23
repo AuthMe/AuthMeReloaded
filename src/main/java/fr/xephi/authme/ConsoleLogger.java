@@ -2,7 +2,7 @@ package fr.xephi.authme;
 
 import com.google.common.base.Throwables;
 import fr.xephi.authme.output.LogLevel;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
@@ -58,7 +58,7 @@ public final class ConsoleLogger {
      *
      * @param settings The settings instance
      */
-    public static void setLoggingOptions(NewSetting settings) {
+    public static void setLoggingOptions(Settings settings) {
         ConsoleLogger.logLevel = settings.getProperty(PluginSettings.LOG_LEVEL);
         ConsoleLogger.useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
         if (useLogging) {

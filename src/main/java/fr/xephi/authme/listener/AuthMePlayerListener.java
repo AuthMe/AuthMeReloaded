@@ -6,7 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -56,7 +56,7 @@ public class AuthMePlayerListener implements Listener {
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
     @Inject
     private Messages m;
     @Inject

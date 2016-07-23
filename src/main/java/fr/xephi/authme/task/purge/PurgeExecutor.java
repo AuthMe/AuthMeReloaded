@@ -4,7 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
@@ -24,7 +24,7 @@ import static fr.xephi.authme.util.StringUtils.makePath;
 class PurgeExecutor {
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
 
     @Inject
     private DataSource dataSource;

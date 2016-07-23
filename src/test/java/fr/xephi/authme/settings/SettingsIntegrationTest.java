@@ -27,9 +27,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * Integration test for {@link NewSetting}.
+ * Integration test for {@link Settings}.
  */
-public class NewSettingIntegrationTest {
+public class SettingsIntegrationTest {
 
     /** File name of the sample config including all {@link TestConfiguration} values. */
     private static final String COMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-sample-values.yml";
@@ -63,7 +63,7 @@ public class NewSettingIntegrationTest {
         File newFile = temporaryFolder.newFile();
 
         // when / then
-        NewSetting settings = new NewSetting(configuration, newFile, testPluginFolder, propertyMap,
+        Settings settings = new Settings(configuration, newFile, testPluginFolder, propertyMap,
             checkAllPropertiesPresent());
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
@@ -90,13 +90,13 @@ public class NewSettingIntegrationTest {
         File file = copyFileFromResources(INCOMPLETE_FILE);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         // Expectation: File is rewritten to since it does not have all configurations
-        new NewSetting(configuration, file, testPluginFolder, propertyMap, checkAllPropertiesPresent());
+        new Settings(configuration, file, testPluginFolder, propertyMap, checkAllPropertiesPresent());
 
         // Load the settings again -> checks that what we wrote can be loaded again
         configuration = YamlConfiguration.loadConfiguration(file);
 
         // then
-        NewSetting settings = new NewSetting(configuration, file, testPluginFolder, propertyMap,
+        Settings settings = new Settings(configuration, file, testPluginFolder, propertyMap,
             checkAllPropertiesPresent());
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
@@ -133,14 +133,14 @@ public class NewSettingIntegrationTest {
         }
 
         // when
-        new NewSetting(configuration, file, testPluginFolder, propertyMap, checkAllPropertiesPresent());
+        new Settings(configuration, file, testPluginFolder, propertyMap, checkAllPropertiesPresent());
         // reload the file as settings should have been rewritten
         configuration = YamlConfiguration.loadConfiguration(file);
 
         // then
         // assert that we won't rewrite the settings again! One rewrite should produce a valid, complete configuration
         File unusedFile = new File("config-difficult-values.unused.yml");
-        NewSetting settings = new NewSetting(configuration, unusedFile, testPluginFolder, propertyMap,
+        Settings settings = new Settings(configuration, unusedFile, testPluginFolder, propertyMap,
             checkAllPropertiesPresent());
         assertThat(unusedFile.exists(), equalTo(false));
         assertThat(configuration.contains(TestConfiguration.DUST_LEVEL.getPath()), equalTo(true));
@@ -171,7 +171,7 @@ public class NewSettingIntegrationTest {
         // given
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(temporaryFolder.newFile());
         File fullConfigFile = copyFileFromResources(COMPLETE_FILE);
-        NewSetting settings = new NewSetting(configuration, fullConfigFile, testPluginFolder, propertyMap,
+        Settings settings = new Settings(configuration, fullConfigFile, testPluginFolder, propertyMap,
             TestSettingsMigrationServices.alwaysFulfilled());
 
         // when

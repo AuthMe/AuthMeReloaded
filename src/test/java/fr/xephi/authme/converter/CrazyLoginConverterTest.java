@@ -6,7 +6,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
@@ -42,7 +42,7 @@ public class CrazyLoginConverterTest {
     private DataSource dataSource;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @DataFolder
     private File dataFolder = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "converter/");

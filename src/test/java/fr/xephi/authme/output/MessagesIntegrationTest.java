@@ -2,7 +2,7 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public class MessagesIntegrationTest {
     @Before
     public void setUpMessages() {
         File testFile = TestHelper.getJarFile(YML_TEST_FILE);
-        NewSetting settings = mock(NewSetting.class);
+        Settings settings = mock(Settings.class);
         given(settings.getMessagesFile()).willReturn(testFile);
         given(settings.getDefaultMessagesFile()).willReturn(YML_DEFAULT_TEST_FILE);
         messages = new Messages(settings);
@@ -235,7 +235,7 @@ public class MessagesIntegrationTest {
     @Test
     public void shouldAllowNullAsDefaultFile() {
         // given
-        NewSetting settings = mock(NewSetting.class);
+        Settings settings = mock(Settings.class);
         given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile(YML_TEST_FILE));
         Messages testMessages = new Messages(settings);
         // Key not present in test file
@@ -254,7 +254,7 @@ public class MessagesIntegrationTest {
         MessageKey key = MessageKey.WRONG_PASSWORD;
         // assumption: message comes back as defined in messages_test.yml
         assumeThat(messages.retrieveSingle(key), equalTo("§cWrong password!"));
-        NewSetting settings = mock(NewSetting.class);
+        Settings settings = mock(Settings.class);
         given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile(
             TestHelper.PROJECT_ROOT + "output/messages_test2.yml"));
 

@@ -2,7 +2,7 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
@@ -18,7 +18,7 @@ public class CommandService {
     @Inject
     private Messages messages;
     @Inject
-    private NewSetting settings;
+    private Settings settings;
     @Inject
     private ValidationService validationService;
 
@@ -79,7 +79,7 @@ public class CommandService {
      *
      * @return The settings manager
      */
-    public NewSetting getSettings() {
+    public Settings getSettings() {
         return settings;
     }
 

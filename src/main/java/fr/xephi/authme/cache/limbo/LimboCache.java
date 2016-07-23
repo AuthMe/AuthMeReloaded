@@ -2,7 +2,7 @@ package fr.xephi.authme.cache.limbo;
 
 import fr.xephi.authme.cache.backup.PlayerDataStorage;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.StringUtils;
@@ -23,12 +23,12 @@ public class LimboCache {
     private final Map<String, PlayerData> cache = new ConcurrentHashMap<>();
 
     private PlayerDataStorage playerDataStorage;
-    private NewSetting settings;
+    private Settings settings;
     private PermissionsManager permissionsManager;
     private SpawnLoader spawnLoader;
 
     @Inject
-    LimboCache(NewSetting settings, PermissionsManager permissionsManager,
+    LimboCache(Settings settings, PermissionsManager permissionsManager,
                SpawnLoader spawnLoader, PlayerDataStorage playerDataStorage) {
         this.settings = settings;
         this.permissionsManager = permissionsManager;

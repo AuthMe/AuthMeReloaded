@@ -2,7 +2,7 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ValidationService;
@@ -31,7 +31,7 @@ public class CommandServiceTest {
     @Mock
     private Messages messages;
     @Mock
-    private NewSetting settings;
+    private Settings settings;
     @Mock
     private ValidationService validationService;
 
@@ -91,7 +91,7 @@ public class CommandServiceTest {
     @Test
     public void shouldReturnSettings() {
         // given/when
-        NewSetting result = commandService.getSettings();
+        Settings result = commandService.getSettings();
 
         // then
         assertThat(result, equalTo(settings));

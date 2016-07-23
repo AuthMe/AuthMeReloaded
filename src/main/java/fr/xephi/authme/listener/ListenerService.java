@@ -4,7 +4,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.entity.Entity;
@@ -27,7 +27,7 @@ class ListenerService implements SettingsDependent {
     private boolean isRegistrationForced;
 
     @Inject
-    ListenerService(NewSetting settings, DataSource dataSource, PluginHooks pluginHooks,
+    ListenerService(Settings settings, DataSource dataSource, PluginHooks pluginHooks,
                     PlayerCache playerCache, ValidationService validationService) {
         this.dataSource = dataSource;
         this.pluginHooks = pluginHooks;
@@ -74,7 +74,7 @@ class ListenerService implements SettingsDependent {
     }
 
     @Override
-    public void reload(NewSetting settings) {
+    public void reload(Settings settings) {
         isRegistrationForced = settings.getProperty(RegistrationSettings.FORCE);
     }
 

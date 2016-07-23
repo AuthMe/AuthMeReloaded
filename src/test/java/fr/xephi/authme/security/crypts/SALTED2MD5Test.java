@@ -1,6 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import static org.mockito.BDDMockito.given;
@@ -19,8 +19,8 @@ public class SALTED2MD5Test extends AbstractEncryptionMethodTest {
             new HashedPassword("ad25606eae5b760c8a2469d65578ac39", "04eee598")); // âË_3(íù*)
     }
 
-    private static NewSetting mockSettings() {
-        NewSetting settings = mock(NewSetting.class);
+    private static Settings mockSettings() {
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(8);
         return settings;
     }

@@ -2,7 +2,7 @@ package fr.xephi.authme.initialization;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.mcstats.Metrics;
@@ -15,7 +15,7 @@ public class MetricsStarter {
     private MetricsStarter() {
     }
 
-    public static void setupMetrics(AuthMe plugin, NewSetting settings) {
+    public static void setupMetrics(AuthMe plugin, Settings settings) {
         try {
             final Metrics metrics = new Metrics(plugin);
 

@@ -10,7 +10,7 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
@@ -30,7 +30,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.TELEPORT_U
 public class TeleportationService implements Reloadable {
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
 
     @Inject
     private BukkitService bukkitService;

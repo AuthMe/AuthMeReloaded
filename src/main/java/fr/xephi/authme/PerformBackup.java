@@ -1,7 +1,7 @@
 package fr.xephi.authme;
 
 import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.BackupSettings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.util.StringUtils;
@@ -30,7 +30,7 @@ public class PerformBackup {
     private final String tblname;
     private final String path;
     private final File dataFolder;
-    private final NewSetting settings;
+    private final Settings settings;
 
     /**
      * Constructor for PerformBackup.
@@ -38,7 +38,7 @@ public class PerformBackup {
      * @param instance AuthMe
      * @param settings The plugin settings
      */
-    public PerformBackup(AuthMe instance, NewSetting settings) {
+    public PerformBackup(AuthMe instance, Settings settings) {
         this.dataFolder = instance.getDataFolder();
         this.settings   = settings;
         this.dbName     = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);

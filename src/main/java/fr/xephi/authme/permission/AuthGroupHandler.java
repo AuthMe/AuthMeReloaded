@@ -4,7 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -22,7 +22,7 @@ public class AuthGroupHandler implements Reloadable {
     private PermissionsManager permissionsManager;
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
 
     @Inject
     private LimboCache limboCache;
