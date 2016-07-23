@@ -8,7 +8,7 @@ import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -29,18 +29,20 @@ public class API {
     private static PasswordSecurity passwordSecurity;
     private static Management management;
     private static PluginHooks pluginHooks;
+    private static ValidationService validationService;
 
     /*
      * Constructor.
      */
     @Inject
     API(AuthMe instance, DataSource dataSource, PasswordSecurity passwordSecurity, Management management,
-        PluginHooks pluginHooks) {
+        PluginHooks pluginHooks, ValidationService validationService) {
         API.instance = instance;
         API.dataSource = dataSource;
         API.passwordSecurity = passwordSecurity;
         API.management = management;
         API.pluginHooks = pluginHooks;
+        API.validationService = validationService;
     }
 
     /**
@@ -77,7 +79,7 @@ public class API {
      * @return true if the player is unrestricted
      */
     public static boolean isUnrestricted(Player player) {
-        return Utils.isUnrestricted(player);
+        return validationService.isUnrestricted(player.getName());
     }
 
     public static Location getLastLocation(Player player) {

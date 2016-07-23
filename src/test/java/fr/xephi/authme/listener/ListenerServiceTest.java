@@ -8,7 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -17,8 +17,6 @@ import org.bukkit.event.player.PlayerEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-
-import java.util.Arrays;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -48,11 +46,12 @@ public class ListenerServiceTest {
     @Mock
     private PlayerCache playerCache;
 
+    @Mock
+    private ValidationService validationService;
+
     @BeforeInjecting
     public void initializeDefaultSettings() {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(
-            Arrays.asList("npc1", "npc2", "npc3"));
     }
 
     @Test
@@ -145,6 +144,7 @@ public class ListenerServiceTest {
         Player player = mockPlayerWithName(playerName);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
+        given(validationService.isUnrestricted(playerName)).willReturn(true);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);

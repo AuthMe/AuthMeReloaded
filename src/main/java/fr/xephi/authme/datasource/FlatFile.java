@@ -6,7 +6,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,21 +41,11 @@ public class FlatFile implements DataSource {
      */
     private final File source;
 
-    public FlatFile() {
-        AuthMe instance = AuthMe.getInstance();
-
-        source = new File(instance.getDataFolder(), "auths.db");
-        try {
-            source.createNewFile();
-        } catch (IOException e) {
-            ConsoleLogger.logException("Cannot open flatfile", e);
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.warning("Can't use FLAT FILE... SHUTDOWN...");
-                instance.getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled) {
-                instance.getServer().getPluginManager().disablePlugin(instance);
-            }
+    public FlatFile(AuthMe authMe) throws IOException {
+        source = new File(authMe.getDataFolder(), "auths.db");
+        boolean createResult = source.createNewFile();
+        if (!createResult) {
+            throw new IOException("Could not create file '" + source.getPath() + "'");
         }
     }
 

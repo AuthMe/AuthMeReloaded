@@ -13,7 +13,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -75,6 +75,8 @@ public class AuthMePlayerListener implements Listener {
     private ListenerService listenerService;
     @Inject
     private TeleportationService teleportationService;
+    @Inject
+    private ValidationService validationService;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -206,7 +208,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
-        if (Utils.isUnrestricted(player)) {
+        if (validationService.isUnrestricted(player.getName())) {
             return;
         } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;

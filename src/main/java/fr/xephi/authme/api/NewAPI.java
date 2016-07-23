@@ -8,7 +8,7 @@ import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -29,18 +29,20 @@ public class NewAPI {
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
+    private final ValidationService validationService;
 
     /*
      * Constructor for NewAPI.
      */
     @Inject
     NewAPI(AuthMe plugin, PluginHooks pluginHooks, DataSource dataSource, PasswordSecurity passwordSecurity,
-           Management management) {
+           Management management, ValidationService validationService) {
         this.plugin = plugin;
         this.pluginHooks = pluginHooks;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
+        this.validationService = validationService;
         NewAPI.singleton = this;
     }
 
@@ -106,7 +108,7 @@ public class NewAPI {
      * @see fr.xephi.authme.settings.properties.RestrictionSettings#UNRESTRICTED_NAMES
      */
     public boolean isUnrestricted(Player player) {
-        return Utils.isUnrestricted(player);
+        return validationService.isUnrestricted(player.getName());
     }
 
     /**

@@ -51,6 +51,7 @@ public class ValidationServiceTest {
         given(settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
             .willReturn(Arrays.asList("unsafe", "other-unsafe"));
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
+        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Arrays.asList("name01", "npc"));
     }
 
     @Test
@@ -189,6 +190,7 @@ public class ValidationServiceTest {
         assertThat(validationService.validateEmail("your@email.com"), equalTo(false));
     }
 
+    @Test
     public void shouldAllowRegistration() {
         // given
         CommandSender sender = mock(CommandSender.class);
@@ -204,6 +206,7 @@ public class ValidationServiceTest {
         assertThat(result, equalTo(true));
     }
 
+    @Test
     public void shouldRejectEmailWithTooManyAccounts() {
         // given
         CommandSender sender = mock(CommandSender.class);
@@ -219,6 +222,7 @@ public class ValidationServiceTest {
         assertThat(result, equalTo(false));
     }
 
+    @Test
     public void shouldAllowBypassForPresentPermission() {
         // given
         CommandSender sender = mock(CommandSender.class);
@@ -232,6 +236,19 @@ public class ValidationServiceTest {
 
         // then
         assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldRecognizeUnrestrictedNames() {
+        assertThat(validationService.isUnrestricted("npc"), equalTo(true));
+        assertThat(validationService.isUnrestricted("someplayer"), equalTo(false));
+        assertThat(validationService.isUnrestricted("NAME01"), equalTo(true));
+
+        // Check reloading
+        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Arrays.asList("new", "names"));
+        validationService.reload();
+        assertThat(validationService.isUnrestricted("npc"), equalTo(false));
+        assertThat(validationService.isUnrestricted("New"), equalTo(true));
     }
 
     private static void assertErrorEquals(ValidationResult validationResult, MessageKey messageKey, String... args) {

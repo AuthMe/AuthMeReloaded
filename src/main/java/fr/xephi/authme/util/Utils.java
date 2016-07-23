@@ -1,7 +1,6 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Settings;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -13,14 +12,6 @@ import java.util.regex.Pattern;
 public final class Utils {
 
     private Utils() {
-    }
-
-    @Deprecated
-    public static boolean isUnrestricted(Player player) {
-        // TODO ljacqu 20160602: Checking for Settings.isAllowRestrictedIp is wrong! Nothing in the config suggests
-        // that this setting has anything to do with unrestricted names
-        return Settings.isAllowRestrictedIp
-            && Settings.getUnrestrictedName.contains(player.getName().toLowerCase());
     }
 
     /**

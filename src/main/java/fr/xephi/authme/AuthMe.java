@@ -30,11 +30,9 @@ import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
@@ -55,6 +53,7 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -71,6 +70,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitWorker;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -112,6 +112,7 @@ public class AuthMe extends JavaPlugin {
     private BukkitService bukkitService;
     private Injector injector;
     private GeoLiteAPI geoLiteApi;
+    private PlayerCache playerCache;
 
     /**
      * Constructor.
@@ -281,18 +282,20 @@ public class AuthMe extends JavaPlugin {
     }
 
     protected void instantiateServices(Injector injector) {
-        // Some statically injected things
-        injector.register(PlayerCache.class, PlayerCache.getInstance());
+        // PlayerCache is still injected statically sometimes
+        playerCache = PlayerCache.getInstance();
+        injector.register(PlayerCache.class, playerCache);
 
         messages = injector.getSingleton(Messages.class);
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         pluginHooks = injector.getSingleton(PluginHooks.class);
-        injector.getSingleton(PasswordSecurity.class);
         spawnLoader = injector.getSingleton(SpawnLoader.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         management = injector.getSingleton(Management.class);
         geoLiteApi = injector.getSingleton(GeoLiteAPI.class);
+
+        // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(NewAPI.class);
         injector.getSingleton(API.class);
     }
@@ -346,14 +349,13 @@ public class AuthMe extends JavaPlugin {
             int playersOnline = bukkitService.getOnlinePlayers().size();
             if (playersOnline < 1) {
                 database.purgeLogged();
-            } else if (Settings.reloadSupport) {
+            } else if (newSettings.getProperty(SecuritySettings.USE_RELOAD_COMMAND_SUPPORT)) {
                 for (PlayerAuth auth : database.getLoggedPlayers()) {
-                    if (auth == null) {
-                        continue;
+                    if (auth != null) {
+                        auth.setLastLogin(new Date().getTime());
+                        database.updateSession(auth);
+                        playerCache.addPlayer(auth);
                     }
-                    auth.setLastLogin(new Date().getTime());
-                    database.updateSession(auth);
-                    PlayerCache.getInstance().addPlayer(auth);
                 }
             }
         }
@@ -422,12 +424,12 @@ public class AuthMe extends JavaPlugin {
         // Save player data
         BukkitService bukkitService = injector.getIfAvailable(BukkitService.class);
         LimboCache limboCache = injector.getIfAvailable(LimboCache.class);
-        AuthGroupHandler authGroupHandler = injector.getIfAvailable(AuthGroupHandler.class);
+        ValidationService validationService = injector.getIfAvailable(ValidationService.class);
 
-        if (bukkitService != null && limboCache != null) {
+        if (bukkitService != null && limboCache != null && validationService != null) {
             Collection<? extends Player> players = bukkitService.getOnlinePlayers();
             for (Player player : players) {
-                savePlayer(player, limboCache, authGroupHandler);
+                savePlayer(player, limboCache, validationService);
             }
         }
 
@@ -492,7 +494,7 @@ public class AuthMe extends JavaPlugin {
 
     // Stop/unload the server/plugin as defined in the configuration
     public void stopOrUnload() {
-        if (Settings.isStopEnabled) {
+        if (newSettings == null || newSettings.getProperty(SecuritySettings.STOP_SERVER_ON_PROBLEM)) {
             ConsoleLogger.warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
             getServer().shutdown();
         } else {
@@ -507,9 +509,10 @@ public class AuthMe extends JavaPlugin {
      *
      * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
+     * @throws IOException            if flat file cannot be read
      * @see AuthMe#database
      */
-    public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
+    public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException, IOException {
         if (this.database != null) {
             this.database.close();
         }
@@ -518,7 +521,7 @@ public class AuthMe extends JavaPlugin {
         DataSource dataSource;
         switch (dataSourceType) {
             case FILE:
-                dataSource = new FlatFile();
+                dataSource = new FlatFile(this);
                 break;
             case MYSQL:
                 dataSource = new MySQL(settings);
@@ -530,10 +533,10 @@ public class AuthMe extends JavaPlugin {
                 throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
         }
 
-        DataSource convertedSource = MigrationService.convertFlatfileToSqlite(newSettings, dataSource);
+        DataSource convertedSource = MigrationService.convertFlatfileToSqlite(settings, dataSource);
         dataSource = convertedSource == null ? dataSource : convertedSource;
 
-        if (newSettings.getProperty(DatabaseSettings.USE_CACHING)) {
+        if (settings.getProperty(DatabaseSettings.USE_CACHING)) {
             dataSource = new CacheDataSource(dataSource);
         }
 
@@ -560,11 +563,11 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Save Player Data
-    private void savePlayer(Player player, LimboCache limboCache, AuthGroupHandler authGroupHandler) {
-        if (safeIsNpc(player) || Utils.isUnrestricted(player)) {
+    private void savePlayer(Player player, LimboCache limboCache, ValidationService validationService) {
+        final String name = player.getName().toLowerCase();
+        if (safeIsNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
-        String name = player.getName().toLowerCase();
         if (limboCache.hasPlayerData(name)) {
             limboCache.restoreData(player);
             limboCache.removeFromCache(player);
@@ -585,7 +588,7 @@ public class AuthMe extends JavaPlugin {
                 }
             }
         }
-        PlayerCache.getInstance().removePlayer(name);
+        playerCache.removePlayer(name);
     }
 
     private boolean safeIsNpc(Player player) {
@@ -622,7 +625,7 @@ public class AuthMe extends JavaPlugin {
             .replace("{ONLINE}", playersOnline)
             .replace("{MAXPLAYERS}", Integer.toString(server.getMaxPlayers()))
             .replace("{IP}", ipAddress)
-            .replace("{LOGINS}", Integer.toString(PlayerCache.getInstance().getLogged()))
+            .replace("{LOGINS}", Integer.toString(playerCache.getLogged()))
             .replace("{WORLD}", player.getWorld().getName())
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
