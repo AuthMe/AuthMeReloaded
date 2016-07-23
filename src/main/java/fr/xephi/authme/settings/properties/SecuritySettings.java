@@ -42,11 +42,6 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<Integer> CAPTCHA_LENGTH =
         newProperty("Security.captcha.captchaLength", 5);
 
-    @Comment({"Kick players before stopping the server, that allow us to save position of players",
-        "and all needed information correctly without any corruption."})
-    public static final Property<Boolean> KICK_PLAYERS_BEFORE_STOPPING =
-        newProperty("Security.stop.kickPlayersBeforeStopping", true);
-
     @Comment("Minimum length of password")
     public static final Property<Integer> MIN_PASSWORD_LENGTH =
         newProperty("settings.security.minPasswordLength", 5);

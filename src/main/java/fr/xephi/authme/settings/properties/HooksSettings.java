@@ -31,10 +31,6 @@ public class HooksSettings implements SettingsClass {
     public static final Property<Boolean> USE_ESSENTIALS_MOTD =
         newProperty("Hooks.useEssentialsMotd", false);
 
-    @Comment("Do we need to cache custom Attributes?")
-    public static final Property<Boolean> CACHE_CUSTOM_ATTRIBUTES =
-        newProperty("Hooks.customAttributes", false);
-
     @Comment({
         "-1 means disabled. If you want that only activated players",
         "can log into your server, you can set here the group number",
@@ -61,6 +57,14 @@ public class HooksSettings implements SettingsClass {
     @Comment("Wordpress prefix defined during WordPress installation")
     public static final Property<String> WORDPRESS_TABLE_PREFIX =
         newProperty("ExternalBoardOptions.wordpressTablePrefix", "wp_");
+
+    @Comment("Unregistered permission group")
+    public static final Property<String> UNREGISTERED_GROUP =
+        newProperty("GroupOptions.UnregisteredPlayerGroup", "");
+
+    @Comment("Registered permission group")
+    public static final Property<String> REGISTERED_GROUP =
+        newProperty("GroupOptions.RegisteredPlayerGroup", "");
 
     private HooksSettings() {
     }

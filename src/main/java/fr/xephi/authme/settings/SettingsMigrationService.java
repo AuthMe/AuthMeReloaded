@@ -67,7 +67,8 @@ public class SettingsMigrationService {
         String[] deprecatedProperties = {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
             "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt",
-            "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional"};
+            "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional", "DataSource.mySQLWebsite",
+            "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping"};
         for (String deprecatedPath : deprecatedProperties) {
             if (configuration.contains(deprecatedPath)) {
                 return true;

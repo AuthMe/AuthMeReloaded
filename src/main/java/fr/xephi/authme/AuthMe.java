@@ -35,7 +35,6 @@ import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -205,13 +204,6 @@ public class AuthMe extends JavaPlugin {
         // Apply settings to the logger
         ConsoleLogger.setLoggingOptions(newSettings);
 
-        // Old settings manager
-        if (!loadSettings()) {
-            getServer().shutdown();
-            setEnabled(false);
-            return;
-        }
-
         // Connect to the database and setup tables
         try {
             setupDatabase(newSettings);
@@ -373,22 +365,10 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Load the plugin's settings.
+     * Loads the plugin's settings.
      *
-     * @return True on success, false on failure.
+     * @return The settings instance, or null if it could not be constructed
      */
-    private boolean loadSettings() {
-        try {
-            new Settings(this);
-            return true;
-        } catch (Exception e) {
-            ConsoleLogger.logException("Can't load the configuration file... Something went wrong. "
-                + "To avoid security issues the server will shut down!", e);
-            getServer().shutdown();
-        }
-        return false;
-    }
-
     private NewSetting createNewSetting() {
         File configFile = new File(getDataFolder(), "config.yml");
         PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();

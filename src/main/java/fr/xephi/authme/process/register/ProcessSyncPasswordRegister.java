@@ -7,8 +7,8 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BungeeService;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.Utils;
@@ -63,7 +63,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     }
 
     public void processPasswordRegister(Player player) {
-        if (!Settings.getRegisteredGroup.isEmpty()) {
+        if (!service.getProperty(HooksSettings.REGISTERED_GROUP).isEmpty()) {
             service.setGroup(player, AuthGroupType.REGISTERED);
         }
 

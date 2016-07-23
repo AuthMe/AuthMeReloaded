@@ -5,7 +5,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
@@ -116,8 +116,8 @@ public class AuthGroupHandler implements Reloadable {
     @Override
     public void reload() {
         unloggedInGroup = settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP);
-        unregisteredGroup = Settings.unRegisteredGroup;
-        registeredGroup = Settings.getRegisteredGroup;
+        unregisteredGroup = settings.getProperty(HooksSettings.UNREGISTERED_GROUP);
+        registeredGroup = settings.getProperty(HooksSettings.REGISTERED_GROUP);
     }
 
 }

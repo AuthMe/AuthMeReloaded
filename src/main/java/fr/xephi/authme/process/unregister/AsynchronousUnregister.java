@@ -10,13 +10,12 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
-
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -67,7 +66,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 teleportationService.teleportOnJoin(player);
                 player.saveData();
                 playerCache.removePlayer(player.getName().toLowerCase());
-                if (!Settings.getRegisteredGroup.isEmpty()) {
+                if (!service.getProperty(HooksSettings.REGISTERED_GROUP).isEmpty()) {
                     service.setGroup(player, AuthGroupType.UNREGISTERED);
                 }
                 limboCache.deletePlayerData(player);
@@ -79,7 +78,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 ConsoleLogger.info(player.getName() + " unregistered himself");
                 return; // TODO ljacqu 20160612: Why return here? No blind effect? Player not removed from PlayerCache?
             }
-            if (!Settings.unRegisteredGroup.isEmpty()) {
+            if (!service.getProperty(HooksSettings.UNREGISTERED_GROUP).isEmpty()) {
                 service.setGroup(player, AuthGroupType.UNREGISTERED);
             }
             playerCache.removePlayer(name);

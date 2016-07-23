@@ -40,8 +40,6 @@ DataSource:
     mySQLlastlocWorld: world
     # Column for RealName
     mySQLRealName: realname
-    # Enable this when you allow registration through a website
-    mySQLWebsite: false
 settings:
     # The name shown in the help messages.
     helpHeader: AuthMeReloaded
@@ -326,10 +324,6 @@ Security:
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5
-    stop:
-        # Kick players before stopping the server, that allow us to save position of players, and all needed
-        # information correctly without any corruption.
-        kickPlayersBeforeStopping: true
     tempban:
         # Tempban a user's IP address if they enter the wrong password too many times
         enableTempban: false
@@ -390,8 +384,6 @@ Hooks:
     disableSocialSpy: true
     # Do we need to force /motd Essentials command on join?
     useEssentialsMotd: false
-    # Do we need to cache custom Attributes?
-    customAttributes: false
 Purge:
     # If enabled, AuthMe automatically purges old, unused accounts
     useAutoPurge: false
@@ -429,3 +421,8 @@ Protection:
     antiBotSensibility: 10
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10
+GroupOptions:
+    # Registered permission group
+    RegisteredPlayerGroup: ''
+    # Unregistered permission group
+    UnregisteredPlayerGroup: ''
