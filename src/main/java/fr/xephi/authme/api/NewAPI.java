@@ -30,19 +30,21 @@ public class NewAPI {
     private final PasswordSecurity passwordSecurity;
     private final Management management;
     private final ValidationService validationService;
+    private final PlayerCache playerCache;
 
     /*
      * Constructor for NewAPI.
      */
     @Inject
     NewAPI(AuthMe plugin, PluginHooks pluginHooks, DataSource dataSource, PasswordSecurity passwordSecurity,
-           Management management, ValidationService validationService) {
+           Management management, ValidationService validationService, PlayerCache playerCache) {
         this.plugin = plugin;
         this.pluginHooks = pluginHooks;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
         this.validationService = validationService;
+        this.playerCache = playerCache;
         NewAPI.singleton = this;
     }
 
@@ -86,7 +88,7 @@ public class NewAPI {
      * @return true if the player is authenticated
      */
     public boolean isAuthenticated(Player player) {
-        return PlayerCache.getInstance().isAuthenticated(player.getName());
+        return playerCache.isAuthenticated(player.getName());
     }
 
     /**
@@ -112,13 +114,13 @@ public class NewAPI {
     }
 
     /**
-     * Get the last location of a player.
+     * Get the last location of an online player.
      *
      * @param player The player to process
      * @return Location The location of the player
      */
     public Location getLastLocation(Player player) {
-        PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName());
+        PlayerAuth auth = playerCache.getAuth(player.getName());
         if (auth != null) {
             return new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
         }
@@ -144,7 +146,7 @@ public class NewAPI {
      * @return true if the password is correct, false otherwise
      */
     public boolean checkPassword(String playerName, String passwordToCheck) {
-        return isRegistered(playerName) && passwordSecurity.comparePassword(passwordToCheck, playerName);
+        return passwordSecurity.comparePassword(passwordToCheck, playerName);
     }
 
     /**
