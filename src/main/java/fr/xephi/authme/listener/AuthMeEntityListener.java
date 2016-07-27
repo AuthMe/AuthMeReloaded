@@ -39,7 +39,7 @@ public class AuthMeEntityListener implements Listener {
 
     // Note #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onEntityDamage(EntityDamageEvent event) {
+    public void onDamage(EntityDamageEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.getEntity().setFireTicks(0);
             event.setDamage(0);
@@ -48,20 +48,16 @@ public class AuthMeEntityListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onEntityTarget(EntityTargetEvent event) {
-        if (listenerService.shouldCancelEvent(event)) {
-            event.setTarget(null);
+    public void onAttack(EntityDamageByEntityEvent event) {
+        if (listenerService.shouldCancelEvent(event.getDamager())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onDamage(EntityDamageByEntityEvent event) {
+    public void onEntityTarget(EntityTargetEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
-            event.setCancelled(true);
-            return;
-        }
-        if (listenerService.shouldCancelEvent(event.getDamager())) {
+            event.setTarget(null);
             event.setCancelled(true);
         }
     }
