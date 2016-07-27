@@ -44,10 +44,19 @@ class ListenerService implements SettingsDependent {
      */
     public boolean shouldCancelEvent(EntityEvent event) {
         Entity entity = event.getEntity();
+        return shouldCancelEvent(entity);
+    }
+
+    /**
+     * Returns, based on the entity associated with the event, whether or not the event should be canceled.
+     *
+     * @param entity the player entity to verify
+     * @return true if the associated event should be canceled, false otherwise
+     */
+    public boolean shouldCancelEvent(Entity entity) {
         if (entity == null || !(entity instanceof Player)) {
             return false;
         }
-
         Player player = (Player) entity;
         return shouldCancelEvent(player);
     }

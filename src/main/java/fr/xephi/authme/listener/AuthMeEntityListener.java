@@ -59,6 +59,10 @@ public class AuthMeEntityListener implements Listener {
     public void onDamage(EntityDamageByEntityEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
+            return;
+        }
+        if (listenerService.shouldCancelEvent(event.getDamager())) {
+            event.setCancelled(true);
         }
     }
 
