@@ -13,7 +13,6 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -66,9 +65,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
-
-    @Inject
-    private Management management;
 
     AsynchronousJoin() {
     }
@@ -142,7 +138,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 playerCache.removePlayer(name);
                 if (auth != null && auth.getIp().equals(ip)) {
                     service.send(player, MessageKey.SESSION_RECONNECTION);
-                    management.performLogin(player, "dontneed", true);
+                    plugin.getManagement().performLogin(player, "dontneed", true);
                     return;
                 } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
                     service.send(player, MessageKey.SESSION_EXPIRED);

@@ -635,4 +635,19 @@ public class AuthMe extends JavaPlugin {
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
     }
+
+    // -------------
+    // Service getters (deprecated)
+    // Use @Inject fields instead
+    // -------------
+
+    /**
+     * @return process manager
+     *
+     * @deprecated should be used in API classes only (temporarily)
+     */
+    @Deprecated
+    public Management getManagement() {
+        return management;
+    }
 }
