@@ -7,7 +7,6 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -25,9 +24,6 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     @Inject
     private PlayerCache playerCache;
-    
-    @Inject
-    private Settings settings;
 
     BungeeCordMessage() { }
 
