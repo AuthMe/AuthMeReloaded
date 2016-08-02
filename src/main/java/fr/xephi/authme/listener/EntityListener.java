@@ -1,6 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
+
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -20,14 +21,14 @@ import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class AuthMeEntityListener implements Listener {
+public class EntityListener implements Listener {
 
     private final ListenerService listenerService;
     private Method getShooter;
     private boolean shooterIsLivingEntity;
 
     @Inject
-    AuthMeEntityListener(ListenerService listenerService) {
+    EntityListener(ListenerService listenerService) {
         this.listenerService = listenerService;
         try {
             getShooter = Projectile.class.getDeclaredMethod("getShooter");

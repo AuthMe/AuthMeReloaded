@@ -7,7 +7,7 @@ import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
-import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BungeeService;
@@ -100,7 +100,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // We can now display the join message (if delayed)
-        String jm = AuthMePlayerListener.joinMessage.get(name);
+        String jm = PlayerListener.joinMessage.get(name);
         if (jm != null) {
             if (!jm.isEmpty()) {
                 for (Player p : bukkitService.getOnlinePlayers()) {
@@ -109,7 +109,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
                     }
                 }
             }
-            AuthMePlayerListener.joinMessage.remove(name);
+            PlayerListener.joinMessage.remove(name);
         }
 
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

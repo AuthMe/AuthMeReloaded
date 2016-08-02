@@ -9,19 +9,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.ListenerService;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
- * Test for {@link AuthMeBlockListener}.
+ * Test for {@link BlockListener}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AuthMeBlockListenerTest {
 
     @InjectMocks
-    private AuthMeBlockListener listener;
+    private BlockListener listener;
 
     @Mock
     private ListenerService listenerService;

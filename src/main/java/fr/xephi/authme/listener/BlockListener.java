@@ -7,7 +7,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import javax.inject.Inject;
 
-public class AuthMeBlockListener implements Listener {
+public class BlockListener implements Listener {
 
     @Inject
     private ListenerService listenerService;

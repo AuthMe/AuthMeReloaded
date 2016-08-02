@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 /**
  */
-public class AuthMeServerListener implements Listener {
+public class ServerListener implements Listener {
 
     @Inject
     private PluginHooks pluginHooks;

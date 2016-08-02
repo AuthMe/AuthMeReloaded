@@ -1,6 +1,14 @@
 package fr.xephi.authme.listener;
 
 import com.google.common.collect.Sets;
+
+import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.listener.PlayerListener16;
+import fr.xephi.authme.listener.PlayerListener18;
+import fr.xephi.authme.listener.ServerListener;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.junit.Test;
@@ -20,9 +28,9 @@ import static org.junit.Assert.fail;
  */
 public final class ListenerConsistencyTest {
 
-    private static final Class<?>[] LISTENERS = { AuthMeBlockListener.class, AuthMeEntityListener.class,
-        AuthMePlayerListener.class, AuthMePlayerListener16.class, AuthMePlayerListener18.class,
-        AuthMeServerListener.class };
+    private static final Class<?>[] LISTENERS = { BlockListener.class, EntityListener.class,
+        PlayerListener.class, PlayerListener16.class, PlayerListener18.class,
+        ServerListener.class };
 
     private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerListener#onPlayerJoin",
         "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",

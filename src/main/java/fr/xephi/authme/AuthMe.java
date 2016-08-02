@@ -20,12 +20,14 @@ import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
-import fr.xephi.authme.listener.AuthMeBlockListener;
-import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.listener.AuthMePlayerListener16;
-import fr.xephi.authme.listener.AuthMePlayerListener18;
-import fr.xephi.authme.listener.AuthMeServerListener;
+import fr.xephi.authme.listener.AsyncSingleSessionListener;
+import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.listener.PlayerListener16;
+import fr.xephi.authme.listener.PlayerListener18;
+import fr.xephi.authme.listener.ServerListener;
+import fr.xephi.authme.listener.SyncSingleSessionListener;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
@@ -53,6 +55,8 @@ import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
+import tools.utils.ServerUtils;
+
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -316,23 +320,30 @@ public class AuthMe extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
 
         // Register event listeners
-        pluginManager.registerEvents(injector.getSingleton(AuthMePlayerListener.class), this);
-        pluginManager.registerEvents(injector.getSingleton(AuthMeBlockListener.class), this);
-        pluginManager.registerEvents(injector.getSingleton(AuthMeEntityListener.class), this);
-        pluginManager.registerEvents(injector.getSingleton(AuthMeServerListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(PlayerListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(BlockListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(EntityListener.class), this);
+        pluginManager.registerEvents(injector.getSingleton(ServerListener.class), this);
 
         // Try to register 1.6 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
-            pluginManager.registerEvents(injector.getSingleton(AuthMePlayerListener16.class), this);
+            pluginManager.registerEvents(injector.getSingleton(PlayerListener16.class), this);
         } catch (ClassNotFoundException ignore) {
         }
 
         // Try to register 1.8 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
-            pluginManager.registerEvents(injector.getSingleton(AuthMePlayerListener18.class), this);
+            pluginManager.registerEvents(injector.getSingleton(PlayerListener18.class), this);
         } catch (ClassNotFoundException ignore) {
+        }
+
+        // Choose the right SingleSessionListener
+        if(Bukkit.getOnlineMode() || ServerUtils.isSpigot()) {
+            pluginManager.registerEvents(injector.getSingleton(AsyncSingleSessionListener.class), this);
+        } else {
+            pluginManager.registerEvents(injector.getSingleton(SyncSingleSessionListener.class), this);
         }
     }
 

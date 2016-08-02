@@ -7,7 +7,7 @@ import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.listener.AuthMeBlockListener;
+import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
@@ -113,7 +113,7 @@ public class AuthMeInitializationTest {
 
         // then
         // Take a few samples and ensure that they are not null
-        assertThat(injector.getIfAvailable(AuthMeBlockListener.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(BlockListener.class), not(nullValue()));
         assertThat(injector.getIfAvailable(CommandHandler.class), not(nullValue()));
         assertThat(injector.getIfAvailable(Management.class), not(nullValue()));
         assertThat(injector.getIfAvailable(NewAPI.class), not(nullValue()));

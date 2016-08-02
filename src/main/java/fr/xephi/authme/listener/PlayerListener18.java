@@ -10,7 +10,7 @@ import javax.inject.Inject;
 /**
  * Listener of player events for events introduced in Minecraft 1.8.
  */
-public class AuthMePlayerListener18 implements Listener {
+public class PlayerListener18 implements Listener {
 
     @Inject
     private ListenerService listenerService;

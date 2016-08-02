@@ -1,7 +1,6 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
@@ -15,6 +14,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.ValidationService;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -52,7 +53,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
 /**
  * Listener class for player events.
  */
-public class AuthMePlayerListener implements Listener {
+public class PlayerListener implements Listener {
 
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
 
@@ -201,26 +202,27 @@ public class AuthMePlayerListener implements Listener {
         management.performJoin(player);
     }
 
-    // Note: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
-    // e.g. CraftBukkit does not. So we need to run crucial things in onPlayerLogin, too
-    // We have no performance improvements if we do the same thing on two different events
-    // Important: the single session feature works if we use the low priority to the sync handler
-
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onLoginSingleSession(PlayerLoginEvent event) {
-        if(event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+    public void onAsyncPreLogin(AsyncPlayerPreLoginEvent event) {
+        
+        // Spigot only
+        try {
+            Class.forName("org.spigotmc.CustomTimingsHandler");
+        } catch(Exception e) {
+            return;
+        }
+        
+        if(event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             return;
         }
 
-        final Player player = event.getPlayer();
-        final String name = player.getName();
+        final String name = event.getName();
 
         try {
             onJoinVerifier.checkSingleSession(name);
         } catch (FailedVerificationException e) {
-            ConsoleLogger.warning("DEBUG: " + name + " tried to join the game but an user with the same name was already online!" );
             event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             return;
         }
     }
