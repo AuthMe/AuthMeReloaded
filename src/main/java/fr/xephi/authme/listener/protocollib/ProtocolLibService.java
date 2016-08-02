@@ -16,8 +16,8 @@ import javax.inject.Inject;
 public class ProtocolLibService implements SettingsDependent {
 
     /* Packet Adapters */
-    private AuthMeInventoryPacketAdapter inventoryPacketAdapter;
-    private AuthMeTabCompletePacketAdapter tabCompletePacketAdapter;
+    private InventoryPacketAdapter inventoryPacketAdapter;
+    private TabCompletePacketAdapter tabCompletePacketAdapter;
 
     /* Settings */
     private boolean protectInvBeforeLogin;
@@ -57,14 +57,14 @@ public class ProtocolLibService implements SettingsDependent {
 
         // Set up packet adapters
         if (protectInvBeforeLogin && inventoryPacketAdapter == null) {
-            inventoryPacketAdapter = new AuthMeInventoryPacketAdapter(plugin);
+            inventoryPacketAdapter = new InventoryPacketAdapter(plugin);
             inventoryPacketAdapter.register();
         } else if (inventoryPacketAdapter != null) {
             inventoryPacketAdapter.unregister();
             inventoryPacketAdapter = null;
         }
         if (denyTabCompleteBeforeLogin && tabCompletePacketAdapter == null) {
-            tabCompletePacketAdapter = new AuthMeTabCompletePacketAdapter(plugin);
+            tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin);
             tabCompletePacketAdapter.register();
         } else if (tabCompletePacketAdapter != null) {
             tabCompletePacketAdapter.unregister();

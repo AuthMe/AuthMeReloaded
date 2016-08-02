@@ -202,31 +202,6 @@ public class PlayerListener implements Listener {
         management.performJoin(player);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onAsyncPreLogin(AsyncPlayerPreLoginEvent event) {
-        
-        // Spigot only
-        try {
-            Class.forName("org.spigotmc.CustomTimingsHandler");
-        } catch(Exception e) {
-            return;
-        }
-        
-        if(event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            return;
-        }
-
-        final String name = event.getName();
-
-        try {
-            onJoinVerifier.checkSingleSession(name);
-        } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            return;
-        }
-    }
-
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();

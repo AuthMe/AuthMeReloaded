@@ -32,11 +32,11 @@ public final class ListenerConsistencyTest {
         PlayerListener.class, PlayerListener16.class, PlayerListener18.class,
         ServerListener.class };
 
-    private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerListener#onPlayerJoin",
-        "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",
-        "AuthMePlayerListener#onPlayerQuit", "AuthMeServerListener#onPluginDisable",
-        "AuthMeServerListener#onServerPing", "AuthMeServerListener#onPluginEnable",
-        "AuthMePlayerListener#onJoinMessage", "AuthMePlayerListener#onLoginSingleSession");
+    private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet(
+        "PlayerListener#onPlayerJoin", "PlayerListener#onPlayerLogin",
+        "PlayerListener#onPlayerQuit", "ServerListener#onPluginDisable",
+        "ServerListener#onServerPing", "ServerListener#onPluginEnable",
+        "PlayerListener#onJoinMessage", "PlayerListener#onLoginSingleSession");
 
     @Test
     public void shouldSetIgnoreCancelledToTrue() {
