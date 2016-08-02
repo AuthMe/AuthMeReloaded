@@ -1,4 +1,4 @@
-package tools.utils;
+package fr.xephi.authme.util;
 
 public class ServerUtils {
 

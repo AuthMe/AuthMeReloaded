@@ -55,7 +55,7 @@ import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
-import tools.utils.ServerUtils;
+import fr.xephi.authme.util.ServerUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
