@@ -1,6 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
@@ -217,6 +218,7 @@ public class AuthMePlayerListener implements Listener {
         try {
             onJoinVerifier.checkSingleSession(name);
         } catch (FailedVerificationException e) {
+            ConsoleLogger.warning("DEBUG: " + name + " tried to join the game but an user with the same name was already online!" );
             event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
