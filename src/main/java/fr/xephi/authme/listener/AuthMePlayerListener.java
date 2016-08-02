@@ -206,6 +206,24 @@ public class AuthMePlayerListener implements Listener {
     // Important: the single session feature works if we use the low priority to the sync handler
 
     @EventHandler(priority = EventPriority.LOWEST)
+    public void onLoginSingleSession(PlayerLoginEvent event) {
+        if(event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        final String name = player.getName();
+
+        try {
+            onJoinVerifier.checkSingleSession(name);
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         if (validationService.isUnrestricted(player.getName())) {
@@ -221,7 +239,7 @@ public class AuthMePlayerListener implements Listener {
 
         try {
             // Fast stuff
-            onJoinVerifier.checkSingleSession(lowerName);
+            // onJoinVerifier.checkSingleSession(lowerName);
             onJoinVerifier.checkIsValidName(name);
             
             // Get the auth later as this may cause the single session check to fail
