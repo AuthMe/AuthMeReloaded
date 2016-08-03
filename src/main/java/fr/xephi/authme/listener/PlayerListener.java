@@ -25,7 +25,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -195,37 +194,12 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // Note: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
-    // e.g. CraftBukkit does not. So we need to run crucial things in onPlayerLogin
-    // We have no performance improvements if we do the same thing on two different events
-    // The single session feature only works with the AsyncPlayerPreLoginEvent, i.e. it does not work
-    // with CraftBukkit, cf. issue #831
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onAsyncPreLogin(AsyncPlayerPreLoginEvent event) {
-        if (!AsyncPlayerPreLoginEvent.Result.ALLOWED.equals(event.getLoginResult())) {
-            return;
-        }
-
-        final String name = event.getName();
-        try {
-            onJoinVerifier.checkSingleSession(name);
-        } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-        teleportationService.teleportNewPlayerToFirstSpawn(player);
-        management.performJoin(player);
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
-        if (validationService.isUnrestricted(player.getName())) {
+        final String name = player.getName();
+
+        if (validationService.isUnrestricted(name)) {
             return;
         } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
@@ -233,9 +207,9 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        final String name = player.getName();
         try {
             // Fast stuff
+            onJoinVerifier.checkSingleSession(name);
             onJoinVerifier.checkIsValidName(name);
             
             // Get the auth later as this may cause the single session check to fail
@@ -255,6 +229,13 @@ public class PlayerListener implements Listener {
 
         antiBot.handlePlayerJoin(player);
         teleportationService.teleportOnJoin(player);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
+        management.performJoin(player);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
