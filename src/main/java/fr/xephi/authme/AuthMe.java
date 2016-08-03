@@ -50,7 +50,6 @@ import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
-import fr.xephi.authme.util.ServerUtils;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
@@ -306,13 +305,6 @@ public class AuthMe extends JavaPlugin {
         if (settings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
             && settings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
             ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
-        }
-
-        // Single session not possible on CraftBukkit
-        if (settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
-            && !Bukkit.getOnlineMode() && !ServerUtils.isSpigot()) {
-            ConsoleLogger.warning("WARNING: You have force single session enabled but are not running on Spigot. "
-                + "This feature is not supported on CraftBukkit in offline mode");
         }
     }
 

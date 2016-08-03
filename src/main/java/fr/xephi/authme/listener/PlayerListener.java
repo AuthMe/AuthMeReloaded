@@ -14,7 +14,6 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.ValidationService;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -194,12 +193,24 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
+        management.performJoin(player);
+    }
+
+    // Note #831: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
+    // e.g. CraftBukkit does not fire it. So we need to run crucial things with PlayerLoginEvent.
+    // Single session feature can be implemented for Spigot and CraftBukkit by canceling a kick
+    // event caused by "logged in from another location". The nicer way, but only for Spigot, would be
+    // to check in the AsyncPlayerPreLoginEvent. To support all servers, we use the less nice way.
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();
-
-        if (validationService.isUnrestricted(name)) {
+        if (validationService.isUnrestricted(player.getName())) {
             return;
         } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
@@ -231,13 +242,6 @@ public class PlayerListener implements Listener {
         teleportationService.teleportOnJoin(player);
     }
 
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-        teleportationService.teleportNewPlayerToFirstSpawn(player);
-        management.performJoin(player);
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
@@ -255,8 +259,15 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerKick(PlayerKickEvent event) {
-        Player player = event.getPlayer();
+        // Note #831: Especially for offline CraftBukkit, we need to catch players being kicked because of
+        // "logged in from another location" and to cancel their kick
+        if (settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
+            && event.getReason().contains("You logged in from another location")) {
+            event.setCancelled(true);
+            return;
+        }
 
+        final Player player = event.getPlayer();
         if (!antiBot.wasPlayerKicked(player.getName())) {
             management.performQuit(player);
         }
