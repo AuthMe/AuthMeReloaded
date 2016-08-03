@@ -1,14 +1,6 @@
 package fr.xephi.authme.listener;
 
 import com.google.common.collect.Sets;
-
-import fr.xephi.authme.listener.BlockListener;
-import fr.xephi.authme.listener.EntityListener;
-import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.listener.PlayerListener16;
-import fr.xephi.authme.listener.PlayerListener18;
-import fr.xephi.authme.listener.ServerListener;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.junit.Test;
@@ -36,7 +28,7 @@ public final class ListenerConsistencyTest {
         "PlayerListener#onPlayerJoin", "PlayerListener#onPlayerLogin",
         "PlayerListener#onPlayerQuit", "ServerListener#onPluginDisable",
         "ServerListener#onServerPing", "ServerListener#onPluginEnable",
-        "PlayerListener#onJoinMessage", "PlayerListener#onLoginSingleSession");
+        "PlayerListener#onJoinMessage", "PlayerListener#onAsyncPreLogin");
 
     @Test
     public void shouldSetIgnoreCancelledToTrue() {

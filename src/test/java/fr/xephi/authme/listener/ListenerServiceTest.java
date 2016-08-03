@@ -6,7 +6,6 @@ import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.listener.ListenerService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.ValidationService;

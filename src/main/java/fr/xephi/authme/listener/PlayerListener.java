@@ -195,6 +195,26 @@ public class PlayerListener implements Listener {
         }
     }
 
+    // Note: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
+    // e.g. CraftBukkit does not. So we need to run crucial things in onPlayerLogin
+    // We have no performance improvements if we do the same thing on two different events
+    // The single session feature only works with the AsyncPlayerPreLoginEvent, i.e. it does not work
+    // with CraftBukkit, cf. issue #831
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onAsyncPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (!AsyncPlayerPreLoginEvent.Result.ALLOWED.equals(event.getLoginResult())) {
+            return;
+        }
+
+        final String name = event.getName();
+        try {
+            onJoinVerifier.checkSingleSession(name);
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
@@ -214,17 +234,15 @@ public class PlayerListener implements Listener {
         }
 
         final String name = player.getName();
-        final String lowerName = name.toLowerCase();
-
         try {
             // Fast stuff
-            // onJoinVerifier.checkSingleSession(lowerName);
             onJoinVerifier.checkIsValidName(name);
             
             // Get the auth later as this may cause the single session check to fail
             // Slow stuff
             final PlayerAuth auth = dataSource.getAuth(player.getName());
             final boolean isAuthAvailable = (auth != null);
+            final String lowerName = name.toLowerCase();
             onJoinVerifier.checkAntibot(lowerName, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkNameCasing(player, auth);

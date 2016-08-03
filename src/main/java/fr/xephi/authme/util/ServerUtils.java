@@ -1,6 +1,9 @@
 package fr.xephi.authme.util;
 
-public class ServerUtils {
+public final class ServerUtils {
+
+    private ServerUtils() {
+    }
 
     /**
      * Check if the server implementation is based on Spigot

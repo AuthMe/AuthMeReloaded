@@ -20,14 +20,12 @@ import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
-import fr.xephi.authme.listener.AsyncSingleSessionListener;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.listener.SyncSingleSessionListener;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
@@ -52,11 +50,10 @@ import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
+import fr.xephi.authme.util.ServerUtils;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
-import fr.xephi.authme.util.ServerUtils;
-
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -310,6 +307,13 @@ public class AuthMe extends JavaPlugin {
             && settings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
             ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
         }
+
+        // Single session not possible on CraftBukkit
+        if (settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
+            && !Bukkit.getOnlineMode() && !ServerUtils.isSpigot()) {
+            ConsoleLogger.warning("WARNING: You have force single session enabled but are not running on Spigot. "
+                + "This feature is not supported on CraftBukkit in offline mode");
+        }
     }
 
     /**
@@ -337,13 +341,6 @@ public class AuthMe extends JavaPlugin {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
             pluginManager.registerEvents(injector.getSingleton(PlayerListener18.class), this);
         } catch (ClassNotFoundException ignore) {
-        }
-
-        // Choose the right SingleSessionListener
-        if(Bukkit.getOnlineMode() || ServerUtils.isSpigot()) {
-            pluginManager.registerEvents(injector.getSingleton(AsyncSingleSessionListener.class), this);
-        } else {
-            pluginManager.registerEvents(injector.getSingleton(SyncSingleSessionListener.class), this);
         }
     }
 
