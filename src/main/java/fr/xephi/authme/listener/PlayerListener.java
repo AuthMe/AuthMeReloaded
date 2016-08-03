@@ -210,7 +210,7 @@ public class PlayerListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();
-        if (validationService.isUnrestricted(player.getName())) {
+        if (validationService.isUnrestricted(name)) {
             return;
         } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
