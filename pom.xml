@@ -328,8 +328,8 @@
 
         <!-- Vault Repo -->
         <repository>
-            <id>theyeticave-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+            <id>vault-repo</id>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
 
         <!-- XAuth Repo -->
