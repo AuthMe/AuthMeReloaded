@@ -26,7 +26,7 @@ public final class Utils {
         // so we can have uuid support.
         try {
             return player.getUniqueId().toString();
-        } catch (Exception ignore) {
+        } catch (NoSuchMethodError ignore) {
             return player.getName();
         }
     }

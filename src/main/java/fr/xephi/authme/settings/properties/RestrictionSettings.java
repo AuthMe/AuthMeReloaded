@@ -50,11 +50,11 @@ public class RestrictionSettings implements SettingsClass {
         newProperty("settings.restrictions.ForceSingleSession", true);
 
     @Comment({
-        "If enabled, every player will be teleported to the world spawnpoint",
-        "after successful authentication.",
+        "If enabled, every player that spawn in one of the world listed in \"ForceSpawnLocOnJoin.worlds\"",
+        "will be teleported to the spawnpoint after successful authentication.",
         "The quit location of the player will be overwritten.",
         "This is different from \"teleportUnAuthedToSpawn\" that teleport player",
-        "back to his quit location after the authentication."})
+        "to the spawnpoint on join."})
     public static final Property<Boolean> FORCE_SPAWN_LOCATION_AFTER_LOGIN =
         newProperty("settings.restrictions.ForceSpawnLocOnJoin.enabled", false);
 
