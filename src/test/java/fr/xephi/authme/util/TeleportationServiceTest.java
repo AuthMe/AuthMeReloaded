@@ -23,7 +23,6 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.TestHelper.runSyncDelayedTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -94,7 +93,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportNewPlayerToFirstSpawn(player);
-        runSyncDelayedTask(bukkitService);
 
         // then
         verify(player).teleport(firstSpawn);
@@ -114,7 +112,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnJoin(player);
-        runSyncDelayedTask(bukkitService);
 
         // then
         verify(player).teleport(spawn);
@@ -175,31 +172,6 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerDueToForcedWorld() {
-        // given
-        Player player = mock(Player.class);
-        given(player.isOnline()).willReturn(true);
-
-        World playerWorld = mock(World.class);
-        given(playerWorld.getName()).willReturn("OtherForced");
-        given(player.getWorld()).willReturn(playerWorld);
-        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(true);
-
-        Location spawn = mockLocation();
-        given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
-
-        // when
-        teleportationService.teleportOnJoin(player);
-        runSyncDelayedTask(bukkitService);
-
-        // then
-        verify(player).teleport(spawn);
-        verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
-        verify(spawnLoader).getSpawnLocation(player);
-    }
-
-    @Test
     public void shouldNotTeleportPlayerForRemovedLocationInEvent() {
         // given
         final Player player = mock(Player.class);
@@ -218,7 +190,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnJoin(player);
-        runSyncDelayedTask(bukkitService);
 
         // then
         verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
@@ -244,7 +215,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnJoin(player);
-        runSyncDelayedTask(bukkitService);
 
         // then
         verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
@@ -285,7 +255,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
 
         // then
         verify(player).teleport(spawn);
@@ -335,7 +304,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
 
         // then
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
@@ -364,7 +332,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
 
         // then
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
@@ -392,7 +359,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
 
         // then
         verify(player).teleport(location);
@@ -417,7 +383,6 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
 
         // then
         verify(player).teleport(location);

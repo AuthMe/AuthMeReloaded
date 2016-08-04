@@ -65,14 +65,12 @@ public class TeleportationService implements Reloadable {
      * as fast as possible (cf. <a href="https://github.com/Xephi/AuthMeReloaded/issues/682">AuthMe #682</a>).
      *
      * @param player the player to process
-     * @see <a href="https://bukkit.atlassian.net/browse/BUKKIT-3521">BUKKIT-3521: Player.hasPlayedBefore() always false</a>
+     * @see <a href="https://bukkit.atlassian.net/browse/BUKKIT-3521">BUKKIT-3521: Player.hasPlayedBefore()
+     * always false</a>
      */
     public void teleportOnJoin(final Player player) {
-        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-            return;
-        }
-
-        if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
+        if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
+            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
     }

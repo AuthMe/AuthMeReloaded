@@ -80,7 +80,7 @@ public class UtilsTest {
     public void shouldFallbackToName() {
         // given
         Player player = mock(Player.class);
-        doThrow(RuntimeException.class).when(player).getUniqueId();
+        doThrow(NoSuchMethodError.class).when(player).getUniqueId();
         String name = "Bobby12";
         given(player.getName()).willReturn(name);
 
