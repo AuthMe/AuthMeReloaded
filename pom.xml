@@ -135,9 +135,6 @@
         <!-- Bukkit -->
         <profile>
             <id>bukkit</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>org.bukkit</groupId>
