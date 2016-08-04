@@ -225,8 +225,7 @@ public class ListenerServiceTest {
     }
 
     /**
-     * Test implementation of {@link PlayerEvent} (necessary because
-     * {@link PlayerEvent#getPlayer()} is declared final).
+     * Test implementation of {@link PlayerEvent}.
      */
     private static final class TestPlayerEvent extends PlayerEvent {
         public TestPlayerEvent(Player player) {

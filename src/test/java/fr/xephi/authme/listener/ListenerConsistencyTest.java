@@ -53,7 +53,7 @@ public final class ListenerConsistencyTest {
     }
 
     @Test
-    public void shouldNotHaveMultipleHandlersForSameEvent() {
+    public void shouldNotHaveMultipleMethodsWithSameName() {
         Set<String> events = new HashSet<>();
         for (Class<?> listener : LISTENERS) {
             for (Method method : listener.getDeclaredMethods()) {

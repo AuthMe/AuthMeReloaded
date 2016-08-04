@@ -23,6 +23,18 @@ public final class ListenerTestUtils {
     private ListenerTestUtils() {
     }
 
+    /**
+     * Tests a simple event handler that checks with the {@link ListenerService}
+     * if the event should be canceled or not. This method tests that the event is
+     * canceled when the service says so and the other way around. Do not use this
+     * method if the handler method has additional behavior.
+     *
+     *
+     * @param listener the listener to test
+     * @param listenerService the listener service mock
+     * @param clazz the event class to test the handler method for
+     * @param <T> the event type
+     */
     public static <T extends Event & Cancellable>
         void checkEventIsCanceledForUnauthed(Listener listener, ListenerService listenerService, Class<T> clazz) {
         Method handlerMethod = findMethod(listener, clazz);
@@ -38,6 +50,14 @@ public final class ListenerTestUtils {
         verifyZeroInteractions(event);
     }
 
+    /**
+     * Mocks, based on the given event, the correct method in {@link ListenerService} to return
+     * the provided {@code result}.
+     *
+     * @param result the result the service should return
+     * @param listenerService the service to mock
+     * @param event the event
+     */
     private static void mockShouldCancel(boolean result, ListenerService listenerService, Event event) {
         if (event instanceof PlayerEvent) {
             given(listenerService.shouldCancelEvent((PlayerEvent) event)).willReturn(result);
@@ -48,7 +68,15 @@ public final class ListenerTestUtils {
         }
     }
 
-    private static <T> Method findMethod(Listener listener, Class<T> paramType) {
+    /**
+     * Returns the method in the listener that takes the given event type as parameter.
+     *
+     * @param listener the listener to scan
+     * @param paramType the event type
+     * @return the mapped method
+     * @throws IllegalStateException if there is not exactly one method with the given event type as parameter
+     */
+    private static Method findMethod(Listener listener, Class<?> paramType) {
         Method matchingMethod = null;
         for (Method method : listener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventHandler.class)) {
