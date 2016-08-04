@@ -91,6 +91,81 @@
                 <project.skipExtendedHashTests>true</project.skipExtendedHashTests>
             </properties>
         </profile>
+        <!-- Spigot, default -->
+        <profile>
+            <id>spigot</id>
+            <dependencies>
+		        <dependency>
+		            <groupId>org.spigotmc</groupId>
+		            <artifactId>spigot-api</artifactId>
+		            <version>${bukkit.version}</version>
+		            <scope>provided</scope>
+		            <exclusions>
+		                <exclusion>
+		                    <artifactId>junit</artifactId>
+		                    <groupId>junit</groupId>
+		                </exclusion>
+		                <exclusion>
+		                    <artifactId>json-simple</artifactId>
+		                    <groupId>com.googlecode.json-simple</groupId>
+		                </exclusion>
+		                <exclusion>
+		                    <artifactId>persistence-api</artifactId>
+		                    <groupId>javax.persistence</groupId>
+		                </exclusion>
+		                <exclusion>
+		                    <artifactId>guava</artifactId>
+		                    <groupId>com.google.guava</groupId>
+		                </exclusion>
+		                <exclusion>
+		                    <artifactId>bungeecord-chat</artifactId>
+		                    <groupId>net.md-5</groupId>
+		                </exclusion>
+		                <exclusion>
+		                    <artifactId>gson</artifactId>
+		                    <groupId>com.google.code.gson</groupId>
+		                </exclusion>
+		            </exclusions>
+		        </dependency>
+            </dependencies>
+        </profile>
+        <!-- Bukkit -->
+        <profile>
+            <id>bukkit</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                    <version>${bukkit.version}</version>
+                    <scope>provided</scope>
+                    <exclusions>
+                        <exclusion>
+                            <artifactId>junit</artifactId>
+                            <groupId>junit</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>json-simple</artifactId>
+                            <groupId>com.googlecode.json-simple</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>persistence-api</artifactId>
+                            <groupId>javax.persistence</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>guava</artifactId>
+                            <groupId>com.google.guava</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>gson</artifactId>
+                            <groupId>com.google.code.gson</groupId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
     <build>
@@ -438,38 +513,7 @@
         </dependency>
 
         <!-- Spigot API, http://www.spigotmc.org/ or http://bukkit.org/ -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>${bukkit.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>json-simple</artifactId>
-                    <groupId>com.googlecode.json-simple</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>persistence-api</artifactId>
-                    <groupId>javax.persistence</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-                <exclusion>
-                	<artifactId>bungeecord-chat</artifactId>
-                	<groupId>net.md-5</groupId>
-                </exclusion>
-                <exclusion>
-                	<artifactId>gson</artifactId>
-                	<groupId>com.google.code.gson</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!-- Moved in profiles! -->
 
         <!-- ProtocolLib, http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
         <dependency>
