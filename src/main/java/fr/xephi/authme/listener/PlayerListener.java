@@ -193,7 +193,7 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         teleportationService.teleportNewPlayerToFirstSpawn(player);
@@ -206,7 +206,7 @@ public class PlayerListener implements Listener {
     // event caused by "logged in from another location". The nicer way, but only for Spigot, would be
     // to check in the AsyncPlayerPreLoginEvent. To support all servers, we use the less nice way.
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();

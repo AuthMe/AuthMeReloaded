@@ -158,10 +158,15 @@ public class TeleportationService implements Reloadable {
      * @param event  the event to emit and according to which to teleport
      */
     private void performTeleportation(final Player player, final AbstractTeleportEvent event) {
-        bukkitService.callEvent(event);
-        if (player.isOnline() && isEventValid(event)) {
-            player.teleport(event.getTo());
-        }
+        bukkitService.scheduleSyncDelayedTask(new Runnable() {
+            @Override
+            public void run() {
+                bukkitService.callEvent(event);
+                if (player.isOnline() && isEventValid(event)) {
+                    player.teleport(event.getTo());
+                }
+            }
+        });
     }
 
     private static boolean isEventValid(AbstractTeleportEvent event) {
