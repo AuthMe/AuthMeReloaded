@@ -72,7 +72,7 @@ public class TeleportationService implements Reloadable {
             return;
         }
 
-        if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN) || mustForceSpawnAfterLogin(player.getWorld().getName())) {
+        if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
     }
@@ -160,15 +160,10 @@ public class TeleportationService implements Reloadable {
      * @param event  the event to emit and according to which to teleport
      */
     private void performTeleportation(final Player player, final AbstractTeleportEvent event) {
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                bukkitService.callEvent(event);
-                if (player.isOnline() && isEventValid(event)) {
-                    player.teleport(event.getTo());
-                }
-            }
-        });
+        bukkitService.callEvent(event);
+        if (player.isOnline() && isEventValid(event)) {
+            player.teleport(event.getTo());
+        }
     }
 
     private static boolean isEventValid(AbstractTeleportEvent event) {
