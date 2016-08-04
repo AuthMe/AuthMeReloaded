@@ -163,28 +163,34 @@ permissions:
         default: true
     authme.player.email.add:
         description: Command permission to add an email address.
-        default: false
+        default: true
     authme.player.email.change:
         description: Command permission to change the email address.
-        default: false
+        default: true
     authme.player.email.recover:
-        description: Command permission to recover an account using it's email address.
-        default: false
+        description: Command permission to recover an account using its email address.
+        default: true
     authme.player.captcha:
         description: Command permission to use captcha.
-        default: false
+        default: true
     authme.player.canbeforced:
         description: Permission for users a login can be forced to.
-        default: false
+        default: true
+    authme.player.seeownaccounts:
+        description: Permission to use to see own other accounts.
+        default: true
     authme.vip:
         description: Allow vip slot when the server is full
-        default: false
+        default: op
     authme.bypassantibot:
         description: Bypass the AntiBot check
-        default: false
+        default: op
     authme.allowmultipleaccounts:
         description: Allow more accounts for same ip
-        default: false
+        default: op
     authme.bypassforcesurvival:
         description: Bypass all ForceSurvival features
+        default: op
+    authme.bypasspurge:
+        description: Permission to bypass the purging process
         default: false
