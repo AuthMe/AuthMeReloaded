@@ -193,9 +193,10 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
         management.performJoin(player);
     }
 
@@ -205,7 +206,7 @@ public class PlayerListener implements Listener {
     // event caused by "logged in from another location". The nicer way, but only for Spigot, would be
     // to check in the AsyncPlayerPreLoginEvent. To support all servers, we use the less nice way.
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();
@@ -238,7 +239,6 @@ public class PlayerListener implements Listener {
         }
 
         antiBot.handlePlayerJoin(player);
-        teleportationService.teleportNewPlayerToFirstSpawn(player);
         teleportationService.teleportOnJoin(player);
     }
 
@@ -261,12 +261,10 @@ public class PlayerListener implements Listener {
     public void onPlayerKick(PlayerKickEvent event) {
         // Note #831: Especially for offline CraftBukkit, we need to catch players being kicked because of
         // "logged in from another location" and to cancel their kick
-        if(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
-            String reason = event.getReason();
-            if (reason.contains("You logged in from another location")) {
-                event.setCancelled(true);
-                return;
-            }
+        if (settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
+            && event.getReason().contains("You logged in from another location")) {
+            event.setCancelled(true);
+            return;
         }
 
         final Player player = event.getPlayer();
