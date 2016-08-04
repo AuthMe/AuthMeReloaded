@@ -94,6 +94,9 @@
         <!-- Spigot, default -->
         <profile>
             <id>spigot</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <dependencies>
 		        <dependency>
 		            <groupId>org.spigotmc</groupId>
