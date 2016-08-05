@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.MemorySection;
@@ -126,7 +127,7 @@ public class PermissionConsistencyTest {
 
         Map<String, PermissionDefinition> permissions = new HashMap<>();
         addChildren(permsList, permissions);
-        return permissions;
+        return ImmutableMap.copyOf(permissions);
     }
 
     /**
@@ -161,7 +162,8 @@ public class PermissionConsistencyTest {
      */
     private static void validateChildren(PermissionDefinition definition, List<String> errorList) {
         // Replace ending .* in path if present, e.g. authme.player.* -> authme.player
-        String root = definition.node.replaceAll("\\.\\*$", "");
+        // Add ending '.' since we want all children to be children, i.e. authme.playertest would not be OK
+        String root = definition.node.replaceAll("\\.\\*$", "") + ".";
         List<String> badChildren = new ArrayList<>();
         for (String child : definition.children) {
             if (!child.startsWith(root)) {
@@ -245,7 +247,7 @@ public class PermissionConsistencyTest {
                     children.add(parentSection.getCurrentPath() + "." + entry.getKey());
                 } else {
                     throw new IllegalStateException("Found child entry at '" + entry.getKey() + "' with value "
-                        + "of unexpected type: '" + entry.getValue() + "'");
+                        + "of unexpected type: '" + parentSection.getCurrentPath() + "." + entry.getValue() + "'");
                 }
             }
         }
