@@ -9,6 +9,7 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
@@ -90,9 +91,7 @@ public class OnJoinVerifierTest {
         assertThat(result, equalTo(false));
         verify(event).getResult();
         verifyNoMoreInteractions(event);
-        verifyZeroInteractions(bukkitService);
-        verifyZeroInteractions(dataSource);
-        verifyZeroInteractions(permissionsManager);
+        verifyZeroInteractions(bukkitService, dataSource, permissionsManager);
     }
 
     @Test
@@ -112,8 +111,7 @@ public class OnJoinVerifierTest {
         assertThat(result, equalTo(true));
         assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.KICK_FULL));
         assertThat(event.getKickMessage(), equalTo(serverFullMessage));
-        verifyZeroInteractions(bukkitService);
-        verifyZeroInteractions(dataSource);
+        verifyZeroInteractions(bukkitService, dataSource);
     }
 
     @Test
@@ -421,6 +419,68 @@ public class OnJoinVerifierTest {
             assertThat(e, exceptionWithData(MessageKey.KICK_ANTIBOT));
             verify(antiBot).addPlayerKick(name);
         }
+    }
+
+    /**
+     * Tests various scenarios in which the country check should not take place.
+     */
+    @Test
+    public void shouldNotCheckCountry() throws FailedVerificationException {
+        // protection setting disabled
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(false);
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
+        onJoinVerifier.checkPlayerCountry(false, "127.0.0.1");
+        verifyZeroInteractions(validationService);
+
+        // protection for registered players disabled
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
+        onJoinVerifier.checkPlayerCountry(true, "127.0.0.1");
+        verifyZeroInteractions(validationService);
+    }
+
+    @Test
+    public void shouldCheckAndAcceptUnregisteredPlayerCountry() throws FailedVerificationException {
+        // given
+        String ip = "192.168.0.1";
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
+        given(validationService.isCountryAdmitted(ip)).willReturn(true);
+
+        // when
+        onJoinVerifier.checkPlayerCountry(false, ip);
+
+        // then
+        verify(validationService).isCountryAdmitted(ip);
+    }
+
+    @Test
+    public void shouldCheckAndAcceptRegisteredPlayerCountry() throws FailedVerificationException {
+        // given
+        String ip = "192.168.10.24";
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
+        given(validationService.isCountryAdmitted(ip)).willReturn(true);
+
+        // when
+        onJoinVerifier.checkPlayerCountry(true, ip);
+
+        // then
+        verify(validationService).isCountryAdmitted(ip);
+    }
+
+    @Test
+    public void shouldThrowForBannedCountry() throws FailedVerificationException {
+        // given
+        String ip = "192.168.40.0";
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
+        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
+        given(validationService.isCountryAdmitted(ip)).willReturn(false);
+
+        // expect
+        expectValidationExceptionWith(MessageKey.COUNTRY_BANNED_ERROR);
+
+        // when
+        onJoinVerifier.checkPlayerCountry(false, ip);
     }
 
     private static Player newPlayerWithName(String name) {

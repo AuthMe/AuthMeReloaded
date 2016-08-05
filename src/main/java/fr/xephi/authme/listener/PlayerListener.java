@@ -231,7 +231,7 @@ public class PlayerListener implements Listener {
             onJoinVerifier.checkAntibot(lowerName, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkNameCasing(player, auth);
-            onJoinVerifier.checkPlayerCountry(isAuthAvailable, event);
+            onJoinVerifier.checkPlayerCountry(isAuthAvailable, event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
             event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
