@@ -175,7 +175,7 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0;");
             } else {
-                migrateLastLoginColumnToBigInt(con, md);
+                migrateLastLoginColumn(con, md);
             }
 
             if (isColumnMissing(md, col.LASTLOC_X)) {
@@ -871,12 +871,14 @@ public class MySQL implements DataSource {
     }
 
     /**
-     * Check if the lastlogin column is of type timestamp and, if so, revert it to the bigint format.
+     * Checks if the last login column has a type that needs to be migrated.
      *
-     * @param con Connection to the database
-     * @param metaData metaData meta data of the database
+     * @param con connection to the database
+     * @param metaData lastlogin column meta data
+     * @throws SQLException
      */
-    private void migrateLastLoginColumnToBigInt(Connection con, DatabaseMetaData metaData) throws SQLException {
+    @VisibleForTesting
+    protected void migrateLastLoginColumn(Connection con, DatabaseMetaData metaData) throws SQLException {
         final int columnType;
         try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
             if (!rs.next()) {
@@ -887,32 +889,65 @@ public class MySQL implements DataSource {
         }
 
         if (columnType == Types.TIMESTAMP) {
-            ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
-            final String lastLoginOld = col.LAST_LOGIN + "_old";
-
-            // Rename lastlogin to lastlogin_old
-            String sql = String.format("ALTER TABLE %s CHANGE COLUMN %s %s BIGINT",
-                tableName, col.LAST_LOGIN, lastLoginOld);
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.execute();
-
-            // Create lastlogin column
-            sql = String.format("ALTER TABLE %s ADD COLUMN %s "
-                    + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
-                tableName, col.LAST_LOGIN, col.IP);
-            con.prepareStatement(sql).execute();
-
-            // Set values of lastlogin based on lastlogin_old
-            sql = String.format("UPDATE %s SET %s = UNIX_TIMESTAMP(%s)",
-                tableName, col.LAST_LOGIN, lastLoginOld);
-            con.prepareStatement(sql).execute();
-
-            // Drop lastlogin_old
-            sql = String.format("ALTER TABLE %s DROP COLUMN %s",
-                tableName, lastLoginOld);
-            con.prepareStatement(sql).execute();
-            ConsoleLogger.info("Finished migration of lastlogin (timestamp to bigint)");
+            migrateLastLoginColumnFromTimestamp(con);
+        } else if (columnType == Types.INTEGER) {
+            migrateLastLoginColumnFromInt(con);
         }
+    }
+
+    /**
+     * Performs conversion of lastlogin column from timestamp type to bigint.
+     *
+     * @param con connection to the database
+     */
+    private void migrateLastLoginColumnFromTimestamp(Connection con) throws SQLException {
+        ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
+        final String lastLoginOld = col.LAST_LOGIN + "_old";
+
+        // Rename lastlogin to lastlogin_old
+        String sql = String.format("ALTER TABLE %s CHANGE COLUMN %s %s BIGINT",
+            tableName, col.LAST_LOGIN, lastLoginOld);
+        PreparedStatement pst = con.prepareStatement(sql);
+        pst.execute();
+
+        // Create lastlogin column
+        sql = String.format("ALTER TABLE %s ADD COLUMN %s "
+                + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
+            tableName, col.LAST_LOGIN, col.IP);
+        con.prepareStatement(sql).execute();
+
+        // Set values of lastlogin based on lastlogin_old
+        sql = String.format("UPDATE %s SET %s = UNIX_TIMESTAMP(%s) * 1000",
+            tableName, col.LAST_LOGIN, lastLoginOld);
+        con.prepareStatement(sql).execute();
+
+        // Drop lastlogin_old
+        sql = String.format("ALTER TABLE %s DROP COLUMN %s",
+            tableName, lastLoginOld);
+        con.prepareStatement(sql).execute();
+        ConsoleLogger.info("Finished migration of lastlogin (timestamp to bigint)");
+    }
+
+    /**
+     * Performs conversion of lastlogin column from int to bigint.
+     *
+     * @param con connection to the database
+     */
+    private void migrateLastLoginColumnFromInt(Connection con) throws SQLException {
+        // Change from int to bigint
+        ConsoleLogger.info("Migrating lastlogin column from int to bigint");
+        String sql = String.format("ALTER TABLE %s MODIFY %s BIGINT;", tableName, col.LAST_LOGIN);
+        con.prepareStatement(sql).execute();
+
+        // Migrate timestamps in seconds format to milliseconds format if they are plausible
+        int rangeStart = 1262304000; // timestamp for 2010-01-01
+        int rangeEnd = 1514678400;   // timestamp for 2017-12-31
+        sql = String.format("UPDATE %s SET %s = %s * 1000 WHERE %s > %d AND %s < %d;",
+            tableName, col.LAST_LOGIN, col.LAST_LOGIN, col.LAST_LOGIN, rangeStart, col.LAST_LOGIN, rangeEnd);
+        int changedRows = con.prepareStatement(sql).executeUpdate();
+
+        ConsoleLogger.warning("You may have entries with invalid timestamps. Please check your data "
+            + "before purging. " + changedRows + " rows were migrated from seconds to milliseconds.");
     }
 
     private static void logSqlException(SQLException e) {
