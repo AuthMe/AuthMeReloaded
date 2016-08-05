@@ -12,7 +12,9 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.ValidationService;
+import org.bukkit.Location;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -24,6 +26,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.junit.Ignore;
@@ -45,6 +48,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.spy;
@@ -289,6 +293,103 @@ public class PlayerListenerTest {
         assertThat(event.getRecipients(), contains(recipients.get(1), recipients.get(0)));
     }
 
+    @Test
+    public void shouldAllowUnlimitedMovement() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.ALLOWED_MOVEMENT_RADIUS)).willReturn(0);
+        Player player = mock(Player.class);
+        Location location = mock(Location.class);
+        PlayerMoveEvent event = spy(new PlayerMoveEvent(player, location, location));
+
+        // when
+        listener.onPlayerMove(event);
+
+        // then
+        verifyZeroInteractions(event);
+    }
+
+    @Test
+    public void shouldAllowFalling() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        Player player = mock(Player.class);
+        Location from = new Location(null, 100, 90, 200);
+        Location to = new Location(null, 100, 88, 200);
+        PlayerMoveEvent event = spy(new PlayerMoveEvent(player, from, to));
+
+        // when
+        listener.onPlayerMove(event);
+
+        // then
+        verifyNoModifyingCalls(event);
+    }
+
+    @Test
+    public void shouldAllowMovementForAuthedPlayer() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        Player player = mock(Player.class);
+        Location from = new Location(null, 100, 90, 200);
+        Location to = new Location(null, 99, 90, 200);
+        PlayerMoveEvent event = spy(new PlayerMoveEvent(player, from, to));
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+
+        // when
+        listener.onPlayerMove(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(player);
+        verifyNoModifyingCalls(event);
+    }
+
+    @Test
+    public void shouldCancelEventForDisabledUnauthedMovement() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        Player player = mock(Player.class);
+        World world = mock(World.class);
+        Location from = new Location(world, 200, 70, 200);
+        Location to = new Location(world, 199, 70, 199);
+        PlayerMoveEvent event = spy(new PlayerMoveEvent(player, from, to));
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.REMOVE_SPEED)).willReturn(false);
+
+        // when
+        listener.onPlayerMove(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(player);
+        verify(event).setTo(from);
+    }
+
+    @Test
+    public void shouldTeleportPlayerToSpawn() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.ALLOWED_MOVEMENT_RADIUS)).willReturn(20);
+        World playerWorld = mock(World.class);
+        Player player = mock(Player.class);
+        given(player.getWorld()).willReturn(playerWorld);
+        Location from = new Location(null, 200, 70, 200);
+        Location to = new Location(null, 199, 70, 199);
+        PlayerMoveEvent event = spy(new PlayerMoveEvent(player, from, to));
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
+        World world = mock(World.class);
+        Location spawn = new Location(world, 0, 90, 0);
+        given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
+
+        // when
+        listener.onPlayerMove(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(player);
+        verify(player).teleport(spawn);
+        verify(spawnLoader).getSpawnLocation(player);
+        verifyNoModifyingCalls(event);
+    }
+
     private static Player mockPlayerWithName(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
@@ -320,6 +421,12 @@ public class PlayerListenerTest {
         Player player = mock(Player.class);
         List<Player> recipients = Arrays.asList(mock(Player.class), mock(Player.class), mock(Player.class));
         return spy(new AsyncPlayerChatEvent(true, player, "Test message", new HashSet<>(recipients)));
+    }
+
+    private static void verifyNoModifyingCalls(PlayerMoveEvent event) {
+        verify(event, atLeast(0)).getFrom();
+        verify(event, atLeast(0)).getTo();
+        verifyNoMoreInteractions(event);
     }
 
 }
