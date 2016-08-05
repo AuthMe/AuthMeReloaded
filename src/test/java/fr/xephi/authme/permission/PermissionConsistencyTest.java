@@ -74,14 +74,17 @@ public class PermissionConsistencyTest {
         List<String> errors = new ArrayList<>();
 
         // when
-        for (String key : pluginYmlPermissions.keySet()) {
-            if (!PLUGIN_YML_PERMISSIONS_WILDCARDS.contains(key)) {
-                if (!doesPermissionExist(key, permissionNodes)) {
-                    errors.add("Permission '" + key + "' in plugin.yml does not exist in the codebase");
+        for (PermissionDefinition def : pluginYmlPermissions.values()) {
+            if (PLUGIN_YML_PERMISSIONS_WILDCARDS.contains(def.node)) {
+                validateChildren(def, errors);
+            } else {
+                if (!doesPermissionExist(def.node, permissionNodes)) {
+                    errors.add("Permission '" + def.node + "' in plugin.yml does not exist in the codebase");
+                } else if (!def.children.isEmpty()) {
+                    errors.add("Permission '" + def.node + "' has children in plugin.yml "
+                        + "but is not a wildcard permission");
                 }
-                // TODO #337: Add else if checking that non-wildcard permissions do not have children
             }
-            // TODO #337: Add check that children of wildcard permissions make sense
         }
 
         // then
@@ -127,7 +130,7 @@ public class PermissionConsistencyTest {
     }
 
     /**
-     * Recursively visits every MemorySection and creates {@link PermissionDefinition} where applicable.
+     * Recursively visits every MemorySection and creates a {@link PermissionDefinition} when applicable.
      *
      * @param node the node to visit
      * @param collection the collection to add constructed permission definitions to
@@ -150,36 +153,116 @@ public class PermissionConsistencyTest {
         }
     }
 
-    // TODO #337: Save children to PermissionDefinition objects
+    /**
+     * Validates that the given permission definition's children, if present, are children of the wildcard permission.
+     *
+     * @param definition the permission definition to process
+     * @param errorList list of errors to add an entry to in case of unsuccessful check
+     */
+    private static void validateChildren(PermissionDefinition definition, List<String> errorList) {
+        // Replace ending .* in path if present, e.g. authme.player.* -> authme.player
+        String root = definition.node.replaceAll("\\.\\*$", "");
+        List<String> badChildren = new ArrayList<>();
+        for (String child : definition.children) {
+            if (!child.startsWith(root)) {
+                badChildren.add(child);
+            }
+        }
+        if (!badChildren.isEmpty()) {
+            errorList.add("Permission '" + definition.node + "' has children that are not logically below it: "
+                + StringUtils.join(", ", badChildren));
+        }
+    }
+
+    /**
+     * Represents a permission entry in plugin.yml.
+     */
     private static final class PermissionDefinition {
 
         private final String node;
+        private final List<String> children;
         private final DefaultPermission expectedDefault;
 
         PermissionDefinition(MemorySection memorySection) {
             this.node = removePermissionsPrefix(memorySection.getCurrentPath());
             this.expectedDefault = mapToDefaultPermission(memorySection.getString("default"));
+
+            if (memorySection.get("children") instanceof MemorySection) {
+                List<String> children = new ArrayList<>();
+                collectChildren((MemorySection) memorySection.get("children"), children);
+                this.children = removeStart(memorySection.getCurrentPath() + ".children.", children);
+            } else {
+                this.children = Collections.emptyList();
+            }
         }
 
-        private static DefaultPermission mapToDefaultPermission(String defaultDescription) {
-            if ("true".equals(defaultDescription)) {
+        /**
+         * Returns the {@link DefaultPermission} corresponding to the {@code default} value in plugin.yml.
+         *
+         * @param defaultValue the value of the default
+         * @return the according DefaultPermission object, or null
+         */
+        private static DefaultPermission mapToDefaultPermission(String defaultValue) {
+            if ("true".equals(defaultValue)) {
                 return DefaultPermission.ALLOWED;
-            } else if ("op".equals(defaultDescription)) {
+            } else if ("op".equals(defaultValue)) {
                 return DefaultPermission.OP_ONLY;
-            } else if ("false".equals(defaultDescription)) {
+            } else if ("false".equals(defaultValue)) {
                 return DefaultPermission.NOT_ALLOWED;
-            } else if (defaultDescription == null) {
-                // Return null: comparison with PermissionNode will always fail
+            } else if (defaultValue == null) {
+                // Return null: comparison with the default of the PermissionNode will fail
+                // -> force to set default in plugin.yml
                 return null;
             }
-            throw new IllegalStateException("Unknown default description '" + defaultDescription + "'");
+            throw new IllegalStateException("Unknown default description '" + defaultValue + "'");
         }
 
+        /**
+         * Removes the starting "permission." node in the path.
+         *
+         * @param path the path to truncate
+         * @return the shortened path
+         */
         private static String removePermissionsPrefix(String path) {
             if (path.startsWith("permissions.")) {
                 return path.substring("permissions.".length());
             }
             throw new IllegalStateException("Unexpected path '" + path + "': does not begin with 'permissions.'");
+        }
+
+        /**
+         * Recursively walks through the given memory section to gather all keys.
+         * Assumes that the ending value is a boolean and throws an exception otherwise.
+         *
+         * @param parentSection the memory section to traverse
+         * @param children list to add all results to
+         */
+        private static void collectChildren(MemorySection parentSection, List<String> children) {
+            for (Map.Entry<String, Object> entry : parentSection.getValues(false).entrySet()) {
+                if (entry.getValue() instanceof MemorySection) {
+                    collectChildren((MemorySection) entry.getValue(), children);
+                } else if (entry.getValue() instanceof Boolean) {
+                    children.add(parentSection.getCurrentPath() + "." + entry.getKey());
+                } else {
+                    throw new IllegalStateException("Found child entry at '" + entry.getKey() + "' with value "
+                        + "of unexpected type: '" + entry.getValue() + "'");
+                }
+            }
+        }
+
+        /**
+         * Removes the given start from all entries in the list.
+         *
+         * @param start the start to remove
+         * @param list the entries to modify
+         * @return list with shortened entries
+         */
+        private static List<String> removeStart(String start, List<String> list) {
+            List<String> result = new ArrayList<>(list.size());
+            for (String entry : list) {
+                result.add(entry.substring(start.length()));
+            }
+            return result;
         }
     }
 
