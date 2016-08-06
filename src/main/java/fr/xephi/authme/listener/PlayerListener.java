@@ -225,7 +225,7 @@ public class PlayerListener implements Listener {
             
             // Get the auth later as this may cause the single session check to fail
             // Slow stuff
-            final PlayerAuth auth = dataSource.getAuth(player.getName());
+            final PlayerAuth auth = dataSource.getAuth(name);
             final boolean isAuthAvailable = (auth != null);
             final String lowerName = name.toLowerCase();
             onJoinVerifier.checkAntibot(lowerName, isAuthAvailable);

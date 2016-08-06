@@ -82,15 +82,14 @@ public class RakamakConverter implements Converter {
                     .realName(playerName)
                     .ip(ip)
                     .password(psw)
-                    .lastLogin(System.currentTimeMillis())
+                    .lastLogin(0)
                     .build();
                 database.saveAuth(auth);
             }
             ConsoleLogger.info("Rakamak database has been imported correctly");
             sender.sendMessage("Rakamak database has been imported correctly");
         } catch (IOException ex) {
-            ConsoleLogger.warning(ex.getMessage());
-            sender.sendMessage("Can't open the rakamak database file! Does it exist?");
+            ConsoleLogger.logException("Can't open the rakamak database file! Does it exist?", ex);
         }
     }
 }

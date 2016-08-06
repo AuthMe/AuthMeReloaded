@@ -49,9 +49,7 @@ public class ServerListener implements Listener {
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.unloadEssentialsSpawn();
             ConsoleLogger.info("EssentialsSpawn has been disabled: unhooking");
-        }
-
-        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+        } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
             protocolLibService.disable();
             ConsoleLogger.warning("ProtocolLib has been disabled, unhooking packet adapters!");
         }
@@ -77,9 +75,7 @@ public class ServerListener implements Listener {
             pluginHooks.tryHookToCombatPlus();
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.loadEssentialsSpawn();
-        }
-
-        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+        } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
             protocolLibService.setup();
         }
     }

@@ -877,8 +877,7 @@ public class MySQL implements DataSource {
      * @param metaData lastlogin column meta data
      * @throws SQLException
      */
-    @VisibleForTesting
-    protected void migrateLastLoginColumn(Connection con, DatabaseMetaData metaData) throws SQLException {
+    private void migrateLastLoginColumn(Connection con, DatabaseMetaData metaData) throws SQLException {
         final int columnType;
         try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
             if (!rs.next()) {

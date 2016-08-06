@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
@@ -9,6 +10,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.projectiles.ProjectileSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,7 +20,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static fr.xephi.authme.listener.ListenerTestUtils.checkEventIsCanceledForUnauthed;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -190,4 +195,56 @@ public class EntityListenerTest {
         verifyZeroInteractions(event);
     }
 
+    @Test
+    public void shouldAllowProjectileLaunchFromNonHuman() {
+        // given
+        Projectile projectile = mock(Projectile.class);
+        ProjectileSource source = mock(ProjectileSource.class);
+        given(projectile.getShooter()).willReturn(source);
+        ProjectileLaunchEvent event = mock(ProjectileLaunchEvent.class);
+        given(event.getEntity()).willReturn(projectile);
+
+        // when
+        listener.onProjectileLaunch(event);
+
+        // then
+        verifyZeroInteractions(listenerService);
+        verify(event, never()).setCancelled(anyBoolean());
+    }
+
+    @Test
+    public void shouldAllowProjectileLaunchFromAuthedHuman() {
+        // given
+        Projectile projectile = mock(Projectile.class);
+        Player player = mock(Player.class);
+        given(projectile.getShooter()).willReturn(player);
+        ProjectileLaunchEvent event = mock(ProjectileLaunchEvent.class);
+        given(event.getEntity()).willReturn(projectile);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+
+        // when
+        listener.onProjectileLaunch(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(player);
+        verify(event, never()).setCancelled(anyBoolean());
+    }
+
+    @Test
+    public void shouldRejectProjectileLaunchFromUnauthed() {
+        // given
+        Projectile projectile = mock(Projectile.class);
+        Player player = mock(Player.class);
+        given(projectile.getShooter()).willReturn(player);
+        ProjectileLaunchEvent event = mock(ProjectileLaunchEvent.class);
+        given(event.getEntity()).willReturn(projectile);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+
+        // when
+        listener.onProjectileLaunch(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(player);
+        verify(event).setCancelled(true);
+    }
 }
