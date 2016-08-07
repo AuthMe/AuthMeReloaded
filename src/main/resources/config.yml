@@ -255,9 +255,11 @@ settings:
     broadcastWelcomeMessage: false
     # Should we delay the join message and display it once the player has logged in?
     delayJoinMessage: false
+    # Should we remove the leave messages of unlogged users?
+    removeUnloggedLeaveMessage: false
     # Should we remove join messages altogether?
     removeJoinMessage: false
-    # Should we remove leave messages?
+    # Should we remove leave messages altogether?
     removeLeaveMessage: false
     # Do we need to add potion effect Blinding before login/register?
     applyBlindEffect: false

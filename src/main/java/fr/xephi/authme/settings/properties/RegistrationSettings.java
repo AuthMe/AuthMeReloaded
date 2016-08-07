@@ -84,7 +84,7 @@ public class RegistrationSettings implements SettingsClass {
     public static final Property<Boolean> DELAY_JOIN_MESSAGE =
         newProperty("settings.delayJoinMessage", false);
 
-    @Comment("Should we remove leave messages for unlogged users?")
+    @Comment("Should we remove the leave messages of unlogged users?")
     public static final Property<Boolean> REMOVE_UNLOGGED_LEAVE_MESSAGE =
         newProperty("settings.removeUnloggedLeaveMessage", false);
 
