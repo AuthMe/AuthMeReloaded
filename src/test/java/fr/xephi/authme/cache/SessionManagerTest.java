@@ -9,7 +9,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Map;
 
+import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.anEmptyMap;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -120,6 +122,43 @@ public class SessionManagerTest {
 
         // then
         assertThat(getSessionsMap(manager), anEmptyMap());
+    }
+
+    @Test
+    public void shouldPerformCleanup() {
+        // given
+        Settings settings = mockSettings(true, 1);
+        SessionManager manager = new SessionManager(settings);
+        Map<String, Long> sessions = getSessionsMap(manager);
+        sessions.put("somebody", System.currentTimeMillis() - 123L);
+        sessions.put("someone", System.currentTimeMillis() + 4040L);
+        sessions.put("anyone", System.currentTimeMillis() - 1000L);
+        sessions.put("everyone", System.currentTimeMillis() + 60000L);
+
+        // when
+        manager.performCleanup();
+
+        // then
+        assertThat(sessions, aMapWithSize(2));
+        assertThat(sessions.keySet(), containsInAnyOrder("someone", "everyone"));
+    }
+
+    @Test
+    public void shouldNotPerformCleanup() {
+        // given
+        Settings settings = mockSettings(false, 1);
+        SessionManager manager = new SessionManager(settings);
+        Map<String, Long> sessions = getSessionsMap(manager);
+        sessions.put("somebody", System.currentTimeMillis() - 123L);
+        sessions.put("someone", System.currentTimeMillis() + 4040L);
+        sessions.put("anyone", System.currentTimeMillis() - 1000L);
+        sessions.put("everyone", System.currentTimeMillis() + 60000L);
+
+        // when
+        manager.performCleanup();
+
+        // then
+        assertThat(sessions, aMapWithSize(4)); // map not changed -> no cleanup performed
     }
 
     @SuppressWarnings("unchecked")

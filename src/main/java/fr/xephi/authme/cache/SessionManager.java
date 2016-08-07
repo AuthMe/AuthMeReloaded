@@ -1,5 +1,6 @@
 package fr.xephi.authme.cache;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
@@ -74,11 +75,15 @@ public class SessionManager implements SettingsDependent, HasCleanup {
         // With this reload, the sessions feature has just been disabled, so clear all stored sessions
         if (oldEnabled && !enabled) {
             sessions.clear();
+            ConsoleLogger.fine("Sessions disabled: cleared all sessions");
         }
     }
 
     @Override
     public void performCleanup() {
+        if (!enabled) {
+            return;
+        }
         final long currentTime = System.currentTimeMillis();
         Iterator<Map.Entry<String, Long>> iterator = sessions.entrySet().iterator();
         while (iterator.hasNext()) {
