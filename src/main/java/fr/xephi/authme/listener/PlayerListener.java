@@ -248,6 +248,10 @@ public class PlayerListener implements Listener {
 
         if (settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)) {
             event.setQuitMessage(null);
+        } else if (settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)) {
+            if(listenerService.shouldCancelEvent(event)) {
+                event.setQuitMessage(null);
+            }
         }
 
         if (antiBot.wasPlayerKicked(player.getName())) {
