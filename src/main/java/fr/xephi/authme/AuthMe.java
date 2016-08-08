@@ -18,7 +18,7 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.initialization.MetricsStarter;
+import fr.xephi.authme.initialization.MetricsManager;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -85,8 +85,11 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
  */
 public class AuthMe extends JavaPlugin {
 
-    // Name of the plugin.
+    // Costants
     private static final String PLUGIN_NAME = "AuthMeReloaded";
+    private static final String LOG_FILENAME = "authme.log";
+    private static final int SQLITE_MAX_SIZE = 4000;
+    private final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
 
     // Default version and build number values;
     private static String pluginVersion = "N/D";
@@ -95,10 +98,6 @@ public class AuthMe extends JavaPlugin {
     /*
      * Private instances
      */
-
-    // Plugin instance
-    private static AuthMe plugin;
-
     private Management management;
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
@@ -129,16 +128,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Get the plugin's instance.
-     *
-     * @return AuthMe
-     */
-    @Deprecated
-    public static AuthMe getInstance() {
-        return plugin;
-    }
-
-    /**
      * Get the plugin's name.
      *
      * @return The plugin's name.
@@ -165,47 +154,37 @@ public class AuthMe extends JavaPlugin {
         return pluginBuildNumber;
     }
 
-    // Get version and build number of the plugin
-    private void loadPluginInfo() {
-        String versionRaw = this.getDescription().getVersion();
-        int index = versionRaw.lastIndexOf("-");
-        if (index != -1) {
-            pluginVersion = versionRaw.substring(0, index);
-            pluginBuildNumber = versionRaw.substring(index + 1);
-            if (pluginBuildNumber.startsWith("b")) {
-                pluginBuildNumber = pluginBuildNumber.substring(1);
-            }
-        }
-    }
-
     /**
      * Method called when the server enables the plugin.
      */
     @Override
     public void onEnable() {
         // Set the plugin instance and load plugin info from the plugin description.
-        plugin = this;
         loadPluginInfo();
 
         // Set the Logger instance and log file path
         ConsoleLogger.setLogger(getLogger());
-        ConsoleLogger.setLogFile(new File(getDataFolder(), "authme.log"));
+        ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
         settings = createSettings();
         if (settings == null) {
-            getLogger().warning("Could not load configuration. Aborting.");
-            getServer().shutdown();
+            ConsoleLogger.warning("Could not load the configuration file!"
+                    + "The server is going to shutdown NOW!");
             setEnabled(false);
+            getServer().shutdown();
             return;
         }
 
         // Apply settings to the logger
         ConsoleLogger.setLoggingOptions(settings);
 
+        // Set console filter
+        setupConsoleFilter();
+
         // Connect to the database and setup tables
         try {
-            setupDatabase(settings);
+            setupDatabase();
         } catch (Exception e) {
             ConsoleLogger.logException("Fatal error occurred during database connection! "
                 + "Authme initialization aborted!", e);
@@ -232,46 +211,53 @@ public class AuthMe extends JavaPlugin {
         instantiateServices(injector);
 
         // Set up Metrics
-        MetricsStarter.setupMetrics(this, settings);
-
-        // Set console filter
-        setupConsoleFilter();
+        MetricsManager.sendMetrics(this, settings);
 
         // Do a backup on start
         // TODO: maybe create a backup manager?
         new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.START);
 
-        // Reload support hook
-        reloadSupportHook();
-
         // Register event listeners
         registerEventListeners(injector);
+
         // Start Email recall task if needed
         scheduleRecallEmailTask();
 
         // Show settings warnings
         showSettingsWarnings();
 
+        // If server is using PermissionsBukkit, print a warning that some features may not be supported
+        if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
+            ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
+        }
+
         // Sponsor messages
         ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
         ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
 
         // Successful message
-        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
-
-        // If server is using PermissionsBukkit, print a warning that some features may not be supported
-        if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
-            ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
-        }
+        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n°" + getPluginBuildNumber() + " correctly enabled!");
 
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);
         purgeService.runAutoPurge();
 
         // Schedule clean up task
-        final int cleanupInterval = 5 * TICKS_PER_MINUTE;
         CleanupTask cleanupTask = injector.getSingleton(CleanupTask.class);
-        cleanupTask.runTaskTimerAsynchronously(this, cleanupInterval, cleanupInterval);
+        cleanupTask.runTaskTimerAsynchronously(this, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
+    }
+
+    // Get version and build number of the plugin
+    private void loadPluginInfo() {
+        String versionRaw = this.getDescription().getVersion();
+        int index = versionRaw.lastIndexOf("-");
+        if (index != -1) {
+            pluginVersion = versionRaw.substring(0, index);
+            pluginBuildNumber = versionRaw.substring(index + 1);
+            if (pluginBuildNumber.startsWith("b")) {
+                pluginBuildNumber = pluginBuildNumber.substring(1);
+            }
+        }
     }
 
     protected void instantiateServices(Injector injector) {
@@ -334,23 +320,6 @@ public class AuthMe extends JavaPlugin {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
             pluginManager.registerEvents(injector.getSingleton(PlayerListener18.class), this);
         } catch (ClassNotFoundException ignore) {
-        }
-    }
-
-    private void reloadSupportHook() {
-        if (database != null) {
-            int playersOnline = bukkitService.getOnlinePlayers().size();
-            if (playersOnline < 1) {
-                database.purgeLogged();
-            } else if (settings.getProperty(SecuritySettings.USE_RELOAD_COMMAND_SUPPORT)) {
-                for (PlayerAuth auth : database.getLoggedPlayers()) {
-                    if (auth != null) {
-                        auth.setLastLogin(new Date().getTime());
-                        database.updateSession(auth);
-                        playerCache.addPlayer(auth);
-                    }
-                }
-            }
         }
     }
 
@@ -475,14 +444,12 @@ public class AuthMe extends JavaPlugin {
     /**
      * Sets up the data source.
      *
-     * @param settings The settings instance
-     *
      * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
      * @throws IOException            if flat file cannot be read
      * @see AuthMe#database
      */
-    public void setupDatabase(Settings settings) throws ClassNotFoundException, SQLException, IOException {
+    public void setupDatabase() throws ClassNotFoundException, SQLException, IOException {
         if (this.database != null) {
             this.database.close();
         }

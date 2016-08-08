@@ -94,10 +94,6 @@ public class AuthMeInitializationTest {
         // given
         Settings settings = new Settings(settingsFile, dataFolder, getAllPropertyFields(), alwaysFulfilled());
 
-        // TODO ljacqu 20160619: At some point setting the "plugin" field should no longer be necessary
-        // We only require it right now because of usages of AuthMe#getInstance()
-        ReflectionTestUtils.setField(AuthMe.class, null, "plugin", authMe);
-
         Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
         injector.provide(DataFolder.class, dataFolder);
         injector.register(Server.class, server);

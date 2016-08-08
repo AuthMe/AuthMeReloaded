@@ -10,12 +10,12 @@ import org.mcstats.Metrics.Graph;
 
 import java.io.IOException;
 
-public class MetricsStarter {
+public class MetricsManager {
 
-    private MetricsStarter() {
+    private MetricsManager() {
     }
 
-    public static void setupMetrics(AuthMe plugin, Settings settings) {
+    public static void sendMetrics(AuthMe plugin, Settings settings) {
         try {
             final Metrics metrics = new Metrics(plugin);
 
@@ -41,7 +41,7 @@ public class MetricsStarter {
             metrics.start();
         } catch (IOException e) {
           // Failed to submit the metrics data
-          ConsoleLogger.logException("Can't start Metrics! The plugin will work anyway...", e);
+          ConsoleLogger.logException("Can't send Metrics data! The plugin will work anyway...", e);
         }
     }
 }
