@@ -3,12 +3,15 @@ package fr.xephi.authme.service;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.util.BukkitService;
+
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.Messenger;
 
 import javax.inject.Inject;
 
@@ -19,20 +22,19 @@ public class BungeeService implements SettingsDependent {
 
     private AuthMe plugin;
     private BukkitService bukkitService;
+    private BungeeCordMessage bungeeCordMessage;
 
     private boolean isEnabled;
     private String bungeeServer;
 
-    /**
+    /*
      * Constructor.
-     *
-     * @param plugin AuthMe plugin.
-     * @param settings AuthMe settings.
      */
     @Inject
-    BungeeService(AuthMe plugin, BukkitService bukkitService, Settings settings) {
+    BungeeService(AuthMe plugin, BukkitService bukkitService, Settings settings, BungeeCordMessage bungeeCordMessage) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
+        this.bungeeCordMessage = bungeeCordMessage;
         reload(settings);
     }
 
@@ -103,5 +105,15 @@ public class BungeeService implements SettingsDependent {
     public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         this.bungeeServer = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
+        Messenger messenger = plugin.getServer().getMessenger();
+        if (!this.isEnabled) {
+            return;
+        }
+        if (!messenger.isIncomingChannelRegistered(plugin, "BungeeCord")) {
+            messenger.registerIncomingPluginChannel(plugin, "BungeeCord", bungeeCordMessage);
+        }
+        if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
+            messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+        }
     }
 }
