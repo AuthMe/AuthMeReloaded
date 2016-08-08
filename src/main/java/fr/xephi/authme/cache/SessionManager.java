@@ -1,10 +1,13 @@
 package fr.xephi.authme.cache;
 
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 
 import javax.inject.Inject;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manages sessions, allowing players to be automatically logged in if they join again
  * within a configurable amount of time.
  */
-public class SessionManager implements SettingsDependent {
+public class SessionManager implements SettingsDependent, HasCleanup {
 
     private static final int MINUTE_IN_MILLIS = 60_000;
     // Player -> expiration of session in milliseconds
@@ -72,6 +75,22 @@ public class SessionManager implements SettingsDependent {
         // With this reload, the sessions feature has just been disabled, so clear all stored sessions
         if (oldEnabled && !enabled) {
             sessions.clear();
+            ConsoleLogger.fine("Sessions disabled: cleared all sessions");
+        }
+    }
+
+    @Override
+    public void performCleanup() {
+        if (!enabled) {
+            return;
+        }
+        final long currentTime = System.currentTimeMillis();
+        Iterator<Map.Entry<String, Long>> iterator = sessions.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Long> entry = iterator.next();
+            if (entry.getValue() < currentTime) {
+                iterator.remove();
+            }
         }
     }
 }

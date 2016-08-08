@@ -45,6 +45,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
+import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.FileUtils;
@@ -80,6 +81,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
 
 /**
  * The AuthMe main class.
@@ -271,6 +273,11 @@ public class AuthMe extends JavaPlugin {
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);
         purgeService.runAutoPurge();
+
+        // Schedule clean up task
+        final int cleanupInterval = 5 * TICKS_PER_MINUTE;
+        CleanupTask cleanupTask = injector.getSingleton(CleanupTask.class);
+        cleanupTask.runTaskTimerAsynchronously(this, cleanupInterval, cleanupInterval);
     }
 
     protected void instantiateServices(Injector injector) {
