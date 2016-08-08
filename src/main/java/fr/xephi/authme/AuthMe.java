@@ -16,6 +16,7 @@ import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
+import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
@@ -38,6 +39,7 @@ import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -62,6 +64,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitWorker;
 
@@ -239,6 +242,9 @@ public class AuthMe extends JavaPlugin {
         // TODO: maybe create a backup manager?
         new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.START);
 
+        // Set up the BungeeCord hook
+        setupBungeeCordHook();
+
         // Reload support hook
         reloadSupportHook();
 
@@ -344,6 +350,17 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Set up the BungeeCord hook.
+     */
+    private void setupBungeeCordHook() {
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
+            Messenger messenger = Bukkit.getMessenger();
+            messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+            messenger.registerIncomingPluginChannel(this, "BungeeCord", injector.getSingleton(BungeeCordMessage.class));
         }
     }
 
