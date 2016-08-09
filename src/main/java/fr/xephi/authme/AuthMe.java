@@ -358,6 +358,64 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
+    // Set the console filter to remove the passwords
+    private void setLog4JFilter() {
+        org.apache.logging.log4j.core.Logger logger;
+        logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        logger.addFilter(new Log4JFilter());
+    }
+
+    /**
+     * Sets up the data source.
+     *
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException           when initialization of a SQL datasource failed
+     * @throws IOException            if flat file cannot be read
+     * @see AuthMe#database
+     */
+    private void setupDatabase() throws ClassNotFoundException, SQLException, IOException {
+        if (this.database != null) {
+            this.database.close();
+        }
+
+        DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
+        DataSource dataSource;
+        switch (dataSourceType) {
+            case FILE:
+                dataSource = new FlatFile(this);
+                break;
+            case MYSQL:
+                dataSource = new MySQL(settings);
+                break;
+            case SQLITE:
+                dataSource = new SQLite(settings);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
+        }
+
+        DataSource convertedSource = MigrationService.convertFlatfileToSqlite(settings, dataSource);
+        dataSource = convertedSource == null ? dataSource : convertedSource;
+
+        if (settings.getProperty(DatabaseSettings.USE_CACHING)) {
+            dataSource = new CacheDataSource(dataSource);
+        }
+
+        database = dataSource;
+        if (DataSourceType.SQLITE == dataSourceType) {
+            getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
+                @Override
+                public void run() {
+                    int accounts = database.getAccountsRegistered();
+                    if (accounts >= SQLITE_MAX_SIZE) {
+                        ConsoleLogger.warning("YOU'RE USING THE SQLITE DATABASE WITH "
+                            + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public void onDisable() {
         // Save player data
@@ -439,64 +497,6 @@ public class AuthMe extends JavaPlugin {
         } else {
             getServer().getPluginManager().disablePlugin(this);
         }
-    }
-
-    /**
-     * Sets up the data source.
-     *
-     * @throws ClassNotFoundException if no driver could be found for the datasource
-     * @throws SQLException           when initialization of a SQL datasource failed
-     * @throws IOException            if flat file cannot be read
-     * @see AuthMe#database
-     */
-    public void setupDatabase() throws ClassNotFoundException, SQLException, IOException {
-        if (this.database != null) {
-            this.database.close();
-        }
-
-        DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
-        DataSource dataSource;
-        switch (dataSourceType) {
-            case FILE:
-                dataSource = new FlatFile(this);
-                break;
-            case MYSQL:
-                dataSource = new MySQL(settings);
-                break;
-            case SQLITE:
-                dataSource = new SQLite(settings);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
-        }
-
-        DataSource convertedSource = MigrationService.convertFlatfileToSqlite(settings, dataSource);
-        dataSource = convertedSource == null ? dataSource : convertedSource;
-
-        if (settings.getProperty(DatabaseSettings.USE_CACHING)) {
-            dataSource = new CacheDataSource(dataSource);
-        }
-
-        database = dataSource;
-        if (DataSourceType.SQLITE == dataSourceType) {
-            getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
-                @Override
-                public void run() {
-                    int accounts = database.getAccountsRegistered();
-                    if (accounts >= 4000) {
-                        ConsoleLogger.warning("YOU'RE USING THE SQLITE DATABASE WITH "
-                            + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
-                    }
-                }
-            });
-        }
-    }
-
-    // Set the console filter to remove the passwords
-    private void setLog4JFilter() {
-        org.apache.logging.log4j.core.Logger logger;
-        logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-        logger.addFilter(new Log4JFilter());
     }
 
     // Save Player Data
