@@ -81,11 +81,17 @@ public class LimboCache {
             PlayerData data = cache.get(lowerName);
             player.setOp(data.isOperator());
             player.setAllowFlight(data.isCanFly());
-            //player.setWalkSpeed(data.getWalkSpeed());
-            //player.setFlySpeed(data.getFlySpeed());
-            // FIXME: this is a temp fix!
-            player.setWalkSpeed(0.2f);
-            player.setFlySpeed(0.2f);
+            float walkSpeed = data.getWalkSpeed();
+            float flySpeed = data.getFlySpeed();
+            // Reset the speed value if it was 0
+            if(walkSpeed == 0f) {
+                walkSpeed = 0.2f;
+            }
+            if(flySpeed == 0f) {
+                flySpeed = 0.2f;
+            }
+            player.setWalkSpeed(walkSpeed);
+            player.setFlySpeed(flySpeed);
             restoreGroup(player, data.getGroup());
             data.clearTasks();
         }

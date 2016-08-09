@@ -128,14 +128,38 @@ public class LimboCacheTest {
         // when
         limboCache.restoreData(player);
 
-        // FIXME: speeds
         // then
         verify(player).setOp(true);
-        //verify(player).setWalkSpeed(walkSpeed);
+        verify(player).setWalkSpeed(walkSpeed);
         verify(player).setAllowFlight(true);
-        //verify(player).setFlySpeed(flySpeed);
+        verify(player).setFlySpeed(flySpeed);
         verify(permissionsManager).setGroup(player, group);
         verify(playerData).clearTasks();
+    }
+
+    @Test
+    public void shouldResetPlayerSpeed() {
+        // given
+        String name = "Champ";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        PlayerData playerData = mock(PlayerData.class);
+        given(playerData.isOperator()).willReturn(true);
+        given(playerData.getWalkSpeed()).willReturn(0f);
+        given(playerData.isCanFly()).willReturn(true);
+        given(playerData.getFlySpeed()).willReturn(0f);
+        String group = "primary-group";
+        given(playerData.getGroup()).willReturn(group);
+        getCache().put(name.toLowerCase(), playerData);
+        given(settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)).willReturn(true);
+        given(permissionsManager.hasGroupSupport()).willReturn(true);
+
+        // when
+        limboCache.restoreData(player);
+
+        // then
+        verify(player).setWalkSpeed(0.2f);
+        verify(player).setFlySpeed(0.2f);
     }
 
     @Test
