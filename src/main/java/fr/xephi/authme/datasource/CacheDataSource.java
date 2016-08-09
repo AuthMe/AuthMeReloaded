@@ -155,14 +155,14 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void close() {
-        source.close();
-        cachedAuths.invalidateAll();
         executorService.shutdown();
         try {
             executorService.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             ConsoleLogger.logException("Could not close executor service:", e);
         }
+        cachedAuths.invalidateAll();
+        source.close();
     }
 
     @Override
