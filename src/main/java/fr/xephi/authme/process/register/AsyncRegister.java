@@ -1,5 +1,6 @@
 package fr.xephi.authme.process.register;
 
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -33,6 +34,9 @@ import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_AC
 public class AsyncRegister implements AsynchronousProcess {
 
     @Inject
+    private AuthMe plugin;
+
+    @Inject
     private DataSource database;
 
     @Inject
@@ -55,9 +59,6 @@ public class AsyncRegister implements AsynchronousProcess {
 
     @Inject
     private SendMailSSL sendMailSsl;
-
-    @Inject
-    private Management management;
 
     AsyncRegister() { }
 
@@ -163,7 +164,7 @@ public class AsyncRegister implements AsynchronousProcess {
         }
 
         if (!service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER) && autoLogin) {
-            management.performLogin(player, "dontneed", true);
+            plugin.getManagement().performLogin(player, "dontneed", true);
         }
         syncProcessManager.processSyncPasswordRegister(player);
 
