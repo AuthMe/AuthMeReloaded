@@ -1,7 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import com.google.common.annotations.VisibleForTesting;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -41,17 +39,11 @@ public class FlatFile implements DataSource {
      */
     private final File source;
 
-    public FlatFile(AuthMe authMe) throws IOException {
-        source = new File(authMe.getDataFolder(), "auths.db");
-        boolean createResult = source.createNewFile();
-        if (!createResult) {
+    public FlatFile(File source) throws IOException {
+        this.source = source;
+        if (!source.exists() && !source.createNewFile()) {
             throw new IOException("Could not create file '" + source.getPath() + "'");
         }
-    }
-
-    @VisibleForTesting
-    public FlatFile(File source) {
-        this.source = source;
     }
 
     @Override

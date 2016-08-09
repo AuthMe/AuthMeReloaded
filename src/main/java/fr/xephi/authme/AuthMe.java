@@ -71,7 +71,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -88,8 +87,9 @@ public class AuthMe extends JavaPlugin {
     // Costants
     private static final String PLUGIN_NAME = "AuthMeReloaded";
     private static final String LOG_FILENAME = "authme.log";
+    private static final String FLATFILE_FILENAME = "auths.db";
     private static final int SQLITE_MAX_SIZE = 4000;
-    private final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
+    private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
 
     // Default version and build number values;
     private static String pluginVersion = "N/D";
@@ -210,8 +210,8 @@ public class AuthMe extends JavaPlugin {
 
         instantiateServices(injector);
 
-        // Set up Metrics
-        MetricsManager.sendMetrics(this, settings);
+        // Reload support hook
+        reloadSupportHook();
 
         // Do a backup on start
         // TODO: maybe create a backup manager?
@@ -230,6 +230,9 @@ public class AuthMe extends JavaPlugin {
         if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
             ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
         }
+
+        // Set up Metrics
+        MetricsManager.sendMetrics(this, settings);
 
         // Sponsor messages
         ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
@@ -374,15 +377,17 @@ public class AuthMe extends JavaPlugin {
      * @see AuthMe#database
      */
     private void setupDatabase() throws ClassNotFoundException, SQLException, IOException {
-        if (this.database != null) {
-            this.database.close();
+        if (database != null) {
+            database.close();
+            database = null;
         }
 
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
         DataSource dataSource;
         switch (dataSourceType) {
             case FILE:
-                dataSource = new FlatFile(this);
+                File source = new File(getDataFolder(), FLATFILE_FILENAME);
+                dataSource = new FlatFile(source);
                 break;
             case MYSQL:
                 dataSource = new MySQL(settings);
@@ -413,6 +418,55 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             });
+        }
+    }
+
+    // Stop/unload the server/plugin as defined in the configuration
+    public void stopOrUnload() {
+        if (settings == null || settings.getProperty(SecuritySettings.STOP_SERVER_ON_PROBLEM)) {
+            ConsoleLogger.warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
+            setEnabled(false);
+            getServer().shutdown();
+        } else {
+            setEnabled(false);
+        }
+    }
+
+    private void scheduleRecallEmailTask() {
+        if (!settings.getProperty(RECALL_PLAYERS)) {
+            return;
+        }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    String email = auth.getEmail();
+                    if (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email)) {
+                        Player player = bukkitService.getPlayerExact(auth.getRealName());
+                        if (player != null) {
+                            messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
+                        }
+                    }
+                }
+            }
+        }, 1, 1200 * settings.getProperty(EmailSettings.DELAY_RECALL));
+    }
+
+    // TODO: check this, do we really need it? -sgdc3
+    private void reloadSupportHook() {
+        if (database != null) {
+            int playersOnline = bukkitService.getOnlinePlayers().size();
+            if (playersOnline == 0) {
+                database.purgeLogged();
+            } else if (settings.getProperty(SecuritySettings.USE_RELOAD_COMMAND_SUPPORT)) {
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    if (auth != null) {
+                        //auth.setLastLogin(new Date().getTime());
+                        //database.updateSession(auth);
+                        playerCache.addPlayer(auth);
+                    }
+                }
+            }
         }
     }
 
@@ -489,16 +543,6 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.close();
     }
 
-    // Stop/unload the server/plugin as defined in the configuration
-    public void stopOrUnload() {
-        if (settings == null || settings.getProperty(SecuritySettings.STOP_SERVER_ON_PROBLEM)) {
-            ConsoleLogger.warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
-            getServer().shutdown();
-        } else {
-            getServer().getPluginManager().disablePlugin(this);
-        }
-    }
-
     // Save Player Data
     private void savePlayer(Player player, LimboCache limboCache, ValidationService validationService) {
         final String name = player.getName().toLowerCase();
@@ -532,26 +576,6 @@ public class AuthMe extends JavaPlugin {
         return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
     }
 
-    private void scheduleRecallEmailTask() {
-        if (!settings.getProperty(RECALL_PLAYERS)) {
-            return;
-        }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                for (PlayerAuth auth : database.getLoggedPlayers()) {
-                    String email = auth.getEmail();
-                    if (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email)) {
-                        Player player = bukkitService.getPlayerExact(auth.getRealName());
-                        if (player != null) {
-                            messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
-                        }
-                    }
-                }
-            }
-        }, 1, 1200 * settings.getProperty(EmailSettings.DELAY_RECALL));
-    }
-
     public String replaceAllInfo(String message, Player player) {
         String playersOnline = Integer.toString(bukkitService.getOnlinePlayers().size());
         String ipAddress = Utils.getPlayerIp(player);
@@ -566,6 +590,7 @@ public class AuthMe extends JavaPlugin {
             .replace("{WORLD}", player.getWorld().getName())
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
+            // TODO: We should cache info like this, maybe with a class that extends Player?
             .replace("{COUNTRY}", geoLiteApi.getCountryName(ipAddress));
     }
 

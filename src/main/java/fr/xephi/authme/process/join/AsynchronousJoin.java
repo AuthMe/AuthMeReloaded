@@ -66,6 +66,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
 
+    @Inject
+    private Management management;
+
     AsynchronousJoin() {
     }
 
