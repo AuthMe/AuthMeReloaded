@@ -145,10 +145,6 @@ public class PlayerListener implements Listener {
         if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             // "cancel" the event
             event.setTo(event.getFrom());
-            if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-                player.setFlySpeed(0.0f);
-                player.setWalkSpeed(0.0f);
-            }
             return;
         }
 
