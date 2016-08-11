@@ -142,7 +142,7 @@ public class Messages implements SettingsDependent {
     }
 
     private static String[] formatMessage(String message) {
-        String[] lines = message.split("\\n");
+        String[] lines = message.split("%nl%");
         for (int i = 0; i < lines.length; ++i) {
             lines[i] = ChatColor.translateAlternateColorCodes('&', lines[i]);
         }

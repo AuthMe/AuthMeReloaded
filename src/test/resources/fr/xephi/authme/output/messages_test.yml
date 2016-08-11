@@ -1,6 +1,6 @@
 # Sample messages file
 
-unknown_user: 'We''ve got&nnew lines&nand '' apostrophes'
+unknown_user: 'We''ve got%nl%new lines%nl%and '' apostrophes'
 unsafe_spawn: '&cHere we have&bdefined some colors &dand some other &lthings'
 reg_voluntarily: 'You can register yourself to the server with the command "/register <password> <ConfirmPassword>"'
 usage_log: '&cUsage: /login <password>'
