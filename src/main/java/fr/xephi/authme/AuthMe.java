@@ -1,36 +1,8 @@
 package fr.xephi.authme;
 
-import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitWorker;
-
-import com.google.common.annotations.VisibleForTesting;
-
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -81,13 +53,39 @@ import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
+import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitWorker;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
 
 /**
  * The AuthMe main class.
  */
 public class AuthMe extends JavaPlugin {
 
-    // Costants
+    // Constants
     private static final String PLUGIN_NAME = "AuthMeReloaded";
     private static final String LOG_FILENAME = "authme.log";
     private static final String FLATFILE_FILENAME = "auths.db";
@@ -459,7 +457,7 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             }
-        }, 1, 1200 * settings.getProperty(EmailSettings.DELAY_RECALL));
+        }, 1, TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));
     }
 
     // TODO: check this, do we really need it? -sgdc3

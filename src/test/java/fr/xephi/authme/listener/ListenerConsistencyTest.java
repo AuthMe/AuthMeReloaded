@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 public final class ListenerConsistencyTest {
 
     private static final Class<?>[] LISTENERS = { BlockListener.class, EntityListener.class,
-        PlayerListener.class, PlayerListener16.class, PlayerListener18.class,
+        PlayerListener.class, PlayerListener16.class, PlayerListener18.class, PlayerListener19.class,
         ServerListener.class };
 
     private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet(
