@@ -63,7 +63,7 @@ country_banned: '&4Il tuo paese è bandito da questo server!'
 antibot_auto_enabled: '&4Il servizio di AntiBot è stato automaticamente abilitato a seguito delle numerose connessioni!'
 antibot_auto_disabled: "&2Il servizio di AntiBot è stato automaticamente disabilitato dopo %m Minuti, sperando che l'attacco sia finito!"
 email_already_used: '&4L''indirizzo email inserito è già in uso'
-two_factor_create: '&2Il tuo codice segreto è: &f%code&n&2Puoi anche scannerizzare il codice QR da qui: &f%url'
+two_factor_create: '&2Il tuo codice segreto è: &f%code%nl%&2Puoi anche scannerizzare il codice QR da qui: &f%url'
 not_owner_error: 'Non sei il proprietario di questo account. Per favore scegli un altro nome!'
 invalid_name_case: 'Dovresti entrare con questo nome utente: "%valid", al posto di: "%invalid".'
 tempban_max_logins: '&cSei stato temporaneamente bandito per aver fallito l''autenticazione troppe volte.'
