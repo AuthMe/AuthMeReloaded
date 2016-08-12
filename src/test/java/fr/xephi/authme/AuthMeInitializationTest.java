@@ -14,6 +14,7 @@ import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.purge.PurgeService;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -102,6 +103,7 @@ public class AuthMeInitializationTest {
         injector.register(AuthMe.class, authMe);
         injector.register(Settings.class, settings);
         injector.register(DataSource.class, mock(DataSource.class));
+        injector.register(BukkitService.class, mock(BukkitService.class));
 
         // when
         authMe.instantiateServices(injector);
