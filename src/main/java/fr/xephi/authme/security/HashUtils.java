@@ -68,6 +68,17 @@ public final class HashUtils {
     }
 
     /**
+     * Return whether the given hash starts like a BCrypt hash. Checking with this method
+     * beforehand prevents the BcryptService from throwing certain exceptions.
+     *
+     * @param hash The salt to verify
+     * @return True if the salt is valid, false otherwise
+     */
+    public static boolean isValidBcryptHash(String hash) {
+        return hash.length() > 3 && hash.substring(0, 2).equals("$2");
+    }
+
+    /**
      * Hash the message with the given algorithm and return the hash in its hexadecimal notation.
      *
      * @param message The message to hash
