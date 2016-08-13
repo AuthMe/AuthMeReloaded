@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class TempbanManagerTest {
 
-    private static final long DATE_TOLERANCE_MILLISECONDS = 100L;
+    private static final long DATE_TOLERANCE_MILLISECONDS = 200L;
 
     @Mock
     private BukkitService bukkitService;
