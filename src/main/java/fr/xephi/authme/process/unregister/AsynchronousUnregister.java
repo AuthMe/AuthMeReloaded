@@ -53,7 +53,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     AsynchronousUnregister() { }
 
 
-    public void unregister(final Player player, String password, boolean force) {
+    public void unregister(Player player, String password, boolean force) {
         final String name = player.getName().toLowerCase();
         PlayerAuth cachedAuth = playerCache.getAuth(name);
         if (force || passwordSecurity.comparePassword(password, cachedAuth.getPassword(), player.getName())) {
@@ -75,6 +75,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 playerDataTaskManager.registerMessageTask(name, false);
 
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
+                applyBlindEffect(player);
                 ConsoleLogger.info(player.getName() + " unregistered himself");
                 return; // TODO ljacqu 20160612: Why return here? No blind effect? Player not removed from PlayerCache?
             }
@@ -83,21 +84,22 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             }
             playerCache.removePlayer(name);
 
-            // Apply blind effect
-            final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-            if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-                bukktiService.runTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
-                    }
-                });
-            }
-
             service.send(player, MessageKey.UNREGISTERED_SUCCESS);
             ConsoleLogger.info(player.getName() + " unregistered himself");
         } else {
             service.send(player, MessageKey.WRONG_PASSWORD);
+        }
+    }
+
+    private void applyBlindEffect(final Player player) {
+        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+            final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+            bukktiService.runTask(new Runnable() {
+                @Override
+                public void run() {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
+                }
+            });
         }
     }
 }
