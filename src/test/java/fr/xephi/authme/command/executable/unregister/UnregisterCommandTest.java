@@ -68,7 +68,7 @@ public class UnregisterCommandTest {
 
         // then
         verify(playerCache).isAuthenticated(name);
-        verify(management).performUnregister(player, password, false);
+        verify(management).performUnregister(player, password);
     }
 
 }
