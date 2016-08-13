@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
@@ -121,9 +120,6 @@ public class TeleportationService implements Reloadable {
                 teleportBackFromSpawn(player, location);
             } else if (limbo != null && limbo.getLocation() != null) {
                 teleportBackFromSpawn(player, limbo.getLocation());
-            } else if (limbo == null) {
-                // TODO #867: Remove this after investigating why LimboPlayer is null sometimes
-                ConsoleLogger.warning("LimboPlayer is null for '" + player.getName() + "'");
             }
         }
     }
