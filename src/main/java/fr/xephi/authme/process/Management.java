@@ -10,6 +10,7 @@ import fr.xephi.authme.process.quit.AsynchronousQuit;
 import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
 import fr.xephi.authme.util.BukkitService;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -70,11 +71,20 @@ public class Management {
         });
     }
 
-    public void performUnregister(final Player player, final String password, final boolean isForce) {
+    public void performUnregister(final Player player, final String password) {
         runTask(new Runnable() {
             @Override
             public void run() {
-                asynchronousUnregister.unregister(player, password, isForce);
+                asynchronousUnregister.unregister(player, password);
+            }
+        });
+    }
+
+    public void performUnregisterByAdmin(final CommandSender initiator, final String name, final Player player) {
+        runTask(new Runnable() {
+            @Override
+            public void run() {
+                asynchronousUnregister.adminUnregister(initiator, name, player);
             }
         });
     }

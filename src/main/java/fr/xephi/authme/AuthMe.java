@@ -1,20 +1,44 @@
 package fr.xephi.authme;
 
-import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
+import ch.jalu.injector.Injector;
+import ch.jalu.injector.InjectorBuilder;
+import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.api.API;
+import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.PlayerDataStorage;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.initialization.Initializer;
+import fr.xephi.authme.initialization.MetricsManager;
+import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.listener.PlayerListener16;
+import fr.xephi.authme.listener.PlayerListener18;
+import fr.xephi.authme.listener.PlayerListener19;
+import fr.xephi.authme.listener.ServerListener;
+import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PermissionsSystemType;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.security.crypts.SHA256;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.task.CleanupTask;
+import fr.xephi.authme.task.purge.PurgeService;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.MigrationService;
+import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -27,71 +51,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitWorker;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
 
-import ch.jalu.injector.Injector;
-import ch.jalu.injector.InjectorBuilder;
-import fr.xephi.authme.api.API;
-import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.PlayerDataStorage;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.command.CommandHandler;
-import fr.xephi.authme.datasource.CacheDataSource;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.datasource.FlatFile;
-import fr.xephi.authme.datasource.MySQL;
-import fr.xephi.authme.datasource.SQLite;
-import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.initialization.MetricsManager;
-import fr.xephi.authme.listener.BlockListener;
-import fr.xephi.authme.listener.EntityListener;
-import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.listener.PlayerListener16;
-import fr.xephi.authme.listener.PlayerListener18;
-import fr.xephi.authme.listener.PlayerListener19;
-import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.output.ConsoleFilter;
-import fr.xephi.authme.output.Log4JFilter;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PermissionsSystemType;
-import fr.xephi.authme.process.Management;
-import fr.xephi.authme.security.crypts.SHA256;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.SettingsMigrationService;
-import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
-import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.task.CleanupTask;
-import fr.xephi.authme.task.purge.PurgeService;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.FileUtils;
-import fr.xephi.authme.util.GeoLiteAPI;
-import fr.xephi.authme.util.MigrationService;
-import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.ValidationService;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
+import static fr.xephi.authme.util.Utils.isClassLoaded;
 
 /**
  * The AuthMe main class.
  */
 public class AuthMe extends JavaPlugin {
 
-    // Costants
+    // Constants
     private static final String PLUGIN_NAME = "AuthMeReloaded";
     private static final String LOG_FILENAME = "authme.log";
-    private static final String FLATFILE_FILENAME = "auths.db";
-    private static final int SQLITE_MAX_SIZE = 4000;
     private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
 
     // Default version and build number values;
@@ -162,69 +140,12 @@ public class AuthMe extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        // Set the plugin instance and load plugin info from the plugin description.
-        loadPluginInfo();
-
-        // Set the Logger instance and log file path
-        ConsoleLogger.setLogger(getLogger());
-        ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
-
-        // Load settings and custom configurations, if it fails, stop the server due to security reasons.
-        settings = createSettings();
-        if (settings == null) {
-            ConsoleLogger.warning("Could not load the configuration file!"
-                    + "The server is going to shutdown NOW!");
-            setEnabled(false);
-            getServer().shutdown();
-            return;
-        }
-
-        // Apply settings to the logger
-        ConsoleLogger.setLoggingOptions(settings);
-
-        // Set console filter
-        setupConsoleFilter();
-
-        // Connect to the database and setup tables
         try {
-            setupDatabase();
+            initializeServices();
         } catch (Exception e) {
-            ConsoleLogger.logException("Fatal error occurred during database connection! "
-                + "Authme initialization aborted!", e);
+            ConsoleLogger.logException("Aborting initialization of AuthMe:", e);
             stopOrUnload();
-            return;
         }
-        // Convert deprecated PLAINTEXT hash entries
-        MigrationService.changePlainTextToSha256(settings, database, new SHA256());
-
-        // Injector initialization
-        injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
-
-        // Register elements of the Bukkit / JavaPlugin environment
-        injector.register(AuthMe.class, this);
-        injector.register(Server.class, getServer());
-        injector.register(PluginManager.class, getServer().getPluginManager());
-        injector.register(BukkitScheduler.class, getServer().getScheduler());
-        injector.provide(DataFolder.class, getDataFolder());
-
-        // Register elements we instantiate manually
-        injector.register(Settings.class, settings);
-        injector.register(DataSource.class, database);
-
-        instantiateServices(injector);
-
-        // Reload support hook
-        reloadSupportHook();
-
-        // Do a backup on start
-        // TODO: maybe create a backup manager?
-        new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.START);
-
-        // Register event listeners
-        registerEventListeners(injector);
-
-        // Start Email recall task if needed
-        scheduleRecallEmailTask();
 
         // Show settings warnings
         showSettingsWarnings();
@@ -233,6 +154,9 @@ public class AuthMe extends JavaPlugin {
         if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
             ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
         }
+
+        // Do a backup on start
+        new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.START);
 
         // Set up Metrics
         MetricsManager.sendMetrics(this, settings);
@@ -251,6 +175,55 @@ public class AuthMe extends JavaPlugin {
         // Schedule clean up task
         CleanupTask cleanupTask = injector.getSingleton(CleanupTask.class);
         cleanupTask.runTaskTimerAsynchronously(this, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
+    }
+
+    private void initializeServices() throws Exception {
+        // Set the plugin instance and load plugin info from the plugin description.
+        loadPluginInfo();
+
+        // Set the Logger instance and log file path
+        ConsoleLogger.setLogger(getLogger());
+        ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
+
+        bukkitService = new BukkitService(this);
+        Initializer initializer = new Initializer(this, bukkitService);
+
+        // Load settings and set up the console and console filter
+        settings = initializer.createSettings();
+        ConsoleLogger.setLoggingOptions(settings);
+        initializer.setupConsoleFilter(settings, getLogger());
+
+        // Connect to the database and set up tables
+        database = initializer.setupDatabase(settings);
+
+        // Convert deprecated PLAINTEXT hash entries
+        MigrationService.changePlainTextToSha256(settings, database, new SHA256());
+
+        // Injector initialization
+        injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
+
+        // Register elements of the Bukkit / JavaPlugin environment
+        injector.register(AuthMe.class, this);
+        injector.register(Server.class, getServer());
+        injector.register(PluginManager.class, getServer().getPluginManager());
+        injector.register(BukkitScheduler.class, getServer().getScheduler());
+        injector.provide(DataFolder.class, getDataFolder());
+
+        // Register elements we instantiate manually
+        injector.register(Settings.class, settings);
+        injector.register(DataSource.class, database);
+        injector.register(BukkitService.class, bukkitService);
+
+        instantiateServices(injector);
+
+        // Reload support hook
+        reloadSupportHook();
+
+        // Register event listeners
+        registerEventListeners(injector);
+
+        // Start Email recall task if needed
+        initializer.scheduleRecallEmailTask(settings, database, messages);
     }
 
     // Get version and build number of the plugin
@@ -315,119 +288,18 @@ public class AuthMe extends JavaPlugin {
         pluginManager.registerEvents(injector.getSingleton(ServerListener.class), this);
 
         // Try to register 1.6 player listeners
-        try {
-            Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
+        if (isClassLoaded("org.bukkit.event.player.PlayerEditBookEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener16.class), this);
-        } catch (ClassNotFoundException ignore) {
         }
 
         // Try to register 1.8 player listeners
-        try {
-            Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
+        if (isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener18.class), this);
-        } catch (ClassNotFoundException ignore) {
         }
 
         // Try to register 1.9 player listeners
-        try {
-            Class.forName("org.bukkit.event.player.PlayerSwapHandItemsEvent");
+        if (isClassLoaded("org.bukkit.event.player.PlayerSwapHandItemsEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
-        } catch (ClassNotFoundException ignore) {
-        }
-    }
-
-    /**
-     * Loads the plugin's settings.
-     *
-     * @return The settings instance, or null if it could not be constructed
-     */
-    private Settings createSettings() {
-        File configFile = new File(getDataFolder(), "config.yml");
-        PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
-        SettingsMigrationService migrationService = new SettingsMigrationService();
-        return FileUtils.copyFileFromResource(configFile, "config.yml")
-            ? new Settings(configFile, getDataFolder(), properties, migrationService)
-            : null;
-    }
-
-    /**
-     * Set up the console filter.
-     */
-    private void setupConsoleFilter() {
-        if (!settings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
-            return;
-        }
-        // Try to set the log4j filter
-        try {
-            Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
-            setLog4JFilter();
-        } catch (ClassNotFoundException | NoClassDefFoundError e) {
-            // log4j is not available
-            ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
-            ConsoleFilter filter = new ConsoleFilter();
-            getLogger().setFilter(filter);
-            Bukkit.getLogger().setFilter(filter);
-            Logger.getLogger("Minecraft").setFilter(filter);
-        }
-    }
-
-    // Set the console filter to remove the passwords
-    private void setLog4JFilter() {
-        org.apache.logging.log4j.core.Logger logger;
-        logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-        logger.addFilter(new Log4JFilter());
-    }
-
-    /**
-     * Sets up the data source.
-     *
-     * @throws ClassNotFoundException if no driver could be found for the datasource
-     * @throws SQLException           when initialization of a SQL datasource failed
-     * @throws IOException            if flat file cannot be read
-     * @see AuthMe#database
-     */
-    private void setupDatabase() throws ClassNotFoundException, SQLException, IOException {
-        if (database != null) {
-            database.close();
-            database = null;
-        }
-
-        DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
-        DataSource dataSource;
-        switch (dataSourceType) {
-            case FILE:
-                File source = new File(getDataFolder(), FLATFILE_FILENAME);
-                dataSource = new FlatFile(source);
-                break;
-            case MYSQL:
-                dataSource = new MySQL(settings);
-                break;
-            case SQLITE:
-                dataSource = new SQLite(settings);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
-        }
-
-        DataSource convertedSource = MigrationService.convertFlatfileToSqlite(settings, dataSource);
-        dataSource = convertedSource == null ? dataSource : convertedSource;
-
-        if (settings.getProperty(DatabaseSettings.USE_CACHING)) {
-            dataSource = new CacheDataSource(dataSource);
-        }
-
-        database = dataSource;
-        if (DataSourceType.SQLITE == dataSourceType) {
-            getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
-                @Override
-                public void run() {
-                    int accounts = database.getAccountsRegistered();
-                    if (accounts >= SQLITE_MAX_SIZE) {
-                        ConsoleLogger.warning("YOU'RE USING THE SQLITE DATABASE WITH "
-                            + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
-                    }
-                }
-            });
         }
     }
 
@@ -442,26 +314,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    private void scheduleRecallEmailTask() {
-        if (!settings.getProperty(RECALL_PLAYERS)) {
-            return;
-        }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                for (PlayerAuth auth : database.getLoggedPlayers()) {
-                    String email = auth.getEmail();
-                    if (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email)) {
-                        Player player = bukkitService.getPlayerExact(auth.getRealName());
-                        if (player != null) {
-                            messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
-                        }
-                    }
-                }
-            }
-        }, 1, 1200 * settings.getProperty(EmailSettings.DELAY_RECALL));
-    }
-
     // TODO: check this, do we really need it? -sgdc3
     private void reloadSupportHook() {
         if (database != null) {
@@ -471,8 +323,8 @@ public class AuthMe extends JavaPlugin {
             } else if (settings.getProperty(SecuritySettings.USE_RELOAD_COMMAND_SUPPORT)) {
                 for (PlayerAuth auth : database.getLoggedPlayers()) {
                     if (auth != null) {
-                        //auth.setLastLogin(new Date().getTime());
-                        //database.updateSession(auth);
+                        auth.setLastLogin(new Date().getTime());
+                        database.updateSession(auth);
                         playerCache.addPlayer(auth);
                     }
                 }

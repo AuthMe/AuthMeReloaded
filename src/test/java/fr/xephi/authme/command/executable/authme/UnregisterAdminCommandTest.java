@@ -3,7 +3,10 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,12 +15,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Test for {@link UnregisterAdminCommand}.
@@ -34,6 +35,12 @@ public class UnregisterAdminCommandTest {
     @Mock
     private CommandService commandService;
 
+    @Mock
+    private BukkitService bukkitService;
+
+    @Mock
+    private Management management;
+
     @Test
     public void shouldHandleUnknownPlayer() {
         // given
@@ -45,27 +52,45 @@ public class UnregisterAdminCommandTest {
         command.executeCommand(sender, Collections.singletonList(user));
 
         // then
-        verify(dataSource).isAuthAvailable(user);
-        verifyNoMoreInteractions(dataSource);
+        verify(dataSource, only()).isAuthAvailable(user);
         verify(commandService).send(sender, MessageKey.UNKNOWN_USER);
     }
 
     @Test
-    public void shouldHandleDatabaseError() {
+    public void shouldInvokeUnregisterProcess() {
         // given
         String user = "personaNonGrata";
-        given(dataSource.isAuthAvailable(argThat(equalToIgnoringCase(user)))).willReturn(true);
-        given(dataSource.removeAuth(argThat(equalToIgnoringCase(user)))).willReturn(false);
+        given(dataSource.isAuthAvailable(user)).willReturn(true);
+        given(dataSource.removeAuth(user)).willReturn(false);
+        Player player = mock(Player.class);
+        given(bukkitService.getPlayerExact(user)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
 
         // when
         command.executeCommand(sender, Collections.singletonList(user));
 
         // then
-        verify(dataSource).isAuthAvailable(argThat(equalToIgnoringCase(user)));
-        verify(dataSource).removeAuth(argThat(equalToIgnoringCase(user)));
-        verifyNoMoreInteractions(dataSource);
-        verify(commandService).send(sender, MessageKey.ERROR);
+        verify(dataSource, only()).isAuthAvailable(user);
+        verify(bukkitService).getPlayerExact(user);
+        verify(management).performUnregisterByAdmin(sender, user, player);
+    }
+
+    @Test
+    public void shouldInvokeUnregisterProcessWithNullPlayer() {
+        // given
+        String user = "personaNonGrata";
+        given(dataSource.isAuthAvailable(user)).willReturn(true);
+        given(dataSource.removeAuth(user)).willReturn(false);
+        given(bukkitService.getPlayerExact(user)).willReturn(null);
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(user));
+
+        // then
+        verify(dataSource, only()).isAuthAvailable(user);
+        verify(bukkitService).getPlayerExact(user);
+        verify(management).performUnregisterByAdmin(sender, user, null);
     }
 
 }

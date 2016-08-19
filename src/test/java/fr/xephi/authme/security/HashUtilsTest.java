@@ -113,4 +113,14 @@ public class HashUtilsTest {
         assertThat(digest.getAlgorithm(), equalTo("MD5"));
     }
 
+    @Test
+    public void shouldCheckForValidBcryptHashStart() {
+        // given / when / then
+        assertThat(HashUtils.isValidBcryptHash(""), equalTo(false));
+        assertThat(HashUtils.isValidBcryptHash("$2afsdaf"), equalTo(true));
+        assertThat(HashUtils.isValidBcryptHash("$2"), equalTo(false));
+        assertThat(HashUtils.isValidBcryptHash("$2aead234adef"), equalTo(true));
+        assertThat(HashUtils.isValidBcryptHash("#2ae5fc78"), equalTo(false));
+    }
+
 }

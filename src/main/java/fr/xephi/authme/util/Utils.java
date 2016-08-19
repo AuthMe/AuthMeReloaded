@@ -57,4 +57,20 @@ public final class Utils {
     public static String getPlayerIp(Player p) {
         return p.getAddress().getAddress().getHostAddress();
     }
+
+    /**
+     * Returns whether the class exists in the current class loader.
+     *
+     * @param className the class name to check
+     *
+     * @return true if the class is loaded, false otherwise
+     */
+    public static boolean isClassLoaded(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 }

@@ -13,7 +13,7 @@ import static java.lang.String.format;
 /**
  * File utilities.
  */
-public class FileUtils {
+public final class FileUtils {
 
     private FileUtils() {
     }

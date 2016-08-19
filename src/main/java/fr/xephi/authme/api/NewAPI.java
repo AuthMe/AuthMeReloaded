@@ -216,6 +216,6 @@ public class NewAPI {
      * @param player The player to unregister
      */
     public void forceUnregister(Player player) {
-        management.performUnregister(player, "", true);
+        management.performUnregisterByAdmin(null, player.getName(), player);
     }
 }

@@ -96,4 +96,11 @@ public class UtilsTest {
         // given / when / then
         TestHelper.validateHasOnlyPrivateEmptyConstructor(Utils.class);
     }
+
+    @Test
+    public void shouldCheckIfClassIsLoaded() {
+        // given / when / then
+        assertThat(Utils.isClassLoaded("org.bukkit.event.player.PlayerFishEvent"), equalTo(true));
+        assertThat(Utils.isClassLoaded("com.someclass.doesnot.exist"), equalTo(false));
+    }
 }
