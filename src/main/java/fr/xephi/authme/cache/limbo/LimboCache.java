@@ -156,10 +156,9 @@ public class LimboCache {
     }
 
     private void restoreGroup(Player player, String group) {
-        if (!settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)
-            || !permissionsManager.hasGroupSupport() || StringUtils.isEmpty(group)) {
-            return;
+        if (!StringUtils.isEmpty(group) && permissionsManager.hasGroupSupport()
+            && settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)) {
+            permissionsManager.setGroup(player, group);
         }
-        permissionsManager.setGroup(player, group);
     }
 }

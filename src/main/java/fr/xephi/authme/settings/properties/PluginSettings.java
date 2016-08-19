@@ -45,8 +45,8 @@ public class PluginSettings implements SettingsClass {
         newProperty("settings.messagesLanguage", "en");
 
     @Comment({
-        "Take care with this option; if you don't want",
-        "to use Vault and group switching of AuthMe",
+        "Take care with this option; if you want",
+        "to use group switching of AuthMe",
         "for unloggedIn players, set this setting to true.",
         "Default is false."
     })

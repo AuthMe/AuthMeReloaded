@@ -87,7 +87,10 @@ public class PlayerDataStorage {
     public void saveData(Player player) {
         String id = Utils.getUUIDorName(player);
         Location location = spawnLoader.getPlayerLocationOrSpawn(player);
-        String group = permissionsManager.getPrimaryGroup(player);
+        String group = "";
+        if (permissionsManager.hasGroupSupport()) {
+            group = permissionsManager.getPrimaryGroup(player);
+        }
         boolean operator = player.isOp();
         boolean canFly = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
