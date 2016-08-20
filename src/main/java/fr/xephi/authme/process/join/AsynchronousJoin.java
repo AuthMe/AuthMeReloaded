@@ -14,6 +14,7 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -33,7 +34,9 @@ import javax.inject.Inject;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
-
+/**
+ * Asynchronous process for when a player joins.
+ */
 public class AsynchronousJoin implements AsynchronousProcess {
 
     private static final boolean DISABLE_COLLISIONS = MethodUtils
@@ -65,6 +68,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
+
+    @Inject
+    private AsynchronousLogin asynchronousLogin;
 
     AsynchronousJoin() {
     }
@@ -138,7 +144,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 playerCache.removePlayer(name);
                 if (auth != null && auth.getIp().equals(ip)) {
                     service.send(player, MessageKey.SESSION_RECONNECTION);
-                    plugin.getManagement().performLogin(player, "dontneed", true);
+                    bukkitService.runTaskAsynchronously(new Runnable() {
+                        @Override
+                        public void run() {
+                            asynchronousLogin.login(player, "dontneed", true);
+                        }
+                    });
                     return;
                 } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
                     service.send(player, MessageKey.SESSION_EXPIRED);

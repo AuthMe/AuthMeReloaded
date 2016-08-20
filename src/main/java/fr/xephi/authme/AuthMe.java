@@ -24,7 +24,6 @@ import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
-import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -67,7 +66,6 @@ public class AuthMe extends JavaPlugin {
     private static String pluginBuildNumber = "Unknown";
 
     // Private instances
-    private Management management;
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
     private Settings settings;
@@ -226,6 +224,11 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
+    /**
+     * Instantiates all services.
+     *
+     * @param injector the injector
+     */
     protected void instantiateServices(Injector injector) {
         // PlayerCache is still injected statically sometimes
         playerCache = PlayerCache.getInstance();
@@ -235,7 +238,6 @@ public class AuthMe extends JavaPlugin {
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
-        management = injector.getSingleton(Management.class);
         geoLiteApi = injector.getSingleton(GeoLiteAPI.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
@@ -290,7 +292,9 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // Stop/unload the server/plugin as defined in the configuration
+    /**
+     * Stops the server or disables the plugin, as defined in the configuration.
+     */
     public void stopOrUnload() {
         if (settings == null || settings.getProperty(SecuritySettings.STOP_SERVER_ON_PROBLEM)) {
             ConsoleLogger.warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
@@ -385,20 +389,5 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
-    }
-
-    // -------------
-    // Service getters (deprecated)
-    // Use @Inject fields instead
-    // -------------
-
-    /**
-     * @return process manager
-     *
-     * @deprecated should be used in API classes only (temporarily)
-     */
-    @Deprecated
-    public Management getManagement() {
-        return management;
     }
 }
