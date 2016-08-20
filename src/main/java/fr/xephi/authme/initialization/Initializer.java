@@ -37,7 +37,7 @@ import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
 
 /**
- * Initializes the plugin's data source.
+ * Initializes various services.
  */
 public class Initializer {
 
@@ -70,6 +70,7 @@ public class Initializer {
     /**
      * Sets up the data source.
      *
+     * @param settings the settings
      * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
      * @throws IOException            if flat file cannot be read
@@ -119,6 +120,9 @@ public class Initializer {
 
     /**
      * Sets up the console filter if enabled.
+     *
+     * @param settings the settings
+     * @param logger the plugin logger
      */
     public void setupConsoleFilter(Settings settings, Logger logger) {
         if (!settings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {

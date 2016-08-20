@@ -840,7 +840,7 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>injector</artifactId>
-            <version>0.2</version>
+            <version>0.3</version>
         </dependency>
 
         <!-- String comparison library. Used for dynamic help system. -->
