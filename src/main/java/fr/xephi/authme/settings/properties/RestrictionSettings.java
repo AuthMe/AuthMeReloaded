@@ -50,11 +50,11 @@ public class RestrictionSettings implements SettingsClass {
         newProperty("settings.restrictions.ForceSingleSession", true);
 
     @Comment({
-        "If enabled, every player will be teleported to the world spawnpoint",
-        "after successful authentication.",
+        "If enabled, every player that spawn in one of the world listed in \"ForceSpawnLocOnJoin.worlds\"",
+        "will be teleported to the spawnpoint after successful authentication.",
         "The quit location of the player will be overwritten.",
         "This is different from \"teleportUnAuthedToSpawn\" that teleport player",
-        "back to his quit location after the authentication."})
+        "to the spawnpoint on join."})
     public static final Property<Boolean> FORCE_SPAWN_LOCATION_AFTER_LOGIN =
         newProperty("settings.restrictions.ForceSpawnLocOnJoin.enabled", false);
 
@@ -140,10 +140,6 @@ public class RestrictionSettings implements SettingsClass {
     @Comment("Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.")
     public static final Property<Boolean> DENY_TABCOMPLETE_BEFORE_LOGIN =
         newProperty("settings.restrictions.DenyTabCompleteBeforeLogin", true);
-
-    @Comment("Should we hide the tablist before logging in? Requires ProtocolLib.")
-    public static final Property<Boolean> HIDE_TABLIST_BEFORE_LOGIN =
-        newProperty("settings.restrictions.HideTablistBeforeLogin", true);
 
     @Comment({
         "Should we display all other accounts from a player when he joins?",

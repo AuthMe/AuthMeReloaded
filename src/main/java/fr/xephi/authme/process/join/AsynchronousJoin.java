@@ -2,6 +2,7 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -13,14 +14,13 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
 import fr.xephi.authme.util.Utils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
@@ -34,7 +34,9 @@ import javax.inject.Inject;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
-
+/**
+ * Asynchronous process for when a player joins.
+ */
 public class AsynchronousJoin implements AsynchronousProcess {
 
     private static final boolean DISABLE_COLLISIONS = MethodUtils
@@ -56,18 +58,22 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
-    private PluginHooks pluginHooks;
+    private SessionManager sessionManager;
 
     @Inject
-    private TeleportationService teleportationService;
+    private PluginHooks pluginHooks;
 
     @Inject
     private BukkitService bukkitService;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
-    AsynchronousJoin() { }
+    @Inject
+    private AsynchronousLogin asynchronousLogin;
+
+    AsynchronousJoin() {
+    }
 
 
     public void processJoin(final Player player) {
@@ -114,44 +120,45 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
+
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
+            limboCache.addPlayerData(player);
             service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
-            teleportationService.teleportOnJoin(player);
-            limboCache.updateLimboPlayer(player);
 
             // Protect inventory
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
-                    plugin.inventoryProtector.sendInventoryPacket(player);
-                    if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                        ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
-                    }
+                    player.updateInventory();
+                    ConsoleLogger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                 }
             }
 
             // Session logic
-            if (service.getProperty(PluginSettings.SESSIONS_ENABLED) && (playerCache.isAuthenticated(name) || database.isLogged(name))) {
-                if (plugin.sessions.containsKey(name)) {
-                    plugin.sessions.get(name).cancel();
-                    plugin.sessions.remove(name);
-                }
+            if (sessionManager.hasSession(name) || database.isLogged(name)) {
                 PlayerAuth auth = database.getAuth(name);
                 database.setUnlogged(name);
                 playerCache.removePlayer(name);
                 if (auth != null && auth.getIp().equals(ip)) {
                     service.send(player, MessageKey.SESSION_RECONNECTION);
-                    plugin.getManagement().performLogin(player, "dontneed", true);
+                    bukkitService.runTaskAsynchronously(new Runnable() {
+                        @Override
+                        public void run() {
+                            asynchronousLogin.login(player, "dontneed", true);
+                        }
+                    });
                     return;
                 } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
                     service.send(player, MessageKey.SESSION_EXPIRED);
                 }
             }
         } else {
-            // Not Registered
+            // Not Registered. Delete old data, load default one.
+            limboCache.deletePlayerData(player);
+            limboCache.addPlayerData(player);
 
             // Groups logic
             service.setGroup(player, AuthGroupType.UNREGISTERED);
@@ -160,13 +167,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (!service.getProperty(RegistrationSettings.FORCE)) {
                 return;
             }
-
-            teleportationService.teleportOnJoin(player);
-        }
-        // The user is not logged in
-
-        if (!limboCache.hasLimboPlayer(name)) {
-            limboCache.addLimboPlayer(player);
         }
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
@@ -194,8 +194,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         });
 
         // Timeout and message task
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
+        playerDataTaskManager.registerTimeoutTask(player);
+        playerDataTaskManager.registerMessageTask(name, isAuthAvailable);
     }
 
     private boolean isPlayerUnrestricted(String name) {
@@ -205,11 +205,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
     /**
      * Returns whether the name is restricted based on the restriction settings.
      *
-     * @param name The name to check
-     * @param ip The IP address of the player
+     * @param name   The name to check
+     * @param ip     The IP address of the player
      * @param domain The hostname of the IP address
+     *
      * @return True if the name is restricted (IP/domain is not allowed for the given name),
-     *         false if the restrictions are met or if the name has no restrictions to it
+     * false if the restrictions are met or if the name has no restrictions to it
      */
     private boolean isNameRestricted(String name, String ip, String domain) {
         if (!service.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)) {
@@ -236,7 +237,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * settings and permissions). If this is the case, the player is kicked.
      *
      * @param player the player to verify
-     * @param ip the ip address of the player
+     * @param ip     the ip address of the player
+     *
      * @return true if the verification is OK (no infraction), false if player has been kicked
      */
     private boolean validatePlayerCountForIp(final Player player, String ip) {

@@ -4,17 +4,15 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
 
 import javax.inject.Inject;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Service class for the AuthMe listeners to determine whether an event should be canceled.
@@ -24,16 +22,18 @@ class ListenerService implements SettingsDependent {
     private final DataSource dataSource;
     private final PluginHooks pluginHooks;
     private final PlayerCache playerCache;
+    private final ValidationService validationService;
 
     private boolean isRegistrationForced;
-    private Set<String> unrestrictedNames;
 
     @Inject
-    ListenerService(NewSetting settings, DataSource dataSource, PluginHooks pluginHooks, PlayerCache playerCache) {
+    ListenerService(Settings settings, DataSource dataSource, PluginHooks pluginHooks,
+                    PlayerCache playerCache, ValidationService validationService) {
         this.dataSource = dataSource;
         this.pluginHooks = pluginHooks;
         this.playerCache = playerCache;
-        loadSettings(settings);
+        this.validationService = validationService;
+        reload(settings);
     }
 
     /**
@@ -44,10 +44,19 @@ class ListenerService implements SettingsDependent {
      */
     public boolean shouldCancelEvent(EntityEvent event) {
         Entity entity = event.getEntity();
+        return shouldCancelEvent(entity);
+    }
+
+    /**
+     * Returns, based on the entity associated with the event, whether or not the event should be canceled.
+     *
+     * @param entity the player entity to verify
+     * @return true if the associated event should be canceled, false otherwise
+     */
+    public boolean shouldCancelEvent(Entity entity) {
         if (entity == null || !(entity instanceof Player)) {
             return false;
         }
-
         Player player = (Player) entity;
         return shouldCancelEvent(player);
     }
@@ -74,10 +83,8 @@ class ListenerService implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(Settings settings) {
         isRegistrationForced = settings.getProperty(RegistrationSettings.FORCE);
-        // Keep unrestricted names as Set for more efficient contains()
-        unrestrictedNames = new HashSet<>(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES));
     }
 
     /**
@@ -88,22 +95,12 @@ class ListenerService implements SettingsDependent {
      * @return true if the player may play, false otherwise
      */
     private boolean checkAuth(String name) {
-        if (isUnrestricted(name) || playerCache.isAuthenticated(name)) {
+        if (validationService.isUnrestricted(name) || playerCache.isAuthenticated(name)) {
             return true;
         }
         if (!isRegistrationForced && !dataSource.isAuthAvailable(name)) {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Checks if the name is unrestricted according to the configured settings.
-     *
-     * @param name the name to verify
-     * @return true if unrestricted, false otherwise
-     */
-    private boolean isUnrestricted(String name) {
-        return unrestrictedNames.contains(name.toLowerCase());
     }
 }

@@ -4,7 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
 
@@ -20,11 +20,11 @@ import java.io.IOException;
 public class CrazyLoginConverter implements Converter {
 
     private final DataSource database;
-    private final NewSetting settings;
+    private final Settings settings;
     private final File dataFolder;
 
     @Inject
-    CrazyLoginConverter(@DataFolder File dataFolder, DataSource dataSource, NewSetting settings) {
+    CrazyLoginConverter(@DataFolder File dataFolder, DataSource dataSource, Settings settings) {
         this.dataFolder = dataFolder;
         this.database = dataSource;
         this.settings = settings;
@@ -61,7 +61,7 @@ public class CrazyLoginConverter implements Converter {
             }
             ConsoleLogger.info("CrazyLogin database has been imported correctly");
         } catch (IOException ex) {
-            ConsoleLogger.showError("Can't open the crazylogin database file! Does it exist?");
+            ConsoleLogger.warning("Can't open the crazylogin database file! Does it exist?");
             ConsoleLogger.logException("Encountered", ex);
         }
     }

@@ -5,12 +5,10 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -32,10 +30,8 @@ public class AsynchronousLogout implements AsynchronousProcess {
     @Inject
     private SyncProcessManager syncProcessManager;
 
-    @Inject
-    private BukkitService bukkitService;
-
-    AsynchronousLogout() { }
+    AsynchronousLogout() {
+    }
 
     public void logout(final Player player) {
         final String name = player.getName().toLowerCase();
@@ -43,27 +39,17 @@ public class AsynchronousLogout implements AsynchronousProcess {
             service.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }
+
         PlayerAuth auth = playerCache.getAuth(name);
         database.updateSession(auth);
-        auth.setQuitLocX(player.getLocation().getX());
-        auth.setQuitLocY(player.getLocation().getY());
-        auth.setQuitLocZ(player.getLocation().getZ());
-        auth.setWorld(player.getWorld().getName());
-        database.updateQuitLoc(auth);
+        if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
+            auth.setQuitLocation(player.getLocation());
+            database.updateQuitLoc(auth);
+        }
 
+        limboCache.addPlayerData(player);
         playerCache.removePlayer(name);
         database.setUnlogged(name);
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                Utils.teleportToSpawn(player);
-            }
-        });
-        if (limboCache.hasLimboPlayer(name)) {
-            limboCache.deleteLimboPlayer(name);
-        }
-        limboCache.addLimboPlayer(player);
-        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
         syncProcessManager.processSyncPlayerLogout(player);
     }
 }

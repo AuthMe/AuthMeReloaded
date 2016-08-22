@@ -1,25 +1,23 @@
 package fr.xephi.authme.permission;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.GroupManagerHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
+import fr.xephi.authme.permission.handlers.PermissionHandlerException;
 import fr.xephi.authme.permission.handlers.PermissionsBukkitHandler;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
 import fr.xephi.authme.util.StringUtils;
-import net.milkbowl.vault.permission.Permission;
 import org.anjocaido.groupmanager.GroupManager;
-import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,7 +36,7 @@ import java.util.List;
  * @author Tim Visée, http://timvisee.com
  * @version 0.3
  */
-public class PermissionsManager {
+public class PermissionsManager implements Reloadable {
 
     private final Server server;
     private final PluginManager pluginManager;
@@ -74,90 +72,17 @@ public class PermissionsManager {
      * Setup and hook into the permissions systems.
      */
     @PostConstruct
-    public void setup() {
-        // Force-unhook from current hooked permissions systems
-        unhook();
-
+    private void setup() {
         // Loop through all the available permissions system types
         for (PermissionsSystemType type : PermissionsSystemType.values()) {
-            // Try to find and hook the current plugin if available, print an error if failed
             try {
-                // Try to find the plugin for the current permissions system
-                Plugin plugin = pluginManager.getPlugin(type.getPluginName());
-
-                // Make sure a plugin with this name was found
-                if (plugin == null)
-                    continue;
-
-                // Make sure the plugin is enabled before hooking
-                if (!plugin.isEnabled()) {
-                    ConsoleLogger.info("Not hooking into " + type.getName() + " because it's disabled!");
-                    continue;
+                PermissionHandler handler = getPermissionHandler(type);
+                if (handler != null) {
+                    // Show a success message and return
+                    this.handler = handler;
+                    ConsoleLogger.info("Hooked into " + type.getName() + "!");
+                    return;
                 }
-
-                // Use the proper method to hook this plugin
-                switch (type) {
-                    case PERMISSIONS_EX:
-                        // Get the permissions manager for PermissionsEx and make sure it isn't null
-                        if (PermissionsEx.getPermissionManager() == null) {
-                            ConsoleLogger.info("Failed to hook into " + type.getName() + "!");
-                            continue;
-                        }
-
-                        handler = new PermissionsExHandler(PermissionsEx.getPermissionManager());
-                        break;
-
-                    case ESSENTIALS_GROUP_MANAGER:
-                        // Set the plugin instance
-                        handler = new GroupManagerHandler((GroupManager) plugin);
-                        break;
-
-                    case Z_PERMISSIONS:
-                        // Set the zPermissions service and make sure it's valid
-                        ZPermissionsService zPermissionsService = Bukkit.getServicesManager().load(ZPermissionsService.class);
-                        if (zPermissionsService == null) {
-                            ConsoleLogger.info("Failed to hook into " + type.getName() + "!");
-                            continue;
-                        }
-
-                        handler = new ZPermissionsHandler(zPermissionsService);
-                        break;
-
-                    case VAULT:
-                        // Get the permissions provider service
-                        RegisteredServiceProvider<Permission> permissionProvider = this.server.getServicesManager().getRegistration(Permission.class);
-                        if (permissionProvider == null) {
-                            ConsoleLogger.info("Failed to hook into " + type.getName() + "!");
-                            continue;
-                        }
-
-                        // Get the Vault provider and make sure it's valid
-                        Permission vaultPerms = permissionProvider.getProvider();
-                        if (vaultPerms == null) {
-                            ConsoleLogger.info("Not using " + type.getName() + " because it's disabled!");
-                            continue;
-                        }
-
-                        handler = new VaultHandler(vaultPerms);
-                        break;
-
-                    case B_PERMISSIONS:
-                        handler = new BPermissionsHandler();
-                        break;
-
-                    case PERMISSIONS_BUKKIT:
-                        handler = new PermissionsBukkitHandler();
-                        break;
-
-                    default:
-                }
-
-                // Show a success message
-                ConsoleLogger.info("Hooked into " + type.getName() + "!");
-
-                // Return the used permissions system type
-                return;
-
             } catch (Exception ex) {
                 // An error occurred, show a warning message
                 ConsoleLogger.logException("Error while hooking into " + type.getName(), ex);
@@ -168,10 +93,42 @@ public class PermissionsManager {
         ConsoleLogger.info("No supported permissions system found! Permissions are disabled!");
     }
 
+    private PermissionHandler getPermissionHandler(PermissionsSystemType type) throws PermissionHandlerException {
+        // Try to find the plugin for the current permissions system
+        Plugin plugin = pluginManager.getPlugin(type.getPluginName());
+
+        if (plugin == null) {
+            return null;
+        }
+
+        // Make sure the plugin is enabled before hooking
+        if (!plugin.isEnabled()) {
+            ConsoleLogger.info("Not hooking into " + type.getName() + " because it's disabled!");
+            return null;
+        }
+
+        switch (type) {
+            case PERMISSIONS_EX:
+                return new PermissionsExHandler();
+            case ESSENTIALS_GROUP_MANAGER:
+                return new GroupManagerHandler((GroupManager) plugin);
+            case Z_PERMISSIONS:
+                return new ZPermissionsHandler();
+            case VAULT:
+                return new VaultHandler(server);
+            case B_PERMISSIONS:
+                return new BPermissionsHandler();
+            case PERMISSIONS_BUKKIT:
+                return new PermissionsBukkitHandler();
+            default:
+                throw new IllegalStateException("Unhandled permission type '" + type + "'");
+        }
+    }
+
     /**
      * Break the hook with all permission systems.
      */
-    public void unhook() {
+    private void unhook() {
         // Reset the current used permissions system
         this.handler = null;
 
@@ -182,11 +139,12 @@ public class PermissionsManager {
     /**
      * Reload the permissions manager, and re-hook all permission plugins.
      */
+    @Override
     public void reload() {
         // Unhook all permission plugins
         unhook();
 
-        // Set up the permissions manager again, return the result
+        // Set up the permissions manager again
         setup();
     }
 
@@ -217,6 +175,15 @@ public class PermissionsManager {
     }
 
     /**
+     * Return the permissions system that is hooked into.
+     *
+     * @return The permissions system, or null.
+     */
+    public PermissionsSystemType getPermissionSystem() {
+        return isEnabled() ? handler.getPermissionSystem() : null;
+    }
+
+    /**
      * Check if the command sender has permission for the given permissions node. If no permissions system is used or
      * if the sender is not a player (e.g. console user), the player has to be OP in order to have the permission.
      *
@@ -238,6 +205,39 @@ public class PermissionsManager {
 
         Player player = (Player) sender;
         return handler.hasPermission(player, permissionNode);
+    }
+
+    /**
+     * Check if a player has permission for the given permission node. This is for offline player checks. If no permissions
+     * system is used, then the player will not have permission.
+     *
+     * @param player         The offline player
+     * @param permissionNode The permission node to verify
+     *
+     * @return true if the player has permission, false otherwise
+     */
+    public boolean hasPermissionOffline(OfflinePlayer player, PermissionNode permissionNode) {
+        // Check if the permission node is null
+        if (permissionNode == null) {
+            return true;
+        }
+
+        if (!isEnabled()) {
+            return permissionNode.getDefaultPermission().evaluate(player);
+        }
+
+        return handler.hasPermissionOffline(player.getName(), permissionNode);
+    }
+
+    public boolean hasPermissionOffline(String name, PermissionNode permissionNode) {
+        if (permissionNode == null) {
+            return true;
+        }
+        if (!isEnabled()) {
+            return permissionNode.getDefaultPermission().evaluate(null);
+        }
+
+        return handler.hasPermissionOffline(name, permissionNode);
     }
 
     /**

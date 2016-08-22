@@ -1,7 +1,9 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -48,7 +50,8 @@ public class SettingsMigrationService {
         return changes
             | performMailTextToFileMigration(configuration, pluginFolder)
             | migrateJoinLeaveMessages(configuration)
-            | migrateForceSpawnSettings(configuration);
+            | migrateForceSpawnSettings(configuration)
+            | changeBooleanSettingToLogLevelProperty(configuration);
     }
 
     public boolean containsAllSettings(FileConfiguration configuration, PropertyMap propertyMap) {
@@ -64,7 +67,8 @@ public class SettingsMigrationService {
         String[] deprecatedProperties = {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
             "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt",
-            "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional"};
+            "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional", "DataSource.mySQLWebsite",
+            "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping"};
         for (String deprecatedPath : deprecatedProperties) {
             if (configuration.contains(deprecatedPath)) {
                 return true;
@@ -92,10 +96,10 @@ public class SettingsMigrationService {
 
         final File emailFile = new File(pluginFolder, "email.html");
         final String mailText = configuration.getString(oldSettingPath)
-            .replace("<playername>", "<playername />")
-            .replace("<servername>", "<servername />")
-            .replace("<generatedpass>", "<generatedpass />")
-            .replace("<image>", "<image />");
+            .replace("<playername>", "<playername />").replace("%playername%", "<playername />")
+            .replace("<servername>", "<servername />").replace("%servername%", "<servername />")
+            .replace("<generatedpass>", "<generatedpass />").replace("%generatedpass%", "<generatedpass />")
+            .replace("<image>", "<image />").replace("%image%", "<image />");
         if (!emailFile.exists()) {
             try (FileWriter fw = new FileWriter(emailFile)) {
                 fw.write(mailText);
@@ -139,6 +143,25 @@ public class SettingsMigrationService {
 
         return moveProperty(oldForceLocEnabled, FORCE_SPAWN_LOCATION_AFTER_LOGIN, configuration)
             | moveProperty(oldForceWorlds, FORCE_SPAWN_ON_WORLDS, configuration);
+    }
+
+    /**
+     * Changes the old boolean property "hide spam from console" to the new property specifying
+     * the log level.
+     *
+     * @param configuration The file configuration
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean changeBooleanSettingToLogLevelProperty(FileConfiguration configuration) {
+        final String oldPath = "Security.console.noConsoleSpam";
+        final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
+        if (!newProperty.isPresent(configuration) && configuration.contains(oldPath)) {
+            ConsoleLogger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
+            LogLevel level = configuration.getBoolean(oldPath) ? LogLevel.INFO : LogLevel.FINE;
+            configuration.set(newProperty.getPath(), level.name());
+            return true;
+        }
+        return false;
     }
 
     /**

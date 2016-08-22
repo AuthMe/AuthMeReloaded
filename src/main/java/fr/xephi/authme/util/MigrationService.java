@@ -10,7 +10,7 @@ import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.SHA256;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
@@ -31,17 +31,17 @@ public final class MigrationService {
      * @param dataSource The data source
      * @param authmeSha256 Instance to the AuthMe SHA256 encryption method implementation
      */
-    public static void changePlainTextToSha256(NewSetting settings, DataSource dataSource,
+    public static void changePlainTextToSha256(Settings settings, DataSource dataSource,
                                                SHA256 authmeSha256) {
         if (HashAlgorithm.PLAINTEXT == settings.getProperty(SecuritySettings.PASSWORD_HASH)) {
-            ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated;"
+            ConsoleLogger.warning("Your HashAlgorithm has been detected as plaintext and is now deprecated;"
                 + " it will be changed and hashed now to the AuthMe default hashing method");
-            ConsoleLogger.showError("Don't stop your server; wait for the conversion to have been completed!");
+            ConsoleLogger.warning("Don't stop your server; wait for the conversion to have been completed!");
             List<PlayerAuth> allAuths = dataSource.getAllAuths();
             for (PlayerAuth auth : allAuths) {
                 String hash = auth.getPassword().getHash();
                 if (hash.startsWith("$SHA$")) {
-                    ConsoleLogger.showError("Skipping conversion for " + auth.getNickname() + "; detected SHA hash");
+                    ConsoleLogger.warning("Skipping conversion for " + auth.getNickname() + "; detected SHA hash");
                 } else {
                     HashedPassword hashedPassword = authmeSha256.computeHash(hash, auth.getNickname());
                     auth.setPassword(hashedPassword);
@@ -61,9 +61,9 @@ public final class MigrationService {
      * @param dataSource The data source
      * @return The converted datasource (SQLite), or null if no migration was necessary
      */
-    public static DataSource convertFlatfileToSqlite(NewSetting settings, DataSource dataSource) {
+    public static DataSource convertFlatfileToSqlite(Settings settings, DataSource dataSource) {
         if (DataSourceType.FILE == settings.getProperty(DatabaseSettings.BACKEND)) {
-            ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated; it will be changed "
+            ConsoleLogger.warning("FlatFile backend has been detected and is now deprecated; it will be changed "
                 + "to SQLite... Connection will be impossible until conversion is done!");
             FlatFile flatFile = (FlatFile) dataSource;
             try {

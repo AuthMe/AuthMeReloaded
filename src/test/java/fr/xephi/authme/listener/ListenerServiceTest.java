@@ -1,26 +1,22 @@
 package fr.xephi.authme.listener;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -32,13 +28,14 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link ListenerService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class ListenerServiceTest {
 
+    @InjectDelayed
     private ListenerService listenerService;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private DataSource dataSource;
@@ -49,25 +46,12 @@ public class ListenerServiceTest {
     @Mock
     private PlayerCache playerCache;
 
-    @SuppressWarnings("rawtypes")
-    @Before
-    public void initializeTestSetup() {
-        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(
-            Arrays.asList("npc1", "npc2", "npc3"));
+    @Mock
+    private ValidationService validationService;
 
-        // Note ljacqu 20160602: We use a hacky way to avoid having to instantiate the service in each test:
-        // the listenerService test is initialized as a mock that will answer to any method invocation by creating an
-        // actual service object (with the @Mock fields) and then invoking the method on that actual service.
-        // As long as there is no interaction with listenerService all of the mock setups will have effect.
-        listenerService = mock(ListenerService.class, new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Exception {
-                Method method = invocation.getMethod();
-                ListenerService service = new ListenerService(settings, dataSource, pluginHooks, playerCache);
-                return method.invoke(service, invocation.getArguments());
-            }
-        });
+    @BeforeInjecting
+    public void initializeDefaultSettings() {
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
     }
 
     @Test
@@ -142,6 +126,7 @@ public class ListenerServiceTest {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
+        listenerService.reload(settings);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);
@@ -159,6 +144,7 @@ public class ListenerServiceTest {
         Player player = mockPlayerWithName(playerName);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
+        given(validationService.isUnrestricted(playerName)).willReturn(true);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);
@@ -239,8 +225,7 @@ public class ListenerServiceTest {
     }
 
     /**
-     * Test implementation of {@link PlayerEvent} (necessary because
-     * {@link PlayerEvent#getPlayer()} is declared final).
+     * Test implementation of {@link PlayerEvent}.
      */
     private static final class TestPlayerEvent extends PlayerEvent {
         public TestPlayerEvent(Player player) {

@@ -10,7 +10,7 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -48,9 +48,9 @@ public class HelpProvider implements SettingsDependent {
     private String helpHeader;
 
     @Inject
-    HelpProvider(PermissionsManager permissionsManager, NewSetting settings) {
+    HelpProvider(PermissionsManager permissionsManager, Settings settings) {
         this.permissionsManager = permissionsManager;
-        loadSettings(settings);
+        reload(settings);
     }
 
     private List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
@@ -102,7 +102,7 @@ public class HelpProvider implements SettingsDependent {
     }
 
     @Override
-    public void loadSettings(NewSetting settings) {
+    public void reload(Settings settings) {
         helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
     }
 

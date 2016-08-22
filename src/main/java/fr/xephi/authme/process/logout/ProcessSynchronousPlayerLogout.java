@@ -1,18 +1,19 @@
 package fr.xephi.authme.process.logout;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.SessionManager;
 import fr.xephi.authme.events.LogoutEvent;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -25,7 +26,7 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     @Inject
-    private AuthMe plugin;
+    private BungeeService bungeeService;
 
     @Inject
     private ProcessService service;
@@ -34,56 +35,63 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private ProtocolLibService protocolLibService;
 
-    ProcessSynchronousPlayerLogout() { }
+    @Inject
+    private PlayerDataTaskManager playerDataTaskManager;
 
+    @Inject
+    private SessionManager sessionManager;
 
-    private void sendBungeeMessage(Player player) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ALL");
-        out.writeUTF("AuthMe");
-        out.writeUTF("logout;" + player.getName());
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-    }
+    @Inject
+    private TeleportationService teleportationService;
 
-    private void restoreSpeedEffect(Player player) {
-        if (service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setWalkSpeed(0.0F);
-            player.setFlySpeed(0.0F);
-        }
+    ProcessSynchronousPlayerLogout() {
     }
 
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
-        if (plugin.sessions.containsKey(name)) {
-            plugin.sessions.get(name).cancel();
-            plugin.sessions.remove(name);
-        }
+
+        sessionManager.removeSession(name);
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
-            plugin.inventoryProtector.sendBlankInventoryPacket(player);
+            protocolLibService.sendBlankInventoryPacket(player);
         }
 
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
+        playerDataTaskManager.registerTimeoutTask(player);
+        playerDataTaskManager.registerMessageTask(name, true);
 
-        if (player.isInsideVehicle() && player.getVehicle() != null) {
-            player.getVehicle().eject();
-        }
+        applyLogoutEffect(player);
+
+        // Player is now logout... Time to fire event !
+        bukkitService.callEvent(new LogoutEvent(player));
+        // Send Bungee stuff. The service will check if it is enabled or not.
+        bungeeService.sendBungeeMessage(player, "logout");
+
+        service.send(player, MessageKey.LOGOUT_SUCCESS);
+        ConsoleLogger.info(player.getName() + " logged out");
+    }
+
+    private void applyLogoutEffect(Player player) {
+        // dismount player
+        player.leaveVehicle();
+        teleportationService.teleportOnJoin(player);
+
+        // Apply Blindness effect
         final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
+
+        // Set player's data to unauthenticated
+        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
         player.setOp(false);
-        restoreSpeedEffect(player);
-        // Player is now logout... Time to fire event !
-        bukkitService.callEvent(new LogoutEvent(player));
-        if (service.getProperty(HooksSettings.BUNGEECORD)) {
-            sendBungeeMessage(player);
+        player.setAllowFlight(false);
+        // Remove speed
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+            player.setFlySpeed(0.0f);
+            player.setWalkSpeed(0.0f);
         }
-        service.send(player, MessageKey.LOGOUT_SUCCESS);
-        ConsoleLogger.info(player.getName() + " logged out");
     }
 
 }

@@ -1,12 +1,12 @@
 package fr.xephi.authme.security;
 
+import ch.jalu.injector.Injector;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.plugin.PluginManager;
 
@@ -19,7 +19,7 @@ import javax.inject.Inject;
 public class PasswordSecurity implements Reloadable {
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
 
     @Inject
     private DataSource dataSource;
@@ -28,7 +28,7 @@ public class PasswordSecurity implements Reloadable {
     private PluginManager pluginManager;
 
     @Inject
-    private AuthMeServiceInitializer initializer;
+    private Injector injector;
 
     private HashAlgorithm algorithm;
     private boolean supportOldAlgorithm;
@@ -155,7 +155,7 @@ public class PasswordSecurity implements Reloadable {
         if (HashAlgorithm.CUSTOM.equals(algorithm) || HashAlgorithm.PLAINTEXT.equals(algorithm)) {
             return null;
         }
-        return initializer.newInstance(algorithm.getClazz());
+        return injector.newInstance(algorithm.getClazz());
     }
 
     private void hashPasswordForNewAlgorithm(String password, String playerName) {

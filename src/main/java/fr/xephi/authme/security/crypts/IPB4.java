@@ -1,6 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
@@ -34,9 +35,9 @@ public class IPB4 implements EncryptionMethod {
     @Override
     public boolean comparePassword(String password, HashedPassword hash, String name) {
         try {
-            return hash.getHash().length() > 3 && BCryptService.checkpw(password, hash.getHash());
+            return HashUtils.isValidBcryptHash(hash.getHash()) && BCryptService.checkpw(password, hash.getHash());
         } catch (IllegalArgumentException e) {
-            ConsoleLogger.showError("Bcrypt checkpw() returned " + StringUtils.formatException(e));
+            ConsoleLogger.warning("Bcrypt checkpw() returned " + StringUtils.formatException(e));
         }
         return false;
     }

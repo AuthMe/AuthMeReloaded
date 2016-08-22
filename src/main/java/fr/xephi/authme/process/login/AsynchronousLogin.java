@@ -6,7 +6,7 @@ import fr.xephi.authme.cache.TempbanManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.output.MessageKey;
@@ -18,16 +18,14 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -70,23 +68,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private TempbanManager tempbanManager;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
     AsynchronousLogin() { }
-
-
-    /**
-     * Queries the {@link fr.xephi.authme.cache.CaptchaManager} to
-     * see if a captcha needs to be entered in order to log in.
-     *
-     * @param player The player to check
-     * @return True if a captcha needs to be entered
-     */
-    private boolean needsCaptcha(Player player) {
-        final String playerName = player.getName();
-
-        return captchaManager.isCaptchaRequired(playerName);
-    }
 
     /**
      * Checks the precondition for authentication (like user known) and returns
@@ -106,11 +90,12 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
 
             // TODO ljacqu 20160612: Why is the message task being canceled and added again here?
-            limboPlayerTaskManager.registerMessageTask(name, false);
+            playerDataTaskManager.registerMessageTask(name, false);
             return null;
         }
 
-        if (!service.getProperty(DatabaseSettings.MYSQL_COL_GROUP).isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
+        if (!service.getProperty(DatabaseSettings.MYSQL_COL_GROUP).isEmpty()
+            && pAuth.getGroupId() == service.getProperty(HooksSettings.NON_ACTIVATED_USERS_GROUP)) {
             service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
             return null;
         }
@@ -126,7 +111,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
-        Bukkit.getServer().getPluginManager().callEvent(event);
+        bukkitService.callEvent(event);
         if (!event.canLogin()) {
             return null;
         }
@@ -142,7 +127,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
 
         // If Captcha is required send a message to the player and deny to login
-        if (needsCaptcha(player)) {
+        if (captchaManager.isCaptchaRequired(name)) {
             service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
             return;
         }
@@ -153,11 +138,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
         // If the login is successful, we clear the captcha count for the player.
         captchaManager.increaseCount(name);
         tempbanManager.increaseCount(ip);
-
-        if ("127.0.0.1".equals(pAuth.getIp()) && !pAuth.getIp().equals(ip)) {
-            pAuth.setIp(ip);
-            database.updateIp(pAuth.getNickname(), ip);
-        }
 
         String email = pAuth.getEmail();
         boolean passwordVerified = forceLogin || passwordSecurity.comparePassword(
@@ -185,9 +165,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
-            if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                ConsoleLogger.info(player.getName() + " logged in!");
-            }
+            ConsoleLogger.fine(player.getName() + " logged in!");
 
             // makes player isLoggedin via API
             playerCache.addPlayer(auth);
@@ -197,20 +175,13 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
-            if (limboPlayer != null) {
-                if (limboPlayer.getTimeoutTask() != null) {
-                    limboPlayer.getTimeoutTask().cancel();
-                }
-                if (limboPlayer.getMessageTask() != null) {
-                    limboPlayer.getMessageTask().cancel();
-                }
+            PlayerData playerData = limboCache.getPlayerData(name);
+            if (playerData != null) {
+                playerData.clearTasks();
             }
             syncProcessManager.processSyncPlayerLogin(player);
         } else if (player.isOnline()) {
-            if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                ConsoleLogger.info(player.getName() + " used the wrong password");
-            }
+            ConsoleLogger.fine(player.getName() + " used the wrong password");
             if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
                 bukkitService.scheduleSyncDelayedTask(new Runnable() {
                     @Override
@@ -224,12 +195,12 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 service.send(player, MessageKey.WRONG_PASSWORD);
 
                 // If the authentication fails check if Captcha is required and send a message to the player
-                if (needsCaptcha(player)) {
+                if (captchaManager.isCaptchaRequired(name)) {
                     service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
                 }
             }
         } else {
-            ConsoleLogger.showError("Player " + name + " wasn't online during login process, aborted... ");
+            ConsoleLogger.warning("Player " + name + " wasn't online during login process, aborted... ");
         }
     }
 
@@ -255,10 +226,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
         String message = ChatColor.GRAY + StringUtils.join(ChatColor.GRAY + ", ", formattedNames) + ".";
 
-        if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-            ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
-            ConsoleLogger.info(message);
-        }
+        ConsoleLogger.fine("The user " + player.getName() + " has " + auths.size() + " accounts:");
+        ConsoleLogger.fine(message);
 
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(player.getName())

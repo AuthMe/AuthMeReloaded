@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link NewSetting} and the project's config.yml,
+ * Test for {@link Settings} and the project's config.yml,
  * verifying that no settings are missing from the file.
  */
 public class ConfigFileConsistencyTest {

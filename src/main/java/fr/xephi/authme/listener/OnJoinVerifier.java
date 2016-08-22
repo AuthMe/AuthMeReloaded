@@ -9,12 +9,13 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ import java.util.regex.Pattern;
 class OnJoinVerifier implements Reloadable {
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
     @Inject
     private DataSource dataSource;
     @Inject
@@ -56,13 +57,7 @@ class OnJoinVerifier implements Reloadable {
     @Override
     public void reload() {
         String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
-        try {
-            nicknamePattern = Pattern.compile(nickRegEx);
-        } catch (Exception e) {
-            nicknamePattern = Pattern.compile(".*?");
-            ConsoleLogger.showError("Nickname pattern is not a valid regular expression! "
-                + "Fallback to allowing all nicknames");
-        }
+        nicknamePattern = Utils.safePatternCompile(nickRegEx);
     }
 
     /**
@@ -73,7 +68,7 @@ class OnJoinVerifier implements Reloadable {
      */
     public void checkAntibot(String playerName, boolean isAuthAvailable) throws FailedVerificationException {
         if (antiBot.getAntiBotStatus() == AntiBot.AntiBotStatus.ACTIVE && !isAuthAvailable) {
-            antiBot.antibotKicked.addIfAbsent(playerName);
+            antiBot.addPlayerKick(playerName);
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }
     }
@@ -162,15 +157,15 @@ class OnJoinVerifier implements Reloadable {
     }
 
     /**
-     * Checks that the player's country is admitted if he is not registered.
+     * Checks that the player's country is admitted.
      *
      * @param isAuthAvailable whether or not the user is registered
-     * @param event the login event of the player
+     * @param playerIp the ip address of the player
      */
     public void checkPlayerCountry(boolean isAuthAvailable,
-                                    PlayerLoginEvent event) throws FailedVerificationException {
-        if (!isAuthAvailable && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)) {
-            String playerIp = event.getAddress().getHostAddress();
+                                   String playerIp) throws FailedVerificationException {
+        if ((!isAuthAvailable || settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED))
+            && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)) {
             if (!validationService.isCountryAdmitted(playerIp)) {
                 throw new FailedVerificationException(MessageKey.COUNTRY_BANNED_ERROR);
             }

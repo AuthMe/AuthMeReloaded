@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
@@ -22,12 +23,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -55,6 +54,9 @@ public class RegisterAdminCommandTest {
 
     @Mock
     private ValidationService validationService;
+
+    @Mock
+    private LimboCache limboCache;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -160,6 +162,8 @@ public class RegisterAdminCommandTest {
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
         Player player = mock(Player.class);
         given(bukkitService.getPlayerExact(user)).willReturn(player);
+        String kickForAdminRegister = "Admin registered you -- log in again";
+        given(commandService.retrieveSingle(MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -174,7 +178,7 @@ public class RegisterAdminCommandTest {
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
         verify(dataSource).setUnlogged(user);
-        verify(player).kickPlayer(argThat(containsString("please log in again")));
+        verify(player).kickPlayer(kickForAdminRegister);
     }
 
     private void assertAuthHasInfo(PlayerAuth auth, String name, HashedPassword hashedPassword) {

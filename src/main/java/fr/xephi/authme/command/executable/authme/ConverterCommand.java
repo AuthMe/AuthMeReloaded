@@ -1,6 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.injector.Injector;
 import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
@@ -10,7 +12,6 @@ import fr.xephi.authme.converter.RoyalAuthConverter;
 import fr.xephi.authme.converter.SqliteToSql;
 import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
@@ -30,7 +31,7 @@ public class ConverterCommand implements ExecutableCommand {
     private BukkitService bukkitService;
 
     @Inject
-    private AuthMeServiceInitializer initializer;
+    private Injector injector;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
@@ -45,13 +46,17 @@ public class ConverterCommand implements ExecutableCommand {
         }
 
         // Get the proper converter instance
-        final Converter converter = initializer.newInstance(jobType.getConverterClass());
+        final Converter converter = injector.newInstance(jobType.getConverterClass());
 
         // Run the convert job
         bukkitService.runTaskAsynchronously(new Runnable() {
             @Override
             public void run() {
-                converter.execute(sender);
+                try {
+                    converter.execute(sender);
+                } catch (Exception e) {
+                    ConsoleLogger.logException("Error during conversion:", e);
+                }
             }
         });
 

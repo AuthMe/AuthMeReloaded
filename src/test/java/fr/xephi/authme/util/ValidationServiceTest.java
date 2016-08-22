@@ -1,53 +1,60 @@
 package fr.xephi.authme.util;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.base.Strings;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link ValidationService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class ValidationServiceTest {
 
+    @InjectDelayed
     private ValidationService validationService;
     @Mock
-    private NewSetting settings;
+    private Settings settings;
     @Mock
     private DataSource dataSource;
     @Mock
     private PermissionsManager permissionsManager;
+    @Mock
+    private GeoLiteAPI geoLiteApi;
 
-    @Before
+    @BeforeInjecting
     public void createService() {
         given(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).willReturn("[a-zA-Z]+");
         given(settings.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(3);
         given(settings.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(20);
         given(settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
-            .willReturn(Arrays.asList("unsafe", "other-unsafe"));
+            .willReturn(asList("unsafe", "other-unsafe"));
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
-        validationService = new ValidationService(settings, dataSource, permissionsManager);
+        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(asList("name01", "npc"));
     }
 
     @Test
@@ -122,7 +129,7 @@ public class ValidationServiceTest {
     public void shouldAcceptEmailWithWhitelist() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
-            .willReturn(Arrays.asList("domain.tld", "example.com"));
+            .willReturn(asList("domain.tld", "example.com"));
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String>emptyList());
 
         // when
@@ -136,7 +143,7 @@ public class ValidationServiceTest {
     public void shouldRejectEmailNotInWhitelist() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
-            .willReturn(Arrays.asList("domain.tld", "example.com"));
+            .willReturn(asList("domain.tld", "example.com"));
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String>emptyList());
 
         // when
@@ -151,7 +158,7 @@ public class ValidationServiceTest {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String>emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
-            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
+            .willReturn(asList("Example.org", "a-test-name.tld"));
 
         // when
         boolean result = validationService.validateEmail("sample@valid-name.tld");
@@ -165,7 +172,7 @@ public class ValidationServiceTest {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String>emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
-            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
+            .willReturn(asList("Example.org", "a-test-name.tld"));
 
         // when
         boolean result = validationService.validateEmail("sample@a-Test-name.tld");
@@ -186,6 +193,7 @@ public class ValidationServiceTest {
         assertThat(validationService.validateEmail("your@email.com"), equalTo(false));
     }
 
+    @Test
     public void shouldAllowRegistration() {
         // given
         CommandSender sender = mock(CommandSender.class);
@@ -201,6 +209,7 @@ public class ValidationServiceTest {
         assertThat(result, equalTo(true));
     }
 
+    @Test
     public void shouldRejectEmailWithTooManyAccounts() {
         // given
         CommandSender sender = mock(CommandSender.class);
@@ -216,6 +225,7 @@ public class ValidationServiceTest {
         assertThat(result, equalTo(false));
     }
 
+    @Test
     public void shouldAllowBypassForPresentPermission() {
         // given
         CommandSender sender = mock(CommandSender.class);
@@ -229,6 +239,97 @@ public class ValidationServiceTest {
 
         // then
         assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldRecognizeUnrestrictedNames() {
+        assertThat(validationService.isUnrestricted("npc"), equalTo(true));
+        assertThat(validationService.isUnrestricted("someplayer"), equalTo(false));
+        assertThat(validationService.isUnrestricted("NAME01"), equalTo(true));
+
+        // Check reloading
+        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(asList("new", "names"));
+        validationService.reload();
+        assertThat(validationService.isUnrestricted("npc"), equalTo(false));
+        assertThat(validationService.isUnrestricted("New"), equalTo(true));
+    }
+
+    @Test
+    public void shouldNotInvokeGeoLiteApiIfCountryListsAreEmpty() {
+        // given
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
+
+        // when
+        boolean result = validationService.isCountryAdmitted("addr");
+
+        // then
+        assertThat(result, equalTo(true));
+        verifyZeroInteractions(geoLiteApi);
+    }
+
+    @Test
+    public void shouldAcceptCountryInWhitelist() {
+        // given
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        String ip = "127.0.0.1";
+        given(geoLiteApi.getCountryCode(ip)).willReturn("CH");
+
+        // when
+        boolean result = validationService.isCountryAdmitted(ip);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(geoLiteApi).getCountryCode(ip);
+    }
+
+    @Test
+    public void shouldRejectCountryMissingFromWhitelist() {
+        // given
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        String ip = "123.45.67.89";
+        given(geoLiteApi.getCountryCode(ip)).willReturn("BR");
+
+        // when
+        boolean result = validationService.isCountryAdmitted(ip);
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(geoLiteApi).getCountryCode(ip);
+    }
+
+    @Test
+    public void shouldAcceptCountryAbsentFromBlacklist() {
+        // given
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
+        String ip = "127.0.0.1";
+        given(geoLiteApi.getCountryCode(ip)).willReturn("BR");
+
+        // when
+        boolean result = validationService.isCountryAdmitted(ip);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(geoLiteApi).getCountryCode(ip);
+    }
+
+    @Test
+    public void shouldRejectCountryInBlacklist() {
+        // given
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
+        String ip = "123.45.67.89";
+        given(geoLiteApi.getCountryCode(ip)).willReturn("IT");
+
+        // when
+        boolean result = validationService.isCountryAdmitted(ip);
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(geoLiteApi).getCountryCode(ip);
     }
 
     private static void assertErrorEquals(ValidationResult validationResult, MessageKey messageKey, String... args) {

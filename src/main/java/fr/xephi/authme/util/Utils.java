@@ -1,81 +1,49 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for various operations used in the codebase.
  */
 public final class Utils {
 
-    private static AuthMe plugin = AuthMe.getInstance();
-
     private Utils() {
     }
 
     /**
-     * TODO: This method requires better explanation.
-     * <p>
-     * Set the normal group of a player.
+     * Get player's UUID if can, name otherwise.
      *
-     * @param player The player.
-     * @param group  The normal group.
+     * @param player Player to retrieve
      *
-     * @return True on success, false on failure.
+     * @return player's UUID or Name in String.
      */
-    public static boolean addNormal(Player player, String group) {
-        if (!Settings.isPermissionCheckEnabled) {
-            return false;
-        }
-
-        // Get the permissions manager, and make sure it's valid
-        PermissionsManager permsMan = plugin.getPermissionsManager();
-        if (permsMan == null) {
-            ConsoleLogger.showError("Failed to access permissions manager instance, aborting.");
-            return false;
-        }
-
-        // Remove old groups
-        permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup,
-            Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
-
-        // Add the normal group, return the result
-        return permsMan.addGroup(player, group);
-    }
-
-    @Deprecated
-    public static boolean isUnrestricted(Player player) {
-        // TODO ljacqu 20160602: Checking for Settings.isAllowRestrictedIp is wrong! Nothing in the config suggests
-        // that this setting has anything to do with unrestricted names
-        return Settings.isAllowRestrictedIp
-            && Settings.getUnrestrictedName.contains(player.getName().toLowerCase());
-    }
-
-    @Deprecated
-    public static void teleportToSpawn(Player player) {
-        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-            Location spawn = plugin.getSpawnLocation(player);
-            AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawn);
-            plugin.getServer().getPluginManager().callEvent(tpEvent);
-            if (!tpEvent.isCancelled()) {
-                player.teleport(tpEvent.getTo());
-            }
-        }
-    }
-
     public static String getUUIDorName(OfflinePlayer player) {
+        // We may made this configurable in future
+        // so we can have uuid support.
         try {
             return player.getUniqueId().toString();
-        } catch (Exception ignore) {
+        } catch (NoSuchMethodError ignore) {
             return player.getName();
+        }
+    }
+
+    /**
+     * Compile Pattern sneaky without throwing Exception.
+     *
+     * @param pattern pattern string to compile
+     *
+     * @return the given regex compiled into Pattern object.
+     */
+    public static Pattern safePatternCompile(String pattern) {
+        try {
+            return Pattern.compile(pattern);
+        } catch (Exception e) {
+            ConsoleLogger.warning("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
+            return Pattern.compile(".*?");
         }
     }
 
@@ -88,5 +56,21 @@ public final class Utils {
      */
     public static String getPlayerIp(Player p) {
         return p.getAddress().getAddress().getHostAddress();
+    }
+
+    /**
+     * Returns whether the class exists in the current class loader.
+     *
+     * @param className the class name to check
+     *
+     * @return true if the class is loaded, false otherwise
+     */
+    public static boolean isClassLoaded(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }

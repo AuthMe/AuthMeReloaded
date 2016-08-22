@@ -5,7 +5,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -13,9 +13,12 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -23,22 +26,26 @@ import java.util.regex.Pattern;
  */
 public class ValidationService implements Reloadable {
 
-    private final NewSetting settings;
-    private final DataSource dataSource;
-    private final PermissionsManager permissionsManager;
-    private Pattern passwordRegex;
-
     @Inject
-    public ValidationService(NewSetting settings, DataSource dataSource, PermissionsManager permissionsManager) {
-        this.settings = settings;
-        this.dataSource = dataSource;
-        this.permissionsManager = permissionsManager;
-        reload();
-    }
+    private Settings settings;
+    @Inject
+    private DataSource dataSource;
+    @Inject
+    private PermissionsManager permissionsManager;
+    @Inject
+    private GeoLiteAPI geoLiteApi;
 
+    private Pattern passwordRegex;
+    private Set<String> unrestrictedNames;
+
+    ValidationService() { }
+
+    @PostConstruct
     @Override
     public void reload() {
-        passwordRegex = Pattern.compile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
+        passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
+        // Use Set for more efficient contains() lookup
+        unrestrictedNames = new HashSet<>(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES));
     }
 
     /**
@@ -105,10 +112,20 @@ public class ValidationService implements Reloadable {
             return true;
         }
 
-        String countryCode = GeoLiteAPI.getCountryCode(hostAddress);
+        String countryCode = geoLiteApi.getCountryCode(hostAddress);
         return validateWhitelistAndBlacklist(countryCode,
             ProtectionSettings.COUNTRIES_WHITELIST,
             ProtectionSettings.COUNTRIES_BLACKLIST);
+    }
+
+    /**
+     * Checks if the name is unrestricted according to the configured settings.
+     *
+     * @param name the name to verify
+     * @return true if unrestricted, false otherwise
+     */
+    public boolean isUnrestricted(String name) {
+        return unrestrictedNames.contains(name.toLowerCase());
     }
 
     /**

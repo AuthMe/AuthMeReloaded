@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * Command for a player to unregister himself.
+ */
 public class UnregisterCommand extends PlayerCommand {
 
     @Inject
@@ -24,15 +27,15 @@ public class UnregisterCommand extends PlayerCommand {
     @Override
     public void runCommand(Player player, List<String> arguments) {
         String playerPass = arguments.get(0);
-        final String playerNameLowerCase = player.getName().toLowerCase();
+        final String playerName = player.getName();
 
         // Make sure the player is authenticated
-        if (!playerCache.isAuthenticated(playerNameLowerCase)) {
+        if (!playerCache.isAuthenticated(playerName)) {
             commandService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }
 
         // Unregister the player
-        management.performUnregister(player, playerPass, false);
+        management.performUnregister(player, playerPass);
     }
 }

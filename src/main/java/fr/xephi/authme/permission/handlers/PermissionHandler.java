@@ -39,6 +39,17 @@ public interface PermissionHandler {
     boolean hasPermission(Player player, PermissionNode node);
 
     /**
+     * Check if a player has permission by their name.
+     * Used to check an offline player's permission.
+     *
+     * @param name  The player's name.
+     * @param node The permission node.
+     *
+     * @return True if the player has permission.
+     */
+    boolean hasPermissionOffline(String name, PermissionNode node);
+
+    /**
      * Check whether the player is in the specified group.
      *
      * @param player    The player.

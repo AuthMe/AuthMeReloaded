@@ -2,23 +2,23 @@
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
 
-#####News:
-
-- Latest version of AuthMeBridge is finally compatible with latest AuthMe snapshots! ;)
-
 #####Development tools:
 
-- DEVELOPMENT TEAM REPO (<strong>please send PRs here!</strong>): <a href="https://github.com/AuthMe-Team/AuthMeReloaded">Github Development Page</a>
+- MAIN REPO (**release sources, issue tracker!**): [Github Main Page](https://github.com/Xephi/AuthMeReloaded)
+
+- DEVELOPMENT TEAM REPO (**latest sources, please send PRs here!**): [Github Development Page](https://github.com/AuthMe/AuthMeReloaded)
 
 - Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr/job/AuthMeReloaded">Xephi's Jenkins</a>
+- Build Server (**DEVELOPMENT BUILDS**): [Xephi's Jenkins](http://ci.xephi.fr/job/AuthMeReloaded)
 
-- Build status: [![Build Status](https://travis-ci.org/AuthMe-Team/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe-Team/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
+- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded)
 
-- Build status (CircleCI): [![Circle CI](https://circleci.com/gh/AuthMe-Team/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe-Team/AuthMeReloaded)
-- Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe-Team/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
-- JitPack (just in case): [![](https://jitpack.io/v/AuthMe-Team/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe-Team/AuthMeReloaded)
+- Dependencies: [![Dependency Status](https://www.versioneye.com/user/projects/5617ca36a193340f28000222/badge.svg)](https://www.versioneye.com/user/projects/5617ca36a193340f28000222)
+
+- Build status (CircleCI): [![Circle CI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
+- Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
+- JitPack (just in case): [![](https://jitpack.io/v/AuthMe/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe/AuthMeReloaded)
 
 - Code Coverage: [![Coverage Status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
 
@@ -39,6 +39,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 <img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
 
 #####Development history:
+Outdated!
 [![Gource AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
 
 <hr>
@@ -53,8 +54,8 @@ McStats: http://mcstats.org/plugin/AuthMe
 >- Execute command "mvn clean install"
 
 #####Running Requirements:
->- Java 1.7 (should work also with Java 1.8)
->- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X or 1.9.X)
+>- Java 1.7 or 1.8
+>- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X, 1.9.X, 1.10.X)
 >- ProtocolLib (optional, required by the protectInventory feature)
 
 <hr>
@@ -62,13 +63,16 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####"The best authentication plugin for the Bukkit/Spigot API!"
 
-<p>Prevent username stealing on your server!<br>
-Use it to secure your Offline mode server or to increase your Online mode server's protection!</p>
+Prevent username stealing on your server!<br>
+Use it to secure your Offline mode server or to increase your Online mode server's protection!
 
-<p>AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
-typing commands or using the inventory. It can also kick players with uncommonly long or short player names or kick players from banned countries.</p>
-<p>With the Session Login feature you don't have to execute the authentication command every time you connect to the server! Each command and every feature can be enabled or disabled from our well structured configuration file.</p>
-<p>You can also create your own translation file and, if you want, you can share it with us! :)</p>
+AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
+typing commands or using the inventory. It can also kick players with uncommonly long or short player names or kick players from banned countries.
+
+With the Session Login feature you don't have to execute the authentication command every time you connect to the server! 
+Each command and every feature can be enabled or disabled from our well structured configuration file.
+
+You can also create your own translation file and, if you want, you can share it with us! :)
 
 ####Features:
 <ul>
@@ -114,24 +118,25 @@ typing commands or using the inventory. It can also kick players with uncommonly
 ####Email Recovery Dependency
 <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-configure-email-recovery-system/">How to configure email recovery system?</a>
 ####Commands
-<a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/commands.md">Command list and usage</a>
+[Command list and usage](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/commands.md)
 ####Permissions
-<ul><li>authme.player.* - for all user commands
-</li><li>authme.admin.* - for all admin commands
-</li><li><a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/permission_nodes.md">List of all single permissions</a>
-</li></ul>
+- authme.player.* - for all user commands
+- authme.admin.* - for all admin commands
+- [List of all permission nodes](http://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/permission_nodes.md)
+
 ####How To
-<ul><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">How to Install and Setup</a>
-</li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-xauth/">How to import database from xAuth</a>
-</li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/">Website Integration</a>
-</li><li><a href="https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml">Click here for an example of the Config file</a>
-</li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/">How to convert from Rakamak</a>
-</li><li>Convert from FlatFile (auths.db but not the sqlite one) to MySQL: /authme converter
-</li></ul>
+- [How to install and set up](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/)
+- [How to import database from xAuth](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-xauth/)
+- [Website integration](http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/)
+- [Click here for an example of the config file](https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml)
+- [How to convert from Rakamak](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/)
+- Convert from FlatFile (auths.db but not the sqlite one) to MySQL: /authme converter
+
 <hr>
 
 #####GeoIP
-<p>This product uses data from the GeoLite API created by MaxMind, available at <a href="http://www.maxmind.com">http://www.maxmind.com</a></p>
+This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com
+
 <hr>
 
 #####Donate
@@ -144,6 +149,6 @@ GameHosting.it is leader in Italy as Game Server Provider. With its own DataCent
 [![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
 
 #####Credits
-<p>Team members: look at the <a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/team.txt">team.txt file</a>
+<p>Team members: look at the <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/team.txt">team.txt file</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>

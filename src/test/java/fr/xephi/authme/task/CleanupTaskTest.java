@@ -1,0 +1,46 @@
+package fr.xephi.authme.task;
+
+import ch.jalu.injector.Injector;
+import fr.xephi.authme.initialization.HasCleanup;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
+
+/**
+ * Test for {@link CleanupTask}.
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class CleanupTaskTest {
+
+    @InjectMocks
+    private CleanupTask cleanupTask;
+
+    @Mock
+    private Injector injector;
+
+    @Test
+    public void shouldPerformCleanup() {
+        // given
+        List<HasCleanup> services = asList(mock(HasCleanup.class), mock(HasCleanup.class), mock(HasCleanup.class));
+        given(injector.retrieveAllOfType(HasCleanup.class)).willReturn(services);
+
+        // when
+        cleanupTask.run();
+
+        // then
+        verify(services.get(0)).performCleanup();
+        verify(services.get(1)).performCleanup();
+        verify(services.get(2)).performCleanup();
+        verify(injector, only()).retrieveAllOfType(HasCleanup.class);
+    }
+}

@@ -1,12 +1,9 @@
 package fr.xephi.authme.datasource;
 
-import com.google.common.annotations.VisibleForTesting;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +14,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,27 +39,11 @@ public class FlatFile implements DataSource {
      */
     private final File source;
 
-    public FlatFile() {
-        AuthMe instance = AuthMe.getInstance();
-
-        source = new File(instance.getDataFolder(), "auths.db");
-        try {
-            source.createNewFile();
-        } catch (IOException e) {
-            ConsoleLogger.logException("Cannot open flatfile", e);
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use FLAT FILE... SHUTDOWN...");
-                instance.getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled) {
-                instance.getServer().getPluginManager().disablePlugin(instance);
-            }
-        }
-    }
-
-    @VisibleForTesting
-    public FlatFile(File source) {
+    public FlatFile(File source) throws IOException {
         this.source = source;
+        if (!source.exists() && !source.createNewFile()) {
+            throw new IOException("Could not create file '" + source.getPath() + "'");
+        }
     }
 
     @Override
@@ -82,7 +64,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -109,7 +91,7 @@ public class FlatFile implements DataSource {
             bw = new BufferedWriter(new FileWriter(source, true));
             bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(bw);
@@ -145,7 +127,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -179,7 +161,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -216,7 +198,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -229,11 +211,10 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
+    public Set<String> getRecordsToPurge(long until) {
         BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-        Set<String> cleared = new HashSet<>();
+        Set<String> list = new HashSet<>();
+
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -241,25 +222,24 @@ public class FlatFile implements DataSource {
                 String[] args = line.split(":");
                 if (args.length >= 4) {
                     if (Long.parseLong(args[3]) >= until) {
-                        lines.add(line);
+                        list.add(args[0]);
                         continue;
                     }
                 }
-                cleared.add(args[0]);
-            }
-            bw = new BufferedWriter(new FileWriter(source));
-            for (String l : lines) {
-                bw.write(l + "\n");
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return cleared;
+            ConsoleLogger.warning(ex.getMessage());
+            return list;
         } finally {
             silentClose(br);
-            silentClose(bw);
         }
 
-        return cleared;
+        return list;
+    }
+
+    @Override
+    public void purgeRecords(Collection<String> toPurge) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
     @Override
@@ -284,7 +264,7 @@ public class FlatFile implements DataSource {
                 bw.write(l + "\n");
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             silentClose(br);
@@ -306,7 +286,7 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return null;
         } finally {
             silentClose(br);
@@ -339,10 +319,10 @@ public class FlatFile implements DataSource {
                 }
             }
         } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             if (br != null) {
@@ -374,10 +354,10 @@ public class FlatFile implements DataSource {
             }
             return countIp;
         } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return new ArrayList<>();
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return new ArrayList<>();
         } finally {
             if (br != null) {
@@ -404,7 +384,7 @@ public class FlatFile implements DataSource {
             }
             return countEmail;
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
         } finally {
             if (br != null) {
                 try {
@@ -414,37 +394,6 @@ public class FlatFile implements DataSource {
             }
         }
         return 0;
-    }
-
-    @Override
-    public void purgeBanned(Set<String> banned) {
-        BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                try {
-                    if (banned.contains(args[0])) {
-                        lines.add(line);
-                    }
-                } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {
-                }
-            }
-            bw = new BufferedWriter(new FileWriter(source));
-            for (String l : lines) {
-                bw.write(l + "\n");
-            }
-
-        } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-
-        } finally {
-            silentClose(br);
-            silentClose(bw);
-        }
     }
 
     @Override
@@ -479,7 +428,7 @@ public class FlatFile implements DataSource {
                 result++;
             }
         } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return result;
         } finally {
             silentClose(br);
@@ -489,11 +438,6 @@ public class FlatFile implements DataSource {
 
     @Override
     public boolean updateRealName(String user, String realName) {
-        throw new UnsupportedOperationException("Flat file no longer supported");
-    }
-
-    @Override
-    public boolean updateIp(String user, String ip) {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 

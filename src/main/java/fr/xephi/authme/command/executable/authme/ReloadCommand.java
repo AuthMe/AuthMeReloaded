@@ -1,17 +1,20 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
+import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,10 +26,10 @@ public class ReloadCommand implements ExecutableCommand {
     private AuthMe plugin;
 
     @Inject
-    private AuthMeServiceInitializer initializer;
+    private Injector injector;
 
     @Inject
-    private NewSetting settings;
+    private Settings settings;
 
     @Inject
     private DataSource dataSource;
@@ -44,12 +47,24 @@ public class ReloadCommand implements ExecutableCommand {
                 ConsoleLogger.info("Note: cannot change database type during /authme reload");
                 sender.sendMessage("Note: cannot change database type during /authme reload");
             }
-            initializer.performReloadOnServices();
+            performReloadOnServices();
             commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
             sender.sendMessage("Error occurred during reload of AuthMe: aborting");
             ConsoleLogger.logException("Aborting! Encountered exception during reload of AuthMe:", e);
             plugin.stopOrUnload();
+        }
+    }
+
+    private void performReloadOnServices() {
+        Collection<Reloadable> reloadables = injector.retrieveAllOfType(Reloadable.class);
+        for (Reloadable reloadable : reloadables) {
+            reloadable.reload();
+        }
+
+        Collection<SettingsDependent> settingsDependents = injector.retrieveAllOfType(SettingsDependent.class);
+        for (SettingsDependent dependent : settingsDependents) {
+            dependent.reload(settings);
         }
     }
 }

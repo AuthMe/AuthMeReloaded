@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -12,8 +13,6 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
@@ -49,6 +49,8 @@ public class RegisterCommandTest {
     @Mock
     private Management management;
 
+    @Mock
+    private SendMailSSL sendMailSsl;
 
     @BeforeClass
     public static void setup() {
@@ -72,7 +74,7 @@ public class RegisterCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("Player only!")));
-        verifyZeroInteractions(management);
+        verifyZeroInteractions(management, sendMailSsl);
     }
 
     @Test
@@ -86,6 +88,7 @@ public class RegisterCommandTest {
 
         // then
         verify(management).performRegister(player, "", "", true);
+        verifyZeroInteractions(sendMailSsl);
     }
 
     @Test
@@ -98,7 +101,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management);
+        verifyZeroInteractions(management, sendMailSsl);
     }
 
     @Test
@@ -112,7 +115,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management);
+        verifyZeroInteractions(management, sendMailSsl);
     }
 
     @Test
@@ -127,7 +130,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management);
+        verifyZeroInteractions(management, sendMailSsl);
     }
 
     @Test
@@ -135,14 +138,15 @@ public class RegisterCommandTest {
         // given
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(false);
-        given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("");
+        given(sendMailSsl.hasAllInformation()).willReturn(false);
         Player player = mock(Player.class);
 
         // when
         command.executeCommand(player, Collections.singletonList("myMail@example.tld"));
 
         // then
-        verify(player).sendMessage(argThat(containsString("no email address")));
+        verify(commandService).send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
+        verify(sendMailSsl).hasAllInformation();
         verifyZeroInteractions(management);
     }
 
@@ -155,6 +159,7 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
         // when
@@ -175,6 +180,7 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
         // when
@@ -182,6 +188,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_REGISTER);
+        verify(sendMailSsl).hasAllInformation();
         verifyZeroInteractions(management);
     }
 
@@ -196,6 +203,7 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
         // when
@@ -203,6 +211,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).validateEmail(playerMail);
+        verify(sendMailSsl).hasAllInformation();
         verify(management).performRegister(eq(player), argThat(stringWithLength(passLength)), eq(playerMail), eq(true));
     }
 
@@ -217,7 +226,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).send(player, MessageKey.PASSWORD_MATCH_ERROR);
-        verifyZeroInteractions(management);
+        verifyZeroInteractions(management, sendMailSsl);
     }
 
     @Test
@@ -230,20 +239,5 @@ public class RegisterCommandTest {
 
         // then
         verify(management).performRegister(player, "myPass", "", true);
-    }
-
-
-    private static TypeSafeMatcher<String> stringWithLength(final int length) {
-        return new TypeSafeMatcher<String>() {
-            @Override
-            protected boolean matchesSafely(String item) {
-                return item != null && item.length() == length;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("String with length " + length);
-            }
-        };
     }
 }

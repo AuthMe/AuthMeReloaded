@@ -2,7 +2,7 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -33,8 +33,8 @@ import static org.mockito.Mockito.verify;
  */
 public class MessagesIntegrationTest {
 
-    private static final String YML_TEST_FILE = "/messages_test.yml";
-    private static final String YML_DEFAULT_TEST_FILE = "/messages_default.yml";
+    private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + "output/messages_test.yml";
+    private static final String YML_DEFAULT_TEST_FILE = TestHelper.PROJECT_ROOT + "output/messages_default.yml";
     private Messages messages;
 
     @BeforeClass
@@ -53,7 +53,10 @@ public class MessagesIntegrationTest {
     @Before
     public void setUpMessages() {
         File testFile = TestHelper.getJarFile(YML_TEST_FILE);
-        messages = new Messages(testFile, YML_DEFAULT_TEST_FILE);
+        Settings settings = mock(Settings.class);
+        given(settings.getMessagesFile()).willReturn(testFile);
+        given(settings.getDefaultMessagesFile()).willReturn(YML_DEFAULT_TEST_FILE);
+        messages = new Messages(settings);
     }
 
     @Test
@@ -232,7 +235,9 @@ public class MessagesIntegrationTest {
     @Test
     public void shouldAllowNullAsDefaultFile() {
         // given
-        Messages testMessages = new Messages(TestHelper.getJarFile(YML_TEST_FILE), null);
+        Settings settings = mock(Settings.class);
+        given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile(YML_TEST_FILE));
+        Messages testMessages = new Messages(settings);
         // Key not present in test file
         MessageKey key = MessageKey.TWO_FACTOR_CREATE;
 
@@ -249,11 +254,12 @@ public class MessagesIntegrationTest {
         MessageKey key = MessageKey.WRONG_PASSWORD;
         // assumption: message comes back as defined in messages_test.yml
         assumeThat(messages.retrieveSingle(key), equalTo("§cWrong password!"));
-        NewSetting settings = mock(NewSetting.class);
-        given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile("/messages_test2.yml"));
+        Settings settings = mock(Settings.class);
+        given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile(
+            TestHelper.PROJECT_ROOT + "output/messages_test2.yml"));
 
         // when
-        messages.loadSettings(settings);
+        messages.reload(settings);
 
         // then
         assertThat(messages.retrieveSingle(key), equalTo("test2 - wrong password"));

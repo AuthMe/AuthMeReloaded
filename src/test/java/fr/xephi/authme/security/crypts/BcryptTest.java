@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import org.junit.BeforeClass;
 
@@ -27,8 +27,8 @@ public class BcryptTest extends AbstractEncryptionMethodTest {
         );
     }
 
-    private static NewSetting mockSettings() {
-        NewSetting settings = mock(NewSetting.class);
+    private static Settings mockSettings() {
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         return settings;
     }

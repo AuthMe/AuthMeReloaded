@@ -1,23 +1,24 @@
 package fr.xephi.authme.process.register;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
@@ -30,10 +31,10 @@ import java.util.List;
 
 import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
 
+/**
+ * Asynchronous processing of a request for registration.
+ */
 public class AsyncRegister implements AsynchronousProcess {
-
-    @Inject
-    private AuthMe plugin;
 
     @Inject
     private DataSource database;
@@ -55,6 +56,16 @@ public class AsyncRegister implements AsynchronousProcess {
 
     @Inject
     private ValidationService validationService;
+
+    @Inject
+    private SendMailSSL sendMailSsl;
+
+    @Inject
+    private AsynchronousLogin asynchronousLogin;
+
+    @Inject
+    private BukkitService bukkitService;
+
 
     AsyncRegister() { }
 
@@ -138,11 +149,11 @@ public class AsyncRegister implements AsynchronousProcess {
         }
         database.updateEmail(auth);
         database.updateSession(auth);
-        plugin.mail.main(auth, password);
+        sendMailSsl.sendPasswordMail(auth, password);
         syncProcessManager.processSyncEmailRegister(player);
     }
 
-    private void passwordRegister(Player player, String password, boolean autoLogin) {
+    private void passwordRegister(final Player player, String password, boolean autoLogin) {
         final String name = player.getName().toLowerCase();
         final String ip = Utils.getPlayerIp(player);
         final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
@@ -159,11 +170,13 @@ public class AsyncRegister implements AsynchronousProcess {
             return;
         }
 
-        if (!Settings.forceRegLogin && autoLogin) {
-            //PlayerCache.getInstance().addPlayer(auth);
-            //database.setLogged(name);
-            // TODO: check this...
-            plugin.getManagement().performLogin(player, "dontneed", true);
+        if (!service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER) && autoLogin) {
+            bukkitService.runTaskAsynchronously(new Runnable(){
+                @Override
+                public void run() {
+                    asynchronousLogin.login(player, "dontneed", true);
+                }
+            });
         }
         syncProcessManager.processSyncPasswordRegister(player);
 

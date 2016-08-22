@@ -1,11 +1,11 @@
 package fr.xephi.authme.command;
 
+import ch.jalu.injector.Injector;
 import com.google.common.collect.Sets;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -54,7 +54,7 @@ public class CommandHandlerTest {
     private CommandHandler handler;
 
     @Mock
-    private AuthMeServiceInitializer initializer;
+    private Injector injector;
     @Mock
     private CommandMapper commandMapper;
     @Mock
@@ -67,21 +67,22 @@ public class CommandHandlerTest {
     @Before
     @SuppressWarnings("unchecked")
     public void initializeCommandMapper() {
-        given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(ExecutableCommand.class,
-            TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
+        given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(
+            ExecutableCommand.class, TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
         setInjectorToMockExecutableCommandClasses();
-        handler = new CommandHandler(initializer, commandMapper, permissionsManager, helpProvider);
+
+        handler = new CommandHandler(injector, commandMapper, permissionsManager, helpProvider);
     }
 
     /**
-     * Makes the initializer return a mock when {@link AuthMeServiceInitializer#newInstance(Class)} is invoked
-     * with (a child of) ExecutableCommand.class. The mocks the initializer creates are stored in {@link #mockedCommands}.
+     * Makes the injector return a mock when {@link Injector#newInstance(Class)} is invoked
+     * with (a child of) ExecutableCommand.class. The mocks the injector creates are stored in {@link #mockedCommands}.
      * <p>
      * The {@link CommandMapper} is mocked in {@link #initializeCommandMapper()} to return certain test classes.
      */
     @SuppressWarnings("unchecked")
     private void setInjectorToMockExecutableCommandClasses() {
-        given(initializer.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
+        given(injector.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Class<?> clazz = (Class<?>) invocation.getArguments()[0];

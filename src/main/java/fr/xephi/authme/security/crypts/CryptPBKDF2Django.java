@@ -32,7 +32,7 @@ public class CryptPBKDF2Django extends HexSaltedMethod {
         try {
             iterations = Integer.parseInt(line[1]);
         } catch (NumberFormatException e) {
-            ConsoleLogger.showError("Could not read number of rounds for CryptPBKDF2Django:"
+            ConsoleLogger.warning("Could not read number of rounds for CryptPBKDF2Django:"
                 + StringUtils.formatException(e));
             return false;
         }

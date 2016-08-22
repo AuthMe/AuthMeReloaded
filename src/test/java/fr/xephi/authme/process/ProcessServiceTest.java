@@ -7,7 +7,7 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
@@ -37,7 +37,7 @@ public class ProcessServiceTest {
     private ValidationService validationService;
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private Messages messages;
@@ -64,7 +64,7 @@ public class ProcessServiceTest {
     @Test
     public void shouldReturnSettings() {
         // given/when
-        NewSetting result = processService.getSettings();
+        Settings result = processService.getSettings();
 
         // then
         assertThat(result, equalTo(settings));

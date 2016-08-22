@@ -22,12 +22,11 @@ public class MessageKeyTest {
         // when / then
         for (MessageKey messageKey : messageKeys) {
             String key = messageKey.getKey();
-            if (keys.contains(key)) {
+            if (!keys.add(key)) {
                 fail("Found key '" + messageKey.getKey() + "' twice!");
             } else if (StringUtils.isEmpty(key)) {
                 fail("Key for message key '" + messageKey + "' is empty");
             }
-            keys.add(key);
         }
     }
 }

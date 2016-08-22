@@ -7,19 +7,19 @@ import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 
 public class SqliteToSql implements Converter {
 
-    private final NewSetting settings;
+    private final Settings settings;
     private final DataSource dataSource;
     private final Messages messages;
 
     @Inject
-    SqliteToSql(NewSetting settings, DataSource dataSource, Messages messages) {
+    SqliteToSql(Settings settings, DataSource dataSource, Messages messages) {
         this.settings = settings;
         this.dataSource = dataSource;
         this.messages = messages;

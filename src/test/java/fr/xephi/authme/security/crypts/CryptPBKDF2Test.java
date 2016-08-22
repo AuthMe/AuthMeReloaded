@@ -6,7 +6,7 @@ import org.junit.Ignore;
  * Test for {@link CryptPBKDF2}.
  */
 @Ignore
-// TODO #369: This algorithm seems broken
+// TODO #685: This algorithm seems broken
 public class CryptPBKDF2Test extends AbstractEncryptionMethodTest {
 
     public CryptPBKDF2Test() {

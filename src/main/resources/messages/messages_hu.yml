@@ -66,3 +66,7 @@ denied_command: '&cAmíg nem vagy bejelentkezve, nem használhatod ezt a parancs
 same_ip_online: 'Már valaki csatlakozott a szerverhez ezzel az IP címmel!'
 password_error_chars: '&4A választott jelszó nem engedélyezett karaktereket tartalmaz. Engedélyezett karakterek: REG_EX'
 tempban_max_logins: '&cIdeiglenesen ki lettél tiltva mert túl sok alkalommal rontottad el a jelszavad!'
+incomplete_email_settings: 'Hiba: nem lett beállítva az össze szükséges beállítás az email küldéshez. Vedd fel a kapcsolatot egy adminnal.'
+accounts_owned_other: 'A %name nevű játékosnak, %count db regisztrációja van:'
+kicked_admin_registered: 'Adminisztrátor által regisztrálva lettél; kérlek lépj be újra!'
+accounts_owned_self: '%count db regisztrációd van:'

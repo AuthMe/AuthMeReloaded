@@ -20,15 +20,15 @@ import static org.junit.Assert.fail;
  */
 public final class ListenerConsistencyTest {
 
-    private static final Class<?>[] LISTENERS = { AuthMeBlockListener.class, AuthMeEntityListener.class,
-        AuthMePlayerListener.class, AuthMePlayerListener16.class, AuthMePlayerListener18.class,
-        AuthMeServerListener.class };
+    private static final Class<?>[] LISTENERS = { BlockListener.class, EntityListener.class,
+        PlayerListener.class, PlayerListener16.class, PlayerListener18.class, PlayerListener19.class,
+        ServerListener.class };
 
-    private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerListener#onPlayerJoin",
-        "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",
-        "AuthMePlayerListener#onPlayerQuit", "AuthMeServerListener#onPluginDisable",
-        "AuthMeServerListener#onServerPing", "AuthMeServerListener#onPluginEnable",
-        "AuthMePlayerListener#onJoinMessage");
+    private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet(
+        "PlayerListener#onPlayerJoin", "PlayerListener#onPlayerLogin",
+        "PlayerListener#onPlayerQuit", "ServerListener#onPluginDisable",
+        "ServerListener#onServerPing", "ServerListener#onPluginEnable",
+        "PlayerListener#onJoinMessage");
 
     @Test
     public void shouldSetIgnoreCancelledToTrue() {
@@ -53,7 +53,7 @@ public final class ListenerConsistencyTest {
     }
 
     @Test
-    public void shouldNotHaveMultipleHandlersForSameEvent() {
+    public void shouldNotHaveMultipleMethodsWithSameName() {
         Set<String> events = new HashSet<>();
         for (Class<?> listener : LISTENERS) {
             for (Method method : listener.getDeclaredMethods()) {

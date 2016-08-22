@@ -3,9 +3,10 @@ package fr.xephi.authme.datasource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.invocation.InvocationOnMock;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
-    private static NewSetting settings;
+    private static Settings settings;
     /** SQL statement to execute before running a test. */
     private static String sqlInitialize;
     /** Connection to the H2 test database. */
@@ -43,7 +44,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         // Check that we have an H2 driver
         Class.forName("org.h2.jdbcx.JdbcDataSource");
 
-        settings = mock(NewSetting.class);
+        settings = mock(Settings.class);
         when(settings.getProperty(any(Property.class))).thenAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -54,13 +55,12 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         set(DatabaseSettings.MYSQL_TABLE, "authme");
         TestHelper.setupLogger();
 
-        Path sqlInitFile = TestHelper.getJarPath("/datasource-integration/sql-initialize.sql");
+        Path sqlInitFile = TestHelper.getJarPath(TestHelper.PROJECT_ROOT + "datasource/sql-initialize.sql");
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile));
     }
 
     @Before
     public void initializeConnectionAndTable() throws SQLException {
-        silentClose(hikariSource);
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
         config.setConnectionTestQuery("VALUES 1");
@@ -75,6 +75,11 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
             st.execute(sqlInitialize);
         }
         hikariSource = ds;
+    }
+
+    @After
+    public void closeConnection() {
+        silentClose(hikariSource);
     }
 
     @Override

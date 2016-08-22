@@ -1,6 +1,6 @@
 package fr.xephi.authme.permission;
 
-import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.ServerOperator;
 
 /**
  * The default permission to fall back to if there is no support for permission nodes.
@@ -10,7 +10,7 @@ public enum DefaultPermission {
     /** No one has permission. */
     NOT_ALLOWED("No permission") {
         @Override
-        public boolean evaluate(CommandSender sender) {
+        public boolean evaluate(ServerOperator sender) {
             return false;
         }
     },
@@ -18,15 +18,15 @@ public enum DefaultPermission {
     /** Only players with OP status have permission. */
     OP_ONLY("OP's only") {
         @Override
-        public boolean evaluate(CommandSender sender) {
-            return sender.isOp();
+        public boolean evaluate(ServerOperator sender) {
+            return sender != null && sender.isOp();
         }
     },
 
     /** Everyone is granted permission. */
     ALLOWED("Everyone allowed") {
         @Override
-        public boolean evaluate(CommandSender sender) {
+        public boolean evaluate(ServerOperator sender) {
             return true;
         }
     };
@@ -48,7 +48,7 @@ public enum DefaultPermission {
      * @param sender the sender to process
      * @return true if the sender has permission, false otherwise
      */
-    public abstract boolean evaluate(CommandSender sender);
+    public abstract boolean evaluate(ServerOperator sender);
 
     /**
      * Return the textual representation.

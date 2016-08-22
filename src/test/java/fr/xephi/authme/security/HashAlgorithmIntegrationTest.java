@@ -1,9 +1,10 @@
 package fr.xephi.authme.security;
 
-import fr.xephi.authme.initialization.AuthMeServiceInitializer;
+import ch.jalu.injector.Injector;
+import ch.jalu.injector.InjectorBuilder;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
@@ -24,15 +25,15 @@ import static org.mockito.Mockito.mock;
  */
 public class HashAlgorithmIntegrationTest {
 
-    private static AuthMeServiceInitializer initializer;
+    private static Injector injector;
 
     @BeforeClass
     public static void setUpConfigAndInjector() {
-        NewSetting settings = mock(NewSetting.class);
+        Settings settings = mock(Settings.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
-        initializer = new AuthMeServiceInitializer();
-        initializer.register(NewSetting.class, settings);
+        injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
+        injector.register(Settings.class, settings);
     }
 
     @Test
@@ -43,10 +44,9 @@ public class HashAlgorithmIntegrationTest {
         // when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
-                if (classes.contains(algorithm.getClazz())) {
+                if (!classes.add(algorithm.getClazz())) {
                     fail("Found class '" + algorithm.getClazz() + "' twice!");
                 }
-                classes.add(algorithm.getClazz());
             }
         }
     }
@@ -56,7 +56,7 @@ public class HashAlgorithmIntegrationTest {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
-                EncryptionMethod method = initializer.newInstance(algorithm.getClazz());
+                EncryptionMethod method = injector.newInstance(algorithm.getClazz());
                 HashedPassword hashedPassword = method.computeHash("pwd", "name");
                 assertThat("Salt should not be null if method.hasSeparateSalt(), and vice versa. Method: '"
                     + method + "'", StringUtils.isEmpty(hashedPassword.getSalt()), equalTo(!method.hasSeparateSalt()));

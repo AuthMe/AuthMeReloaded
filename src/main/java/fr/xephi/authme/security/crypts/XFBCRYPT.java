@@ -1,6 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.util.StringUtils;
 
 import java.util.regex.Matcher;
@@ -29,9 +30,9 @@ public class XFBCRYPT implements EncryptionMethod {
     @Override
     public boolean comparePassword(String password, HashedPassword hash, String salt) {
         try {
-            return hash.getHash().length() > 3 && BCryptService.checkpw(password, hash.getHash());
+            return HashUtils.isValidBcryptHash(hash.getHash()) && BCryptService.checkpw(password, hash.getHash());
         } catch (IllegalArgumentException e) {
-            ConsoleLogger.showError("XfBCrypt checkpw() returned " + StringUtils.formatException(e));
+            ConsoleLogger.warning("XfBCrypt checkpw() returned " + StringUtils.formatException(e));
         }
         return false;
     }

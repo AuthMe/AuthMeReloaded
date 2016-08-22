@@ -15,6 +15,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -54,7 +55,6 @@ public class CacheDataSource implements DataSource {
                     return executorService.submit(new Callable<Optional<PlayerAuth>>() {
                         @Override
                         public Optional<PlayerAuth> call() {
-                            ConsoleLogger.debug("REFRESH " + key);
                             return load(key);
                         }
                     });
@@ -139,13 +139,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
-        Set<String> cleared = source.autoPurgeDatabase(until);
-        for (String name : cleared) {
-            cachedAuths.invalidate(name);
-        }
-
-        return cleared;
+    public Set<String> getRecordsToPurge(long until) {
+        return source.getRecordsToPurge(until);
     }
 
     @Override
@@ -160,14 +155,14 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void close() {
-        source.close();
-        cachedAuths.invalidateAll();
         executorService.shutdown();
         try {
             executorService.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.logException("Could not close executor service:", e);
         }
+        cachedAuths.invalidateAll();
+        source.close();
     }
 
     @Override
@@ -190,8 +185,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void purgeBanned(final Set<String> banned) {
-        source.purgeBanned(banned);
+    public void purgeRecords(final Collection<String> banned) {
+        source.purgeRecords(banned);
         cachedAuths.invalidateAll(banned);
     }
 
@@ -229,15 +224,6 @@ public class CacheDataSource implements DataSource {
     @Override
     public boolean updateRealName(String user, String realName) {
         boolean result = source.updateRealName(user, realName);
-        if (result) {
-            cachedAuths.refresh(user);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean updateIp(String user, String ip) {
-        boolean result = source.updateIp(user, ip);
         if (result) {
             cachedAuths.refresh(user);
         }

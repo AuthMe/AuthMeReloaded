@@ -1,63 +1,39 @@
 package fr.xephi.authme.process.register;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.events.LoginEvent;
-import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
-
-import static fr.xephi.authme.settings.properties.RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN;
 
 /**
  */
 public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
-    private AuthMe plugin;
+    private BungeeService bungeeService;
 
     @Inject
     private ProcessService service;
 
     @Inject
-    private BukkitService bukkitService;
-
-    @Inject
     private LimboCache limboCache;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private PlayerDataTaskManager playerDataTaskManager;
 
-    ProcessSyncPasswordRegister() { }
-
-
-    private void sendBungeeMessage(Player player) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ALL");
-        out.writeUTF("AuthMe");
-        out.writeUTF("register;" + player.getName());
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+    ProcessSyncPasswordRegister() {
     }
 
     private void forceCommands(Player player) {
@@ -66,7 +42,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
         for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS_AS_CONSOLE)) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                    command.replace("%p", player.getName()));
+                command.replace("%p", player.getName()));
         }
     }
 
@@ -77,11 +53,9 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
      */
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
-        Utils.teleportToSpawn(player);
-
-        limboCache.updateLimboPlayer(player);
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
+        limboCache.updatePlayerData(player);
+        playerDataTaskManager.registerTimeoutTask(player);
+        playerDataTaskManager.registerMessageTask(name, true);
 
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -89,27 +63,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     }
 
     public void processPasswordRegister(Player player) {
-        final String name = player.getName().toLowerCase();
-        LimboPlayer limbo = limboCache.getLimboPlayer(name);
-        if (limbo != null) {
-            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
-                plugin.tablistHider.sendTablist(player);
-            }
-
-            Utils.teleportToSpawn(player);
-
-            if (service.getProperty(HIDE_TABLIST_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
-                RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-                bukkitService.callEvent(event);
-                if (!event.isCancelled()) {
-                    plugin.inventoryProtector.sendInventoryPacket(player);
-                }
-            }
-
-            limboCache.deleteLimboPlayer(name);
-        }
-
-        if (!Settings.getRegisteredGroup.isEmpty()) {
+        if (!service.getProperty(HooksSettings.REGISTERED_GROUP).isEmpty()) {
             service.setGroup(player, AuthGroupType.REGISTERED);
         }
 
@@ -119,17 +73,8 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
             service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
         }
 
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            player.removePotionEffect(PotionEffectType.BLINDNESS);
-        }
-
-        // The LoginEvent now fires (as intended) after everything is processed
-        bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
-
-        if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-            ConsoleLogger.info(player.getName() + " registered " + Utils.getPlayerIp(player));
-        }
+        ConsoleLogger.fine(player.getName() + " registered " + Utils.getPlayerIp(player));
 
         // Kick Player after Registration is enabled, kick the player
         if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {
@@ -146,19 +91,8 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
             return;
         }
 
-        if (service.getProperty(HooksSettings.BUNGEECORD)) {
-            sendBungeeMessage(player);
-        }
-
-        sendTo(player);
-    }
-
-    private void sendTo(Player player) {
-        if (!service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("Connect");
-            out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
-            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-        }
+        // Send Bungee stuff. The service will check if it is enabled or not.
+        bungeeService.sendBungeeMessage(player, "register");
+        bungeeService.connectPlayer(player);
     }
 }

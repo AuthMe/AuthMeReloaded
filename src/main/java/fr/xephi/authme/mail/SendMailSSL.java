@@ -3,22 +3,26 @@ package fr.xephi.authme.mail;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailConstants;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.bukkit.Bukkit;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import javax.mail.Session;
 import java.io.File;
 import java.io.IOException;
 import java.security.Security;
 import java.util.Properties;
+
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 
 
 /**
@@ -26,24 +30,47 @@ import java.util.Properties;
  */
 public class SendMailSSL {
 
-    private final AuthMe plugin;
-    private final NewSetting settings;
+    @Inject
+    private AuthMe plugin;
+    @Inject
+    private Settings settings;
+    @Inject
+    private BukkitService bukkitService;
 
-    public SendMailSSL(AuthMe plugin, NewSetting settings) {
-        this.plugin = plugin;
-        this.settings = settings;
+    SendMailSSL() {
     }
 
-    public void main(final PlayerAuth auth, final String newPass) {
-        final String mailText = replaceMailTags(settings.getEmailMessage(), plugin, auth, newPass);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    /**
+     * Returns whether all necessary settings are set for sending mails.
+     *
+     * @return true if the necessary email settings are set, false otherwise
+     */
+    public boolean hasAllInformation() {
+        return !settings.getProperty(MAIL_ACCOUNT).isEmpty()
+            && !settings.getProperty(MAIL_PASSWORD).isEmpty();
+    }
+
+    /**
+     * Sends an email to the user with his new password.
+     *
+     * @param auth the player auth of the player
+     * @param newPass the new password
+     */
+    public void sendPasswordMail(final PlayerAuth auth, final String newPass) {
+        if (!hasAllInformation()) {
+            ConsoleLogger.warning("Cannot perform email registration: not all email settings are complete");
+            return;
+        }
+
+        final String mailText = replaceMailTags(settings.getEmailMessage(), auth, newPass);
+        bukkitService.runTaskAsynchronously(new Runnable() {
 
             @Override
             public void run() {
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
                 HtmlEmail email;
                 try {
-                    email = initializeMail(auth, settings);
+                    email = initializeMail(auth.getEmail());
                 } catch (EmailException e) {
                     ConsoleLogger.logException("Failed to create email with the given settings:", e);
                     return;
@@ -54,7 +81,7 @@ public class SendMailSSL {
                 File file = null;
                 if (settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)) {
                     try {
-                        file = generateImage(auth, plugin, newPass);
+                        file = generateImage(auth.getNickname(), plugin, newPass);
                         content = embedImageIntoEmailContent(file, email, content);
                     } catch (IOException | EmailException e) {
                         ConsoleLogger.logException(
@@ -67,13 +94,12 @@ public class SendMailSSL {
                     file.delete();
                 }
             }
-
         });
     }
 
-    private static File generateImage(PlayerAuth auth, AuthMe plugin, String newPass) throws IOException {
+    private static File generateImage(String name, AuthMe plugin, String newPass) throws IOException {
         ImageGenerator gen = new ImageGenerator(newPass);
-        File file = new File(plugin.getDataFolder(), auth.getNickname() + "_new_pass.jpg");
+        File file = new File(plugin.getDataFolder(), name + "_new_pass.jpg");
         ImageIO.write(gen.generateImage(), "jpg", file);
         return file;
     }
@@ -85,8 +111,7 @@ public class SendMailSSL {
         return content.replace("<image />", "<img src=\"cid:" + tag + "\">");
     }
 
-    private static HtmlEmail initializeMail(PlayerAuth auth, NewSetting settings)
-            throws EmailException {
+    private HtmlEmail initializeMail(String emailAddress) throws EmailException {
         String senderMail = settings.getProperty(EmailSettings.MAIL_ACCOUNT);
         String senderName = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_SENDER_NAME))
             ? senderMail
@@ -98,12 +123,12 @@ public class SendMailSSL {
         email.setCharset(EmailConstants.UTF_8);
         email.setSmtpPort(port);
         email.setHostName(settings.getProperty(EmailSettings.SMTP_HOST));
-        email.addTo(auth.getEmail());
+        email.addTo(emailAddress);
         email.setFrom(senderMail, senderName);
         email.setSubject(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT));
         email.setAuthentication(senderMail, mailPassword);
 
-        setPropertiesForPort(email, port, settings);
+        setPropertiesForPort(email, port);
         return email;
     }
 
@@ -124,15 +149,14 @@ public class SendMailSSL {
         }
     }
 
-    private static String replaceMailTags(String mailText, AuthMe plugin, PlayerAuth auth, String newPass) {
+    private String replaceMailTags(String mailText, PlayerAuth auth, String newPass) {
         return mailText
             .replace("<playername />", auth.getNickname())
             .replace("<servername />", plugin.getServer().getServerName())
             .replace("<generatedpass />", newPass);
     }
 
-    private static void setPropertiesForPort(HtmlEmail email, int port, NewSetting settings)
-            throws EmailException {
+    private void setPropertiesForPort(HtmlEmail email, int port) throws EmailException {
         switch (port) {
             case 587:
                 String oAuth2Token = settings.getProperty(EmailSettings.OAUTH2_TOKEN);

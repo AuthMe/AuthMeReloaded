@@ -50,7 +50,7 @@ public class DatabaseSettings implements SettingsClass {
     public static final Property<String> MYSQL_COL_NAME =
         newProperty("DataSource.mySQLColumnName", "username");
 
-    @Comment("Column for storing or checking players RealName ")
+    @Comment("Column for storing or checking players RealName")
     public static final Property<String> MYSQL_COL_REALNAME =
         newProperty("DataSource.mySQLRealName", "realname");
 
@@ -97,10 +97,6 @@ public class DatabaseSettings implements SettingsClass {
     @Comment("Column for storing players groups")
     public static final Property<String> MYSQL_COL_GROUP =
         newProperty("ExternalBoardOptions.mySQLColumnGroup", "");
-
-    @Comment("Enable this when you allow registration through a website")
-    public static final Property<Boolean> MYSQL_WEBSITE =
-        newProperty("DataSource.mySQLWebsite", false);
 
     private DatabaseSettings() {
     }

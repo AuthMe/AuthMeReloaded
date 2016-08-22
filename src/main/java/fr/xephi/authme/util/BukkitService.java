@@ -9,9 +9,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -34,8 +36,7 @@ public class BukkitService {
     private final boolean getOnlinePlayersIsCollection;
     private Method getOnlinePlayers;
 
-    @Inject
-    BukkitService(AuthMe authMe) {
+    public BukkitService(AuthMe authMe) {
         this.authMe = authMe;
         getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
     }
@@ -107,6 +108,40 @@ public class BukkitService {
     }
 
     /**
+     * <b>Asynchronous tasks should never access any API in Bukkit. Great care
+     * should be taken to assure the thread-safety of asynchronous tasks.</b>
+     * <p>
+     * Returns a task that will repeatedly run asynchronously until cancelled,
+     * starting after the specified number of server ticks.
+     *
+     * @param task the task to be run
+     * @param delay the ticks to wait before running the task for the first
+     *     time
+     * @param period the ticks to wait between runs
+     * @return a BukkitTask that contains the id number
+     * @throws IllegalArgumentException if task is null
+     */
+    public BukkitTask runTaskTimerAsynchronously(Runnable task, long delay, long period) {
+        return Bukkit.getScheduler().runTaskTimerAsynchronously(authMe, task, delay, period);
+    }
+
+    /**
+     * Schedules the given task to repeatedly run until cancelled, starting after the
+     * specified number of server ticks.
+     *
+     * @param task the task to schedule
+     * @param delay the ticks to wait before running the task
+     * @param period the ticks to wait between runs
+     * @return a BukkitTask that contains the id number
+     * @throws IllegalArgumentException if plugin is null
+     * @throws IllegalStateException if this was already scheduled
+     * @see BukkitScheduler#runTaskTimer(Plugin, Runnable, long, long)
+     */
+    public BukkitTask runTaskTimer(BukkitRunnable task, long delay, long period) {
+        return task.runTaskTimer(authMe, period, delay);
+    }
+
+    /**
      * Broadcast a message to all players.
      *
      * @param message the message
@@ -133,6 +168,15 @@ public class BukkitService {
      */
     public Set<OfflinePlayer> getBannedPlayers() {
         return Bukkit.getBannedPlayers();
+    }
+
+    /**
+     * Gets every player that has ever played on this server.
+     *
+     * @return an array containing all previous players
+     */
+    public OfflinePlayer[] getOfflinePlayers() {
+        return Bukkit.getOfflinePlayers();
     }
 
     /**
@@ -164,7 +208,7 @@ public class BukkitService {
                 return Arrays.asList((Player[]) obj);
             } else {
                 String type = (obj == null) ? "null" : obj.getClass().getName();
-                ConsoleLogger.showError("Unknown list of online players of type " + type);
+                ConsoleLogger.warning("Unknown list of online players of type " + type);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             ConsoleLogger.logException("Could not retrieve list of online players:", e);
@@ -204,7 +248,7 @@ public class BukkitService {
             Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
             return method.getReturnType() == Collection.class;
         } catch (NoSuchMethodException e) {
-            ConsoleLogger.showError("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
+            ConsoleLogger.warning("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
         }
         return false;
     }

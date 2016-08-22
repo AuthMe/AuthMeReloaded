@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.register;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -26,6 +27,9 @@ public class RegisterCommand extends PlayerCommand {
 
     @Inject
     private CommandService commandService;
+
+    @Inject
+    private SendMailSSL sendMailSsl;
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
@@ -63,11 +67,10 @@ public class RegisterCommand extends PlayerCommand {
     }
 
     private void handleEmailRegistration(Player player, List<String> arguments) {
-        if (commandService.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {
-            player.sendMessage("Cannot register: no email address is set for the server. "
-                + "Please contact an administrator");
-            ConsoleLogger.showError("Cannot register player '" + player.getName() + "': no email is set "
-                + "to send emails from. Please add one in your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
+        if (!sendMailSsl.hasAllInformation()) {
+            commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
+            ConsoleLogger.warning("Cannot register player '" + player.getName() + "': no email or password is set "
+                + "to send emails from. Please adjust your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
             return;
         }
 

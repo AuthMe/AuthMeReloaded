@@ -1,5 +1,6 @@
 package fr.xephi.authme.settings.properties;
 
+import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.SettingsClass;
@@ -25,7 +26,6 @@ public class PluginSettings implements SettingsClass {
 
     @Comment({
         "After how many minutes should a session expire?",
-        "0 for unlimited time (Very dangerous, use it at your own risk!)",
         "Remember that sessions will end only after the timeout, and",
         "if the player's IP has changed but the timeout hasn't expired,",
         "the player will be kicked from the server due to invalid session"
@@ -45,8 +45,8 @@ public class PluginSettings implements SettingsClass {
         newProperty("settings.messagesLanguage", "en");
 
     @Comment({
-        "Take care with this option; if you don't want",
-        "to use Vault and group switching of AuthMe",
+        "Take care with this option; if you want",
+        "to use group switching of AuthMe",
         "for unloggedIn players, set this setting to true.",
         "Default is false."
     })
@@ -59,6 +59,14 @@ public class PluginSettings implements SettingsClass {
     })
     public static final Property<Boolean> KEEP_COLLISIONS_DISABLED =
         newProperty("settings.restrictions.keepCollisionsDisabled", false);
+
+    @Comment({
+        "Log level: INFO, FINE, DEBUG. Use INFO for general messages,",
+        "FINE for some additional detailed ones (like password failed),",
+        "and DEBUG for debugging"
+    })
+    public static final Property<LogLevel> LOG_LEVEL =
+        newProperty(LogLevel.class, "settings.logLevel", LogLevel.FINE);
 
     private PluginSettings() {
     }

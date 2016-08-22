@@ -24,7 +24,12 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * Permission to be able to register multiple accounts.
      */
-    ALLOW_MULTIPLE_ACCOUNTS("authme.allowmultipleaccounts", DefaultPermission.OP_ONLY);
+    ALLOW_MULTIPLE_ACCOUNTS("authme.allowmultipleaccounts", DefaultPermission.OP_ONLY),
+
+    /**
+     * Permission to bypass the purging process
+     */
+    BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED);
 
     /**
      * The permission node.

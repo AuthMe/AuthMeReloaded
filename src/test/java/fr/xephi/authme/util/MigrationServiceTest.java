@@ -6,7 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.SHA256;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class MigrationServiceTest {
 
     @Mock
-    private NewSetting settings;
+    private Settings settings;
 
     @Mock
     private DataSource dataSource;

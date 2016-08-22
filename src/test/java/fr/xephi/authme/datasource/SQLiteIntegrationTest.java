@@ -1,11 +1,14 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -17,6 +20,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,7 +32,7 @@ import static org.mockito.Mockito.when;
 public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
-    private static NewSetting settings;
+    private static Settings settings;
     /** Collection of SQL statements to execute for initialization of a test. */
     private static String[] sqlInitialize;
     /** Connection to the SQLite test database. */
@@ -42,7 +47,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         // Check that we have an implementation for SQLite
         Class.forName("org.sqlite.JDBC");
 
-        settings = mock(NewSetting.class);
+        settings = mock(Settings.class);
         when(settings.getProperty(any(Property.class))).thenAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -53,7 +58,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         set(DatabaseSettings.MYSQL_TABLE, "authme");
         TestHelper.setupLogger();
 
-        Path sqlInitFile = TestHelper.getJarPath("/datasource-integration/sql-initialize.sql");
+        Path sqlInitFile = TestHelper.getJarPath(TestHelper.PROJECT_ROOT + "datasource/sql-initialize.sql");
         // Note ljacqu 20160221: It appears that we can only run one statement per Statement.execute() so we split
         // the SQL file by ";\n" as to get the individual statements
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile)).split(";(\\r?)\\n");
@@ -61,7 +66,6 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     @Before
     public void initializeConnectionAndTable() throws SQLException {
-        silentClose(con);
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS authme");
@@ -70,6 +74,50 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             }
         }
         con = connection;
+    }
+
+    @After
+    public void closeConnection() {
+        silentClose(con);
+    }
+
+    @Test
+    public void shouldSetUpTableIfMissing() throws SQLException {
+        // given
+        Statement st = con.createStatement();
+        // table is absent
+        st.execute("DROP TABLE authme");
+        SQLite sqLite = new SQLite(settings, con);
+
+        // when
+        sqLite.setup();
+
+        // then
+        // Save some player to verify database is operational
+        sqLite.saveAuth(PlayerAuth.builder().name("Name").build());
+        assertThat(sqLite.getAllAuths(), hasSize(1));
+    }
+
+    @Test
+    public void shouldCreateMissingColumns() throws SQLException {
+        // given
+        Statement st = con.createStatement();
+        // drop table and create one with only some of the columns: SQLite doesn't support ALTER TABLE t DROP COLUMN c
+        st.execute("DROP TABLE authme");
+        st.execute("CREATE TABLE authme ("
+            + "id bigint, "
+            + "username varchar(255) unique, "
+            + "password varchar(255) not null, "
+            + "primary key (id));");
+        SQLite sqLite = new SQLite(settings, con);
+
+        // when
+        sqLite.setup();
+
+        // then
+        // Save some player to verify database is operational
+        sqLite.saveAuth(PlayerAuth.builder().name("Name").build());
+        assertThat(sqLite.getAllAuths(), hasSize(1));
     }
 
     @Override

@@ -4,7 +4,6 @@ import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.SettingsClass;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -67,7 +66,7 @@ public final class SettingsFieldRetriever {
                 return (Property<?>) field.get(null);
             } catch (IllegalAccessException e) {
                 throw new IllegalStateException("Could not fetch field '" + field.getName() + "' from class '"
-                    + field.getDeclaringClass().getSimpleName() + "': " + StringUtils.formatException(e));
+                    + field.getDeclaringClass().getSimpleName() + "'", e);
             }
         }
         return null;

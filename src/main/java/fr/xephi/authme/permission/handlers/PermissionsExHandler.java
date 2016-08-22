@@ -1,6 +1,5 @@
 package fr.xephi.authme.permission.handlers;
 
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.entity.Player;
@@ -15,14 +14,16 @@ public class PermissionsExHandler implements PermissionHandler {
 
     private PermissionManager permissionManager;
 
-    public PermissionsExHandler(PermissionManager permissionManager) {
-        this.permissionManager = permissionManager;
+    public PermissionsExHandler() throws PermissionHandlerException {
+        permissionManager = PermissionsEx.getPermissionManager();
+        if (permissionManager == null) {
+            throw new PermissionHandlerException("Could not get manager of PermissionsEx");
+        }
     }
 
     @Override
     public boolean addToGroup(Player player, String group) {
         if (!PermissionsEx.getPermissionManager().getGroupNames().contains(group)) {
-            ConsoleLogger.showError("The plugin tried to set " + player + "'s group to '" + group + "', but it doesn't exist!");
             return false;
         }
 
@@ -39,6 +40,12 @@ public class PermissionsExHandler implements PermissionHandler {
     @Override
     public boolean hasPermission(Player player, PermissionNode node) {
         PermissionUser user = permissionManager.getUser(player);
+        return user.has(node.getNode());
+    }
+
+    @Override
+    public boolean hasPermissionOffline(String name, PermissionNode node) {
+        PermissionUser user = permissionManager.getUser(name);
         return user.has(node.getNode());
     }
 

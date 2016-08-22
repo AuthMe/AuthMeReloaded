@@ -40,8 +40,6 @@ DataSource:
     mySQLlastlocWorld: world
     # Column for RealName
     mySQLRealName: realname
-    # Enable this when you allow registration through a website
-    mySQLWebsite: false
 settings:
     # The name shown in the help messages.
     helpHeader: AuthMeReloaded
@@ -54,7 +52,6 @@ settings:
         # hasn't expired, he will not need to authenticate.
         enabled: false
         # After how many minutes a session should expire?
-        # 0 for unlimited time (Very dangerous, use it at your own risk!)
         # Consider that session will end only after the timeout time, and
         # if the player's ip has changed but the timeout hasn't expired,
         # player will be kicked out of sever due to invalidSession!
@@ -141,8 +138,6 @@ settings:
         ProtectInventoryBeforeLogIn: true
         # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
         DenyTabCompleteBeforeLogin: true
-        # Should we hide the tablist before logging in? Requires ProtocolLib.
-        HideTablistBeforeLogin: true
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
@@ -260,15 +255,21 @@ settings:
     broadcastWelcomeMessage: false
     # Should we delay the join message and display it once the player has logged in?
     delayJoinMessage: false
+    # Should we remove the leave messages of unlogged users?
+    removeUnloggedLeaveMessage: false
     # Should we remove join messages altogether?
     removeJoinMessage: false
-    # Should we remove leave messages?
+    # Should we remove leave messages altogether?
     removeLeaveMessage: false
     # Do we need to add potion effect Blinding before login/register?
     applyBlindEffect: false
     # Do we need to prevent people to login with another case?
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
     preventOtherCase: false
+    # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
+    # FINE for some additional detailed ones (like password failed),
+    # and DEBUG for debug messages
+    logLevel: 'FINE'
 ExternalBoardOptions:
     # MySQL column for the salt, needed for some forum/cms support
     mySQLColumnSalt: ''
@@ -314,8 +315,6 @@ Security:
         # /reload support
         useReloadCommandSupport: true
     console:
-        # Remove spam console
-        noConsoleSpam: false
         # Replace passwords in the console when player type a command like /login
         removePassword: true
         # Copy AuthMe log output in a separate file as well?
@@ -327,10 +326,6 @@ Security:
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5
-    stop:
-        # Kick players before stopping the server, that allow us to save position of players, and all needed
-        # information correctly without any corruption.
-        kickPlayersBeforeStopping: true
     tempban:
         # Tempban a user's IP address if they enter the wrong password too many times
         enableTempban: false
@@ -391,8 +386,6 @@ Hooks:
     disableSocialSpy: true
     # Do we need to force /motd Essentials command on join?
     useEssentialsMotd: false
-    # Do we need to cache custom Attributes?
-    customAttributes: false
 Purge:
     # If enabled, AuthMe automatically purges old, unused accounts
     useAutoPurge: false
@@ -413,6 +406,8 @@ Purge:
 Protection:
     # Enable some servers protection ( country based login, antibot )
     enableProtection: false
+    # Apply the protection also to registered usernames
+    enableProtectionRegistered: true
     # Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes
     # PLEASE USE QUOTES!
     countries:
@@ -428,3 +423,8 @@ Protection:
     antiBotSensibility: 10
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10
+GroupOptions:
+    # Registered permission group
+    RegisteredPlayerGroup: ''
+    # Unregistered permission group
+    UnregisteredPlayerGroup: ''

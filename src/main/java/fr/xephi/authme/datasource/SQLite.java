@@ -1,25 +1,25 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.StringUtils;
+
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.annotations.VisibleForTesting;
-
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
 
 /**
  */
@@ -38,7 +38,7 @@ public class SQLite implements DataSource {
      * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
      */
-    public SQLite(NewSetting settings) throws ClassNotFoundException, SQLException {
+    public SQLite(Settings settings) throws ClassNotFoundException, SQLException {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
@@ -53,7 +53,7 @@ public class SQLite implements DataSource {
     }
 
     @VisibleForTesting
-    SQLite(NewSetting settings, Connection connection) {
+    SQLite(Settings settings, Connection connection) {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
@@ -70,65 +70,71 @@ public class SQLite implements DataSource {
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
     }
 
-    private void setup() throws SQLException {
-        Statement st = null;
-        ResultSet rs = null;
-        try {
-            st = con.createStatement();
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + col.ID + " INTEGER AUTO_INCREMENT," + col.NAME + " VARCHAR(255) NOT NULL UNIQUE," + col.PASSWORD + " VARCHAR(255) NOT NULL," + col.IP + " VARCHAR(40) NOT NULL," + col.LAST_LOGIN + " BIGINT," + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0'," + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0'," + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0'," + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + col.ID + "));");
-            rs = con.getMetaData().getColumns(null, null, tableName, col.PASSWORD);
-            if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) NOT NULL;");
+    @VisibleForTesting
+    protected void setup() throws SQLException {
+        try (Statement st = con.createStatement()) {
+            // Note: cannot add unique fields later on in SQLite, so we add it on initialization
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " ("
+                + col.ID + " INTEGER AUTO_INCREMENT, "
+                + col.NAME + " VARCHAR(255) NOT NULL UNIQUE, "
+                + "CONSTRAINT table_const_prim PRIMARY KEY (" + col.ID + "));");
+
+            DatabaseMetaData md = con.getMetaData();
+
+            if (isColumnMissing(md, col.REAL_NAME)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.REAL_NAME + " VARCHAR(255) NOT NULL DEFAULT 'Player';");
             }
-            rs.close();
-            if (!col.SALT.isEmpty()) {
-                rs = con.getMetaData().getColumns(null, null, tableName, col.SALT);
-                if (!rs.next()) {
-                    st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
-                }
-                rs.close();
+
+            if (isColumnMissing(md, col.PASSWORD)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) NOT NULL DEFAULT '';");
             }
-            rs = con.getMetaData().getColumns(null, null, tableName, col.IP);
-            if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.IP + " VARCHAR(40) NOT NULL;");
+
+            if (!col.SALT.isEmpty() && isColumnMissing(md, col.SALT)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
             }
-            rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, col.LAST_LOGIN);
-            if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LAST_LOGIN + " TIMESTAMP DEFAULT current_timestamp;");
+
+            if (isColumnMissing(md, col.IP)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.IP + " VARCHAR(40) NOT NULL DEFAULT '';");
             }
-            rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, col.LASTLOC_X);
-            if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0';");
+
+            if (isColumnMissing(md, col.LAST_LOGIN)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LAST_LOGIN + " TIMESTAMP;");
             }
-            rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, col.LASTLOC_WORLD);
-            if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
+
+            if (isColumnMissing(md, col.LASTLOC_X)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_X
+                    + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Y
+                    + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Z
+                    + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
-            rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, col.EMAIL);
-            if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com';");
+
+            if (isColumnMissing(md, col.LASTLOC_WORLD)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
             }
-            rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, col.IS_LOGGED);
-            if (!rs.next()) {
+
+            if (isColumnMissing(md, col.EMAIL)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com';");
+            }
+
+            if (isColumnMissing(md, col.IS_LOGGED)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.IS_LOGGED + " INT DEFAULT '0';");
             }
-            rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, col.REAL_NAME);
-            if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.REAL_NAME + " VARCHAR(255) NOT NULL DEFAULT 'Player';");
-            }
-        } finally {
-            close(rs);
-            close(st);
         }
         ConsoleLogger.info("SQLite Setup finished");
+    }
+
+    private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+            return !rs.next();
+        }
     }
 
     @Override
@@ -147,12 +153,12 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);");
+            pst = con.prepareStatement("SELECT 1 FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
             return rs.next();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
             close(rs);
@@ -207,7 +213,7 @@ public class SQLite implements DataSource {
             HashedPassword password = auth.getPassword();
             if (col.SALT.isEmpty()) {
                 if (!StringUtils.isEmpty(auth.getPassword().getSalt())) {
-                    ConsoleLogger.showError("Warning! Detected hashed password with separate salt but the salt column "
+                    ConsoleLogger.warning("Warning! Detected hashed password with separate salt but the salt column "
                         + "is not set in the config!");
                 }
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD +
@@ -293,25 +299,35 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public Set<String> autoPurgeDatabase(long until) {
+    public Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
+
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        try (PreparedStatement selectPst = con.prepareStatement(select);
-             PreparedStatement deletePst = con.prepareStatement(delete)) {
+        try (PreparedStatement selectPst = con.prepareStatement(select)) {
             selectPst.setLong(1, until);
             try (ResultSet rs = selectPst.executeQuery()) {
                 while (rs.next()) {
                     list.add(rs.getString(col.NAME));
                 }
             }
-            deletePst.setLong(1, until);
-            deletePst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
 
         return list;
+    }
+
+    @Override
+    public void purgeRecords(Collection<String> toPurge) {
+        String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (PreparedStatement deletePst = con.prepareStatement(delete)) {
+            for (String name : toPurge) {
+                deletePst.setString(1, name.toLowerCase());
+                deletePst.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
     }
 
     @Override
@@ -444,19 +460,6 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void purgeBanned(Set<String> banned) {
-        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            for (String name : banned) {
-                pst.setString(1, name);
-                pst.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-    }
-
-    @Override
     public DataSourceType getType() {
         return DataSourceType.SQLITE;
     }
@@ -544,20 +547,6 @@ public class SQLite implements DataSource {
         String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, realName);
-            pst.setString(2, user);
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean updateIp(String user, String ip) {
-        String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, ip);
             pst.setString(2, user);
             pst.executeUpdate();
             return true;

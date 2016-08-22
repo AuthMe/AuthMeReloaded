@@ -4,6 +4,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -70,13 +71,19 @@ public interface DataSource extends Reloadable {
     boolean updatePassword(String user, HashedPassword password);
 
     /**
-     * Purge all records in the database whose last login was longer ago than
-     * the given time.
+     * Get all records in the database whose last login was before the given time.
      *
      * @param until The minimum last login
-     * @return The account names that have been removed
+     * @return The account names selected to purge
      */
-    Set<String> autoPurgeDatabase(long until);
+    Set<String> getRecordsToPurge(long until);
+
+    /**
+     * Purge the given players from the database.
+     *
+     * @param toPurge The players to purge
+     */
+    void purgeRecords(Collection<String> toPurge);
 
     /**
      * Remove a user record from the database.
@@ -122,13 +129,6 @@ public interface DataSource extends Reloadable {
      * Close the underlying connections to the data source.
      */
     void close();
-
-    /**
-     * Purge all given players, i.e. delete all players whose name is in the list.
-     *
-     * @param banned the list of players to delete
-     */
-    void purgeBanned(Set<String> banned);
 
     /**
      * Return the data source type.
@@ -186,15 +186,6 @@ public interface DataSource extends Reloadable {
      * @return True upon success, false upon failure
      */
     boolean updateRealName(String user, String realName);
-
-    /**
-     * Update a player's IP address.
-     *
-     * @param user The name of the user (lowercase)
-     * @param ip The IP address to save
-     * @return True upon success, false upon failure
-     */
-    boolean updateIp(String user, String ip);
 
     /**
      * Return all players of the database.

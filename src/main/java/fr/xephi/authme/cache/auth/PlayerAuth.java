@@ -85,6 +85,13 @@ public class PlayerAuth {
         return groupId;
     }
 
+    public void setQuitLocation(Location location) {
+        x = location.getBlockX();
+        y = location.getBlockY();
+        z = location.getBlockZ();
+        world = location.getWorld().getName();
+    }
+
     public double getQuitLocX() {
         return x;
     }

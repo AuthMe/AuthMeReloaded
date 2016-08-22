@@ -5,13 +5,16 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
-import java.util.HashSet;
-import java.util.Set;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -171,6 +174,22 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
+    public void shouldUpdatePasswordWithPlayerAuth() {
+        // given
+        DataSource dataSource = getDataSource("salt");
+        PlayerAuth bobbyAuth = PlayerAuth.builder().name("bobby").password(new HashedPassword("tt", "cc")).build();
+        PlayerAuth invalidAuth = PlayerAuth.builder().name("invalid").password(new HashedPassword("tt", "cc")).build();
+
+        // when
+        boolean response1 = dataSource.updatePassword(bobbyAuth);
+        boolean response2 = dataSource.updatePassword(invalidAuth);
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getPassword("bobby"), equalToHash("tt", "cc"));
+    }
+
+    @Test
     public void shouldRemovePlayerAuth() {
         // given
         DataSource dataSource = getDataSource();
@@ -227,7 +246,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         assumeThat(dataSource.getAccountsRegistered(), equalTo(2));
 
         // when
-        dataSource.purgeBanned(playersToDelete);
+        dataSource.purgeRecords(playersToDelete);
 
         // then
         assertThat(dataSource.getAccountsRegistered(), equalTo(1));
@@ -250,22 +269,6 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(response1 && response2, equalTo(true));
         assertThat(dataSource.getAllAuths(), hasItem(hasAuthBasicData("user", "user", email, "34.56.78.90")));
-    }
-
-    @Test
-    public void shouldUpdateIp() {
-        // given
-        DataSource dataSource = getDataSource();
-        String ip = "250.230.67.73";
-
-        // when
-        boolean response1 = dataSource.updateIp("bobby", ip);
-        boolean response2 = dataSource.updateIp("bogus", "123.123.123.123");
-
-
-        // then
-        assertThat(response1 && response2, equalTo(true));
-        assertThat(dataSource.getAllAuths(), hasItem(hasAuthBasicData("bobby", "Bobby", "your@email.com", ip)));
     }
 
     @Test
@@ -319,6 +322,64 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(response1 && response2, equalTo(true));
         assertThat(dataSource.getAuth("bobby"), hasAuthBasicData("bobby", "BOBBY", "your@email.com", "123.45.67.89"));
+    }
+
+    @Test
+    public void shouldGetRecordsToPurge() {
+        // given
+        DataSource dataSource = getDataSource();
+        // 1453242857 -> user, 1449136800 -> bobby
+
+        // when
+        Set<String> records1 = dataSource.getRecordsToPurge(1450000000);
+        Set<String> records2 = dataSource.getRecordsToPurge(1460000000);
+
+        // then
+        assertThat(records1, contains("bobby"));
+        assertThat(records2, containsInAnyOrder("bobby", "user"));
+        // check that the entry was not deleted because of running this command
+        assertThat(dataSource.isAuthAvailable("bobby"), equalTo(true));
+    }
+
+    @Test
+    public void shouldPerformOperationsOnIsLoggedColumnSuccessfully() {
+        DataSource dataSource = getDataSource();
+        // on startup no one should be marked as logged
+        assertThat(dataSource.getLoggedPlayers(), empty());
+
+        // Mark user as logged
+        dataSource.setLogged("user");
+        // non-existent user should not break database
+        dataSource.setLogged("does-not-exist");
+
+        assertThat(dataSource.isLogged("user"), equalTo(true));
+        assertThat(dataSource.isLogged("bobby"), equalTo(false));
+
+        // Set bobby logged and unlog user
+        dataSource.setLogged("bobby");
+        dataSource.setUnlogged("user");
+        assertThat(dataSource.getLoggedPlayers(),
+            contains(hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89")));
+
+        // Set both as logged (even if Bobby already is logged)
+        dataSource.setLogged("user");
+        dataSource.setLogged("bobby");
+        dataSource.purgeLogged();
+        assertThat(dataSource.isLogged("user"), equalTo(false));
+        assertThat(dataSource.getLoggedPlayers(), empty());
+    }
+
+    @Test
+    public void shouldPerformPurgeOperation() {
+        // given
+        List<String> names = Arrays.asList("Bobby", "USER", "DoesnotExist");
+        DataSource dataSource = getDataSource();
+
+        // when
+        dataSource.purgeRecords(names);
+
+        // then
+        assertThat(dataSource.getAllAuths(), empty());
     }
 
 }
