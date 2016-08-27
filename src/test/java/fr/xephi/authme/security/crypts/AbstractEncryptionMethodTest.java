@@ -1,10 +1,10 @@
 package fr.xephi.authme.security.crypts;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,12 +20,12 @@ import static org.junit.Assume.assumeThat;
 public abstract class AbstractEncryptionMethodTest {
 
     /** The username used to query {@link EncryptionMethod#comparePassword}. */
-    public static final String USERNAME = "Test_Player00";
+    private static final String USERNAME = "Test_Player00";
     /**
      * List of passwords whose hash is provided to the class to test against; this verifies that previously constructed
      * hashes remain valid.
      */
-    public static final String[] GIVEN_PASSWORDS = {"password", "PassWord1", "&^%te$t?Pw@_", "âË_3(íù*"};
+    private static final String[] GIVEN_PASSWORDS = {"password", "PassWord1", "&^%te$t?Pw@_", "âË_3(íù*"};
     /**
      * List of passwords that are hashed at runtime and then tested against; this verifies that newly generated hashes
      * are valid.
@@ -51,26 +51,40 @@ public abstract class AbstractEncryptionMethodTest {
     private Map<String, HashedPassword> hashes;
 
     /**
-     * Create a new test for the given encryption method.
+     * Creates a new test for the given encryption method. This is for encryption methods that do not have
+     * a separate salt.
      *
-     * @param method The encryption method to test
-     * @param computedHashes The pre-generated hashes for the elements in {@link #GIVEN_PASSWORDS}
+     * @param method the encryption method to test
+     * @param hash0 the pre-generated hash for the first entry in {@link #GIVEN_PASSWORDS}
+     * @param hash1 hash for second given password
+     * @param hash2 hash for third given password
+     * @param hash3 hash for fourth given password
      */
-    public AbstractEncryptionMethodTest(EncryptionMethod method, String... computedHashes) {
+    public AbstractEncryptionMethodTest(EncryptionMethod method, String hash0,
+                                        String hash1, String hash2, String hash3) {
         if (method.hasSeparateSalt()) {
             throw new UnsupportedOperationException("Test must be initialized with HashedPassword objects if "
                 + "the salt is stored separately. Use the other constructor");
-        } else if (computedHashes.length != GIVEN_PASSWORDS.length) {
-            throw new UnsupportedOperationException("Expected " + GIVEN_PASSWORDS.length + " hashes");
         }
         this.method = method;
 
-        hashes = new HashMap<>();
-        for (int i = 0; i < GIVEN_PASSWORDS.length; ++i) {
-            hashes.put(GIVEN_PASSWORDS[i], new HashedPassword(computedHashes[i]));
-        }
+        hashes = ImmutableMap.of(
+            GIVEN_PASSWORDS[0], new HashedPassword(hash0),
+            GIVEN_PASSWORDS[1], new HashedPassword(hash1),
+            GIVEN_PASSWORDS[2], new HashedPassword(hash2),
+            GIVEN_PASSWORDS[3], new HashedPassword(hash3));
     }
 
+    /**
+     * Creates a new test for the given encryption method. This is for encryption methods that use
+     * a separate salt.
+     *
+     * @param method the encryption method to test
+     * @param result0 the pre-generated hash for the first entry in {@link #GIVEN_PASSWORDS}
+     * @param result1 hash for second given password
+     * @param result2 hash for third given password
+     * @param result3 hash for fourth given password
+     */
     public AbstractEncryptionMethodTest(EncryptionMethod method, HashedPassword result0, HashedPassword result1,
                                         HashedPassword result2, HashedPassword result3) {
         if (!method.hasSeparateSalt()) {
@@ -79,11 +93,11 @@ public abstract class AbstractEncryptionMethodTest {
         }
         this.method = method;
 
-        hashes = new HashMap<>();
-        hashes.put(GIVEN_PASSWORDS[0], result0);
-        hashes.put(GIVEN_PASSWORDS[1], result1);
-        hashes.put(GIVEN_PASSWORDS[2], result2);
-        hashes.put(GIVEN_PASSWORDS[3], result3);
+        hashes = ImmutableMap.of(
+            GIVEN_PASSWORDS[0], result0,
+            GIVEN_PASSWORDS[1], result1,
+            GIVEN_PASSWORDS[2], result2,
+            GIVEN_PASSWORDS[3], result3);
     }
 
     @Test
@@ -127,6 +141,8 @@ public abstract class AbstractEncryptionMethodTest {
 
             assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
                 method.comparePassword(password, hashedPassword, USERNAME));
+            assumeThat(SKIP_LONG_TESTS, equalTo(false));
+
             if (!password.equals(password.toLowerCase())) {
                 assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
                     method.comparePassword(password.toLowerCase(), hashedPassword, USERNAME));
@@ -135,7 +151,6 @@ public abstract class AbstractEncryptionMethodTest {
                 assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
                     method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME));
             }
-            assumeThat(SKIP_LONG_TESTS, equalTo(false));
         }
     }
 
