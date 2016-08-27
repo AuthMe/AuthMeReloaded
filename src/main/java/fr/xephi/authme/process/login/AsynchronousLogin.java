@@ -137,7 +137,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         // Increase the counts here before knowing the result of the login.
         // If the login is successful, we clear the captcha count for the player.
         captchaManager.increaseCount(name);
-        tempbanManager.increaseCount(ip);
+        tempbanManager.increaseCount(ip, name);
 
         String email = pAuth.getEmail();
         boolean passwordVerified = forceLogin || passwordSecurity.comparePassword(
@@ -153,6 +153,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             database.updateSession(auth);
 
             captchaManager.resetCounts(name);
+            tempbanManager.resetCount(ip, name);
             player.setNoDamageTicks(0);
 
             if (!forceLogin)

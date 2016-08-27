@@ -2,6 +2,7 @@ package fr.xephi.authme.cache;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.cache.TempbanManager.TimedCounter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -49,13 +50,14 @@ public class TempbanManagerTest {
         String address = "192.168.1.1";
 
         // when
-        for (int i = 0; i < 2; ++i) {
-            manager.increaseCount(address);
-        }
+        manager.increaseCount(address, "Bob");
+        manager.increaseCount(address, "Todd");
 
         // then
         assertThat(manager.shouldTempban(address), equalTo(false));
-        manager.increaseCount(address);
+        assertHasCount(manager, address, "Bob", 1);
+        assertHasCount(manager, address, "Todd", 1);
+        manager.increaseCount(address, "Bob");
         assertThat(manager.shouldTempban(address), equalTo(true));
         assertThat(manager.shouldTempban("10.0.0.1"), equalTo(false));
     }
@@ -68,20 +70,20 @@ public class TempbanManagerTest {
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
-        manager.increaseCount(address);
-        manager.increaseCount(address);
-        manager.increaseCount(address);
+        manager.increaseCount(address, "test");
+        manager.increaseCount(address, "test");
+        manager.increaseCount(address, "test");
 
         // then
         assertThat(manager.shouldTempban(address), equalTo(true));
-        assertHasCount(manager, address, 3);
+        assertHasCount(manager, address, "test", 3);
 
         // when 2
-        manager.resetCount(address);
+        manager.resetCount(address, "test");
 
         // then 2
         assertThat(manager.shouldTempban(address), equalTo(false));
-        assertHasCount(manager, address, null);
+        assertHasNoEntries(manager, address);
     }
 
     @Test
@@ -93,11 +95,11 @@ public class TempbanManagerTest {
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
-        manager.increaseCount(address);
+        manager.increaseCount(address, "username");
 
         // then
         assertThat(manager.shouldTempban(address), equalTo(false));
-        assertHasCount(manager, address, null);
+        assertHasNoEntries(manager, address);
     }
 
     @Test
@@ -109,10 +111,10 @@ public class TempbanManagerTest {
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
 
         // when
-        manager.increaseCount(address);
+        manager.increaseCount(address, "username");
         // assumptions
         assertThat(manager.shouldTempban(address), equalTo(true));
-        assertHasCount(manager, address, 1);
+        assertHasCount(manager, address, "username", 1);
         // end assumptions
         manager.reload(settings);
         boolean result = manager.shouldTempban(address);
@@ -173,9 +175,9 @@ public class TempbanManagerTest {
         given(messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
         Settings settings = mockSettings(10, 60);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
-        manager.increaseCount(ip);
-        manager.increaseCount(ip);
-        manager.increaseCount(ip);
+        manager.increaseCount(ip, "user");
+        manager.increaseCount(ip, "name2");
+        manager.increaseCount(ip, "user");
 
         // when
         manager.tempbanPlayer(player);
@@ -183,7 +185,7 @@ public class TempbanManagerTest {
 
         // then
         verify(player).kickPlayer(banReason);
-        assertHasCount(manager, ip, null);
+        assertHasNoEntries(manager, ip);
     }
 
     private static Settings mockSettings(int maxTries, int tempbanLength) {
@@ -194,10 +196,18 @@ public class TempbanManagerTest {
         return settings;
     }
 
-    private static void assertHasCount(TempbanManager manager, String address, Integer count) {
-        @SuppressWarnings("unchecked")
-        Map<String, Integer> playerCounts = (Map<String, Integer>) ReflectionTestUtils
+    @SuppressWarnings("unchecked")
+    private static void assertHasNoEntries(TempbanManager manager, String address) {
+        Map<String, Map<?, ?>> playerCounts = (Map<String, Map<?, ?>>) ReflectionTestUtils
             .getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
-        assertThat(playerCounts.get(address), equalTo(count));
+        Map map = playerCounts.get(address);
+        assertThat(map == null || map.isEmpty(), equalTo(true));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void assertHasCount(TempbanManager manager, String address, String name, int count) {
+        Map<String, Map<String, TimedCounter>> playerCounts = (Map<String, Map<String, TimedCounter>>)
+            ReflectionTestUtils.getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
+        assertThat(playerCounts.get(address).get(name).getCount(10000L), equalTo(count));
     }
 }
