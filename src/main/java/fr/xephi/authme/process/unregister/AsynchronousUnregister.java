@@ -96,6 +96,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 ConsoleLogger.info(name + " was unregistered by " + initiator.getName());
                 service.send(initiator, MessageKey.UNREGISTERED_SUCCESS);
             }
+        } else if (initiator != null) {
+            service.send(initiator, MessageKey.ERROR);
         }
     }
 
