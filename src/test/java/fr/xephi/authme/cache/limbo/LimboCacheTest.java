@@ -224,8 +224,7 @@ public class LimboCacheTest {
         assertThat(limboCache.hasPlayerData("someone_else"), equalTo(false));
     }
 
-    @SuppressWarnings("unchecked")
     private Map<String, PlayerData> getCache() {
-        return (Map<String, PlayerData>) ReflectionTestUtils.getFieldValue(LimboCache.class, limboCache, "cache");
+        return ReflectionTestUtils.getFieldValue(LimboCache.class, limboCache, "cache");
     }
 }

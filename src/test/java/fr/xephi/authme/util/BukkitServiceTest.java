@@ -34,7 +34,7 @@ public class BukkitServiceTest {
         BukkitService bukkitService = new BukkitService(authMe);
 
         // when
-        boolean doesMethodReturnCollection = (Boolean) ReflectionTestUtils
+        boolean doesMethodReturnCollection = ReflectionTestUtils
             .getFieldValue(BukkitService.class, bukkitService, "getOnlinePlayersIsCollection");
 
         // then

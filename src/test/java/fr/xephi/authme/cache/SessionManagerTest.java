@@ -161,10 +161,8 @@ public class SessionManagerTest {
         assertThat(sessions, aMapWithSize(4)); // map not changed -> no cleanup performed
     }
 
-    @SuppressWarnings("unchecked")
     private static Map<String, Long> getSessionsMap(SessionManager manager) {
-        return (Map<String, Long>) ReflectionTestUtils
-            .getFieldValue(SessionManager.class, manager, "sessions");
+        return ReflectionTestUtils.getFieldValue(SessionManager.class, manager, "sessions");
     }
 
 

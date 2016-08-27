@@ -196,18 +196,16 @@ public class TempbanManagerTest {
         return settings;
     }
 
-    @SuppressWarnings("unchecked")
     private static void assertHasNoEntries(TempbanManager manager, String address) {
-        Map<String, Map<?, ?>> playerCounts = (Map<String, Map<?, ?>>) ReflectionTestUtils
+        Map<String, Map<?, ?>> playerCounts = ReflectionTestUtils
             .getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
         Map map = playerCounts.get(address);
         assertThat(map == null || map.isEmpty(), equalTo(true));
     }
 
-    @SuppressWarnings("unchecked")
     private static void assertHasCount(TempbanManager manager, String address, String name, int count) {
-        Map<String, Map<String, TimedCounter>> playerCounts = (Map<String, Map<String, TimedCounter>>)
-            ReflectionTestUtils.getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
+        Map<String, Map<String, TimedCounter>> playerCounts = ReflectionTestUtils
+            .getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
         assertThat(playerCounts.get(address).get(name).getCount(10000L), equalTo(count));
     }
 }

@@ -64,11 +64,11 @@ public final class ReflectionTestUtils {
         }
     }
 
-
-    public static <T> Object getFieldValue(Class<T> clazz, T instance, String fieldName) {
+    @SuppressWarnings("unchecked")
+    public static <T, V> V getFieldValue(Class<T> clazz, T instance, String fieldName) {
         Field field = getField(clazz, instance, fieldName);
         try {
-            return field.get(instance);
+            return (V) field.get(instance);
         } catch (IllegalAccessException e) {
             throw new UnsupportedOperationException("Could not get value of field '" + fieldName + "'", e);
         }

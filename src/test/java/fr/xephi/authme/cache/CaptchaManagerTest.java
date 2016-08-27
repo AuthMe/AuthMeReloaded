@@ -154,7 +154,7 @@ public class CaptchaManagerTest {
 
     private static void assertHasCount(CaptchaManager manager, String player, Integer count) {
         @SuppressWarnings("unchecked")
-        Map<String, Integer> playerCounts = (Map<String, Integer>) ReflectionTestUtils
+        Map<String, Integer> playerCounts = ReflectionTestUtils
             .getFieldValue(CaptchaManager.class, manager, "playerCounts");
         assertThat(playerCounts.get(player.toLowerCase()), equalTo(count));
     }

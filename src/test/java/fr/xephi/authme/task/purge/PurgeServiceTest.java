@@ -34,8 +34,8 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -116,7 +116,6 @@ public class PurgeServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldRecognizeNoPlayersToPurge() {
         // given
         long delay = 123012301L;
@@ -128,7 +127,7 @@ public class PurgeServiceTest {
 
         // then
         verify(dataSource).getRecordsToPurge(delay);
-        verify(dataSource, never()).purgeRecords(anySet());
+        verify(dataSource, never()).purgeRecords(anyCollectionOf(String.class));
         verify(sender).sendMessage("No players to purge");
         verifyZeroInteractions(bukkitService, permissionsManager);
     }
@@ -208,14 +207,13 @@ public class PurgeServiceTest {
             Math.abs(timestamp - expectedTimestamp), not(greaterThan(toleranceMillis)));
     }
 
-    @SuppressWarnings("unchecked")
     private void verifyScheduledPurgeTask(UUID senderUuid, Set<String> names) {
         ArgumentCaptor<PurgeTask> captor = ArgumentCaptor.forClass(PurgeTask.class);
         verify(bukkitService).runTaskTimer(captor.capture(), eq(0L), eq(1L));
         PurgeTask task = captor.getValue();
 
         Object senderInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "sender");
-        Set<String> namesInTask = (Set<String>) ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "toPurge");
+        Set<String> namesInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "toPurge");
         assertThat(senderInTask, Matchers.<Object>equalTo(senderUuid));
         assertThat(namesInTask, containsInAnyOrder(names.toArray()));
     }
