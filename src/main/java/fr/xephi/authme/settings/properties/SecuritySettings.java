@@ -104,6 +104,11 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<Integer> TEMPBAN_LENGTH =
         newProperty("Security.tempban.tempbanLength", 480);
 
+    @Comment({"How many minutes before resetting the count for failed logins by IP and username",
+        "Default: 480 minutes (8 hours)"})
+    public static final Property<Integer> TEMPBAN_MINUTES_BEFORE_RESET =
+        newProperty("Security.tempban.minutesBeforeCounterReset", 480);
+
     private SecuritySettings() {
     }
 

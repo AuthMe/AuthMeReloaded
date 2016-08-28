@@ -34,15 +34,6 @@ public final class ReflectionTestUtils {
         }
     }
 
-    public static void setField(Field field, Object instance, Object value) {
-        try {
-            field.setAccessible(true);
-            field.set(instance, value);
-        } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException(e);
-        }
-    }
-
     private static <T> Field getField(Class<T> clazz, T instance, String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
@@ -51,16 +42,6 @@ public final class ReflectionTestUtils {
         } catch (NoSuchFieldException e) {
             throw new UnsupportedOperationException(format("Could not get field '%s' for instance '%s' of class '%s'",
                 fieldName, instance, clazz.getName()), e);
-        }
-    }
-
-    public static Object getFieldValue(Field field, Object instance) {
-        try {
-            field.setAccessible(true);
-            return field.get(instance);
-        } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("Cannot get value of field '"
-                + field + "' for '" + instance + "'", e);
         }
     }
 

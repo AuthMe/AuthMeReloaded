@@ -17,8 +17,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
@@ -35,6 +38,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class TempbanManagerTest {
 
     private static final long DATE_TOLERANCE_MILLISECONDS = 200L;
+    private static final long TEST_EXPIRATION_THRESHOLD = 120_000L;
 
     @Mock
     private BukkitService bukkitService;
@@ -188,11 +192,54 @@ public class TempbanManagerTest {
         assertHasNoEntries(manager, ip);
     }
 
+    @Test
+    public void shouldPerformCleanup() {
+        // given
+        // `expirationPoint` is the approximate timestamp until which entries should be considered, so subtracting
+        // from it will create expired entries, and adding a reasonably large number makes it still valid
+        final long expirationPoint = System.currentTimeMillis() - TEST_EXPIRATION_THRESHOLD;
+        // 2 current entries with total 6 failed tries
+        Map<String, TimedCounter> map1 = new HashMap<>();
+        map1.put("name", newTimedCounter(4, expirationPoint + 20_000));
+        map1.put("other", newTimedCounter(2, expirationPoint + 40_000));
+        // 0 current entries
+        Map<String, TimedCounter> map2 = new HashMap<>();
+        map2.put("someone", newTimedCounter(10, expirationPoint - 5_000));
+        map2.put("somebody", newTimedCounter(10, expirationPoint - 8_000));
+        // 1 current entry with total 4 failed tries
+        Map<String, TimedCounter> map3 = new HashMap<>();
+        map3.put("some", newTimedCounter(5, expirationPoint - 12_000));
+        map3.put("test", newTimedCounter(4, expirationPoint + 8_000));
+        map3.put("values", newTimedCounter(2, expirationPoint - 80_000));
+
+        String[] addresses = {"123.45.67.89", "127.0.0.1", "192.168.0.1"};
+        Map<String, Map<String, TimedCounter>> counterMap = new HashMap<>();
+        counterMap.put(addresses[0], map1);
+        counterMap.put(addresses[1], map2);
+        counterMap.put(addresses[2], map3);
+
+        TempbanManager manager = new TempbanManager(bukkitService, messages, mockSettings(5, 250));
+        ReflectionTestUtils.setField(TempbanManager.class, manager, "ipLoginFailureCounts", counterMap);
+
+        // when
+        manager.performCleanup();
+
+        // then
+        assertThat(counterMap.get(addresses[0]), aMapWithSize(2));
+        assertHasCount(manager, addresses[0], "name", 4);
+        assertHasCount(manager, addresses[0], "other", 2);
+        assertThat(counterMap.get(addresses[1]), anEmptyMap());
+        assertThat(counterMap.get(addresses[2]), aMapWithSize(1));
+        assertHasCount(manager, addresses[2], "test", 4);
+    }
+
     private static Settings mockSettings(int maxTries, int tempbanLength) {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(true);
         given(settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN)).willReturn(maxTries);
         given(settings.getProperty(SecuritySettings.TEMPBAN_LENGTH)).willReturn(tempbanLength);
+        given(settings.getProperty(SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET))
+            .willReturn((int) TEST_EXPIRATION_THRESHOLD / 60_000);
         return settings;
     }
 
@@ -206,6 +253,12 @@ public class TempbanManagerTest {
     private static void assertHasCount(TempbanManager manager, String address, String name, int count) {
         Map<String, Map<String, TimedCounter>> playerCounts = ReflectionTestUtils
             .getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
-        assertThat(playerCounts.get(address).get(name).getCount(10000L), equalTo(count));
+        assertThat(playerCounts.get(address).get(name).getCount(TEST_EXPIRATION_THRESHOLD), equalTo(count));
+    }
+
+    private static TimedCounter newTimedCounter(int count, long timestamp) {
+        TimedCounter counter = new TimedCounter(count);
+        ReflectionTestUtils.setField(TimedCounter.class, counter, "lastIncrementTimestamp", timestamp);
+        return counter;
     }
 }

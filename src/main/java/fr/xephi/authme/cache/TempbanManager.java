@@ -1,6 +1,7 @@
 package fr.xephi.authme.cache;
 
 import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -12,18 +13,18 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static fr.xephi.authme.settings.properties.SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET;
 
 /**
  * Manager for handling temporary bans.
  */
-// TODO #876: Implement HasCleanup interface
-public class TempbanManager implements SettingsDependent {
+public class TempbanManager implements SettingsDependent, HasCleanup {
 
     private static final long MINUTE_IN_MILLISECONDS = 60_000;
-    // TODO #876: Make a setting out of this
-    private static final long COUNTER_RETENTION_MILLIS = 6 * 60 * MINUTE_IN_MILLISECONDS;
 
     private final Map<String, Map<String, TimedCounter>> ipLoginFailureCounts;
     private final BukkitService bukkitService;
@@ -32,6 +33,7 @@ public class TempbanManager implements SettingsDependent {
     private boolean isEnabled;
     private int threshold;
     private int length;
+    private long resetThreshold;
 
     @Inject
     TempbanManager(BukkitService bukkitService, Messages messages, Settings settings) {
@@ -59,7 +61,7 @@ public class TempbanManager implements SettingsDependent {
             if (counter == null) {
                 countsByName.put(name, new TimedCounter(1));
             } else {
-                counter.increment(COUNTER_RETENTION_MILLIS);
+                counter.increment(resetThreshold);
             }
         }
     }
@@ -91,12 +93,11 @@ public class TempbanManager implements SettingsDependent {
             if (countsByName != null) {
                 int total = 0;
                 for (TimedCounter counter : countsByName.values()) {
-                    total += counter.getCount(COUNTER_RETENTION_MILLIS);
+                    total += counter.getCount(resetThreshold);
                 }
                 return total >= threshold;
             }
         }
-
         return false;
     }
 
@@ -132,6 +133,20 @@ public class TempbanManager implements SettingsDependent {
         this.isEnabled = settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN);
         this.length = settings.getProperty(SecuritySettings.TEMPBAN_LENGTH);
+        this.resetThreshold = settings.getProperty(TEMPBAN_MINUTES_BEFORE_RESET) * MINUTE_IN_MILLISECONDS;
+    }
+
+    @Override
+    public void performCleanup() {
+        for (Map<String, TimedCounter> countsByIp : ipLoginFailureCounts.values()) {
+            Iterator<TimedCounter> it = countsByIp.values().iterator();
+            while (it.hasNext()) {
+                TimedCounter counter = it.next();
+                if (counter.getCount(resetThreshold) == 0) {
+                    it.remove();
+                }
+            }
+        }
     }
 
     /**

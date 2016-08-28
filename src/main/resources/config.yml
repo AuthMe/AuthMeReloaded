@@ -334,6 +334,9 @@ Security:
         # The length of time a IP address will be tempbanned in minutes
         # Default: 480 minutes, or 8 hours
         tempbanLength: 480
+        # How many minutes before resetting the count for failed logins by IP and username
+        # Default: 480 minutes (8 hours)
+        minutesBeforeCounterReset: 480
 Converter:
     Rakamak:
         # Rakamak file name
