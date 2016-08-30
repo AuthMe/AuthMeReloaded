@@ -1,9 +1,9 @@
 package fr.xephi.authme.datasource;
 
+import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
 import org.junit.Before;

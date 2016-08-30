@@ -2,6 +2,7 @@ package tools.hashmethods;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
@@ -9,7 +10,6 @@ import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.domain.Property;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 

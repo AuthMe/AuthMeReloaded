@@ -1,12 +1,13 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.settings.propertymap.PropertyMap;
-import org.bukkit.configuration.file.FileConfiguration;
+import com.github.authme.configme.migration.MigrationService;
+import com.github.authme.configme.propertymap.PropertyEntry;
+import com.github.authme.configme.resource.PropertyResource;
 
-import java.io.File;
+import java.util.List;
 
 /**
- * Provides {@link SettingsMigrationService} implementations for testing.
+ * Provides {@link MigrationService} implementations for testing.
  */
 public final class TestSettingsMigrationServices {
 
@@ -18,32 +19,12 @@ public final class TestSettingsMigrationServices {
      *
      * @return test settings migration service
      */
-    public static SettingsMigrationService alwaysFulfilled() {
-        return new SettingsMigrationService() {
+    public static MigrationService alwaysFulfilled() {
+        return new MigrationService() {
             @Override
-            public boolean checkAndMigrate(FileConfiguration configuration, PropertyMap propertyMap, File pluginFolder) {
+            public boolean checkAndMigrate(PropertyResource propertyResource, List<PropertyEntry> list) {
                 return false;
             }
-            @Override
-            public boolean containsAllSettings(FileConfiguration configuration, PropertyMap propertyMap) {
-                return true;
-            }
         };
     }
-
-    /**
-     * Returns a simple settings migration service which is fulfilled if all properties are present.
-     *
-     * @return test settings migration service
-     */
-    public static SettingsMigrationService checkAllPropertiesPresent() {
-        return new SettingsMigrationService() {
-            // See parent javadoc: true = some migration had to be done, false = config file is up-to-date
-            @Override
-            public boolean checkAndMigrate(FileConfiguration configuration, PropertyMap propertyMap, File pluginFolder) {
-                return !super.containsAllSettings(configuration, propertyMap);
-            }
-        };
-    }
-
 }

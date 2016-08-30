@@ -1,13 +1,13 @@
 package fr.xephi.authme.settings.properties;
 
+import com.github.authme.configme.Comment;
+import com.github.authme.configme.SettingsHolder;
+import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.output.LogLevel;
-import fr.xephi.authme.settings.domain.Comment;
-import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.SettingsClass;
 
-import static fr.xephi.authme.settings.domain.Property.newProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 
-public class PluginSettings implements SettingsClass {
+public class PluginSettings implements SettingsHolder {
 
     @Comment("The name shown in the help messages")
     public static final Property<String> HELP_HEADER =

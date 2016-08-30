@@ -1,20 +1,21 @@
 package fr.xephi.authme.settings.properties;
 
+import com.github.authme.configme.SettingsHolder;
+import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.propertymap.PropertyEntry;
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.SettingsClass;
-import fr.xephi.authme.settings.propertymap.PropertyMap;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
-import static fr.xephi.authme.settings.domain.Property.newListProperty;
-import static fr.xephi.authme.settings.domain.Property.newProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 
 /**
  * Sample properties for testing purposes.
  */
-public final class TestConfiguration implements SettingsClass {
+public final class TestConfiguration implements SettingsHolder {
 
     public static final Property<Integer> DURATION_IN_SECONDS =
         newProperty("test.duration", 4);
@@ -55,17 +56,17 @@ public final class TestConfiguration implements SettingsClass {
      *
      * @return The generated property map
      */
-    public static PropertyMap generatePropertyMap() {
-        PropertyMap propertyMap = new PropertyMap();
+    public static List<PropertyEntry> generatePropertyMap() {
+        List<PropertyEntry> properties = new ArrayList<>();
         for (Field field : TestConfiguration.class.getDeclaredFields()) {
             Object fieldValue = ReflectionTestUtils.getFieldValue(TestConfiguration.class, null, field.getName());
             if (fieldValue instanceof Property<?>) {
                 Property<?> property = (Property<?>) fieldValue;
                 String[] comments = new String[]{"Comment for '" + property.getPath() + "'"};
-                propertyMap.put(property, comments);
+                properties.add(new PropertyEntry(property, comments));
             }
         }
-        return propertyMap;
+        return properties;
     }
 
 }

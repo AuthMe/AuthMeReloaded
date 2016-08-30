@@ -1,12 +1,12 @@
 package fr.xephi.authme.util;
 
+import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;

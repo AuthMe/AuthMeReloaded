@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.github.authme.configme.properties.Property;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -9,7 +10,6 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.Before;
 import org.junit.BeforeClass;

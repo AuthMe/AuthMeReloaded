@@ -1,5 +1,8 @@
 package fr.xephi.authme.initialization;
 
+import com.github.authme.configme.propertymap.PropertyEntry;
+import com.github.authme.configme.resource.PropertyResource;
+import com.github.authme.configme.resource.YamlFileResource;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -15,11 +18,10 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
+import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
-import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.MigrationService;
@@ -31,6 +33,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
@@ -59,10 +62,12 @@ public class Initializer {
      */
     public Settings createSettings() throws Exception {
         File configFile = new File(authMe.getDataFolder(), "config.yml");
-        PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
-        SettingsMigrationService migrationService = new SettingsMigrationService();
+        PropertyResource resource = new YamlFileResource(configFile);
+        SettingsMigrationService migrationService = new SettingsMigrationService(authMe.getDataFolder());
+        List<PropertyEntry> knownProperties = AuthMeSettingsRetriever.getAllPropertyFields();
+
         if (FileUtils.copyFileFromResource(configFile, "config.yml")) {
-            return new Settings(configFile, authMe.getDataFolder(), properties, migrationService);
+            return new Settings(authMe.getDataFolder(), knownProperties, resource, migrationService);
         }
         throw new Exception("Could not copy config.yml from JAR to plugin folder");
     }
@@ -71,6 +76,7 @@ public class Initializer {
      * Sets up the data source.
      *
      * @param settings the settings
+     * @return the constructed datasource
      * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
      * @throws IOException            if flat file cannot be read

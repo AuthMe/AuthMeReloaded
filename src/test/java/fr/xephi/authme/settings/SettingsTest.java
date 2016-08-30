@@ -1,22 +1,23 @@
 package fr.xephi.authme.settings;
 
+import com.github.authme.configme.migration.PlainMigrationService;
+import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.propertymap.PropertyEntry;
+import com.github.authme.configme.resource.PropertyResource;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.TestConfiguration;
-import fr.xephi.authme.settings.properties.TestEnum;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.List;
 
 import static fr.xephi.authme.settings.properties.PluginSettings.MESSAGES_LANGUAGE;
@@ -28,13 +29,9 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -57,37 +54,11 @@ public class SettingsTest {
     }
 
     @Test
-    public void shouldLoadAllConfigs() {
-        // given
-        YamlConfiguration configuration = mock(YamlConfiguration.class);
-        given(configuration.getString(anyString(), anyString())).willAnswer(new ReturnsArgumentAt(1));
-        given(configuration.getBoolean(anyString(), anyBoolean())).willAnswer(new ReturnsArgumentAt(1));
-        given(configuration.getDouble(anyString(), anyDouble())).willAnswer(new ReturnsArgumentAt(1));
-        given(configuration.getInt(anyString(), anyInt())).willAnswer(new ReturnsArgumentAt(1));
-
-        setReturnValue(configuration, TestConfiguration.VERSION_NUMBER, 20);
-        setReturnValue(configuration, TestConfiguration.SKIP_BORING_FEATURES, true);
-        setReturnValue(configuration, TestConfiguration.RATIO_ORDER, TestEnum.THIRD);
-        setReturnValue(configuration, TestConfiguration.SYSTEM_NAME, "myTestSys");
-
-        // when / then
-        Settings settings = new Settings(configuration, null, null, null, null);
-
-        assertThat(settings.getProperty(TestConfiguration.VERSION_NUMBER), equalTo(20));
-        assertThat(settings.getProperty(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
-        assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER), equalTo(TestEnum.THIRD));
-        assertThat(settings.getProperty(TestConfiguration.SYSTEM_NAME), equalTo("myTestSys"));
-
-        assertDefaultValue(TestConfiguration.DURATION_IN_SECONDS, settings);
-        assertDefaultValue(TestConfiguration.DUST_LEVEL, settings);
-        assertDefaultValue(TestConfiguration.COOL_OPTIONS, settings);
-    }
-
-    @Test
     public void shouldReturnDefaultFile() throws IOException {
         // given
-        YamlConfiguration configuration = mock(YamlConfiguration.class);
-        Settings settings = new Settings(configuration, null, null, null, null);
+        PropertyResource resource = mock(PropertyResource.class);
+        List<PropertyEntry> knownProperties = Collections.emptyList();
+        Settings settings = new Settings(testPluginFolder, knownProperties, resource, new PlainMigrationService());
 
         // when
         String defaultFile = settings.getDefaultMessagesFile();
@@ -100,19 +71,6 @@ public class SettingsTest {
     }
 
     @Test
-    public void shouldSetProperty() {
-        // given
-        YamlConfiguration configuration = mock(YamlConfiguration.class);
-        Settings settings = new Settings(configuration, null, null, null, null);
-
-        // when
-        settings.setProperty(TestConfiguration.DUST_LEVEL, -4);
-
-        // then
-        verify(configuration).set(TestConfiguration.DUST_LEVEL.getPath(), -4);
-    }
-
-    @Test
     public void shouldReturnMessagesFile() {
         // given
         // Use some code that is for sure not present in our JAR
@@ -120,11 +78,11 @@ public class SettingsTest {
         File file = new File(testPluginFolder, makePath("messages", "messages_" + languageCode + ".yml"));
         createFile(file);
 
-        YamlConfiguration configuration = mock(YamlConfiguration.class);
-        given(configuration.contains(anyString())).willReturn(true);
-        setReturnValue(configuration, MESSAGES_LANGUAGE, languageCode);
-        Settings settings = new Settings(configuration, null, testPluginFolder,
-            TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
+        PropertyResource resource = mock(PropertyResource.class);
+        given(resource.contains(anyString())).willReturn(true);
+        setReturnValue(resource, MESSAGES_LANGUAGE, languageCode);
+        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
+            resource, TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
         File messagesFile = settings.getMessagesFile();
@@ -137,11 +95,11 @@ public class SettingsTest {
     @Test
     public void shouldCopyDefaultForUnknownLanguageCode() {
         // given
-        YamlConfiguration configuration = mock(YamlConfiguration.class);
-        given(configuration.contains(anyString())).willReturn(true);
-        setReturnValue(configuration, MESSAGES_LANGUAGE, "doesntexist");
-        Settings settings = new Settings(configuration, null, testPluginFolder,
-            TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
+        PropertyResource resource = mock(PropertyResource.class);
+        given(resource.contains(anyString())).willReturn(true);
+        setReturnValue(resource, MESSAGES_LANGUAGE, "doesntexist");
+        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
+            resource, TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
         File messagesFile = settings.getMessagesFile();
@@ -159,10 +117,10 @@ public class SettingsTest {
         createFile(welcomeFile);
         Files.write(welcomeFile.toPath(), welcomeMessage.getBytes());
 
-        YamlConfiguration configuration = mock(YamlConfiguration.class);
-        setReturnValue(configuration, RegistrationSettings.USE_WELCOME_MESSAGE, true);
-        Settings settings = new Settings(configuration, null, testPluginFolder,
-            TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
+        PropertyResource resource = mock(PropertyResource.class);
+        setReturnValue(resource, RegistrationSettings.USE_WELCOME_MESSAGE, true);
+        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
+            resource, TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
         List<String> result = settings.getWelcomeMessage();
@@ -181,9 +139,9 @@ public class SettingsTest {
         createFile(emailFile);
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
-        YamlConfiguration configuration = mock(YamlConfiguration.class);
-        Settings settings = new Settings(configuration, null, testPluginFolder,
-            TestConfiguration.generatePropertyMap(), TestSettingsMigrationServices.alwaysFulfilled());
+        PropertyResource resource = mock(PropertyResource.class);
+        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
+            resource, TestSettingsMigrationServices.alwaysFulfilled());
 
         // when
         String result = settings.getEmailMessage();
@@ -192,24 +150,19 @@ public class SettingsTest {
         assertThat(result, equalTo(emailMessage));
     }
 
-    private static <T> void setReturnValue(YamlConfiguration config, Property<T> property, T value) {
+    private static <T> void setReturnValue(PropertyResource resource, Property<T> property, T value) {
         if (value instanceof String) {
-            when(config.getString(eq(property.getPath()), anyString())).thenReturn((String) value);
+            when(resource.getString(eq(property.getPath()))).thenReturn((String) value);
         } else if (value instanceof Integer) {
-            when(config.getInt(eq(property.getPath()), anyInt())).thenReturn((Integer) value);
+            when(resource.getInt(eq(property.getPath()))).thenReturn((Integer) value);
         } else if (value instanceof Boolean) {
-            when(config.getBoolean(eq(property.getPath()), anyBoolean())).thenReturn((Boolean) value);
+            when(resource.getBoolean(eq(property.getPath()))).thenReturn((Boolean) value);
         } else if (value instanceof Enum<?>) {
-            when(config.getString(property.getPath())).thenReturn(((Enum<?>) value).name());
+            when(resource.getString(property.getPath())).thenReturn(((Enum<?>) value).name());
         } else {
             throw new UnsupportedOperationException("Value has unsupported type '"
                 + (value == null ? "null" : value.getClass().getSimpleName()) + "'");
         }
-    }
-
-    private static void assertDefaultValue(Property<?> property, Settings setting) {
-        assertThat(property.getPath() + " has default value",
-            setting.getProperty(property).equals(property.getDefaultValue()), equalTo(true));
     }
 
     private static void createFile(File file) {

@@ -1,12 +1,12 @@
 package fr.xephi.authme.settings.properties;
 
-import fr.xephi.authme.settings.domain.Comment;
-import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.SettingsClass;
+import com.github.authme.configme.Comment;
+import com.github.authme.configme.SettingsHolder;
+import com.github.authme.configme.properties.Property;
 
-import static fr.xephi.authme.settings.domain.Property.newProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 
-public class ConverterSettings implements SettingsClass {
+public class ConverterSettings implements SettingsHolder {
 
     @Comment("Rakamak file name")
     public static final Property<String> RAKAMAK_FILE_NAME =

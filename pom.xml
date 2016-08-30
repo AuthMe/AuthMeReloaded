@@ -852,6 +852,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- ConfigMe -->
+        <dependency>
+            <groupId>com.github.authme</groupId>
+            <artifactId>configme</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- Unit Testing Libraries -->
         <dependency>
             <groupId>junit</groupId>

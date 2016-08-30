@@ -1,9 +1,9 @@
 package fr.xephi.authme.settings.properties;
 
+import com.github.authme.configme.SettingsHolder;
+import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.SettingsClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,12 +20,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link SettingsClass} implementations.
+ * Test for {@link SettingsHolder} implementations.
  */
 public class SettingsClassConsistencyTest {
 
     private static final String SETTINGS_FOLDER = "src/main/java/fr/xephi/authme/settings/properties";
-    private static List<Class<? extends SettingsClass>> classes;
+    private static List<Class<? extends SettingsHolder>> classes;
 
     @BeforeClass
     public static void scanForSettingsClasses() {
@@ -37,7 +37,7 @@ public class SettingsClassConsistencyTest {
 
         classes = new ArrayList<>();
         for (File file : filesInFolder) {
-            Class<? extends SettingsClass> clazz = getSettingsClassFromFile(file);
+            Class<? extends SettingsHolder> clazz = getSettingsClassFromFile(file);
             if (clazz != null) {
                 classes.add(clazz);
             }
@@ -95,15 +95,15 @@ public class SettingsClassConsistencyTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static Class<? extends SettingsClass> getSettingsClassFromFile(File file) {
+    private static Class<? extends SettingsHolder> getSettingsClassFromFile(File file) {
         String fileName = file.getPath();
         String className = fileName
             .substring("src/main/java/".length(), fileName.length() - ".java".length())
             .replace(File.separator, ".");
         try {
             Class<?> clazz = SettingsClassConsistencyTest.class.getClassLoader().loadClass(className);
-            if (SettingsClass.class.isAssignableFrom(clazz)) {
-                return (Class<? extends SettingsClass>) clazz;
+            if (SettingsHolder.class.isAssignableFrom(clazz)) {
+                return (Class<? extends SettingsHolder>) clazz;
             }
             return null;
         } catch (ClassNotFoundException e) {
