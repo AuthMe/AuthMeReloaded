@@ -34,15 +34,6 @@ public class ZPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermission(Player player, PermissionNode node) {
-        Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(player.getWorld().getName(), null, player.getName());
-        if (perms.containsKey(node.getNode()))
-            return perms.get(node.getNode());
-        else
-            return node.getDefaultPermission().evaluate(player);
-    }
-
-    @Override
     public boolean hasPermissionOffline(String name, PermissionNode node) {
         Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(null, null, name);
         if (perms.containsKey(node.getNode()))

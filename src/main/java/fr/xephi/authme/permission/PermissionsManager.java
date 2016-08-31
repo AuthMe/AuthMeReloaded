@@ -198,13 +198,13 @@ public class PermissionsManager implements Reloadable {
             return true;
         }
 
-        // Return if the player is an Op if sender is console or no permission system in use
+        // Return default if sender is not a player or no permission system is in use
         if (!(sender instanceof Player) || !isEnabled()) {
             return permissionNode.getDefaultPermission().evaluate(sender);
         }
 
         Player player = (Player) sender;
-        return handler.hasPermission(player, permissionNode);
+        return player.hasPermission(permissionNode.getNode());
     }
 
     /**
