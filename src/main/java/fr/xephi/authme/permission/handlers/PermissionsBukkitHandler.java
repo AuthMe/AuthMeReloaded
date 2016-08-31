@@ -21,11 +21,6 @@ public class PermissionsBukkitHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermission(Player player, PermissionNode node) {
-        return player.hasPermission(node.getNode());
-    }
-
-    @Override
     public boolean hasPermissionOffline(String name, PermissionNode node) {
         return false;
     }
