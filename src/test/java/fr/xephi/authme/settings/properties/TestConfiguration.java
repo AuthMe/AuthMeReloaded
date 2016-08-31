@@ -2,11 +2,7 @@ package fr.xephi.authme.settings.properties;
 
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
-import com.github.authme.configme.propertymap.PropertyEntry;
-import fr.xephi.authme.ReflectionTestUtils;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
@@ -50,23 +46,4 @@ public final class TestConfiguration implements SettingsHolder {
 
     private TestConfiguration() {
     }
-
-    /**
-     * Generate a property map with all properties in {@link TestConfiguration}.
-     *
-     * @return The generated property map
-     */
-    public static List<PropertyEntry> generatePropertyMap() {
-        List<PropertyEntry> properties = new ArrayList<>();
-        for (Field field : TestConfiguration.class.getDeclaredFields()) {
-            Object fieldValue = ReflectionTestUtils.getFieldValue(TestConfiguration.class, null, field.getName());
-            if (fieldValue instanceof Property<?>) {
-                Property<?> property = (Property<?>) fieldValue;
-                String[] comments = new String[]{"Comment for '" + property.getPath() + "'"};
-                properties.add(new PropertyEntry(property, comments));
-            }
-        }
-        return properties;
-    }
-
 }

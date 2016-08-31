@@ -94,7 +94,8 @@ public class AuthMeInitializationTest {
     @Test
     public void shouldInitializeAllServices() {
         // given
-        Settings settings = new Settings(dataFolder, getAllPropertyFields(), mock(PropertyResource.class), alwaysFulfilled());
+        Settings settings =
+            new Settings(dataFolder, mock(PropertyResource.class), alwaysFulfilled(), getAllPropertyFields());
 
         Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
         injector.provide(DataFolder.class, dataFolder);

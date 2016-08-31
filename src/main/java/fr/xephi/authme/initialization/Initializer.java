@@ -67,7 +67,7 @@ public class Initializer {
         List<PropertyEntry> knownProperties = AuthMeSettingsRetriever.getAllPropertyFields();
 
         if (FileUtils.copyFileFromResource(configFile, "config.yml")) {
-            return new Settings(authMe.getDataFolder(), knownProperties, resource, migrationService);
+            return new Settings(authMe.getDataFolder(), resource, migrationService, knownProperties);
         }
         throw new Exception("Could not copy config.yml from JAR to plugin folder");
     }

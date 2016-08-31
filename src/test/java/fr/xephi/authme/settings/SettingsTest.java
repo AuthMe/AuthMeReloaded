@@ -3,6 +3,7 @@ package fr.xephi.authme.settings;
 import com.github.authme.configme.migration.PlainMigrationService;
 import com.github.authme.configme.properties.Property;
 import com.github.authme.configme.propertymap.PropertyEntry;
+import com.github.authme.configme.propertymap.SettingsFieldRetriever;
 import com.github.authme.configme.resource.PropertyResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -38,6 +39,9 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link Settings}.
  */
 public class SettingsTest {
+    
+    private final List<PropertyEntry> knownProperties = 
+        SettingsFieldRetriever.getAllProperties(TestConfiguration.class);
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -58,7 +62,7 @@ public class SettingsTest {
         // given
         PropertyResource resource = mock(PropertyResource.class);
         List<PropertyEntry> knownProperties = Collections.emptyList();
-        Settings settings = new Settings(testPluginFolder, knownProperties, resource, new PlainMigrationService());
+        Settings settings = new Settings(testPluginFolder, resource, new PlainMigrationService(), knownProperties);
 
         // when
         String defaultFile = settings.getDefaultMessagesFile();
@@ -81,8 +85,8 @@ public class SettingsTest {
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.contains(anyString())).willReturn(true);
         setReturnValue(resource, MESSAGES_LANGUAGE, languageCode);
-        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
-            resource, TestSettingsMigrationServices.alwaysFulfilled());
+        Settings settings = new Settings(testPluginFolder, resource,
+            TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
 
         // when
         File messagesFile = settings.getMessagesFile();
@@ -98,8 +102,8 @@ public class SettingsTest {
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.contains(anyString())).willReturn(true);
         setReturnValue(resource, MESSAGES_LANGUAGE, "doesntexist");
-        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
-            resource, TestSettingsMigrationServices.alwaysFulfilled());
+        Settings settings = new Settings(testPluginFolder, resource,
+            TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
 
         // when
         File messagesFile = settings.getMessagesFile();
@@ -119,8 +123,8 @@ public class SettingsTest {
 
         PropertyResource resource = mock(PropertyResource.class);
         setReturnValue(resource, RegistrationSettings.USE_WELCOME_MESSAGE, true);
-        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
-            resource, TestSettingsMigrationServices.alwaysFulfilled());
+        Settings settings = new Settings(testPluginFolder, resource,
+            TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
 
         // when
         List<String> result = settings.getWelcomeMessage();
@@ -140,8 +144,8 @@ public class SettingsTest {
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
         PropertyResource resource = mock(PropertyResource.class);
-        Settings settings = new Settings(testPluginFolder, TestConfiguration.generatePropertyMap(),
-            resource, TestSettingsMigrationServices.alwaysFulfilled());
+        Settings settings = new Settings(testPluginFolder, resource,
+            TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
 
         // when
         String result = settings.getEmailMessage();

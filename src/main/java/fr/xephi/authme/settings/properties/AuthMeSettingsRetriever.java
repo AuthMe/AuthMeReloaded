@@ -22,12 +22,10 @@ public final class AuthMeSettingsRetriever {
      * @return list of all known properties
      */
     public static List<PropertyEntry> getAllPropertyFields() {
-        SettingsFieldRetriever retriever = new SettingsFieldRetriever(
+        return SettingsFieldRetriever.getAllProperties(
             DatabaseSettings.class,      ConverterSettings.class,  PluginSettings.class,
             RestrictionSettings.class,   EmailSettings.class,      HooksSettings.class,
             ProtectionSettings.class,    PurgeSettings.class,      SecuritySettings.class,
             RegistrationSettings.class,  BackupSettings.class);
-
-        return retriever.getAllPropertyFields();
     }
 }

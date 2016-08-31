@@ -33,13 +33,13 @@ public class Settings extends SettingsManager {
      * Constructor.
      *
      * @param pluginFolder the AuthMe plugin folder
-     * @param knownProperties collection of all available settings
      * @param resource the property resource to read and write properties to
      * @param migrationService migration service to check the settings file with
+     * @param knownProperties collection of all available settings
      */
-    public Settings(File pluginFolder, List<PropertyEntry> knownProperties, PropertyResource resource,
-                    MigrationService migrationService) {
-        super(knownProperties, resource, migrationService);
+    public Settings(File pluginFolder, PropertyResource resource, MigrationService migrationService,
+                    List<PropertyEntry> knownProperties) {
+        super(resource, migrationService, knownProperties);
         this.pluginFolder = pluginFolder;
     }
 
