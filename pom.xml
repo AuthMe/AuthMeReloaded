@@ -413,12 +413,6 @@
             <url>http://repo.luricos.de/content/repositories/releases</url>
         </repository>
 
-        <!-- bPermissions Repo -->
-        <repository>
-            <id>rymatemc-repo</id>
-            <url>http://rymatemc.co.uk:8081/artifactory/libs-release-local</url>
-        </repository>
-
         <!-- Our Repo (Many libs) -->
         <repository>
             <id>xephi-repo</id>
@@ -582,8 +576,8 @@
         <!-- bPermissions plugin -->
         <dependency>
             <groupId>de.bananaco</groupId>
-            <artifactId>bPermissions-API</artifactId>
-            <version>2.12</version>
+            <artifactId>bPermissions</artifactId>
+            <version>2.12-DEV</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

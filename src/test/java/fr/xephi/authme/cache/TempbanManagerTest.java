@@ -243,11 +243,10 @@ public class TempbanManagerTest {
         return settings;
     }
 
-    @SuppressWarnings("rawtypes")
     private static void assertHasNoEntries(TempbanManager manager, String address) {
-        Map<String, Map<?, ?>> playerCounts = ReflectionTestUtils
+        Map<String, Map<String, TimedCounter>> playerCounts = ReflectionTestUtils
             .getFieldValue(TempbanManager.class, manager, "ipLoginFailureCounts");
-        Map map = playerCounts.get(address);
+        Map<String, TimedCounter> map = playerCounts.get(address);
         assertThat(map == null || map.isEmpty(), equalTo(true));
     }
 
