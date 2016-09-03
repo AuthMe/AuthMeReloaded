@@ -41,6 +41,7 @@ public class Settings extends SettingsManager {
                     List<PropertyEntry> knownProperties) {
         super(resource, migrationService, knownProperties);
         this.pluginFolder = pluginFolder;
+        loadSettingsFromFiles();
     }
 
     /**
@@ -79,17 +80,16 @@ public class Settings extends SettingsManager {
         return welcomeMessage;
     }
 
-    @Override
-    protected void validateAndLoadOptions() {
-        if (migrationService.checkAndMigrate(resource, knownProperties)) {
-            ConsoleLogger.info("Merged new config options");
-            ConsoleLogger.info("Please check your config.yml file for new settings!");
-            save();
-        }
-
+    private void loadSettingsFromFiles() {
         messagesFile = buildMessagesFile();
         welcomeMessage = readWelcomeMessage();
         emailMessage = readEmailMessage();
+    }
+
+    @Override
+    public void reload() {
+        super.reload();
+        loadSettingsFromFiles();
     }
 
     private File buildMessagesFile() {

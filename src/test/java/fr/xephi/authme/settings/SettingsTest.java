@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
  */
 public class SettingsTest {
     
-    private final List<PropertyEntry> knownProperties = 
+    private static final List<PropertyEntry> knownProperties =
         SettingsFieldRetriever.getAllProperties(TestConfiguration.class);
 
     @Rule

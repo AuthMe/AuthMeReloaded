@@ -24,11 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static fr.xephi.authme.TestHelper.getJarFile;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * Integration test for {@link Settings}.
+ * Integration test for {@link Settings} (ConfigMe integration).
  */
 public class SettingsIntegrationTest {
 
@@ -118,13 +119,14 @@ public class SettingsIntegrationTest {
     @Test
     public void shouldReloadSettings() throws IOException {
         // given
-        PropertyResource resource = new YamlFileResource(temporaryFolder.newFile());
+        File configFile = temporaryFolder.newFile();
+        PropertyResource resource = new YamlFileResource(configFile);
         Settings settings = new Settings(testPluginFolder, resource,
             TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
 
         // when
-        assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER),
-            equalTo(TestConfiguration.RATIO_ORDER.getDefaultValue()));
+        assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER), equalTo(TestEnum.SECOND)); // default value
+        Files.copy(getJarFile(COMPLETE_FILE), configFile);
         settings.reload();
 
         // then
@@ -133,7 +135,7 @@ public class SettingsIntegrationTest {
 
     private File copyFileFromResources(String path) {
         try {
-            File source = TestHelper.getJarFile(path);
+            File source = getJarFile(path);
             File destination = temporaryFolder.newFile();
             Files.copy(source, destination);
             return destination;
