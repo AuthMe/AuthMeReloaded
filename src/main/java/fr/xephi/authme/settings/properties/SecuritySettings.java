@@ -89,7 +89,7 @@ public class SecuritySettings implements SettingsClass {
         "- '123456'",
         "- 'password'"})
     public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321");
+        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321", "123456789");
 
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")
     public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =

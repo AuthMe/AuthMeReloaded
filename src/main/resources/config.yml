@@ -206,6 +206,7 @@ settings:
         - 'qwerty'
         - '12345'
         - '54321'
+        - '123456789'
     registration:
         # enable registration on the server?
         enabled: true
