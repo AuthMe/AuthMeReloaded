@@ -98,38 +98,38 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
-		        <dependency>
-		            <groupId>org.spigotmc</groupId>
-		            <artifactId>spigot-api</artifactId>
-		            <version>${bukkit.version}</version>
-		            <scope>provided</scope>
-		            <exclusions>
-		                <exclusion>
-		                    <artifactId>junit</artifactId>
-		                    <groupId>junit</groupId>
-		                </exclusion>
-		                <exclusion>
-		                    <artifactId>json-simple</artifactId>
-		                    <groupId>com.googlecode.json-simple</groupId>
-		                </exclusion>
-		                <exclusion>
-		                    <artifactId>persistence-api</artifactId>
-		                    <groupId>javax.persistence</groupId>
-		                </exclusion>
-		                <exclusion>
-		                    <artifactId>guava</artifactId>
-		                    <groupId>com.google.guava</groupId>
-		                </exclusion>
-		                <exclusion>
-		                    <artifactId>bungeecord-chat</artifactId>
-		                    <groupId>net.md-5</groupId>
-		                </exclusion>
-		                <exclusion>
-		                    <artifactId>gson</artifactId>
-		                    <groupId>com.google.code.gson</groupId>
-		                </exclusion>
-		            </exclusions>
-		        </dependency>
+                <dependency>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                    <version>${bukkit.version}</version>
+                    <scope>provided</scope>
+                    <exclusions>
+                        <exclusion>
+                            <artifactId>junit</artifactId>
+                            <groupId>junit</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>json-simple</artifactId>
+                            <groupId>com.googlecode.json-simple</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>persistence-api</artifactId>
+                            <groupId>javax.persistence</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>guava</artifactId>
+                            <groupId>com.google.guava</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>bungeecord-chat</artifactId>
+                            <groupId>net.md-5</groupId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>gson</artifactId>
+                            <groupId>com.google.code.gson</groupId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
             </dependencies>
         </profile>
         <!-- Bukkit -->
@@ -244,31 +244,31 @@
                                 </excludes>
                             </artifactSet>
                             <relocations>
-		                        <relocation>
-		                            <pattern>com.zaxxer.hikari</pattern>
-		                            <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
-		                        </relocation>
-		                        <relocation>
-		                            <pattern>org.slf4j</pattern>
-		                            <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
-		                        </relocation>
-		                        <relocation>
-		                            <pattern>com.maxmind.geoip</pattern>
-		                            <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
-		                        </relocation>
-		                        <relocation>
-		                            <pattern>net.ricecode.similarity</pattern>
-		                            <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
-		                        </relocation>
-		                        <relocation>
-		                            <pattern>javax.inject</pattern>
-		                            <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
-		                        </relocation>
-		                        <!-- MCStats.org metrics -->
-		                        <relocation>
-		                            <pattern>org.mcstats</pattern>
-		                            <shadedPattern>fr.xephi.authme</shadedPattern>
-		                        </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.maxmind.geoip</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.ricecode.similarity</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.inject</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
+                                </relocation>
+                                <!-- MCStats.org metrics -->
+                                <relocation>
+                                    <pattern>org.mcstats</pattern>
+                                    <shadedPattern>fr.xephi.authme</shadedPattern>
+                                </relocation>
                             </relocations>
                             <outputFile>target/${project.finalName}-spigot.jar</outputFile>
                         </configuration>
@@ -421,6 +421,70 @@
     </repositories>
 
     <dependencies>
+        <!-- Java Libraries -->
+        
+        <!-- Jalu Injector -->
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>injector</artifactId>
+            <version>0.3</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- String comparison library. Used for dynamic help system. -->
+        <dependency>
+            <groupId>net.ricecode</groupId>
+            <artifactId>string-similarity</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- GSON (version included in spigot 1.8+, required to provide 1.7.10 and below compatibility) -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Guava (the version provided by the latest bukkit version) -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>17.0</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Maxmind GeoIp API -->
+        <dependency>
+            <groupId>com.maxmind.geoip</groupId>
+            <artifactId>geoip-api</artifactId>
+            <version>1.3.1</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Java Email Library -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <version>1.4</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Log4J Logger (required by the console filter) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Database Connection Pool -->
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -444,58 +508,10 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Log4J Logger (required by the console filter) -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
+        <!-- Spigot API, http://www.spigotmc.org/ or http://bukkit.org/ -->
+        <!-- Moved in profiles! -->
 
-        <!-- Java Email Library -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-email</artifactId>
-            <version>1.4</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- GSON (version included in spigot 1.8+, required to provide 1.7.10 and below compatibility) -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.4</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Guava (the version provided by the latest bukkit version) -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>17.0</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Inject API -->
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Maxmind GeoIp API -->
-        <dependency>
-            <groupId>com.maxmind.geoip</groupId>
-            <artifactId>geoip-api</artifactId>
-            <version>1.3.1</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
+        <!-- Bukkit Libraries  -->
 
         <!-- Metrics API -->
         <dependency>
@@ -511,9 +527,6 @@
             </exclusions>
             <optional>true</optional>
         </dependency>
-
-        <!-- Spigot API, http://www.spigotmc.org/ or http://bukkit.org/ -->
-        <!-- Moved in profiles! -->
 
         <!-- ProtocolLib -->
         <dependency>
@@ -611,7 +624,7 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -678,12 +691,12 @@
                     <groupId>junit</groupId>
                 </exclusion>
                 <exclusion>
-                	<artifactId>spigot-api</artifactId>
-                	<groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                    <groupId>org.spigotmc</groupId>
                 </exclusion>
                 <exclusion>
-                	<artifactId>jettison</artifactId>
-                	<groupId>org.codehaus.jettison</groupId>
+                    <artifactId>jettison</artifactId>
+                    <groupId>org.codehaus.jettison</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -710,7 +723,7 @@
         <dependency>
             <groupId>net.minelink</groupId>
             <artifactId>CombatTagPlus</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
+            <version>1.3.0-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -777,6 +790,24 @@
                     <artifactId>metrics-lite</artifactId>
                     <groupId>org.mcstats.bukkit</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>net.minelink</groupId>
+                    <artifactId>CombatTagPlusCompat-v1_9_R1</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.minelink</groupId>
+                    <artifactId>CombatTagPlusCompat-v1_9_R2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.minelink</groupId>
+                    <artifactId>
+                        CombatTagPlusCompat-v1_10_R1
+                    </artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -822,35 +853,22 @@
             </exclusions>
         </dependency>
 
-        <!-- Injector -->
-        <dependency>
-            <groupId>ch.jalu</groupId>
-            <artifactId>injector</artifactId>
-            <version>0.3</version>
-        </dependency>
-
-        <!-- String comparison library. Used for dynamic help system. -->
-        <dependency>
-            <groupId>net.ricecode</groupId>
-            <artifactId>string-similarity</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
         <!-- Unit Testing Libraries -->
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
             <version>4.12</version>
         </dependency>
+
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>java-hamcrest</artifactId>
             <scope>test</scope>
             <version>2.0.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -863,6 +881,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <!-- JDBC drivers for datasource integration tests -->
         <dependency>
             <groupId>org.xerial</groupId>
@@ -876,5 +895,6 @@
             <version>1.4.192</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 </project>
