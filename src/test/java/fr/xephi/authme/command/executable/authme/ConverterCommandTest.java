@@ -4,8 +4,6 @@ import ch.jalu.injector.Injector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.converter.Converter;
-import fr.xephi.authme.converter.RakamakConverter;
-import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
@@ -92,9 +90,7 @@ public class ConverterCommandTest {
         // given
         String converterName = "rakamak";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
-        // Keep concrete class reference in mock: if this class is ever removed, we need to use another converterName
-        Converter converter = mock(RakamakConverter.class);
-        given(injector.newInstance(converterClass)).willReturn(converter);
+        Converter converter = createMockReturnedByInjector(converterClass);
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -113,9 +109,8 @@ public class ConverterCommandTest {
         // given
         String converterName = "vauth";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
-        Converter converter = mock(vAuthConverter.class);
+        Converter converter = createMockReturnedByInjector(converterClass);
         doThrow(IllegalStateException.class).when(converter).execute(any(CommandSender.class));
-        given(injector.newInstance(converterClass)).willReturn(converter);
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -128,6 +123,12 @@ public class ConverterCommandTest {
         verify(injector).newInstance(converterClass);
         verifyNoMoreInteractions(injector);
         verify(commandService).send(sender, MessageKey.ERROR);
+    }
+
+    private <T extends Converter> T createMockReturnedByInjector(Class<T> clazz) {
+        T converter = mock(clazz);
+        given(injector.newInstance(clazz)).willReturn(converter);
+        return converter;
     }
 
 }
