@@ -1,8 +1,8 @@
 package fr.xephi.authme.settings;
 
 import com.github.authme.configme.SettingsManager;
+import com.github.authme.configme.knownproperties.PropertyEntry;
 import com.github.authme.configme.migration.MigrationService;
-import com.github.authme.configme.propertymap.PropertyEntry;
 import com.github.authme.configme.resource.PropertyResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;

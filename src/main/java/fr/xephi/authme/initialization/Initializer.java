@@ -1,6 +1,6 @@
 package fr.xephi.authme.initialization;
 
-import com.github.authme.configme.propertymap.PropertyEntry;
+import com.github.authme.configme.knownproperties.PropertyEntry;
 import com.github.authme.configme.resource.PropertyResource;
 import com.github.authme.configme.resource.YamlFileResource;
 import fr.xephi.authme.AuthMe;

@@ -1,9 +1,9 @@
 package fr.xephi.authme.settings;
 
+import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.knownproperties.PropertyFieldsCollector;
 import com.github.authme.configme.migration.PlainMigrationService;
 import com.github.authme.configme.properties.Property;
-import com.github.authme.configme.propertymap.PropertyEntry;
-import com.github.authme.configme.propertymap.SettingsFieldRetriever;
 import com.github.authme.configme.resource.PropertyResource;
 import com.github.authme.configme.resource.YamlFileResource;
 import com.google.common.collect.ImmutableMap;
@@ -38,7 +38,8 @@ public class SettingsIntegrationTest {
     /** File name of the sample config missing certain {@link TestConfiguration} values. */
     private static final String INCOMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-incomplete-sample.yml";
 
-    private static List<PropertyEntry> knownProperties = SettingsFieldRetriever.getAllProperties(TestConfiguration.class);
+    private static List<PropertyEntry> knownProperties =
+        PropertyFieldsCollector.getAllProperties(TestConfiguration.class);
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
