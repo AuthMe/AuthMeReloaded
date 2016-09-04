@@ -45,7 +45,7 @@ Outdated!
 <hr>
 
 #####Compiling Requirements:
->- JDK 1.7
+>- JDK 1.8
 >- Maven
 >- Git/Github (Optional)
 
@@ -54,7 +54,7 @@ Outdated!
 >- Execute command "mvn clean install"
 
 #####Running Requirements:
->- Java 1.7 or 1.8
+>- Java 1.8
 >- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X, 1.9.X, 1.10.X)
 >- ProtocolLib (optional, required by the protectInventory feature)
 

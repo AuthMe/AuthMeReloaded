@@ -151,7 +151,7 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
 
         // Successful message
-        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n°" + getPluginBuildNumber() + " correctly enabled!");
+        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber() + " correctly enabled!");
 
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);
