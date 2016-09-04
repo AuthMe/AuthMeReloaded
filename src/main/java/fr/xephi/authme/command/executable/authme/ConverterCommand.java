@@ -7,6 +7,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.CrazyLoginConverter;
+import fr.xephi.authme.converter.MySqlToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
 import fr.xephi.authme.converter.RoyalAuthConverter;
 import fr.xephi.authme.converter.SqliteToSql;
@@ -55,13 +56,14 @@ public class ConverterCommand implements ExecutableCommand {
                 try {
                     converter.execute(sender);
                 } catch (Exception e) {
+                    commandService.send(sender, MessageKey.ERROR);
                     ConsoleLogger.logException("Error during conversion:", e);
                 }
             }
         });
 
         // Show a status message
-        sender.sendMessage("[AuthMe] Successfully converted from " + jobType.getName());
+        sender.sendMessage("[AuthMe] Successfully started " + jobType.getName());
     }
 
     @VisibleForTesting
@@ -71,7 +73,8 @@ public class ConverterCommand implements ExecutableCommand {
         RAKAMAK("rakamak", RakamakConverter.class),
         ROYALAUTH("royalauth", RoyalAuthConverter.class),
         VAUTH("vauth", vAuthConverter.class),
-        SQLITETOSQL("sqlitetosql", SqliteToSql.class);
+        SQLITE_TO_SQL("sqlitetosql", SqliteToSql.class),
+        MYSQL_TO_SQLITE("mysqltosqlite", MySqlToSqlite.class);
 
         private final String name;
         private final Class<? extends Converter> converterClass;
