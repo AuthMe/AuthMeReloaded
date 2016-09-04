@@ -245,6 +245,10 @@
                             </artifactSet>
                             <relocations>
                                 <relocation>
+                                    <pattern>ch.jalu.injector</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
                                 </relocation>
@@ -286,6 +290,10 @@
                                 <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>ch.jalu.injector</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
