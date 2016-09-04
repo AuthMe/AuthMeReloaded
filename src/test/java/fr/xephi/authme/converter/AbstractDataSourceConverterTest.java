@@ -54,7 +54,6 @@ public class AbstractDataSourceConverterTest {
         verifyZeroInteractions(source);
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void shouldHandleSourceThrowingException() {
         // given
@@ -62,7 +61,7 @@ public class AbstractDataSourceConverterTest {
         DataSource destination = mock(DataSource.class);
         DataSourceType destinationType = DataSourceType.SQLITE;
         given(destination.getType()).willReturn(destinationType);
-        DataSourceConverterTestImpl converter =
+        DataSourceConverterTestImpl<DataSource> converter =
             Mockito.spy(new DataSourceConverterTestImpl<>(source, destination, destinationType));
         doThrow(IllegalStateException.class).when(converter).getSource();
         CommandSender sender = mock(CommandSender.class);
