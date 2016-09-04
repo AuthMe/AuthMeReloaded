@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.FlatFile;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -20,6 +21,7 @@ import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,10 +53,11 @@ public class ForceFlatToSqliteTest {
     public void shouldConvertToSqlite() {
         // given
         DataSource dataSource = mock(DataSource.class);
+        given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
         ForceFlatToSqlite converter = new ForceFlatToSqlite(flatFile, dataSource);
 
         // when
-        converter.run();
+        converter.execute(null);
 
         // then
         ArgumentCaptor<PlayerAuth> authCaptor = ArgumentCaptor.forClass(PlayerAuth.class);
