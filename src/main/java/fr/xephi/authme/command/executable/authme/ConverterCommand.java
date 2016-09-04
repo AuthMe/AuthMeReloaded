@@ -47,7 +47,7 @@ public class ConverterCommand implements ExecutableCommand {
         // Determine the job type
         Class<? extends Converter> converterClass = CONVERTERS.get(job.toLowerCase());
         if (converterClass == null) {
-            commandService.send(sender, MessageKey.ERROR);
+            sender.sendMessage("[AuthMe] Converter does not exist!");
             return;
         }
 

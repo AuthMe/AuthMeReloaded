@@ -22,10 +22,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -64,7 +66,7 @@ public class ConverterCommandTest {
         command.executeCommand(sender, Collections.singletonList("invalid"));
 
         // then
-        verify(commandService).send(sender, MessageKey.ERROR);
+        verify(sender).sendMessage(argThat(containsString("Converter does not exist")));
         verifyNoMoreInteractions(commandService);
         verifyZeroInteractions(injector);
         verifyZeroInteractions(bukkitService);
