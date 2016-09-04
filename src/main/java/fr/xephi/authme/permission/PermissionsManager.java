@@ -3,7 +3,6 @@ package fr.xephi.authme.permission;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
-import fr.xephi.authme.permission.handlers.GroupManagerHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandlerException;
 import fr.xephi.authme.permission.handlers.PermissionsBukkitHandler;
@@ -11,7 +10,6 @@ import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
 import fr.xephi.authme.util.StringUtils;
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -110,8 +108,6 @@ public class PermissionsManager implements Reloadable {
         switch (type) {
             case PERMISSIONS_EX:
                 return new PermissionsExHandler();
-            case ESSENTIALS_GROUP_MANAGER:
-                return new GroupManagerHandler((GroupManager) plugin);
             case Z_PERMISSIONS:
                 return new ZPermissionsHandler();
             case VAULT:

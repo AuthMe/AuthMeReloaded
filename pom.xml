@@ -515,11 +515,11 @@
         <!-- Spigot API, http://www.spigotmc.org/ or http://bukkit.org/ -->
         <!-- Moved in profiles! -->
 
-        <!-- ProtocolLib, http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
+        <!-- ProtocolLib -->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.6.5-SNAPSHOT</version>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>4.1.0-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -537,7 +537,7 @@
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.23.1</version>
+            <version>1.23.4</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -555,20 +555,6 @@
                 <exclusion>
                     <artifactId>AccountsClient</artifactId>
                     <groupId>com.mojang</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- GroupManager plugin -->
-        <dependency>
-            <groupId>org.anjocaido</groupId>
-            <artifactId>groupmanagerx</artifactId>
-            <version>2.2-SNAPSHOT</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
