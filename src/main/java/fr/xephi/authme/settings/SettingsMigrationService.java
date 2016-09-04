@@ -4,6 +4,7 @@ import com.github.authme.configme.knownproperties.PropertyEntry;
 import com.github.authme.configme.migration.PlainMigrationService;
 import com.github.authme.configme.properties.Property;
 import com.github.authme.configme.resource.PropertyResource;
+import com.google.common.base.Objects;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -145,7 +146,8 @@ public class SettingsMigrationService extends PlainMigrationService {
         final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
         if (!newProperty.isPresent(resource) && resource.contains(oldPath)) {
             ConsoleLogger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
-            LogLevel level = Boolean.valueOf(resource.getString(oldPath)) ? LogLevel.INFO : LogLevel.FINE;
+            boolean oldValue = Objects.firstNonNull(resource.getBoolean(oldPath), false);
+            LogLevel level = oldValue ? LogLevel.INFO : LogLevel.FINE;
             resource.setValue(newProperty.getPath(), level.name());
             return true;
         }
