@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import ch.jalu.injector.Injector;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
@@ -19,11 +20,15 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Converter command: launches conversion based on its parameters.
  */
 public class ConverterCommand implements ExecutableCommand {
+
+    @VisibleForTesting
+    static final Map<String, Class<? extends Converter>> CONVERTERS = getConverters();
 
     @Inject
     private CommandService commandService;
@@ -40,14 +45,14 @@ public class ConverterCommand implements ExecutableCommand {
         String job = arguments.get(0);
 
         // Determine the job type
-        ConvertType jobType = ConvertType.fromName(job);
-        if (jobType == null) {
+        Class<? extends Converter> converterClass = CONVERTERS.get(job.toLowerCase());
+        if (converterClass == null) {
             commandService.send(sender, MessageKey.ERROR);
             return;
         }
 
         // Get the proper converter instance
-        final Converter converter = injector.newInstance(jobType.getConverterClass());
+        final Converter converter = injector.newInstance(converterClass);
 
         // Run the convert job
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -63,42 +68,24 @@ public class ConverterCommand implements ExecutableCommand {
         });
 
         // Show a status message
-        sender.sendMessage("[AuthMe] Successfully started " + jobType.getName());
+        sender.sendMessage("[AuthMe] Successfully started " + job);
     }
 
-    @VisibleForTesting
-    enum ConvertType {
-        XAUTH("xauth", xAuthConverter.class),
-        CRAZYLOGIN("crazylogin", CrazyLoginConverter.class),
-        RAKAMAK("rakamak", RakamakConverter.class),
-        ROYALAUTH("royalauth", RoyalAuthConverter.class),
-        VAUTH("vauth", vAuthConverter.class),
-        SQLITE_TO_SQL("sqlitetosql", SqliteToSql.class),
-        MYSQL_TO_SQLITE("mysqltosqlite", MySqlToSqlite.class);
-
-        private final String name;
-        private final Class<? extends Converter> converterClass;
-
-        ConvertType(String name, Class<? extends Converter> converterClass) {
-            this.name = name;
-            this.converterClass = converterClass;
-        }
-
-        public static ConvertType fromName(String name) {
-            for (ConvertType type : ConvertType.values()) {
-                if (type.getName().equalsIgnoreCase(name)) {
-                    return type;
-                }
-            }
-            return null;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public Class<? extends Converter> getConverterClass() {
-            return converterClass;
-        }
+    /**
+     * Initializes a map with all available converters.
+     *
+     * @return map with all available converters
+     */
+    private static Map<String, Class<? extends Converter>> getConverters() {
+        return ImmutableMap.<String, Class<? extends Converter>>builder()
+            .put("xauth", xAuthConverter.class)
+            .put("crazylogin", CrazyLoginConverter.class)
+            .put("rakamak", RakamakConverter.class)
+            .put("royalauth", RoyalAuthConverter.class)
+            .put("vauth", vAuthConverter.class)
+            .put("sqlitetosql", SqliteToSql.class)
+            .put("mysqltosqlite", MySqlToSqlite.class)
+            .build();
     }
+
 }
