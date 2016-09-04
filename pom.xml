@@ -249,6 +249,10 @@
                                     <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>com.github.authme.configme</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.authme.configme</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
                                 </relocation>
@@ -294,6 +298,10 @@
                                 <relocation>
                                     <pattern>ch.jalu.injector</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.github.authme.configme</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.authme.configme</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
@@ -866,6 +874,14 @@
             <groupId>com.github.authme</groupId>
             <artifactId>configme</artifactId>
             <version>0.1</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.yaml</groupId>
+            		<artifactId>snakeyaml</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Unit Testing Libraries -->

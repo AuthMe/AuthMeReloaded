@@ -54,6 +54,7 @@ public class AbstractDataSourceConverterTest {
         verifyZeroInteractions(source);
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void shouldHandleSourceThrowingException() {
         // given
