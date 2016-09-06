@@ -92,7 +92,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.sendBungeeMessage(player, "register");
         bungeeService.connectPlayer(player);
     }
 }

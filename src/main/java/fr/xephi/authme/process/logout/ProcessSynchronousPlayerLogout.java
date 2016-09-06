@@ -64,8 +64,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
-        // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.sendBungeeMessage(player, "logout");
 
         service.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");

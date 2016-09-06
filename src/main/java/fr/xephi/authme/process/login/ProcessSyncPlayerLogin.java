@@ -119,7 +119,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         // The Login event now fires (as intended) after everything is processed
         bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
-        bungeeService.sendBungeeMessage(player, "login");
 
         // Login is done, display welcome message
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {

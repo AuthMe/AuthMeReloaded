@@ -49,9 +49,6 @@ public class AsyncChangePassword implements AsynchronousProcess {
             playerCache.updatePlayer(auth);
             processService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             ConsoleLogger.info(player.getName() + " changed his password");
-
-            // Send a Bungee message for the password change
-            bungeeService.sendPasswordChanged(player, hashedPassword);
         } else {
             processService.send(player, MessageKey.WRONG_PASSWORD);
         }
