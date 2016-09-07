@@ -2,15 +2,14 @@ package fr.xephi.authme.settings.properties;
 
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
+import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,25 +23,14 @@ import static org.junit.Assert.fail;
  */
 public class SettingsClassConsistencyTest {
 
-    private static final String SETTINGS_FOLDER = "src/main/java/fr/xephi/authme/settings/properties";
+    private static final String SETTINGS_FOLDER = TestHelper.PROJECT_ROOT + "settings/properties";
     private static List<Class<? extends SettingsHolder>> classes;
 
     @BeforeClass
     public static void scanForSettingsClasses() {
-        File settingsFolder = new File(SETTINGS_FOLDER);
-        File[] filesInFolder = settingsFolder.listFiles();
-        if (filesInFolder == null || filesInFolder.length == 0) {
-            throw new IllegalStateException("Could not read folder '" + SETTINGS_FOLDER + "'. Is it correct?");
-        }
-
-        classes = new ArrayList<>();
-        for (File file : filesInFolder) {
-            Class<? extends SettingsHolder> clazz = getSettingsClassFromFile(file);
-            if (clazz != null) {
-                classes.add(clazz);
-            }
-        }
-        System.out.println("Found " + classes.size() + " SettingsClass implementations");
+        ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, SETTINGS_FOLDER);
+        classes = collector.collectClasses(SettingsHolder.class);
+        System.out.println("Found " + classes.size() + " SettingsHolder implementations");
     }
 
     /**
@@ -93,22 +81,4 @@ public class SettingsClassConsistencyTest {
         int modifiers = field.getModifiers();
         return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);
     }
-
-    @SuppressWarnings("unchecked")
-    private static Class<? extends SettingsHolder> getSettingsClassFromFile(File file) {
-        String fileName = file.getPath();
-        String className = fileName
-            .substring("src/main/java/".length(), fileName.length() - ".java".length())
-            .replace(File.separator, ".");
-        try {
-            Class<?> clazz = SettingsClassConsistencyTest.class.getClassLoader().loadClass(className);
-            if (SettingsHolder.class.isAssignableFrom(clazz)) {
-                return (Class<? extends SettingsHolder>) clazz;
-            }
-            return null;
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Could not load class '" + className + "'", e);
-        }
-    }
-
 }
