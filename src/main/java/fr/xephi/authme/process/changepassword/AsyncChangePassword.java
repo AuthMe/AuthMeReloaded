@@ -9,15 +9,11 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.service.BungeeService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
 public class AsyncChangePassword implements AsynchronousProcess {
-
-    @Inject
-    private BungeeService bungeeService;
 
     @Inject
     private DataSource dataSource;
