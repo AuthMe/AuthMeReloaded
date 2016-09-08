@@ -438,13 +438,13 @@
     </repositories>
 
     <dependencies>
-    <!-- 
+    
     	<dependency>
     		<groupId>org.bukkit</groupId>
     		<artifactId>bukkit</artifactId>
     		<version>${bukkit.version}</version>
     		<scope>compile</scope>
-    	</dependency> -->
+    	</dependency>
         <!-- Java Libraries -->
 
         <!-- Jalu Injector -->
