@@ -393,12 +393,11 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
 
-        <!-- Essentials Repo NOTE: Offline atm
+        <!-- Essentials Repo -->
         <repository>
             <id>ess-repo</id>
             <url>http://repo.ess3.net/content/groups/essentials</url>
         </repository>
-        -->
 
         <!-- CombatTagPlus Repo -->
         <repository>
@@ -718,7 +717,7 @@
             </exclusions>
         </dependency>
 
-        <!-- Essentials plugin NOTE: Unavailable atm
+        <!-- Essentials plugin -->
         <dependency>
             <groupId>net.ess3</groupId>
             <artifactId>Essentials</artifactId>
@@ -735,7 +734,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        -->
 
         <!-- Anti-PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
         <dependency>
