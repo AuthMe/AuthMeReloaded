@@ -30,6 +30,10 @@ public class SettingsClassConsistencyTest {
     public static void scanForSettingsClasses() {
         ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, SETTINGS_FOLDER);
         classes = collector.collectClasses(SettingsHolder.class);
+
+        if (classes.isEmpty()) {
+            throw new IllegalStateException("Did not find any SettingsHolder classes. Is the folder correct?");
+        }
         System.out.println("Found " + classes.size() + " SettingsHolder implementations");
     }
 
