@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailConstants;
@@ -62,7 +63,7 @@ public class SendMailSSL {
             return;
         }
 
-        final String mailText = replaceMailTags(settings.getEmailMessage(), name, newPass);
+        final String mailText = replaceTagsForPasswordMail(settings.getPasswordEmailMessage(), name, newPass);
         bukkitService.runTaskAsynchronously(new Runnable() {
 
             @Override
@@ -97,9 +98,9 @@ public class SendMailSSL {
         });
     }
 
-    public void sendRecoveryCode(String email, String code) {
-        // TODO #472: Create a configurable, more verbose message
-        String message = String.format("Use /email recovery %s %s to reset your password", email, code);
+    public void sendRecoveryCode(String name, String email, String code) {
+        String message = replaceTagsForRecoveryCodeMail(settings.getRecoveryCodeEmailMessage(),
+            name, code, settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID));
 
         HtmlEmail htmlEmail;
         try {
@@ -163,11 +164,19 @@ public class SendMailSSL {
         }
     }
 
-    private String replaceMailTags(String mailText, String name, String newPass) {
+    private String replaceTagsForPasswordMail(String mailText, String name, String newPass) {
         return mailText
             .replace("<playername />", name)
             .replace("<servername />", plugin.getServer().getServerName())
             .replace("<generatedpass />", newPass);
+    }
+
+    private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {
+        return mailText
+            .replace("<playername />", name)
+            .replace("<servername />", plugin.getServer().getServerName())
+            .replace("<recoverycode />", code)
+            .replace("<hoursvalid />", String.valueOf(hoursValid));
     }
 
     private void setPropertiesForPort(HtmlEmail email, int port) throws EmailException {

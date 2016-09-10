@@ -4,16 +4,14 @@ import com.github.authme.configme.SettingsManager;
 import com.github.authme.configme.knownproperties.PropertyEntry;
 import com.github.authme.configme.migration.MigrationService;
 import com.github.authme.configme.resource.PropertyResource;
+import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
 import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
@@ -26,8 +24,9 @@ public class Settings extends SettingsManager {
     private final File pluginFolder;
     /** The file with the localized messages based on {@link PluginSettings#MESSAGES_LANGUAGE}. */
     private File messagesFile;
-    private List<String> welcomeMessage;
-    private String emailMessage;
+    private String[] welcomeMessage;
+    private String passwordEmailMessage;
+    private String recoveryCodeEmailMessage;
 
     /**
      * Constructor.
@@ -67,8 +66,17 @@ public class Settings extends SettingsManager {
      *
      * @return The email message
      */
-    public String getEmailMessage() {
-        return emailMessage;
+    public String getPasswordEmailMessage() {
+        return passwordEmailMessage;
+    }
+
+    /**
+     * Return the text to use when someone requests to receive a recovery code.
+     *
+     * @return The email message
+     */
+    public String getRecoveryCodeEmailMessage() {
+        return recoveryCodeEmailMessage;
     }
 
     /**
@@ -76,14 +84,15 @@ public class Settings extends SettingsManager {
      *
      * @return The welcome message
      */
-    public List<String> getWelcomeMessage() {
+    public String[] getWelcomeMessage() {
         return welcomeMessage;
     }
 
     private void loadSettingsFromFiles() {
         messagesFile = buildMessagesFile();
-        welcomeMessage = readWelcomeMessage();
-        emailMessage = readEmailMessage();
+        passwordEmailMessage = readFile("email.html");
+        recoveryCodeEmailMessage = readFile("recovery_code_email.html");
+        welcomeMessage = readFile("welcome.txt").split("\n");
     }
 
     @Override
@@ -114,30 +123,22 @@ public class Settings extends SettingsManager {
         return StringUtils.makePath("messages", "messages_" + language + ".yml");
     }
 
-    private List<String> readWelcomeMessage() {
-        if (getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            final File welcomeFile = new File(pluginFolder, "welcome.txt");
-            final Charset charset = Charset.forName("UTF-8");
-            if (copyFileFromResource(welcomeFile, "welcome.txt")) {
-                try {
-                    return Files.readLines(welcomeFile, charset);
-                } catch (IOException e) {
-                    ConsoleLogger.logException("Failed to read file '" + welcomeFile.getPath() + "':", e);
-                }
-            }
-        }
-        return new ArrayList<>(0);
-    }
-
-    private String readEmailMessage() {
-        final File emailFile = new File(pluginFolder, "email.html");
-        final Charset charset = Charset.forName("UTF-8");
-        if (copyFileFromResource(emailFile, "email.html")) {
+    /**
+     * Reads a file from the plugin folder or copies it from the JAR to the plugin folder.
+     *
+     * @param filename the file to read
+     * @return the file's contents
+     */
+    private String readFile(String filename) {
+        final File file = new File(pluginFolder, filename);
+        if (copyFileFromResource(file, filename)) {
             try {
-                return Files.toString(emailFile, charset);
+                return Files.toString(file, Charsets.UTF_8);
             } catch (IOException e) {
-                ConsoleLogger.logException("Failed to read file '" + emailFile.getPath() + "':", e);
+                ConsoleLogger.logException("Failed to read file '" + filename + "':", e);
             }
+        } else {
+            ConsoleLogger.warning("Failed to copy file '" + filename + "' from JAR");
         }
         return "";
     }

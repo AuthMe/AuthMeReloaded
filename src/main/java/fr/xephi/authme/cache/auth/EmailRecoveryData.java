@@ -13,13 +13,16 @@ public class EmailRecoveryData {
      *
      * @param email the email address
      * @param recoveryCode the recovery code, or null if not available
-     * @param codeExpiration
+     * @param codeExpiration expiration timestamp of the recovery code
      */
     public EmailRecoveryData(String email, String recoveryCode, Long codeExpiration) {
         this.email = email;
-        this.recoveryCode = codeExpiration == null || System.currentTimeMillis() > codeExpiration
-            ? null
-            : recoveryCode;
+
+        if (codeExpiration == null || System.currentTimeMillis() > codeExpiration) {
+            this.recoveryCode = null;
+        } else {
+            this.recoveryCode = recoveryCode;
+        }
     }
 
     /**

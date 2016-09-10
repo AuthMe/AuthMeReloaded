@@ -10,6 +10,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,11 +24,14 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static fr.xephi.authme.util.Utils.MILLIS_PER_HOUR;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
@@ -170,6 +174,10 @@ public class RecoverEmailCommandTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
         given(dataSource.getEmailRecoveryData(name)).willReturn(newEmailRecoveryData(email));
+        int codeLength = 7;
+        given(commandService.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(codeLength);
+        int hoursValid = 12;
+        given(commandService.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(hoursValid);
 
         // when
         command.executeCommand(sender, Collections.singletonList(email.toUpperCase()));
@@ -178,9 +186,13 @@ public class RecoverEmailCommandTest {
         verify(sendMailSsl).hasAllInformation();
         verify(dataSource).getEmailRecoveryData(name);
         ArgumentCaptor<String> codeCaptor = ArgumentCaptor.forClass(String.class);
-        verify(dataSource).setRecoveryCode(eq(name), codeCaptor.capture(), anyLong());
-        assertThat(codeCaptor.getValue(), stringWithLength(8));
-        verify(sendMailSsl).sendRecoveryCode(email, codeCaptor.getValue());
+        ArgumentCaptor<Long> expirationCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(dataSource).setRecoveryCode(eq(name), codeCaptor.capture(), expirationCaptor.capture());
+        assertThat(codeCaptor.getValue(), stringWithLength(codeLength));
+        // Check expiration with a tolerance
+        assertThat(expirationCaptor.getValue() - System.currentTimeMillis(),
+            allOf(lessThan(12L * MILLIS_PER_HOUR), greaterThan((long) (11.9 * MILLIS_PER_HOUR))));
+        verify(sendMailSsl).sendRecoveryCode(name, email, codeCaptor.getValue());
     }
 
     @Test

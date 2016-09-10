@@ -23,9 +23,10 @@ import java.util.List;
 
 import static fr.xephi.authme.settings.properties.PluginSettings.MESSAGES_LANGUAGE;
 import static fr.xephi.authme.util.StringUtils.makePath;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -127,12 +128,11 @@ public class SettingsTest {
             TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
 
         // when
-        List<String> result = settings.getWelcomeMessage();
+        String[] result = settings.getWelcomeMessage();
 
         // then
-        assertThat(result, hasSize(2));
-        assertThat(result.get(0), equalTo(welcomeMessage.split("\\n")[0]));
-        assertThat(result.get(1), equalTo(welcomeMessage.split("\\n")[1]));
+        assertThat(result, arrayWithSize(2));
+        assertThat(result, arrayContaining(welcomeMessage.split("\\n")));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SettingsTest {
             TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
 
         // when
-        String result = settings.getEmailMessage();
+        String result = settings.getPasswordEmailMessage();
 
         // then
         assertThat(result, equalTo(emailMessage));

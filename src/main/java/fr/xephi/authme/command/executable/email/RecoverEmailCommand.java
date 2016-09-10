@@ -17,6 +17,10 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 
+import static fr.xephi.authme.settings.properties.SecuritySettings.RECOVERY_CODE_HOURS_VALID;
+import static fr.xephi.authme.settings.properties.SecuritySettings.RECOVERY_CODE_LENGTH;
+import static fr.xephi.authme.util.Utils.MILLIS_PER_HOUR;
+
 /**
  * Command for password recovery by email.
  */
@@ -74,11 +78,12 @@ public class RecoverEmailCommand extends PlayerCommand {
     }
 
     private void createAndSendRecoveryCode(String name, EmailRecoveryData recoveryData) {
-        // TODO #472: Add configurations
-        String recoveryCode = RandomString.generateHex(8);
-        long expiration = System.currentTimeMillis() + (3 * 60 * 60_000L); // 3 hours
+        String recoveryCode = RandomString.generateHex(commandService.getProperty(RECOVERY_CODE_LENGTH));
+        long expiration = System.currentTimeMillis()
+            + commandService.getProperty(RECOVERY_CODE_HOURS_VALID) * MILLIS_PER_HOUR;
+
         dataSource.setRecoveryCode(name, recoveryCode, expiration);
-        sendMailSsl.sendRecoveryCode(recoveryData.getEmail(), recoveryCode);
+        sendMailSsl.sendRecoveryCode(name, recoveryData.getEmail(), recoveryCode);
     }
 
     private void processRecoveryCode(Player player, String code, EmailRecoveryData recoveryData) {
