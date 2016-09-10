@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -881,15 +882,16 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public String getRecoveryCode(String name) {
-        String sql = "SELECT " + col.RECOVERY_CODE + " FROM " + tableName
-            + " WHERE " + col.NAME + " = ? AND " + col.RECOVERY_EXPIRATION + " > ?;";
+    public EmailRecoveryData getEmailRecoveryData(String name) {
+        String sql = "SELECT " + col.EMAIL + ", " + col.RECOVERY_CODE + ", " + col.RECOVERY_EXPIRATION
+            + " FROM " + tableName
+            + " WHERE " + col.NAME + " = ?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, name.toLowerCase());
-            pst.setLong(2, System.currentTimeMillis());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString(1);
+                    return new EmailRecoveryData(
+                        rs.getString(col.EMAIL), rs.getString(col.RECOVERY_CODE), rs.getLong(col.RECOVERY_EXPIRATION));
                 }
             }
         } catch (SQLException e) {

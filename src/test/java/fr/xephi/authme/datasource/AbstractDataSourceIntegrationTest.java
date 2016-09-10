@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
@@ -393,7 +394,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         dataSource.setRecoveryCode(name, code, System.currentTimeMillis() + 100_000L);
 
         // then
-        assertThat(dataSource.getRecoveryCode(name), equalTo(code));
+        assertThat(dataSource.getEmailRecoveryData(name).getRecoveryCode(), equalTo(code));
     }
 
     @Test
@@ -407,8 +408,10 @@ public abstract class AbstractDataSourceIntegrationTest {
         dataSource.removeRecoveryCode(name);
 
         // then
-        assertThat(dataSource.getRecoveryCode(name), nullValue());
-        assertThat(dataSource.getRecoveryCode("bobby"), nullValue());
+        EmailRecoveryData recoveryData = dataSource.getEmailRecoveryData(name);
+        assertThat(recoveryData.getRecoveryCode(), nullValue());
+        assertThat(recoveryData.getEmail(), equalTo("user@example.org"));
+        assertThat(dataSource.getEmailRecoveryData("bobby").getRecoveryCode(), nullValue());
     }
 
     @Test
@@ -419,10 +422,23 @@ public abstract class AbstractDataSourceIntegrationTest {
         dataSource.setRecoveryCode(name, "123456", System.currentTimeMillis() - 2_000L);
 
         // when
-        String code = dataSource.getRecoveryCode(name);
+        EmailRecoveryData recoveryData = dataSource.getEmailRecoveryData(name);
 
         // then
-        assertThat(code, nullValue());
+        assertThat(recoveryData.getEmail(), equalTo("user@example.org"));
+        assertThat(recoveryData.getRecoveryCode(), nullValue());
+    }
+
+    @Test
+    public void shouldReturnNullForNoAvailableUser() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        EmailRecoveryData result = dataSource.getEmailRecoveryData("does-not-exist");
+
+        // then
+        assertThat(result, nullValue());
     }
 
 }

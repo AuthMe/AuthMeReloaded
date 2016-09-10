@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -242,9 +243,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public String getRecoveryCode(String name) {
-        // TODO #472: can probably get it from the cached Auth?
-        return source.getRecoveryCode(name);
+    public EmailRecoveryData getEmailRecoveryData(String name) {
+        return source.getEmailRecoveryData(name);
     }
 
     @Override

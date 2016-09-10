@@ -384,6 +384,7 @@ public class CommandInitializer {
             .detailedDescription("Recover your account using an Email address by sending a mail containing " +
                 "a new password.")
             .withArgument("email", "Email address", false)
+            .withArgument("code", "Recovery code", true)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(RecoverEmailCommand.class)
             .build();

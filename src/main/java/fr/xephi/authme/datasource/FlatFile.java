@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -474,7 +475,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public String getRecoveryCode(String name) {
+    public EmailRecoveryData getEmailRecoveryData(String name) {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
