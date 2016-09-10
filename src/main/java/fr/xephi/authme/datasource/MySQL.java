@@ -901,8 +901,8 @@ public class MySQL implements DataSource {
     @Override
     public void removeRecoveryCode(String name) {
         String sql = "UPDATE " + tableName
-            + " SET " + col.RECOVERY_CODE + " = NULL"
-            + " AND " + col.RECOVERY_EXPIRATION + " = NULL"
+            + " SET " + col.RECOVERY_CODE + " = NULL, "
+                      + col.RECOVERY_EXPIRATION + " = NULL"
             + " WHERE " + col.NAME + " = ?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, name.toLowerCase());
