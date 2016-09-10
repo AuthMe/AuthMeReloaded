@@ -382,4 +382,47 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(dataSource.getAllAuths(), empty());
     }
 
+    @Test
+    public void shouldSetRecoveryCode() {
+        // given
+        DataSource dataSource = getDataSource();
+        String name = "Bobby";
+        String code = "A123BC";
+
+        // when
+        dataSource.setRecoveryCode(name, code, System.currentTimeMillis() + 100_000L);
+
+        // then
+        assertThat(dataSource.getRecoveryCode(name), equalTo(code));
+    }
+
+    @Test
+    public void shouldRemoveRecoveryCode() {
+        // given
+        String name = "User";
+        DataSource dataSource = getDataSource();
+        dataSource.setRecoveryCode(name, "code", System.currentTimeMillis() + 20_000L);
+
+        // when
+        dataSource.removeRecoveryCode(name);
+
+        // then
+        assertThat(dataSource.getRecoveryCode(name), nullValue());
+        assertThat(dataSource.getRecoveryCode("bobby"), nullValue());
+    }
+
+    @Test
+    public void shouldNotReturnRecoveryCodeIfExpired() {
+        // given
+        String name = "user";
+        DataSource dataSource = getDataSource();
+        dataSource.setRecoveryCode(name, "123456", System.currentTimeMillis() - 2_000L);
+
+        // when
+        String code = dataSource.getRecoveryCode(name);
+
+        // then
+        assertThat(code, nullValue());
+    }
+
 }

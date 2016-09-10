@@ -236,6 +236,24 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public void setRecoveryCode(String name, String code, long expiration) {
+        source.setRecoveryCode(name, code, expiration);
+        cachedAuths.refresh(name);
+    }
+
+    @Override
+    public String getRecoveryCode(String name) {
+        // TODO #472: can probably get it from the cached Auth?
+        return source.getRecoveryCode(name);
+    }
+
+    @Override
+    public void removeRecoveryCode(String name) {
+        source.removeRecoveryCode(name);
+        cachedAuths.refresh(name);
+    }
+
+    @Override
     public List<PlayerAuth> getLoggedPlayers() {
         return new ArrayList<>(PlayerCache.getInstance().getCache().values());
     }

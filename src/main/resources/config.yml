@@ -40,6 +40,10 @@ DataSource:
     mySQLlastlocWorld: world
     # Column for RealName
     mySQLRealName: realname
+    # Column for storing recovery code (when password lost)
+    mySQLrecoveryCode: recoverycode
+    # Column for storing recovery code expiration
+    mySQLrecoveryExpiration: recoveryexpiration
 settings:
     # The name shown in the help messages.
     helpHeader: AuthMeReloaded

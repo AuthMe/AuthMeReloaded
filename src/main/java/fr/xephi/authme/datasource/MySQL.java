@@ -208,6 +208,14 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.EMAIL);
             }
+
+            if (isColumnMissing(md, col.RECOVERY_CODE)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.RECOVERY_CODE + " VARCHAR(20);");
+            }
+
+            if (isColumnMissing(md, col.RECOVERY_EXPIRATION)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.RECOVERY_EXPIRATION + " BIGINT;");
+            }
         }
         ConsoleLogger.info("MySQL setup finished");
     }
@@ -854,6 +862,54 @@ public class MySQL implements DataSource {
             logSqlException(ex);
         }
         return auths;
+    }
+
+    @Override
+    public void setRecoveryCode(String name, String code, long expiration) {
+        String sql = "UPDATE " + tableName
+            + " SET " + col.RECOVERY_CODE + " = ?, "
+                      + col.RECOVERY_EXPIRATION + " = ?"
+            + " WHERE " + col.NAME + " = ?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, code);
+            pst.setLong(2, expiration);
+            pst.setString(3, name.toLowerCase());
+            pst.executeUpdate();
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+    }
+
+    @Override
+    public String getRecoveryCode(String name) {
+        String sql = "SELECT " + col.RECOVERY_CODE + " FROM " + tableName
+            + " WHERE " + col.NAME + " = ? AND " + col.RECOVERY_EXPIRATION + " > ?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, name.toLowerCase());
+            pst.setLong(2, System.currentTimeMillis());
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString(1);
+                }
+            }
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public void removeRecoveryCode(String name) {
+        String sql = "UPDATE " + tableName
+            + " SET " + col.RECOVERY_CODE + " = NULL"
+            + " AND " + col.RECOVERY_EXPIRATION + " = NULL"
+            + " WHERE " + col.NAME + " = ?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, name.toLowerCase());
+            pst.executeUpdate();
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
     }
 
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {

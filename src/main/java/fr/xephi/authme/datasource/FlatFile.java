@@ -468,6 +468,21 @@ public class FlatFile implements DataSource {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
+    @Override
+    public void setRecoveryCode(String name, String code, long expiration) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    @Override
+    public String getRecoveryCode(String name) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    @Override
+    public void removeRecoveryCode(String name) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
     private static PlayerAuth buildAuthFromArray(String[] args) {
         // Format allows 2, 3, 4, 7, 8, 9 fields. Anything else is unknown
         if (args.length >= 2 && args.length <= 9 && args.length != 5 && args.length != 6) {

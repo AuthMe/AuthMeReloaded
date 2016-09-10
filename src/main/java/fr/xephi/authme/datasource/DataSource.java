@@ -195,6 +195,30 @@ public interface DataSource extends Reloadable {
     List<PlayerAuth> getAllAuths();
 
     /**
+     * Set the password recovery code for a user.
+     *
+     * @param name The name of the user
+     * @param code The recovery code
+     * @param expiration Recovery code expiration (milliseconds timestamp)
+     */
+    void setRecoveryCode(String name, String code, long expiration);
+
+    /**
+     * Get the recovery code of a user if available and not yet expired.
+     *
+     * @param name The name of the user
+     * @return The recovery code, or null if no current code available
+     */
+    String getRecoveryCode(String name);
+
+    /**
+     * Remove the recovery code of a given user.
+     *
+     * @param name The name of the user
+     */
+    void removeRecoveryCode(String name);
+
+    /**
      * Reload the data source.
      */
     @Override

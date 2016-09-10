@@ -127,6 +127,17 @@ public final class TestHelper {
     }
 
     /**
+     * Set ConsoleLogger to use a new real logger.
+     *
+     * @return The real logger used by ConsoleLogger
+     */
+    public static Logger setRealLogger() {
+        Logger logger = Logger.getAnonymousLogger();
+        ConsoleLogger.setLogger(logger);
+        return logger;
+    }
+
+    /**
      * Check that a class only has a hidden, zero-argument constructor, preventing the
      * instantiation of such classes (utility classes). Invokes the hidden constructor
      * as to register the code coverage.
