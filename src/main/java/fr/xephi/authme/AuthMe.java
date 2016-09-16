@@ -120,6 +120,15 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
+     * Method used to obtain the plugin's api instance
+     *
+     * @return The plugin's api instance
+     */
+    public static NewAPI getApi() {
+        return NewAPI.getInstance();
+    }
+
+    /**
      * Method called when the server enables the plugin.
      */
     @Override

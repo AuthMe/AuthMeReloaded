@@ -14,11 +14,13 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The current API of AuthMe. Recommended method of retrieving the API object:
  * <code>
- * NewAPI authmeApi = NewAPI.getInstance();
+ * NewAPI authmeApi = AuthMe.getApi();
  * </code>
  */
 public class NewAPI {
@@ -217,5 +219,27 @@ public class NewAPI {
      */
     public void forceUnregister(Player player) {
         management.performUnregisterByAdmin(null, player.getName(), player);
+    }
+
+    /**
+     * Get all the registered names (lowercase)
+     *
+     * @return registered names
+     */
+    public List<String> getRegisteredNames() {
+        List<String> registeredNames = new ArrayList<>();
+        dataSource.getAllAuths().forEach(auth -> registeredNames.add(auth.getNickname()));
+        return registeredNames;
+    }
+
+    /**
+     * Get all the registered real-names (original case)
+     *
+     * @return registered real-names
+     */
+    public List<String> getRegisteredRealNames() {
+        List<String> registeredNames = new ArrayList<>();
+        dataSource.getAllAuths().forEach(auth -> registeredNames.add(auth.getRealName()));
+        return registeredNames;
     }
 }
