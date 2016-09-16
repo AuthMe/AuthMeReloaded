@@ -147,7 +147,11 @@ public enum MessageKey {
 
     KICK_FOR_ADMIN_REGISTER("kicked_admin_registered"),
 
-    INCOMPLETE_EMAIL_SETTINGS("incomplete_email_settings");
+    INCOMPLETE_EMAIL_SETTINGS("incomplete_email_settings"),
+
+    RECOVERY_CODE_SENT("recovery_code_sent"),
+
+    INCORRECT_RECOVERY_CODE("recovery_code_incorrect");
 
     private String key;
     private String[] tags;

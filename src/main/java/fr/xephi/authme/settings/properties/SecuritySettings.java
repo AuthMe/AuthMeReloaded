@@ -109,7 +109,7 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> TEMPBAN_MINUTES_BEFORE_RESET =
         newProperty("Security.tempban.minutesBeforeCounterReset", 480);
 
-    @Comment("Number of characters a recovery code should have")
+    @Comment("Number of characters a recovery code should have (0 to disable)")
     public static final Property<Integer> RECOVERY_CODE_LENGTH =
         newProperty("Security.recoveryCode.length", 8);
 

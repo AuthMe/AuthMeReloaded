@@ -339,7 +339,7 @@ Security:
         # Default: 480 minutes (8 hours)
         minutesBeforeCounterReset: 480
     recoveryCode:
-        # Number of characters a recovery code should have
+        # Number of characters a recovery code should have (0 to disable)
         length: 8
         # How many hours is a recovery code valid for?
         validForHours: 4

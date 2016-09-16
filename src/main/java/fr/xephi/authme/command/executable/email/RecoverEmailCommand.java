@@ -72,7 +72,7 @@ public class RecoverEmailCommand extends PlayerCommand {
         if (recoveryCodeManager.isRecoveryCodeNeeded()) {
             // Process /email recovery addr@example.com
             if (arguments.size() == 1) {
-                createAndSendRecoveryCode(playerName, email);
+                createAndSendRecoveryCode(player, email);
             } else {
                 // Process /email recovery addr@example.com 12394
                 processRecoveryCode(player, arguments.get(1), email);
@@ -82,15 +82,16 @@ public class RecoverEmailCommand extends PlayerCommand {
         }
     }
 
-    private void createAndSendRecoveryCode(String name, String email) {
-        String recoveryCode = recoveryCodeManager.generateCode(name);
-        sendMailSsl.sendRecoveryCode(name, email, recoveryCode);
+    private void createAndSendRecoveryCode(Player player, String email) {
+        String recoveryCode = recoveryCodeManager.generateCode(player.getName());
+        sendMailSsl.sendRecoveryCode(player.getName(), email, recoveryCode);
+        commandService.send(player, MessageKey.RECOVERY_CODE_SENT);
     }
 
     private void processRecoveryCode(Player player, String code, String email) {
         final String name = player.getName();
         if (!recoveryCodeManager.isCodeValid(name, code)) {
-            player.sendMessage("The recovery code is not correct! Use /email recovery [email] to generate a new one");
+            commandService.send(player, MessageKey.INCORRECT_RECOVERY_CODE);
             return;
         }
 

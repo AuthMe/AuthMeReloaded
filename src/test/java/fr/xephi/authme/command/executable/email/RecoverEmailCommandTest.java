@@ -251,6 +251,37 @@ public class RecoverEmailCommandTest {
         verify(commandService).send(sender, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
     }
 
+    @Test
+    public void shouldGenerateNewPasswordWithoutRecoveryCode() {
+        // given
+        String name = "sh4rK";
+        Player sender = mock(Player.class);
+        given(sender.getName()).willReturn(name);
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(playerCache.isAuthenticated(name)).willReturn(false);
+        String email = "shark@example.org";
+        PlayerAuth auth = newAuthWithEmail(email);
+        given(dataSource.getAuth(name)).willReturn(auth);
+        given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(20);
+        given(passwordSecurity.computeHash(anyString(), eq(name)))
+            .willAnswer(invocation -> new HashedPassword((String) invocation.getArguments()[0]));
+        given(recoveryCodeManager.isRecoveryCodeNeeded()).willReturn(false);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(email));
+
+        // then
+        verify(sendMailSsl).hasAllInformation();
+        verify(dataSource).getAuth(name);
+        ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
+        verify(passwordSecurity).computeHash(passwordCaptor.capture(), eq(name));
+        String generatedPassword = passwordCaptor.getValue();
+        assertThat(generatedPassword, stringWithLength(20));
+        verify(dataSource).updatePassword(eq(name), any(HashedPassword.class));
+        verify(sendMailSsl).sendPasswordMail(name, email, generatedPassword);
+        verify(commandService).send(sender, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+    }
+
 
     private static PlayerAuth newAuthWithEmail(String email) {
         return PlayerAuth.builder()
