@@ -6,6 +6,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailConstants;
 import org.apache.commons.mail.EmailException;
@@ -91,9 +92,7 @@ public class SendMailSSL {
                 }
 
                 sendEmail(content, email);
-                if (file != null) {
-                    file.delete();
-                }
+                FileUtils.delete(file);
             }
         });
     }

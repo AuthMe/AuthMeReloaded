@@ -64,9 +64,7 @@ public class GeoLiteAPI {
                     return false;
                 }
             } else {
-                if (!dataFile.delete()) {
-                    ConsoleLogger.warning("Failed to delete GeoLiteAPI database");
-                }
+                FileUtils.delete(dataFile);
             }
         }
         // Ok, let's try to download the data file!
