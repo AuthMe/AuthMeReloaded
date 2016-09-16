@@ -1,7 +1,8 @@
 package tools.utils;
 
+import com.google.common.base.Charsets;
+
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -11,8 +12,6 @@ import java.util.List;
  * Utility class for reading from and writing to files.
  */
 public final class FileUtils {
-
-    private final static Charset CHARSET = Charset.forName("utf-8");
 
     private FileUtils() {
     }
@@ -41,7 +40,7 @@ public final class FileUtils {
 
     public static String readFromFile(String file) {
         try {
-            return new String(Files.readAllBytes(Paths.get(file)), CHARSET);
+            return new String(Files.readAllBytes(Paths.get(file)), Charsets.UTF_8);
         } catch (IOException e) {
             throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }
@@ -49,7 +48,7 @@ public final class FileUtils {
 
     public static List<String> readLinesFromFile(String file) {
         try {
-            return Files.readAllLines(Paths.get(file), CHARSET);
+            return Files.readAllLines(Paths.get(file), Charsets.UTF_8);
         } catch (IOException e) {
             throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }
