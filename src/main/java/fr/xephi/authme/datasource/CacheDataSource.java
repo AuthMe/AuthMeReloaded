@@ -8,9 +8,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -234,23 +232,6 @@ public class CacheDataSource implements DataSource {
     @Override
     public List<PlayerAuth> getAllAuths() {
         return source.getAllAuths();
-    }
-
-    @Override
-    public void setRecoveryCode(String name, String code, long expiration) {
-        source.setRecoveryCode(name, code, expiration);
-        cachedAuths.refresh(name);
-    }
-
-    @Override
-    public EmailRecoveryData getEmailRecoveryData(String name) {
-        return source.getEmailRecoveryData(name);
-    }
-
-    @Override
-    public void removeRecoveryCode(String name) {
-        source.removeRecoveryCode(name);
-        cachedAuths.refresh(name);
     }
 
     @Override

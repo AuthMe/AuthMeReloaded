@@ -2,7 +2,6 @@ package fr.xephi.authme.datasource;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
@@ -127,14 +126,6 @@ public class SQLite implements DataSource {
 
             if (isColumnMissing(md, col.IS_LOGGED)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.IS_LOGGED + " INT DEFAULT '0';");
-            }
-
-            if (isColumnMissing(md, col.RECOVERY_CODE)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.RECOVERY_CODE + " VARCHAR(20);");
-            }
-
-            if (isColumnMissing(md, col.RECOVERY_EXPIRATION)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.RECOVERY_EXPIRATION + " BIGINT;");
             }
         }
         ConsoleLogger.info("SQLite Setup finished");
@@ -593,55 +584,6 @@ public class SQLite implements DataSource {
             logSqlException(ex);
         }
         return auths;
-    }
-
-    @Override
-    public void setRecoveryCode(String name, String code, long expiration) {
-        String sql = "UPDATE " + tableName
-            + " SET " + col.RECOVERY_CODE + " = ?, "
-                      + col.RECOVERY_EXPIRATION + " = ?"
-            + " WHERE " + col.NAME + " = ?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, code);
-            pst.setLong(2, expiration);
-            pst.setString(3, name.toLowerCase());
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            logSqlException(e);
-        }
-    }
-
-    @Override
-    public EmailRecoveryData getEmailRecoveryData(String name) {
-        String sql = "SELECT " + col.EMAIL + ", " + col.RECOVERY_CODE + ", " + col.RECOVERY_EXPIRATION
-            + " FROM " + tableName
-            + " WHERE " + col.NAME + " = ?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, name.toLowerCase());
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return new EmailRecoveryData(
-                        rs.getString(col.EMAIL), rs.getString(col.RECOVERY_CODE), rs.getLong(col.RECOVERY_EXPIRATION));
-                }
-            }
-        } catch (SQLException e) {
-            logSqlException(e);
-        }
-        return null;
-    }
-
-    @Override
-    public void removeRecoveryCode(String name) {
-        String sql = "UPDATE " + tableName
-            + " SET " + col.RECOVERY_CODE + " = NULL, "
-                      + col.RECOVERY_EXPIRATION + " = NULL"
-            + " WHERE " + col.NAME + " = ?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, name.toLowerCase());
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            logSqlException(e);
-        }
     }
 
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {

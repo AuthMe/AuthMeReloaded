@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.EmailRecoveryData;
+import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
@@ -11,15 +11,13 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.service.RecoveryCodeManager;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static fr.xephi.authme.settings.properties.SecuritySettings.RECOVERY_CODE_HOURS_VALID;
-import static fr.xephi.authme.settings.properties.SecuritySettings.RECOVERY_CODE_LENGTH;
-import static fr.xephi.authme.util.Utils.MILLIS_PER_HOUR;
+import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
 
 /**
  * Command for password recovery by email.
@@ -41,6 +39,9 @@ public class RecoverEmailCommand extends PlayerCommand {
     @Inject
     private SendMailSSL sendMailSsl;
 
+    @Inject
+    private RecoveryCodeManager recoveryCodeManager;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
         final String playerMail = arguments.get(0);
@@ -56,48 +57,54 @@ public class RecoverEmailCommand extends PlayerCommand {
             return;
         }
 
-        EmailRecoveryData recoveryData = dataSource.getEmailRecoveryData(playerName);
-        if (recoveryData == null) {
+        PlayerAuth auth = dataSource.getAuth(playerName); // TODO: Create method to get email only
+        if (auth == null) {
             commandService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
             return;
         }
 
-        final String email = recoveryData.getEmail();
+        final String email = auth.getEmail();
         if (email == null || !email.equalsIgnoreCase(playerMail) || "your@email.com".equalsIgnoreCase(email)) {
             commandService.send(player, MessageKey.INVALID_EMAIL);
             return;
         }
 
-        if (arguments.size() == 1) {
-            // Process /email recover addr@example.com
-            createAndSendRecoveryCode(playerName, recoveryData);
+        if (recoveryCodeManager.isRecoveryCodeNeeded()) {
+            // Process /email recovery addr@example.com
+            if (arguments.size() == 1) {
+                createAndSendRecoveryCode(playerName, email);
+            } else {
+                // Process /email recovery addr@example.com 12394
+                processRecoveryCode(player, arguments.get(1), email);
+            }
         } else {
-            // Process /email recover addr@example.com 12394
-            processRecoveryCode(player, arguments.get(1), recoveryData);
+            generateAndSendNewPassword(player, email);
         }
     }
 
-    private void createAndSendRecoveryCode(String name, EmailRecoveryData recoveryData) {
-        String recoveryCode = RandomString.generateHex(commandService.getProperty(RECOVERY_CODE_LENGTH));
-        long expiration = System.currentTimeMillis()
-            + commandService.getProperty(RECOVERY_CODE_HOURS_VALID) * MILLIS_PER_HOUR;
-
-        dataSource.setRecoveryCode(name, recoveryCode, expiration);
-        sendMailSsl.sendRecoveryCode(name, recoveryData.getEmail(), recoveryCode);
+    private void createAndSendRecoveryCode(String name, String email) {
+        String recoveryCode = recoveryCodeManager.generateCode(name);
+        sendMailSsl.sendRecoveryCode(name, email, recoveryCode);
     }
 
-    private void processRecoveryCode(Player player, String code, EmailRecoveryData recoveryData) {
-        if (!code.equals(recoveryData.getRecoveryCode())) {
+    private void processRecoveryCode(Player player, String code, String email) {
+        final String name = player.getName();
+        if (!recoveryCodeManager.isCodeValid(name, code)) {
             player.sendMessage("The recovery code is not correct! Use /email recovery [email] to generate a new one");
             return;
         }
 
-        final String name = player.getName();
-        String thePass = RandomString.generate(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH));
+        generateAndSendNewPassword(player, email);
+        recoveryCodeManager.removeCode(name);
+    }
+
+    private void generateAndSendNewPassword(Player player, String email) {
+        String name = player.getName();
+        String thePass = RandomString.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
         HashedPassword hashNew = passwordSecurity.computeHash(thePass, name);
+
         dataSource.updatePassword(name, hashNew);
-        dataSource.removeRecoveryCode(name);
-        sendMailSsl.sendPasswordMail(name, recoveryData.getEmail(), thePass);
+        sendMailSsl.sendPasswordMail(name, email, thePass);
         commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
     }
 }

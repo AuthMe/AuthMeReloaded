@@ -1,6 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -194,30 +193,6 @@ public interface DataSource extends Reloadable {
      * @return List of all players
      */
     List<PlayerAuth> getAllAuths();
-
-    /**
-     * Set the password recovery code for a user.
-     *
-     * @param name The name of the user
-     * @param code The recovery code
-     * @param expiration Recovery code expiration (milliseconds timestamp)
-     */
-    void setRecoveryCode(String name, String code, long expiration);
-
-    /**
-     * Get the information necessary for performing a password recovery by email.
-     *
-     * @param name The name of the user
-     * @return The data of the player, or null if player doesn't exist
-     */
-    EmailRecoveryData getEmailRecoveryData(String name);
-
-    /**
-     * Remove the recovery code of a given user.
-     *
-     * @param name The name of the user
-     */
-    void removeRecoveryCode(String name);
 
     /**
      * Reload the data source.

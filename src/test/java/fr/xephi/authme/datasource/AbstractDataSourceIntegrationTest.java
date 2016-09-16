@@ -1,6 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.cache.auth.EmailRecoveryData;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
@@ -382,63 +381,4 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(dataSource.getAllAuths(), empty());
     }
-
-    @Test
-    public void shouldSetRecoveryCode() {
-        // given
-        DataSource dataSource = getDataSource();
-        String name = "Bobby";
-        String code = "A123BC";
-
-        // when
-        dataSource.setRecoveryCode(name, code, System.currentTimeMillis() + 100_000L);
-
-        // then
-        assertThat(dataSource.getEmailRecoveryData(name).getRecoveryCode(), equalTo(code));
-    }
-
-    @Test
-    public void shouldRemoveRecoveryCode() {
-        // given
-        String name = "User";
-        DataSource dataSource = getDataSource();
-        dataSource.setRecoveryCode(name, "code", System.currentTimeMillis() + 20_000L);
-
-        // when
-        dataSource.removeRecoveryCode(name);
-
-        // then
-        EmailRecoveryData recoveryData = dataSource.getEmailRecoveryData(name);
-        assertThat(recoveryData.getRecoveryCode(), nullValue());
-        assertThat(recoveryData.getEmail(), equalTo("user@example.org"));
-        assertThat(dataSource.getEmailRecoveryData("bobby").getRecoveryCode(), nullValue());
-    }
-
-    @Test
-    public void shouldNotReturnRecoveryCodeIfExpired() {
-        // given
-        String name = "user";
-        DataSource dataSource = getDataSource();
-        dataSource.setRecoveryCode(name, "123456", System.currentTimeMillis() - 2_000L);
-
-        // when
-        EmailRecoveryData recoveryData = dataSource.getEmailRecoveryData(name);
-
-        // then
-        assertThat(recoveryData.getEmail(), equalTo("user@example.org"));
-        assertThat(recoveryData.getRecoveryCode(), nullValue());
-    }
-
-    @Test
-    public void shouldReturnNullForNoAvailableUser() {
-        // given
-        DataSource dataSource = getDataSource();
-
-        // when
-        EmailRecoveryData result = dataSource.getEmailRecoveryData("does-not-exist");
-
-        // then
-        assertThat(result, nullValue());
-    }
-
 }

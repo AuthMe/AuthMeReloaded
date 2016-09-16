@@ -98,14 +98,6 @@ public class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_GROUP =
         newProperty("ExternalBoardOptions.mySQLColumnGroup", "");
 
-    @Comment("Column for storing recovery code (when password lost)")
-    public static final Property<String> MYSQL_COL_RECOVERY_CODE =
-        newProperty("DataSource.mySQLrecoveryCode", "recoverycode");
-
-    @Comment("Column for storing recovery code expiration")
-    public static final Property<String> MYSQL_COL_RECOVERY_EXPIRATION =
-        newProperty("DataSource.mySQLrecoveryExpiration", "recoveryexpiration");
-
     private DatabaseSettings() {
     }
 

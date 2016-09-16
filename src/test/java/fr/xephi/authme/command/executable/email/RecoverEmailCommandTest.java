@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.EmailRecoveryData;
+import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
@@ -9,6 +9,7 @@ import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.RecoveryCodeManager;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
@@ -24,11 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
-import static fr.xephi.authme.util.Utils.MILLIS_PER_HOUR;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -66,6 +63,9 @@ public class RecoverEmailCommandTest {
 
     @Mock
     private SendMailSSL sendMailSsl;
+    
+    @Mock
+    private RecoveryCodeManager recoveryCodeManager;
 
     @BeforeClass
     public static void initLogger() {
@@ -112,14 +112,14 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getEmailRecoveryData(name)).willReturn(null);
+        given(dataSource.getAuth(name)).willReturn(null);
 
         // when
         command.executeCommand(sender, Collections.singletonList("someone@example.com"));
 
         // then
         verify(sendMailSsl).hasAllInformation();
-        verify(dataSource).getEmailRecoveryData(name);
+        verify(dataSource).getAuth(name);
         verifyNoMoreInteractions(dataSource);
         verify(commandService).send(sender, MessageKey.REGISTER_EMAIL_MESSAGE);
     }
@@ -132,14 +132,14 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getEmailRecoveryData(name)).willReturn(newEmailRecoveryData(DEFAULT_EMAIL));
+        given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(DEFAULT_EMAIL));
 
         // when
         command.executeCommand(sender, Collections.singletonList(DEFAULT_EMAIL));
 
         // then
         verify(sendMailSsl).hasAllInformation();
-        verify(dataSource).getEmailRecoveryData(name);
+        verify(dataSource).getAuth(name);
         verifyNoMoreInteractions(dataSource);
         verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
     }
@@ -152,14 +152,14 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getEmailRecoveryData(name)).willReturn(newEmailRecoveryData("raptor@example.org"));
+        given(dataSource.getAuth(name)).willReturn(newAuthWithEmail("raptor@example.org"));
 
         // when
         command.executeCommand(sender, Collections.singletonList("wrong-email@example.com"));
 
         // then
         verify(sendMailSsl).hasAllInformation();
-        verify(dataSource).getEmailRecoveryData(name);
+        verify(dataSource).getAuth(name);
         verifyNoMoreInteractions(dataSource);
         verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
     }
@@ -173,26 +173,23 @@ public class RecoverEmailCommandTest {
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
-        given(dataSource.getEmailRecoveryData(name)).willReturn(newEmailRecoveryData(email));
+        given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(email));
         int codeLength = 7;
         given(commandService.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(codeLength);
         int hoursValid = 12;
         given(commandService.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(hoursValid);
+        String code = "a94f37";
+        given(recoveryCodeManager.isRecoveryCodeNeeded()).willReturn(true);
+        given(recoveryCodeManager.generateCode(name)).willReturn(code);
 
         // when
         command.executeCommand(sender, Collections.singletonList(email.toUpperCase()));
 
         // then
         verify(sendMailSsl).hasAllInformation();
-        verify(dataSource).getEmailRecoveryData(name);
-        ArgumentCaptor<String> codeCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<Long> expirationCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(dataSource).setRecoveryCode(eq(name), codeCaptor.capture(), expirationCaptor.capture());
-        assertThat(codeCaptor.getValue(), stringWithLength(codeLength));
-        // Check expiration with a tolerance
-        assertThat(expirationCaptor.getValue() - System.currentTimeMillis(),
-            allOf(lessThan(12L * MILLIS_PER_HOUR), greaterThan((long) (11.9 * MILLIS_PER_HOUR))));
-        verify(sendMailSsl).sendRecoveryCode(name, email, codeCaptor.getValue());
+        verify(dataSource).getAuth(name);
+        verify(recoveryCodeManager).generateCode(name);
+        verify(sendMailSsl).sendRecoveryCode(name, email, code);
     }
 
     @Test
@@ -204,19 +201,18 @@ public class RecoverEmailCommandTest {
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
-        String code = "A6EF3AC8";
-        EmailRecoveryData recoveryData = newEmailRecoveryData(email, code);
-        given(dataSource.getEmailRecoveryData(name)).willReturn(recoveryData);
+        PlayerAuth auth = newAuthWithEmail(email);
+        given(dataSource.getAuth(name)).willReturn(auth);
         given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(20);
-        given(passwordSecurity.computeHash(anyString(), eq(name)))
-            .willAnswer(invocation -> new HashedPassword((String) invocation.getArguments()[0]));
+        given(recoveryCodeManager.isRecoveryCodeNeeded()).willReturn(true);
+        given(recoveryCodeManager.isCodeValid(name, "bogus")).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, "bogus"));
 
         // then
         verify(sendMailSsl).hasAllInformation();
-        verify(dataSource, only()).getEmailRecoveryData(name);
+        verify(dataSource, only()).getAuth(name);
         verify(sender).sendMessage(argThat(containsString("The recovery code is not correct")));
         verifyNoMoreInteractions(sendMailSsl);
     }
@@ -231,35 +227,35 @@ public class RecoverEmailCommandTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
         String code = "A6EF3AC8";
-        EmailRecoveryData recoveryData = newEmailRecoveryData(email, code);
-        given(dataSource.getEmailRecoveryData(name)).willReturn(recoveryData);
+        PlayerAuth auth = newAuthWithEmail(email);
+        given(dataSource.getAuth(name)).willReturn(auth);
         given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(20);
         given(passwordSecurity.computeHash(anyString(), eq(name)))
             .willAnswer(invocation -> new HashedPassword((String) invocation.getArguments()[0]));
+        given(recoveryCodeManager.isRecoveryCodeNeeded()).willReturn(true);
+        given(recoveryCodeManager.isCodeValid(name, code)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, code));
 
         // then
         verify(sendMailSsl).hasAllInformation();
-        verify(dataSource).getEmailRecoveryData(name);
+        verify(dataSource).getAuth(name);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
         verify(passwordSecurity).computeHash(passwordCaptor.capture(), eq(name));
         String generatedPassword = passwordCaptor.getValue();
         assertThat(generatedPassword, stringWithLength(20));
         verify(dataSource).updatePassword(eq(name), any(HashedPassword.class));
-        verify(dataSource).removeRecoveryCode(name);
+        verify(recoveryCodeManager).removeCode(name);
         verify(sendMailSsl).sendPasswordMail(name, email, generatedPassword);
         verify(commandService).send(sender, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
     }
 
 
-    private static EmailRecoveryData newEmailRecoveryData(String email) {
-        return new EmailRecoveryData(email, null, 0L);
+    private static PlayerAuth newAuthWithEmail(String email) {
+        return PlayerAuth.builder()
+            .name("name")
+            .email(email)
+            .build();
     }
-
-    private static EmailRecoveryData newEmailRecoveryData(String email, String code) {
-        return new EmailRecoveryData(email, code, System.currentTimeMillis() + 10_000);
-    }
-
 }
