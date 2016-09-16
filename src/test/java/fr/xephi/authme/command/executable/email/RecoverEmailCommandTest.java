@@ -25,12 +25,10 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -189,6 +187,7 @@ public class RecoverEmailCommandTest {
         verify(sendMailSsl).hasAllInformation();
         verify(dataSource).getAuth(name);
         verify(recoveryCodeManager).generateCode(name);
+        verify(commandService).send(sender, MessageKey.RECOVERY_CODE_SENT);
         verify(sendMailSsl).sendRecoveryCode(name, email, code);
     }
 
@@ -213,7 +212,7 @@ public class RecoverEmailCommandTest {
         // then
         verify(sendMailSsl).hasAllInformation();
         verify(dataSource, only()).getAuth(name);
-        verify(sender).sendMessage(argThat(containsString("The recovery code is not correct")));
+        verify(commandService).send(sender, MessageKey.INCORRECT_RECOVERY_CODE);
         verifyNoMoreInteractions(sendMailSsl);
     }
 
