@@ -338,6 +338,11 @@ Security:
         # How many minutes before resetting the count for failed logins by IP and username
         # Default: 480 minutes (8 hours)
         minutesBeforeCounterReset: 480
+    recoveryCode:
+        # Number of characters a recovery code should have (0 to disable)
+        length: 8
+        # How many hours is a recovery code valid for?
+        validForHours: 4
 Converter:
     Rakamak:
         # Rakamak file name

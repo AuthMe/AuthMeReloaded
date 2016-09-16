@@ -18,13 +18,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.settings.properties.SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET;
+import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
 
 /**
  * Manager for handling temporary bans.
  */
 public class TempbanManager implements SettingsDependent, HasCleanup {
-
-    private static final long MINUTE_IN_MILLISECONDS = 60_000;
 
     private final Map<String, Map<String, TimedCounter>> ipLoginFailureCounts;
     private final BukkitService bukkitService;
@@ -113,7 +112,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
             final String reason = messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS);
 
             final Date expires = new Date();
-            long newTime = expires.getTime() + (length * MINUTE_IN_MILLISECONDS);
+            long newTime = expires.getTime() + (length * MILLIS_PER_MINUTE);
             expires.setTime(newTime);
 
             bukkitService.scheduleSyncDelayedTask(new Runnable() {
@@ -133,7 +132,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         this.isEnabled = settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN);
         this.length = settings.getProperty(SecuritySettings.TEMPBAN_LENGTH);
-        this.resetThreshold = settings.getProperty(TEMPBAN_MINUTES_BEFORE_RESET) * MINUTE_IN_MILLISECONDS;
+        this.resetThreshold = settings.getProperty(TEMPBAN_MINUTES_BEFORE_RESET) * MILLIS_PER_MINUTE;
     }
 
     @Override

@@ -53,7 +53,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         });
         set(DatabaseSettings.MYSQL_DATABASE, "h2_test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
-        TestHelper.setupLogger();
+        TestHelper.setRealLogger();
 
         Path sqlInitFile = TestHelper.getJarPath(TestHelper.PROJECT_ROOT + "datasource/sql-initialize.sql");
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile));

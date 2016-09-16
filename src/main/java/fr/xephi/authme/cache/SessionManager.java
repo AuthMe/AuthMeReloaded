@@ -11,13 +11,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
+
 /**
  * Manages sessions, allowing players to be automatically logged in if they join again
  * within a configurable amount of time.
  */
 public class SessionManager implements SettingsDependent, HasCleanup {
 
-    private static final int MINUTE_IN_MILLIS = 60_000;
     // Player -> expiration of session in milliseconds
     private final Map<String, Long> sessions = new ConcurrentHashMap<>();
 
@@ -52,7 +53,7 @@ public class SessionManager implements SettingsDependent, HasCleanup {
      */
     public void addSession(String name) {
         if (enabled) {
-            long timeout = System.currentTimeMillis() + timeoutInMinutes * MINUTE_IN_MILLIS;
+            long timeout = System.currentTimeMillis() + timeoutInMinutes * MILLIS_PER_MINUTE;
             sessions.put(name.toLowerCase(), timeout);
         }
     }

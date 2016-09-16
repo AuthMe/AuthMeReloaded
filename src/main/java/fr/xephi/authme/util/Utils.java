@@ -11,6 +11,11 @@ import java.util.regex.Pattern;
  */
 public final class Utils {
 
+    /** Number of milliseconds in a minute. */
+    public static final long MILLIS_PER_MINUTE = 60_000L;
+    /** Number of milliseconds in an hour. */
+    public static final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
+
     private Utils() {
     }
 

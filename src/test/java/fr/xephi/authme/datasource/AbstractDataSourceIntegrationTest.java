@@ -381,5 +381,4 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(dataSource.getAllAuths(), empty());
     }
-
 }

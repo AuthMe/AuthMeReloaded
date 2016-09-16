@@ -149,7 +149,7 @@ public class AsyncRegister implements AsynchronousProcess {
         }
         database.updateEmail(auth);
         database.updateSession(auth);
-        sendMailSsl.sendPasswordMail(auth, password);
+        sendMailSsl.sendPasswordMail(name, email, password);
         syncProcessManager.processSyncEmailRegister(player);
     }
 
