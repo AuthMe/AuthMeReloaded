@@ -70,3 +70,5 @@ incomplete_email_settings: 'Hiba: nem lett beállítva az össze szükséges be�
 accounts_owned_other: 'A %name nevű játékosnak, %count db regisztrációja van:'
 kicked_admin_registered: 'Adminisztrátor által regisztrálva lettél; kérlek lépj be újra!'
 accounts_owned_self: '%count db regisztrációd van:'
+# TODO recovery_code_incorrect: 'The recovery code is not correct! Use /email recovery [email] to generate a new one'
+# TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'

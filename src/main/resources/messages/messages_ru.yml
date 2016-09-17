@@ -72,3 +72,5 @@ kicked_admin_registered: 'Администратор зарегистриров�
 tempban_max_logins: '&cВы были временно забанены, потому что вы пытались войти в систему слишком много раз.'
 accounts_owned_self: 'Вы являетесь владельцем %count аккаунтов:'
 incomplete_email_settings: 'Ошибка: не все необходимые параметры установлены для отправки электронной почты. Пожалуйста, обратитесь к администратору.'
+# TODO recovery_code_incorrect: 'The recovery code is not correct! Use /email recovery [email] to generate a new one'
+# TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
