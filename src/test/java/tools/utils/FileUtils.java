@@ -1,8 +1,7 @@
 package tools.utils;
 
-import com.google.common.base.Charsets;
-
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -40,7 +39,7 @@ public final class FileUtils {
 
     public static String readFromFile(String file) {
         try {
-            return new String(Files.readAllBytes(Paths.get(file)), Charsets.UTF_8);
+            return new String(Files.readAllBytes(Paths.get(file)), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }
@@ -48,7 +47,7 @@ public final class FileUtils {
 
     public static List<String> readLinesFromFile(String file) {
         try {
-            return Files.readAllLines(Paths.get(file), Charsets.UTF_8);
+            return Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }

@@ -4,7 +4,6 @@ import com.github.authme.configme.SettingsManager;
 import com.github.authme.configme.knownproperties.PropertyEntry;
 import com.github.authme.configme.migration.MigrationService;
 import com.github.authme.configme.resource.PropertyResource;
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -12,6 +11,7 @@ import fr.xephi.authme.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
@@ -133,7 +133,7 @@ public class Settings extends SettingsManager {
         final File file = new File(pluginFolder, filename);
         if (copyFileFromResource(file, filename)) {
             try {
-                return Files.toString(file, Charsets.UTF_8);
+                return Files.toString(file, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 ConsoleLogger.logException("Failed to read file '" + filename + "':", e);
             }

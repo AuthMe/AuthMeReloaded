@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -77,9 +78,9 @@ public final class VerifyMessagesTask implements ToolTask {
     }
 
     private static void verifyFile(MessageFileVerifier verifier) {
-        Map<String, Boolean> missingKeys = verifier.getMissingKeys();
+        List<MissingKey> missingKeys = verifier.getMissingKeys();
         if (!missingKeys.isEmpty()) {
-            System.out.println("  Missing keys: " + missingKeys.keySet());
+            System.out.println("  Missing keys: " + missingKeys);
         }
 
         Set<String> unknownKeys = verifier.getUnknownKeys();
@@ -94,13 +95,13 @@ public final class VerifyMessagesTask implements ToolTask {
     }
 
     public static void verifyFileAndAddKeys(MessageFileVerifier verifier, FileConfiguration defaultMessages) {
-        Map<String, Boolean> missingKeys = verifier.getMissingKeys();
+        List<MissingKey> missingKeys = verifier.getMissingKeys();
         if (!missingKeys.isEmpty() || !verifier.getMissingTags().isEmpty()) {
             verifier.addMissingKeys(defaultMessages);
-            List<String> addedKeys = getKeysWithValue(Boolean.TRUE, missingKeys);
+            List<String> addedKeys = getMissingKeysWithAdded(missingKeys, true);
             System.out.println("  Added missing keys " + addedKeys);
 
-            List<String> unsuccessfulKeys = getKeysWithValue(Boolean.FALSE, missingKeys);
+            List<String> unsuccessfulKeys = getMissingKeysWithAdded(missingKeys, false);
             if (!unsuccessfulKeys.isEmpty()) {
                 System.err.println("  Warning! Could not add all missing keys (problem with loading " +
                     "default messages?)");
@@ -119,14 +120,11 @@ public final class VerifyMessagesTask implements ToolTask {
         }
     }
 
-    private static <K, V> List<K> getKeysWithValue(V value, Map<K, V> map) {
-        List<K> result = new ArrayList<>();
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            if (value.equals(entry.getValue())) {
-                result.add(entry.getKey());
-            }
-        }
-        return result;
+    private static List<String> getMissingKeysWithAdded(List<MissingKey> missingKeys, boolean wasAdded) {
+        return missingKeys.stream()
+            .filter(e -> e.getWasAdded() == wasAdded)
+            .map(MissingKey::getKey)
+            .collect(Collectors.toList());
     }
 
     private static List<File> getMessagesFiles() {

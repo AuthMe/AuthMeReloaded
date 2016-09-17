@@ -1,6 +1,5 @@
 package fr.xephi.authme.cache.backup;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,6 +25,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Class used to store player's data (OP, flying, speed, position) to disk.
@@ -71,7 +71,7 @@ public class PlayerDataStorage {
         }
 
         try {
-            String str = Files.toString(file, Charsets.UTF_8);
+            String str = Files.toString(file, StandardCharsets.UTF_8);
             return gson.fromJson(str, PlayerData.class);
         } catch (IOException e) {
             ConsoleLogger.logException("Could not read player data on disk for '" + player.getName() + "'", e);
@@ -100,7 +100,7 @@ public class PlayerDataStorage {
             File file = new File(cacheDir, id + File.separator + "data.json");
             Files.createParentDirs(file);
             Files.touch(file);
-            Files.write(gson.toJson(playerData), file, Charsets.UTF_8);
+            Files.write(gson.toJson(playerData), file, StandardCharsets.UTF_8);
         } catch (IOException e) {
             ConsoleLogger.logException("Failed to write " + player.getName() + " data.", e);
         }

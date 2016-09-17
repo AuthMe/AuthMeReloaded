@@ -1,9 +1,9 @@
 package fr.xephi.authme.security.crypts;
 
-import com.google.common.base.Charsets;
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.security.MessageDigestAlgorithm;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 public class CRAZYCRYPT1 extends UsernameSaltMethod {
@@ -24,7 +24,7 @@ public class CRAZYCRYPT1 extends UsernameSaltMethod {
     public HashedPassword computeHash(String password, String name) {
         final String text = "ÜÄaeut//&/=I " + password + "7421€547" + name + "__+IÄIH§%NK " + password;
         final MessageDigest md = HashUtils.getDigest(MessageDigestAlgorithm.SHA512);
-        md.update(text.getBytes(Charsets.UTF_8), 0, text.length());
+        md.update(text.getBytes(StandardCharsets.UTF_8), 0, text.length());
         return new HashedPassword(byteArrayToHexString(md.digest()));
     }
 

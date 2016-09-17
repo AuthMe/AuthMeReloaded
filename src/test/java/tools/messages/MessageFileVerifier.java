@@ -5,7 +5,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import tools.utils.FileUtils;
@@ -14,7 +13,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,7 @@ public class MessageFileVerifier {
     private final String messagesFile;
     private final Set<String> unknownKeys = new HashSet<>();
     // Map with the missing key and a boolean indicating whether or not it was added to the file by this object
-    private final Map<String, Boolean> missingKeys = new HashMap<>();
+    private final List<MissingKey> missingKeys = new ArrayList<>();
     private final Multimap<String, String> missingTags = HashMultimap.create();
 
     /**
@@ -58,7 +56,7 @@ public class MessageFileVerifier {
      *
      * @return The list of missing keys in the file
      */
-    public Map<String, Boolean> getMissingKeys() {
+    public List<MissingKey> getMissingKeys() {
         return missingKeys;
     }
 
@@ -80,7 +78,7 @@ public class MessageFileVerifier {
             if (configuration.isString(key)) {
                 checkTagsInMessage(messageKey, configuration.getString(key));
             } else {
-                missingKeys.put(key, false);
+                missingKeys.add(new MissingKey(key));
             }
         }
 
@@ -109,26 +107,27 @@ public class MessageFileVerifier {
         final List<String> fileLines = new ArrayList<>(
             Arrays.asList(FileUtils.readFromFile(messagesFile).split("\\n")));
 
-        List<String> keysToAdd = new ArrayList<>();
-        for (Map.Entry<String, Boolean> entry : missingKeys.entrySet()) {
+        List<MissingKey> keysToAdd = new ArrayList<>();
+        for (MissingKey entry : missingKeys) {
             final String key = entry.getKey();
 
-            if (Boolean.FALSE.equals(entry.getValue()) && defaultMessages.get(key) != null) {
-                keysToAdd.add(key);
+            if (!entry.getWasAdded() && defaultMessages.get(key) != null) {
+                keysToAdd.add(entry);
             }
         }
 
         // Add missing keys as comments to the bottom of the file
-        for (String keyToAdd : keysToAdd) {
-            int indexOfComment = Iterables.indexOf(fileLines, isCommentFor(keyToAdd));
+        for (MissingKey keyToAdd : keysToAdd) {
+            final String key = keyToAdd.getKey();
+            int indexOfComment = Iterables.indexOf(fileLines, isCommentFor(key));
             if (indexOfComment != -1) {
                 // Comment for keyToAdd already exists, so remove it since we're going to add it
                 fileLines.remove(indexOfComment);
             }
-            String comment = commentForKey(keyToAdd) + "'" +
-                defaultMessages.getString(keyToAdd).replace("'", "''") + "'";
+            String comment = commentForKey(key) + "'" +
+                defaultMessages.getString(key).replace("'", "''") + "'";
             fileLines.add(comment);
-            missingKeys.put(keyToAdd, Boolean.TRUE);
+            keyToAdd.setWasAdded(true);
         }
 
         // Add a comment above messages missing a tag
@@ -137,7 +136,7 @@ public class MessageFileVerifier {
             addCommentForMissingTags(fileLines, key, entry.getValue());
         }
 
-        FileUtils.writeToFile(messagesFile, StringUtils.join("\n", fileLines));
+        FileUtils.writeToFile(messagesFile, String.join("\n", fileLines));
     }
 
     /**
@@ -167,7 +166,7 @@ public class MessageFileVerifier {
 
         String tagWord = tags.size() > 1 ? "tags" : "tag";
         fileLines.add(indexForComment, commentForKey(key)
-            + String.format("Missing %s %s", tagWord, StringUtils.join(", ", tags)));
+            + String.format("Missing %s %s", tagWord, String.join(", ", tags)));
     }
 
     private static String commentForKey(String key) {
