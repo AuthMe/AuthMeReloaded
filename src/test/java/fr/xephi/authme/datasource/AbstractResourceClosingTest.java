@@ -241,6 +241,7 @@ public abstract class AbstractResourceClosingTest {
             .put(String.class, "test")
             .put(int.class, 3)
             .put(long.class, 102L)
+            .put(boolean.class, true)
             .put(PlayerAuth.class, PlayerAuth.builder().name("test").realName("test").password(hash).build())
             .put(HashedPassword.class, hash)
             .build();

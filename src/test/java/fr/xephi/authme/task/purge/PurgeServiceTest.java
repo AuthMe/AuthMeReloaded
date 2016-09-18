@@ -10,7 +10,6 @@ import fr.xephi.authme.util.BukkitService;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,7 +99,7 @@ public class PurgeServiceTest {
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(true);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
         Set<String> playerNames = newHashSet("alpha", "bravo", "charlie", "delta");
-        given(dataSource.getRecordsToPurge(anyLong())).willReturn(playerNames);
+        given(dataSource.getRecordsToPurge(anyLong(), eq(false))).willReturn(playerNames);
         mockReturnedOfflinePlayers();
 
         // when
@@ -108,7 +107,7 @@ public class PurgeServiceTest {
 
         // then
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        verify(dataSource).getRecordsToPurge(captor.capture());
+        verify(dataSource).getRecordsToPurge(captor.capture(), eq(false));
         assertCorrectPurgeTimestamp(captor.getValue(), 60);
         assertThat(Boolean.TRUE, equalTo(
             ReflectionTestUtils.getFieldValue(PurgeService.class, purgeService, "isPurging")));
@@ -118,15 +117,16 @@ public class PurgeServiceTest {
     @Test
     public void shouldRecognizeNoPlayersToPurge() {
         // given
-        long delay = 123012301L;
-        given(dataSource.getRecordsToPurge(delay)).willReturn(Collections.<String>emptySet());
+        final long delay = 123012301L;
+        final boolean includeLastLoginZeroEntries = true;
+        given(dataSource.getRecordsToPurge(delay, includeLastLoginZeroEntries)).willReturn(Collections.<String>emptySet());
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        purgeService.runPurge(sender, delay);
+        purgeService.runPurge(sender, delay, includeLastLoginZeroEntries);
 
         // then
-        verify(dataSource).getRecordsToPurge(delay);
+        verify(dataSource).getRecordsToPurge(delay, includeLastLoginZeroEntries);
         verify(dataSource, never()).purgeRecords(anyCollectionOf(String.class));
         verify(sender).sendMessage("No players to purge");
         verifyZeroInteractions(bukkitService, permissionsManager);
@@ -135,19 +135,20 @@ public class PurgeServiceTest {
     @Test
     public void shouldRunPurge() {
         // given
-        long delay = 1809714L;
+        final long delay = 1809714L;
+        final boolean includeLastLoginZeroEntries = false;
         Set<String> playerNames = newHashSet("charlie", "delta", "echo", "foxtrot");
-        given(dataSource.getRecordsToPurge(delay)).willReturn(playerNames);
+        given(dataSource.getRecordsToPurge(delay, includeLastLoginZeroEntries)).willReturn(playerNames);
         mockReturnedOfflinePlayers();
         Player sender = mock(Player.class);
         UUID uuid = UUID.randomUUID();
         given(sender.getUniqueId()).willReturn(uuid);
 
         // when
-        purgeService.runPurge(sender, delay);
+        purgeService.runPurge(sender, delay, includeLastLoginZeroEntries);
 
         // then
-        verify(dataSource).getRecordsToPurge(delay);
+        verify(dataSource).getRecordsToPurge(delay, includeLastLoginZeroEntries);
         verifyScheduledPurgeTask(uuid, playerNames);
     }
 
@@ -214,7 +215,7 @@ public class PurgeServiceTest {
 
         Object senderInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "sender");
         Set<String> namesInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "toPurge");
-        assertThat(senderInTask, Matchers.<Object>equalTo(senderUuid));
+        assertThat(senderInTask, equalTo(senderUuid));
         assertThat(namesInTask, containsInAnyOrder(names.toArray()));
     }
 }

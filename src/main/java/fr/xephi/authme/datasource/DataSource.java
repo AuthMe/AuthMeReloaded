@@ -74,9 +74,11 @@ public interface DataSource extends Reloadable {
      * Get all records in the database whose last login was before the given time.
      *
      * @param until The minimum last login
+     * @param includeEntriesWithLastLoginZero Whether entries with lastlogin = 0 should be included or not,
+     *        see <a href="https://github.com/Xephi/AuthMeReloaded/issues/886">issue #886</a>
      * @return The account names selected to purge
      */
-    Set<String> getRecordsToPurge(long until);
+    Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero);
 
     /**
      * Purge the given players from the database.

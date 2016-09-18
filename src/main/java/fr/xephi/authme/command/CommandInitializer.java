@@ -219,6 +219,7 @@ public class CommandInitializer {
             .description("Purge old data")
             .detailedDescription("Purge old AuthMeReloaded data longer than the specified amount of days ago.")
             .withArgument("days", "Number of days", false)
+            .withArgument("all", "Add 'all' at the end to also purge players with lastlogin = 0", true)
             .permission(AdminPermission.PURGE)
             .executableCommand(PurgeCommand.class)
             .build();

@@ -299,10 +299,13 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until) {
+    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
         Set<String> list = new HashSet<>();
 
-        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + " < ?";
+        if (!includeEntriesWithLastLoginZero) {
+            select += " AND " + col.LAST_LOGIN + " <> 0";
+        }
         try (PreparedStatement selectPst = con.prepareStatement(select)) {
             selectPst.setLong(1, until);
             try (ResultSet rs = selectPst.executeQuery()) {
