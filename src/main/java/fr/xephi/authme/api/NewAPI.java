@@ -222,6 +222,15 @@ public class NewAPI {
     }
 
     /**
+     * Unregister a player from AuthMe by name.
+     *
+     * @param name the name of the player (case-insensitive)
+     */
+    public void forceUnregister(String name) {
+        management.performUnregisterByAdmin(null, name, Bukkit.getPlayer(name));
+    }
+
+    /**
      * Get all the registered names (lowercase)
      *
      * @return registered names

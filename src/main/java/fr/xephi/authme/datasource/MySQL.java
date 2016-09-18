@@ -612,7 +612,7 @@ public class MySQL implements DataSource {
                     }
                 }
             }
-            pst.setString(1, user);
+            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {

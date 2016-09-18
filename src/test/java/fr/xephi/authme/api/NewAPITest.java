@@ -212,6 +212,36 @@ public class NewAPITest {
         assertThat(result, contains(names));
     }
 
+    @Test
+    public void shouldUnregisterPlayer() {
+        // given
+        Player player = mock(Player.class);
+        String name = "Donald";
+        given(player.getName()).willReturn(name);
+
+        // when
+        api.forceUnregister(player);
+
+        // then
+        verify(management).performUnregisterByAdmin(null, name, player);
+    }
+
+    @Test
+    public void shouldUnregisterPlayerByName() {
+        // given
+        Server server = mock(Server.class);
+        ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
+        String name = "tristan";
+        Player player = mock(Player.class);
+        given(server.getPlayer(name)).willReturn(player);
+
+        // when
+        api.forceUnregister(name);
+
+        // then
+        verify(management).performUnregisterByAdmin(null, name, player);
+    }
+
     private static Player mockPlayerWithName(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);

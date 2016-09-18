@@ -335,7 +335,7 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
-            pst.setString(1, user);
+            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {

@@ -195,7 +195,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         DataSource dataSource = getDataSource();
 
         // when
-        boolean response1 = dataSource.removeAuth("bobby");
+        boolean response1 = dataSource.removeAuth("Bobby");
         boolean response2 = dataSource.removeAuth("does-not-exist");
 
         // then
