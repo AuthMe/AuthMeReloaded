@@ -89,8 +89,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
         PlayerAuth pAuth = database.getAuth(name);
         if (pAuth == null) {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
-
-            // TODO ljacqu 20160612: Why is the message task being canceled and added again here?
+            // Recreate the message task to immediately send the message again as response
+            // and to make sure we send the right register message (password vs. email registration)
             playerDataTaskManager.registerMessageTask(name, false);
             return null;
         }
@@ -186,12 +186,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
         } else if (player.isOnline()) {
             ConsoleLogger.fine(player.getName() + " used the wrong password");
             if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
-                bukkitService.scheduleSyncDelayedTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        player.kickPlayer(service.retrieveSingleMessage(MessageKey.WRONG_PASSWORD));
-                    }
-                });
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                    () -> player.kickPlayer(service.retrieveSingleMessage(MessageKey.WRONG_PASSWORD)));
             } else if (tempbanManager.shouldTempban(ip)) {
                 tempbanManager.tempbanPlayer(player);
             } else  {

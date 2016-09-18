@@ -15,6 +15,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -36,36 +37,33 @@ import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_AC
  */
 public class AsyncRegister implements AsynchronousProcess {
 
+    /**
+     * Number of ticks to wait before running the login action when it is run synchronously.
+     * A small delay is necessary or the database won't return the newly saved PlayerAuth object
+     * and the login process thinks the user is not registered.
+     */
+    private static final int SYNC_LOGIN_DELAY = 5;
+
     @Inject
     private DataSource database;
-
     @Inject
     private PlayerCache playerCache;
-
     @Inject
     private PasswordSecurity passwordSecurity;
-
     @Inject
     private ProcessService service;
-
     @Inject
     private SyncProcessManager syncProcessManager;
-
     @Inject
     private PermissionsManager permissionsManager;
-
     @Inject
     private ValidationService validationService;
-
     @Inject
     private SendMailSSL sendMailSsl;
-
     @Inject
     private AsynchronousLogin asynchronousLogin;
-
     @Inject
     private BukkitService bukkitService;
-
 
     AsyncRegister() {
     }
@@ -172,7 +170,12 @@ public class AsyncRegister implements AsynchronousProcess {
         }
 
         if (!service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER) && autoLogin) {
-            bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.login(player, "dontneed", true));
+            if (service.getProperty(PluginSettings.USE_ASYNC_TASKS)) {
+                bukkitService.runTaskAsynchronously(() -> asynchronousLogin.login(player, "dontneed", true));
+            } else {
+                bukkitService.scheduleSyncDelayedTask(
+                    () -> asynchronousLogin.login(player, "dontneed", true), SYNC_LOGIN_DELAY);
+            }
         }
         syncProcessManager.processSyncPasswordRegister(player);
 
