@@ -36,51 +36,26 @@ public class SyncProcessManager {
 
 
     public void processSyncEmailRegister(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                processSyncEmailRegister.processEmailRegister(player);
-            }
-        });
+        runTask(() -> processSyncEmailRegister.processEmailRegister(player));
     }
 
     public void processSyncPasswordRegister(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                processSyncPasswordRegister.processPasswordRegister(player);
-            }
-        });
+        runTask(() -> processSyncPasswordRegister.processPasswordRegister(player));
     }
 
     public void processSyncPlayerLogout(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                processSynchronousPlayerLogout.processSyncLogout(player);
-            }
-        });
+        runTask(() -> processSynchronousPlayerLogout.processSyncLogout(player));
     }
 
     public void processSyncPlayerLogin(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                processSyncPlayerLogin.processPlayerLogin(player);
-            }
-        });
+        runTask(() -> processSyncPlayerLogin.processPlayerLogin(player));
     }
 
     public void processSyncPlayerQuit(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                processSyncronousPlayerQuit.processSyncQuit(player);
-            }
-        });
+        runTask(() -> processSyncronousPlayerQuit.processSyncQuit(player));
     }
 
     private void runTask(Runnable runnable) {
-        bukkitService.scheduleSyncDelayedTask(runnable);
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(runnable);
     }
 }

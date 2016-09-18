@@ -179,11 +179,11 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.setLogger(getLogger());
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
 
-        bukkitService = new BukkitService(this);
+        // Load settings and set up the console and console filter
+        settings = Initializer.createSettings(this);
+        bukkitService = new BukkitService(this, settings);
         Initializer initializer = new Initializer(this, bukkitService);
 
-        // Load settings and set up the console and console filter
-        settings = initializer.createSettings();
         ConsoleLogger.setLoggingOptions(settings);
         initializer.setupConsoleFilter(settings, getLogger());
 

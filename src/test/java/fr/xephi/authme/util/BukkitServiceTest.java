@@ -2,6 +2,8 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +15,7 @@ import java.util.Collection;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -23,6 +26,8 @@ public class BukkitServiceTest {
 
     @Mock
     private AuthMe authMe;
+    @Mock
+    private Settings settings;
 
     /**
      * Checks that {@link BukkitService#getOnlinePlayersIsCollection} is initialized to {@code true} on startup;
@@ -31,7 +36,8 @@ public class BukkitServiceTest {
     @Test
     public void shouldHavePlayerListAsCollectionMethod() {
         // given
-        BukkitService bukkitService = new BukkitService(authMe);
+        given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
+        BukkitService bukkitService = new BukkitService(authMe, settings);
 
         // when
         boolean doesMethodReturnCollection = ReflectionTestUtils
@@ -44,7 +50,8 @@ public class BukkitServiceTest {
     @Test
     public void shouldRetrieveListOfOnlinePlayersFromReflectedMethod() {
         // given
-        BukkitService bukkitService = new BukkitService(authMe);
+        given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
+        BukkitService bukkitService = new BukkitService(authMe, settings);
         ReflectionTestUtils.setField(BukkitService.class, bukkitService, "getOnlinePlayersIsCollection", false);
         ReflectionTestUtils.setField(BukkitService.class, bukkitService, "getOnlinePlayers",
             ReflectionTestUtils.getMethod(BukkitServiceTest.class, "onlinePlayersImpl"));

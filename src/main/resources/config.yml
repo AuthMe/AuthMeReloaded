@@ -271,6 +271,9 @@ settings:
     # FINE for some additional detailed ones (like password failed),
     # and DEBUG for debug messages
     logLevel: 'FINE'
+    # By default we schedule async tasks when talking to the database
+    # If you want typical communication with the database to happen synchronously, set this to false
+    useAsyncTasks: true
 ExternalBoardOptions:
     # MySQL column for the salt, needed for some forum/cms support
     mySQLColumnSalt: ''

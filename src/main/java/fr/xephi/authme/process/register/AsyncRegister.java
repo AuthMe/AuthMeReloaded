@@ -67,7 +67,8 @@ public class AsyncRegister implements AsynchronousProcess {
     private BukkitService bukkitService;
 
 
-    AsyncRegister() { }
+    AsyncRegister() {
+    }
 
     private boolean preRegisterCheck(Player player, String password) {
         final String name = player.getName().toLowerCase();
@@ -171,12 +172,7 @@ public class AsyncRegister implements AsynchronousProcess {
         }
 
         if (!service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER) && autoLogin) {
-            bukkitService.runTaskAsynchronously(new Runnable(){
-                @Override
-                public void run() {
-                    asynchronousLogin.login(player, "dontneed", true);
-                }
-            });
+            bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.login(player, "dontneed", true));
         }
         syncProcessManager.processSyncPasswordRegister(player);
 

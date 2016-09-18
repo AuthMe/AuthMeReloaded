@@ -15,7 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.TestHelper.runInnerRunnable;
+import static fr.xephi.authme.TestHelper.runOptionallyAsyncTask;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -73,7 +73,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -95,7 +95,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -120,7 +120,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -146,7 +146,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -173,7 +173,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);

@@ -41,7 +41,7 @@ public class SetEmailCommand implements ExecutableCommand {
             return;
         }
 
-        bukkitService.runTaskAsynchronously(new Runnable() {
+        bukkitService.runTaskOptionallyAsync(new Runnable() {
             @Override
             public void run() {
                 // Validate the user
@@ -68,7 +68,6 @@ public class SetEmailCommand implements ExecutableCommand {
 
                 // Show a status message
                 commandService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
-
             }
         });
     }

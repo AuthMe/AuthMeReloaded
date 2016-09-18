@@ -23,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
+import static fr.xephi.authme.TestHelper.runSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -92,7 +93,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -114,7 +115,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -139,7 +140,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -168,8 +169,8 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
-        runSyncDelayedTask(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -185,12 +186,5 @@ public class RegisterAdminCommandTest {
         assertThat(auth.getRealName(), equalTo(name));
         assertThat(auth.getNickname(), equalTo(name.toLowerCase()));
         assertThat(auth.getPassword(), equalTo(hashedPassword));
-    }
-
-    private static void runSyncDelayedTask(BukkitService bukkitService) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(bukkitService).scheduleSyncDelayedTask(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
     }
 }

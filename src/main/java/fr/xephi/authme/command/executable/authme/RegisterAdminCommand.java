@@ -55,7 +55,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
             return;
         }
 
-        bukkitService.runTaskAsynchronously(new Runnable() {
+        bukkitService.runTaskOptionallyAsync(new Runnable() {
 
             @Override
             public void run() {
@@ -80,7 +80,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
                 final Player player = bukkitService.getPlayerExact(playerName);
                 if (player != null) {
-                    bukkitService.scheduleSyncDelayedTask(new Runnable() {
+                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
                         @Override
                         public void run() {
                             limboCache.restoreData(player);

@@ -55,7 +55,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
 
         // Set the password
         final String playerNameLowerCase = playerName.toLowerCase();
-        bukkitService.runTaskAsynchronously(new Runnable() {
+        bukkitService.runTaskOptionallyAsync(new Runnable() {
 
             @Override
             public void run() {

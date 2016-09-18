@@ -58,9 +58,10 @@ public class Initializer {
     /**
      * Loads the plugin's settings.
      *
-     * @return The settings instance, or null if it could not be constructed
+     * @param authMe the plugin instance
+     * @return the settings instance, or null if it could not be constructed
      */
-    public Settings createSettings() throws Exception {
+    public static Settings createSettings(AuthMe authMe) throws Exception {
         File configFile = new File(authMe.getDataFolder(), "config.yml");
         PropertyResource resource = new YamlFileResource(configFile);
         SettingsMigrationService migrationService = new SettingsMigrationService(authMe.getDataFolder());

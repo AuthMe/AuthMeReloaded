@@ -21,6 +21,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
 import fr.xephi.authme.util.BukkitService;
@@ -110,7 +111,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
             }
         }
 
-        AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
+        boolean isAsync = service.getProperty(PluginSettings.USE_ASYNC_TASKS);
+        AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player, isAsync);
         bukkitService.callEvent(event);
         if (!event.canLogin()) {
             return null;

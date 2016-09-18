@@ -15,7 +15,9 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-
+/**
+ * Performs auth actions, e.g. when a player joins, registers or wants to change his password.
+ */
 public class Management {
 
     @Inject
@@ -41,100 +43,51 @@ public class Management {
     @Inject
     private AsyncChangePassword asyncChangePassword;
 
-    Management() { }
-
-
-    public void performLogin(final Player player, final String password, final boolean forceLogin) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asynchronousLogin.login(player, password, forceLogin);
-            }
-        });
+    Management() {
     }
 
-    public void performLogout(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asynchronousLogout.logout(player);
-            }
-        });
+
+    public void performLogin(Player player, String password, boolean forceLogin) {
+        runTask(() -> asynchronousLogin.login(player, password, forceLogin));
     }
 
-    public void performRegister(final Player player, final String password, final String email, final boolean autoLogin) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asyncRegister.register(player, password, email, autoLogin);
-            }
-        });
+    public void performLogout(Player player) {
+        runTask(() -> asynchronousLogout.logout(player));
     }
 
-    public void performUnregister(final Player player, final String password) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asynchronousUnregister.unregister(player, password);
-            }
-        });
+    public void performRegister(Player player, String password, String email, boolean autoLogin) {
+        runTask(() -> asyncRegister.register(player, password, email, autoLogin));
     }
 
-    public void performUnregisterByAdmin(final CommandSender initiator, final String name, final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asynchronousUnregister.adminUnregister(initiator, name, player);
-            }
-        });
+    public void performUnregister(Player player, String password) {
+        runTask(() -> asynchronousUnregister.unregister(player, password));
     }
 
-    public void performJoin(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asynchronousJoin.processJoin(player);
-            }
-        });
+    public void performUnregisterByAdmin(CommandSender initiator, String name, Player player) {
+        runTask(() -> asynchronousUnregister.adminUnregister(initiator, name, player));
     }
 
-    public void performQuit(final Player player) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asynchronousQuit.processQuit(player);
-            }
-        });
+    public void performJoin(Player player) {
+        runTask(() -> asynchronousJoin.processJoin(player));
     }
 
-    public void performAddEmail(final Player player, final String newEmail) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asyncAddEmail.addEmail(player, newEmail);
-            }
-        });
+    public void performQuit(Player player) {
+        runTask(() -> asynchronousQuit.processQuit(player));
     }
 
-    public void performChangeEmail(final Player player, final String oldEmail, final String newEmail) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asyncChangeEmail.changeEmail(player, oldEmail, newEmail);
-            }
-        });
+    public void performAddEmail(Player player, String newEmail) {
+        runTask(() -> asyncAddEmail.addEmail(player, newEmail));
     }
 
-    public void performPasswordChange(final Player player, final String oldPassword, final String newPassword) {
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                asyncChangePassword.changePassword(player, oldPassword, newPassword);
-            }
-        });
+    public void performChangeEmail(Player player, String oldEmail, String newEmail) {
+        runTask(() -> asyncChangeEmail.changeEmail(player, oldEmail, newEmail));
+    }
+
+    public void performPasswordChange(Player player, String oldPassword, String newPassword) {
+        runTask(() -> asyncChangePassword.changePassword(player, oldPassword, newPassword));
     }
 
     private void runTask(Runnable runnable) {
-        bukkitService.runTaskAsynchronously(runnable);
+        bukkitService.runTaskOptionallyAsync(runnable);
     }
 }

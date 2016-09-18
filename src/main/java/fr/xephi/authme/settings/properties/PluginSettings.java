@@ -68,6 +68,13 @@ public class PluginSettings implements SettingsHolder {
     public static final Property<LogLevel> LOG_LEVEL =
         newProperty(LogLevel.class, "settings.logLevel", LogLevel.FINE);
 
+    @Comment({
+        "By default we schedule async tasks when talking to the database",
+        "If you want typical communication with the database to happen synchronously, set this to false"
+    })
+    public static final Property<Boolean> USE_ASYNC_TASKS =
+        newProperty("settings.useAsyncTasks", true);
+
     private PluginSettings() {
     }
 
