@@ -62,12 +62,12 @@ public class Initializer {
      * @return the settings instance, or null if it could not be constructed
      */
     public static Settings createSettings(AuthMe authMe) throws Exception {
-        File configFile = new File(authMe.getDataFolder(), "config.yml");
-        PropertyResource resource = new YamlFileResource(configFile);
         SettingsMigrationService migrationService = new SettingsMigrationService(authMe.getDataFolder());
         List<PropertyEntry> knownProperties = AuthMeSettingsRetriever.getAllPropertyFields();
 
+        File configFile = new File(authMe.getDataFolder(), "config.yml");
         if (FileUtils.copyFileFromResource(configFile, "config.yml")) {
+            PropertyResource resource = new YamlFileResource(configFile);
             return new Settings(authMe.getDataFolder(), resource, migrationService, knownProperties);
         }
         throw new Exception("Could not copy config.yml from JAR to plugin folder");
