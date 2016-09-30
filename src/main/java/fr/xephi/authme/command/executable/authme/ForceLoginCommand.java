@@ -37,7 +37,7 @@ public class ForceLoginCommand implements ExecutableCommand {
         } else if (!permissionsManager.hasPermission(player, CAN_LOGIN_BE_FORCED)) {
             sender.sendMessage("You cannot force login the player " + playerName + "!");
         } else {
-            management.performLogin(player, "dontneed", true);
+            management.forceLogin(player);
             sender.sendMessage("Force login for " + playerName + " performed!");
         }
     }

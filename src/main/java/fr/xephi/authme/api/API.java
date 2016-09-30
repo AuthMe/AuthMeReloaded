@@ -157,7 +157,7 @@ public class API {
      * @param player The player to log in
      */
     public static void forceLogin(Player player) {
-        management.performLogin(player, "dontneed", true);
+        management.forceLogin(player);
     }
 
     public AuthMe getPlugin() {

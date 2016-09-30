@@ -171,10 +171,9 @@ public class AsyncRegister implements AsynchronousProcess {
 
         if (!service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER) && autoLogin) {
             if (service.getProperty(PluginSettings.USE_ASYNC_TASKS)) {
-                bukkitService.runTaskAsynchronously(() -> asynchronousLogin.login(player, "dontneed", true));
+                bukkitService.runTaskAsynchronously(() -> asynchronousLogin.forceLogin(player));
             } else {
-                bukkitService.scheduleSyncDelayedTask(
-                    () -> asynchronousLogin.login(player, "dontneed", true), SYNC_LOGIN_DELAY);
+                bukkitService.scheduleSyncDelayedTask(() -> asynchronousLogin.forceLogin(player), SYNC_LOGIN_DELAY);
             }
         }
         syncProcessManager.processSyncPasswordRegister(player);

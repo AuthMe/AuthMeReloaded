@@ -47,8 +47,12 @@ public class Management {
     }
 
 
-    public void performLogin(Player player, String password, boolean forceLogin) {
-        runTask(() -> asynchronousLogin.login(player, password, forceLogin));
+    public void performLogin(Player player, String password) {
+        runTask(() -> asynchronousLogin.login(player, password));
+    }
+
+    public void forceLogin(Player player) {
+        runTask(() -> asynchronousLogin.forceLogin(player));
     }
 
     public void performLogout(Player player) {

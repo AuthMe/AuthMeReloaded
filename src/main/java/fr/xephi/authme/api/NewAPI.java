@@ -179,7 +179,7 @@ public class NewAPI {
      * @param player The player to log in
      */
     public void forceLogin(Player player) {
-        management.performLogin(player, "dontneed", true);
+        management.forceLogin(player);
     }
 
     /**

@@ -17,9 +17,7 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -107,7 +105,7 @@ public class ForceLoginCommandTest {
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
-        verify(management).performLogin(eq(player), anyString(), eq(true));
+        verify(management).forceLogin(player);
     }
 
     @Test
@@ -125,7 +123,7 @@ public class ForceLoginCommandTest {
 
         // then
         verify(bukkitService).getPlayerExact(senderName);
-        verify(management).performLogin(eq(player), anyString(), eq(true));
+        verify(management).forceLogin(player);
     }
 
     private static Player mockPlayer(boolean isOnline, String name) {

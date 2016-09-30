@@ -140,7 +140,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 playerCache.removePlayer(name);
                 if (auth != null && auth.getIp().equals(ip)) {
                     service.send(player, MessageKey.SESSION_RECONNECTION);
-                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.login(player, "dontneed", true));
+                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                     return;
                 } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
                     service.send(player, MessageKey.SESSION_EXPIRED);
@@ -239,12 +239,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
             && !"localhost".equalsIgnoreCase(ip)
             && countOnlinePlayersByIp(ip) > service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)) {
 
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
-                @Override
-                public void run() {
-                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE));
-                }
-            });
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                () -> player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE)));
             return false;
         }
         return true;
