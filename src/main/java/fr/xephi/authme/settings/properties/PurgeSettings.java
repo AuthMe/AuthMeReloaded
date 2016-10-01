@@ -20,7 +20,7 @@ public class PurgeSettings implements SettingsHolder {
     public static final Property<Boolean> REMOVE_PLAYER_DAT =
         newProperty("Purge.removePlayerDat", false);
 
-    @Comment("Do we need to remove the Essentials/users/player.yml file during purge process?")
+    @Comment("Do we need to remove the Essentials/userdata/player.yml file during purge process?")
     public static final Property<Boolean> REMOVE_ESSENTIALS_FILES =
         newProperty("Purge.removeEssentialsFile", false);
 

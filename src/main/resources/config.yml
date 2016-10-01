@@ -405,7 +405,7 @@ Purge:
     daysBeforeRemovePlayer: 60
     # Do we need to remove the player.dat file during purge process?
     removePlayerDat: false
-    # Do we need to remove the Essentials/users/player.yml file during purge process?
+    # Do we need to remove the Essentials/userdata/player.yml file during purge process?
     removeEssentialsFile: false
     # World where are players.dat stores
     defaultWorld: 'world'
