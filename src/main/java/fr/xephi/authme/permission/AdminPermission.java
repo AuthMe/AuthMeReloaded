@@ -101,6 +101,11 @@ public enum AdminPermission implements PermissionNode {
     RELOAD("authme.admin.reload", DefaultPermission.OP_ONLY),
 
     /**
+     * Administrator command to reload the plugin configuration.
+     */
+    ANTIBOT_MESSAGES("authme.admin.antibotmessages", DefaultPermission.OP_ONLY),
+
+    /**
      * Permission to see the other accounts of the players that log in.
      */
     SEE_OTHER_ACCOUNTS("authme.admin.seeotheraccounts", DefaultPermission.OP_ONLY);

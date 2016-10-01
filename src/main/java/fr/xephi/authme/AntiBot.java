@@ -2,6 +2,7 @@ package fr.xephi.authme;
 
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
@@ -66,8 +67,11 @@ public class AntiBot {
 
     public void activateAntiBot() {
         antiBotStatus = AntiBotStatus.ACTIVE;
-        for (String s : messages.retrieve(MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE)) {
-            bukkitService.broadcastMessage(s);
+        for(Player player : bukkitService.getOnlinePlayers()) {
+            if(!permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES)) {
+                continue;
+            }
+            messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
         }
 
         final int duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);

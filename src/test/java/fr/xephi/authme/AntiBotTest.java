@@ -127,7 +127,7 @@ public class AntiBotTest {
         // then
         assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.ACTIVE));
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(bukkitService, times(2)).broadcastMessage(captor.capture());
+        verify(messages, times(2)).send(captor.capture());
         assertThat(captor.getAllValues(), contains("Test line #1", "Test line #2"));
         long expectedTicks = duration * TICKS_PER_MINUTE;
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(expectedTicks));
