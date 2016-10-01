@@ -89,7 +89,7 @@ public class ImportMessagesTask implements ToolTask {
             throw new IllegalStateException(e);
         }
 
-        MessageFileVerifier verifier = new MessageFileVerifier(fileName);
+        MessageFileVerifier verifier = new MessageFileVerifier(file);
         VerifyMessagesTask.verifyFileAndAddKeys(verifier, YamlConfiguration.loadConfiguration(
             new File(MESSAGES_FOLDER + "messages_en.yml")));
     }

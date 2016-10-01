@@ -1,5 +1,6 @@
 package tools.messages;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
@@ -11,7 +12,6 @@ import tools.utils.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -24,9 +24,8 @@ import java.util.Set;
  */
 public class MessageFileVerifier {
 
-    private final String messagesFile;
+    private final File messagesFile;
     private final Set<String> unknownKeys = new HashSet<>();
-    // Map with the missing key and a boolean indicating whether or not it was added to the file by this object
     private final List<MissingKey> missingKeys = new ArrayList<>();
     private final Multimap<String, String> missingTags = HashMultimap.create();
 
@@ -35,7 +34,8 @@ public class MessageFileVerifier {
      *
      * @param messagesFile The messages file to process
      */
-    public MessageFileVerifier(String messagesFile) {
+    public MessageFileVerifier(File messagesFile) {
+        Preconditions.checkArgument(messagesFile.exists(), "Message file '" + messagesFile + "' does not exist");
         this.messagesFile = messagesFile;
         verifyKeys();
     }
@@ -70,7 +70,7 @@ public class MessageFileVerifier {
     }
 
     private void verifyKeys() {
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(new File(messagesFile));
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(messagesFile);
 
         // Check known keys (their existence + presence of all tags)
         for (MessageKey messageKey : MessageKey.values()) {
@@ -104,8 +104,7 @@ public class MessageFileVerifier {
      * @param defaultMessages The collection of default messages
      */
     public void addMissingKeys(FileConfiguration defaultMessages) {
-        final List<String> fileLines = new ArrayList<>(
-            Arrays.asList(FileUtils.readFromFile(messagesFile).split("\\n")));
+        final List<String> fileLines = FileUtils.readLinesFromFile(messagesFile.toPath());
 
         List<MissingKey> keysToAdd = new ArrayList<>();
         for (MissingKey entry : missingKeys) {
@@ -136,7 +135,7 @@ public class MessageFileVerifier {
             addCommentForMissingTags(fileLines, key, entry.getValue());
         }
 
-        FileUtils.writeToFile(messagesFile, String.join("\n", fileLines));
+        FileUtils.writeToFile(messagesFile.toPath(), String.join("\n", fileLines));
     }
 
     /**
@@ -150,12 +149,7 @@ public class MessageFileVerifier {
     private void addCommentForMissingTags(List<String> fileLines, final String key, Collection<String> tags) {
         int indexForComment = Iterables.indexOf(fileLines, isCommentFor(key));
         if (indexForComment == -1) {
-            indexForComment = Iterables.indexOf(fileLines, new Predicate<String>() {
-                @Override
-                public boolean apply(String input) {
-                    return input.startsWith(key + ": ");
-                }
-            });
+            indexForComment = Iterables.indexOf(fileLines, input -> input.startsWith(key + ": "));
             if (indexForComment == -1) {
                 System.err.println("Error adding comment for key '" + key + "': couldn't find entry in file lines");
                 return;
@@ -174,12 +168,7 @@ public class MessageFileVerifier {
     }
 
     private static Predicate<String> isCommentFor(final String key) {
-        return new Predicate<String>() {
-            @Override
-            public boolean apply(String input) {
-                return input.startsWith(commentForKey(key));
-            }
-        };
+        return input -> input.startsWith(commentForKey(key));
     }
 
     private static boolean messageKeyExists(String key) {
