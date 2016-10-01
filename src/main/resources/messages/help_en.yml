@@ -1,0 +1,30 @@
+common:
+    description.short: 'Short description'
+    description.detailed: 'Detailed description'
+    usage: 'Usage'
+    arguments: 'Arguments'
+    permissions: 'Permissions'
+    optional: '(Optional)'
+    hasPermission: 'You have permission'
+    noPermission: 'No permission'
+    default: 'Default'
+    alternatives: 'Alternatives'
+    result: 'Result'
+    commands: 'Commands'
+    defaultPermissions:
+        notAllowed: 'No permission'
+        opOnly: 'OP''s only'
+        allowed: 'Everyone allowed'
+command:
+    register:
+        description: 'Register with this command'
+        detailedDescription: 'Use /register <pw> <pw>'
+    authme.register:
+        description: 'Admin registration'
+        detailedDescription: 'Used by l33t adminz'
+        arg1:
+            label: 'n4me'
+            description: 'The name to save'
+        arg2:
+            label: 'passw0rd'
+            description: 'Password to use yo'

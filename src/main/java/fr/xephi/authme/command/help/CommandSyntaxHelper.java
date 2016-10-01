@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Helper class for displaying the syntax of a command properly to a user.
  */
-class CommandSyntaxHelper {
+final class CommandSyntaxHelper {
 
     private CommandSyntaxHelper() {
     }
