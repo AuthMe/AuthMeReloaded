@@ -2,6 +2,7 @@ package fr.xephi.authme;
 
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
@@ -15,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
@@ -115,20 +117,25 @@ public class AntiBotTest {
     @Test
     public void shouldActivateAntiBot() {
         // given
-        given(messages.retrieve(MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE))
-            .willReturn(new String[]{"Test line #1", "Test line #2"});
         int duration = 300;
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DURATION)).willReturn(duration);
         AntiBot antiBot = createListeningAntiBot();
+        List<Player> onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class), mock(Player.class));
+        given(bukkitService.getOnlinePlayers()).willReturn((List) onlinePlayers);
+        given(permissionsManager.hasPermission(onlinePlayers.get(0), AdminPermission.ANTIBOT_MESSAGES)).willReturn(true);
+        given(permissionsManager.hasPermission(onlinePlayers.get(1), AdminPermission.ANTIBOT_MESSAGES)).willReturn(false);
+        given(permissionsManager.hasPermission(onlinePlayers.get(2), AdminPermission.ANTIBOT_MESSAGES)).willReturn(true);
 
         // when
         antiBot.activateAntiBot();
 
         // then
         assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.ACTIVE));
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(messages, times(2)).send(captor.capture());
-        assertThat(captor.getAllValues(), contains("Test line #1", "Test line #2"));
+        verify(bukkitService).getOnlinePlayers();
+        verify(permissionsManager, times(3)).hasPermission(any(Player.class), eq(AdminPermission.ANTIBOT_MESSAGES));
+        verify(messages).send(onlinePlayers.get(0), MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
+        verify(messages, never()).send(onlinePlayers.get(1), MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
+        verify(messages).send(onlinePlayers.get(2), MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
         long expectedTicks = duration * TICKS_PER_MINUTE;
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(expectedTicks));
     }

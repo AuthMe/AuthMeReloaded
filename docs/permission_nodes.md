@@ -1,11 +1,12 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Jun 22 17:39:29 EDT 2016. See permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sat Oct 01 23:34:27 CEST 2016. See permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
 
 - **authme.admin.*** – Give access to all admin commands.
 - **authme.admin.accounts** – Administrator command to see all accounts associated with a user.
+- **authme.admin.antibotmessages** – Administrator command to reload the plugin configuration.
 - **authme.admin.changemail** – Administrator command to set or change the email address of a user.
 - **authme.admin.changepassword** – Administrator command to change the password of a user.
 - **authme.admin.converter** – Administrator command to convert old or other data to AuthMe data.
@@ -46,4 +47,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Wed Jun 22 17:39:29 EDT 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 01 23:34:27 CEST 2016
