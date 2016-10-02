@@ -5,8 +5,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -63,51 +61,6 @@ public class StringUtilsTest {
         // Should be false if string has content
         assertFalse(StringUtils.isEmpty("P"));
         assertFalse(StringUtils.isEmpty(" test"));
-    }
-
-    @Test
-    public void shouldJoinStrings() {
-        // given
-        List<String> elements = Arrays.asList("test", "for", null, "join", "StringUtils");
-
-        // when
-        String result = StringUtils.join(", ", elements);
-
-        // then
-        assertThat(result, equalTo("test, for, join, StringUtils"));
-    }
-
-    @Test
-    public void shouldJoinStringArray() {
-        // given
-        String[] elements = {"A", "test", "sentence", "for", "the join", null, "method"};
-
-        // when
-        String result = StringUtils.join("_", elements);
-
-        // then
-        assertThat(result, equalTo("A_test_sentence_for_the join_method"));
-    }
-
-    @Test
-    public void shouldNotHaveDelimiter() {
-        // given
-        List<String> elements = Arrays.asList(" ", null, "\t", "hello", null);
-
-        // when
-        String result = StringUtils.join("-", elements);
-
-        // then
-        assertThat(result, equalTo("hello"));
-    }
-
-    @Test
-    public void shouldJoinWithNullDelimiter() {
-        // given/when
-        String result = StringUtils.join(null, "A", "Few", "Words", "\n", "To", "Join");
-
-        // then
-        assertThat(result, equalTo("AFewWordsToJoin"));
     }
 
     @Test

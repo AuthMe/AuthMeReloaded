@@ -4,7 +4,6 @@ import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.BackupSettings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +46,7 @@ public class PerformBackup {
         this.tblname    = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
 
         String dateString = DATE_FORMAT.format(new Date());
-        this.path = StringUtils.join(File.separator,
+        this.path = String.join(File.separator,
             instance.getDataFolder().getPath(), "backups", "backup" + dateString);
     }
 

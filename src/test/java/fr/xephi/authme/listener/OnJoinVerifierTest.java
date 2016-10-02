@@ -13,7 +13,6 @@ import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -511,7 +510,7 @@ public class OnJoinVerifierTest {
             @Override
             public void describeTo(Description description) {
                 description.appendValue("VerificationFailedException: reason=" + messageKey + ";args="
-                    + (args == null ? "null" : StringUtils.join(", ", args)));
+                    + (args == null ? "null" : String.join(", ", args)));
             }
         };
     }

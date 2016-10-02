@@ -48,7 +48,7 @@ public class MessagesFileYamlCheckerTest {
 
         // then
         if (!errors.isEmpty()) {
-            fail("Errors during verification of message files:\n-" + StringUtils.join("\n-", errors));
+            fail("Errors during verification of message files:\n-" + String.join("\n-", errors));
         }
     }
 

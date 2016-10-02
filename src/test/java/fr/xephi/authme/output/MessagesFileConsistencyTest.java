@@ -32,7 +32,7 @@ public class MessagesFileConsistencyTest {
 
         if (!errors.isEmpty()) {
             fail("Validation errors in " + MESSAGES_FILE + ":\n- "
-                + StringUtils.join("\n- ", errors));
+                + String.join("\n- ", errors));
         }
     }
 
@@ -55,7 +55,7 @@ public class MessagesFileConsistencyTest {
         if (!missingTags.isEmpty()) {
             String pluralS = missingTags.size() > 1 ? "s" : "";
             errors.add(String.format("Message with key '%s' missing tag%s: %s", key, pluralS,
-                StringUtils.join(", ", missingTags)));
+                String.join(", ", missingTags)));
         }
     }
 }
