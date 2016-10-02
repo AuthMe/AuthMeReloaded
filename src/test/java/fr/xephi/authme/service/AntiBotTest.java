@@ -1,10 +1,13 @@
-package fr.xephi.authme;
+package fr.xephi.authme.service;
 
+import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.util.BukkitService;
@@ -37,7 +40,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for {@link AntiBot}.
+ * Test for {@link AntiBotService}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AntiBotTest {
@@ -60,58 +63,58 @@ public class AntiBotTest {
     public void shouldKeepAntiBotDisabled() {
         // given / when
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(false);
-        AntiBot antiBot = new AntiBot(settings, messages, permissionsManager, bukkitService);
+        AntiBotService antiBot = new AntiBotService(settings, messages, permissionsManager, bukkitService);
 
         // then
         verify(bukkitService, never()).scheduleSyncDelayedTask(any(Runnable.class), anyLong());
-        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.DISABLED));
+        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.DISABLED));
     }
 
     @Test
     public void shouldTransitionToListening() {
         // given / when
-        AntiBot antiBot = new AntiBot(settings, messages, permissionsManager, bukkitService);
+        AntiBotService antiBot = new AntiBotService(settings, messages, permissionsManager, bukkitService);
         TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
 
         // then
-        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.LISTENING));
+        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
     @Test
     public void shouldSetStatusToActive() {
         // given
-        AntiBot antiBot = createListeningAntiBot();
+        AntiBotService antiBot = createListeningAntiBot();
 
         // when
         antiBot.overrideAntiBotStatus(true);
 
         // then
-        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.ACTIVE));
+        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.ACTIVE));
     }
 
     @Test
     public void shouldSetStatusToListening() {
         // given
-        AntiBot antiBot = createListeningAntiBot();
+        AntiBotService antiBot = createListeningAntiBot();
 
         // when
         antiBot.overrideAntiBotStatus(false);
 
         // then
-        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.LISTENING));
+        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
     @Test
     public void shouldRemainDisabled() {
         // given
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(false);
-        AntiBot antiBot = new AntiBot(settings, messages, permissionsManager, bukkitService);
+        AntiBotService antiBot = new AntiBotService(settings, messages, permissionsManager, bukkitService);
 
         // when
         antiBot.overrideAntiBotStatus(true);
 
         // then
-        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.DISABLED));
+        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.DISABLED));
     }
 
     @Test
@@ -119,7 +122,7 @@ public class AntiBotTest {
         // given
         int duration = 300;
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DURATION)).willReturn(duration);
-        AntiBot antiBot = createListeningAntiBot();
+        AntiBotService antiBot = createListeningAntiBot();
         List<Player> onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class), mock(Player.class));
         given(bukkitService.getOnlinePlayers()).willReturn((List) onlinePlayers);
         given(permissionsManager.hasPermission(onlinePlayers.get(0), AdminPermission.ANTIBOT_MESSAGES)).willReturn(true);
@@ -127,10 +130,10 @@ public class AntiBotTest {
         given(permissionsManager.hasPermission(onlinePlayers.get(2), AdminPermission.ANTIBOT_MESSAGES)).willReturn(true);
 
         // when
-        antiBot.activateAntiBot();
+        antiBot.startProtection();
 
         // then
-        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.ACTIVE));
+        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.ACTIVE));
         verify(bukkitService).getOnlinePlayers();
         verify(permissionsManager, times(3)).hasPermission(any(Player.class), eq(AdminPermission.ANTIBOT_MESSAGES));
         verify(messages).send(onlinePlayers.get(0), MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
@@ -147,69 +150,22 @@ public class AntiBotTest {
         given(messages.retrieve(MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE))
             .willReturn(new String[]{"Disabled...", "Placeholder: %m."});
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DURATION)).willReturn(4);
-        AntiBot antiBot = createListeningAntiBot();
+        AntiBotService antiBot = createListeningAntiBot();
 
         // when
-        antiBot.activateAntiBot();
+        antiBot.startProtection();
         TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
 
         // then
-        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBot.AntiBotStatus.LISTENING));
+        assertThat(antiBot.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq((long) 4800));
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(bukkitService, times(2)).broadcastMessage(captor.capture());
         assertThat(captor.getAllValues(), contains("Disabled...", "Placeholder: 4."));
     }
 
-    @Test
-    public void shouldCheckPlayerAndRemoveHimLater() {
-        // given
-        Player player = mock(Player.class);
-        given(player.getName()).willReturn("Plaer");
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
-        given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(10);
-        AntiBot antiBot = createListeningAntiBot();
-
-        // when
-        antiBot.handlePlayerJoin(player);
-
-        // then
-        List<String> playerList = ReflectionTestUtils
-            .getFieldValue(AntiBot.class, antiBot, "antibotPlayers");
-        assertThat(playerList, hasSize(1));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq((long) 15 * TICKS_PER_SECOND));
-
-        // Follow-up: Check that player will be removed from list again by running the Runnable
-        // given (2)
-        // Add another player to the list
-        playerList.add("other_player");
-
-        // when (2)
-        TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
-
-        // then (2)
-        assertThat(playerList, contains("other_player"));
-    }
-
-    @Test
-    public void shouldNotUpdateListForPlayerWithByPassPermission() {
-        // given
-        Player player = mock(Player.class);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(true);
-        given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(3);
-        AntiBot antiBot = createListeningAntiBot();
-
-        // when
-        antiBot.handlePlayerJoin(player);
-
-        // then
-        List<?> playerList = ReflectionTestUtils.getFieldValue(AntiBot.class, antiBot, "antibotPlayers");
-        assertThat(playerList, empty());
-        verify(bukkitService, never()).scheduleSyncDelayedTask(any(Runnable.class), anyLong());
-    }
-
-    private AntiBot createListeningAntiBot() {
-        AntiBot antiBot = new AntiBot(settings, messages, permissionsManager, bukkitService);
+    private AntiBotService createListeningAntiBot() {
+        AntiBotService antiBot = new AntiBotService(settings, messages, permissionsManager, bukkitService);
         TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
         // Make BukkitService forget about all interactions up to here
         reset(bukkitService);

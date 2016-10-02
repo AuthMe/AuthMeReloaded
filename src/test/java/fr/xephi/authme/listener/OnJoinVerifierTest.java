@@ -1,6 +1,6 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -61,7 +61,7 @@ public class OnJoinVerifierTest {
     @Mock
     private PermissionsManager permissionsManager;
     @Mock
-    private AntiBot antiBot;
+    private AntiBotService antiBotService;
     @Mock
     private ValidationService validationService;
     @Mock
@@ -378,46 +378,31 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldCheckAntiBot() throws FailedVerificationException {
         // given
-        String name = "user123";
+        Player player = newPlayerWithName("test123");
         boolean hasAuth = false;
-        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.LISTENING);
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
+        given(antiBotService.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.LISTENING);
 
         // when
-        onJoinVerifier.checkAntibot(name, hasAuth);
+        onJoinVerifier.checkAntibot(player, hasAuth);
 
         // then
-        verify(antiBot).getAntiBotStatus();
+        verify(antiBotService).shouldKick(hasAuth);
     }
 
     @Test
     public void shouldAllowUserWithAuth() throws FailedVerificationException {
         // given
-        String name = "Bobby";
+        Player player = newPlayerWithName("Bobby");
         boolean hasAuth = true;
-        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.ACTIVE);
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
+        given(antiBotService.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.ACTIVE);
 
         // when
-        onJoinVerifier.checkAntibot(name, hasAuth);
+        onJoinVerifier.checkAntibot(player, hasAuth);
 
         // then
-        verify(antiBot).getAntiBotStatus();
-    }
-
-    @Test
-    public void shouldThrowForActiveAntiBot() {
-        // given
-        String name = "Bobby";
-        boolean hasAuth = false;
-        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.ACTIVE);
-
-        // when / then
-        try {
-            onJoinVerifier.checkAntibot(name, hasAuth);
-            fail("Expected exception to be thrown");
-        } catch (FailedVerificationException e) {
-            assertThat(e, exceptionWithData(MessageKey.KICK_ANTIBOT));
-            verify(antiBot).addPlayerKick(name);
-        }
+        verify(antiBotService).shouldKick(hasAuth);
     }
 
     /**
