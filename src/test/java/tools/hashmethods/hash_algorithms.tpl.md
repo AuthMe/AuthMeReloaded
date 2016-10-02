@@ -9,8 +9,7 @@ Algorithm | Recommendation | Hash length | ASCII |     | Salt type | Length | Se
 --------- | -------------- | ----------- | ----- | --- | --------- | ------ | ---------
 [#algorithms]
 {name} | {recommendation} | {hash_length} | {ascii_restricted} | | {salt_type} | {salt_length} | {separate_salt}
-[/#algorithms]
-CUSTOM |  |  |  |  |  |  |  |
+[/#algorithms]CUSTOM |  |  |  |  |  |  |  |
 
 <!-- {gen_warning} -->
 
