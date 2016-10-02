@@ -101,7 +101,7 @@ public enum AdminPermission implements PermissionNode {
     RELOAD("authme.admin.reload", DefaultPermission.OP_ONLY),
 
     /**
-     * Administrator command to reload the plugin configuration.
+     * Permission to see Antibot messages.
      */
     ANTIBOT_MESSAGES("authme.admin.antibotmessages", DefaultPermission.OP_ONLY),
 

@@ -67,11 +67,10 @@ public class AntiBot {
 
     public void activateAntiBot() {
         antiBotStatus = AntiBotStatus.ACTIVE;
-        for(Player player : bukkitService.getOnlinePlayers()) {
-            if(!permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES)) {
-                continue;
+        for (Player player : bukkitService.getOnlinePlayers()) {
+            if (permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES)) {
+                messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
             }
-            messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
         }
 
         final int duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);

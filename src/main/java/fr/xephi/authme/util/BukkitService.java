@@ -3,7 +3,6 @@ package fr.xephi.authme.util;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.BanEntry;
