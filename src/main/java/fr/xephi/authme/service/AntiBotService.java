@@ -35,10 +35,11 @@ public class AntiBotService implements SettingsDependent {
     private AntiBotStatus antiBotStatus;
     private BukkitTask disableTask;
     private int antibotPlayers;
-    private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList();
+    private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<>();
 
     @Inject
-    AntiBotService(Settings settings, Messages messages, PermissionsManager permissionsManager, BukkitService bukkitService) {
+    AntiBotService(Settings settings, Messages messages, PermissionsManager permissionsManager,
+                   BukkitService bukkitService) {
         // Instances
         this.messages = messages;
         this.permissionsManager = permissionsManager;
@@ -75,7 +76,7 @@ public class AntiBotService implements SettingsDependent {
         }, 90 * TICKS_PER_SECOND);
     }
 
-    protected void startProtection() {
+    private void startProtection() {
         // Disable existing antibot session
         stopProtection();
         // Enable the new session
@@ -98,7 +99,7 @@ public class AntiBotService implements SettingsDependent {
     }
 
     private void stopProtection() {
-        if(antiBotStatus != AntiBotStatus.ACTIVE) {
+        if (antiBotStatus != AntiBotStatus.ACTIVE) {
             return;
         }
 
@@ -134,13 +135,12 @@ public class AntiBotService implements SettingsDependent {
      * @param started the new protection status
      */
     public void overrideAntiBotStatus(boolean started) {
-        if (antiBotStatus == AntiBotStatus.DISABLED) {
-            return;
-        }
-        if (started) {
-            startProtection();
-        } else {
-            stopProtection();
+        if (antiBotStatus != AntiBotStatus.DISABLED) {
+            if (started) {
+                startProtection();
+            } else {
+                stopProtection();
+            }
         }
     }
 

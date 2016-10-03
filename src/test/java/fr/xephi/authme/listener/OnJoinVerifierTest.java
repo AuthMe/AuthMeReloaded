@@ -1,6 +1,5 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -8,6 +7,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -376,33 +376,53 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldCheckAntiBot() throws FailedVerificationException {
+    public void shouldAllowUser() throws FailedVerificationException {
         // given
-        Player player = newPlayerWithName("test123");
-        boolean hasAuth = false;
+        Player player = newPlayerWithName("Bobby");
+        boolean isAuthAvailable = false;
         given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
-        given(antiBotService.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.LISTENING);
+        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(false);
 
         // when
-        onJoinVerifier.checkAntibot(player, hasAuth);
+        onJoinVerifier.checkAntibot(player, isAuthAvailable);
 
         // then
-        verify(antiBotService).shouldKick(hasAuth);
+        verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
+        verify(antiBotService).shouldKick(isAuthAvailable);
     }
 
     @Test
-    public void shouldAllowUserWithAuth() throws FailedVerificationException {
+    public void shouldAllowUserWithBypassPermission() throws FailedVerificationException {
         // given
-        Player player = newPlayerWithName("Bobby");
-        boolean hasAuth = true;
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
-        given(antiBotService.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.ACTIVE);
+        Player player = newPlayerWithName("Steward");
+        boolean isAuthAvailable = false;
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(true);
+        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(true);
 
         // when
-        onJoinVerifier.checkAntibot(player, hasAuth);
+        onJoinVerifier.checkAntibot(player, isAuthAvailable);
 
         // then
-        verify(antiBotService).shouldKick(hasAuth);
+        verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
+    }
+
+    @Test
+    public void shouldKickUserForFailedAntibotCheck() throws FailedVerificationException {
+        // given
+        Player player = newPlayerWithName("D3");
+        boolean isAuthAvailable = false;
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
+        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(true);
+
+        // when / then
+        try {
+            onJoinVerifier.checkAntibot(player, isAuthAvailable);
+            fail("Expected exception to be thrown");
+        } catch (FailedVerificationException e) {
+            verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
+            verify(antiBotService).shouldKick(isAuthAvailable);
+        }
+
     }
 
     /**
@@ -473,7 +493,7 @@ public class OnJoinVerifierTest {
         return player;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     private void returnOnlineListFromBukkitServer(Collection<Player> onlineList) {
         // Note ljacqu 20160529: The compiler gets lost in generics because Collection<? extends Player> is returned
         // from getOnlinePlayers(). We need to uncheck onlineList to a simple Collection or it will refuse to compile.

@@ -223,7 +223,6 @@ public class PlayerListener implements Listener {
             // Slow stuff
             final PlayerAuth auth = dataSource.getAuth(name);
             final boolean isAuthAvailable = (auth != null);
-            final String lowerName = name.toLowerCase();
             onJoinVerifier.checkAntibot(player, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkNameCasing(player, auth);
