@@ -78,16 +78,4 @@ public final class StringUtils {
     public static String formatException(Throwable th) {
         return "[" + th.getClass().getSimpleName() + "]: " + th.getMessage();
     }
-
-    /**
-     * Construct a file path from the given elements, i.e. separate the given elements by the file separator.
-     *
-     * @param elements The elements to create a path with
-     *
-     * @return The created path
-     */
-    public static String makePath(String... elements) {
-        return String.join(File.separator, elements);
-    }
-
 }

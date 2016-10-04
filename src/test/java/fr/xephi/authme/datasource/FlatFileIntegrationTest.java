@@ -2,7 +2,9 @@ package fr.xephi.authme.datasource;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.FlatFile;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for the deprecated {@link FlatFile} datasource. The flatfile datasource is no longer used.
- * Essentially, the only time we use it is in {@link fr.xephi.authme.converter.ForceFlatToSqlite},
+ * Essentially, the only time we use it is in {@link fr.xephi.authme.datasource.converter.ForceFlatToSqlite},
  * which requires {@link FlatFile#getAllAuths()}.
  */
 public class FlatFileIntegrationTest {

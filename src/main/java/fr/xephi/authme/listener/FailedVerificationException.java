@@ -1,6 +1,6 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 
 /**
  * Exception thrown when a verification has failed.

@@ -2,9 +2,9 @@ package fr.xephi.authme.service;
 
 import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.geoip.GeoLiteAPI;
+import fr.xephi.authme.geoip.GeoIpManager;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
@@ -36,7 +36,7 @@ public class ValidationService implements Reloadable {
     @Inject
     private PermissionsManager permissionsManager;
     @Inject
-    private GeoLiteAPI geoLiteApi;
+    private GeoIpManager geoIpManager;
 
     private Pattern passwordRegex;
     private Set<String> unrestrictedNames;
@@ -115,7 +115,7 @@ public class ValidationService implements Reloadable {
             return true;
         }
 
-        String countryCode = geoLiteApi.getCountryCode(hostAddress);
+        String countryCode = geoIpManager.getCountryCode(hostAddress);
         return validateWhitelistAndBlacklist(countryCode,
             ProtectionSettings.COUNTRIES_WHITELIST,
             ProtectionSettings.COUNTRIES_BLACKLIST);

@@ -7,7 +7,7 @@ import com.github.authme.configme.resource.PropertyResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,7 +120,7 @@ public class Settings extends SettingsManager {
     }
 
     private static String buildMessagesFilePathFromCode(String language) {
-        return StringUtils.makePath("messages", "messages_" + language + ".yml");
+        return FileUtils.makePath("messages", "messages_" + language + ".yml");
     }
 
     /**

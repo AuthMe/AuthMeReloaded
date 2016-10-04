@@ -119,6 +119,15 @@ public class FileUtilsTest {
         // Nothing happens
     }
 
+    @Test
+    public void shouldConstructPath() {
+        // given/when
+        String result = FileUtils.makePath("path", "to", "test-file.txt");
+
+        // then
+        assertThat(result, equalTo("path" + File.separator + "to" + File.separator + "test-file.txt"));
+    }
+
     private static void createFiles(File... files) throws IOException {
         for (File file : files) {
             boolean result = file.getParentFile().mkdirs() & file.createNewFile();

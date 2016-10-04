@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 
-import static fr.xephi.authme.util.StringUtils.makePath;
+import static fr.xephi.authme.util.FileUtils.makePath;
 
 /**
  * Executes the purge operations.

@@ -1,11 +1,11 @@
 package fr.xephi.authme.task;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -52,14 +52,14 @@ public class PlayerDataTaskManager {
         final int interval = settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         final MessageKey key = getMessageKey(isRegistered);
         if (interval > 0) {
-            final PlayerData playerData = limboCache.getPlayerData(name);
-            if (playerData == null) {
+            final LimboPlayer limboPlayer = limboCache.getPlayerData(name);
+            if (limboPlayer == null) {
                 ConsoleLogger.info("PlayerData for '" + name + "' is not available");
             } else {
-                cancelTask(playerData.getMessageTask());
+                cancelTask(limboPlayer.getMessageTask());
                 BukkitTask messageTask = bukkitService.runTask(new MessageTask(name, messages.retrieve(key),
                     interval, bukkitService, limboCache, playerCache));
-                playerData.setMessageTask(messageTask);
+                limboPlayer.setMessageTask(messageTask);
             }
         }
     }
@@ -72,14 +72,14 @@ public class PlayerDataTaskManager {
     public void registerTimeoutTask(Player player) {
         final int timeout = settings.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (timeout > 0) {
-            final PlayerData playerData = limboCache.getPlayerData(player.getName());
-            if (playerData == null) {
+            final LimboPlayer limboPlayer = limboCache.getPlayerData(player.getName());
+            if (limboPlayer == null) {
                 ConsoleLogger.info("PlayerData for '" + player.getName() + "' is not available");
             } else {
-                cancelTask(playerData.getTimeoutTask());
+                cancelTask(limboPlayer.getTimeoutTask());
                 String message = messages.retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR);
                 BukkitTask task = bukkitService.runTaskLater(new TimeoutTask(player, message, playerCache), timeout);
-                playerData.setTimeoutTask(task);
+                limboPlayer.setTimeoutTask(task);
             }
         }
     }

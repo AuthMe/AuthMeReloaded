@@ -1,12 +1,10 @@
 package fr.xephi.authme.service;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -237,7 +235,7 @@ public class TeleportationServiceTest {
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
         Player player = mock(Player.class);
         PlayerAuth auth = mock(PlayerAuth.class);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -255,7 +253,7 @@ public class TeleportationServiceTest {
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         PlayerAuth auth = mock(PlayerAuth.class);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("forced1");
         given(limbo.getLocation()).willReturn(limboLocation);
@@ -279,7 +277,7 @@ public class TeleportationServiceTest {
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         PlayerAuth auth = mock(PlayerAuth.class);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("Forced1"); // different case
         given(limbo.getLocation()).willReturn(limboLocation);
@@ -306,7 +304,7 @@ public class TeleportationServiceTest {
 
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limbo.getLocation()).willReturn(limboLocation);
 
@@ -335,7 +333,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         World world = mock(World.class);
         given(player.getWorld()).willReturn(world);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limbo.getLocation()).willReturn(limboLocation);
 
@@ -363,7 +361,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         World world = mock(World.class);
         given(player.getWorld()).willReturn(world);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
         Location location = mockLocation();
         given(limbo.getLocation()).willReturn(location);
 
@@ -388,7 +386,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         World world = mock(World.class);
         given(player.getWorld()).willReturn(world);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
         Location location = mockLocation();
         given(limbo.getLocation()).willReturn(location);
 
@@ -409,7 +407,7 @@ public class TeleportationServiceTest {
 
         PlayerAuth auth = PlayerAuth.builder().name("bobby").build();
         Player player = mock(Player.class);
-        PlayerData limbo = mock(PlayerData.class);
+        LimboPlayer limbo = mock(LimboPlayer.class);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);

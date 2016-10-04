@@ -1,7 +1,7 @@
 package fr.xephi.authme.process.quit;
 
-import fr.xephi.authme.cache.backup.PlayerDataStorage;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.backup.LimboPlayerStorage;
+import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.process.SynchronousProcess;
 import org.bukkit.entity.Player;
 
@@ -11,7 +11,7 @@ import javax.inject.Inject;
 public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
 
     @Inject
-    private PlayerDataStorage playerDataStorage;
+    private LimboPlayerStorage limboPlayerStorage;
 
     @Inject
     private LimboCache limboCache;
@@ -22,8 +22,8 @@ public class ProcessSyncronousPlayerQuit implements SynchronousProcess {
             limboCache.removeFromCache(player);
         } else {
             // Save player's data, so we could retrieve it later on player next join
-            if (!playerDataStorage.hasData(player)) {
-                playerDataStorage.saveData(player);
+            if (!limboPlayerStorage.hasData(player)) {
+                limboPlayerStorage.saveData(player);
             }
         }
 

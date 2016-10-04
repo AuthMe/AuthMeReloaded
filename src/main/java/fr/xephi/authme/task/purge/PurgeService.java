@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
+// TODO: move into services. -sgdc3
+
 /**
  * Initiates purge tasks.
  */

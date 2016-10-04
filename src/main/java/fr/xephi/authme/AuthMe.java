@@ -5,8 +5,8 @@ import ch.jalu.injector.InjectorBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -21,7 +21,7 @@ import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.security.crypts.SHA256;
@@ -33,7 +33,7 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.geoip.GeoLiteAPI;
+import fr.xephi.authme.geoip.GeoIpManager;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Server;
@@ -74,7 +74,7 @@ public class AuthMe extends JavaPlugin {
     private DataSource database;
     private BukkitService bukkitService;
     private Injector injector;
-    private GeoLiteAPI geoLiteApi;
+    private GeoIpManager geoIpManager;
     private PlayerCache playerCache;
 
     /**
@@ -248,7 +248,7 @@ public class AuthMe extends JavaPlugin {
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
-        geoLiteApi = injector.getSingleton(GeoLiteAPI.class);
+        geoIpManager = injector.getSingleton(GeoIpManager.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(NewAPI.class);
@@ -374,7 +374,7 @@ public class AuthMe extends JavaPlugin {
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
             // TODO: We should cache info like this, maybe with a class that extends Player?
-            .replace("{COUNTRY}", geoLiteApi.getCountryName(ipAddress));
+            .replace("{COUNTRY}", geoIpManager.getCountryName(ipAddress));
     }
 
 

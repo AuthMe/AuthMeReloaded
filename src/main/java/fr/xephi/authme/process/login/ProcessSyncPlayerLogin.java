@@ -1,9 +1,9 @@
 package fr.xephi.authme.process.login;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
@@ -79,7 +79,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     public void processPlayerLogin(Player player) {
         final String name = player.getName().toLowerCase();
 
-        final PlayerData limbo = limboCache.getPlayerData(name);
+        final LimboPlayer limbo = limboCache.getPlayerData(name);
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
             limboCache.restoreData(player);
