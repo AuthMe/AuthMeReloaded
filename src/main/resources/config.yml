@@ -206,6 +206,7 @@ settings:
         - 'qwerty'
         - '12345'
         - '54321'
+        - '123456789'
     registration:
         # enable registration on the server?
         enabled: true
@@ -270,6 +271,9 @@ settings:
     # FINE for some additional detailed ones (like password failed),
     # and DEBUG for debug messages
     logLevel: 'FINE'
+    # By default we schedule async tasks when talking to the database
+    # If you want typical communication with the database to happen synchronously, set this to false
+    useAsyncTasks: true
 ExternalBoardOptions:
     # MySQL column for the salt, needed for some forum/cms support
     mySQLColumnSalt: ''
@@ -334,6 +338,14 @@ Security:
         # The length of time a IP address will be tempbanned in minutes
         # Default: 480 minutes, or 8 hours
         tempbanLength: 480
+        # How many minutes before resetting the count for failed logins by IP and username
+        # Default: 480 minutes (8 hours)
+        minutesBeforeCounterReset: 480
+    recoveryCode:
+        # Number of characters a recovery code should have (0 to disable)
+        length: 8
+        # How many hours is a recovery code valid for?
+        validForHours: 4
 Converter:
     Rakamak:
         # Rakamak file name
@@ -393,7 +405,7 @@ Purge:
     daysBeforeRemovePlayer: 60
     # Do we need to remove the player.dat file during purge process?
     removePlayerDat: false
-    # Do we need to remove the Essentials/users/player.yml file during purge process?
+    # Do we need to remove the Essentials/userdata/player.yml file during purge process?
     removeEssentialsFile: false
     # World where are players.dat stores
     defaultWorld: 'world'

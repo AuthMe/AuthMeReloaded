@@ -1,11 +1,11 @@
 package fr.xephi.authme.process.unregister;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -14,8 +14,8 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -23,7 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 public class AsynchronousUnregister implements AsynchronousProcess {
 
@@ -43,7 +43,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
@@ -96,6 +96,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 ConsoleLogger.info(name + " was unregistered by " + initiator.getName());
                 service.send(initiator, MessageKey.UNREGISTERED_SUCCESS);
             }
+        } else if (initiator != null) {
+            service.send(initiator, MessageKey.ERROR);
         }
     }
 
@@ -109,8 +111,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             teleportationService.teleportOnJoin(player);
             player.saveData();
 
-            limboCache.deletePlayerData(player);
-            limboCache.addPlayerData(player);
+            limboStorage.deletePlayerData(player);
+            limboStorage.addPlayerData(player);
 
             playerDataTaskManager.registerTimeoutTask(player);
             playerDataTaskManager.registerMessageTask(name, false);

@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.executable.captcha;
 
-import fr.xephi.authme.cache.CaptchaManager;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.CaptchaManager;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;

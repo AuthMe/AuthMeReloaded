@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 
@@ -73,13 +74,48 @@ public class PurgeCommandTest {
 
         // then
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        verify(purgeService).runPurge(eq(sender), captor.capture());
+        verify(purgeService).runPurge(eq(sender), captor.capture(), eq(false));
 
         // Check the timestamp with a certain tolerance
         int toleranceMillis = 100;
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -Integer.valueOf(interval));
         assertIsCloseTo(captor.getValue(), calendar.getTimeInMillis(), toleranceMillis);
+    }
+
+    @Test
+    public void shouldProcessCommandWithAllParameter() {
+        // given
+        String interval = "32";
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Arrays.asList(interval, "all"));
+
+        // then
+        ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+        verify(purgeService).runPurge(eq(sender), captor.capture(), eq(true));
+
+        // Check the timestamp with a certain tolerance
+        int toleranceMillis = 100;
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -Integer.valueOf(interval));
+        assertIsCloseTo(captor.getValue(), calendar.getTimeInMillis(), toleranceMillis);
+    }
+
+    @Test
+    public void shouldRejectCommandWithInvalidSecondParameter() {
+        // given
+        String interval = "80";
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Arrays.asList(interval, "bogus"));
+
+        // then
+        verify(sender).sendMessage(
+            argThat(containsString("Purge process aborted; use '/authme purge " + interval + " all'")));
+        verifyZeroInteractions(purgeService);
     }
 
     private static void assertIsCloseTo(long value1, long value2, long tolerance) {

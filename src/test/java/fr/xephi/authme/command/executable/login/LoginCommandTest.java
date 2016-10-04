@@ -55,7 +55,7 @@ public class LoginCommandTest {
         command.executeCommand(sender, Collections.singletonList("password"));
 
         // then
-        verify(management).performLogin(eq(sender), eq("password"), eq(false));
+        verify(management).performLogin(eq(sender), eq("password"));
     }
 
 }

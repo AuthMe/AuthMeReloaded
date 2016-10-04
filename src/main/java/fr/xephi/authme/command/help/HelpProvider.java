@@ -187,7 +187,7 @@ public class HelpProvider implements SettingsDependent {
         }
 
         lines.add(ChatColor.GOLD + "Commands:");
-        String parentCommandPath = CommandUtils.labelsToString(parentLabels);
+        String parentCommandPath = String.join(" ", parentLabels);
         for (CommandDescription child : command.getChildren()) {
             lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
                 + ChatColor.GRAY + ChatColor.ITALIC + ": " + child.getDescription());

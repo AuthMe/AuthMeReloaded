@@ -1,17 +1,21 @@
 package fr.xephi.authme.settings;
 
+import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.migration.PlainMigrationService;
+import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.resource.PropertyResource;
+import com.google.common.base.Objects;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.LogLevel;
-import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.propertymap.PropertyMap;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.DELAY_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_LEAVE_MESSAGE;
@@ -22,55 +26,40 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
 /**
  * Service for verifying that the configuration is up-to-date.
  */
-public class SettingsMigrationService {
+public class SettingsMigrationService extends PlainMigrationService {
 
-    /**
-     * Checks the config file and performs any necessary migrations.
-     *
-     * @param configuration The file configuration to check and migrate
-     * @param propertyMap The property map of all existing properties
-     * @param pluginFolder The plugin folder
-     * @return True if there is a change and the config must be saved, false if the config is up-to-date
-     */
-    public boolean checkAndMigrate(FileConfiguration configuration, PropertyMap propertyMap, File pluginFolder) {
-        return performMigrations(configuration, pluginFolder)
-            || hasDeprecatedProperties(configuration)
-            || !containsAllSettings(configuration, propertyMap);
+    private final File pluginFolder;
+
+    public SettingsMigrationService(File pluginFolder) {
+        this.pluginFolder = pluginFolder;
     }
 
-    private boolean performMigrations(FileConfiguration configuration, File pluginFolder) {
+    @Override
+    protected boolean performMigrations(PropertyResource resource, List<PropertyEntry> knownProperties) {
         boolean changes = false;
-        if ("[a-zA-Z0-9_?]*".equals(configuration.getString(ALLOWED_NICKNAME_CHARACTERS.getPath()))) {
-            configuration.set(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
+        if ("[a-zA-Z0-9_?]*".equals(resource.getString(ALLOWED_NICKNAME_CHARACTERS.getPath()))) {
+            resource.setValue(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
             changes = true;
         }
 
         // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
         // ensures that all migrations will be performed
         return changes
-            | performMailTextToFileMigration(configuration, pluginFolder)
-            | migrateJoinLeaveMessages(configuration)
-            | migrateForceSpawnSettings(configuration)
-            | changeBooleanSettingToLogLevelProperty(configuration);
+            | performMailTextToFileMigration(resource)
+            | migrateJoinLeaveMessages(resource)
+            | migrateForceSpawnSettings(resource)
+            | changeBooleanSettingToLogLevelProperty(resource)
+            || hasDeprecatedProperties(resource);
     }
 
-    public boolean containsAllSettings(FileConfiguration configuration, PropertyMap propertyMap) {
-        for (Property<?> property : propertyMap.keySet()) {
-            if (!property.isPresent(configuration)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean hasDeprecatedProperties(FileConfiguration configuration) {
+    private static boolean hasDeprecatedProperties(PropertyResource resource) {
         String[] deprecatedProperties = {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
             "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt",
             "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional", "DataSource.mySQLWebsite",
             "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping"};
         for (String deprecatedPath : deprecatedProperties) {
-            if (configuration.contains(deprecatedPath)) {
+            if (resource.contains(deprecatedPath)) {
                 return true;
             }
         }
@@ -84,18 +73,18 @@ public class SettingsMigrationService {
     /**
      * Check if {@code Email.mailText} is present and move it to the Email.html file if it doesn't exist yet.
      *
-     * @param configuration The file configuration to verify
-     * @param pluginFolder The plugin data folder
+     * @param resource The property resource
      * @return True if a migration has been completed, false otherwise
      */
-    private static boolean performMailTextToFileMigration(FileConfiguration configuration, File pluginFolder) {
+    private boolean performMailTextToFileMigration(PropertyResource resource) {
         final String oldSettingPath = "Email.mailText";
-        if (!configuration.contains(oldSettingPath)) {
+        final String oldMailText = resource.getString(oldSettingPath);
+        if (oldMailText == null) {
             return false;
         }
 
         final File emailFile = new File(pluginFolder, "email.html");
-        final String mailText = configuration.getString(oldSettingPath)
+        final String mailText = oldMailText
             .replace("<playername>", "<playername />").replace("%playername%", "<playername />")
             .replace("<servername>", "<servername />").replace("%servername%", "<servername />")
             .replace("<generatedpass>", "<generatedpass />").replace("%generatedpass%", "<generatedpass />")
@@ -114,12 +103,12 @@ public class SettingsMigrationService {
      * Detect deprecated {@code settings.delayJoinLeaveMessages} and inform user of new "remove join messages"
      * and "remove leave messages" settings.
      *
-     * @param configuration The file configuration
+     * @param resource The property resource
      * @return True if the configuration has changed, false otherwise
      */
-    private static boolean migrateJoinLeaveMessages(FileConfiguration configuration) {
-        Property<Boolean> oldDelayJoinProperty = Property.newProperty("settings.delayJoinLeaveMessages", false);
-        boolean hasMigrated = moveProperty(oldDelayJoinProperty, DELAY_JOIN_MESSAGE, configuration);
+    private static boolean migrateJoinLeaveMessages(PropertyResource resource) {
+        Property<Boolean> oldDelayJoinProperty = newProperty("settings.delayJoinLeaveMessages", false);
+        boolean hasMigrated = moveProperty(oldDelayJoinProperty, DELAY_JOIN_MESSAGE, resource);
 
         if (hasMigrated) {
             ConsoleLogger.info(String.format("Note that we now also have the settings %s and %s",
@@ -132,33 +121,34 @@ public class SettingsMigrationService {
      * Detect old "force spawn loc on join" and "force spawn on these worlds" settings and moves them
      * to the new paths.
      *
-     * @param configuration The file configuration
+     * @param resource The property resource
      * @return True if the configuration has changed, false otherwise
      */
-    private static boolean migrateForceSpawnSettings(FileConfiguration configuration) {
-        Property<Boolean> oldForceLocEnabled = Property.newProperty(
+    private static boolean migrateForceSpawnSettings(PropertyResource resource) {
+        Property<Boolean> oldForceLocEnabled = newProperty(
             "settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
-        Property<List<String>> oldForceWorlds = Property.newListProperty(
+        Property<List<String>> oldForceWorlds = newListProperty(
             "settings.restrictions.ForceSpawnOnTheseWorlds", "world", "world_nether", "world_the_ed");
 
-        return moveProperty(oldForceLocEnabled, FORCE_SPAWN_LOCATION_AFTER_LOGIN, configuration)
-            | moveProperty(oldForceWorlds, FORCE_SPAWN_ON_WORLDS, configuration);
+        return moveProperty(oldForceLocEnabled, FORCE_SPAWN_LOCATION_AFTER_LOGIN, resource)
+            | moveProperty(oldForceWorlds, FORCE_SPAWN_ON_WORLDS, resource);
     }
 
     /**
      * Changes the old boolean property "hide spam from console" to the new property specifying
      * the log level.
      *
-     * @param configuration The file configuration
+     * @param resource The property resource
      * @return True if the configuration has changed, false otherwise
      */
-    private static boolean changeBooleanSettingToLogLevelProperty(FileConfiguration configuration) {
+    private static boolean changeBooleanSettingToLogLevelProperty(PropertyResource resource) {
         final String oldPath = "Security.console.noConsoleSpam";
         final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
-        if (!newProperty.isPresent(configuration) && configuration.contains(oldPath)) {
+        if (!newProperty.isPresent(resource) && resource.contains(oldPath)) {
             ConsoleLogger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
-            LogLevel level = configuration.getBoolean(oldPath) ? LogLevel.INFO : LogLevel.FINE;
-            configuration.set(newProperty.getPath(), level.name());
+            boolean oldValue = Objects.firstNonNull(resource.getBoolean(oldPath), false);
+            LogLevel level = oldValue ? LogLevel.INFO : LogLevel.FINE;
+            resource.setValue(newProperty.getPath(), level.name());
             return true;
         }
         return false;
@@ -169,18 +159,18 @@ public class SettingsMigrationService {
      *
      * @param oldProperty The old property (create a temporary {@link Property} object with the path)
      * @param newProperty The new property to move the value to
-     * @param configuration The file configuration
+     * @param resource The property resource
      * @param <T> The type of the property
      * @return True if a migration has been done, false otherwise
      */
     private static <T> boolean moveProperty(Property<T> oldProperty,
                                             Property<T> newProperty,
-                                            FileConfiguration configuration) {
-        if (configuration.contains(oldProperty.getPath())) {
+                                            PropertyResource resource) {
+        if (resource.contains(oldProperty.getPath())) {
             ConsoleLogger.info("Detected deprecated property " + oldProperty.getPath());
-            if (!configuration.contains(newProperty.getPath())) {
+            if (!resource.contains(newProperty.getPath())) {
                 ConsoleLogger.info("Renamed " + oldProperty.getPath() + " to " + newProperty.getPath());
-                configuration.set(newProperty.getPath(), oldProperty.getFromFile(configuration));
+                resource.setValue(newProperty.getPath(), oldProperty.getValue(resource));
             }
             return true;
         }

@@ -4,7 +4,6 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.StringUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,7 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Logger;
@@ -29,7 +28,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -92,7 +90,7 @@ public class ConsoleLoggerTest {
         // then
         verify(logger, times(2)).info(anyString());
         verifyNoMoreInteractions(logger);
-        List<String> loggedLines = Files.readAllLines(logFile.toPath(), Charset.forName("UTF-8"));
+        List<String> loggedLines = Files.readAllLines(logFile.toPath(), StandardCharsets.UTF_8);
         assertThat(loggedLines, hasSize(2));
         assertThat(loggedLines.get(0), containsString("[FINE] Logging a FINE message"));
         assertThat(loggedLines.get(1), containsString("[INFO] This is an INFO message"));
@@ -130,13 +128,13 @@ public class ConsoleLoggerTest {
         verify(logger).info("Info text");
         verify(logger).warning("Exception occurred: [IllegalStateException]: Test exception message");
         verifyNoMoreInteractions(logger);
-        List<String> loggedLines = Files.readAllLines(logFile.toPath(), Charset.forName("UTF-8"));
+        List<String> loggedLines = Files.readAllLines(logFile.toPath(), StandardCharsets.UTF_8);
         assertThat(loggedLines.size(), greaterThan(3));
         assertThat(loggedLines.get(0), containsString("[INFO] Info text"));
         assertThat(loggedLines.get(1),
             containsString("[WARN] Exception occurred: [IllegalStateException]: Test exception message"));
         // Check that we have this class' full name somewhere in the file -> stacktrace of Exception e
-        assertThat(StringUtils.join("", loggedLines), containsString(getClass().getCanonicalName()));
+        assertThat(String.join("", loggedLines), containsString(getClass().getCanonicalName()));
     }
 
     @Test

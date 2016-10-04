@@ -1,8 +1,8 @@
 package fr.xephi.authme.process.register;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.data.limbo.LimboStorage;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -11,7 +11,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -28,7 +28,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private ProcessService service;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
@@ -53,7 +53,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
      */
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
-        limboCache.updatePlayerData(player);
+        limboStorage.updatePlayerData(player);
         playerDataTaskManager.registerTimeoutTask(player);
         playerDataTaskManager.registerMessageTask(name, true);
 
@@ -74,7 +74,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         player.saveData();
-        ConsoleLogger.fine(player.getName() + " registered " + Utils.getPlayerIp(player));
+        ConsoleLogger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
 
         // Kick Player after Registration is enabled, kick the player
         if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {
@@ -92,7 +92,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.sendBungeeMessage(player, "register");
         bungeeService.connectPlayer(player);
     }
 }

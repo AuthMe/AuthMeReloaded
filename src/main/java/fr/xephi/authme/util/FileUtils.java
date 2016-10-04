@@ -15,6 +15,7 @@ import static java.lang.String.format;
  */
 public final class FileUtils {
 
+    // Utility class
     private FileUtils() {
     }
 
@@ -68,7 +69,33 @@ public final class FileUtils {
             if (target.isDirectory()) {
                 purgeDirectory(target);
             }
-            target.delete();
+            delete(target);
         }
+    }
+
+    /**
+     * Delete the given file or directory and log a message if it was unsuccessful.
+     * Method is null safe and does nothing when null is passed.
+     *
+     * @param file the file to delete
+     */
+    public static void delete(File file) {
+        if (file != null) {
+            boolean result = file.delete();
+            if (!result) {
+                ConsoleLogger.warning("Could not delete file '" + file + "'");
+            }
+        }
+    }
+
+    /**
+     * Construct a file path from the given elements, i.e. separate the given elements by the file separator.
+     *
+     * @param elements The elements to create a path with
+     *
+     * @return The created path
+     */
+    public static String makePath(String... elements) {
+        return String.join(File.separator, elements);
     }
 }

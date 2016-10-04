@@ -1,16 +1,16 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.ValidationService;
-import fr.xephi.authme.util.ValidationService.ValidationResult;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
@@ -23,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
+import static fr.xephi.authme.TestHelper.runSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -56,7 +57,7 @@ public class RegisterAdminCommandTest {
     private ValidationService validationService;
 
     @Mock
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -92,7 +93,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -114,7 +115,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -139,7 +140,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -168,8 +169,8 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runInnerRunnable(bukkitService);
-        runSyncDelayedTask(bukkitService);
+        TestHelper.runOptionallyAsyncTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -185,12 +186,5 @@ public class RegisterAdminCommandTest {
         assertThat(auth.getRealName(), equalTo(name));
         assertThat(auth.getNickname(), equalTo(name.toLowerCase()));
         assertThat(auth.getPassword(), equalTo(hashedPassword));
-    }
-
-    private static void runSyncDelayedTask(BukkitService bukkitService) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(bukkitService).scheduleSyncDelayedTask(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
     }
 }

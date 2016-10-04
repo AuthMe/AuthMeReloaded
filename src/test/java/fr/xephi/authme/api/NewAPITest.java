@@ -2,13 +2,13 @@ package fr.xephi.authme.api;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -20,6 +20,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -173,6 +178,68 @@ public class NewAPITest {
         // then
         verify(passwordSecurity).comparePassword(password, playerName);
         assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldReturnAuthNames() {
+        // given
+        String[] names = {"bobby", "peter", "elisabeth", "craig"};
+        List<PlayerAuth> auths = Arrays.stream(names)
+            .map(name -> PlayerAuth.builder().name(name).build())
+            .collect(Collectors.toList());
+        given(dataSource.getAllAuths()).willReturn(auths);
+
+        // when
+        List<String> result = api.getRegisteredNames();
+
+        // then
+        assertThat(result, contains(names));
+    }
+
+    @Test
+    public void shouldReturnAuthRealNames() {
+        // given
+        String[] names = {"Bobby", "peter", "Elisabeth", "CRAIG"};
+        List<PlayerAuth> auths = Arrays.stream(names)
+            .map(name -> PlayerAuth.builder().name(name).realName(name).build())
+            .collect(Collectors.toList());
+        given(dataSource.getAllAuths()).willReturn(auths);
+
+        // when
+        List<String> result = api.getRegisteredRealNames();
+
+        // then
+        assertThat(result, contains(names));
+    }
+
+    @Test
+    public void shouldUnregisterPlayer() {
+        // given
+        Player player = mock(Player.class);
+        String name = "Donald";
+        given(player.getName()).willReturn(name);
+
+        // when
+        api.forceUnregister(player);
+
+        // then
+        verify(management).performUnregisterByAdmin(null, name, player);
+    }
+
+    @Test
+    public void shouldUnregisterPlayerByName() {
+        // given
+        Server server = mock(Server.class);
+        ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
+        String name = "tristan";
+        Player player = mock(Player.class);
+        given(server.getPlayer(name)).willReturn(player);
+
+        // when
+        api.forceUnregister(name);
+
+        // then
+        verify(management).performUnregisterByAdmin(null, name, player);
     }
 
     private static Player mockPlayerWithName(String name) {

@@ -1,10 +1,13 @@
 package fr.xephi.authme.settings;
 
+import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.migration.MigrationService;
+import com.github.authme.configme.migration.PlainMigrationService;
+import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.resource.PropertyResource;
+import com.github.authme.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
-import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,22 +38,22 @@ public class ConfigFileConsistencyTest {
     public void shouldHaveAllConfigs() throws IOException {
         // given
         File configFile = TestHelper.getJarFile(CONFIG_FILE);
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
-        SettingsMigrationService migration = new SettingsMigrationService();
+        PropertyResource resource = new YamlFileResource(configFile);
+        MigrationService migration = new PlainMigrationService();
 
         // when
-        boolean result = migration.containsAllSettings(configuration, SettingsFieldRetriever.getAllPropertyFields());
+        boolean result = migration.checkAndMigrate(resource, AuthMeSettingsRetriever.getAllPropertyFields());
 
         // then
-        if (!result) {
+        if (result) {
             Set<String> knownProperties = getAllKnownPropertyPaths();
             List<String> missingProperties = new ArrayList<>();
             for (String path : knownProperties) {
-                if (!configuration.contains(path)) {
+                if (!resource.contains(path)) {
                     missingProperties.add(path);
                 }
             }
-            fail("Found missing properties!\n-" + StringUtils.join("\n-", missingProperties));
+            fail("Found missing properties!\n-" + String.join("\n-", missingProperties));
         }
     }
 
@@ -74,7 +77,7 @@ public class ConfigFileConsistencyTest {
         // then
         if (!unknownPaths.isEmpty()) {
             fail("Found " + unknownPaths.size() + " unknown property paths in the project's config.yml: \n- "
-                + StringUtils.join("\n- ", unknownPaths));
+                + String.join("\n- ", unknownPaths));
         }
     }
 
@@ -82,21 +85,22 @@ public class ConfigFileConsistencyTest {
     public void shouldHaveValueCorrespondingToPropertyDefault() {
         // given
         File configFile = TestHelper.getJarFile(CONFIG_FILE);
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
-        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
+        PropertyResource resource = new YamlFileResource(configFile);
+        List<PropertyEntry> knownProperties = AuthMeSettingsRetriever.getAllPropertyFields();
 
         // when / then
-        for (Property<?> property : propertyMap.keySet()) {
+        for (PropertyEntry propertyEntry : knownProperties) {
+            Property<?> property = propertyEntry.getProperty();
             assertThat("Default value of '" + property.getPath() + "' in config.yml should be the same as in Property",
-                property.getFromFile(configuration).equals(property.getDefaultValue()), equalTo(true));
+                property.getValue(resource).equals(property.getDefaultValue()), equalTo(true));
         }
     }
 
     private static Set<String> getAllKnownPropertyPaths() {
-        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
-        Set<String> paths = new HashSet<>(propertyMap.size());
-        for (Property<?> property : propertyMap.keySet()) {
-            paths.add(property.getPath());
+        List<PropertyEntry> knownProperties = AuthMeSettingsRetriever.getAllPropertyFields();
+        Set<String> paths = new HashSet<>(knownProperties.size());
+        for (PropertyEntry propertyEntry : knownProperties) {
+            paths.add(propertyEntry.getProperty().getPath());
         }
         return paths;
     }

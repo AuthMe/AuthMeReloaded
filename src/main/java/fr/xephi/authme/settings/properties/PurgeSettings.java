@@ -1,12 +1,12 @@
 package fr.xephi.authme.settings.properties;
 
-import fr.xephi.authme.settings.domain.Comment;
-import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.SettingsClass;
+import com.github.authme.configme.Comment;
+import com.github.authme.configme.SettingsHolder;
+import com.github.authme.configme.properties.Property;
 
-import static fr.xephi.authme.settings.domain.Property.newProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 
-public class PurgeSettings implements SettingsClass {
+public class PurgeSettings implements SettingsHolder {
 
     @Comment("If enabled, AuthMe automatically purges old, unused accounts")
     public static final Property<Boolean> USE_AUTO_PURGE =
@@ -20,7 +20,7 @@ public class PurgeSettings implements SettingsClass {
     public static final Property<Boolean> REMOVE_PLAYER_DAT =
         newProperty("Purge.removePlayerDat", false);
 
-    @Comment("Do we need to remove the Essentials/users/player.yml file during purge process?")
+    @Comment("Do we need to remove the Essentials/userdata/player.yml file during purge process?")
     public static final Property<Boolean> REMOVE_ESSENTIALS_FILES =
         newProperty("Purge.removeEssentialsFile", false);
 

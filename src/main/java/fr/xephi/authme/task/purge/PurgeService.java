@@ -5,7 +5,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -16,6 +16,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
+// TODO: move into services. -sgdc3
+
+/**
+ * Initiates purge tasks.
+ */
 public class PurgeService {
 
     @Inject
@@ -33,6 +38,7 @@ public class PurgeService {
     @Inject
     private PurgeExecutor purgeExecutor;
 
+    /** Keeps track of whether a purge task is currently running. */
     private boolean isPurging = false;
 
     PurgeService() {
@@ -55,7 +61,7 @@ public class PurgeService {
         calendar.add(Calendar.DATE, -daysBeforePurge);
         long until = calendar.getTimeInMillis();
 
-        runPurge(null, until);
+        runPurge(null, until, false);
     }
 
     /**
@@ -64,10 +70,11 @@ public class PurgeService {
      *
      * @param sender Sender running the command
      * @param until The last login threshold in milliseconds
+     * @param includeEntriesWithLastLoginZero True to also purge players with lastlogin = 0, false otherwise
      */
-    public void runPurge(CommandSender sender, long until) {
+    public void runPurge(CommandSender sender, long until, boolean includeEntriesWithLastLoginZero) {
         //todo: note this should may run async because it may executes a SQL-Query
-        Set<String> toPurge = dataSource.getRecordsToPurge(until);
+        Set<String> toPurge = dataSource.getRecordsToPurge(until, includeEntriesWithLastLoginZero);
         if (CollectionUtils.isEmpty(toPurge)) {
             logAndSendMessage(sender, "No players to purge");
             return;

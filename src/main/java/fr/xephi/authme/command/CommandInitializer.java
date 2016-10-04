@@ -219,6 +219,7 @@ public class CommandInitializer {
             .description("Purge old data")
             .detailedDescription("Purge old AuthMeReloaded data longer than the specified amount of days ago.")
             .withArgument("days", "Number of days", false)
+            .withArgument("all", "Add 'all' at the end to also purge players with lastlogin = 0", true)
             .permission(AdminPermission.PURGE)
             .executableCommand(PurgeCommand.class)
             .build();
@@ -282,7 +283,7 @@ public class CommandInitializer {
             .description("Converter command")
             .detailedDescription("Converter command for AuthMeReloaded.")
             .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
-                "royalauth / vauth / sqlitetosql", false)
+                "royalauth / vauth / sqliteToSql / mysqlToSqlite", false)
             .permission(AdminPermission.CONVERTER)
             .executableCommand(ConverterCommand.class)
             .build();
@@ -384,6 +385,7 @@ public class CommandInitializer {
             .detailedDescription("Recover your account using an Email address by sending a mail containing " +
                 "a new password.")
             .withArgument("email", "Email address", false)
+            .withArgument("code", "Recovery code", true)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(RecoverEmailCommand.class)
             .build();

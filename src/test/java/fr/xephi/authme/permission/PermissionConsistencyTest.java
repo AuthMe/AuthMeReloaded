@@ -2,7 +2,6 @@ package fr.xephi.authme.permission;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -65,7 +64,7 @@ public class PermissionConsistencyTest {
 
         // then
         if (!errors.isEmpty()) {
-            fail("Found consistency issues!\n" + StringUtils.join("\n", errors));
+            fail("Found consistency issues!\n" + String.join("\n", errors));
         }
     }
 
@@ -90,7 +89,7 @@ public class PermissionConsistencyTest {
 
         // then
         if (!errors.isEmpty()) {
-            fail("Found consistency issues!\n" + StringUtils.join("\n", errors));
+            fail("Found consistency issues!\n" + String.join("\n", errors));
         }
     }
 
@@ -172,7 +171,7 @@ public class PermissionConsistencyTest {
         }
         if (!badChildren.isEmpty()) {
             errorList.add("Permission '" + definition.node + "' has children that are not logically below it: "
-                + StringUtils.join(", ", badChildren));
+                + String.join(", ", badChildren));
         }
     }
 

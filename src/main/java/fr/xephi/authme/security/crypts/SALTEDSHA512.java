@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
@@ -15,6 +15,6 @@ public class SALTEDSHA512 extends SeparateSaltMethod {
 
     @Override
     public String generateSalt() {
-        return RandomString.generateHex(32);
+        return RandomStringUtils.generateHex(32);
     }
 }

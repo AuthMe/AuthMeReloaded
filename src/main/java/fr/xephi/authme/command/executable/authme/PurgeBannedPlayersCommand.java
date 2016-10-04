@@ -2,7 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.task.purge.PurgeService;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 

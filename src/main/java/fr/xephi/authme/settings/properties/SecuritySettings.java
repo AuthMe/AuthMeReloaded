@@ -1,16 +1,16 @@
 package fr.xephi.authme.settings.properties;
 
+import com.github.authme.configme.Comment;
+import com.github.authme.configme.SettingsHolder;
+import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.settings.domain.Comment;
-import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
-import static fr.xephi.authme.settings.domain.Property.newLowercaseListProperty;
-import static fr.xephi.authme.settings.domain.Property.newProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newLowercaseListProperty;
+import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 
-public class SecuritySettings implements SettingsClass {
+public class SecuritySettings implements SettingsHolder {
 
     @Comment({"Stop the server if we can't contact the sql database",
         "Take care with this, if you set this to false,",
@@ -89,7 +89,7 @@ public class SecuritySettings implements SettingsClass {
         "- '123456'",
         "- 'password'"})
     public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321");
+        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321", "123456789");
 
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")
     public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =
@@ -103,6 +103,19 @@ public class SecuritySettings implements SettingsClass {
         "Default: 480 minutes, or 8 hours"})
     public static final Property<Integer> TEMPBAN_LENGTH =
         newProperty("Security.tempban.tempbanLength", 480);
+
+    @Comment({"How many minutes before resetting the count for failed logins by IP and username",
+        "Default: 480 minutes (8 hours)"})
+    public static final Property<Integer> TEMPBAN_MINUTES_BEFORE_RESET =
+        newProperty("Security.tempban.minutesBeforeCounterReset", 480);
+
+    @Comment("Number of characters a recovery code should have (0 to disable)")
+    public static final Property<Integer> RECOVERY_CODE_LENGTH =
+        newProperty("Security.recoveryCode.length", 8);
+
+    @Comment("How many hours is a recovery code valid for?")
+    public static final Property<Integer> RECOVERY_CODE_HOURS_VALID =
+        newProperty("Security.recoveryCode.validForHours", 4);
 
     private SecuritySettings() {
     }

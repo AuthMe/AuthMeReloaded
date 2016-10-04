@@ -18,6 +18,6 @@ public class LoginCommand extends PlayerCommand {
     @Override
     public void runCommand(Player player, List<String> arguments) {
         final String password = arguments.get(0);
-        management.performLogin(player, password, false);
+        management.performLogin(player, password);
     }
 }

@@ -1,7 +1,5 @@
 package tools.messages.translation;
 
-import fr.xephi.authme.util.StringUtils;
-
 /**
  * Container class for one translatable message.
  */
@@ -14,7 +12,7 @@ public class MessageExport {
 
     public MessageExport(String key, String[] tags, String defaultMessage, String translatedMessage) {
         this.key = key;
-        this.tags = StringUtils.join(",", tags);
+        this.tags = String.join(",", tags);
         this.defaultMessage = defaultMessage;
         this.translatedMessage = translatedMessage;
     }

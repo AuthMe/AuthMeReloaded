@@ -1,6 +1,6 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -28,6 +28,8 @@ import static org.mockito.Mockito.verify;
  */
 public final class TestHelper {
 
+    public static final String SOURCES_FOLDER = "src/main/java/";
+    public static final String TEST_SOURCES_FOLDER = "src/test/java/";
     public static final String PROJECT_ROOT = "/fr/xephi/authme/";
 
     private TestHelper() {
@@ -86,6 +88,20 @@ public final class TestHelper {
     }
 
     /**
+     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#runTaskOptionallyAsync} method.
+     * Note that calling this method expects that there be a runnable sent to the method and will fail
+     * otherwise.
+     *
+     * @param service The mock service
+     */
+    public static void runOptionallyAsyncTask(BukkitService service) {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verify(service).runTaskOptionallyAsync(captor.capture());
+        Runnable runnable = captor.getValue();
+        runnable.run();
+    }
+
+    /**
      * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncDelayedTask(Runnable)}
      * method. Note that calling this method expects that there be a runnable sent to the method and will fail
      * otherwise.
@@ -114,12 +130,37 @@ public final class TestHelper {
     }
 
     /**
+     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncTaskFromOptionallyAsyncTask}
+     * method. Note that calling this method expects that there be a runnable sent to the method and will fail
+     * otherwise.
+     *
+     * @param service The mock service
+     */
+    public static void runSyncTaskFromOptionallyAsyncTask(BukkitService service) {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verify(service).scheduleSyncTaskFromOptionallyAsyncTask(captor.capture());
+        Runnable runnable = captor.getValue();
+        runnable.run();
+    }
+
+    /**
      * Assign the necessary fields on ConsoleLogger with mocks.
      *
      * @return The logger mock used
      */
     public static Logger setupLogger() {
         Logger logger = Mockito.mock(Logger.class);
+        ConsoleLogger.setLogger(logger);
+        return logger;
+    }
+
+    /**
+     * Set ConsoleLogger to use a new real logger.
+     *
+     * @return The real logger used by ConsoleLogger
+     */
+    public static Logger setRealLogger() {
+        Logger logger = Logger.getAnonymousLogger();
         ConsoleLogger.setLogger(logger);
         return logger;
     }

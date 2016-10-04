@@ -15,6 +15,8 @@ import org.bukkit.plugin.PluginManager;
 import javax.inject.Inject;
 import java.io.File;
 
+// TODO: Split into single hook classes -sgdc3
+
 /**
  * Hooks into third-party plugins and allows to perform actions on them.
  */

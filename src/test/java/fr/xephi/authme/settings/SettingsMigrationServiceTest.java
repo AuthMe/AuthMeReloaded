@@ -1,17 +1,18 @@
 package fr.xephi.authme.settings;
 
+import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.resource.PropertyResource;
+import com.github.authme.configme.resource.YamlFileResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
-import fr.xephi.authme.settings.propertymap.PropertyMap;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,13 +40,13 @@ public class SettingsMigrationServiceTest {
     public void shouldNotRewriteJarConfig() throws IOException {
         // given
         copyConfigToTestFolder();
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(configTestFile);
-        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
+        PropertyResource resource = new YamlFileResource(configTestFile);
+        List<PropertyEntry> propertyMap = AuthMeSettingsRetriever.getAllPropertyFields();
         assumeThat(testFolder.listFiles(), arrayWithSize(1));
-        SettingsMigrationService migrationService = new SettingsMigrationService();
+        SettingsMigrationService migrationService = new SettingsMigrationService(testFolder);
 
         // when
-        boolean result = migrationService.checkAndMigrate(configuration, propertyMap, testFolder);
+        boolean result = migrationService.checkAndMigrate(resource, propertyMap);
 
         // then
         assertThat(result, equalTo(false));

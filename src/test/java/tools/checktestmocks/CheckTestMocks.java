@@ -1,15 +1,12 @@
 package tools.checktestmocks;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.ClassCollector;
+import fr.xephi.authme.TestHelper;
 import org.mockito.Mock;
 import tools.utils.AutoToolTask;
 import tools.utils.InjectorUtils;
-import tools.utils.ToolsConstants;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Task checking if all tests' {@code @Mock} fields have a corresponding
@@ -38,31 +36,11 @@ public class CheckTestMocks implements AutoToolTask {
 
     @Override
     public void executeDefault() {
-        readAndCheckFiles(new File(ToolsConstants.TEST_SOURCE_ROOT));
-        System.out.println(StringUtils.join("\n", errors));
-    }
-
-    /**
-     * Recursively reads directories and checks the contained classes.
-     *
-     * @param dir the directory to read
-     */
-    private void readAndCheckFiles(File dir) {
-        File[] files = dir.listFiles();
-        if (files == null) {
-            throw new IllegalStateException("Cannot read folder '" + dir + "'");
+        ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT);
+        for (Class<?> clazz : collector.collectClasses(c -> isTestClassWithMocks(c))) {
+            checkClass(clazz);
         }
-        for (File file : files) {
-            if (file.isDirectory()) {
-                readAndCheckFiles(file);
-            } else if (file.isFile()) {
-                Class<?> clazz = loadTestClass(file);
-                if (clazz != null) {
-                    checkClass(clazz);
-                }
-                // else System.out.format("No @Mock fields found in class of file '%s'%n", file.getName())
-            }
-        }
+        System.out.println(String.join("\n", errors));
     }
 
     /**
@@ -89,20 +67,6 @@ public class CheckTestMocks implements AutoToolTask {
 
     private void addErrorEntry(Class<?> clazz, String message) {
         errors.add(clazz.getSimpleName() + ": " + message);
-    }
-
-    private static Class<?> loadTestClass(File file) {
-        String fileName = file.getPath();
-        String className = fileName
-            // Strip source folders and .java ending
-            .substring("src/test/java/".length(), fileName.length() - 5)
-            .replace(File.separator, ".");
-        try {
-            Class<?> clazz = CheckTestMocks.class.getClassLoader().loadClass(className);
-            return isTestClassWithMocks(clazz) ? clazz : null;
-        } catch (ClassNotFoundException e) {
-            throw new UnsupportedOperationException(e);
-        }
     }
 
     private static Set<Class<?>> getMocks(Class<?> clazz) {
@@ -147,13 +111,9 @@ public class CheckTestMocks implements AutoToolTask {
     }
 
     private static String formatClassList(Collection<Class<?>> coll) {
-        Collection<String> classNames = Collections2.transform(coll, new Function<Class<?>, String>() {
-            @Override
-            public String apply(Class<?> input) {
-                return input.getSimpleName();
-            }
-        });
-        return StringUtils.join(", ", classNames);
+        return coll.stream()
+            .map(Class::getSimpleName)
+            .collect(Collectors.joining(", "));
     }
 
 }

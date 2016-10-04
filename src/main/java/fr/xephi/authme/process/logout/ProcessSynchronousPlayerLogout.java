@@ -1,32 +1,28 @@
 package fr.xephi.authme.process.logout;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.SessionManager;
+import fr.xephi.authme.data.SessionManager;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 
 public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
-
-    @Inject
-    private BungeeService bungeeService;
 
     @Inject
     private ProcessService service;
@@ -64,8 +60,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
-        // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.sendBungeeMessage(player, "logout");
 
         service.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");

@@ -1,11 +1,11 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.TestHelper.runInnerRunnable;
+import static fr.xephi.authme.TestHelper.runOptionallyAsyncTask;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -73,7 +73,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -95,7 +95,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -120,7 +120,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -146,7 +146,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);
@@ -173,7 +173,7 @@ public class SetEmailCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runInnerRunnable(bukkitService);
+        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(commandService).validateEmail(email);

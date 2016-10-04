@@ -1,6 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -30,7 +30,7 @@ public abstract class HexSaltedMethod implements EncryptionMethod {
 
     @Override
     public String generateSalt() {
-        return RandomString.generateHex(getSaltLength());
+        return RandomStringUtils.generateHex(getSaltLength());
     }
 
     @Override

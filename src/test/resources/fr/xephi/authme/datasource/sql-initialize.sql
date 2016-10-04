@@ -13,6 +13,8 @@ CREATE TABLE authme (
     email VARCHAR(255) DEFAULT 'your@email.com', 
     isLogged INT DEFAULT '0', realname VARCHAR(255) NOT NULL DEFAULT 'Player', 
     salt varchar(255),
+    recoverycode VARCHAR(20),
+    recoveryexpiration BIGINT,
     CONSTRAINT table_const_prim PRIMARY KEY (id)
 );
 

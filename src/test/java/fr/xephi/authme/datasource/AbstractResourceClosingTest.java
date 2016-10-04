@@ -1,15 +1,16 @@
 package fr.xephi.authme.datasource;
 
+import com.github.authme.configme.properties.Property;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.backends.MySQL;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -241,6 +242,7 @@ public abstract class AbstractResourceClosingTest {
             .put(String.class, "test")
             .put(int.class, 3)
             .put(long.class, 102L)
+            .put(boolean.class, true)
             .put(PlayerAuth.class, PlayerAuth.builder().name("test").realName("test").password(hash).build())
             .put(HashedPassword.class, hash)
             .build();
