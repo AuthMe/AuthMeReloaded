@@ -1,4 +1,4 @@
-package fr.xephi.authme.converter;
+package fr.xephi.authme.datasource.converter;
 
 import de.luricos.bukkit.xAuth.database.DatabaseTables;
 import de.luricos.bukkit.xAuth.utils.xAuthLog;

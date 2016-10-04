@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import ch.jalu.injector.Injector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.StringUtils;

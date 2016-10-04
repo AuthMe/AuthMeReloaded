@@ -1,4 +1,4 @@
-package fr.xephi.authme.converter;
+package fr.xephi.authme.datasource.converter;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;

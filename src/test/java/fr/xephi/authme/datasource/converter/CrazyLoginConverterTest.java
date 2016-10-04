@@ -1,4 +1,4 @@
-package fr.xephi.authme.converter;
+package fr.xephi.authme.datasource.converter;
 
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;

@@ -1,4 +1,4 @@
-package fr.xephi.authme.converter;
+package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;

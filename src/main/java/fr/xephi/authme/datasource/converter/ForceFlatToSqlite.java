@@ -1,4 +1,4 @@
-package fr.xephi.authme.converter;
+package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.backends.FlatFile;
