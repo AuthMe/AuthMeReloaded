@@ -1,4 +1,4 @@
-package fr.xephi.authme.security;
+package fr.xephi.authme.util;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -6,14 +6,15 @@ import java.util.Random;
 /**
  * Utility for generating random strings.
  */
-public final class RandomString {
+public final class RandomStringUtils {
 
     private static final String CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final Random RANDOM = new SecureRandom();
     private static final int HEX_MAX_INDEX = 16;
     private static final int LOWER_ALPHANUMERIC_INDEX = 36;
 
-    private RandomString() {
+    // Utility class
+    private RandomStringUtils() {
     }
 
     /**

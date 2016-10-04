@@ -1,7 +1,7 @@
 package fr.xephi.authme.cache;
 
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
@@ -86,7 +86,7 @@ public class CaptchaManager implements SettingsDependent {
      * @return the generated code
      */
     public String generateCode(String name) {
-        String code = RandomString.generate(captchaLength);
+        String code = RandomStringUtils.generate(captchaLength);
         captchaCodes.put(name.toLowerCase(), code);
         return code;
     }

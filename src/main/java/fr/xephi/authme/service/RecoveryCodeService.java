@@ -2,7 +2,7 @@ package fr.xephi.authme.service;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
@@ -42,7 +42,7 @@ public class RecoveryCodeService implements SettingsDependent {
      * @return the generated code
      */
     public String generateCode(String player) {
-        String code = RandomString.generateHex(recoveryCodeLength);
+        String code = RandomStringUtils.generateHex(recoveryCodeLength);
         recoveryCodes.put(player, new ExpiringEntry(code, System.currentTimeMillis() + recoveryCodeExpirationMillis));
         return code;
     }

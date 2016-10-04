@@ -9,7 +9,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.RecoveryCodeService;
 import org.bukkit.entity.Player;
@@ -101,7 +101,7 @@ public class RecoverEmailCommand extends PlayerCommand {
 
     private void generateAndSendNewPassword(Player player, String email) {
         String name = player.getName();
-        String thePass = RandomString.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
+        String thePass = RandomStringUtils.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
         HashedPassword hashNew = passwordSecurity.computeHash(thePass, name);
 
         dataSource.updatePassword(name, hashNew);

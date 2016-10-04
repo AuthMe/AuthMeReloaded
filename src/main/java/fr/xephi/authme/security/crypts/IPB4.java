@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.HashUtils;
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -44,7 +44,7 @@ public class IPB4 implements EncryptionMethod {
 
     @Override
     public String generateSalt() {
-        return RandomString.generateLowerUpper(22);
+        return RandomStringUtils.generateLowerUpper(22);
     }
 
     @Override
