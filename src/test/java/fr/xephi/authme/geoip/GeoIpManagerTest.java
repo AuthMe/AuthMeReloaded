@@ -2,7 +2,6 @@ package fr.xephi.authme.geoip;
 
 import com.maxmind.geoip.Country;
 import com.maxmind.geoip.LookupService;
-import fr.xephi.authme.geoip.GeoLiteAPI;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,12 +22,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for {@link GeoLiteAPI}.
+ * Test for {@link GeoIpManager}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class GeoIpManagerTest {
 
-    private GeoLiteAPI geoLiteApi;
+    private GeoIpManager geoIpManager;
     private File dataFolder;
     @Mock
     private LookupService lookupService;
@@ -39,7 +38,7 @@ public class GeoIpManagerTest {
     @Before
     public void initializeGeoLiteApi() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        geoLiteApi = new GeoLiteAPI(dataFolder, lookupService);
+        geoIpManager = new GeoIpManager(dataFolder, lookupService);
     }
 
     @Test
@@ -52,7 +51,7 @@ public class GeoIpManagerTest {
         given(lookupService.getCountry(ip)).willReturn(country);
 
         // when
-        String result = geoLiteApi.getCountryCode(ip);
+        String result = geoIpManager.getCountryCode(ip);
 
         // then
         assertThat(result, equalTo(countryCode));
@@ -65,7 +64,7 @@ public class GeoIpManagerTest {
         String ip = "127.0.0.1";
 
         // when
-        String result = geoLiteApi.getCountryCode(ip);
+        String result = geoIpManager.getCountryCode(ip);
 
         // then
         assertThat(result, equalTo("--"));
@@ -82,7 +81,7 @@ public class GeoIpManagerTest {
         given(lookupService.getCountry(ip)).willReturn(country);
 
         // when
-        String result = geoLiteApi.getCountryName(ip);
+        String result = geoIpManager.getCountryName(ip);
 
         // then
         assertThat(result, equalTo(countryName));
@@ -95,7 +94,7 @@ public class GeoIpManagerTest {
         String ip = "127.0.0.1";
 
         // when
-        String result = geoLiteApi.getCountryName(ip);
+        String result = geoIpManager.getCountryName(ip);
 
         // then
         assertThat(result, equalTo("N/A"));
