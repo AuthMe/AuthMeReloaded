@@ -14,9 +14,9 @@ import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -64,7 +64,7 @@ public class PlayerDataStorage {
      * @return PlayerData object if the data is exist, null otherwise.
      */
     public PlayerData readData(Player player) {
-        String id = Utils.getUUIDorName(player);
+        String id = PlayerUtils.getUUIDorName(player);
         File file = new File(cacheDir, id + File.separator + "data.json");
         if (!file.exists()) {
             return null;
@@ -85,7 +85,7 @@ public class PlayerDataStorage {
      * @param player player to save
      */
     public void saveData(Player player) {
-        String id = Utils.getUUIDorName(player);
+        String id = PlayerUtils.getUUIDorName(player);
         Location location = spawnLoader.getPlayerLocationOrSpawn(player);
         String group = "";
         if (permissionsManager.hasGroupSupport()) {
@@ -113,7 +113,7 @@ public class PlayerDataStorage {
      * @param player player to remove
      */
     public void removeData(Player player) {
-        String id = Utils.getUUIDorName(player);
+        String id = PlayerUtils.getUUIDorName(player);
         File file = new File(cacheDir, id);
         if (file.exists()) {
             FileUtils.purgeDirectory(file);
@@ -131,7 +131,7 @@ public class PlayerDataStorage {
      * @return true if data exist, false otherwise.
      */
     public boolean hasData(Player player) {
-        String id = Utils.getUUIDorName(player);
+        String id = PlayerUtils.getUUIDorName(player);
         File file = new File(cacheDir, id + File.separator + "data.json");
         return file.exists();
     }

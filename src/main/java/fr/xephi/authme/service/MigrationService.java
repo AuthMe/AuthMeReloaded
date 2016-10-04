@@ -1,4 +1,4 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.service;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;

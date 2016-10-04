@@ -4,7 +4,7 @@ import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.service.RecoveryCodeManager.ExpiringEntry;
+import fr.xephi.authme.service.RecoveryCodeService.ExpiringEntry;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.Test;
@@ -20,13 +20,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Test for {@link RecoveryCodeManager}.
+ * Test for {@link RecoveryCodeService}.
  */
 @RunWith(DelayedInjectionRunner.class)
-public class RecoveryCodeManagerTest {
+public class RecoveryCodeServiceTest {
 
     @InjectDelayed
-    private RecoveryCodeManager recoveryCodeManager;
+    private RecoveryCodeService recoveryCodeService;
 
     @Mock
     private Settings settings;
@@ -39,16 +39,16 @@ public class RecoveryCodeManagerTest {
 
     @Test
     public void shouldBeDisabledForNonPositiveLength() {
-        assertThat(recoveryCodeManager.isRecoveryCodeNeeded(), equalTo(true));
+        assertThat(recoveryCodeService.isRecoveryCodeNeeded(), equalTo(true));
 
         // given
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(0);
 
         // when
-        recoveryCodeManager.reload(settings);
+        recoveryCodeService.reload(settings);
 
         // then
-        assertThat(recoveryCodeManager.isRecoveryCodeNeeded(), equalTo(false));
+        assertThat(recoveryCodeService.isRecoveryCodeNeeded(), equalTo(false));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class RecoveryCodeManagerTest {
         String name = "Bobbers";
 
         // when
-        recoveryCodeManager.generateCode(name);
+        recoveryCodeService.generateCode(name);
 
         // then
         ExpiringEntry entry = getCodeMap().get(name);
@@ -72,7 +72,7 @@ public class RecoveryCodeManagerTest {
         setCodeInMap(player, code, System.currentTimeMillis() - 500);
 
         // when
-        boolean result = recoveryCodeManager.isCodeValid(player, code);
+        boolean result = recoveryCodeService.isCodeValid(player, code);
 
         // then
         assertThat(result, equalTo(false));
@@ -82,10 +82,10 @@ public class RecoveryCodeManagerTest {
     public void shouldRecognizeCorrectCode() {
         // given
         String player = "dragon";
-        String code = recoveryCodeManager.generateCode(player);
+        String code = recoveryCodeService.generateCode(player);
 
         // when
-        boolean result = recoveryCodeManager.isCodeValid(player, code);
+        boolean result = recoveryCodeService.isCodeValid(player, code);
 
         // then
         assertThat(result, equalTo(true));
@@ -95,19 +95,19 @@ public class RecoveryCodeManagerTest {
     public void shouldRemoveCode() {
         // given
         String player = "Tester";
-        String code = recoveryCodeManager.generateCode(player);
+        String code = recoveryCodeService.generateCode(player);
 
         // when
-        recoveryCodeManager.removeCode(player);
+        recoveryCodeService.removeCode(player);
 
         // then
-        assertThat(recoveryCodeManager.isCodeValid(player, code), equalTo(false));
+        assertThat(recoveryCodeService.isCodeValid(player, code), equalTo(false));
         assertThat(getCodeMap().get(player), nullValue());
     }
 
 
     private Map<String, ExpiringEntry> getCodeMap() {
-        return ReflectionTestUtils.getFieldValue(RecoveryCodeManager.class, recoveryCodeManager, "recoveryCodes");
+        return ReflectionTestUtils.getFieldValue(RecoveryCodeService.class, recoveryCodeService, "recoveryCodes");
     }
 
     private void setCodeInMap(String player, String code, long expiration) {

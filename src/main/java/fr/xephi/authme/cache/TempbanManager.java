@@ -7,8 +7,8 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -108,7 +108,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
      */
     public void tempbanPlayer(final Player player) {
         if (isEnabled) {
-            final String ip = Utils.getPlayerIp(player);
+            final String ip = PlayerUtils.getPlayerIp(player);
             final String reason = messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS);
 
             final Date expires = new Date();

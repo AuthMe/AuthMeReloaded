@@ -1,9 +1,10 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.geoip;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.util.FileUtils;
 
 import javax.inject.Inject;
 import java.io.File;

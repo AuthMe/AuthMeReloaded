@@ -11,7 +11,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -74,7 +74,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         player.saveData();
-        ConsoleLogger.fine(player.getName() + " registered " + Utils.getPlayerIp(player));
+        ConsoleLogger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
 
         // Kick Player after Registration is enabled, kick the player
         if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {

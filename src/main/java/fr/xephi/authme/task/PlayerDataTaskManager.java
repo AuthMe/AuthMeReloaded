@@ -9,13 +9,13 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 /**
  * Registers tasks associated with a PlayerData.

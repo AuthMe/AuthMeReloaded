@@ -16,7 +16,7 @@ import static fr.xephi.authme.util.Utils.MILLIS_PER_HOUR;
 /**
  * Manager for recovery codes.
  */
-public class RecoveryCodeManager implements SettingsDependent {
+public class RecoveryCodeService implements SettingsDependent {
 
     private Map<String, ExpiringEntry> recoveryCodes = new ConcurrentHashMap<>();
 
@@ -24,7 +24,7 @@ public class RecoveryCodeManager implements SettingsDependent {
     private long recoveryCodeExpirationMillis;
 
     @Inject
-    RecoveryCodeManager(Settings settings) {
+    RecoveryCodeService(Settings settings) {
         reload(settings);
     }
 

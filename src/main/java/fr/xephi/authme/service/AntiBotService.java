@@ -7,15 +7,14 @@ import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
-import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 /**
  * The AntiBot Service Management class.

@@ -1,7 +1,8 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.geoip;
 
 import com.maxmind.geoip.Country;
 import com.maxmind.geoip.LookupService;
+import fr.xephi.authme.geoip.GeoLiteAPI;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link GeoLiteAPI}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class GeoLiteAPITest {
+public class GeoIpManagerTest {
 
     private GeoLiteAPI geoLiteApi;
     private File dataFolder;

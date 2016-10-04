@@ -8,7 +8,7 @@ import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.World;

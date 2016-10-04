@@ -14,7 +14,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;

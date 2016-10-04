@@ -1,10 +1,12 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.service;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.PlayerData;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;

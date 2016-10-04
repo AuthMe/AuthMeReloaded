@@ -1,5 +1,7 @@
-package fr.xephi.authme;
+package fr.xephi.authme.service;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.BackupSettings;
@@ -19,7 +21,7 @@ import java.util.Date;
  *
  * @author stefano
  */
-public class PerformBackup {
+public class BackupService {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
 
@@ -37,7 +39,7 @@ public class PerformBackup {
      * @param instance AuthMe
      * @param settings The plugin settings
      */
-    public PerformBackup(AuthMe instance, Settings settings) {
+    public BackupService(AuthMe instance, Settings settings) {
         this.dataFolder = instance.getDataFolder();
         this.settings   = settings;
         this.dbName     = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);

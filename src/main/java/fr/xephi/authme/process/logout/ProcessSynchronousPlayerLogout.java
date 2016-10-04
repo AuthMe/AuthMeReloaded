@@ -11,15 +11,15 @@ import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 
 public class ProcessSynchronousPlayerLogout implements SynchronousProcess {

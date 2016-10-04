@@ -15,7 +15,7 @@ import fr.xephi.authme.converter.SqliteToSql;
 import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;

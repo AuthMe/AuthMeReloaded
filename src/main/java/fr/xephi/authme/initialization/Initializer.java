@@ -22,9 +22,9 @@ import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
-import fr.xephi.authme.util.MigrationService;
+import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 
 /**
  * Initializes various services.

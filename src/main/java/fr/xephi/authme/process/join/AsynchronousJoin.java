@@ -20,8 +20,8 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
@@ -32,7 +32,7 @@ import org.bukkit.potion.PotionEffectType;
 import javax.inject.Inject;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 /**
  * Asynchronous process for when a player joins.
@@ -78,7 +78,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
-        final String ip = Utils.getPlayerIp(player);
+        final String ip = PlayerUtils.getPlayerIp(player);
 
         if (isPlayerUnrestricted(name)) {
             return;
@@ -249,7 +249,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private int countOnlinePlayersByIp(String ip) {
         int count = 0;
         for (Player player : bukkitService.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))) {
+            if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(player))) {
                 ++count;
             }
         }

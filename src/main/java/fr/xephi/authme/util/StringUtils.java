@@ -11,8 +11,8 @@ import java.io.File;
  */
 public final class StringUtils {
 
+    // Utility class
     private StringUtils() {
-        // Utility class
     }
 
     /**

@@ -15,7 +15,7 @@ import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.purge.PurgeService;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;

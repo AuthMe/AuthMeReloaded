@@ -7,7 +7,7 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -35,7 +35,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         playerDataTaskManager.registerMessageTask(name, true);
 
         player.saveData();
-        ConsoleLogger.fine(player.getName() + " registered " + Utils.getPlayerIp(player));
+        ConsoleLogger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
     }
 
 }

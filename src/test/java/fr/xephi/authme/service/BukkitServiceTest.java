@@ -1,4 +1,4 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.service;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;

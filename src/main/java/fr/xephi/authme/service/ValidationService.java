@@ -1,7 +1,8 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.service;
 
 import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.geoip.GeoLiteAPI;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -11,6 +12,8 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.PostConstruct;

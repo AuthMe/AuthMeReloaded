@@ -8,7 +8,7 @@ import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.service;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -6,6 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.SHA256;
+import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.BeforeClass;

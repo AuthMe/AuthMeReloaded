@@ -25,9 +25,9 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -130,7 +130,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return null;
         }
 
-        final String ip = Utils.getPlayerIp(player);
+        final String ip = PlayerUtils.getPlayerIp(player);
         if (hasReachedMaxLoggedInPlayersForIp(player, ip)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
@@ -163,7 +163,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return false;
         }
 
-        final String ip = Utils.getPlayerIp(player);
+        final String ip = PlayerUtils.getPlayerIp(player);
 
         // Increase the counts here before knowing the result of the login.
         captchaManager.increaseCount(name);
@@ -210,7 +210,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
             // Update auth to reflect this new login
-            final String ip = Utils.getPlayerIp(player);
+            final String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
             auth.setIp(ip);
@@ -311,7 +311,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String name = player.getName();
         int count = 0;
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(Utils.getPlayerIp(onlinePlayer))
+            if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(onlinePlayer))
                 && !onlinePlayer.getName().equals(name)
                 && dataSource.isLogged(onlinePlayer.getName().toLowerCase())) {
                 ++count;

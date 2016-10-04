@@ -15,6 +15,7 @@ import static java.lang.String.format;
  */
 public final class FileUtils {
 
+    // Utility class
     private FileUtils() {
     }
 

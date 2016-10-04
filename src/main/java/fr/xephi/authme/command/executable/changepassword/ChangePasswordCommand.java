@@ -5,8 +5,8 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.util.ValidationService;
-import fr.xephi.authme.util.ValidationService.ValidationResult;
+import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;

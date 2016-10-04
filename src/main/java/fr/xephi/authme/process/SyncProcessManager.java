@@ -5,7 +5,7 @@ import fr.xephi.authme.process.logout.ProcessSynchronousPlayerLogout;
 import fr.xephi.authme.process.quit.ProcessSyncronousPlayerQuit;
 import fr.xephi.authme.process.register.ProcessSyncEmailRegister;
 import fr.xephi.authme.process.register.ProcessSyncPasswordRegister;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;

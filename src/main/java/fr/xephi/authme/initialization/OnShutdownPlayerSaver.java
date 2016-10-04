@@ -9,8 +9,8 @@ import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
