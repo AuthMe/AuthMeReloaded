@@ -1,4 +1,4 @@
-package fr.xephi.authme.output;
+package fr.xephi.authme.message;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;

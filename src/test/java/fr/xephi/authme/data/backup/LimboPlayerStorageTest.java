@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 public class LimboPlayerStorageTest {
 
     private static final UUID SAMPLE_UUID = UUID.nameUUIDFromBytes("PlayerDataStorageTest".getBytes());
-    private static final String SOURCE_FOLDER = TestHelper.PROJECT_ROOT + "cache/backup/";
+    private static final String SOURCE_FOLDER = TestHelper.PROJECT_ROOT + "data/backup/";
 
     @InjectDelayed
     private PlayerDataStorage playerDataStorage;
