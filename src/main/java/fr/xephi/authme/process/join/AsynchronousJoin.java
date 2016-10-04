@@ -9,7 +9,7 @@ import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;

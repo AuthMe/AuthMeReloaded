@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.changepassword;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;

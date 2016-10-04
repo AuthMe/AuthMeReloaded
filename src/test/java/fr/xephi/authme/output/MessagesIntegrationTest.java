@@ -2,6 +2,8 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

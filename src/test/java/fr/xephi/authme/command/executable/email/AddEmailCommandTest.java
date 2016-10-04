@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;

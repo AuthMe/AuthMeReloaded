@@ -1,5 +1,6 @@
 package fr.xephi.authme.output;
 
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.StringUtils;
 import org.junit.Test;
 

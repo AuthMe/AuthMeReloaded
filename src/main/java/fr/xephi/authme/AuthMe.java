@@ -21,7 +21,7 @@ import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.security.crypts.SHA256;

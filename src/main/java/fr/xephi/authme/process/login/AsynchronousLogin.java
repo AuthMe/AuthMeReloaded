@@ -10,7 +10,7 @@ import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;

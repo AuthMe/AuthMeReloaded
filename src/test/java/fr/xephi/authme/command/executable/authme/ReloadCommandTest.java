@@ -9,7 +9,7 @@ import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.LogLevel;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;

@@ -4,7 +4,7 @@ import ch.jalu.injector.Injector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.converter.Converter;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;

@@ -5,7 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;

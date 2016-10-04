@@ -14,7 +14,7 @@ import fr.xephi.authme.datasource.converter.RoyalAuthConverter;
 import fr.xephi.authme.datasource.converter.SqliteToSql;
 import fr.xephi.authme.datasource.converter.vAuthConverter;
 import fr.xephi.authme.datasource.converter.xAuthConverter;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 

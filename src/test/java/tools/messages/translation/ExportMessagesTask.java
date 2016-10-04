@@ -2,7 +2,7 @@ package tools.messages.translation;
 
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

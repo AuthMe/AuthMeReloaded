@@ -1,6 +1,7 @@
 package fr.xephi.authme.output;
 
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
