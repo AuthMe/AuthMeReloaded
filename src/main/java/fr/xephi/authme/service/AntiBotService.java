@@ -162,7 +162,7 @@ public class AntiBotService implements SettingsDependent {
             public void run() {
                 antibotPlayers--;
             }
-        }, 15 * TICKS_PER_SECOND);
+        }, 5 * TICKS_PER_SECOND);
     }
 
     /**
