@@ -15,7 +15,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test for {@link PlayerUtils}.
+ * Test for {@link Utils}.
  */
 public class PlayerUtilsTest {
 

@@ -17,7 +17,7 @@ import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
-public class GeoIpManager {
+public class GeoLiteAPI {
     private static final String LICENSE =
         "[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com";
     private static final String GEOIP_URL =
@@ -28,14 +28,14 @@ public class GeoIpManager {
     private final File dataFile;
 
     @Inject
-    GeoIpManager(@DataFolder File dataFolder) {
+    GeoLiteAPI(@DataFolder File dataFolder) {
         this.dataFile = new File(dataFolder, "GeoIP.dat");
         // Fires download of recent data or the initialization of the look up service
         isDataAvailable();
     }
 
     @VisibleForTesting
-    GeoIpManager(@DataFolder File dataFolder, LookupService lookupService) {
+    GeoLiteAPI(@DataFolder File dataFolder, LookupService lookupService) {
         this.dataFile = dataFolder;
         this.lookupService = lookupService;
     }

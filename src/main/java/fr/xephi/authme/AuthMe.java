@@ -33,7 +33,7 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.geoip.GeoIpManager;
+import fr.xephi.authme.geoip.GeoLiteAPI;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Server;
@@ -74,7 +74,7 @@ public class AuthMe extends JavaPlugin {
     private DataSource database;
     private BukkitService bukkitService;
     private Injector injector;
-    private GeoIpManager geoIpManager;
+    private GeoLiteAPI geoLiteApi;
     private PlayerCache playerCache;
 
     /**
@@ -248,7 +248,7 @@ public class AuthMe extends JavaPlugin {
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
-        geoIpManager = injector.getSingleton(GeoIpManager.class);
+        geoLiteApi = injector.getSingleton(GeoLiteAPI.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(NewAPI.class);
@@ -374,7 +374,7 @@ public class AuthMe extends JavaPlugin {
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
             // TODO: We should cache info like this, maybe with a class that extends Player?
-            .replace("{COUNTRY}", geoIpManager.getCountryName(ipAddress));
+            .replace("{COUNTRY}", geoLiteApi.getCountryName(ipAddress));
     }
 
 

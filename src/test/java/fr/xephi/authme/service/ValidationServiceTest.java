@@ -5,10 +5,11 @@ import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.base.Strings;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.geoip.GeoIpManager;
+import fr.xephi.authme.geoip.GeoLiteAPI;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -45,7 +46,7 @@ public class ValidationServiceTest {
     @Mock
     private PermissionsManager permissionsManager;
     @Mock
-    private GeoIpManager geoIpManager;
+    private GeoLiteAPI geoLiteApi;
 
     @BeforeInjecting
     public void createService() {
@@ -266,7 +267,7 @@ public class ValidationServiceTest {
 
         // then
         assertThat(result, equalTo(true));
-        verifyZeroInteractions(geoIpManager);
+        verifyZeroInteractions(geoLiteApi);
     }
 
     @Test
@@ -275,14 +276,14 @@ public class ValidationServiceTest {
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
         String ip = "127.0.0.1";
-        given(geoIpManager.getCountryCode(ip)).willReturn("CH");
+        given(geoLiteApi.getCountryCode(ip)).willReturn("CH");
 
         // when
         boolean result = validationService.isCountryAdmitted(ip);
 
         // then
         assertThat(result, equalTo(true));
-        verify(geoIpManager).getCountryCode(ip);
+        verify(geoLiteApi).getCountryCode(ip);
     }
 
     @Test
@@ -291,14 +292,14 @@ public class ValidationServiceTest {
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
         String ip = "123.45.67.89";
-        given(geoIpManager.getCountryCode(ip)).willReturn("BR");
+        given(geoLiteApi.getCountryCode(ip)).willReturn("BR");
 
         // when
         boolean result = validationService.isCountryAdmitted(ip);
 
         // then
         assertThat(result, equalTo(false));
-        verify(geoIpManager).getCountryCode(ip);
+        verify(geoLiteApi).getCountryCode(ip);
     }
 
     @Test
@@ -307,14 +308,14 @@ public class ValidationServiceTest {
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
         String ip = "127.0.0.1";
-        given(geoIpManager.getCountryCode(ip)).willReturn("BR");
+        given(geoLiteApi.getCountryCode(ip)).willReturn("BR");
 
         // when
         boolean result = validationService.isCountryAdmitted(ip);
 
         // then
         assertThat(result, equalTo(true));
-        verify(geoIpManager).getCountryCode(ip);
+        verify(geoLiteApi).getCountryCode(ip);
     }
 
     @Test
@@ -323,14 +324,14 @@ public class ValidationServiceTest {
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
         String ip = "123.45.67.89";
-        given(geoIpManager.getCountryCode(ip)).willReturn("IT");
+        given(geoLiteApi.getCountryCode(ip)).willReturn("IT");
 
         // when
         boolean result = validationService.isCountryAdmitted(ip);
 
         // then
         assertThat(result, equalTo(false));
-        verify(geoIpManager).getCountryCode(ip);
+        verify(geoLiteApi).getCountryCode(ip);
     }
 
     private static void assertErrorEquals(ValidationResult validationResult, MessageKey messageKey, String... args) {
