@@ -1,4 +1,4 @@
-package fr.xephi.authme.cache.auth;
+package fr.xephi.authme.data.auth;
 
 
 import java.util.concurrent.ConcurrentHashMap;

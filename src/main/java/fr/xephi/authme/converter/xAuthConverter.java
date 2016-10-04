@@ -3,7 +3,7 @@ package fr.xephi.authme.converter;
 import de.luricos.bukkit.xAuth.database.DatabaseTables;
 import de.luricos.bukkit.xAuth.utils.xAuthLog;
 import de.luricos.bukkit.xAuth.xAuth;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.util.CollectionUtils;
@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.xephi.authme.util.StringUtils.makePath;
+import static fr.xephi.authme.util.FileUtils.makePath;
 
 public class xAuthConverter implements Converter {
 

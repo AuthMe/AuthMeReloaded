@@ -1,10 +1,10 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.SessionManager;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.datasource.CacheDataSource;
+import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.datasource.backends.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;

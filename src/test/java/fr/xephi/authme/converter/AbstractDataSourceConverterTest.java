@@ -1,7 +1,7 @@
 package fr.xephi.authme.converter;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import org.bukkit.command.CommandSender;

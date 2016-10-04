@@ -1,7 +1,7 @@
 package fr.xephi.authme.task;
 
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -17,19 +17,19 @@ public class MessageTask implements Runnable {
     private final String[] message;
     private final int interval;
     private final BukkitService bukkitService;
-    private final LimboCache limboCache;
+    private final LimboStorage limboStorage;
     private final PlayerCache playerCache;
 
     /*
      * Constructor.
      */
     public MessageTask(String name, String[] lines, int interval, BukkitService bukkitService,
-                       LimboCache limboCache, PlayerCache playerCache) {
+                       LimboStorage limboStorage, PlayerCache playerCache) {
         this.name = name;
         this.message = lines;
         this.interval = interval;
         this.bukkitService = bukkitService;
-        this.limboCache = limboCache;
+        this.limboStorage = limboStorage;
         this.playerCache = playerCache;
     }
 
@@ -45,8 +45,8 @@ public class MessageTask implements Runnable {
                     player.sendMessage(ms);
                 }
                 BukkitTask nextTask = bukkitService.runTaskLater(this, interval * TICKS_PER_SECOND);
-                if (limboCache.hasPlayerData(name)) {
-                    limboCache.getPlayerData(name).setMessageTask(nextTask);
+                if (limboStorage.hasPlayerData(name)) {
+                    limboStorage.getPlayerData(name).setMessageTask(nextTask);
                 }
                 return;
             }

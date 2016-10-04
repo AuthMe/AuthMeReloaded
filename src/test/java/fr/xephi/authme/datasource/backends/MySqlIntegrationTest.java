@@ -1,9 +1,11 @@
-package fr.xephi.authme.datasource;
+package fr.xephi.authme.datasource.backends;
 
 import com.github.authme.configme.properties.Property;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.datasource.AbstractDataSourceIntegrationTest;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;

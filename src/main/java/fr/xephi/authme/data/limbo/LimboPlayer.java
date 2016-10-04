@@ -1,4 +1,4 @@
-package fr.xephi.authme.cache.limbo;
+package fr.xephi.authme.data.limbo;
 
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitTask;
  * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
  * which may be revoked from the player until he has logged in or registered.
  */
-public class PlayerData {
+public class LimboPlayer {
 
     private final boolean canFly;
     private final boolean operator;
@@ -18,8 +18,7 @@ public class PlayerData {
     private BukkitTask timeoutTask = null;
     private BukkitTask messageTask = null;
 
-    public PlayerData(Location loc, boolean operator,
-                      String group, boolean fly, float walkSpeed, float flySpeed) {
+    public LimboPlayer(Location loc, boolean operator, String group, boolean fly, float walkSpeed, float flySpeed) {
         this.loc = loc;
         this.operator = operator;
         this.group = group;

@@ -1,6 +1,6 @@
-package fr.xephi.authme.cache.limbo;
+package fr.xephi.authme.data.limbo;
 
-import fr.xephi.authme.cache.backup.PlayerDataStorage;
+import fr.xephi.authme.data.backup.PlayerDataStorage;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -16,11 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Manages all {@link PlayerData} instances.
+ * Manages all {@link LimboPlayer} instances.
  */
-public class LimboCache {
+public class LimboStorage {
 
-    private final Map<String, PlayerData> cache = new ConcurrentHashMap<>();
+    private final Map<String, LimboPlayer> cache = new ConcurrentHashMap<>();
 
     private PlayerDataStorage playerDataStorage;
     private Settings settings;
@@ -28,8 +28,8 @@ public class LimboCache {
     private SpawnLoader spawnLoader;
 
     @Inject
-    LimboCache(Settings settings, PermissionsManager permissionsManager,
-               SpawnLoader spawnLoader, PlayerDataStorage playerDataStorage) {
+    LimboStorage(Settings settings, PermissionsManager permissionsManager,
+                 SpawnLoader spawnLoader, PlayerDataStorage playerDataStorage) {
         this.settings = settings;
         this.permissionsManager = permissionsManager;
         this.spawnLoader = spawnLoader;
@@ -54,7 +54,7 @@ public class LimboCache {
         }
 
         if (playerDataStorage.hasData(player)) {
-            PlayerData cache = playerDataStorage.readData(player);
+            LimboPlayer cache = playerDataStorage.readData(player);
             if (cache != null) {
                 location = cache.getLocation();
                 playerGroup = cache.getGroup();
@@ -67,7 +67,7 @@ public class LimboCache {
             playerDataStorage.saveData(player);
         }
 
-        cache.put(name, new PlayerData(location, operator, playerGroup, flyEnabled, walkSpeed, flySpeed));
+        cache.put(name, new LimboPlayer(location, operator, playerGroup, flyEnabled, walkSpeed, flySpeed));
     }
 
     /**
@@ -78,7 +78,7 @@ public class LimboCache {
     public void restoreData(Player player) {
         String lowerName = player.getName().toLowerCase();
         if (cache.containsKey(lowerName)) {
-            PlayerData data = cache.get(lowerName);
+            LimboPlayer data = cache.get(lowerName);
             player.setOp(data.isOperator());
             player.setAllowFlight(data.isCanFly());
             float walkSpeed = data.getWalkSpeed();
@@ -114,7 +114,7 @@ public class LimboCache {
      */
     public void removeFromCache(Player player) {
         String name = player.getName().toLowerCase();
-        PlayerData cachedPlayer = cache.remove(name);
+        LimboPlayer cachedPlayer = cache.remove(name);
         if (cachedPlayer != null) {
             cachedPlayer.clearTasks();
         }
@@ -127,7 +127,7 @@ public class LimboCache {
      *
      * @return PlayerData
      */
-    public PlayerData getPlayerData(String name) {
+    public LimboPlayer getPlayerData(String name) {
         checkNotNull(name);
         return cache.get(name.toLowerCase());
     }

@@ -1,8 +1,8 @@
-package fr.xephi.authme.cache;
+package fr.xephi.authme.data;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.TempbanManager.TimedCounter;
+import fr.xephi.authme.data.TempbanManager.TimedCounter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;

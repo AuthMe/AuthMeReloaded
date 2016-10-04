@@ -1,7 +1,7 @@
 package fr.xephi.authme.converter;
 
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.backends.FlatFile;
 
 /**
  * Mandatory migration from the deprecated flat file datasource to SQLite.

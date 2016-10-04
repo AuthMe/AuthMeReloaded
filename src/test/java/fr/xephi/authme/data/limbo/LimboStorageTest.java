@@ -1,7 +1,7 @@
-package fr.xephi.authme.cache.limbo;
+package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.cache.backup.PlayerDataStorage;
+import fr.xephi.authme.data.backup.PlayerDataStorage;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
- * Test for {@link LimboCache}.
+ * Test for {@link LimboStorage}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class LimboCacheTest {
+public class LimboStorageTest {
 
     @InjectMocks
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Mock
     private Settings settings;
@@ -66,10 +66,10 @@ public class LimboCacheTest {
         given(playerDataStorage.hasData(player)).willReturn(false);
 
         // when
-        limboCache.addPlayerData(player);
+        limboStorage.addPlayerData(player);
 
         // then
-        PlayerData limboPlayer = limboCache.getPlayerData(name);
+        LimboPlayer limboPlayer = limboStorage.getPlayerData(name);
         assertThat(limboPlayer.getLocation(), equalTo(location));
         assertThat(limboPlayer.isOperator(), equalTo(true));
         assertThat(limboPlayer.getWalkSpeed(), equalTo(walkSpeed));
@@ -85,21 +85,21 @@ public class LimboCacheTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         given(playerDataStorage.hasData(player)).willReturn(true);
-        PlayerData playerData = mock(PlayerData.class);
-        given(playerDataStorage.readData(player)).willReturn(playerData);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(playerDataStorage.readData(player)).willReturn(limboPlayer);
         float walkSpeed = 2.4f;
-        given(playerData.getWalkSpeed()).willReturn(walkSpeed);
-        given(playerData.isCanFly()).willReturn(true);
+        given(limboPlayer.getWalkSpeed()).willReturn(walkSpeed);
+        given(limboPlayer.isCanFly()).willReturn(true);
         float flySpeed = 1.0f;
-        given(playerData.getFlySpeed()).willReturn(flySpeed);
+        given(limboPlayer.getFlySpeed()).willReturn(flySpeed);
         String group = "primary-group";
-        given(playerData.getGroup()).willReturn(group);
+        given(limboPlayer.getGroup()).willReturn(group);
 
         // when
-        limboCache.addPlayerData(player);
+        limboStorage.addPlayerData(player);
 
         // then
-        PlayerData result = limboCache.getPlayerData(name);
+        LimboPlayer result = limboStorage.getPlayerData(name);
         assertThat(result.getWalkSpeed(), equalTo(walkSpeed));
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getFlySpeed(), equalTo(flySpeed));
@@ -112,21 +112,21 @@ public class LimboCacheTest {
         String name = "Champ";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        PlayerData playerData = mock(PlayerData.class);
-        given(playerData.isOperator()).willReturn(true);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(limboPlayer.isOperator()).willReturn(true);
         float walkSpeed = 2.4f;
-        given(playerData.getWalkSpeed()).willReturn(walkSpeed);
-        given(playerData.isCanFly()).willReturn(true);
+        given(limboPlayer.getWalkSpeed()).willReturn(walkSpeed);
+        given(limboPlayer.isCanFly()).willReturn(true);
         float flySpeed = 1.0f;
-        given(playerData.getFlySpeed()).willReturn(flySpeed);
+        given(limboPlayer.getFlySpeed()).willReturn(flySpeed);
         String group = "primary-group";
-        given(playerData.getGroup()).willReturn(group);
-        getCache().put(name.toLowerCase(), playerData);
+        given(limboPlayer.getGroup()).willReturn(group);
+        getCache().put(name.toLowerCase(), limboPlayer);
         given(settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)).willReturn(true);
         given(permissionsManager.hasGroupSupport()).willReturn(true);
 
         // when
-        limboCache.restoreData(player);
+        limboStorage.restoreData(player);
 
         // then
         verify(player).setOp(true);
@@ -134,7 +134,7 @@ public class LimboCacheTest {
         verify(player).setAllowFlight(true);
         verify(player).setFlySpeed(flySpeed);
         verify(permissionsManager).setGroup(player, group);
-        verify(playerData).clearTasks();
+        verify(limboPlayer).clearTasks();
     }
 
     @Test
@@ -143,19 +143,19 @@ public class LimboCacheTest {
         String name = "Champ";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        PlayerData playerData = mock(PlayerData.class);
-        given(playerData.isOperator()).willReturn(true);
-        given(playerData.getWalkSpeed()).willReturn(0f);
-        given(playerData.isCanFly()).willReturn(true);
-        given(playerData.getFlySpeed()).willReturn(0f);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(limboPlayer.isOperator()).willReturn(true);
+        given(limboPlayer.getWalkSpeed()).willReturn(0f);
+        given(limboPlayer.isCanFly()).willReturn(true);
+        given(limboPlayer.getFlySpeed()).willReturn(0f);
         String group = "primary-group";
-        given(playerData.getGroup()).willReturn(group);
-        getCache().put(name.toLowerCase(), playerData);
+        given(limboPlayer.getGroup()).willReturn(group);
+        getCache().put(name.toLowerCase(), limboPlayer);
         given(settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)).willReturn(true);
         given(permissionsManager.hasGroupSupport()).willReturn(true);
 
         // when
-        limboCache.restoreData(player);
+        limboStorage.restoreData(player);
 
         // then
         verify(player).setWalkSpeed(0.2f);
@@ -170,7 +170,7 @@ public class LimboCacheTest {
         given(player.getName()).willReturn(name);
 
         // when
-        limboCache.restoreData(player);
+        limboStorage.restoreData(player);
 
         // then
         verify(player).getName();
@@ -180,36 +180,36 @@ public class LimboCacheTest {
     @Test
     public void shouldRemoveAndClearTasks() {
         // given
-        PlayerData playerData = mock(PlayerData.class);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
         String name = "abcdef";
-        getCache().put(name, playerData);
+        getCache().put(name, limboPlayer);
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
 
         // when
-        limboCache.removeFromCache(player);
+        limboStorage.removeFromCache(player);
 
         // then
         assertThat(getCache(), anEmptyMap());
-        verify(playerData).clearTasks();
+        verify(limboPlayer).clearTasks();
     }
 
     @Test
     public void shouldDeleteFromCacheAndStorage() {
         // given
-        PlayerData playerData = mock(PlayerData.class);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
         String name = "SomeName";
-        getCache().put(name.toLowerCase(), playerData);
-        getCache().put("othername", mock(PlayerData.class));
+        getCache().put(name.toLowerCase(), limboPlayer);
+        getCache().put("othername", mock(LimboPlayer.class));
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
 
         // when
-        limboCache.deletePlayerData(player);
+        limboStorage.deletePlayerData(player);
 
         // then
         assertThat(getCache(), aMapWithSize(1));
-        verify(playerData).clearTasks();
+        verify(limboPlayer).clearTasks();
         verify(playerDataStorage).removeData(player);
     }
 
@@ -217,14 +217,14 @@ public class LimboCacheTest {
     public void shouldReturnIfHasData() {
         // given
         String name = "tester";
-        getCache().put(name, mock(PlayerData.class));
+        getCache().put(name, mock(LimboPlayer.class));
 
         // when / then
-        assertThat(limboCache.hasPlayerData(name), equalTo(true));
-        assertThat(limboCache.hasPlayerData("someone_else"), equalTo(false));
+        assertThat(limboStorage.hasPlayerData(name), equalTo(true));
+        assertThat(limboStorage.hasPlayerData("someone_else"), equalTo(false));
     }
 
-    private Map<String, PlayerData> getCache() {
-        return ReflectionTestUtils.getFieldValue(LimboCache.class, limboCache, "cache");
+    private Map<String, LimboPlayer> getCache() {
+        return ReflectionTestUtils.getFieldValue(LimboStorage.class, limboStorage, "cache");
     }
 }

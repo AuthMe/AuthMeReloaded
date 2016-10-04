@@ -1,9 +1,9 @@
 package fr.xephi.authme.process.unregister;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
@@ -43,7 +43,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Inject
     private PlayerDataTaskManager playerDataTaskManager;
@@ -111,8 +111,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             teleportationService.teleportOnJoin(player);
             player.saveData();
 
-            limboCache.deletePlayerData(player);
-            limboCache.addPlayerData(player);
+            limboStorage.deletePlayerData(player);
+            limboStorage.addPlayerData(player);
 
             playerDataTaskManager.registerTimeoutTask(player);
             playerDataTaskManager.registerMessageTask(name, false);

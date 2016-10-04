@@ -1,10 +1,13 @@
-package fr.xephi.authme.datasource;
+package fr.xephi.authme.datasource.backends;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.Columns;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.XFBCRYPT;

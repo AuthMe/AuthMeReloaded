@@ -1,5 +1,8 @@
-package fr.xephi.authme.datasource;
+package fr.xephi.authme.datasource.backends;
 
+import fr.xephi.authme.datasource.AbstractResourceClosingTest;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.backends.SQLite;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 

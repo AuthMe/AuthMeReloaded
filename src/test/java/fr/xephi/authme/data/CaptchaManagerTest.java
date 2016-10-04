@@ -1,4 +1,4 @@
-package fr.xephi.authme.cache;
+package fr.xephi.authme.data;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;

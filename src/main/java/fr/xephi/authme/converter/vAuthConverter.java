@@ -1,7 +1,7 @@
 package fr.xephi.authme.converter;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import org.bukkit.Bukkit;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.UUID;
 
-import static fr.xephi.authme.util.StringUtils.makePath;
+import static fr.xephi.authme.util.FileUtils.makePath;
 
 public class vAuthConverter implements Converter {
 

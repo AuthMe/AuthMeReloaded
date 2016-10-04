@@ -1,6 +1,6 @@
 package fr.xephi.authme.task;
 
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache;
 import org.bukkit.entity.Player;
 
 /**

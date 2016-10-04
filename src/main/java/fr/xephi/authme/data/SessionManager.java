@@ -1,4 +1,4 @@
-package fr.xephi.authme.cache;
+package fr.xephi.authme.data;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.HasCleanup;

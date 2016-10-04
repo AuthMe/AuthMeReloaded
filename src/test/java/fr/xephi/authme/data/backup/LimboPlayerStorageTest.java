@@ -1,15 +1,15 @@
-package fr.xephi.authme.cache.backup;
+package fr.xephi.authme.data.backup;
 
 import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.FileUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  * Test for {@link PlayerDataStorage}.
  */
 @RunWith(DelayedInjectionRunner.class)
-public class PlayerDataStorageTest {
+public class LimboPlayerStorageTest {
 
     private static final UUID SAMPLE_UUID = UUID.nameUUIDFromBytes("PlayerDataStorageTest".getBytes());
     private static final String SOURCE_FOLDER = TestHelper.PROJECT_ROOT + "cache/backup/";
@@ -61,11 +61,11 @@ public class PlayerDataStorageTest {
     @BeforeInjecting
     public void copyTestFiles() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        File playerFolder = new File(dataFolder, StringUtils.makePath("playerdata", SAMPLE_UUID.toString()));
+        File playerFolder = new File(dataFolder, FileUtils.makePath("playerdata", SAMPLE_UUID.toString()));
         if (!playerFolder.mkdirs()) {
             throw new IllegalStateException("Cannot create '" + playerFolder.getAbsolutePath() + "'");
         }
-        Files.copy(TestHelper.getJarPath(StringUtils.makePath(SOURCE_FOLDER, "sample-folder", "data.json")),
+        Files.copy(TestHelper.getJarPath(FileUtils.makePath(SOURCE_FOLDER, "sample-folder", "data.json")),
             new File(playerFolder, "data.json").toPath());
     }
 
@@ -78,7 +78,7 @@ public class PlayerDataStorageTest {
         given(bukkitService.getWorld("nether")).willReturn(world);
 
         // when
-        PlayerData data = playerDataStorage.readData(player);
+        LimboPlayer data = playerDataStorage.readData(player);
 
         // then
         assertThat(data, not(nullValue()));
@@ -103,7 +103,7 @@ public class PlayerDataStorageTest {
         given(player.getUniqueId()).willReturn(UUID.nameUUIDFromBytes("other-player".getBytes()));
 
         // when
-        PlayerData data = playerDataStorage.readData(player);
+        LimboPlayer data = playerDataStorage.readData(player);
 
         // then
         assertThat(data, nullValue());
@@ -143,7 +143,7 @@ public class PlayerDataStorageTest {
         playerDataStorage.saveData(player);
 
         // then
-        File playerFile = new File(dataFolder, StringUtils.makePath("playerdata", uuid.toString(), "data.json"));
+        File playerFile = new File(dataFolder, FileUtils.makePath("playerdata", uuid.toString(), "data.json"));
         assertThat(playerFile.exists(), equalTo(true));
         // TODO ljacqu 20160711: Check contents of file
     }

@@ -1,9 +1,9 @@
 package fr.xephi.authme.initialization;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.PlayerDataStorage;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.backup.PlayerDataStorage;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.settings.Settings;
@@ -28,7 +28,7 @@ public class OnShutdownPlayerSaver {
     @Inject
     private ValidationService validationService;
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
     @Inject
     private DataSource dataSource;
     @Inject
@@ -57,9 +57,9 @@ public class OnShutdownPlayerSaver {
         if (pluginHooks.isNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
-        if (limboCache.hasPlayerData(name)) {
-            limboCache.restoreData(player);
-            limboCache.removeFromCache(player);
+        if (limboStorage.hasPlayerData(name)) {
+            limboStorage.restoreData(player);
+            limboStorage.removeFromCache(player);
         } else {
             saveLoggedinPlayer(player);
         }

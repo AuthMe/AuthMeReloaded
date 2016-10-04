@@ -2,7 +2,7 @@ package fr.xephi.authme.converter;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 
-import static fr.xephi.authme.util.StringUtils.makePath;
+import static fr.xephi.authme.util.FileUtils.makePath;
 
 public class RoyalAuthConverter implements Converter {
 

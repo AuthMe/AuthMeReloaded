@@ -1,9 +1,9 @@
 package fr.xephi.authme.process.unregister;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
@@ -53,7 +53,7 @@ public class AsynchronousUnregisterTest {
     @Mock
     private BukkitService bukkitService;
     @Mock
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
     @Mock
     private PlayerDataTaskManager playerDataTaskManager;
     @Mock
@@ -85,7 +85,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(service).send(player, MessageKey.WRONG_PASSWORD);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
-        verifyZeroInteractions(dataSource, playerDataTaskManager, limboCache, authGroupHandler, teleportationService);
+        verifyZeroInteractions(dataSource, playerDataTaskManager, limboStorage, authGroupHandler, teleportationService);
         verify(player, only()).getName();
     }
 

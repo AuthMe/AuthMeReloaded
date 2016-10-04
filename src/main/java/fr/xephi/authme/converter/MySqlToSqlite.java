@@ -2,7 +2,7 @@ package fr.xephi.authme.converter;
 
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.datasource.MySQL;
+import fr.xephi.authme.datasource.backends.MySQL;
 import fr.xephi.authme.settings.Settings;
 
 import javax.inject.Inject;

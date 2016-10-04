@@ -1,8 +1,8 @@
 package fr.xephi.authme.service;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AbstractTeleportEvent;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
@@ -101,7 +101,7 @@ public class TeleportationService implements Reloadable {
      * @param auth corresponding PlayerAuth object
      * @param limbo corresponding PlayerData object
      */
-    public void teleportOnLogin(final Player player, PlayerAuth auth, PlayerData limbo) {
+    public void teleportOnLogin(final Player player, PlayerAuth auth, LimboPlayer limbo) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }

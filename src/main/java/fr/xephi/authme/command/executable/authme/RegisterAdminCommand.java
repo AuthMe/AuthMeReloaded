@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
@@ -39,7 +39,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
     private ValidationService validationService;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
@@ -83,7 +83,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
                         @Override
                         public void run() {
-                            limboCache.restoreData(player);
+                            limboStorage.restoreData(player);
                             player.kickPlayer(commandService.retrieveSingle(MessageKey.KICK_FOR_ADMIN_REGISTER));
                         }
                     });

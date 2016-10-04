@@ -2,7 +2,7 @@ package fr.xephi.authme.converter;
 
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.datasource.SQLite;
+import fr.xephi.authme.datasource.backends.SQLite;
 import fr.xephi.authme.settings.Settings;
 
 import javax.inject.Inject;

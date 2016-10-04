@@ -1,4 +1,4 @@
-package fr.xephi.authme.cache;
+package fr.xephi.authme.data;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.initialization.HasCleanup;

@@ -2,10 +2,10 @@ package fr.xephi.authme.converter;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.backends.FlatFile;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;

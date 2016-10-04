@@ -2,10 +2,10 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.SessionManager;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboStorage;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
@@ -55,7 +55,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Inject
     private SessionManager sessionManager;
@@ -119,7 +119,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
-            limboCache.addPlayerData(player);
+            limboStorage.addPlayerData(player);
             service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
 
             // Protect inventory
@@ -148,8 +148,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
         } else {
             // Not Registered. Delete old data, load default one.
-            limboCache.deletePlayerData(player);
-            limboCache.addPlayerData(player);
+            limboStorage.deletePlayerData(player);
+            limboStorage.addPlayerData(player);
 
             // Groups logic
             service.setGroup(player, AuthGroupType.UNREGISTERED);

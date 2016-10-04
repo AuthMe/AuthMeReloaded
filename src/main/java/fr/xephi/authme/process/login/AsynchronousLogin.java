@@ -2,12 +2,12 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.CaptchaManager;
-import fr.xephi.authme.cache.TempbanManager;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.CaptchaManager;
+import fr.xephi.authme.data.TempbanManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboStorage;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.output.MessageKey;
@@ -53,7 +53,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Inject
     private SyncProcessManager syncProcessManager;
@@ -241,9 +241,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            PlayerData playerData = limboCache.getPlayerData(name);
-            if (playerData != null) {
-                playerData.clearTasks();
+            LimboPlayer limboPlayer = limboStorage.getPlayerData(name);
+            if (limboPlayer != null) {
+                limboPlayer.clearTasks();
             }
             syncProcessManager.processSyncPlayerLogin(player);
         } else {

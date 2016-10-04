@@ -1,4 +1,4 @@
-package fr.xephi.authme.cache.backup;
+package fr.xephi.authme.data.backup;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -50,8 +50,8 @@ public class PlayerDataStorage {
             ConsoleLogger.warning("Failed to create userdata directory.");
         }
         gson = new GsonBuilder()
-            .registerTypeAdapter(PlayerData.class, new PlayerDataSerializer())
-            .registerTypeAdapter(PlayerData.class, new PlayerDataDeserializer())
+            .registerTypeAdapter(LimboPlayer.class, new PlayerDataSerializer())
+            .registerTypeAdapter(LimboPlayer.class, new PlayerDataDeserializer())
             .setPrettyPrinting()
             .create();
     }
@@ -63,7 +63,7 @@ public class PlayerDataStorage {
      *
      * @return PlayerData object if the data is exist, null otherwise.
      */
-    public PlayerData readData(Player player) {
+    public LimboPlayer readData(Player player) {
         String id = PlayerUtils.getUUIDorName(player);
         File file = new File(cacheDir, id + File.separator + "data.json");
         if (!file.exists()) {
@@ -72,7 +72,7 @@ public class PlayerDataStorage {
 
         try {
             String str = Files.toString(file, StandardCharsets.UTF_8);
-            return gson.fromJson(str, PlayerData.class);
+            return gson.fromJson(str, LimboPlayer.class);
         } catch (IOException e) {
             ConsoleLogger.logException("Could not read player data on disk for '" + player.getName() + "'", e);
             return null;
@@ -95,12 +95,12 @@ public class PlayerDataStorage {
         boolean canFly = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
         float flySpeed = player.getFlySpeed();
-        PlayerData playerData = new PlayerData(location, operator, group, canFly, walkSpeed, flySpeed);
+        LimboPlayer limboPlayer = new LimboPlayer(location, operator, group, canFly, walkSpeed, flySpeed);
         try {
             File file = new File(cacheDir, id + File.separator + "data.json");
             Files.createParentDirs(file);
             Files.touch(file);
-            Files.write(gson.toJson(playerData), file, StandardCharsets.UTF_8);
+            Files.write(gson.toJson(limboPlayer), file, StandardCharsets.UTF_8);
         } catch (IOException e) {
             ConsoleLogger.logException("Failed to write " + player.getName() + " data.", e);
         }
@@ -136,10 +136,10 @@ public class PlayerDataStorage {
         return file.exists();
     }
 
-    private class PlayerDataDeserializer implements JsonDeserializer<PlayerData> {
+    private class PlayerDataDeserializer implements JsonDeserializer<LimboPlayer> {
         @Override
-        public PlayerData deserialize(JsonElement jsonElement, Type type,
-                                      JsonDeserializationContext context) {
+        public LimboPlayer deserialize(JsonElement jsonElement, Type type,
+                                       JsonDeserializationContext context) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             if (jsonObject == null) {
                 return null;
@@ -181,18 +181,18 @@ public class PlayerDataStorage {
                 flySpeed = e.getAsFloat();
             }
 
-            return new PlayerData(loc, operator, group, canFly, walkSpeed, flySpeed);
+            return new LimboPlayer(loc, operator, group, canFly, walkSpeed, flySpeed);
         }
     }
 
-    private class PlayerDataSerializer implements JsonSerializer<PlayerData> {
+    private class PlayerDataSerializer implements JsonSerializer<LimboPlayer> {
         @Override
-        public JsonElement serialize(PlayerData playerData, Type type,
+        public JsonElement serialize(LimboPlayer limboPlayer, Type type,
                                      JsonSerializationContext context) {
             JsonObject obj = new JsonObject();
-            obj.addProperty("group", playerData.getGroup());
+            obj.addProperty("group", limboPlayer.getGroup());
 
-            Location loc = playerData.getLocation();
+            Location loc = limboPlayer.getLocation();
             JsonObject obj2 = new JsonObject();
             obj2.addProperty("world", loc.getWorld().getName());
             obj2.addProperty("x", loc.getX());
@@ -202,10 +202,10 @@ public class PlayerDataStorage {
             obj2.addProperty("pitch", loc.getPitch());
             obj.add("location", obj2);
 
-            obj.addProperty("operator", playerData.isOperator());
-            obj.addProperty("can-fly", playerData.isCanFly());
-            obj.addProperty("walk-speed", playerData.getWalkSpeed());
-            obj.addProperty("fly-speed", playerData.getFlySpeed());
+            obj.addProperty("operator", limboPlayer.isOperator());
+            obj.addProperty("can-fly", limboPlayer.isCanFly());
+            obj.addProperty("walk-speed", limboPlayer.getWalkSpeed());
+            obj.addProperty("fly-speed", limboPlayer.getFlySpeed());
             return obj;
         }
     }

@@ -1,6 +1,6 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
 

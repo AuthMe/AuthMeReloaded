@@ -1,9 +1,9 @@
 package fr.xephi.authme.task;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboStorage;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Test for {@link PlayerDataTaskManager}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PlayerDataTaskManagerTest {
+public class LimboPlayerTaskManagerTest {
 
     @InjectMocks
     private PlayerDataTaskManager playerDataTaskManager;
@@ -46,7 +46,7 @@ public class PlayerDataTaskManagerTest {
     private BukkitService bukkitService;
 
     @Mock
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     @Mock
     private PlayerCache playerCache;
@@ -60,8 +60,8 @@ public class PlayerDataTaskManagerTest {
     public void shouldRegisterMessageTask() {
         // given
         String name = "bobby";
-        PlayerData playerData = mock(PlayerData.class);
-        given(limboCache.getPlayerData(name)).willReturn(playerData);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(limboStorage.getPlayerData(name)).willReturn(limboPlayer);
         MessageKey key = MessageKey.REGISTER_EMAIL_MESSAGE;
         given(messages.retrieve(key)).willReturn(new String[]{"Please register!"});
         BukkitTask bukkiTask = mock(BukkitTask.class);
@@ -73,7 +73,7 @@ public class PlayerDataTaskManagerTest {
         playerDataTaskManager.registerMessageTask(name, false);
 
         // then
-        verify(playerData).setMessageTask(bukkiTask);
+        verify(limboPlayer).setMessageTask(bukkiTask);
         verify(messages).retrieve(key);
     }
 
@@ -81,14 +81,14 @@ public class PlayerDataTaskManagerTest {
     public void shouldNotScheduleTaskForMissingLimboPlayer() {
         // given
         String name = "ghost";
-        given(limboCache.getPlayerData(name)).willReturn(null);
+        given(limboStorage.getPlayerData(name)).willReturn(null);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(5);
 
         // when
         playerDataTaskManager.registerMessageTask(name, true);
 
         // then
-        verify(limboCache).getPlayerData(name);
+        verify(limboStorage).getPlayerData(name);
         verifyZeroInteractions(bukkitService);
         verifyZeroInteractions(messages);
     }
@@ -97,8 +97,8 @@ public class PlayerDataTaskManagerTest {
     public void shouldNotScheduleTaskForZeroAsInterval() {
         // given
         String name = "Tester1";
-        PlayerData playerData = mock(PlayerData.class);
-        given(limboCache.getPlayerData(name)).willReturn(playerData);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(limboStorage.getPlayerData(name)).willReturn(limboPlayer);
         BukkitTask bukkiTask = mock(BukkitTask.class);
         given(bukkitService.runTask(any(MessageTask.class))).willReturn(bukkiTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(0);
@@ -107,18 +107,18 @@ public class PlayerDataTaskManagerTest {
         playerDataTaskManager.registerMessageTask(name, true);
 
         // then
-        verifyZeroInteractions(playerData, bukkitService);
+        verifyZeroInteractions(limboPlayer, bukkitService);
     }
 
     @Test
     public void shouldCancelExistingMessageTask() {
         // given
-        PlayerData playerData = mock(PlayerData.class);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
         BukkitTask existingMessageTask = mock(BukkitTask.class);
-        given(playerData.getMessageTask()).willReturn(existingMessageTask);
+        given(limboPlayer.getMessageTask()).willReturn(existingMessageTask);
 
         String name = "bobby";
-        given(limboCache.getPlayerData(name)).willReturn(playerData);
+        given(limboStorage.getPlayerData(name)).willReturn(limboPlayer);
         given(messages.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE))
             .willReturn(new String[]{"Please register", "Use /register"});
 
@@ -131,7 +131,7 @@ public class PlayerDataTaskManagerTest {
         playerDataTaskManager.registerMessageTask(name, false);
 
         // then
-        verify(playerData).setMessageTask(bukkiTask);
+        verify(limboPlayer).setMessageTask(bukkiTask);
         verify(messages).retrieve(MessageKey.REGISTER_EMAIL_MESSAGE);
         verify(existingMessageTask).cancel();
     }
@@ -142,8 +142,8 @@ public class PlayerDataTaskManagerTest {
         String name = "l33tPlayer";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        PlayerData playerData = mock(PlayerData.class);
-        given(limboCache.getPlayerData(name)).willReturn(playerData);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(limboStorage.getPlayerData(name)).willReturn(limboPlayer);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(30);
         BukkitTask bukkitTask = mock(BukkitTask.class);
         given(bukkitService.runTaskLater(any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
@@ -152,7 +152,7 @@ public class PlayerDataTaskManagerTest {
         playerDataTaskManager.registerTimeoutTask(player);
 
         // then
-        verify(playerData).setTimeoutTask(bukkitTask);
+        verify(limboPlayer).setTimeoutTask(bukkitTask);
         verify(bukkitService).runTaskLater(any(TimeoutTask.class), eq(600L)); // 30 * TICKS_PER_SECOND
         verify(messages).retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR);
     }
@@ -163,7 +163,7 @@ public class PlayerDataTaskManagerTest {
         String name = "Phantom_";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        given(limboCache.getPlayerData(name)).willReturn(null);
+        given(limboStorage.getPlayerData(name)).willReturn(null);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(27);
 
         // when
@@ -179,15 +179,15 @@ public class PlayerDataTaskManagerTest {
         String name = "snail";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        PlayerData playerData = mock(PlayerData.class);
-        given(limboCache.getPlayerData(name)).willReturn(playerData);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(limboStorage.getPlayerData(name)).willReturn(limboPlayer);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(0);
 
         // when
         playerDataTaskManager.registerTimeoutTask(player);
 
         // then
-        verifyZeroInteractions(playerData, bukkitService);
+        verifyZeroInteractions(limboPlayer, bukkitService);
     }
 
     @Test
@@ -196,10 +196,10 @@ public class PlayerDataTaskManagerTest {
         String name = "l33tPlayer";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        PlayerData playerData = mock(PlayerData.class);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
         BukkitTask existingTask = mock(BukkitTask.class);
-        given(playerData.getTimeoutTask()).willReturn(existingTask);
-        given(limboCache.getPlayerData(name)).willReturn(playerData);
+        given(limboPlayer.getTimeoutTask()).willReturn(existingTask);
+        given(limboStorage.getPlayerData(name)).willReturn(limboPlayer);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(18);
         BukkitTask bukkitTask = mock(BukkitTask.class);
         given(bukkitService.runTaskLater(any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
@@ -209,7 +209,7 @@ public class PlayerDataTaskManagerTest {
 
         // then
         verify(existingTask).cancel();
-        verify(playerData).setTimeoutTask(bukkitTask);
+        verify(limboPlayer).setTimeoutTask(bukkitTask);
         verify(bukkitService).runTaskLater(any(TimeoutTask.class), eq(360L)); // 18 * TICKS_PER_SECOND
         verify(messages).retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR);
     }

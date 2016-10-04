@@ -1,8 +1,8 @@
 package fr.xephi.authme.permission;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.limbo.LimboStorage;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -25,7 +25,7 @@ public class AuthGroupHandler implements Reloadable {
     private Settings settings;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboStorage limboStorage;
 
     private String unloggedInGroup;
     private String unregisteredGroup;
@@ -72,7 +72,7 @@ public class AuthGroupHandler implements Reloadable {
 
             case LOGGED_IN:
                 // Get the player data
-                PlayerData data = limboCache.getPlayerData(player.getName().toLowerCase());
+                LimboPlayer data = limboStorage.getPlayerData(player.getName().toLowerCase());
                 if (data == null) {
                     return false;
                 }

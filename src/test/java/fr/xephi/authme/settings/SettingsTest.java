@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static fr.xephi.authme.settings.properties.PluginSettings.MESSAGES_LANGUAGE;
-import static fr.xephi.authme.util.StringUtils.makePath;
+import static fr.xephi.authme.util.FileUtils.makePath;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.endsWith;
