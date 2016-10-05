@@ -11,6 +11,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,6 +23,8 @@ import static fr.xephi.authme.TestHelper.runSyncDelayedTaskWithDelay;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
@@ -51,6 +54,7 @@ public class AntiBotServiceTest {
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DURATION)).willReturn(10);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(true);
+        given(settings.getProperty(ProtectionSettings.ANTIBOT_DELAY)).willReturn(8);
     }
 
     @Test
@@ -202,6 +206,20 @@ public class AntiBotServiceTest {
         verify(permissionsManager).hasPermission(players.get(0), AdminPermission.ANTIBOT_MESSAGES);
         verify(permissionsManager).hasPermission(players.get(1), AdminPermission.ANTIBOT_MESSAGES);
         verify(messages, only()).send(players.get(1), MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
+    }
+
+    @Test
+    public void shouldImmediatelyStartAfterFirstStartup() {
+        // given - listening antibot
+        runSyncDelayedTaskWithDelay(bukkitService);
+        given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(mock(BukkitTask.class));
+        antiBotService.overrideAntiBotStatus(true);
+
+        // when
+        antiBotService.reload(settings);
+
+        // then
+        assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
     private static int getAntiBotCount(AntiBotService antiBotService) {
