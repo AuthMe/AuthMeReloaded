@@ -435,6 +435,8 @@ Protection:
     antiBotSensibility: 10
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10
+    # Delay in seconds before the antibot activation
+    antiBotDelay: 60
 GroupOptions:
     # Registered permission group
     RegisteredPlayerGroup: ''

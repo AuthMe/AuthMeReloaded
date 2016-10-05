@@ -29,9 +29,11 @@ public class AntiBotService implements SettingsDependent {
     // Settings
     private int duration;
     private int sensibility;
+    private int delay;
 
     // Service status
     private AntiBotStatus antiBotStatus;
+    private boolean startup;
     private BukkitTask disableTask;
     private int antibotPlayers;
     private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<>();
@@ -47,6 +49,7 @@ public class AntiBotService implements SettingsDependent {
         disableTask = null;
         antibotPlayers = 0;
         antiBotStatus = AntiBotStatus.DISABLED;
+        startup = true;
         // Load settings and start if required
         reload(settings);
     }
@@ -56,6 +59,7 @@ public class AntiBotService implements SettingsDependent {
         // Load settings
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
+        delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
 
         // Stop existing protection
         stopProtection();
@@ -66,13 +70,21 @@ public class AntiBotService implements SettingsDependent {
             return;
         }
 
-        // Schedule the bot activation
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
+        // Bot activation task
+        Runnable enableTask = new Runnable() {
             @Override
             public void run() {
                 antiBotStatus = AntiBotStatus.LISTENING;
             }
-        }, 90 * TICKS_PER_SECOND);
+        };
+
+        // Delay the schedule on first start
+        if(startup) {
+            bukkitService.scheduleSyncDelayedTask(enableTask, delay * TICKS_PER_SECOND);
+            startup = false;
+        } else {
+            enableTask.run();
+        }
     }
 
     private void startProtection() {

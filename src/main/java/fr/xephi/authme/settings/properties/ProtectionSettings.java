@@ -42,6 +42,10 @@ public class ProtectionSettings implements SettingsHolder {
     public static final Property<Integer> ANTIBOT_DURATION =
         newProperty("Protection.antiBotDuration", 10);
 
+    @Comment("Delay in seconds before the antibot activation")
+    public static final Property<Integer> ANTIBOT_DELAY =
+        newProperty("Protection.antiBotDelay", 60);
+
     private ProtectionSettings() {
     }
 
