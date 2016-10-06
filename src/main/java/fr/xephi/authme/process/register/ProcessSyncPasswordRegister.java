@@ -10,7 +10,7 @@ import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -31,7 +31,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     ProcessSyncPasswordRegister() {
     }
@@ -54,8 +54,8 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
         limboCache.updatePlayerData(player);
-        playerDataTaskManager.registerTimeoutTask(player);
-        playerDataTaskManager.registerMessageTask(name, true);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();

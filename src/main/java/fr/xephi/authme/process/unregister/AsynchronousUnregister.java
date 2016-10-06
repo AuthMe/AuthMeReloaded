@@ -13,7 +13,7 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.command.CommandSender;
@@ -46,7 +46,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private TeleportationService teleportationService;
@@ -114,8 +114,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             limboCache.deletePlayerData(player);
             limboCache.addPlayerData(player);
 
-            playerDataTaskManager.registerTimeoutTask(player);
-            playerDataTaskManager.registerMessageTask(name, false);
+            limboPlayerTaskManager.registerTimeoutTask(player);
+            limboPlayerTaskManager.registerMessageTask(name, false);
             applyBlindEffect(player);
         }
         authGroupHandler.setGroup(player, AuthGroupType.UNREGISTERED);

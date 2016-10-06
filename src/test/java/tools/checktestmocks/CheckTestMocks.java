@@ -36,7 +36,7 @@ public class CheckTestMocks implements AutoToolTask {
 
     @Override
     public void executeDefault() {
-        ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT);
+        ClassCollector collector = new ClassCollector(TestHelper.TEST_SOURCES_FOLDER, TestHelper.PROJECT_ROOT);
         for (Class<?> clazz : collector.collectClasses(c -> isTestClassWithMocks(c))) {
             checkClass(clazz);
         }

@@ -28,13 +28,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Test for {@link PlayerDataTaskManager}.
+ * Test for {@link LimboPlayerTaskManager}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LimboPlayerTaskManagerTest {
 
     @InjectMocks
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Mock
     private Messages messages;
@@ -70,7 +70,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
 
         // when
-        playerDataTaskManager.registerMessageTask(name, false);
+        limboPlayerTaskManager.registerMessageTask(name, false);
 
         // then
         verify(limboPlayer).setMessageTask(bukkiTask);
@@ -85,7 +85,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(5);
 
         // when
-        playerDataTaskManager.registerMessageTask(name, true);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         // then
         verify(limboCache).getPlayerData(name);
@@ -104,7 +104,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(0);
 
         // when
-        playerDataTaskManager.registerMessageTask(name, true);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         // then
         verifyZeroInteractions(limboPlayer, bukkitService);
@@ -128,7 +128,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
 
         // when
-        playerDataTaskManager.registerMessageTask(name, false);
+        limboPlayerTaskManager.registerMessageTask(name, false);
 
         // then
         verify(limboPlayer).setMessageTask(bukkiTask);
@@ -149,7 +149,7 @@ public class LimboPlayerTaskManagerTest {
         given(bukkitService.runTaskLater(any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
 
         // when
-        playerDataTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerTimeoutTask(player);
 
         // then
         verify(limboPlayer).setTimeoutTask(bukkitTask);
@@ -167,7 +167,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(27);
 
         // when
-        playerDataTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerTimeoutTask(player);
 
         // then
         verifyZeroInteractions(bukkitService, messages);
@@ -184,7 +184,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(0);
 
         // when
-        playerDataTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerTimeoutTask(player);
 
         // then
         verifyZeroInteractions(limboPlayer, bukkitService);
@@ -205,7 +205,7 @@ public class LimboPlayerTaskManagerTest {
         given(bukkitService.runTaskLater(any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
 
         // when
-        playerDataTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerTimeoutTask(player);
 
         // then
         verify(existingTask).cancel();

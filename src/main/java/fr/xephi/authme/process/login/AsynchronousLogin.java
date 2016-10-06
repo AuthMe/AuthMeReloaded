@@ -24,7 +24,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -71,7 +71,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private TempbanManager tempbanManager;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     AsynchronousLogin() {
     }
@@ -120,7 +120,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
             // Recreate the message task to immediately send the message again as response
             // and to make sure we send the right register message (password vs. email registration)
-            playerDataTaskManager.registerMessageTask(name, false);
+            limboPlayerTaskManager.registerMessageTask(name, false);
             return null;
         }
 

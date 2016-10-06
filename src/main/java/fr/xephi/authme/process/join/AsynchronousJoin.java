@@ -19,7 +19,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.PlayerUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -67,7 +67,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private AsynchronousLogin asynchronousLogin;
@@ -185,8 +185,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         });
 
         // Timeout and message task
-        playerDataTaskManager.registerTimeoutTask(player);
-        playerDataTaskManager.registerMessageTask(name, isAuthAvailable);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
     }
 
     private boolean isPlayerUnrestricted(String name) {

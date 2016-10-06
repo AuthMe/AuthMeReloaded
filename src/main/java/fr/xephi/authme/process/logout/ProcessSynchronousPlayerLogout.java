@@ -10,7 +10,7 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     private ProtocolLibService protocolLibService;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private SessionManager sessionManager;
@@ -53,8 +53,8 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
             protocolLibService.sendBlankInventoryPacket(player);
         }
 
-        playerDataTaskManager.registerTimeoutTask(player);
-        playerDataTaskManager.registerMessageTask(name, true);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         applyLogoutEffect(player);
 

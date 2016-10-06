@@ -20,7 +20,7 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 /**
  * Registers tasks associated with a PlayerData.
  */
-public class PlayerDataTaskManager {
+public class LimboPlayerTaskManager {
 
     @Inject
     private Messages messages;
@@ -37,7 +37,7 @@ public class PlayerDataTaskManager {
     @Inject
     private PlayerCache playerCache;
 
-    PlayerDataTaskManager() {
+    LimboPlayerTaskManager() {
     }
 
 

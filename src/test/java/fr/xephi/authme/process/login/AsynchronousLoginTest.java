@@ -13,7 +13,7 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
@@ -58,7 +58,7 @@ public class AsynchronousLoginTest {
     @Mock
     private ProcessService processService;
     @Mock
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
     @Mock
     private BukkitService bukkitService;
     @Mock
