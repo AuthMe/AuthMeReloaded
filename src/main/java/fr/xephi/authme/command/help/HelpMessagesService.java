@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class HelpMessagesService implements Reloadable {
 
-    private static final String COMMAND_PREFIX = "command.";
+    private static final String COMMAND_PREFIX = "commands.";
     private static final String DESCRIPTION_SUFFIX = ".description";
     private static final String DETAILED_DESCRIPTION_SUFFIX = ".detailedDescription";
     private static final String DEFAULT_PERMISSIONS_PATH = "common.defaultPermissions.";

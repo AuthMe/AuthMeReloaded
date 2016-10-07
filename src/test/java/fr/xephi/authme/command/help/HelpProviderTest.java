@@ -8,6 +8,7 @@ import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.FoundResultStatus;
 import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -72,8 +73,7 @@ public class HelpProviderTest {
     @BeforeInjecting
     public void setInitialSettings() {
         given(settings.getProperty(PluginSettings.HELP_HEADER)).willReturn(HELP_HEADER);
-        given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
-            .willAnswer(new ReturnsArgumentAt(0));
+        setDefaultHelpMessages(helpMessagesService);
     }
 
     @Test
@@ -160,9 +160,9 @@ public class HelpProviderTest {
         assertThat(lines, hasSize(5));
         assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
         assertThat(removeColors(lines.get(2)),
-            containsString(AdminPermission.UNREGISTER.getNode() + " (You have permission)"));
-        assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (You have permission)"));
-        assertThat(removeColors(lines.get(4)), containsString("Result: You have permission"));
+            containsString(AdminPermission.UNREGISTER.getNode() + " (Has permission)"));
+        assertThat(removeColors(lines.get(3)), containsString("Default: Op only (Has permission)"));
+        assertThat(removeColors(lines.get(4)), containsString("Result: Has permission"));
     }
 
     @Test
@@ -183,7 +183,7 @@ public class HelpProviderTest {
         assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
         assertThat(removeColors(lines.get(2)),
             containsString(AdminPermission.UNREGISTER.getNode() + " (No permission)"));
-        assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (No permission)"));
+        assertThat(removeColors(lines.get(3)), containsString("Default: Op only (No permission)"));
         assertThat(removeColors(lines.get(4)), containsString("Result: No permission"));
     }
 
@@ -363,6 +363,21 @@ public class HelpProviderTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(captor.capture());
         return captor.getAllValues();
+    }
+
+    private static void setDefaultHelpMessages(HelpMessagesService helpMessagesService) {
+        given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
+            .willAnswer(new ReturnsArgumentAt(0));
+        for (HelpMessageKey key : HelpMessageKey.values()) {
+            String text = key.name().replace("_", " ").toLowerCase();
+            given(helpMessagesService.getMessage(key))
+                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+        }
+        for (DefaultPermission permission : DefaultPermission.values()) {
+            String text = permission.name().replace("_", " ").toLowerCase();
+            given(helpMessagesService.getMessage(permission))
+                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+        }
     }
 
 }

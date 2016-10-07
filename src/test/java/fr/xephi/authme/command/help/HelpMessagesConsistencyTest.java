@@ -1,0 +1,89 @@
+package fr.xephi.authme.command.help;
+
+import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.command.CommandInitializer;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.Test;
+
+import java.io.File;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+/**
+ * Tests that /messages/help_en.yml contains texts that correspond
+ * to the texts provided in the CommandDescription.
+ */
+public class HelpMessagesConsistencyTest {
+
+    private static final File DEFAULT_MESSAGES_FILE = TestHelper.getJarFile("/messages/help_en.yml");
+
+    @Test
+    public void shouldHaveIdenticalTexts() {
+        // given
+        CommandDescription description = getAuthMeRegisterDescription();
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
+        final String path = "commands.authme.register.";
+
+        // when / then
+        assertThat(configuration.get(path + "description"), equalTo(description.getDescription()));
+        assertThat(configuration.get(path + "detailedDescription"), equalTo(description.getDetailedDescription()));
+        assertThat(configuration.get(path + "arg1.label"), equalTo(description.getArguments().get(0).getName()));
+        assertThat(configuration.get(path + "arg1.description"), equalTo(description.getArguments().get(0).getDescription()));
+        assertThat(configuration.get(path + "arg2.label"), equalTo(description.getArguments().get(1).getName()));
+        assertThat(configuration.get(path + "arg2.description"), equalTo(description.getArguments().get(1).getDescription()));
+    }
+
+    /**
+     * Since CommandInitializer contains all descriptions for commands in English, the help_en.yml file
+     * only contains an entry for one command as to provide an example.
+     */
+    @Test
+    public void shouldOnlyHaveDescriptionForOneCommand() {
+        // given
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
+
+        // when
+        Object commands = configuration.get("commands");
+
+        // then
+        assertThat(commands, instanceOf(MemorySection.class));
+        assertThat(((MemorySection) commands).getKeys(false), contains("authme"));
+    }
+
+    @Test
+    public void shouldHaveEntryForEachHelpMessageKey() {
+        // given
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
+
+        // when / then
+        for (HelpMessageKey key : HelpMessageKey.values()) {
+            assertThat("Default configuration has entry for key '" + key + "'",
+                configuration.contains(key.getKey()), equalTo(true));
+        }
+    }
+
+    /**
+     * @return the CommandDescription object for the {@code /authme register} command.
+     */
+    private static CommandDescription getAuthMeRegisterDescription() {
+        Set<CommandDescription> commands = new CommandInitializer().getCommands();
+
+        List<CommandDescription> children = commands.stream()
+            .filter(command -> command.getLabels().contains("authme"))
+            .map(CommandDescription::getChildren)
+            .findFirst().get();
+
+        return children
+            .stream()
+            .filter(child -> child.getLabels().contains("register"))
+            .findFirst().get();
+    }
+}
