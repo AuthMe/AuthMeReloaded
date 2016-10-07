@@ -1,6 +1,6 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;

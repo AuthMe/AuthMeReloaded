@@ -1,8 +1,8 @@
 package fr.xephi.authme.process.register;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -10,8 +10,8 @@ import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -31,7 +31,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private LimboCache limboCache;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     ProcessSyncPasswordRegister() {
     }
@@ -54,8 +54,8 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
         limboCache.updatePlayerData(player);
-        playerDataTaskManager.registerTimeoutTask(player);
-        playerDataTaskManager.registerMessageTask(name, true);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, true);
 
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -74,7 +74,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         player.saveData();
-        ConsoleLogger.fine(player.getName() + " registered " + Utils.getPlayerIp(player));
+        ConsoleLogger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
 
         // Kick Player after Registration is enabled, kick the player
         if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {

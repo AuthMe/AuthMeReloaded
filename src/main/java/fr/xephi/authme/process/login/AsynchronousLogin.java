@@ -2,15 +2,15 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.CaptchaManager;
-import fr.xephi.authme.cache.TempbanManager;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.PlayerData;
+import fr.xephi.authme.data.CaptchaManager;
+import fr.xephi.authme.data.TempbanManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
@@ -24,10 +24,10 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -71,7 +71,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private TempbanManager tempbanManager;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     AsynchronousLogin() {
     }
@@ -120,7 +120,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
             // Recreate the message task to immediately send the message again as response
             // and to make sure we send the right register message (password vs. email registration)
-            playerDataTaskManager.registerMessageTask(name, false);
+            limboPlayerTaskManager.registerMessageTask(name, false);
             return null;
         }
 
@@ -130,7 +130,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return null;
         }
 
-        final String ip = Utils.getPlayerIp(player);
+        final String ip = PlayerUtils.getPlayerIp(player);
         if (hasReachedMaxLoggedInPlayersForIp(player, ip)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
@@ -163,7 +163,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return false;
         }
 
-        final String ip = Utils.getPlayerIp(player);
+        final String ip = PlayerUtils.getPlayerIp(player);
 
         // Increase the counts here before knowing the result of the login.
         captchaManager.increaseCount(name);
@@ -210,7 +210,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
             // Update auth to reflect this new login
-            final String ip = Utils.getPlayerIp(player);
+            final String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
             auth.setIp(ip);
@@ -241,9 +241,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            PlayerData playerData = limboCache.getPlayerData(name);
-            if (playerData != null) {
-                playerData.clearTasks();
+            LimboPlayer limboPlayer = limboCache.getPlayerData(name);
+            if (limboPlayer != null) {
+                limboPlayer.clearTasks();
             }
             syncProcessManager.processSyncPlayerLogin(player);
         } else {
@@ -311,7 +311,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String name = player.getName();
         int count = 0;
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(Utils.getPlayerIp(onlinePlayer))
+            if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(onlinePlayer))
                 && !onlinePlayer.getName().equals(name)
                 && dataSource.isLogged(onlinePlayer.getName().toLowerCase())) {
                 ++count;

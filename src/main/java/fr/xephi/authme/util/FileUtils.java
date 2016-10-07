@@ -15,6 +15,7 @@ import static java.lang.String.format;
  */
 public final class FileUtils {
 
+    // Utility class
     private FileUtils() {
     }
 
@@ -85,5 +86,16 @@ public final class FileUtils {
                 ConsoleLogger.warning("Could not delete file '" + file + "'");
             }
         }
+    }
+
+    /**
+     * Construct a file path from the given elements, i.e. separate the given elements by the file separator.
+     *
+     * @param elements The elements to create a path with
+     *
+     * @return The created path
+     */
+    public static String makePath(String... elements) {
+        return String.join(File.separator, elements);
     }
 }

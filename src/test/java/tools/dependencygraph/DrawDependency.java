@@ -8,7 +8,7 @@ import com.google.common.collect.Multimap;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;

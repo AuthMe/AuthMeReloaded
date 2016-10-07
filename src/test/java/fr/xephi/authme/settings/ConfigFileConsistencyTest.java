@@ -8,7 +8,6 @@ import com.github.authme.configme.resource.PropertyResource;
 import com.github.authme.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -54,7 +53,7 @@ public class ConfigFileConsistencyTest {
                     missingProperties.add(path);
                 }
             }
-            fail("Found missing properties!\n-" + StringUtils.join("\n-", missingProperties));
+            fail("Found missing properties!\n-" + String.join("\n-", missingProperties));
         }
     }
 
@@ -78,7 +77,7 @@ public class ConfigFileConsistencyTest {
         // then
         if (!unknownPaths.isEmpty()) {
             fail("Found " + unknownPaths.size() + " unknown property paths in the project's config.yml: \n- "
-                + StringUtils.join("\n- ", unknownPaths));
+                + String.join("\n- ", unknownPaths));
         }
     }
 

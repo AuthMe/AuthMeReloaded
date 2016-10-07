@@ -1,18 +1,18 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.service.AntiBotService;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -80,7 +80,7 @@ public class PlayerListenerTest {
     @Mock
     private DataSource dataSource;
     @Mock
-    private AntiBot antiBot;
+    private AntiBotService antiBotService;
     @Mock
     private Management management;
     @Mock
@@ -112,7 +112,7 @@ public class PlayerListenerTest {
 
         // then
         assertThat(event.isCancelled(), equalTo(true));
-        verifyZeroInteractions(player, management, antiBot);
+        verifyZeroInteractions(player, management, antiBotService);
     }
 
     @Test
@@ -122,14 +122,14 @@ public class PlayerListenerTest {
         String name = "Bobby";
         Player player = mockPlayerWithName(name);
         PlayerKickEvent event = new PlayerKickEvent(player, "You logged in from another location", "");
-        given(antiBot.wasPlayerKicked(name)).willReturn(false);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
 
         // when
         listener.onPlayerKick(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBot).wasPlayerKicked(name);
+        verify(antiBotService).wasPlayerKicked(name);
         verify(management).performQuit(player);
     }
 
@@ -140,14 +140,14 @@ public class PlayerListenerTest {
         String name = "Bobby";
         Player player = mockPlayerWithName(name);
         PlayerKickEvent event = new PlayerKickEvent(player, "No longer desired here!", "");
-        given(antiBot.wasPlayerKicked(name)).willReturn(true);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(true);
 
         // when
         listener.onPlayerKick(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBot).wasPlayerKicked(name);
+        verify(antiBotService).wasPlayerKicked(name);
         verifyZeroInteractions(management);
     }
 
@@ -560,11 +560,11 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).refusePlayerForFullServer(event);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
-        verify(onJoinVerifier).checkAntibot(name, true);
+        verify(onJoinVerifier).checkAntibot(player, true);
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkNameCasing(player, auth);
         verify(onJoinVerifier).checkPlayerCountry(true, ip);
-        verify(antiBot).handlePlayerJoin(player);
+        verify(antiBotService).handlePlayerJoin();
         verify(teleportationService).teleportOnJoin(player);
         verifyNoModifyingCalls(event);
     }

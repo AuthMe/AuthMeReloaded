@@ -4,10 +4,10 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.mail.SendMailSSL;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
@@ -80,7 +80,7 @@ public class RegisterCommand extends PlayerCommand {
         } else if (commandService.getProperty(ENABLE_CONFIRM_EMAIL) && !email.equals(arguments.get(1))) {
             commandService.send(player, MessageKey.USAGE_REGISTER);
         } else {
-            String thePass = RandomString.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
+            String thePass = RandomStringUtils.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
             management.performRegister(player, thePass, email, true);
         }
     }

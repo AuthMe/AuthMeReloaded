@@ -296,17 +296,12 @@ public class CommandInitializerTest {
      * @return List of all bindings that lead to the command
      */
     private static List<String> getAbsoluteLabels(CommandDescription command) {
-        String parentPath = "";
-        CommandDescription elem = command.getParent();
-        while (elem != null) {
-            parentPath = elem.getLabels().get(0) + " " + parentPath;
-            elem = elem.getParent();
-        }
-        parentPath = parentPath.trim();
+        CommandDescription parent = command.getParent();
+        String parentPath = (parent == null) ? "" : parent.getLabels().get(0) + " ";
 
         List<String> bindings = new ArrayList<>(command.getLabels().size());
         for (String label : command.getLabels()) {
-            bindings.add(StringUtils.join(" ", parentPath, label));
+            bindings.add(parentPath + label);
         }
         return bindings;
     }

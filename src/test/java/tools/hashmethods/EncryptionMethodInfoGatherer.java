@@ -152,7 +152,7 @@ public class EncryptionMethodInfoGatherer {
 
         // By passing some bogus "package" to the constructor, the injector will throw if it needs to
         // instantiate any dependency other than what we provide.
-        Injector injector = new InjectorBuilder().addDefaultHandlers("!!No package!!").create();
+        Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme.security.crypts").create();
         injector.register(Settings.class, settings);
         return injector;
     }

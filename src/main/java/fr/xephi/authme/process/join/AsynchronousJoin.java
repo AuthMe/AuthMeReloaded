@@ -2,14 +2,14 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.SessionManager;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -19,9 +19,9 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
@@ -32,7 +32,7 @@ import org.bukkit.potion.PotionEffectType;
 import javax.inject.Inject;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 /**
  * Asynchronous process for when a player joins.
@@ -67,7 +67,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private AsynchronousLogin asynchronousLogin;
@@ -78,7 +78,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
-        final String ip = Utils.getPlayerIp(player);
+        final String ip = PlayerUtils.getPlayerIp(player);
 
         if (isPlayerUnrestricted(name)) {
             return;
@@ -185,8 +185,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         });
 
         // Timeout and message task
-        playerDataTaskManager.registerTimeoutTask(player);
-        playerDataTaskManager.registerMessageTask(name, isAuthAvailable);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
     }
 
     private boolean isPlayerUnrestricted(String name) {
@@ -249,7 +249,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private int countOnlinePlayersByIp(String ip) {
         int count = 0;
         for (Player player : bukkitService.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))) {
+            if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(player))) {
                 ++count;
             }
         }

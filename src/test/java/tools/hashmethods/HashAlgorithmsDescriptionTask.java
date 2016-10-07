@@ -13,7 +13,7 @@ import java.util.Scanner;
 /**
  * Task for generating the markdown page describing the AuthMe hash algorithms.
  *
- * @see {@link fr.xephi.authme.security.HashAlgorithm}
+ * @see fr.xephi.authme.security.HashAlgorithm
  */
 public class HashAlgorithmsDescriptionTask implements AutoToolTask {
 

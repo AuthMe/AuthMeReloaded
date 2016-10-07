@@ -126,6 +126,9 @@ permissions:
     authme.admin.reload:
         description: Administrator command to reload the plugin configuration.
         default: op
+    authme.admin.antibotmessages:
+        description: Permission to see Antibot messages
+        default: op
     authme.player.*:
         description: Permission to use all player (non-admin) commands.
         children:

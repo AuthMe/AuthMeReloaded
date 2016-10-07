@@ -7,9 +7,9 @@ public enum DataSourceType {
 
     MYSQL,
 
-    @Deprecated
-    FILE,
+    SQLITE,
 
-    SQLITE
+    @Deprecated
+    FILE
 
 }

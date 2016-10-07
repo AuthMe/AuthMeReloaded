@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.FoundCommandResult;
@@ -18,7 +18,7 @@ import java.util.List;
 public class SwitchAntiBotCommand implements ExecutableCommand {
 
     @Inject
-    private AntiBot antiBot;
+    private AntiBotService antiBotService;
 
     @Inject
     private CommandMapper commandMapper;
@@ -29,7 +29,7 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) {
-            sender.sendMessage("[AuthMe] AntiBot status: " + antiBot.getAntiBotStatus().name());
+            sender.sendMessage("[AuthMe] AntiBot status: " + antiBotService.getAntiBotStatus().name());
             return;
         }
 
@@ -37,10 +37,10 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
 
         // Enable or disable the mod
         if ("ON".equalsIgnoreCase(newState)) {
-            antiBot.overrideAntiBotStatus(true);
+            antiBotService.overrideAntiBotStatus(true);
             sender.sendMessage("[AuthMe] AntiBot Manual Override: enabled!");
         } else if ("OFF".equalsIgnoreCase(newState)) {
-            antiBot.overrideAntiBotStatus(false);
+            antiBotService.overrideAntiBotStatus(false);
             sender.sendMessage("[AuthMe] AntiBot Manual Override: disabled!");
         } else {
             sender.sendMessage(ChatColor.DARK_RED + "Invalid AntiBot mode!");

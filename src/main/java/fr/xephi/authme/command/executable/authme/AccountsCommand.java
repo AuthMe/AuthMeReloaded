@@ -1,12 +1,11 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -70,7 +69,7 @@ public class AccountsCommand implements ExecutableCommand {
 
     private static void outputAccountsList(CommandSender sender, String playerName, List<String> accountList) {
         sender.sendMessage("[AuthMe] " + playerName + " has " + accountList.size() + " accounts.");
-        String message = "[AuthMe] " + StringUtils.join(", ", accountList) + ".";
+        String message = "[AuthMe] " + String.join(", ", accountList) + ".";
         sender.sendMessage(message);
     }
 }

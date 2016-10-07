@@ -5,9 +5,9 @@ import fr.xephi.authme.TestHelper;
 import tools.utils.AutoToolTask;
 import tools.utils.ToolTask;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * Runner for executing tool tasks.
@@ -29,7 +29,7 @@ public final class ToolsRunner {
         // Note ljacqu 20151212: If the tools folder becomes a lot bigger, it will make sense to restrict the depth
         // of this recursive collector
         ClassCollector collector = new ClassCollector(TestHelper.TEST_SOURCES_FOLDER, "tools");
-        Map<String, ToolTask> tasks = new HashMap<>();
+        Map<String, ToolTask> tasks = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ToolTask task : collector.getInstancesOfType(ToolTask.class)) {
             tasks.put(task.getTaskName(), task);
         }

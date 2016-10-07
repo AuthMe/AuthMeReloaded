@@ -1,20 +1,19 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -62,7 +61,7 @@ public class OnJoinVerifierTest {
     @Mock
     private PermissionsManager permissionsManager;
     @Mock
-    private AntiBot antiBot;
+    private AntiBotService antiBotService;
     @Mock
     private ValidationService validationService;
     @Mock
@@ -377,48 +376,53 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldCheckAntiBot() throws FailedVerificationException {
+    public void shouldAllowUser() throws FailedVerificationException {
         // given
-        String name = "user123";
-        boolean hasAuth = false;
-        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.LISTENING);
+        Player player = newPlayerWithName("Bobby");
+        boolean isAuthAvailable = false;
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
+        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(false);
 
         // when
-        onJoinVerifier.checkAntibot(name, hasAuth);
+        onJoinVerifier.checkAntibot(player, isAuthAvailable);
 
         // then
-        verify(antiBot).getAntiBotStatus();
+        verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
+        verify(antiBotService).shouldKick(isAuthAvailable);
     }
 
     @Test
-    public void shouldAllowUserWithAuth() throws FailedVerificationException {
+    public void shouldAllowUserWithBypassPermission() throws FailedVerificationException {
         // given
-        String name = "Bobby";
-        boolean hasAuth = true;
-        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.ACTIVE);
+        Player player = newPlayerWithName("Steward");
+        boolean isAuthAvailable = false;
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(true);
+        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(true);
 
         // when
-        onJoinVerifier.checkAntibot(name, hasAuth);
+        onJoinVerifier.checkAntibot(player, isAuthAvailable);
 
         // then
-        verify(antiBot).getAntiBotStatus();
+        verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
     }
 
     @Test
-    public void shouldThrowForActiveAntiBot() {
+    public void shouldKickUserForFailedAntibotCheck() throws FailedVerificationException {
         // given
-        String name = "Bobby";
-        boolean hasAuth = false;
-        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.ACTIVE);
+        Player player = newPlayerWithName("D3");
+        boolean isAuthAvailable = false;
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
+        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(true);
 
         // when / then
         try {
-            onJoinVerifier.checkAntibot(name, hasAuth);
+            onJoinVerifier.checkAntibot(player, isAuthAvailable);
             fail("Expected exception to be thrown");
         } catch (FailedVerificationException e) {
-            assertThat(e, exceptionWithData(MessageKey.KICK_ANTIBOT));
-            verify(antiBot).addPlayerKick(name);
+            verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
+            verify(antiBotService).shouldKick(isAuthAvailable);
         }
+
     }
 
     /**
@@ -489,7 +493,7 @@ public class OnJoinVerifierTest {
         return player;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     private void returnOnlineListFromBukkitServer(Collection<Player> onlineList) {
         // Note ljacqu 20160529: The compiler gets lost in generics because Collection<? extends Player> is returned
         // from getOnlinePlayers(). We need to uncheck onlineList to a simple Collection or it will refuse to compile.
@@ -511,7 +515,7 @@ public class OnJoinVerifierTest {
             @Override
             public void describeTo(Description description) {
                 description.appendValue("VerificationFailedException: reason=" + messageKey + ";args="
-                    + (args == null ? "null" : StringUtils.join(", ", args)));
+                    + (args == null ? "null" : String.join(", ", args)));
             }
         };
     }

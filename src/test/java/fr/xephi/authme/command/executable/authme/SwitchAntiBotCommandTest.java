@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
@@ -32,7 +32,7 @@ public class SwitchAntiBotCommandTest {
     private SwitchAntiBotCommand command;
 
     @Mock
-    private AntiBot antiBot;
+    private AntiBotService antiBot;
 
     @Mock
     private CommandMapper commandMapper;
@@ -43,7 +43,7 @@ public class SwitchAntiBotCommandTest {
     @Test
     public void shouldReturnAntiBotState() {
         // given
-        given(antiBot.getAntiBotStatus()).willReturn(AntiBot.AntiBotStatus.ACTIVE);
+        given(antiBot.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.ACTIVE);
         CommandSender sender = mock(CommandSender.class);
 
         // when

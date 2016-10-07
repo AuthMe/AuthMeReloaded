@@ -5,7 +5,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -15,6 +15,8 @@ import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
+
+// TODO: move into services. -sgdc3
 
 /**
  * Initiates purge tasks.

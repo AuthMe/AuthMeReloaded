@@ -9,6 +9,7 @@ import java.util.List;
  */
 public final class CollectionUtils {
 
+    // Utility class
     private CollectionUtils() {
     }
 

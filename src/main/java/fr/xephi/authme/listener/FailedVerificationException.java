@@ -1,7 +1,6 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.message.MessageKey;
 
 /**
  * Exception thrown when a verification has failed.
@@ -27,7 +26,7 @@ public class FailedVerificationException extends Exception {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": reason=" + (reason == null ? "null" : reason)
-            + ";args=" + (args == null ? "null" : StringUtils.join(", ", args));
+        return getClass().getSimpleName() + ": reason=" + reason
+            + ";args=" + (args == null ? "null" : String.join(", ", args));
     }
 }
