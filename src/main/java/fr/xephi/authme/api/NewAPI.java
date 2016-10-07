@@ -4,7 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -27,7 +27,7 @@ public class NewAPI {
 
     public static NewAPI singleton;
     public final AuthMe plugin;
-    private final PluginHooks pluginHooks;
+    private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
@@ -38,10 +38,10 @@ public class NewAPI {
      * Constructor for NewAPI.
      */
     @Inject
-    NewAPI(AuthMe plugin, PluginHooks pluginHooks, DataSource dataSource, PasswordSecurity passwordSecurity,
+    NewAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
            Management management, ValidationService validationService, PlayerCache playerCache) {
         this.plugin = plugin;
-        this.pluginHooks = pluginHooks;
+        this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
@@ -100,7 +100,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return pluginHooks.isNpc(player);
+        return pluginHookService.isNpc(player);
     }
 
     /**

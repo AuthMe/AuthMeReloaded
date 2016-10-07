@@ -5,7 +5,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.ValidationService;
@@ -46,7 +46,7 @@ public class NewAPITest {
     @Mock
     private AuthMe authMe;
     @Mock
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
     @Mock
     private ValidationService validationService;
     @Mock
@@ -86,7 +86,7 @@ public class NewAPITest {
     public void shouldReturnIfPlayerIsNpc() {
         // given
         Player player = mock(Player.class);
-        given(pluginHooks.isNpc(player)).willReturn(true);
+        given(pluginHookService.isNpc(player)).willReturn(true);
 
         // when
         boolean result = api.isNPC(player);

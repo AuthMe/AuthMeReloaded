@@ -5,7 +5,7 @@ import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.service.ValidationService;
@@ -41,7 +41,7 @@ public class ListenerServiceTest {
     private DataSource dataSource;
 
     @Mock
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
 
     @Mock
     private PlayerCache playerCache;
@@ -161,14 +161,14 @@ public class ListenerServiceTest {
         Player player = mockPlayerWithName(playerName);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
-        given(pluginHooks.isNpc(player)).willReturn(true);
+        given(pluginHookService.isNpc(player)).willReturn(true);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);
 
         // then
         assertThat(result, equalTo(false));
-        verify(pluginHooks).isNpc(player);
+        verify(pluginHookService).isNpc(player);
     }
 
     @Test
@@ -215,7 +215,7 @@ public class ListenerServiceTest {
         assertThat(result, equalTo(true));
         verify(playerCache).isAuthenticated(playerName);
         verifyZeroInteractions(dataSource);
-        verify(pluginHooks).isNpc(player);
+        verify(pluginHookService).isNpc(player);
     }
 
     private static Player mockPlayerWithName(String name) {

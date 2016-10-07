@@ -6,7 +6,7 @@ import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
@@ -42,7 +42,7 @@ public class SpawnLoaderTest {
     private DataSource dataSource;
 
     @Mock
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();

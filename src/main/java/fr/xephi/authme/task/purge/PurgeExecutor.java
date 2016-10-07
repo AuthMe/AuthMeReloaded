@@ -2,7 +2,7 @@ package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
@@ -33,7 +33,7 @@ class PurgeExecutor {
     private PermissionsManager permissionsManager;
 
     @Inject
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
 
     @Inject
     private BukkitService bukkitService;
@@ -172,7 +172,7 @@ class PurgeExecutor {
         }
 
         int i = 0;
-        File essentialsDataFolder = pluginHooks.getEssentialsDataFolder();
+        File essentialsDataFolder = pluginHookService.getEssentialsDataFolder();
         if (essentialsDataFolder == null) {
             ConsoleLogger.info("Cannot purge Essentials: plugin is not loaded");
             return;

@@ -1,7 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -17,7 +17,7 @@ import javax.inject.Inject;
 public class ServerListener implements Listener {
 
     @Inject
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
@@ -38,13 +38,13 @@ public class ServerListener implements Listener {
         permissionsManager.onPluginDisable(pluginName);
 
         if ("Essentials".equalsIgnoreCase(pluginName)) {
-            pluginHooks.unhookEssentials();
+            pluginHookService.unhookEssentials();
             ConsoleLogger.info("Essentials has been disabled: unhooking");
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
-            pluginHooks.unhookMultiverse();
+            pluginHookService.unhookMultiverse();
             ConsoleLogger.info("Multiverse-Core has been disabled: unhooking");
         } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
-            pluginHooks.unhookCombatPlus();
+            pluginHookService.unhookCombatPlus();
             ConsoleLogger.info("CombatTagPlus has been disabled: unhooking");
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.unloadEssentialsSpawn();
@@ -68,11 +68,11 @@ public class ServerListener implements Listener {
         permissionsManager.onPluginEnable(pluginName);
 
         if ("Essentials".equalsIgnoreCase(pluginName)) {
-            pluginHooks.tryHookToEssentials();
+            pluginHookService.tryHookToEssentials();
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
-            pluginHooks.tryHookToMultiverse();
+            pluginHookService.tryHookToMultiverse();
         } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
-            pluginHooks.tryHookToCombatPlus();
+            pluginHookService.tryHookToCombatPlus();
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.loadEssentialsSpawn();
         } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
