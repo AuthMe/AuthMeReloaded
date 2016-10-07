@@ -14,7 +14,6 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -74,7 +73,6 @@ public class HelpProviderTest {
     }
 
     @Test
-    @Ignore // FIXME: Fix test
     public void shouldShowLongDescription() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme", "login");
@@ -347,7 +345,7 @@ public class HelpProviderTest {
      * @return The generated FoundCommandResult object
      */
     private static FoundCommandResult newFoundResult(CommandDescription command, List<String> labels) {
-        return new FoundCommandResult(command, labels, Collections.<String>emptyList(), 0.0, FoundResultStatus.SUCCESS);
+        return new FoundCommandResult(command, labels, Collections.emptyList(), 0.0, FoundResultStatus.SUCCESS);
     }
 
     private static String removeColors(String str) {

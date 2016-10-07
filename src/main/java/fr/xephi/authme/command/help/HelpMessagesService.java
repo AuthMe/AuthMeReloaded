@@ -4,15 +4,17 @@ import com.google.common.base.CaseFormat;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandUtils;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.message.MessageFileCopier;
+import fr.xephi.authme.message.MessageFileCopier.MessageFileData;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.DefaultPermission;
-import fr.xephi.authme.util.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -26,19 +28,15 @@ public class HelpMessagesService implements Reloadable {
     private static final String DETAILED_DESCRIPTION_SUFFIX = ".detailedDescription";
     private static final String DEFAULT_PERMISSIONS_PATH = "common.defaultPermissions.";
 
-    private final File dataFolder;
-    // FIXME: Make configurable
-    private String file = "messages/help_en.yml";
+    private final MessageFileCopier fileCopier;
     private FileConfiguration fileConfiguration;
+    private String defaultFile;
+    private FileConfiguration defaultConfiguration;
 
     @Inject
-    HelpMessagesService(@DataFolder File dataFolder) {
-        File messagesFile = new File(dataFolder, "messages/help_en.yml");
-        if (!FileUtils.copyFileFromResource(messagesFile, file)) {
-            throw new IllegalStateException("Could not copy help message");
-        }
-        this.dataFolder = dataFolder;
-        fileConfiguration = YamlConfiguration.loadConfiguration(messagesFile);
+    HelpMessagesService(MessageFileCopier fileCopier) {
+        this.fileCopier = fileCopier;
+        reload();
     }
 
     /**
@@ -77,7 +75,7 @@ public class HelpMessagesService implements Reloadable {
     public String getMessage(HelpMessageKey key) {
         String message = fileConfiguration.getString(key.getKey());
         return message == null
-            ? key.getFallback()
+            ? getDefault(key.getKey())
             : message;
     }
 
@@ -89,12 +87,31 @@ public class HelpMessagesService implements Reloadable {
         if (message != null) {
             return message;
         }
-        return defaultPermission.name(); // FIXME: Default message
+        return getDefault(path);
     }
 
     @Override
     public void reload() {
-        fileConfiguration = YamlConfiguration.loadConfiguration(new File(dataFolder, "messages/help_en.yml"));
+        MessageFileData fileData = fileCopier.initializeData(lang -> "messages/help_" + lang + ".yml");
+        this.fileConfiguration = YamlConfiguration.loadConfiguration(fileData.getFile());
+        this.defaultFile = fileData.getDefaultFile();
+    }
+
+    private String getDefault(String code) {
+        if (defaultFile == null) {
+            return getDefaultErrorMessage(code);
+        }
+
+        if (defaultConfiguration == null) {
+            InputStream stream = Messages.class.getResourceAsStream(defaultFile);
+            defaultConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
+        }
+        String message = defaultConfiguration.getString(code);
+        return message == null ? getDefaultErrorMessage(code) : message;
+    }
+
+    private static String getDefaultErrorMessage(String code) {
+        return "Error retrieving message '" + code + "'";
     }
 
     private String getText(String path, Supplier<String> defaultTextGetter) {

@@ -1,8 +1,8 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.message.MessageFileCopier.MessageFileData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,25 +16,24 @@ import java.io.InputStreamReader;
 /**
  * Class for retrieving and sending translatable messages to players.
  */
-public class Messages implements SettingsDependent {
+public class Messages implements Reloadable {
 
     // Custom Authme tag replaced to new line
     private static final String NEWLINE_TAG = "%nl%";
 
+    private final MessageFileCopier fileCopier;
     private FileConfiguration configuration;
     private String fileName;
-    private final String defaultFile;
+    private String defaultFile;
     private FileConfiguration defaultConfiguration;
 
-    /**
+    /*
      * Constructor.
-     *
-     * @param settings The settings
      */
     @Inject
-    Messages(Settings settings) {
-        reload(settings);
-        this.defaultFile = settings.getDefaultMessagesFile();
+    Messages(MessageFileCopier fileCopier) {
+        this.fileCopier = fileCopier;
+        reload();
     }
 
     /**
@@ -122,10 +121,12 @@ public class Messages implements SettingsDependent {
     }
 
     @Override
-    public void reload(Settings settings) {
-        File messageFile = settings.getMessagesFile();
+    public void reload() {
+        MessageFileData messageFileData = fileCopier.initializeData(lang -> "messages/messages_" + lang + ".yml");
+        File messageFile = messageFileData.getFile();
         this.configuration = YamlConfiguration.loadConfiguration(messageFile);
         this.fileName = messageFile.getName();
+        this.defaultFile = messageFileData.getDefaultFile();
     }
 
     private String getDefault(String code) {
