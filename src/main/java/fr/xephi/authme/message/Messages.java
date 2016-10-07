@@ -2,16 +2,10 @@ package fr.xephi.authme.message;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.message.MessageFileCopier.MessageFileData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Class for retrieving and sending translatable messages to players.
@@ -21,18 +15,15 @@ public class Messages implements Reloadable {
     // Custom Authme tag replaced to new line
     private static final String NEWLINE_TAG = "%nl%";
 
-    private final MessageFileCopier fileCopier;
-    private FileConfiguration configuration;
-    private String fileName;
-    private String defaultFile;
-    private FileConfiguration defaultConfiguration;
+    private final MessageFileHandlerProvider messageFileHandlerProvider;
+    private MessageFileHandler messageFileHandler;
 
     /*
      * Constructor.
      */
     @Inject
-    Messages(MessageFileCopier fileCopier) {
-        this.fileCopier = fileCopier;
+    Messages(MessageFileHandlerProvider messageFileHandlerProvider) {
+        this.messageFileHandlerProvider = messageFileHandlerProvider;
         reload();
     }
 
@@ -87,15 +78,8 @@ public class Messages implements Reloadable {
      * @return The message from the file
      */
     private String retrieveMessage(MessageKey key) {
-        final String code = key.getKey();
-        String message = configuration.getString(code);
-
-        if (message == null) {
-            ConsoleLogger.warning("Error getting message with key '" + code + "'. "
-                + "Please verify your config file at '" + fileName + "'");
-            return formatMessage(getDefault(code));
-        }
-        return formatMessage(message);
+        return formatMessage(
+            messageFileHandler.getMessage(key.getKey()));
     }
 
     /**
@@ -122,28 +106,8 @@ public class Messages implements Reloadable {
 
     @Override
     public void reload() {
-        MessageFileData messageFileData = fileCopier.initializeData(lang -> "messages/messages_" + lang + ".yml");
-        File messageFile = messageFileData.getFile();
-        this.configuration = YamlConfiguration.loadConfiguration(messageFile);
-        this.fileName = messageFile.getName();
-        this.defaultFile = messageFileData.getDefaultFile();
-    }
-
-    private String getDefault(String code) {
-        if (defaultFile == null) {
-            return getDefaultErrorMessage(code);
-        }
-
-        if (defaultConfiguration == null) {
-            InputStream stream = Messages.class.getResourceAsStream(defaultFile);
-            defaultConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
-        }
-        String message = defaultConfiguration.getString(code);
-        return message == null ? getDefaultErrorMessage(code) : message;
-    }
-
-    private static String getDefaultErrorMessage(String code) {
-        return "Error retrieving message '" + code + "'";
+        this.messageFileHandler = messageFileHandlerProvider
+            .initializeHandler(lang -> "messages/messages_" + lang + ".yml");
     }
 
     private static String formatMessage(String message) {

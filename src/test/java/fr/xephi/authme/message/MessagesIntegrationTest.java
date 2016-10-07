@@ -2,7 +2,6 @@ package fr.xephi.authme.message;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -54,11 +53,8 @@ public class MessagesIntegrationTest {
     @Before
     public void setUpMessages() {
         File testFile = TestHelper.getJarFile(YML_TEST_FILE);
-        Settings settings = mock(Settings.class);
-        given(settings.getMessagesFile()).willReturn(testFile);
-        given(settings.getDefaultMessagesFile()).willReturn(YML_DEFAULT_TEST_FILE);
-        MessageFileCopier copier = copierReturning(testFile, YML_DEFAULT_TEST_FILE);
-        messages = new Messages(copier);
+        MessageFileHandlerProvider provider = providerReturning(testFile, YML_DEFAULT_TEST_FILE);
+        messages = new Messages(provider);
     }
 
     @Test
@@ -237,8 +233,9 @@ public class MessagesIntegrationTest {
     @Test
     public void shouldAllowNullAsDefaultFile() {
         // given
-        MessageFileCopier fileCopier = copierReturning(TestHelper.getJarFile(YML_TEST_FILE), YML_DEFAULT_TEST_FILE);
-        Messages testMessages = new Messages(fileCopier);
+        MessageFileHandlerProvider provider =
+            providerReturning(TestHelper.getJarFile(YML_TEST_FILE), YML_DEFAULT_TEST_FILE);
+        Messages testMessages = new Messages(provider);
         // Key not present in test file
         MessageKey key = MessageKey.TWO_FACTOR_CREATE;
 
@@ -262,10 +259,10 @@ public class MessagesIntegrationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static MessageFileCopier copierReturning(File file, String defaultFile) {
-        MessageFileCopier copier = mock(MessageFileCopier.class);
-        given(copier.initializeData(any(Function.class)))
-            .willReturn(new MessageFileCopier.MessageFileData(file, defaultFile));
-        return copier;
+    private static MessageFileHandlerProvider providerReturning(File file, String defaultFile) {
+        MessageFileHandlerProvider handler = mock(MessageFileHandlerProvider.class);
+        given(handler.initializeHandler(any(Function.class)))
+            .willReturn(new MessageFileHandler(file, defaultFile));
+        return handler;
     }
 }

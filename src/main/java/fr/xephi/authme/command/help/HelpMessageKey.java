@@ -6,44 +6,44 @@ package fr.xephi.authme.command.help;
  */
 public enum HelpMessageKey {
 
-    SHORT_DESCRIPTION("description.short", "Short description"),
+    SHORT_DESCRIPTION("description.short"),
 
-    DETAILED_DESCRIPTION("description.detailed", "Detailed description"),
+    DETAILED_DESCRIPTION("description.detailed"),
 
-    USAGE("usage", "Usage"),
+    USAGE("usage"),
 
-    ARGUMENTS("arguments", "Arguments"),
+    ARGUMENTS("arguments"),
 
-    OPTIONAL("optional", "(Optional)"),
+    OPTIONAL("optional"),
 
-    HAS_PERMISSION("hasPermission", "You have permission"),
+    HAS_PERMISSION("hasPermission"),
 
-    NO_PERMISSION("noPermission", "No permission"),
+    NO_PERMISSION("noPermission"),
 
-    ALTERNATIVES("alternatives", "Alternatives"),
+    ALTERNATIVES("alternatives"),
 
-    DEFAULT("default", "Default"),
+    DEFAULT("default"),
 
-    RESULT("result", "Result"),
+    RESULT("result"),
 
-    PERMISSIONS("permissions", "Permissions"),
+    PERMISSIONS("permissions"),
 
-    COMMANDS("commands", "Commands");
+    COMMANDS("commands");
 
 
     private final String key;
-    private final String fallback;
 
-    HelpMessageKey(String key, String fallback) {
+    /**
+     * Constructor.
+     *
+     * @param key the message key
+     */
+    HelpMessageKey(String key) {
         this.key = "common." + key;
-        this.fallback = fallback;
     }
 
+    /** @return the message key */
     public String getKey() {
         return key;
-    }
-
-    public String getFallback() {
-        return fallback;
     }
 }

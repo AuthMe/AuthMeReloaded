@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -70,6 +72,8 @@ public class HelpProviderTest {
     @BeforeInjecting
     public void setInitialSettings() {
         given(settings.getProperty(PluginSettings.HELP_HEADER)).willReturn(HELP_HEADER);
+        given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
+            .willAnswer(new ReturnsArgumentAt(0));
     }
 
     @Test
