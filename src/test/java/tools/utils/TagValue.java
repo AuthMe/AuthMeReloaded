@@ -3,7 +3,12 @@ package tools.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Value of a tag.
+ *
+ * @param <T> the tag value type
+ * @see TagReplacer
+ */
 public abstract class TagValue<T> {
 
     private final T value;
@@ -18,6 +23,9 @@ public abstract class TagValue<T> {
 
     public abstract boolean isEmpty();
 
+    /**
+     * Text value.
+     */
     public static final class TextTagValue extends TagValue<String> {
         public TextTagValue(String value) {
             super(value);
@@ -29,9 +37,12 @@ public abstract class TagValue<T> {
         }
     }
 
+    /**
+     * List value (iterable).
+     */
     public static final class NestedTagValue extends TagValue<List<TagValueHolder>> {
         public NestedTagValue() {
-            super(new ArrayList<TagValueHolder>());
+            super(new ArrayList<>());
         }
 
         @Override

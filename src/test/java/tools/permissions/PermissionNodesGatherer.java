@@ -1,18 +1,14 @@
 package tools.permissions;
 
-import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.permission.PermissionNode;
-import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.permission.PlayerStatePermission;
 import tools.utils.FileUtils;
 import tools.utils.ToolsConstants;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,35 +28,21 @@ public class PermissionNodesGatherer {
         + "\\s+([A-Z_]+)\\("); // Match the enum name (e.g. 'LOGIN'), until before the first '('
 
     /**
-     * Return a sorted collection of all permission nodes.
-     *
-     * @return AuthMe permission nodes sorted alphabetically
-     */
-    public Set<String> gatherNodes() {
-        Set<String> nodes = new TreeSet<>();
-        for (PermissionNode perm : PlayerPermission.values()) {
-            nodes.add(perm.getNode());
-        }
-        for (PermissionNode perm : AdminPermission.values()) {
-            nodes.add(perm.getNode());
-        }
-        return nodes;
-    }
-
-    /**
      * Return a sorted collection of all permission nodes, including its JavaDoc description.
      *
      * @return Ordered map whose keys are the permission nodes and the values the associated JavaDoc
      */
-    public Map<String, String> gatherNodesWithJavaDoc() {
+    public <T extends Enum<T> & PermissionNode> Map<String, String> gatherNodesWithJavaDoc() {
         Map<String, String> result = new TreeMap<>();
         result.put("authme.admin.*", "Give access to all admin commands.");
         result.put("authme.player.*", "Permission to use all player (non-admin) commands.");
-        // TODO ljacqu 20160109: Add authme.player.email manual description?
+        result.put("authme.player.email", "Grants all email permissions.");
 
-        addDescriptionsForClass(PlayerPermission.class, result);
-        addDescriptionsForClass(AdminPermission.class, result);
-        addDescriptionsForClass(PlayerStatePermission.class, result);
+        new ClassCollector(ToolsConstants.MAIN_SOURCE_ROOT, "")
+            .collectClasses(PermissionNode.class)
+            .stream()
+            .filter(Class::isEnum)
+            .forEach(clz -> addDescriptionsForClass((Class<T>) clz, result));
         return result;
     }
 

@@ -3,6 +3,7 @@ package tools.hashmethods;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import com.github.authme.configme.properties.Property;
+import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
@@ -19,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,9 +30,8 @@ import static org.mockito.Mockito.when;
  */
 public class EncryptionMethodInfoGatherer {
 
-    @SuppressWarnings("unchecked")
     private final static Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
-        newHashSet(HasSalt.class, Recommendation.class, AsciiRestricted.class);
+        ImmutableSet.of(HasSalt.class, Recommendation.class, AsciiRestricted.class);
 
     private static Injector injector = createInitializer();
 
