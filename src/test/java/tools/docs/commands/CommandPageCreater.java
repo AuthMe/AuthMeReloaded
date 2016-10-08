@@ -1,4 +1,4 @@
-package tools.commands;
+package tools.docs.commands;
 
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
@@ -37,7 +37,7 @@ public class CommandPageCreater implements AutoToolTask {
         addCommandsInfo(commandTags, baseCommands);
 
         FileUtils.generateFileFromTemplate(
-            ToolsConstants.TOOLS_SOURCE_ROOT + "commands/commands.tpl.md",
+            ToolsConstants.TOOLS_SOURCE_ROOT + "docs/commands/commands.tpl.md",
             OUTPUT_FILE,
             TagValueHolder.create().put("commands", commandTags));
         System.out.println("Wrote to '" + OUTPUT_FILE + "' with " + baseCommands.size() + " base commands.");

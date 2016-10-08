@@ -1,4 +1,4 @@
-package tools.permissions;
+package tools.docs.permissions;
 
 import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
@@ -15,6 +15,7 @@ import java.util.Scanner;
  */
 public class PermissionsListWriter implements AutoToolTask {
 
+    private static final String TEMPLATE_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/permissions/permission_nodes.tpl.md";
     private static final String PERMISSIONS_OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "permission_nodes.md";
 
     @Override
@@ -36,8 +37,7 @@ public class PermissionsListWriter implements AutoToolTask {
         final NestedTagValue permissionsTagValue = generatePermissionsList();
 
         TagValueHolder tags = TagValueHolder.create().put("nodes", permissionsTagValue);
-        FileUtils.generateFileFromTemplate(
-            ToolsConstants.TOOLS_SOURCE_ROOT + "permissions/permission_nodes.tpl.md", PERMISSIONS_OUTPUT_FILE, tags);
+        FileUtils.generateFileFromTemplate(TEMPLATE_FILE, PERMISSIONS_OUTPUT_FILE, tags);
         System.out.println("Wrote to '" + PERMISSIONS_OUTPUT_FILE + "'");
         System.out.println("Before committing, please verify the output!");
     }

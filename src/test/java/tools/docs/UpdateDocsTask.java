@@ -1,9 +1,9 @@
 package tools.docs;
 
 import com.google.common.collect.ImmutableSet;
-import tools.commands.CommandPageCreater;
-import tools.hashmethods.HashAlgorithmsDescriptionTask;
-import tools.permissions.PermissionsListWriter;
+import tools.docs.commands.CommandPageCreater;
+import tools.docs.hashmethods.HashAlgorithmsDescriptionTask;
+import tools.docs.permissions.PermissionsListWriter;
 import tools.utils.AutoToolTask;
 import tools.utils.ToolTask;
 

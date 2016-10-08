@@ -1,4 +1,4 @@
-package tools.hashmethods;
+package tools.docs.hashmethods;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;

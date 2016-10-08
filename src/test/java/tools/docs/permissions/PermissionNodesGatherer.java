@@ -1,4 +1,4 @@
-package tools.permissions;
+package tools.docs.permissions;
 
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.permission.PermissionNode;
