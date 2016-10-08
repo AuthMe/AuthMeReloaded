@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import tools.docs.commands.CommandPageCreater;
 import tools.docs.hashmethods.HashAlgorithmsDescriptionTask;
 import tools.docs.permissions.PermissionsListWriter;
+import tools.docs.translations.TranslationPageGenerator;
 import tools.utils.AutoToolTask;
 import tools.utils.ToolTask;
 
@@ -17,7 +18,8 @@ import java.util.function.Consumer;
 public class UpdateDocsTask implements AutoToolTask {
 
     private static final Set<Class<? extends ToolTask>> TASKS = ImmutableSet
-        .of(CommandPageCreater.class, HashAlgorithmsDescriptionTask.class, PermissionsListWriter.class);
+        .of(CommandPageCreater.class, HashAlgorithmsDescriptionTask.class,
+            PermissionsListWriter.class, TranslationPageGenerator.class);
 
     @Override
     public String getTaskName() {
