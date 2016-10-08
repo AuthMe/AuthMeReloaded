@@ -19,8 +19,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.xephi.authme.command.help.HelpMessageKey.DETAILED_DESCRIPTION;
-import static fr.xephi.authme.command.help.HelpMessageKey.SHORT_DESCRIPTION;
+import static fr.xephi.authme.command.help.HelpSection.DETAILED_DESCRIPTION;
+import static fr.xephi.authme.command.help.HelpSection.SHORT_DESCRIPTION;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -32,16 +32,18 @@ public class HelpProvider implements SettingsDependent {
     // --- Bit flags ---
     /** Set to <i>not</i> show the command. */
     public static final int HIDE_COMMAND          = 0x001;
-    /** Set to show the detailed description of a command. */
-    public static final int SHOW_LONG_DESCRIPTION = 0x002;
+    /** Set to show the description of the command. */
+    public static final int SHOW_DESCRIPTION      = 0x002;
+    /** Set to show the detailed description of the command. */
+    public static final int SHOW_LONG_DESCRIPTION = 0x004;
     /** Set to include the arguments the command takes. */
-    public static final int SHOW_ARGUMENTS        = 0x004;
+    public static final int SHOW_ARGUMENTS        = 0x008;
     /** Set to show the permissions required to execute the command. */
-    public static final int SHOW_PERMISSIONS      = 0x008;
+    public static final int SHOW_PERMISSIONS      = 0x010;
     /** Set to show alternative labels for the command. */
-    public static final int SHOW_ALTERNATIVES     = 0x010;
+    public static final int SHOW_ALTERNATIVES     = 0x020;
     /** Set to show the child commands of the command. */
-    public static final int SHOW_CHILDREN         = 0x020;
+    public static final int SHOW_CHILDREN         = 0x040;
 
     /** Shortcut for setting all options apart from {@link HelpProvider#HIDE_COMMAND}. */
     public static final int ALL_OPTIONS = ~HIDE_COMMAND;
@@ -72,8 +74,18 @@ public class HelpProvider implements SettingsDependent {
         if (!hasFlag(HIDE_COMMAND, options)) {
             lines.add(ChatColor.GOLD + "Command: " + CommandSyntaxHelper.getSyntax(command, correctLabels));
         }
+        if (hasFlag(SHOW_DESCRIPTION, options)) {
+            String description = helpMessagesService.getMessage(SHORT_DESCRIPTION);
+            if (!description.isEmpty()) {
+                lines.add(ChatColor.GOLD + description + ": " + ChatColor.WHITE + command.getDescription());
+            }
+        }
         if (hasFlag(SHOW_LONG_DESCRIPTION, options)) {
-            printDetailedDescription(command, lines);
+            String description = helpMessagesService.getMessage(DETAILED_DESCRIPTION);
+            if (!description.isEmpty()) {
+                lines.add(ChatColor.GOLD + description + ":");
+                lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
+            }
         }
         if (hasFlag(SHOW_ARGUMENTS, options)) {
             printArguments(command, lines);
@@ -110,22 +122,18 @@ public class HelpProvider implements SettingsDependent {
         helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
     }
 
-    private void printDetailedDescription(CommandDescription command, List<String> lines) {
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(SHORT_DESCRIPTION) + ": "
-            + ChatColor.WHITE + command.getDescription());
-
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(DETAILED_DESCRIPTION) + ":");
-        lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
-    }
-
     private void printArguments(CommandDescription command, List<String> lines) {
         if (command.getArguments().isEmpty()) {
             return;
         }
+        String arguments = helpMessagesService.getMessage(HelpSection.ARGUMENTS);
+        if (arguments.isEmpty()) {
+            return;
+        }
 
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessageKey.ARGUMENTS) + ":");
+        lines.add(ChatColor.GOLD + arguments + ":");
         StringBuilder argString = new StringBuilder();
-        String optionalText = " (" + helpMessagesService.getMessage(HelpMessageKey.OPTIONAL) + ")";
+        String optionalText = " (" + helpMessagesService.getMessage(HelpMessage.OPTIONAL) + ")";
         for (CommandArgumentDescription argument : command.getArguments()) {
             argString.setLength(0);
             argString.append(" ").append(ChatColor.YELLOW).append(ChatColor.ITALIC).append(argument.getName())
@@ -142,8 +150,12 @@ public class HelpProvider implements SettingsDependent {
         if (command.getLabels().size() <= 1 || correctLabels.size() <= 1) {
             return;
         }
+        String alternatives = helpMessagesService.getMessage(HelpSection.ALTERNATIVES);
+        if (alternatives.isEmpty()) {
+            return;
+        }
 
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessageKey.ALTERNATIVES) + ":");
+        lines.add(ChatColor.GOLD + alternatives + ":");
         // Get the label used
         final String parentLabel = correctLabels.get(0);
         final String childLabel = correctLabels.get(1);
@@ -158,10 +170,11 @@ public class HelpProvider implements SettingsDependent {
 
     private void printPermissions(CommandDescription command, CommandSender sender, List<String> lines) {
         PermissionNode permission = command.getPermission();
-        if (permission == null) {
+        String permissionsTitle = helpMessagesService.getMessage(HelpSection.PERMISSIONS);
+        if (permission == null || permissionsTitle.isEmpty()) {
             return;
         }
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessageKey.PERMISSIONS) + ":");
+        lines.add(ChatColor.GOLD + permissionsTitle + ":");
 
         boolean hasPermission = permissionsManager.hasPermission(sender, permission);
         lines.add(String.format(" " + ChatColor.YELLOW + ChatColor.ITALIC + "%s" + ChatColor.GRAY + " (%s)",
@@ -173,7 +186,7 @@ public class HelpProvider implements SettingsDependent {
         if (DefaultPermission.OP_ONLY.equals(defaultPermission)) {
             addendum = " (" + getLocalPermissionText(defaultPermission.evaluate(sender)) + ")";
         }
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessageKey.DEFAULT) + ": "
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessage.DEFAULT) + ": "
             + ChatColor.GRAY + ChatColor.ITALIC + helpMessagesService.getMessage(defaultPermission) + addendum);
 
         // Evaluate if the sender has permission to the command
@@ -187,14 +200,14 @@ public class HelpProvider implements SettingsDependent {
             permissionText = getLocalPermissionText(false);
         }
         lines.add(String.format(ChatColor.GOLD + " %s: %s" + ChatColor.ITALIC + "%s",
-            helpMessagesService.getMessage(HelpMessageKey.RESULT), permissionColor, permissionText));
+            helpMessagesService.getMessage(HelpMessage.RESULT), permissionColor, permissionText));
     }
 
     private String getLocalPermissionText(boolean hasPermission) {
         if (hasPermission) {
-            return helpMessagesService.getMessage(HelpMessageKey.HAS_PERMISSION);
+            return helpMessagesService.getMessage(HelpMessage.HAS_PERMISSION);
         }
-        return helpMessagesService.getMessage(HelpMessageKey.NO_PERMISSION);
+        return helpMessagesService.getMessage(HelpMessage.NO_PERMISSION);
     }
 
     private void printChildren(CommandDescription command, List<String> parentLabels, List<String> lines) {
@@ -202,7 +215,7 @@ public class HelpProvider implements SettingsDependent {
             return;
         }
 
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessageKey.COMMANDS) + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMANDS) + ":");
         String parentCommandPath = String.join(" ", parentLabels);
         for (CommandDescription child : command.getChildren()) {
             lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)

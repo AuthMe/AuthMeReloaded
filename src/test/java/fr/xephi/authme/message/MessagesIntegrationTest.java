@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 public class MessagesIntegrationTest {
 
     private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + "message/messages_test.yml";
-    private static final String YML_DEFAULT_TEST_FILE = TestHelper.PROJECT_ROOT + "message/messages_default.yml";
+    private static final String YML_DEFAULT_TEST_FILE = "messages/messages_en.yml";
     private Messages messages;
 
     @BeforeClass
@@ -201,7 +201,8 @@ public class MessagesIntegrationTest {
         String message = messages.retrieveSingle(key);
 
         // then
-        assertThat(message, equalTo("Message from default file"));
+        assertThat(message,
+            equalTo("§4Only registered users can join the server! Please visit http://example.com to register yourself!"));
     }
 
     @Test
@@ -215,35 +216,6 @@ public class MessagesIntegrationTest {
 
         // then
         assertThat(message, equalTo("§cWrong password!"));
-    }
-
-    @Test
-    public void shouldReturnErrorForMissingMessage() {
-        // given
-        // Key is not present in test file or default file
-        MessageKey key = MessageKey.TWO_FACTOR_CREATE;
-
-        // when
-        String message = messages.retrieveSingle(key);
-
-        // then
-        assertThat(message, containsString("Error retrieving message"));
-    }
-
-    @Test
-    public void shouldAllowNullAsDefaultFile() {
-        // given
-        MessageFileHandlerProvider provider =
-            providerReturning(TestHelper.getJarFile(YML_TEST_FILE), YML_DEFAULT_TEST_FILE);
-        Messages testMessages = new Messages(provider);
-        // Key not present in test file
-        MessageKey key = MessageKey.TWO_FACTOR_CREATE;
-
-        // when
-        String message = testMessages.retrieveSingle(key);
-
-        // then
-        assertThat(message, containsString("Error retrieving message"));
     }
 
     @Test

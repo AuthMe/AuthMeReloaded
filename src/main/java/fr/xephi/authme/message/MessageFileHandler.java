@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 /**
  * Handles a YAML message file with a default file fallback.
  */
-public final class MessageFileHandler {
+public class MessageFileHandler {
 
     // regular file
     private final String filename;
@@ -78,7 +78,7 @@ public final class MessageFileHandler {
      */
     private String getDefault(String key) {
         if (defaultConfiguration == null) {
-            InputStream stream = Messages.class.getResourceAsStream(defaultFile);
+            InputStream stream = MessageFileHandler.class.getClassLoader().getResourceAsStream(defaultFile);
             defaultConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
         }
         String message = defaultConfiguration.getString(key);

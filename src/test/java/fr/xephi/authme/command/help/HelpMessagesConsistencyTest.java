@@ -64,9 +64,13 @@ public class HelpMessagesConsistencyTest {
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
 
         // when / then
-        for (HelpMessageKey key : HelpMessageKey.values()) {
-            assertThat("Default configuration has entry for key '" + key + "'",
-                configuration.contains(key.getKey()), equalTo(true));
+        for (HelpMessage message : HelpMessage.values()) {
+            assertThat("Default configuration has entry for message '" + message + "'",
+                configuration.contains(message.getKey()), equalTo(true));
+        }
+        for (HelpSection section : HelpSection.values()) {
+            assertThat("Default configuration has entry for section '" + section + "'",
+                configuration.contains(section.getKey()), equalTo(true));
         }
     }
 

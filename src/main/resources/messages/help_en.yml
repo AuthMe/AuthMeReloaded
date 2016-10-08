@@ -1,20 +1,21 @@
 common:
-    description.short: 'Short description'
-    description.detailed: 'Detailed description'
-    usage: 'Usage'
-    arguments: 'Arguments'
-    permissions: 'Permissions'
     optional: 'Optional'
     hasPermission: 'You have permission'
     noPermission: 'No permission'
     default: 'Default'
-    alternatives: 'Alternatives'
     result: 'Result'
-    commands: 'Commands'
     defaultPermissions:
         notAllowed: 'No permission'
         opOnly: 'OP''s only'
         allowed: 'Everyone allowed'
+section:
+    description.short: 'Short description'
+    description.detailed: 'Detailed description'
+    arguments: 'Arguments'
+    permissions: 'Permissions'
+    alternatives: 'Alternatives'
+    commands: 'Commands'
+    usage: 'Usage'
 commands:
     authme.register:
         description: 'Register a player'

@@ -4,15 +4,7 @@ package fr.xephi.authme.command.help;
  * Common, non-generic keys for messages used when showing command help.
  * All keys are prefixed with {@code common}.
  */
-public enum HelpMessageKey {
-
-    SHORT_DESCRIPTION("description.short"),
-
-    DETAILED_DESCRIPTION("description.detailed"),
-
-    USAGE("usage"),
-
-    ARGUMENTS("arguments"),
+public enum HelpMessage {
 
     OPTIONAL("optional"),
 
@@ -20,15 +12,9 @@ public enum HelpMessageKey {
 
     NO_PERMISSION("noPermission"),
 
-    ALTERNATIVES("alternatives"),
-
     DEFAULT("default"),
 
-    RESULT("result"),
-
-    PERMISSIONS("permissions"),
-
-    COMMANDS("commands");
+    RESULT("result");
 
 
     private final String key;
@@ -38,7 +24,7 @@ public enum HelpMessageKey {
      *
      * @param key the message key
      */
-    HelpMessageKey(String key) {
+    HelpMessage(String key) {
         this.key = "common." + key;
     }
 

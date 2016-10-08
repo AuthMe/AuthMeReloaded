@@ -32,6 +32,7 @@ import static fr.xephi.authme.command.help.HelpProvider.HIDE_COMMAND;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_ALTERNATIVES;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_ARGUMENTS;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_CHILDREN;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_DESCRIPTION;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_LONG_DESCRIPTION;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_PERMISSIONS;
 import static org.hamcrest.Matchers.contains;
@@ -83,7 +84,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
 
         // when
-        helpProvider.outputHelp(sender, result, SHOW_LONG_DESCRIPTION);
+        helpProvider.outputHelp(sender, result, SHOW_LONG_DESCRIPTION | SHOW_DESCRIPTION);
 
         // then
         List<String> lines = getLines(sender);
@@ -368,7 +369,7 @@ public class HelpProviderTest {
     private static void setDefaultHelpMessages(HelpMessagesService helpMessagesService) {
         given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
             .willAnswer(new ReturnsArgumentAt(0));
-        for (HelpMessageKey key : HelpMessageKey.values()) {
+        for (HelpMessage key : HelpMessage.values()) {
             String text = key.name().replace("_", " ").toLowerCase();
             given(helpMessagesService.getMessage(key))
                 .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
@@ -376,6 +377,11 @@ public class HelpProviderTest {
         for (DefaultPermission permission : DefaultPermission.values()) {
             String text = permission.name().replace("_", " ").toLowerCase();
             given(helpMessagesService.getMessage(permission))
+                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+        }
+        for (HelpSection section : HelpSection.values()) {
+            String text = section.name().replace("_", " ").toLowerCase();
+            given(helpMessagesService.getMessage(section))
                 .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
         }
     }

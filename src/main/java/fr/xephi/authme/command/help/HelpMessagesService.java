@@ -65,8 +65,12 @@ public class HelpMessagesService implements Reloadable {
         return builder.build();
     }
 
-    public String getMessage(HelpMessageKey key) {
-        return messageFileHandler.getMessage(key.getKey());
+    public String getMessage(HelpMessage message) {
+        return messageFileHandler.getMessage(message.getKey());
+    }
+
+    public String getMessage(HelpSection section) {
+        return messageFileHandler.getMessage(section.getKey());
     }
 
     public String getMessage(DefaultPermission defaultPermission) {
