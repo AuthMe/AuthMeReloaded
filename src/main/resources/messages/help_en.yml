@@ -9,13 +9,13 @@ common:
         opOnly: 'OP''s only'
         allowed: 'Everyone allowed'
 section:
+    command: 'Command'
     description.short: 'Short description'
     description.detailed: 'Detailed description'
     arguments: 'Arguments'
     permissions: 'Permissions'
     alternatives: 'Alternatives'
-    commands: 'Commands'
-    usage: 'Usage'
+    children: 'Commands'
 commands:
     authme.register:
         description: 'Register a player'

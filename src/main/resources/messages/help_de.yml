@@ -9,13 +9,13 @@ common:
         opOnly: 'Nur OP''s'
         allowed: 'Allen erlaubt'
 section:
+    command: 'Kommando'
     description.short: 'Beschreibung'
     description.detailed: 'Detaillierte Beschreibung'
-    usage: 'Gebrauch'
     arguments: 'Argumente'
     permissions: 'Rechte'
     alternatives: 'Alternativen'
-    commands: 'Kommandos'
+    children: 'Kommandos'
 commands:
     authme.register:
         description: 'Registriert einen Benutzer'

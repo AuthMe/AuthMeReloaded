@@ -30,8 +30,8 @@ import static java.util.Collections.singletonList;
 public class HelpProvider implements SettingsDependent {
 
     // --- Bit flags ---
-    /** Set to <i>not</i> show the command. */
-    public static final int HIDE_COMMAND          = 0x001;
+    /** Set to show a command overview. */
+    public static final int SHOW_COMMAND          = 0x001;
     /** Set to show the description of the command. */
     public static final int SHOW_DESCRIPTION      = 0x002;
     /** Set to show the detailed description of the command. */
@@ -45,12 +45,14 @@ public class HelpProvider implements SettingsDependent {
     /** Set to show the child commands of the command. */
     public static final int SHOW_CHILDREN         = 0x040;
 
-    /** Shortcut for setting all options apart from {@link HelpProvider#HIDE_COMMAND}. */
-    public static final int ALL_OPTIONS = ~HIDE_COMMAND;
+    /** Shortcut for setting all options. */
+    public static final int ALL_OPTIONS = ~0;
 
     private final PermissionsManager permissionsManager;
     private final HelpMessagesService helpMessagesService;
     private String helpHeader;
+    /** int with bit flags set corresponding to the above constants for enabled sections. */
+    private Integer enabledSections;
 
     @Inject
     HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService, Settings settings) {
@@ -65,27 +67,28 @@ public class HelpProvider implements SettingsDependent {
         }
 
         List<String> lines = new ArrayList<>();
+        options = filterDisabledSections(options);
+        if (options == 0) {
+            // Return directly if no options are enabled so we don't include the help header
+            return lines;
+        }
         lines.add(ChatColor.GOLD + "==========[ " + helpHeader + " HELP ]==========");
 
         CommandDescription command = helpMessagesService.buildLocalizedDescription(result.getCommandDescription());
         List<String> labels = ImmutableList.copyOf(result.getLabels());
         List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, labels));
 
-        if (!hasFlag(HIDE_COMMAND, options)) {
-            lines.add(ChatColor.GOLD + "Command: " + CommandSyntaxHelper.getSyntax(command, correctLabels));
+        if (hasFlag(SHOW_COMMAND, options)) {
+            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMAND) + ": "
+                + CommandSyntaxHelper.getSyntax(command, correctLabels));
         }
         if (hasFlag(SHOW_DESCRIPTION, options)) {
-            String description = helpMessagesService.getMessage(SHORT_DESCRIPTION);
-            if (!description.isEmpty()) {
-                lines.add(ChatColor.GOLD + description + ": " + ChatColor.WHITE + command.getDescription());
-            }
+            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(SHORT_DESCRIPTION) + ": "
+                + ChatColor.WHITE + command.getDescription());
         }
         if (hasFlag(SHOW_LONG_DESCRIPTION, options)) {
-            String description = helpMessagesService.getMessage(DETAILED_DESCRIPTION);
-            if (!description.isEmpty()) {
-                lines.add(ChatColor.GOLD + description + ":");
-                lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
-            }
+            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(DETAILED_DESCRIPTION) + ":");
+            lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
         }
         if (hasFlag(SHOW_ARGUMENTS, options)) {
             printArguments(command, lines);
@@ -120,18 +123,41 @@ public class HelpProvider implements SettingsDependent {
     @Override
     public void reload(Settings settings) {
         helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
+        // We don't know about the reloading order of the classes, i.e. we cannot assume that HelpMessagesService
+        // has already been reloaded. So set the enabledSections flag to null and redefine it first time needed.
+        enabledSections = null;
+    }
+
+    /**
+     * Removes any disabled sections from the options. Sections are considered disabled
+     * if the translated text for the section is empty.
+     *
+     * @param options the options to process
+     * @return the options without any disabled sections
+     */
+    private int filterDisabledSections(int options) {
+        if (enabledSections == null) {
+            enabledSections = flagFor(HelpSection.COMMAND, SHOW_COMMAND)
+                | flagFor(HelpSection.SHORT_DESCRIPTION, SHOW_DESCRIPTION)
+                | flagFor(HelpSection.DETAILED_DESCRIPTION, SHOW_LONG_DESCRIPTION)
+                | flagFor(HelpSection.ARGUMENTS, SHOW_ARGUMENTS)
+                | flagFor(HelpSection.PERMISSIONS, SHOW_PERMISSIONS)
+                | flagFor(HelpSection.ALTERNATIVES, SHOW_ALTERNATIVES)
+                | flagFor(HelpSection.CHILDREN, SHOW_CHILDREN);
+        }
+        return options & enabledSections;
+    }
+
+    private int flagFor(HelpSection section, int flag) {
+        return helpMessagesService.getMessage(section).isEmpty() ? 0 : flag;
     }
 
     private void printArguments(CommandDescription command, List<String> lines) {
         if (command.getArguments().isEmpty()) {
             return;
         }
-        String arguments = helpMessagesService.getMessage(HelpSection.ARGUMENTS);
-        if (arguments.isEmpty()) {
-            return;
-        }
 
-        lines.add(ChatColor.GOLD + arguments + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.ARGUMENTS) + ":");
         StringBuilder argString = new StringBuilder();
         String optionalText = " (" + helpMessagesService.getMessage(HelpMessage.OPTIONAL) + ")";
         for (CommandArgumentDescription argument : command.getArguments()) {
@@ -150,12 +176,8 @@ public class HelpProvider implements SettingsDependent {
         if (command.getLabels().size() <= 1 || correctLabels.size() <= 1) {
             return;
         }
-        String alternatives = helpMessagesService.getMessage(HelpSection.ALTERNATIVES);
-        if (alternatives.isEmpty()) {
-            return;
-        }
 
-        lines.add(ChatColor.GOLD + alternatives + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.ALTERNATIVES) + ":");
         // Get the label used
         final String parentLabel = correctLabels.get(0);
         final String childLabel = correctLabels.get(1);
@@ -170,11 +192,10 @@ public class HelpProvider implements SettingsDependent {
 
     private void printPermissions(CommandDescription command, CommandSender sender, List<String> lines) {
         PermissionNode permission = command.getPermission();
-        String permissionsTitle = helpMessagesService.getMessage(HelpSection.PERMISSIONS);
-        if (permission == null || permissionsTitle.isEmpty()) {
+        if (permission == null) {
             return;
         }
-        lines.add(ChatColor.GOLD + permissionsTitle + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.PERMISSIONS) + ":");
 
         boolean hasPermission = permissionsManager.hasPermission(sender, permission);
         lines.add(String.format(" " + ChatColor.YELLOW + ChatColor.ITALIC + "%s" + ChatColor.GRAY + " (%s)",
@@ -215,7 +236,7 @@ public class HelpProvider implements SettingsDependent {
             return;
         }
 
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMANDS) + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.CHILDREN) + ":");
         String parentCommandPath = String.join(" ", parentLabels);
         for (CommandDescription child : command.getChildren()) {
             lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
@@ -228,7 +249,7 @@ public class HelpProvider implements SettingsDependent {
     }
 
     @VisibleForTesting
-    protected static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
+    static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
         List<CommandDescription> commands = CommandUtils.constructParentList(command);
         List<String> correctLabels = new ArrayList<>();
         boolean foundIncorrectLabel = false;

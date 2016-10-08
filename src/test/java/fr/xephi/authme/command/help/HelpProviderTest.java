@@ -28,10 +28,10 @@ import java.util.Set;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static fr.xephi.authme.command.help.HelpProvider.ALL_OPTIONS;
-import static fr.xephi.authme.command.help.HelpProvider.HIDE_COMMAND;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_ALTERNATIVES;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_ARGUMENTS;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_CHILDREN;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_COMMAND;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_DESCRIPTION;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_LONG_DESCRIPTION;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_PERMISSIONS;
@@ -84,7 +84,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
 
         // when
-        helpProvider.outputHelp(sender, result, SHOW_LONG_DESCRIPTION | SHOW_DESCRIPTION);
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_LONG_DESCRIPTION | SHOW_DESCRIPTION);
 
         // then
         List<String> lines = getLines(sender);
@@ -103,7 +103,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, SHOW_ARGUMENTS);
 
         // then
         List<String> lines = getLines(sender);
@@ -121,7 +121,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("email"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, SHOW_ARGUMENTS);
 
         // then
         List<String> lines = getLines(sender);
@@ -137,7 +137,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, SHOW_ARGUMENTS);
 
         // then
         List<String> lines = getLines(sender);
@@ -154,7 +154,7 @@ public class HelpProviderTest {
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
@@ -176,7 +176,7 @@ public class HelpProviderTest {
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(false);
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
@@ -195,7 +195,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
@@ -211,7 +211,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("test"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
@@ -225,7 +225,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+        helpProvider.outputHelp(sender, result, SHOW_ALTERNATIVES);
 
         // then
         List<String> lines = getLines(sender);
@@ -242,7 +242,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+        helpProvider.outputHelp(sender, result, SHOW_ALTERNATIVES);
 
         // then
         List<String> lines = getLines(sender);
@@ -256,12 +256,12 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+        helpProvider.outputHelp(sender, result, SHOW_CHILDREN);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
-        assertThat(removeColors(lines.get(1)), containsString("Commands:"));
+        assertThat(removeColors(lines.get(1)), containsString("Children:"));
         assertThat(removeColors(lines.get(2)), containsString("/authme login: login cmd"));
         assertThat(removeColors(lines.get(3)), containsString("/authme register: register cmd"));
     }
@@ -273,7 +273,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+        helpProvider.outputHelp(sender, result, SHOW_CHILDREN);
 
         // then
         List<String> lines = getLines(sender);
@@ -284,7 +284,7 @@ public class HelpProviderTest {
     public void shouldHandleUnboundFoundCommandResult() {
         // given
         FoundCommandResult result = new FoundCommandResult(null, Arrays.asList("authme", "test"),
-            Collections.<String>emptyList(), 0.0, FoundResultStatus.UNKNOWN_LABEL);
+            Collections.emptyList(), 0.0, FoundResultStatus.UNKNOWN_LABEL);
 
         // when
         helpProvider.outputHelp(sender, result, ALL_OPTIONS);
@@ -306,7 +306,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "ragister"));
 
         // when
-        helpProvider.outputHelp(sender, result, 0);
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND);
 
         // then
         List<String> lines = getLines(sender);

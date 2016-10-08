@@ -5,11 +5,11 @@ package fr.xephi.authme.command.help;
  */
 public enum HelpSection {
 
+    COMMAND("command"),
+
     SHORT_DESCRIPTION("description.short"),
 
     DETAILED_DESCRIPTION("description.detailed"),
-
-    USAGE("usage"),
 
     ARGUMENTS("arguments"),
 
@@ -17,7 +17,7 @@ public enum HelpSection {
 
     PERMISSIONS("permissions"),
 
-    COMMANDS("commands");
+    CHILDREN("children");
 
 
     private final String key;
