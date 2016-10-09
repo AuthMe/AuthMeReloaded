@@ -7,6 +7,8 @@ section:
     arguments: 'arg.'
 
 commands:
+    authme:
+        detailedDescription: 'Main command'
     authme.register:
         description: 'Registration'
         detailedDescription: 'Registers the player'

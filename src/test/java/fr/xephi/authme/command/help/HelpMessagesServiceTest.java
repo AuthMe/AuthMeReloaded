@@ -93,6 +93,20 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
+    public void shouldKeepChildrenInLocalCommand() {
+        // given
+        CommandDescription command = TestCommandsUtil.getCommandWithLabel(COMMANDS, "authme");
+
+        // when
+        CommandDescription localCommand = helpMessagesService.buildLocalizedDescription(command);
+
+        // then
+        assertThat(localCommand.getChildren(), equalTo(command.getChildren()));
+        assertThat(localCommand.getDescription(), equalTo("authme cmd"));
+        assertThat(localCommand.getDetailedDescription(), equalTo("Main command"));
+    }
+
+    @Test
     public void shouldGetTranslationsForSectionAndMessage() {
         // given / when / then
         assertThat(helpMessagesService.getMessage(DefaultPermission.OP_ONLY), equalTo("only op"));

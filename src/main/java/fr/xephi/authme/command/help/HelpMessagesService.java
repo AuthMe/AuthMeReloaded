@@ -62,7 +62,9 @@ public class HelpMessagesService implements Reloadable {
             ++i;
         }
 
-        return builder.build();
+        CommandDescription localCommand = builder.build();
+        localCommand.getChildren().addAll(command.getChildren());
+        return localCommand;
     }
 
     public String getMessage(HelpMessage message) {
