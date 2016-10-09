@@ -12,8 +12,6 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
-import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
-
 public class VersionCommand implements ExecutableCommand {
 
     @Inject
@@ -25,8 +23,7 @@ public class VersionCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
         // Show some version info
-        sender.sendMessage(ChatColor.GOLD + "==========[ " + commandService.getProperty(HELP_HEADER)
-            + " ABOUT ]==========");
+        sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.getPluginName() + " ABOUT ]==========");
         sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName()
             + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");

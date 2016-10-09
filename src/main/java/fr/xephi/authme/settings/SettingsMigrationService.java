@@ -49,6 +49,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | migrateJoinLeaveMessages(resource)
             | migrateForceSpawnSettings(resource)
             | changeBooleanSettingToLogLevelProperty(resource)
+            | hasOldHelpHeaderProperty(resource)
             || hasDeprecatedProperties(resource);
     }
 
@@ -149,6 +150,15 @@ public class SettingsMigrationService extends PlainMigrationService {
             boolean oldValue = Objects.firstNonNull(resource.getBoolean(oldPath), false);
             LogLevel level = oldValue ? LogLevel.INFO : LogLevel.FINE;
             resource.setValue(newProperty.getPath(), level.name());
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean hasOldHelpHeaderProperty(PropertyResource resource) {
+        if (resource.contains("settings.helpHeader")) {
+            ConsoleLogger.warning("Help header setting is now in messages/help_xx.yml, "
+                + "please check the file to set it again");
             return true;
         }
         return false;

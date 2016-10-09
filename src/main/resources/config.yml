@@ -41,8 +41,6 @@ DataSource:
     # Column for RealName
     mySQLRealName: realname
 settings:
-    # The name shown in the help messages.
-    helpHeader: AuthMeReloaded
     sessions:
         # Do you want to enable the session feature?
         # If enabled, when a player authenticates successfully,

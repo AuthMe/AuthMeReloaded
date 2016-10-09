@@ -10,8 +10,8 @@ common:
         allowed: 'Allen erlaubt'
 section:
     command: 'Kommando'
-    description.short: 'Beschreibung'
-    description.detailed: 'Detaillierte Beschreibung'
+    description: 'Beschreibung'
+    detailedDescription: 'Detaillierte Beschreibung'
     arguments: 'Argumente'
     permissions: 'Rechte'
     alternatives: 'Alternativen'

@@ -9,10 +9,6 @@ import static com.github.authme.configme.properties.PropertyInitializer.newPrope
 
 public class PluginSettings implements SettingsHolder {
 
-    @Comment("The name shown in the help messages")
-    public static final Property<String> HELP_HEADER =
-        newProperty("settings.helpHeader", "AuthMeReloaded");
-
     @Comment({
         "Do you want to enable the session feature?",
         "If enabled, when a player authenticates successfully,",

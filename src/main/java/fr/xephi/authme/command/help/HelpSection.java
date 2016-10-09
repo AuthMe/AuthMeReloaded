@@ -7,9 +7,9 @@ public enum HelpSection {
 
     COMMAND("command"),
 
-    SHORT_DESCRIPTION("description.short"),
+    SHORT_DESCRIPTION("description"),
 
-    DETAILED_DESCRIPTION("description.detailed"),
+    DETAILED_DESCRIPTION("detailedDescription"),
 
     ARGUMENTS("arguments"),
 

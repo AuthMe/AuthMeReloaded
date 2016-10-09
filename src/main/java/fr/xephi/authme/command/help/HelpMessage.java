@@ -6,6 +6,8 @@ package fr.xephi.authme.command.help;
  */
 public enum HelpMessage {
 
+    HEADER("header"),
+
     OPTIONAL("optional"),
 
     HAS_PERMISSION("hasPermission"),

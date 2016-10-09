@@ -26,7 +26,7 @@ public class MessageFileHandler {
      * @param file the file to use for messages
      * @param defaultFile the default file from the JAR to use if no message is found
      */
-    MessageFileHandler(File file, String defaultFile) {
+    public MessageFileHandler(File file, String defaultFile) {
         this.filename = file.getName();
         this.configuration = YamlConfiguration.loadConfiguration(file);
         this.defaultFile = defaultFile;

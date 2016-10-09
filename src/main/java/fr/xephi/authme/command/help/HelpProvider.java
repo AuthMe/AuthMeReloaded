@@ -6,12 +6,10 @@ import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.FoundCommandResult;
-import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -27,7 +25,7 @@ import static java.util.Collections.singletonList;
 /**
  * Help syntax generator for AuthMe commands.
  */
-public class HelpProvider implements SettingsDependent {
+public class HelpProvider implements Reloadable {
 
     // --- Bit flags ---
     /** Set to show a command overview. */
@@ -50,15 +48,13 @@ public class HelpProvider implements SettingsDependent {
 
     private final PermissionsManager permissionsManager;
     private final HelpMessagesService helpMessagesService;
-    private String helpHeader;
     /** int with bit flags set corresponding to the above constants for enabled sections. */
     private Integer enabledSections;
 
     @Inject
-    HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService, Settings settings) {
+    HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService) {
         this.permissionsManager = permissionsManager;
         this.helpMessagesService = helpMessagesService;
-        reload(settings);
     }
 
     private List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
@@ -72,7 +68,10 @@ public class HelpProvider implements SettingsDependent {
             // Return directly if no options are enabled so we don't include the help header
             return lines;
         }
-        lines.add(ChatColor.GOLD + "==========[ " + helpHeader + " HELP ]==========");
+        String header = helpMessagesService.getMessage(HelpMessage.HEADER);
+        if (!header.isEmpty()) {
+            lines.add(ChatColor.GOLD + header);
+        }
 
         CommandDescription command = helpMessagesService.buildLocalizedDescription(result.getCommandDescription());
         List<String> labels = ImmutableList.copyOf(result.getLabels());
@@ -121,8 +120,7 @@ public class HelpProvider implements SettingsDependent {
     }
 
     @Override
-    public void reload(Settings settings) {
-        helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
+    public void reload() {
         // We don't know about the reloading order of the classes, i.e. we cannot assume that HelpMessagesService
         // has already been reloaded. So set the enabledSections flag to null and redefine it first time needed.
         enabledSections = null;
