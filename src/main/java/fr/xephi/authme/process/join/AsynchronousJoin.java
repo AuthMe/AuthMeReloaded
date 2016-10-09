@@ -8,7 +8,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -61,7 +61,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private SessionManager sessionManager;
 
     @Inject
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
 
     @Inject
     private BukkitService bukkitService;
@@ -95,7 +95,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
-            pluginHooks.setEssentialsSocialSpyStatus(player, false);
+            pluginHookService.setEssentialsSocialSpyStatus(player, false);
         }
 
         if (isNameRestricted(name, ip, player.getAddress().getHostName())) {
@@ -172,7 +172,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     player.setWalkSpeed(0.0f);
                 }
                 player.setNoDamageTicks(registrationTimeout);
-                if (pluginHooks.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
+                if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
                     player.performCommand("motd");
                 }
                 if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

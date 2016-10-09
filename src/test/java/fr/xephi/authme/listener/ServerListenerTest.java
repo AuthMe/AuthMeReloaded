@@ -1,7 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -41,7 +41,7 @@ public class ServerListenerTest {
     private PermissionsManager permissionsManager;
 
     @Mock
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
 
     @Mock
     private ProtocolLibService protocolLibService;
@@ -59,7 +59,7 @@ public class ServerListenerTest {
         checkEnableHandling(ESSENTIALS, new Runnable() {
             @Override
             public void run() {
-                verify(pluginHooks).tryHookToEssentials();
+                verify(pluginHookService).tryHookToEssentials();
             }
         });
         checkEnableHandling(ESSENTIALS_SPAWN, new Runnable() {
@@ -71,13 +71,13 @@ public class ServerListenerTest {
         checkEnableHandling(MULTIVERSE, new Runnable() {
             @Override
             public void run() {
-                verify(pluginHooks).tryHookToMultiverse();
+                verify(pluginHookService).tryHookToMultiverse();
             }
         });
         checkEnableHandling(COMBAT_TAG, new Runnable() {
             @Override
             public void run() {
-                verify(pluginHooks).tryHookToCombatPlus();
+                verify(pluginHookService).tryHookToCombatPlus();
             }
         });
         checkEnableHandling(PROTOCOL_LIB, new Runnable() {
@@ -99,7 +99,7 @@ public class ServerListenerTest {
         checkDisableHandling(ESSENTIALS, new Runnable() {
             @Override
             public void run() {
-                verify(pluginHooks).unhookEssentials();
+                verify(pluginHookService).unhookEssentials();
             }
         });
         checkDisableHandling(ESSENTIALS_SPAWN, new Runnable() {
@@ -111,13 +111,13 @@ public class ServerListenerTest {
         checkDisableHandling(MULTIVERSE, new Runnable() {
             @Override
             public void run() {
-                verify(pluginHooks).unhookMultiverse();
+                verify(pluginHookService).unhookMultiverse();
             }
         });
         checkDisableHandling(COMBAT_TAG, new Runnable() {
             @Override
             public void run() {
-                verify(pluginHooks).unhookCombatPlus();
+                verify(pluginHookService).unhookCombatPlus();
             }
         });
         checkDisableHandling(PROTOCOL_LIB, new Runnable() {
@@ -164,8 +164,8 @@ public class ServerListenerTest {
     }
 
     private void verifyNoMoreInteractionsAndReset() {
-        verifyNoMoreInteractions(permissionsManager, pluginHooks, protocolLibService, spawnLoader);
-        reset(permissionsManager, pluginHooks, protocolLibService, spawnLoader);
+        verifyNoMoreInteractions(permissionsManager, pluginHookService, protocolLibService, spawnLoader);
+        reset(permissionsManager, pluginHookService, protocolLibService, spawnLoader);
     }
 
     private static  <T extends PluginEvent> T mockEventWithPluginName(Class<T> eventClass, String name) {

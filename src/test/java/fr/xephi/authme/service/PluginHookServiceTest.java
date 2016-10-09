@@ -1,10 +1,11 @@
-package fr.xephi.authme.hooks;
+package fr.xephi.authme.service;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import org.bukkit.Location;
@@ -29,9 +30,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for {@link PluginHooks}.
+ * Test for {@link PluginHookService}.
  */
-public class PluginHooksTest {
+public class PluginHookServiceTest {
 
     /** The plugin name of Essentials. */
     private static final String ESSENTIALS = "Essentials";
@@ -47,15 +48,15 @@ public class PluginHooksTest {
     public void shouldHookIntoEssentials() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
         setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(false));
+        assertThat(pluginHookService.isEssentialsAvailable(), equalTo(false));
 
         // when
-        pluginHooks.tryHookToEssentials();
+        pluginHookService.tryHookToEssentials();
 
         // then
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(true));
+        assertThat(pluginHookService.isEssentialsAvailable(), equalTo(true));
     }
 
     // Note ljacqu 20160312: Cannot test with Multiverse or CombatTagPlus because their classes are declared final
@@ -67,10 +68,10 @@ public class PluginHooksTest {
         setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
 
         // when
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // then
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(true));
+        assertThat(pluginHookService.isEssentialsAvailable(), equalTo(true));
     }
 
     @Test
@@ -80,10 +81,10 @@ public class PluginHooksTest {
         setPluginAvailable(pluginManager, MULTIVERSE, MultiverseCore.class);
 
         // when
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // then
-        assertThat(pluginHooks.isMultiverseAvailable(), equalTo(true));
+        assertThat(pluginHookService.isMultiverseAvailable(), equalTo(true));
     }
 
     @Test
@@ -96,10 +97,10 @@ public class PluginHooksTest {
 
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, ESSENTIALS, ess);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // when
-        File dataFolder = pluginHooks.getEssentialsDataFolder();
+        File dataFolder = pluginHookService.getEssentialsDataFolder();
 
         // then
         assertThat(dataFolder, equalTo(essDataFolder));
@@ -109,10 +110,10 @@ public class PluginHooksTest {
     public void shouldReturnNullForUnhookedEssentials() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // when
-        File result = pluginHooks.getEssentialsDataFolder();
+        File result = pluginHookService.getEssentialsDataFolder();
 
         // then
         assertThat(result, nullValue());
@@ -129,10 +130,10 @@ public class PluginHooksTest {
 
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, ESSENTIALS, ess);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // when
-        pluginHooks.setEssentialsSocialSpyStatus(player, true);
+        pluginHookService.setEssentialsSocialSpyStatus(player, true);
 
         // then
         verify(ess).getUser(player);
@@ -142,10 +143,10 @@ public class PluginHooksTest {
     @Test
     public void shouldNotDoAnythingForUnhookedEssentials() {
         // given
-        PluginHooks pluginHooks = new PluginHooks(mock(PluginManager.class));
+        PluginHookService pluginHookService = new PluginHookService(mock(PluginManager.class));
 
         // when/then
-        pluginHooks.setEssentialsSocialSpyStatus(mock(Player.class), false);
+        pluginHookService.setEssentialsSocialSpyStatus(mock(Player.class), false);
     }
 
     @Test
@@ -154,15 +155,15 @@ public class PluginHooksTest {
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
         setPluginAvailable(pluginManager, MULTIVERSE, MultiverseCore.class);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // when
-        pluginHooks.unhookEssentials();
-        pluginHooks.unhookMultiverse();
+        pluginHookService.unhookEssentials();
+        pluginHookService.unhookMultiverse();
 
         // then
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(false));
-        assertThat(pluginHooks.isMultiverseAvailable(), equalTo(false));
+        assertThat(pluginHookService.isEssentialsAvailable(), equalTo(false));
+        assertThat(pluginHookService.isMultiverseAvailable(), equalTo(false));
     }
 
     @Test
@@ -173,23 +174,23 @@ public class PluginHooksTest {
         doThrow(IllegalStateException.class).when(pluginManager).getPlugin(anyString());
 
         // when
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // then
-        assertThat(pluginHooks.isEssentialsAvailable(), equalTo(false));
-        assertThat(pluginHooks.isMultiverseAvailable(), equalTo(false));
-        assertThat(pluginHooks.isCombatTagPlusAvailable(), equalTo(false));
+        assertThat(pluginHookService.isEssentialsAvailable(), equalTo(false));
+        assertThat(pluginHookService.isMultiverseAvailable(), equalTo(false));
+        assertThat(pluginHookService.isCombatTagPlusAvailable(), equalTo(false));
     }
 
     @Test
     public void shouldReturnNullForUnavailableMultiverse() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
         World world = mock(World.class);
 
         // when
-        Location result = pluginHooks.getMultiverseSpawn(world);
+        Location result = pluginHookService.getMultiverseSpawn(world);
 
         // then
         assertThat(result, nullValue());
@@ -211,10 +212,10 @@ public class PluginHooksTest {
 
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, MULTIVERSE, multiverse);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // when
-        Location spawn = pluginHooks.getMultiverseSpawn(world);
+        Location spawn = pluginHookService.getMultiverseSpawn(world);
 
         // then
         assertThat(spawn, equalTo(location));
@@ -234,10 +235,10 @@ public class PluginHooksTest {
         MultiverseCore multiverse = mock(MultiverseCore.class);
         setPluginAvailable(pluginManager, MULTIVERSE, multiverse);
         given(multiverse.getMVWorldManager()).willReturn(mvWorldManager);
-        PluginHooks pluginHooks = new PluginHooks(pluginManager);
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
 
         // when
-        Location spawn = pluginHooks.getMultiverseSpawn(world);
+        Location spawn = pluginHookService.getMultiverseSpawn(world);
 
         // then
         assertThat(spawn, nullValue());

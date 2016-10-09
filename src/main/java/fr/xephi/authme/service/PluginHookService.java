@@ -1,4 +1,4 @@
-package fr.xephi.authme.hooks;
+package fr.xephi.authme.service;
 
 import ch.jalu.injector.annotations.NoFieldScan;
 import com.earth2me.essentials.Essentials;
@@ -19,7 +19,7 @@ import java.io.File;
  * Hooks into third-party plugins and allows to perform actions on them.
  */
 @NoFieldScan
-public class PluginHooks {
+public class PluginHookService {
 
     private final PluginManager pluginManager;
     private Essentials essentials;
@@ -32,7 +32,7 @@ public class PluginHooks {
      * @param pluginManager The server's plugin manager
      */
     @Inject
-    public PluginHooks(PluginManager pluginManager) {
+    public PluginHookService(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
         tryHookToCombatPlus();
         tryHookToEssentials();

@@ -1,4 +1,4 @@
-package tools.hashmethods;
+package tools.docs.hashmethods;
 
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.description.SaltType;

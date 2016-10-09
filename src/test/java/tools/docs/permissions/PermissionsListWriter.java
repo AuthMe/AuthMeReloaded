@@ -1,4 +1,4 @@
-package tools.permissions;
+package tools.docs.permissions;
 
 import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
@@ -8,7 +8,6 @@ import tools.utils.ToolsConstants;
 
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * Task responsible for formatting a permissions node list and
@@ -16,6 +15,7 @@ import java.util.Set;
  */
 public class PermissionsListWriter implements AutoToolTask {
 
+    private static final String TEMPLATE_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/permissions/permission_nodes.tpl.md";
     private static final String PERMISSIONS_OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "permission_nodes.md";
 
     @Override
@@ -25,23 +25,7 @@ public class PermissionsListWriter implements AutoToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        // Ask if result should be written to file
-        System.out.println("Include description? [Enter 'n' for no]");
-        boolean includeDescription = !matches("n", scanner);
-
-        boolean writeToFile = false;
-        if (includeDescription) {
-            System.out.println("Write to file? [Enter 'n' for no]");
-            writeToFile = !matches("n", scanner);
-        }
-
-        if (!includeDescription) {
-            outputSimpleList();
-        } else if (writeToFile) {
-            generateAndWriteFile();
-        } else {
-            System.out.println(generatePermissionsList());
-        }
+        generateAndWriteFile();
     }
 
     @Override
@@ -53,8 +37,7 @@ public class PermissionsListWriter implements AutoToolTask {
         final NestedTagValue permissionsTagValue = generatePermissionsList();
 
         TagValueHolder tags = TagValueHolder.create().put("nodes", permissionsTagValue);
-        FileUtils.generateFileFromTemplate(
-            ToolsConstants.TOOLS_SOURCE_ROOT + "permissions/permission_nodes.tpl.md", PERMISSIONS_OUTPUT_FILE, tags);
+        FileUtils.generateFileFromTemplate(TEMPLATE_FILE, PERMISSIONS_OUTPUT_FILE, tags);
         System.out.println("Wrote to '" + PERMISSIONS_OUTPUT_FILE + "'");
         System.out.println("Before committing, please verify the output!");
     }
@@ -70,20 +53,4 @@ public class PermissionsListWriter implements AutoToolTask {
         }
         return permissionTags;
     }
-
-    private static void outputSimpleList() {
-        PermissionNodesGatherer gatherer = new PermissionNodesGatherer();
-        Set<String> nodes = gatherer.gatherNodes();
-        for (String node : nodes) {
-            System.out.println(node);
-        }
-        System.out.println();
-        System.out.println("Total: " + nodes.size());
-    }
-
-    private static boolean matches(String answer, Scanner sc) {
-        String userInput = sc.nextLine();
-        return answer.equalsIgnoreCase(userInput);
-    }
-
 }
