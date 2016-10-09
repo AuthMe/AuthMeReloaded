@@ -493,7 +493,7 @@ public class OnJoinVerifierTest {
         return player;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void returnOnlineListFromBukkitServer(Collection<Player> onlineList) {
         // Note ljacqu 20160529: The compiler gets lost in generics because Collection<? extends Player> is returned
         // from getOnlinePlayers(). We need to uncheck onlineList to a simple Collection or it will refuse to compile.

@@ -52,7 +52,7 @@ public class ClassCollector {
      * @param <T> the parent type
      * @return list of matching classes
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> List<Class<? extends T>> collectClasses(Class<T> parent) {
         List<Class<?>> classes = collectClasses(parent::isAssignableFrom);
         return new ArrayList<>((List) classes);

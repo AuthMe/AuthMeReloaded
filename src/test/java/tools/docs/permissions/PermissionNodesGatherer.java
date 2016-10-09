@@ -32,6 +32,7 @@ public class PermissionNodesGatherer {
      *
      * @return Ordered map whose keys are the permission nodes and the values the associated JavaDoc
      */
+    @SuppressWarnings("unchecked")
     public <T extends Enum<T> & PermissionNode> Map<String, String> gatherNodesWithJavaDoc() {
         Map<String, String> result = new TreeMap<>();
         result.put("authme.admin.*", "Give access to all admin commands.");

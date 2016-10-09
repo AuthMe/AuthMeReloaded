@@ -6,8 +6,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
-import java.util.regex.Pattern;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;

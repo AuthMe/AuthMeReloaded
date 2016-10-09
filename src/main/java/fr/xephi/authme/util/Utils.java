@@ -1,9 +1,6 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import java.util.regex.Pattern;
 
 /**

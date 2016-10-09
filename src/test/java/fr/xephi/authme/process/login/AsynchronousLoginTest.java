@@ -247,7 +247,7 @@ public class AsynchronousLoginTest {
         return player;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void mockOnlinePlayersInBukkitService() {
         // 127.0.0.4: albania (online), brazil (offline)
         Player playerA = mockPlayer("albania");

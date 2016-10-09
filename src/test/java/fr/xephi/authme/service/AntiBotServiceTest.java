@@ -190,7 +190,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void shouldInformPlayersOnActivation() {
         // given - listening antibot
         runSyncDelayedTaskWithDelay(bukkitService);

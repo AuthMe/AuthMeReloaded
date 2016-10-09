@@ -38,6 +38,7 @@ public class HelpMessagesServiceTest {
     @Mock
     private MessageFileHandlerProvider messageFileHandlerProvider;
 
+    @SuppressWarnings("unchecked")
     @BeforeInjecting
     public void initializeHandler() {
         MessageFileHandler handler = new MessageFileHandler(getJarFile(TEST_FILE), "messages/messages_en.yml");

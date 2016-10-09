@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.ChatColor;
@@ -16,9 +15,6 @@ public class VersionCommand implements ExecutableCommand {
 
     @Inject
     private BukkitService bukkitService;
-
-    @Inject
-    private CommandService commandService;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
@@ -40,7 +36,7 @@ public class VersionCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0"
             + ChatColor.GRAY + ChatColor.ITALIC + " (See LICENSE file)");
         sender.sendMessage(ChatColor.GOLD + "Copyright: " + ChatColor.WHITE
-            + "Copyright (c) Xephi 2015. All rights reserved.");
+            + "Copyright (c) AuthMe-Team 2016. All rights reserved.");
     }
 
     /**

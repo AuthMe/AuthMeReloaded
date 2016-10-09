@@ -4,8 +4,6 @@ import net.ricecode.similarity.LevenshteinDistanceStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
 
-import java.io.File;
-
 /**
  * Utility class for String operations.
  */
