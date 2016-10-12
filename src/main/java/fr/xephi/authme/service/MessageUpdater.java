@@ -1,5 +1,10 @@
 package fr.xephi.authme.service;
 
+import com.github.authme.configme.SettingsManager;
+import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.properties.StringProperty;
+import com.github.authme.configme.resource.YamlFileResource;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.FileUtils;
@@ -13,62 +18,82 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Updates a user's messages file with messages from the JAR files.
  */
 public class MessageUpdater {
 
-    private final File userFile;
     private final FileConfiguration userConfiguration;
     private final FileConfiguration localJarConfiguration;
     private final FileConfiguration defaultJarConfiguration;
+
+    private final List<PropertyEntry> properties;
+    private final SettingsManager settingsManager;
     private boolean hasMissingMessages = false;
 
-    public MessageUpdater(File userFile, String jarFile, String jarDefaultsFile) throws Exception {
+    /**
+     * Constructor.
+     *
+     * @param userFile       messages file in the data folder
+     * @param localJarFile   path to messages file in JAR in local language
+     * @param defaultJarFile path to messages file in JAR for default language
+     * @throws Exception     if userFile does not exist or no JAR messages file can be loaded
+     */
+    public MessageUpdater(File userFile, String localJarFile, String defaultJarFile) throws Exception {
         if (!userFile.exists()) {
             throw new Exception("Local messages file does not exist");
         }
-        this.userFile = userFile;
-        this.userConfiguration = YamlConfiguration.loadConfiguration(userFile);
 
-        localJarConfiguration = loadJarFileOrSendError(jarFile);
-        defaultJarConfiguration = jarFile.equals(jarDefaultsFile)
-            ? null
-            : loadJarFileOrSendError(jarDefaultsFile);
+        userConfiguration = YamlConfiguration.loadConfiguration(userFile);
+        localJarConfiguration = loadJarFileOrSendError(localJarFile);
+        defaultJarConfiguration = localJarFile.equals(defaultJarFile) ? null : loadJarFileOrSendError(defaultJarFile);
         if (localJarConfiguration == null && defaultJarConfiguration == null) {
             throw new Exception("Could not load any JAR messages file to copy from");
         }
+
+        properties = buildPropertyEntriesForMessageKeys();
+        settingsManager = new SettingsManager(new YamlFileResource(userFile), (r, p) -> true, properties);
     }
 
-    public void executeCopy(CommandSender sender) {
+    /**
+     * Copies missing messages to the messages file.
+     *
+     * @param sender sender starting the copy process
+     * @return true if the messages file was updated, false otherwise
+     * @throws Exception if an error occurs during saving
+     */
+    public boolean executeCopy(CommandSender sender) throws Exception {
         copyMissingMessages();
 
         if (!hasMissingMessages) {
             sender.sendMessage("No new messages to add");
-            return;
+            return false;
         }
 
         // Save user configuration file
         try {
-            userConfiguration.save(userFile);
+            settingsManager.save();
             sender.sendMessage("Message file updated with new messages");
-        } catch (IOException e) {
-            sender.sendMessage("Could not save to messages file");
-            ConsoleLogger.logException("Could not save new messages to file:", e);
+            return true;
+        } catch (Exception e) {
+            throw new Exception("Could not save to messages file: " + StringUtils.formatException(e));
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void copyMissingMessages() {
-        for (MessageKey entry : MessageKey.values()) {
-            final String key = entry.getKey();
-            if (!userConfiguration.contains(key)) {
-                String jarMessage = getMessageFromJar(key);
-                if (jarMessage != null) {
-                    hasMissingMessages = true;
-                    userConfiguration.set(key, jarMessage);
-                }
+        for (PropertyEntry entry : properties) {
+            final Property<String> property = (Property<String>) entry.getProperty();
+            String message = userConfiguration.getString(property.getPath());
+            if (message == null) {
+                hasMissingMessages = true;
+                message = getMessageFromJar(property.getPath());
             }
+            settingsManager.setProperty(property, message);
         }
     }
 
@@ -77,7 +102,7 @@ public class MessageUpdater {
         if (message != null) {
             return message;
         }
-        return (defaultJarConfiguration == null ? null : defaultJarConfiguration.getString(key));
+        return (defaultJarConfiguration == null) ? null : defaultJarConfiguration.getString(key);
     }
 
     private static FileConfiguration loadJarFileOrSendError(String jarPath) {
@@ -94,6 +119,13 @@ public class MessageUpdater {
             ConsoleLogger.logException("Exception while handling JAR path '" + jarPath + "'", e);
         }
         return null;
+    }
+
+    private static List<PropertyEntry> buildPropertyEntriesForMessageKeys() {
+        return Arrays.stream(MessageKey.values())
+            .map(key -> new StringProperty(key.getKey(), ""))
+            .map(PropertyEntry::new)
+            .collect(Collectors.toList());
     }
 
     private static void close(Closeable closeable) {
