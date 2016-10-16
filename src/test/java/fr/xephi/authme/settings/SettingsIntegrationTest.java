@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.knownproperties.PropertyEntry;
-import com.github.authme.configme.knownproperties.PropertyFieldsCollector;
+import com.github.authme.configme.knownproperties.ConfigurationData;
+import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
 import com.github.authme.configme.migration.PlainMigrationService;
 import com.github.authme.configme.properties.Property;
 import com.github.authme.configme.resource.PropertyResource;
@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
@@ -38,8 +37,8 @@ public class SettingsIntegrationTest {
     /** File name of the sample config missing certain {@link TestConfiguration} values. */
     private static final String INCOMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-incomplete-sample.yml";
 
-    private static List<PropertyEntry> knownProperties =
-        PropertyFieldsCollector.getAllProperties(TestConfiguration.class);
+    private static ConfigurationData CONFIG_DATA =
+        ConfigurationDataBuilder.collectData(TestConfiguration.class);
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -65,7 +64,7 @@ public class SettingsIntegrationTest {
 
         // when / then
         Settings settings = new Settings(testPluginFolder, resource,
-            new PlainMigrationService(), knownProperties);
+            new PlainMigrationService(), CONFIG_DATA);
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "Custom sys name")
@@ -91,14 +90,14 @@ public class SettingsIntegrationTest {
         File file = copyFileFromResources(INCOMPLETE_FILE);
         PropertyResource resource = new YamlFileResource(file);
         // Expectation: File is rewritten to since it does not have all configurations
-        new Settings(testPluginFolder, resource, new PlainMigrationService(), knownProperties);
+        new Settings(testPluginFolder, resource, new PlainMigrationService(), CONFIG_DATA);
 
         // Load the settings again -> checks that what we wrote can be loaded again
         resource = new YamlFileResource(file);
 
         // then
         Settings settings = new Settings(testPluginFolder, resource,
-            new PlainMigrationService(), knownProperties);
+            new PlainMigrationService(), CONFIG_DATA);
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "[TestDefaultValue]")
@@ -123,7 +122,7 @@ public class SettingsIntegrationTest {
         File configFile = temporaryFolder.newFile();
         PropertyResource resource = new YamlFileResource(configFile);
         Settings settings = new Settings(testPluginFolder, resource,
-            TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
+            TestSettingsMigrationServices.alwaysFulfilled(), CONFIG_DATA);
 
         // when
         assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER), equalTo(TestEnum.SECOND)); // default value

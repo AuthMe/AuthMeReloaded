@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
 import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.knownproperties.ConfigurationData;
 import com.github.authme.configme.migration.MigrationService;
 import com.github.authme.configme.resource.PropertyResource;
 import com.google.common.io.Files;
@@ -10,7 +10,6 @@ import fr.xephi.authme.ConsoleLogger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 
@@ -30,11 +29,11 @@ public class Settings extends SettingsManager {
      * @param pluginFolder the AuthMe plugin folder
      * @param resource the property resource to read and write properties to
      * @param migrationService migration service to check the settings file with
-     * @param knownProperties collection of all available settings
+     * @param configurationData configuration data (properties and comments)
      */
     public Settings(File pluginFolder, PropertyResource resource, MigrationService migrationService,
-                    List<PropertyEntry> knownProperties) {
-        super(resource, migrationService, knownProperties);
+                    ConfigurationData configurationData) {
+        super(resource, migrationService, configurationData);
         this.pluginFolder = pluginFolder;
         loadSettingsFromFiles();
     }

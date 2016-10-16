@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.knownproperties.ConfigurationData;
 import com.github.authme.configme.resource.PropertyResource;
 import com.github.authme.configme.resource.YamlFileResource;
 import com.google.common.io.Files;
@@ -12,7 +12,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,12 +40,12 @@ public class SettingsMigrationServiceTest {
         // given
         copyConfigToTestFolder();
         PropertyResource resource = new YamlFileResource(configTestFile);
-        List<PropertyEntry> propertyMap = AuthMeSettingsRetriever.getAllPropertyFields();
+        ConfigurationData configurationData = AuthMeSettingsRetriever.buildConfigurationData();
         assumeThat(testFolder.listFiles(), arrayWithSize(1));
         SettingsMigrationService migrationService = new SettingsMigrationService(testFolder);
 
         // when
-        boolean result = migrationService.checkAndMigrate(resource, propertyMap);
+        boolean result = migrationService.checkAndMigrate(resource, configurationData.getProperties());
 
         // then
         assertThat(result, equalTo(false));
