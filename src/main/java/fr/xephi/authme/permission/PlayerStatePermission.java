@@ -27,7 +27,7 @@ public enum PlayerStatePermission implements PermissionNode {
     ALLOW_MULTIPLE_ACCOUNTS("authme.allowmultipleaccounts", DefaultPermission.OP_ONLY),
 
     /**
-     * Permission to bypass the purging process
+     * Permission to bypass the purging process.
      */
     BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED);
 
@@ -44,7 +44,8 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * Constructor.
      *
-     * @param node Permission node.
+     * @param node Permission node
+     * @param defaultPermission The default permission
      */
     PlayerStatePermission(String node, DefaultPermission defaultPermission) {
         this.node = node;

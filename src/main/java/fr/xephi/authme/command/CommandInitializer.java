@@ -291,10 +291,10 @@ public class CommandInitializer {
 
         CommandDescription.builder()
             .parent(AUTHME_BASE)
-            .labels("messages")
+            .labels("messages", "msg")
             .description("Add missing messages")
             .detailedDescription("Adds missing messages to the current messages file.")
-            // TODO #768: add permission for command
+            .permission(AdminPermission.UPDATE_MESSAGES)
             .executableCommand(MessagesCommand.class)
             .build();
 

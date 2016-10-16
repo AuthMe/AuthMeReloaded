@@ -1,7 +1,7 @@
 package fr.xephi.authme.service;
 
 import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.knownproperties.PropertyEntry;
+import com.github.authme.configme.knownproperties.ConfigurationData;
 import com.github.authme.configme.properties.Property;
 import com.github.authme.configme.properties.StringProperty;
 import com.github.authme.configme.resource.YamlFileResource;
@@ -31,7 +31,7 @@ public class MessageUpdater {
     private final FileConfiguration localJarConfiguration;
     private final FileConfiguration defaultJarConfiguration;
 
-    private final List<PropertyEntry> properties;
+    private final List<Property<String>> properties;
     private final SettingsManager settingsManager;
     private boolean hasMissingMessages = false;
 
@@ -56,7 +56,8 @@ public class MessageUpdater {
         }
 
         properties = buildPropertyEntriesForMessageKeys();
-        settingsManager = new SettingsManager(new YamlFileResource(userFile), (r, p) -> true, properties);
+        settingsManager = new SettingsManager(
+            new YamlFileResource(userFile), (r, p) -> true, new ConfigurationData((List) properties));
     }
 
     /**
@@ -86,8 +87,7 @@ public class MessageUpdater {
 
     @SuppressWarnings("unchecked")
     private void copyMissingMessages() {
-        for (PropertyEntry entry : properties) {
-            final Property<String> property = (Property<String>) entry.getProperty();
+        for (Property<String> property : properties) {
             String message = userConfiguration.getString(property.getPath());
             if (message == null) {
                 hasMissingMessages = true;
@@ -121,10 +121,9 @@ public class MessageUpdater {
         return null;
     }
 
-    private static List<PropertyEntry> buildPropertyEntriesForMessageKeys() {
+    private static List<Property<String>> buildPropertyEntriesForMessageKeys() {
         return Arrays.stream(MessageKey.values())
             .map(key -> new StringProperty(key.getKey(), ""))
-            .map(PropertyEntry::new)
             .collect(Collectors.toList());
     }
 
