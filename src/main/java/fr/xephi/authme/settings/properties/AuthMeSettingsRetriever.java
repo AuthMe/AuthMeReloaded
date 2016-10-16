@@ -1,11 +1,9 @@
 package fr.xephi.authme.settings.properties;
 
 import com.github.authme.configme.SettingsHolder;
-import com.github.authme.configme.knownproperties.PropertyEntry;
-import com.github.authme.configme.knownproperties.PropertyFieldsCollector;
+import com.github.authme.configme.knownproperties.ConfigurationData;
+import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
 import com.github.authme.configme.properties.Property;
-
-import java.util.List;
 
 /**
  * Utility class responsible for retrieving all {@link Property} fields
@@ -17,12 +15,12 @@ public final class AuthMeSettingsRetriever {
     }
 
     /**
-     * Constructs a list with all property fields in AuthMe {@link SettingsHolder} classes.
+     * Builds the configuration data for all property fields in AuthMe {@link SettingsHolder} classes.
      *
-     * @return list of all known properties
+     * @return configuration data
      */
-    public static List<PropertyEntry> getAllPropertyFields() {
-        return PropertyFieldsCollector.getAllProperties(
+    public static ConfigurationData buildConfigurationData() {
+        return ConfigurationDataBuilder.collectData(
             DatabaseSettings.class,      ConverterSettings.class,  PluginSettings.class,
             RestrictionSettings.class,   EmailSettings.class,      HooksSettings.class,
             ProtectionSettings.class,    PurgeSettings.class,      SecuritySettings.class,

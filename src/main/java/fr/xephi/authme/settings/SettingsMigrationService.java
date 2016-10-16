@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.knownproperties.PropertyEntry;
 import com.github.authme.configme.migration.PlainMigrationService;
 import com.github.authme.configme.properties.Property;
 import com.github.authme.configme.resource.PropertyResource;
@@ -35,7 +34,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     }
 
     @Override
-    protected boolean performMigrations(PropertyResource resource, List<PropertyEntry> knownProperties) {
+    protected boolean performMigrations(PropertyResource resource, List<Property<?>> properties) {
         boolean changes = false;
         if ("[a-zA-Z0-9_?]*".equals(resource.getString(ALLOWED_NICKNAME_CHARACTERS.getPath()))) {
             resource.setValue(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");

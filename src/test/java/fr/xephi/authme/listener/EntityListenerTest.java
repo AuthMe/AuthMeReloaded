@@ -18,7 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static fr.xephi.authme.listener.ListenerTestUtils.checkEventIsCanceledForUnauthed;
+import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -41,65 +41,12 @@ public class EntityListenerTest {
 
     @Test
     public void shouldHandleSimpleEvents() {
-        checkEventIsCanceledForUnauthed(listener, listenerService, EntityTargetEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, FoodLevelChangeEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, EntityShootBowEvent.class);
-    }
-
-    @Test
-    public void shouldCancelEntityInteractEvent() {
-        // given
-        EntityInteractEvent event = mock(EntityInteractEvent.class);
-        given(listenerService.shouldCancelEvent(event)).willReturn(true);
-
-        // when
-        listener.onLowestEntityInteract(event);
-
-        // then
-        verify(listenerService).shouldCancelEvent(event);
-        verify(event).setCancelled(true);
-    }
-
-    @Test
-    public void shouldNotCancelEntityInteractEvent() {
-        // given
-        EntityInteractEvent event = mock(EntityInteractEvent.class);
-        given(listenerService.shouldCancelEvent(event)).willReturn(false);
-
-        // when
-        listener.onLowestEntityInteract(event);
-
-        // then
-        verify(listenerService).shouldCancelEvent(event);
-        verifyZeroInteractions(event);
-    }
-
-    @Test
-    public void shouldCancelEntityInteractEventHighest() {
-        // given
-        EntityInteractEvent event = mock(EntityInteractEvent.class);
-        given(listenerService.shouldCancelEvent(event)).willReturn(true);
-
-        // when
-        listener.onEntityInteract(event);
-
-        // then
-        verify(listenerService).shouldCancelEvent(event);
-        verify(event).setCancelled(true);
-    }
-
-    @Test
-    public void shouldNotCancelEntityInteractEventHighest() {
-        // given
-        EntityInteractEvent event = mock(EntityInteractEvent.class);
-        given(listenerService.shouldCancelEvent(event)).willReturn(false);
-
-        // when
-        listener.onEntityInteract(event);
-
-        // then
-        verify(listenerService).shouldCancelEvent(event);
-        verifyZeroInteractions(event);
+        withServiceMock(listenerService)
+            .check(listener::onEntityTarget, EntityTargetEvent.class)
+            .check(listener::onFoodLevelChange, FoodLevelChangeEvent.class)
+            .check(listener::onShoot, EntityShootBowEvent.class)
+            .check(listener::onEntityInteract, EntityInteractEvent.class)
+            .check(listener::onLowestEntityInteract, EntityInteractEvent.class);
     }
 
     @Test

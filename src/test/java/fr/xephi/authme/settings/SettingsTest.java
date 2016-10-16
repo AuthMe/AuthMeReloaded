@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.knownproperties.PropertyEntry;
-import com.github.authme.configme.knownproperties.PropertyFieldsCollector;
+import com.github.authme.configme.knownproperties.ConfigurationData;
+import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
 import com.github.authme.configme.resource.PropertyResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -15,7 +15,6 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayWithSize;
@@ -29,8 +28,8 @@ import static org.mockito.Mockito.mock;
  */
 public class SettingsTest {
     
-    private static final List<PropertyEntry> knownProperties =
-        PropertyFieldsCollector.getAllProperties(TestConfiguration.class);
+    private static final ConfigurationData CONFIG_DATA =
+        ConfigurationDataBuilder.collectData(TestConfiguration.class);
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -57,7 +56,7 @@ public class SettingsTest {
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.getBoolean(RegistrationSettings.USE_WELCOME_MESSAGE.getPath())).willReturn(true);
         Settings settings = new Settings(testPluginFolder, resource,
-            TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
+            TestSettingsMigrationServices.alwaysFulfilled(), CONFIG_DATA);
 
         // when
         String[] result = settings.getWelcomeMessage();
@@ -77,7 +76,7 @@ public class SettingsTest {
 
         PropertyResource resource = mock(PropertyResource.class);
         Settings settings = new Settings(testPluginFolder, resource,
-            TestSettingsMigrationServices.alwaysFulfilled(), knownProperties);
+            TestSettingsMigrationServices.alwaysFulfilled(), CONFIG_DATA);
 
         // when
         String result = settings.getPasswordEmailMessage();

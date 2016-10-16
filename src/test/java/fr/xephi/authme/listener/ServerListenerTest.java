@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link ServerListener}.
@@ -56,82 +57,22 @@ public class ServerListenerTest {
 
     @Test
     public void shouldForwardPluginNameOnEnable() {
-        checkEnableHandling(ESSENTIALS, new Runnable() {
-            @Override
-            public void run() {
-                verify(pluginHookService).tryHookToEssentials();
-            }
-        });
-        checkEnableHandling(ESSENTIALS_SPAWN, new Runnable() {
-            @Override
-            public void run() {
-                verify(spawnLoader).loadEssentialsSpawn();
-            }
-        });
-        checkEnableHandling(MULTIVERSE, new Runnable() {
-            @Override
-            public void run() {
-                verify(pluginHookService).tryHookToMultiverse();
-            }
-        });
-        checkEnableHandling(COMBAT_TAG, new Runnable() {
-            @Override
-            public void run() {
-                verify(pluginHookService).tryHookToCombatPlus();
-            }
-        });
-        checkEnableHandling(PROTOCOL_LIB, new Runnable() {
-            @Override
-            public void run() {
-                verify(protocolLibService).setup();
-            }
-        });
-        checkEnableHandling("UnknownPlugin", new Runnable() {
-            @Override
-            public void run() {
-                // nothing
-            }
-        });
+        checkEnableHandling(ESSENTIALS,       () -> verify(pluginHookService).tryHookToEssentials());
+        checkEnableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).loadEssentialsSpawn());
+        checkEnableHandling(MULTIVERSE,       () -> verify(pluginHookService).tryHookToMultiverse());
+        checkEnableHandling(COMBAT_TAG,       () -> verify(pluginHookService).tryHookToCombatPlus());
+        checkEnableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).setup());
+        checkEnableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
     }
 
     @Test
     public void shouldForwardPluginNameOnDisable() {
-        checkDisableHandling(ESSENTIALS, new Runnable() {
-            @Override
-            public void run() {
-                verify(pluginHookService).unhookEssentials();
-            }
-        });
-        checkDisableHandling(ESSENTIALS_SPAWN, new Runnable() {
-            @Override
-            public void run() {
-                verify(spawnLoader).unloadEssentialsSpawn();
-            }
-        });
-        checkDisableHandling(MULTIVERSE, new Runnable() {
-            @Override
-            public void run() {
-                verify(pluginHookService).unhookMultiverse();
-            }
-        });
-        checkDisableHandling(COMBAT_TAG, new Runnable() {
-            @Override
-            public void run() {
-                verify(pluginHookService).unhookCombatPlus();
-            }
-        });
-        checkDisableHandling(PROTOCOL_LIB, new Runnable() {
-            @Override
-            public void run() {
-                verify(protocolLibService).disable();
-            }
-        });
-        checkDisableHandling("UnknownPlugin", new Runnable() {
-            @Override
-            public void run() {
-                // nothing
-            }
-        });
+        checkDisableHandling(ESSENTIALS,       () -> verify(pluginHookService).unhookEssentials());
+        checkDisableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).unloadEssentialsSpawn());
+        checkDisableHandling(MULTIVERSE,       () -> verify(pluginHookService).unhookMultiverse());
+        checkDisableHandling(COMBAT_TAG,       () -> verify(pluginHookService).unhookCombatPlus());
+        checkDisableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).disable());
+        checkDisableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
     }
 
     @Test

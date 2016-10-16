@@ -13,9 +13,9 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.purge.PurgeService;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.TestSettingsMigrationServices.alwaysFulfilled;
-import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.getAllPropertyFields;
+import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -95,7 +95,7 @@ public class AuthMeInitializationTest {
     public void shouldInitializeAllServices() {
         // given
         Settings settings =
-            new Settings(dataFolder, mock(PropertyResource.class), alwaysFulfilled(), getAllPropertyFields());
+            new Settings(dataFolder, mock(PropertyResource.class), alwaysFulfilled(), buildConfigurationData());
 
         Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
         injector.provide(DataFolder.class, dataFolder);
