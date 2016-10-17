@@ -15,7 +15,7 @@ import java.util.List;
  * Created on 17/10/2016.
  * Author: DNx
  */
-public class EmailShowCommand extends PlayerCommand {
+public class ShowEmailCommand extends PlayerCommand {
 
     @Inject
     private Management management;

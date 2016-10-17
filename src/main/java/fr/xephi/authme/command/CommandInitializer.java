@@ -28,8 +28,8 @@ import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
-import fr.xephi.authme.command.executable.email.EmailShowCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
+import fr.xephi.authme.command.executable.email.ShowEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.command.executable.register.RegisterCommand;
@@ -359,8 +359,8 @@ public class CommandInitializer {
             .parent(EMAIL_BASE)
             .labels("show", "myemail")
             .description("Show Email")
-            .detailedDescription("Show your current email address")
-            .executableCommand(EmailShowCommand.class)
+            .detailedDescription("Show your current email address.")
+            .executableCommand(ShowEmailCommand.class)
             .build();
 
         // Register the add command
