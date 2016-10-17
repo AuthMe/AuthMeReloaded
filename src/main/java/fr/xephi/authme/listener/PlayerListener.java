@@ -6,14 +6,14 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -233,7 +233,6 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        antiBotService.handlePlayerJoin();
         teleportationService.teleportOnJoin(player);
     }
 
@@ -306,12 +305,7 @@ public class PlayerListener implements Listener {
          * @note little hack cause InventoryOpenEvent cannot be cancelled for
          * real, cause no packet is send to server by client for the main inv
          */
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                player.closeInventory();
-            }
-        }, 1);
+        bukkitService.scheduleSyncDelayedTask(player::closeInventory, 1);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
