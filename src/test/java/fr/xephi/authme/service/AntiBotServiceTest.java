@@ -3,7 +3,6 @@ package fr.xephi.authme.service;
 import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.AdminPermission;
@@ -153,22 +152,6 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldIncreaseCountAndDecreaseAfterDelay() {
-        // given - listening antibot
-        runSyncDelayedTaskWithDelay(bukkitService);
-        reset(bukkitService);
-        assertThat(getAntiBotCount(antiBotService), equalTo(0));
-
-        // when
-        antiBotService.handlePlayerJoin();
-
-        // then
-        assertThat(getAntiBotCount(antiBotService), equalTo(1));
-        runSyncDelayedTaskWithDelay(bukkitService);
-        assertThat(getAntiBotCount(antiBotService), equalTo(0));
-    }
-
-    @Test
     public void shouldActivateAntibotAfterThreshold() {
         // given
         int sensitivity = 10;
@@ -178,19 +161,19 @@ public class AntiBotServiceTest {
         runSyncDelayedTaskWithDelay(bukkitService);
 
         for (int i = 0; i < sensitivity; ++i) {
-            antiBotService.handlePlayerJoin();
+            antiBotService.shouldKick(false);
         }
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
 
         // when
-        antiBotService.handlePlayerJoin();
+        antiBotService.shouldKick(false);
 
         // then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.ACTIVE));
     }
 
     @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void shouldInformPlayersOnActivation() {
         // given - listening antibot
         runSyncDelayedTaskWithDelay(bukkitService);
@@ -222,7 +205,4 @@ public class AntiBotServiceTest {
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
-    private static int getAntiBotCount(AntiBotService antiBotService) {
-        return ReflectionTestUtils.getFieldValue(AntiBotService.class, antiBotService, "antibotPlayers");
-    }
 }

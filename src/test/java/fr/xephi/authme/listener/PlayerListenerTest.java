@@ -565,7 +565,6 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkNameCasing(player, auth);
         verify(onJoinVerifier).checkPlayerCountry(true, ip);
-        verify(antiBotService).handlePlayerJoin();
         verify(teleportationService).teleportOnJoin(player);
         verifyNoModifyingCalls(event);
     }

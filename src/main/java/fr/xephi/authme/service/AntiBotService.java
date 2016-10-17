@@ -161,7 +161,7 @@ public class AntiBotService implements SettingsDependent {
         if (lastFlaggedJoin == null) {
             lastFlaggedJoin = Instant.now();
         }
-        if (ChronoUnit.SECONDS.between(Instant.now(), lastFlaggedJoin) <= 5) {
+        if (ChronoUnit.SECONDS.between(lastFlaggedJoin, Instant.now()) <= 5) {
             flagged++;
         } else {
             // reset to 1 because this player is also count as not registered
