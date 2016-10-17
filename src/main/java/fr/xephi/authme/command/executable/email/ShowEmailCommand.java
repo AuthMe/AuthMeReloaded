@@ -5,21 +5,15 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.process.Management;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
 
 /**
- * Created on 17/10/2016.
- * Author: DNx
+ * Show email command.
  */
 public class ShowEmailCommand extends PlayerCommand {
-
-    @Inject
-    private Management management;
-
     @Inject
     private CommandService commandService;
 
