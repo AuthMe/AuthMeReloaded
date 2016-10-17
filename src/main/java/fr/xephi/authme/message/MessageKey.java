@@ -121,6 +121,10 @@ public enum MessageKey {
 
     EMAIL_CHANGED_SUCCESS("email_changed"),
 
+    EMAIL_SHOW("email_show", "%email"),
+
+    SHOW_NO_EMAIL("show_no_email"),
+
     RECOVERY_EMAIL_SENT_MESSAGE("email_send"),
 
     RECOVERY_EMAIL_ALREADY_SENT_MESSAGE("email_exists"),
@@ -136,7 +140,7 @@ public enum MessageKey {
     TWO_FACTOR_CREATE("two_factor_create", "%code", "%url"),
 
     NOT_OWNER_ERROR("not_owner_error"),
-    
+
     INVALID_NAME_CASE("invalid_name_case", "%valid", "%invalid"),
 
     TEMPBAN_MAX_LOGINS("tempban_max_logins"),

@@ -66,6 +66,8 @@ password_error_unsafe: '&cToto heslo není bezpečné, prosím zvol si jiné hes
 kick_antibot: 'Bezpečnostní mód AntiBot je zapnut! Musíš počkat několik minut než se budeš moct připojit znovu na server.'
 email_exists: '&cNový email byl odeslán! Můžeš ho zahodit a poslat jiný pomocí tohoto příkazu:'
 invalid_name_case: 'Měl by jsi použít jméno %valid, ne jméno %invalid.'
+# TODO email_show: '&2Your current email address is: &f%email'
+# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
 # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 # TODO accounts_owned_self: 'You own %count accounts:'
 # TODO accounts_owned_other: 'The player %name has %count accounts:'

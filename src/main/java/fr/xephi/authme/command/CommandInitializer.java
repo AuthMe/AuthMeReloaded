@@ -28,6 +28,7 @@ import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
+import fr.xephi.authme.command.executable.email.EmailShowCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
@@ -351,6 +352,15 @@ public class CommandInitializer {
             .description("Email command")
             .detailedDescription("The AuthMeReloaded Email command base.")
             .executableCommand(EmailBaseCommand.class)
+            .build();
+
+        // Register the show command
+        CommandDescription.builder()
+            .parent(EMAIL_BASE)
+            .labels("show", "myemail")
+            .description("Show Email")
+            .detailedDescription("Show your current email address")
+            .executableCommand(EmailShowCommand.class)
             .build();
 
         // Register the add command

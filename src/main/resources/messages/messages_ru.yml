@@ -11,7 +11,7 @@ login: '&a&lВы успешно вошли!'
 vb_nonActiv: '&6Ваш аккаунт еще не активирован! Проверьте вашу почту!'
 user_regged: '&c&lТакой игрок уже зарегистрирован'
 usage_reg: '&c&lИспользование: &e&l/reg ПАРОЛЬ ПОВТОР_ПАРОЛЯ'
-# TODO max_reg: Missing tags %reg_count, %reg_names, %max_acc
+# TODO max_reg: Missing tags %reg_count, %max_acc, %reg_names
 max_reg: '&c&lВы превысили макс количество регистраций на ваш IP'
 no_perm: '&c&lНедостаточно прав'
 error: '&c&lПроизошла ошибка. Свяжитесь с администратором'
@@ -72,5 +72,7 @@ kicked_admin_registered: 'Администратор зарегистриров�
 tempban_max_logins: '&cВы были временно забанены, потому что вы пытались войти в систему слишком много раз.'
 accounts_owned_self: 'Вы являетесь владельцем %count аккаунтов:'
 incomplete_email_settings: 'Ошибка: не все необходимые параметры установлены для отправки электронной почты. Пожалуйста, обратитесь к администратору.'
-# TODO recovery_code_incorrect: 'The recovery code is not correct! Use /email recovery [email] to generate a new one'
+# TODO email_show: '&2Your current email address is: &f%email'
+# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
 # TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
+# TODO recovery_code_incorrect: 'The recovery code is not correct! Use /email recovery [email] to generate a new one'
