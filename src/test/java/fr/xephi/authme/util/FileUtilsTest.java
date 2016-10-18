@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -117,6 +119,13 @@ public class FileUtilsTest {
 
         // then
         // Nothing happens
+    }
+
+    @Test
+    public void shouldGetResourceFromJar() {
+        // given / when / then
+        assertThat(FileUtils.getResourceFromJar("config.yml"), not(nullValue()));
+        assertThat(FileUtils.getResourceFromJar("does-not-exist"), nullValue());
     }
 
     @Test

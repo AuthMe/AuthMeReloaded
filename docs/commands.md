@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Oct 01 23:33:39 CEST 2016. See commands/commands.tpl.md -->
+<!-- File auto-generated on Sun Oct 16 21:39:08 CEST 2016. See commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -45,6 +45,8 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/authme version**: Show detailed information about the installed AuthMeReloaded version, the developers, contributors, and license.
 - **/authme converter** &lt;job>: Converter command for AuthMeReloaded.
   <br />Requires `authme.admin.converter`
+- **/authme messages**: Adds missing messages to the current messages file.
+  <br />Requires `authme.admin.updatemessages`
 - **/authme help** [query]: View detailed help for /authme commands.
 - **/login** &lt;password>: Command to log in using AuthMeReloaded.
   <br />Requires `authme.player.login`
@@ -76,4 +78,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 01 23:33:39 CEST 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 16 21:39:08 CEST 2016

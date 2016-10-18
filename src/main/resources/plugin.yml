@@ -48,6 +48,7 @@ permissions:
         description: Give access to all admin commands.
         children:
             authme.admin.accounts: true
+            authme.admin.antibotmessages: true
             authme.admin.changemail: true
             authme.admin.changepassword: true
             authme.admin.converter: true
@@ -66,6 +67,7 @@ permissions:
             authme.admin.spawn: true
             authme.admin.switchantibot: true
             authme.admin.unregister: true
+            authme.admin.updatemessages: true
     authme.admin.register:
         description: Administrator command to register a new user.
         default: op
@@ -127,7 +129,10 @@ permissions:
         description: Administrator command to reload the plugin configuration.
         default: op
     authme.admin.antibotmessages:
-        description: Permission to see Antibot messages
+        description: Permission to see Antibot messages.
+        default: op
+    authme.admin.updatemessages:
+        description: Permission to use the update messages command.
         default: op
     authme.player.*:
         description: Permission to use all player (non-admin) commands.
