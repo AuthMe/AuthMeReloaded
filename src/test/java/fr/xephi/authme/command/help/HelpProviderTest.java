@@ -395,6 +395,24 @@ public class HelpProviderTest {
         assertThat(lines.get(0), equalTo("Command: /authme register <password> <confirmation>"));
     }
 
+    @Test
+    public void shouldShowAlternativesForRootCommand() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "unregister");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("unreg"));
+
+        // when
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_ALTERNATIVES);
+
+        // then
+        List<String> lines = getLines(sender);
+        assertThat(lines, hasSize(4));
+        assertThat(lines.get(0), equalTo("Header"));
+        assertThat(lines.get(1), equalTo("Command: /unreg <player>"));
+        assertThat(lines.get(2), equalTo("Alternatives:"));
+        assertThat(lines.get(3), equalTo(" /unregister <player>"));
+    }
+
     /**
      * Generate an instance of {@link FoundCommandResult} with the given command and labels. All other fields aren't
      * retrieved by {@link HelpProvider} and so are initialized to default values for the tests.
