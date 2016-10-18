@@ -41,7 +41,7 @@ public enum PlayerPermission implements PermissionNode {
     CHANGE_EMAIL("authme.player.email.change"),
 
     /**
-     * Command permission to recover an account using it's email address.
+     * Command permission to recover an account using its email address.
      */
     RECOVER_EMAIL("authme.player.email.recover"),
 

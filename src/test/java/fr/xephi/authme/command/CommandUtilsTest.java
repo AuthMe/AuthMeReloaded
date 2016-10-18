@@ -19,14 +19,14 @@ public class CommandUtilsTest {
             .description("Base")
             .detailedDescription("Test base command.")
             .executableCommand(ExecutableCommand.class)
-            .build();
+            .register();
         CommandDescription command = CommandDescription.builder()
             .parent(base)
             .labels("help", "h", "?")
             .description("Child")
             .detailedDescription("Test child command.")
             .executableCommand(ExecutableCommand.class)
-            .build();
+            .register();
 
         // when
         String commandPath = CommandUtils.constructCommandPath(command);
@@ -42,7 +42,7 @@ public class CommandUtilsTest {
     @Test
     public void shouldComputeMinAndMaxOnEmptyCommand() {
         // given
-        CommandDescription command = getBuilderForArgsTest().build();
+        CommandDescription command = getBuilderForArgsTest().register();
 
         // when / then
         checkArgumentCount(command, 0, 0);
@@ -54,7 +54,7 @@ public class CommandUtilsTest {
         CommandDescription command = getBuilderForArgsTest()
             .withArgument("Test", "Arg description", false)
             .withArgument("Test22", "Arg description 2", false)
-            .build();
+            .register();
 
         // when / then
         checkArgumentCount(command, 2, 2);
@@ -67,7 +67,7 @@ public class CommandUtilsTest {
             .withArgument("arg1", "Arg description", false)
             .withArgument("arg2", "Arg description 2", true)
             .withArgument("arg3", "Arg description 3", true)
-            .build();
+            .register();
 
         // when / then
         checkArgumentCount(command, 1, 3);

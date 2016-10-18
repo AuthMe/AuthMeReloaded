@@ -249,7 +249,7 @@ public class HelpProvider implements Reloadable {
         String parentCommandPath = String.join(" ", parentLabels);
         for (CommandDescription child : command.getChildren()) {
             lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
-                + ChatColor.GRAY + ChatColor.ITALIC + ": " + child.getDescription());
+                + ChatColor.GRAY + ChatColor.ITALIC + ": " + helpMessagesService.getDescription(child));
         }
     }
 

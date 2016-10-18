@@ -251,6 +251,10 @@ public class HelpProviderTest {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "login")))
+            .willReturn("Command for login [localized]");
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "register")))
+            .willReturn("Registration command [localized]");
 
         // when
         helpProvider.outputHelp(sender, result, SHOW_CHILDREN);
@@ -258,9 +262,9 @@ public class HelpProviderTest {
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
-        assertThat(lines.get(1), containsString("Children:"));
-        assertThat(lines.get(2), containsString("/authme login: login cmd"));
-        assertThat(lines.get(3), containsString("/authme register: register cmd"));
+        assertThat(lines.get(1), equalTo("Children:"));
+        assertThat(lines.get(2), equalTo(" /authme login: Command for login [localized]"));
+        assertThat(lines.get(3), equalTo(" /authme register: Registration command [localized]"));
     }
 
     @Test

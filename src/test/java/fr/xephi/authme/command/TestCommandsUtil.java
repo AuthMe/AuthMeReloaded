@@ -42,7 +42,7 @@ public final class TestCommandsUtil {
             newArgument("player", true));
         // Register /email helptest -- use only to test for help command arguments special case
         CommandDescription.builder().parent(emailBase).labels("helptest").executableCommand(HelpCommand.class)
-            .description("test").detailedDescription("Test.").withArgument("Query", "", false).build();
+            .description("test").detailedDescription("Test.").withArgument("Query", "", false).register();
 
         // Register /unregister <player>, alias: /unreg
         CommandDescription unregisterBase = createCommand(AdminPermission.UNREGISTER, null,
@@ -101,7 +101,7 @@ public final class TestCommandsUtil {
             }
         }
 
-        return command.build();
+        return command.register();
     }
 
     /** Shortcut command to initialize a new argument description. */

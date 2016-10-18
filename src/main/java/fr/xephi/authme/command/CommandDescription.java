@@ -56,16 +56,10 @@ public class CommandDescription {
     private PermissionNode permission;
 
     /**
-     * Private constructor. Use {@link CommandDescription#builder()} to create instances of this class.
+     * Private constructor.
      * <p>
-     * Note for developers: Instances should be created with {@link CommandDescription#createInstance} to be properly
+     * Note for developers: Instances should be created with {@link CommandBuilder#register()} to be properly
      * registered in the command tree.
-     */
-    private CommandDescription() {
-    }
-
-    /**
-     * Create an instance.
      *
      * @param labels              command labels
      * @param description         description of the command
@@ -74,30 +68,17 @@ public class CommandDescription {
      * @param parent              parent command
      * @param arguments           command arguments
      * @param permission          permission node required to execute this command
-     *
-     * @return the created instance
-     * @see CommandDescription#builder()
      */
-    private static CommandDescription createInstance(List<String> labels, String description,
-            String detailedDescription, Class<? extends ExecutableCommand> executableCommand, CommandDescription parent,
-            List<CommandArgumentDescription> arguments,  PermissionNode permission) {
-        CommandDescription instance = new CommandDescription();
-        instance.labels = labels;
-        instance.description = description;
-        instance.detailedDescription = detailedDescription;
-        instance.executableCommand = executableCommand;
-        instance.parent = parent;
-        instance.arguments = arguments;
-        instance.permission = permission;
-
-        if (parent != null) {
-            parent.addChild(instance);
-        }
-        return instance;
-    }
-
-    private void addChild(CommandDescription command) {
-        children.add(command);
+    private CommandDescription(List<String> labels, String description, String detailedDescription, 
+                               Class<? extends ExecutableCommand> executableCommand, CommandDescription parent,
+                               List<CommandArgumentDescription> arguments,  PermissionNode permission) {
+        this.labels = labels;
+        this.description = description;
+        this.detailedDescription = detailedDescription;
+        this.executableCommand = executableCommand;
+        this.parent = parent;
+        this.arguments = arguments;
+        this.permission = permission;
     }
 
     /**
@@ -224,8 +205,21 @@ public class CommandDescription {
         private PermissionNode permission;
 
         /**
-         * Build a CommandDescription from the builder or throw an exception if a mandatory
-         * field has not been set.
+         * Build a CommandDescription and register it onto the parent if available.
+         *
+         * @return The generated CommandDescription object
+         */
+        public CommandDescription register() {
+            CommandDescription command = build();
+
+            if (command.parent != null) {
+                command.parent.children.add(command);
+            }
+            return command;
+        }
+
+        /**
+         * Build a CommandDescription (without registering it on the parent).
          *
          * @return The generated CommandDescription object
          */
@@ -236,8 +230,8 @@ public class CommandDescription {
             checkArgument(executableCommand != null, "Executable command must be set");
             // parents and permissions may be null; arguments may be empty
 
-            return createInstance(labels, description, detailedDescription, executableCommand,
-                                  parent, arguments, permission);
+            return new CommandDescription(labels, description, detailedDescription, executableCommand,
+                                          parent, arguments, permission);
         }
 
         public CommandBuilder labels(List<String> labels) {
