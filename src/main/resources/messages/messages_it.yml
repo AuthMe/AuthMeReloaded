@@ -73,5 +73,5 @@ kicked_admin_registered: 'Un amministratore ti ha appena registrato, per favore 
 incomplete_email_settings: 'Errore: non tutte le impostazioni richieste per inviare le email sono state impostate. Per favore contatta un amministratore.'
 recovery_code_incorrect: 'Il codice di recupero inserito non è corretto! Scrivi /email recovery <email> per generarne uno nuovo'
 recovery_code_sent: 'Una email contenente il codice di recupero per reimpostare la tua password è stata appena inviata al tuo indirizzo email.'
-# TODO email_show: '&2Your current email address is: &f%email'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
+email_show: '&2Il tuo indirizzo email al momento è: &f%email'
+show_no_email: '&2Al momento non hai nessun indirizzo email associato al tuo account.'
