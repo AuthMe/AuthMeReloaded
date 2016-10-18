@@ -69,7 +69,7 @@ invalid_name_case: 'Dovresti entrare con questo nome utente: "%valid", al posto 
 tempban_max_logins: '&cSei stato temporaneamente bandito per aver fallito l''autenticazione troppe volte.'
 accounts_owned_self: 'Possiedi %count account:'
 accounts_owned_other: 'Il giocatore %name possiede %count account:'
-kicked_admin_registered: 'Un amministratore ti ha appena registrato; per favore rientra nel server'
+kicked_admin_registered: 'Un amministratore ti ha appena registrato, per favore rientra nel server'
 incomplete_email_settings: 'Errore: non tutte le impostazioni richieste per inviare le email sono state impostate. Per favore contatta un amministratore.'
 recovery_code_incorrect: 'Il codice di recupero inserito non è corretto! Scrivi /email recovery <email> per generarne uno nuovo'
 recovery_code_sent: 'Una email contenente il codice di recupero per reimpostare la tua password è stata appena inviata al tuo indirizzo email.'
