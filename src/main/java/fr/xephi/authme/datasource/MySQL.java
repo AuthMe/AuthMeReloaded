@@ -40,6 +40,7 @@ public class MySQL implements DataSource {
     private String password;
     private String database;
     private String tableName;
+    private int poolSize;
     private List<String> columnOthers;
     private Columns col;
     private HashAlgorithm hashAlgorithm;
@@ -98,6 +99,10 @@ public class MySQL implements DataSource {
         this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
+        this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
+        if(poolSize == -1) {
+            poolSize = RuntimeUtils.getCoreCount();
+        }
     }
 
     private void setConnectionArguments() throws RuntimeException {
@@ -105,7 +110,7 @@ public class MySQL implements DataSource {
         ds.setPoolName("AuthMeMYSQLPool");
 
         // Pool size
-    	ds.setMaximumPoolSize(RuntimeUtils.getCoreCount());
+    	ds.setMaximumPoolSize(poolSize);
 
         // Database URL
         ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);

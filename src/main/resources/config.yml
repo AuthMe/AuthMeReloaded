@@ -40,6 +40,8 @@ DataSource:
     mySQLlastlocWorld: world
     # Column for RealName
     mySQLRealName: realname
+    # Overrides the size of the DB Connection Pool, -1 = Auto
+    poolSize: -1
 settings:
     sessions:
         # Do you want to enable the session feature?
