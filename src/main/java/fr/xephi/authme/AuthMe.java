@@ -199,6 +199,9 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.setLogger(getLogger());
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
 
+        // Create plugin folder
+        getDataFolder().mkdir();
+
         // Load settings and set up the console and console filter
         settings = Initializer.createSettings(this);
         bukkitService = new BukkitService(this, settings);
