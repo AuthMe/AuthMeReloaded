@@ -12,7 +12,7 @@ public class PurgeSettings implements SettingsHolder {
     public static final Property<Boolean> USE_AUTO_PURGE =
         newProperty("Purge.useAutoPurge", false);
 
-    @Comment("Number of Days an account become Unused")
+    @Comment("Number of days after which an account should be purged")
     public static final Property<Integer> DAYS_BEFORE_REMOVE_PLAYER =
         newProperty("Purge.daysBeforeRemovePlayer", 60);
 
@@ -28,7 +28,7 @@ public class PurgeSettings implements SettingsHolder {
     public static final Property<String> DEFAULT_WORLD =
         newProperty("Purge.defaultWorld", "world");
 
-    @Comment("Do we need to remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge process ?")
+    @Comment("Remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge?")
     public static final Property<Boolean> REMOVE_LIMITED_CREATIVE_INVENTORIES =
         newProperty("Purge.removeLimitedCreativesInventories", false);
 

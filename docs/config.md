@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Oct 23 18:25:12 CEST 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Oct 23 21:08:57 CEST 2016. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -99,7 +99,8 @@ settings:
         # Should the session expire if the player tries to log in with
         # another IP address?
         sessionExpireOnIpChange: true
-    # Message language, available: en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt
+    # Message language, available languages:
+    # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md
     messagesLanguage: 'en'
     restrictions:
         # Keeps collisions disabled for logged players
@@ -131,9 +132,9 @@ settings:
         # This setting will prevent potential security exploits.
         ForceSingleSession: true
         ForceSpawnLocOnJoin:
-            # If enabled, every player that spawn in one of the world listed in "ForceSpawnLocOnJoin.worlds"
-            # will be teleported to the spawnpoint after successful authentication.
-            # The quit location of the player will be overwritten.
+            # If enabled, every player that spawn in one of the world listed in
+            # "ForceSpawnLocOnJoin.worlds" will be teleported to the spawnpoint after successful
+            # authentication. The quit location of the player will be overwritten.
             # This is different from "teleportUnAuthedToSpawn" that teleport player
             # to the spawnpoint on join.
             enabled: false
@@ -202,8 +203,8 @@ settings:
     # FINE for some additional detailed ones (like password failed),
     # and DEBUG for debugging
     logLevel: 'FINE'
-    # By default we schedule async tasks when talking to the database
-    # If you want typical communication with the database to happen synchronously, set this to false
+    # By default we schedule async tasks when talking to the database. If you want
+    # typical communication with the database to happen synchronously, set this to false
     useAsyncTasks: true
     GameMode:
         # Force survival gamemode when player joins?
@@ -277,19 +278,23 @@ settings:
         forceLoginAfterRegister: false
     # Force these commands after /login, without any '/', use %p to replace with player name
     forceCommands: []
-    # Force these commands after /login as service console, without any '/'. Use %p to replace with player name
+    # Force these commands after /login as service console, without any '/'.
+    # Use %p to replace with player name
     forceCommandsAsConsole: []
     # Force these commands after /register, without any '/', use %p to replace with player name
     forceRegisterCommands: []
-    # Force these commands after /register as a server console, without any '/'. Use %p to replace with player name
+    # Force these commands after /register as a server console, without any '/'.
+    # Use %p to replace with player name
     forceRegisterCommandsAsConsole: []
     # Enable to display the welcome message (welcome.txt) after a login
     # You can use colors in this welcome.txt + some replaced strings:
-    # {PLAYER}: player name, {ONLINE}: display number of online players, {MAXPLAYERS}: display server slots,
-    # {IP}: player ip, {LOGINS}: number of players logged, {WORLD}: player current world, {SERVER}: server name
+    # {PLAYER}: player name, {ONLINE}: display number of online players,
+    # {MAXPLAYERS}: display server slots, {IP}: player ip, {LOGINS}: number of players logged,
+    # {WORLD}: player current world, {SERVER}: server name
     # {VERSION}: get current bukkit version, {COUNTRY}: player country
     useWelcomeMessage: true
-    # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
+    # Broadcast the welcome message to the server or only to the player?
+    # set true for server or false for player
     broadcastWelcomeMessage: false
     # Should we delay the join message and display it once the player has logged in?
     delayJoinMessage: false
@@ -361,7 +366,8 @@ Protection:
     enableProtection: false
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
-    # Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes
+    # Countries allowed to join the server and register. For country codes, see
+    # http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/
     # PLEASE USE QUOTES!
     countries: 
     - 'US'
@@ -372,7 +378,8 @@ Protection:
     - 'A1'
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
-    # Max number of players allowed to login in 5 secs before the AntiBot system is enabled automatically
+    # Max number of players allowed to login in 5 secs
+    # before the AntiBot system is enabled automatically
     antiBotSensibility: 10
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10
@@ -381,7 +388,7 @@ Protection:
 Purge:
     # If enabled, AuthMe automatically purges old, unused accounts
     useAutoPurge: false
-    # Number of Days an account become Unused
+    # Number of days after which an account should be purged
     daysBeforeRemovePlayer: 60
     # Do we need to remove the player.dat file during purge process?
     removePlayerDat: false
@@ -389,7 +396,7 @@ Purge:
     removeEssentialsFile: false
     # World where are players.dat stores
     defaultWorld: 'world'
-    # Do we need to remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge process ?
+    # Remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge?
     removeLimitedCreativesInventories: false
     # Do we need to remove the AntiXRayData/PlayerData/player file during purge process?
     removeAntiXRayFile: false
@@ -448,4 +455,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 23 18:25:12 CEST 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 23 21:08:57 CEST 2016

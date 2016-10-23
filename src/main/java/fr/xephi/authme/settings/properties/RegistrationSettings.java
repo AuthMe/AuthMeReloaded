@@ -52,8 +52,9 @@ public class RegistrationSettings implements SettingsHolder {
     public static final Property<List<String>> FORCE_COMMANDS =
         newListProperty("settings.forceCommands");
 
-    @Comment("Force these commands after /login as service console, without any '/'. "
-        + "Use %p to replace with player name")
+    @Comment({
+        "Force these commands after /login as service console, without any '/'.",
+        "Use %p to replace with player name"})
     public static final Property<List<String>> FORCE_COMMANDS_AS_CONSOLE =
         newListProperty("settings.forceCommandsAsConsole");
 
@@ -61,22 +62,25 @@ public class RegistrationSettings implements SettingsHolder {
     public static final Property<List<String>> FORCE_REGISTER_COMMANDS =
         newListProperty("settings.forceRegisterCommands");
 
-    @Comment("Force these commands after /register as a server console, without any '/'. "
-        + "Use %p to replace with player name")
+    @Comment({
+        "Force these commands after /register as a server console, without any '/'.",
+        "Use %p to replace with player name"})
     public static final Property<List<String>> FORCE_REGISTER_COMMANDS_AS_CONSOLE =
         newListProperty("settings.forceRegisterCommandsAsConsole");
 
     @Comment({
         "Enable to display the welcome message (welcome.txt) after a login",
         "You can use colors in this welcome.txt + some replaced strings:",
-        "{PLAYER}: player name, {ONLINE}: display number of online players, {MAXPLAYERS}: display server slots,",
-        "{IP}: player ip, {LOGINS}: number of players logged, {WORLD}: player current world, {SERVER}: server name",
+        "{PLAYER}: player name, {ONLINE}: display number of online players,",
+        "{MAXPLAYERS}: display server slots, {IP}: player ip, {LOGINS}: number of players logged,",
+        "{WORLD}: player current world, {SERVER}: server name",
         "{VERSION}: get current bukkit version, {COUNTRY}: player country"})
     public static final Property<Boolean> USE_WELCOME_MESSAGE =
         newProperty("settings.useWelcomeMessage", true);
 
-    @Comment("Do we need to broadcast the welcome message to all server or only to the player? set true for "
-        + "server or false for player")
+    @Comment({
+        "Broadcast the welcome message to the server or only to the player?",
+        "set true for server or false for player"})
     public static final Property<Boolean> BROADCAST_WELCOME_MESSAGE =
         newProperty("settings.broadcastWelcomeMessage", false);
 
