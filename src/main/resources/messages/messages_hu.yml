@@ -72,5 +72,5 @@ kicked_admin_registered: 'Adminisztrátor által regisztrálva lettél; kérlek 
 accounts_owned_self: '%count db regisztrációd van:'
 recovery_code_incorrect: 'A visszaállító kód helytelen volt! Használd a következő parancsot: /email recovery [email címed] egy új generálásához'
 recovery_code_sent: 'A jelszavad visszaállításához szükséges kódot sikeresen kiküldtük az email címedre!'
-# TODO email_show: '&2Your current email address is: &f%email'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
+email_show: '&2A jelenlegi email-ed a következő: &f%email'
+show_no_email: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
