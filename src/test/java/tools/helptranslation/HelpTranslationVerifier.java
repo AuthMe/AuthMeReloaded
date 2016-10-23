@@ -55,11 +55,15 @@ public class HelpTranslationVerifier {
     }
 
     public List<String> getMissingCommands() {
-        return missingCommands;
+        // All entries start with "command.", so remove that
+        return missingCommands.stream()
+            .map(s -> s.substring(9)).collect(Collectors.toList());
     }
 
     public List<String> getUnknownCommands() {
-        return unknownCommands;
+        // All entries start with "command.", so remove that
+        return unknownCommands.stream()
+            .map(s -> s.substring(9)).collect(Collectors.toList());
     }
 
     /**
@@ -89,14 +93,14 @@ public class HelpTranslationVerifier {
         Set<String> commandPaths = buildCommandPaths();
         Set<String> existingKeys = getLeafKeys("commands");
         if (existingKeys.isEmpty()) {
-            missingCommands.addAll(commandPaths);
+            missingCommands.addAll(commandPaths); // commandPaths should be empty in this case
         } else {
             missingCommands.addAll(Sets.difference(commandPaths, existingKeys));
             unknownCommands.addAll(Sets.difference(existingKeys, commandPaths));
         }
     }
 
-    private static Set<String> buildCommandPaths() {
+    private Set<String> buildCommandPaths() {
         Set<String> commandPaths = new LinkedHashSet<>();
         for (CommandDescription command : new CommandInitializer().getCommands()) {
             commandPaths.addAll(getYamlPaths(command));
@@ -105,11 +109,16 @@ public class HelpTranslationVerifier {
         return commandPaths;
     }
 
-    private static List<String> getYamlPaths(CommandDescription command) {
+    private List<String> getYamlPaths(CommandDescription command) {
         // e.g. commands.authme.register
         String commandPath = "commands." + CommandUtils.constructParentList(command).stream()
             .map(cmd -> cmd.getLabels().get(0))
             .collect(Collectors.joining("."));
+        // The entire command is not present, so just add it as a missing command and don't return any YAML path
+        if (!configuration.contains(commandPath)) {
+            missingCommands.add(commandPath);
+            return Collections.emptyList();
+        }
 
         // Entries each command can have
         List<String> paths = newArrayList(commandPath + ".description", commandPath + ".detailedDescription");
