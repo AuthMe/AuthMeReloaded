@@ -49,15 +49,15 @@ public class FileUtilsTest {
     public void shouldCopyFileFromJar() throws IOException {
         // given
         File folder = temporaryFolder.newFolder();
-        File file = new File(folder, "some/folders/config.yml");
+        File file = new File(folder, "some/folders/welcome.txt");
 
         // when
-        boolean result = FileUtils.copyFileFromResource(file, "config.yml");
+        boolean result = FileUtils.copyFileFromResource(file, "welcome.txt");
 
         // then
         assertThat(result, equalTo(true));
         assertThat(file.exists(), equalTo(true));
-        File configJarFile = TestHelper.getJarFile("/config.yml");
+        File configJarFile = TestHelper.getJarFile("/welcome.txt");
         assertThat(file.length(), equalTo(configJarFile.length()));
     }
 
