@@ -18,10 +18,6 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Boolean> STOP_SERVER_ON_PROBLEM =
         newProperty("Security.SQLProblem.stopServer", true);
 
-    @Comment("/reload support")
-    public static final Property<Boolean> USE_RELOAD_COMMAND_SUPPORT =
-        newProperty("Security.ReloadCommand.useReloadCommandSupport", true);
-
     @Comment("Remove passwords from console?")
     public static final Property<Boolean> REMOVE_PASSWORD_FROM_CONSOLE =
         newProperty("Security.console.removePassword", true);
@@ -85,11 +81,13 @@ public class SecuritySettings implements SettingsHolder {
         newProperty("settings.security.supportOldPasswordHash", false);
 
     @Comment({"Prevent unsafe passwords from being used; put them in lowercase!",
+        "You should always set 'help' as unsafePassword due to possible conflicts.",
         "unsafePasswords:",
         "- '123456'",
-        "- 'password'"})
+        "- 'password'",
+        "- 'help'"})
     public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321", "123456789");
+        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321", "123456789", "help");
 
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")
     public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =
