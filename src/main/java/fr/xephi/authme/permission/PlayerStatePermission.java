@@ -17,7 +17,7 @@ public enum PlayerStatePermission implements PermissionNode {
     BYPASS_FORCE_SURVIVAL("authme.bypassforcesurvival", DefaultPermission.OP_ONLY),
 
     /**
-     * Permission node to identify VIP users.
+     * When the server is full and someone with this permission joins the server, someone will be kicked.
      */
     IS_VIP("authme.vip", DefaultPermission.OP_ONLY),
 
