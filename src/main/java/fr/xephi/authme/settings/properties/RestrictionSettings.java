@@ -36,7 +36,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment("Minimum allowed username length")
     public static final Property<Integer> MIN_NICKNAME_LENGTH =
-        newProperty("settings.restrictions.minNicknameLength", 4);
+        newProperty("settings.restrictions.minNicknameLength", 3);
 
     @Comment("Maximum allowed username length")
     public static final Property<Integer> MAX_NICKNAME_LENGTH =
