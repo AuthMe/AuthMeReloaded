@@ -6,7 +6,7 @@ import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
 import tools.utils.AutoToolTask;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
@@ -29,7 +29,7 @@ public class CommandPageCreater implements AutoToolTask {
         NestedTagValue commandTags = new NestedTagValue();
         addCommandsInfo(commandTags, baseCommands);
 
-        FileUtils.generateFileFromTemplate(
+        FileIoUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "docs/commands/commands.tpl.md",
             OUTPUT_FILE,
             TagValueHolder.create().put("commands", commandTags));

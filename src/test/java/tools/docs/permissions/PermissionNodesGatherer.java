@@ -2,7 +2,7 @@ package tools.docs.permissions;
 
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.permission.PermissionNode;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.ToolsConstants;
 
 import java.util.EnumSet;
@@ -103,7 +103,7 @@ public class PermissionNodesGatherer {
      */
     private static <T extends Enum<T> & PermissionNode> String getSourceForClass(Class<T> clazz) {
         String classFile = ToolsConstants.MAIN_SOURCE_ROOT + clazz.getName().replace(".", "/") + ".java";
-        return FileUtils.readFromFile(classFile);
+        return FileIoUtils.readFromFile(classFile);
     }
 
 }

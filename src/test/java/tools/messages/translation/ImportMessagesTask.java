@@ -7,7 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import tools.messages.MessageFileVerifier;
 import tools.messages.VerifyMessagesTask;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -108,9 +108,9 @@ public class ImportMessagesTask implements ToolTask {
      * @param file The file whose to-do comments should be removed
      */
     private static void removeAllTodoComments(String file) {
-        String contents = FileUtils.readFromFile(file);
+        String contents = FileIoUtils.readFromFile(file);
         String regex = "^# TODO .*$";
         contents = Pattern.compile(regex, Pattern.MULTILINE).matcher(contents).replaceAll("");
-        FileUtils.writeToFile(file, contents);
+        FileIoUtils.writeToFile(file, contents);
     }
 }

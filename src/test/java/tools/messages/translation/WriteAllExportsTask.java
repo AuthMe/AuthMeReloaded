@@ -2,7 +2,7 @@ package tools.messages.translation;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.ToolsConstants;
 
 import java.io.File;
@@ -31,7 +31,7 @@ public class WriteAllExportsTask extends ExportMessagesTask {
         for (File file : messageFiles) {
             String code = file.getName().substring("messages_".length(), file.getName().length() - ".yml".length());
             String json = convertToJson(code, defaultMessages, YamlConfiguration.loadConfiguration(file));
-            FileUtils.writeToFile(OUTPUT_FOLDER + "messages_" + code + ".json", json);
+            FileIoUtils.writeToFile(OUTPUT_FOLDER + "messages_" + code + ".json", json);
         }
     }
 }

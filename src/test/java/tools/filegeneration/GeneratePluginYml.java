@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import tools.docs.permissions.PermissionNodesGatherer;
 import tools.utils.AutoToolTask;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.ToolsConstants;
 
 import java.io.StringReader;
@@ -46,7 +46,7 @@ public class GeneratePluginYml implements AutoToolTask {
         configuration.set("commands", generateCommands());
         configuration.set("permissions", generatePermissions());
 
-        FileUtils.writeToFile(PLUGIN_YML_FILE,
+        FileIoUtils.writeToFile(PLUGIN_YML_FILE,
         pluginYmlStart + "\n" + configuration.saveToString());
     }
 
@@ -63,7 +63,7 @@ public class GeneratePluginYml implements AutoToolTask {
      * @return file configuration with the lower part of the plugin.yml file
      */
     private FileConfiguration loadPartialPluginYmlFile() {
-        List<String> pluginYmlLines = FileUtils.readLinesFromFile(Paths.get(PLUGIN_YML_FILE));
+        List<String> pluginYmlLines = FileIoUtils.readLinesFromFile(Paths.get(PLUGIN_YML_FILE));
         int lineNr = 0;
         for (String line : pluginYmlLines) {
             if (line.equals("commands:")) {
