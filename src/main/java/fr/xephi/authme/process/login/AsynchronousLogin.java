@@ -195,6 +195,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             // If the authentication fails check if Captcha is required and send a message to the player
             if (captchaManager.isCaptchaRequired(player.getName())) {
+                limboCache.getPlayerData(player.getName()).getMessageTask().setMuted(true);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
                     captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
             }

@@ -11,6 +11,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
@@ -57,8 +58,8 @@ public class LimboPlayerTaskManager {
                 ConsoleLogger.info("PlayerData for '" + name + "' is not available");
             } else {
                 cancelTask(limboPlayer.getMessageTask());
-                BukkitTask messageTask = bukkitService.runTask(new MessageTask(name, messages.retrieve(key),
-                    interval, bukkitService, limboCache, playerCache));
+                MessageTask messageTask = new MessageTask(name, messages.retrieve(key), bukkitService, playerCache);
+                bukkitService.runTaskTimer(messageTask, 2 * TICKS_PER_SECOND, interval * TICKS_PER_SECOND);
                 limboPlayer.setMessageTask(messageTask);
             }
         }
@@ -106,6 +107,17 @@ public class LimboPlayerTaskManager {
      * @param task the task to cancel (or null)
      */
     private static void cancelTask(BukkitTask task) {
+        if (task != null) {
+            task.cancel();
+        }
+    }
+
+    /**
+     * Null-safe method to cancel a potentially existing task.
+     *
+     * @param task the task to cancel (or null)
+     */
+    private static void cancelTask(BukkitRunnable task) {
         if (task != null) {
             task.cancel();
         }

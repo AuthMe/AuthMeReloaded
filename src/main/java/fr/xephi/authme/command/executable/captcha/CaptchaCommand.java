@@ -4,6 +4,7 @@ import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.message.MessageKey;
 import org.bukkit.entity.Player;
 
@@ -20,6 +21,9 @@ public class CaptchaCommand extends PlayerCommand {
 
     @Inject
     private CommandService commandService;
+
+    @Inject
+    private LimboCache limboCache;
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
@@ -39,6 +43,7 @@ public class CaptchaCommand extends PlayerCommand {
         if (isCorrectCode) {
             commandService.send(player, MessageKey.CAPTCHA_SUCCESS);
             commandService.send(player, MessageKey.LOGIN_MESSAGE);
+            limboCache.getPlayerData(player.getName()).getMessageTask().setMuted(false);
         } else {
             String newCode = captchaManager.generateCode(player.getName());
             commandService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);

@@ -1,5 +1,6 @@
 package fr.xephi.authme.data.limbo;
 
+import fr.xephi.authme.task.MessageTask;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -16,7 +17,7 @@ public class LimboPlayer {
     private final float walkSpeed;
     private final float flySpeed;
     private BukkitTask timeoutTask = null;
-    private BukkitTask messageTask = null;
+    private MessageTask messageTask = null;
 
     public LimboPlayer(Location loc, boolean operator, String group, boolean fly, float walkSpeed, float flySpeed) {
         this.loc = loc;
@@ -94,7 +95,7 @@ public class LimboPlayer {
      *
      * @return The task responsible for sending the message regularly
      */
-    public BukkitTask getMessageTask() {
+    public MessageTask getMessageTask() {
         return messageTask;
     }
 
@@ -103,7 +104,7 @@ public class LimboPlayer {
      *
      * @param messageTask The message task to set
      */
-    public void setMessageTask(BukkitTask messageTask) {
+    public void setMessageTask(MessageTask messageTask) {
         if (this.messageTask != null) {
             this.messageTask.cancel();
         }

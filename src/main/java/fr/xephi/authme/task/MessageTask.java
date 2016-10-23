@@ -4,6 +4,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
@@ -11,31 +12,36 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 /**
  * Message shown to a player in a regular interval as long as he is not logged in.
  */
-public class MessageTask implements Runnable {
+public class MessageTask extends BukkitRunnable {
 
     private final String name;
     private final String[] message;
-    private final int interval;
     private final BukkitService bukkitService;
-    private final LimboCache limboCache;
     private final PlayerCache playerCache;
+    private boolean isMuted;
 
     /*
      * Constructor.
      */
-    public MessageTask(String name, String[] lines, int interval, BukkitService bukkitService,
-                       LimboCache limboCache, PlayerCache playerCache) {
+    public MessageTask(String name, String[] lines, BukkitService bukkitService, PlayerCache playerCache) {
         this.name = name;
         this.message = lines;
-        this.interval = interval;
         this.bukkitService = bukkitService;
-        this.limboCache = limboCache;
         this.playerCache = playerCache;
+        isMuted = false;
+    }
+
+    public void setMuted(boolean isMuted) {
+        this.isMuted = isMuted;
     }
 
     @Override
     public void run() {
         if (playerCache.isAuthenticated(name)) {
+            cancel();
+        }
+
+        if(isMuted) {
             return;
         }
 
@@ -44,11 +50,7 @@ public class MessageTask implements Runnable {
                 for (String ms : message) {
                     player.sendMessage(ms);
                 }
-                BukkitTask nextTask = bukkitService.runTaskLater(this, interval * TICKS_PER_SECOND);
-                if (limboCache.hasPlayerData(name)) {
-                    limboCache.getPlayerData(name).setMessageTask(nextTask);
-                }
-                return;
+                break;
             }
         }
     }
