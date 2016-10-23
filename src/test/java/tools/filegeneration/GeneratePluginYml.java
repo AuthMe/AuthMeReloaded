@@ -9,8 +9,8 @@ import fr.xephi.authme.permission.PermissionNode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import tools.docs.permissions.PermissionNodesGatherer;
-import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
+import tools.utils.SimpleAutoTask;
 import tools.utils.ToolsConstants;
 
 import java.io.StringReader;
@@ -20,14 +20,13 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
  * Generates the command and permission section of plugin.yml.
  */
-public class GeneratePluginYml implements AutoToolTask {
+public class GeneratePluginYml extends SimpleAutoTask {
 
     private static final String PLUGIN_YML_FILE = ToolsConstants.MAIN_RESOURCES_ROOT + "plugin.yml";
 
@@ -54,11 +53,6 @@ public class GeneratePluginYml implements AutoToolTask {
     @Override
     public String getTaskName() {
         return "generatePluginYml";
-    }
-
-    @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
     }
 
     /**

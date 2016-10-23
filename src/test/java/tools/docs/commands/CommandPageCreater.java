@@ -5,27 +5,21 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
-import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
+import tools.utils.SimpleAutoTask;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
 import java.util.Collection;
-import java.util.Scanner;
 
-public class CommandPageCreater implements AutoToolTask {
+public class CommandPageCreater extends SimpleAutoTask {
 
     private static final String OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "commands.md";
 
     @Override
     public String getTaskName() {
         return "createCommandPage";
-    }
-
-    @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
     }
 
     @Override

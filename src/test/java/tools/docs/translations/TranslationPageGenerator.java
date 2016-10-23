@@ -2,15 +2,14 @@ package tools.docs.translations;
 
 import com.google.common.collect.ImmutableMap;
 import tools.docs.translations.TranslationsGatherer.TranslationInfo;
-import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
+import tools.utils.SimpleAutoTask;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Objects.firstNonNull;
@@ -18,7 +17,7 @@ import static com.google.common.base.Objects.firstNonNull;
 /**
  * Generates the translations page in docs.
  */
-public class TranslationPageGenerator implements AutoToolTask {
+public class TranslationPageGenerator extends SimpleAutoTask {
 
     private static final String DOCS_PAGE = ToolsConstants.DOCS_FOLDER + "translations.md";
     private static final String TEMPLATE_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/translations/translations.tpl.md";
@@ -40,11 +39,6 @@ public class TranslationPageGenerator implements AutoToolTask {
     @Override
     public String getTaskName() {
         return "updateTranslations";
-    }
-
-    @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
     }
 
     @Override
