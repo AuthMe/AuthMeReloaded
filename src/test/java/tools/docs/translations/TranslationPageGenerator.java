@@ -2,8 +2,8 @@ package tools.docs.translations;
 
 import com.google.common.collect.ImmutableMap;
 import tools.docs.translations.TranslationsGatherer.TranslationInfo;
+import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
-import tools.utils.SimpleAutoTask;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
@@ -17,7 +17,7 @@ import static com.google.common.base.Objects.firstNonNull;
 /**
  * Generates the translations page in docs.
  */
-public class TranslationPageGenerator extends SimpleAutoTask {
+public class TranslationPageGenerator implements AutoToolTask {
 
     private static final String DOCS_PAGE = ToolsConstants.DOCS_FOLDER + "translations.md";
     private static final String TEMPLATE_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/translations/translations.tpl.md";

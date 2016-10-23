@@ -9,8 +9,8 @@ import fr.xephi.authme.permission.PermissionNode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import tools.docs.permissions.PermissionNodesGatherer;
+import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
-import tools.utils.SimpleAutoTask;
 import tools.utils.ToolsConstants;
 
 import java.io.StringReader;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * Generates the command and permission section of plugin.yml.
  */
-public class GeneratePluginYml extends SimpleAutoTask {
+public class GeneratePluginYml implements AutoToolTask {
 
     private static final String PLUGIN_YML_FILE = ToolsConstants.MAIN_RESOURCES_ROOT + "plugin.yml";
 

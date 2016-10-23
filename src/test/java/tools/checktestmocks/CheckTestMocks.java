@@ -4,8 +4,8 @@ import com.google.common.collect.Sets;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
 import org.mockito.Mock;
+import tools.utils.AutoToolTask;
 import tools.utils.InjectorUtils;
-import tools.utils.SimpleAutoTask;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Task checking if all tests' {@code @Mock} fields have a corresponding
  * {@code @Inject} field in the class they are testing.
  */
-public class CheckTestMocks extends SimpleAutoTask {
+public class CheckTestMocks implements AutoToolTask {
 
     private List<String> errors = new ArrayList<>();
 
