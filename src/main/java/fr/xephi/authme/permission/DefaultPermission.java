@@ -8,7 +8,7 @@ import org.bukkit.permissions.ServerOperator;
 public enum DefaultPermission {
 
     /** No one has permission. */
-    NOT_ALLOWED("No permission") {
+    NOT_ALLOWED {
         @Override
         public boolean evaluate(ServerOperator sender) {
             return false;
@@ -16,7 +16,7 @@ public enum DefaultPermission {
     },
 
     /** Only players with OP status have permission. */
-    OP_ONLY("OP's only") {
+    OP_ONLY {
         @Override
         public boolean evaluate(ServerOperator sender) {
             return sender != null && sender.isOp();
@@ -24,23 +24,12 @@ public enum DefaultPermission {
     },
 
     /** Everyone is granted permission. */
-    ALLOWED("Everyone allowed") {
+    ALLOWED {
         @Override
         public boolean evaluate(ServerOperator sender) {
             return true;
         }
     };
-
-    /** Textual representation of the default permission. */
-    private final String title;
-
-    /**
-     * Constructor.
-     * @param title The textual representation
-     */
-    DefaultPermission(String title) {
-        this.title = title;
-    }
 
     /**
      * Evaluates whether permission is granted to the sender or not.
@@ -49,14 +38,5 @@ public enum DefaultPermission {
      * @return true if the sender has permission, false otherwise
      */
     public abstract boolean evaluate(ServerOperator sender);
-
-    /**
-     * Return the textual representation.
-     *
-     * @return the textual representation
-     */
-    public String getTitle() {
-        return title;
-    }
 
 }

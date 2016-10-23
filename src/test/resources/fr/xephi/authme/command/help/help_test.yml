@@ -1,0 +1,24 @@
+common:
+    result: 'res.'
+    defaultPermissions:
+        opOnly: 'only op'
+
+section:
+    arguments: 'arg.'
+
+commands:
+    authme:
+        detailedDescription: 'Main command'
+    authme.register:
+        description: 'Registration'
+        detailedDescription: 'Registers the player'
+        arg1:
+            label: 'password'
+            description: 'The password'
+        arg2:
+            label: 'confirmation'
+            description: 'The confirmation'
+    authme.login:
+        description: 'Logging in'
+        arg1:
+            label: 'user password'

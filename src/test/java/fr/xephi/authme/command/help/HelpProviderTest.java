@@ -1,31 +1,37 @@
 package fr.xephi.authme.command.help;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.FoundResultStatus;
 import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static fr.xephi.authme.command.help.HelpProvider.ALL_OPTIONS;
-import static fr.xephi.authme.command.help.HelpProvider.HIDE_COMMAND;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_ALTERNATIVES;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_ARGUMENTS;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_CHILDREN;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_COMMAND;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_DESCRIPTION;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_LONG_DESCRIPTION;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_PERMISSIONS;
 import static org.hamcrest.Matchers.contains;
@@ -34,19 +40,28 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link HelpProvider}.
  */
+@RunWith(DelayedInjectionRunner.class)
 public class HelpProviderTest {
 
-    private static final String HELP_HEADER = "Help";
-    private static Set<CommandDescription> commands;
+    private static Collection<CommandDescription> commands;
+
+    @InjectDelayed
     private HelpProvider helpProvider;
+    @Mock
     private PermissionsManager permissionsManager;
+    @Mock
+    private HelpMessagesService helpMessagesService;
+    @Mock
     private CommandSender sender;
 
     @BeforeClass
@@ -54,13 +69,9 @@ public class HelpProviderTest {
         commands = TestCommandsUtil.generateCommands();
     }
 
-    @Before
-    public void setUpHelpProvider() {
-        permissionsManager = mock(PermissionsManager.class);
-        Settings settings = mock(Settings.class);
-        given(settings.getProperty(PluginSettings.HELP_HEADER)).willReturn(HELP_HEADER);
-        helpProvider = new HelpProvider(permissionsManager, settings);
-        sender = mock(CommandSender.class);
+    @BeforeInjecting
+    public void setInitialSettings() {
+        setDefaultHelpMessages(helpMessagesService);
     }
 
     @Test
@@ -70,16 +81,16 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
 
         // when
-        helpProvider.outputHelp(sender, result, SHOW_LONG_DESCRIPTION);
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_LONG_DESCRIPTION | SHOW_DESCRIPTION);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(5));
-        assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
-        assertThat(removeColors(lines.get(1)), containsString("Command: /authme login <password>"));
-        assertThat(removeColors(lines.get(2)), containsString("Short description: login cmd"));
-        assertThat(removeColors(lines.get(3)), equalTo("Detailed description:"));
-        assertThat(removeColors(lines.get(4)), containsString("'login' test command"));
+        assertThat(lines.get(0), containsString("Header"));
+        assertThat(lines.get(1), containsString("Command: /authme login <password>"));
+        assertThat(lines.get(2), containsString("Short description: login cmd"));
+        assertThat(lines.get(3), equalTo("Detailed description:"));
+        assertThat(lines.get(4), containsString("'login' test command"));
     }
 
     @Test
@@ -89,15 +100,15 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, SHOW_ARGUMENTS);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
-        assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
-        assertThat(removeColors(lines.get(1)), equalTo("Arguments:"));
-        assertThat(removeColors(lines.get(2)), containsString("password: 'password' argument description"));
-        assertThat(removeColors(lines.get(3)), containsString("confirmation: 'confirmation' argument description"));
+        assertThat(lines.get(0), containsString("Header"));
+        assertThat(lines.get(1), equalTo("Arguments:"));
+        assertThat(lines.get(2), containsString("password: 'password' argument description"));
+        assertThat(lines.get(3), containsString("confirmation: 'confirmation' argument description"));
     }
 
     @Test
@@ -107,12 +118,12 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("email"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, SHOW_ARGUMENTS);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(3));
-        assertThat(removeColors(lines.get(2)), containsString("player: 'player' argument description (Optional)"));
+        assertThat(lines.get(2), containsString("player: 'player' argument description (Optional)"));
     }
 
     /** Verifies that the "Arguments:" line is not shown if the command has no arguments. */
@@ -123,7 +134,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+        helpProvider.outputHelp(sender, result, SHOW_ARGUMENTS);
 
         // then
         List<String> lines = getLines(sender);
@@ -140,16 +151,16 @@ public class HelpProviderTest {
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(5));
-        assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
-        assertThat(removeColors(lines.get(2)),
-            containsString(AdminPermission.UNREGISTER.getNode() + " (You have permission)"));
-        assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (You have permission)"));
-        assertThat(removeColors(lines.get(4)), containsString("Result: You have permission"));
+        assertThat(lines.get(1), containsString("Permissions:"));
+        assertThat(lines.get(2),
+            containsString(AdminPermission.UNREGISTER.getNode() + " (Has permission)"));
+        assertThat(lines.get(3), containsString("Default: Op only (Has permission)"));
+        assertThat(lines.get(4), containsString("Result: Has permission"));
     }
 
     @Test
@@ -162,16 +173,16 @@ public class HelpProviderTest {
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(false);
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(5));
-        assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
-        assertThat(removeColors(lines.get(2)),
+        assertThat(lines.get(1), containsString("Permissions:"));
+        assertThat(lines.get(2),
             containsString(AdminPermission.UNREGISTER.getNode() + " (No permission)"));
-        assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (No permission)"));
-        assertThat(removeColors(lines.get(4)), containsString("Result: No permission"));
+        assertThat(lines.get(3), containsString("Default: Op only (No permission)"));
+        assertThat(lines.get(4), containsString("Result: No permission"));
     }
 
     @Test
@@ -181,7 +192,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
@@ -197,7 +208,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("test"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+        helpProvider.outputHelp(sender, result, SHOW_PERMISSIONS);
 
         // then
         List<String> lines = getLines(sender);
@@ -211,14 +222,14 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+        helpProvider.outputHelp(sender, result, SHOW_ALTERNATIVES);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
-        assertThat(removeColors(lines.get(1)), containsString("Alternatives:"));
-        assertThat(removeColors(lines.get(2)), containsString("/authme register <password> <confirmation>"));
-        assertThat(removeColors(lines.get(3)), containsString("/authme r <password> <confirmation>"));
+        assertThat(lines.get(1), containsString("Alternatives:"));
+        assertThat(lines.get(2), containsString("/authme register <password> <confirmation>"));
+        assertThat(lines.get(3), containsString("/authme r <password> <confirmation>"));
     }
 
     @Test
@@ -228,7 +239,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+        helpProvider.outputHelp(sender, result, SHOW_ALTERNATIVES);
 
         // then
         List<String> lines = getLines(sender);
@@ -240,16 +251,20 @@ public class HelpProviderTest {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "login")))
+            .willReturn("Command for login [localized]");
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "register")))
+            .willReturn("Registration command [localized]");
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+        helpProvider.outputHelp(sender, result, SHOW_CHILDREN);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
-        assertThat(removeColors(lines.get(1)), containsString("Commands:"));
-        assertThat(removeColors(lines.get(2)), containsString("/authme login: login cmd"));
-        assertThat(removeColors(lines.get(3)), containsString("/authme register: register cmd"));
+        assertThat(lines.get(1), equalTo("Children:"));
+        assertThat(lines.get(2), equalTo(" /authme login: Command for login [localized]"));
+        assertThat(lines.get(3), equalTo(" /authme register: Registration command [localized]"));
     }
 
     @Test
@@ -259,7 +274,7 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
         // when
-        helpProvider.outputHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+        helpProvider.outputHelp(sender, result, SHOW_CHILDREN);
 
         // then
         List<String> lines = getLines(sender);
@@ -270,7 +285,7 @@ public class HelpProviderTest {
     public void shouldHandleUnboundFoundCommandResult() {
         // given
         FoundCommandResult result = new FoundCommandResult(null, Arrays.asList("authme", "test"),
-            Collections.<String>emptyList(), 0.0, FoundResultStatus.UNKNOWN_LABEL);
+            Collections.emptyList(), 0.0, FoundResultStatus.UNKNOWN_LABEL);
 
         // when
         helpProvider.outputHelp(sender, result, ALL_OPTIONS);
@@ -292,13 +307,13 @@ public class HelpProviderTest {
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "ragister"));
 
         // when
-        helpProvider.outputHelp(sender, result, 0);
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND);
 
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(2));
-        assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
-        assertThat(removeColors(lines.get(1)), containsString("Command: /authme register <password> <confirmation>"));
+        assertThat(lines.get(0), containsString("Header"));
+        assertThat(lines.get(1), containsString("Command: /authme register <password> <confirmation>"));
     }
 
     @Test
@@ -327,6 +342,81 @@ public class HelpProviderTest {
         assertThat(result, contains("authme", "register"));
     }
 
+    @Test
+    public void shouldDisableSectionsWithEmptyTranslations() {
+        // given
+        given(helpMessagesService.getMessage(HelpSection.DETAILED_DESCRIPTION)).willReturn("");
+        given(helpMessagesService.getMessage(HelpSection.ALTERNATIVES)).willReturn("");
+        given(helpMessagesService.getMessage(HelpSection.PERMISSIONS)).willReturn("");
+
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+
+        // when
+        helpProvider.outputHelp(sender, result, ALL_OPTIONS);
+
+        // then
+        List<String> lines = getLines(sender);
+        assertThat(lines, hasSize(6));
+        assertThat(lines.get(0), equalTo("Header"));
+        assertThat(lines.get(1), equalTo("Command: /authme register <password> <confirmation>"));
+        assertThat(lines.get(2), equalTo("Short description: register cmd"));
+        assertThat(lines.get(3), equalTo("Arguments:"));
+        assertThat(lines.get(4), containsString("'password' argument description"));
+        assertThat(lines.get(5), containsString("'confirmation' argument description"));
+    }
+
+    @Test
+    public void shouldNotReturnAnythingForAllDisabledSections() {
+        // given
+        given(helpMessagesService.getMessage(HelpSection.COMMAND)).willReturn("");
+        given(helpMessagesService.getMessage(HelpSection.ALTERNATIVES)).willReturn("");
+        given(helpMessagesService.getMessage(HelpSection.PERMISSIONS)).willReturn("");
+
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+
+        // when
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_ALTERNATIVES | SHOW_PERMISSIONS);
+
+        // then
+        verify(sender, never()).sendMessage(anyString());
+    }
+
+    @Test
+    public void shouldSkipEmptyHeader() {
+        // given
+        given(helpMessagesService.getMessage(HelpMessage.HEADER)).willReturn("");
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+
+        // when
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND);
+
+        // then
+        List<String> lines = getLines(sender);
+        assertThat(lines, hasSize(1));
+        assertThat(lines.get(0), equalTo("Command: /authme register <password> <confirmation>"));
+    }
+
+    @Test
+    public void shouldShowAlternativesForRootCommand() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "unregister");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("unreg"));
+
+        // when
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_ALTERNATIVES);
+
+        // then
+        List<String> lines = getLines(sender);
+        assertThat(lines, hasSize(4));
+        assertThat(lines.get(0), equalTo("Header"));
+        assertThat(lines.get(1), equalTo("Command: /unreg <player>"));
+        assertThat(lines.get(2), equalTo("Alternatives:"));
+        assertThat(lines.get(3), equalTo(" /unregister <player>"));
+    }
+
     /**
      * Generate an instance of {@link FoundCommandResult} with the given command and labels. All other fields aren't
      * retrieved by {@link HelpProvider} and so are initialized to default values for the tests.
@@ -336,7 +426,7 @@ public class HelpProviderTest {
      * @return The generated FoundCommandResult object
      */
     private static FoundCommandResult newFoundResult(CommandDescription command, List<String> labels) {
-        return new FoundCommandResult(command, labels, Collections.<String>emptyList(), 0.0, FoundResultStatus.SUCCESS);
+        return new FoundCommandResult(command, labels, Collections.emptyList(), 0.0, FoundResultStatus.SUCCESS);
     }
 
     private static String removeColors(String str) {
@@ -349,7 +439,27 @@ public class HelpProviderTest {
     private static List<String> getLines(CommandSender sender) {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(captor.capture());
-        return captor.getAllValues();
+        return captor.getAllValues().stream().map(s -> removeColors(s)).collect(Collectors.toList());
+    }
+
+    private static void setDefaultHelpMessages(HelpMessagesService helpMessagesService) {
+        given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
+            .willAnswer(new ReturnsArgumentAt(0));
+        for (HelpMessage key : HelpMessage.values()) {
+            String text = key.name().replace("_", " ").toLowerCase();
+            given(helpMessagesService.getMessage(key))
+                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+        }
+        for (DefaultPermission permission : DefaultPermission.values()) {
+            String text = permission.name().replace("_", " ").toLowerCase();
+            given(helpMessagesService.getMessage(permission))
+                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+        }
+        for (HelpSection section : HelpSection.values()) {
+            String text = section.name().replace("_", " ").toLowerCase();
+            given(helpMessagesService.getMessage(section))
+                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+        }
     }
 
 }

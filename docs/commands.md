@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Jun 22 17:39:14 EDT 2016. See commands/commands.tpl.md -->
+<!-- File auto-generated on Sun Oct 16 21:39:08 CEST 2016. See commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -32,7 +32,7 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.admin.firstspawn`
 - **/authme setfirstspawn**: Change the first player's spawn to your current position.
   <br />Requires `authme.admin.setfirstspawn`
-- **/authme purge** &lt;days>: Purge old AuthMeReloaded data longer than the specified amount of days ago.
+- **/authme purge** &lt;days> [all]: Purge old AuthMeReloaded data longer than the specified amount of days ago.
   <br />Requires `authme.admin.purge`
 - **/authme resetpos** &lt;player/*>: Purge the last know position of the specified player or all of them.
   <br />Requires `authme.admin.purgelastpos`
@@ -45,6 +45,8 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/authme version**: Show detailed information about the installed AuthMeReloaded version, the developers, contributors, and license.
 - **/authme converter** &lt;job>: Converter command for AuthMeReloaded.
   <br />Requires `authme.admin.converter`
+- **/authme messages**: Adds missing messages to the current messages file.
+  <br />Requires `authme.admin.updatemessages`
 - **/authme help** [query]: View detailed help for /authme commands.
 - **/login** &lt;password>: Command to log in using AuthMeReloaded.
   <br />Requires `authme.player.login`
@@ -66,7 +68,7 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.player.email.add`
 - **/email change** &lt;oldEmail> &lt;newEmail>: Change an email address of your account.
   <br />Requires `authme.player.email.change`
-- **/email recover** &lt;email>: Recover your account using an Email address by sending a mail containing a new password.
+- **/email recover** &lt;email> [code]: Recover your account using an Email address by sending a mail containing a new password.
   <br />Requires `authme.player.email.recover`
 - **/email help** [query]: View detailed help for /email commands.
 - **/captcha** &lt;captcha>: Captcha command for AuthMeReloaded.
@@ -76,4 +78,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Wed Jun 22 17:39:14 EDT 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 16 21:39:08 CEST 2016

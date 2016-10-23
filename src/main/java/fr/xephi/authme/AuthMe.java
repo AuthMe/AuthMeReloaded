@@ -5,8 +5,7 @@ import ch.jalu.injector.InjectorBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -21,20 +20,21 @@ import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.security.crypts.SHA256;
+import fr.xephi.authme.service.BackupService;
+import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.GeoLiteAPI;
-import fr.xephi.authme.util.MigrationService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.MigrationService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,9 +46,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
-import java.util.Date;
 
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.util.Utils.isClassLoaded;
 
 /**
@@ -73,7 +72,7 @@ public class AuthMe extends JavaPlugin {
     private DataSource database;
     private BukkitService bukkitService;
     private Injector injector;
-    private GeoLiteAPI geoLiteApi;
+    private GeoIpService geoIpService;
     private PlayerCache playerCache;
 
     /**
@@ -120,12 +119,25 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
+     * Method used to obtain the plugin's api instance
+     *
+     * @return The plugin's api instance
+     */
+    public static NewAPI getApi() {
+        return NewAPI.getInstance();
+    }
+
+    /**
      * Method called when the server enables the plugin.
      */
     @Override
     public void onEnable() {
+        // Load the plugin version data from the plugin description file
+        loadPluginInfo();
+
+        // Initialize the plugin
         try {
-            initializeServices();
+            initialize();
         } catch (Exception e) {
             ConsoleLogger.logException("Aborting initialization of AuthMe:", e);
             stopOrUnload();
@@ -141,7 +153,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Do a backup on start
-        new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.START);
+        new BackupService(this, settings).doBackup(BackupService.BackupCause.START);
 
         // Set up Metrics
         MetricsManager.sendMetrics(this, settings);
@@ -151,7 +163,7 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
 
         // Successful message
-        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n°" + getPluginBuildNumber() + " correctly enabled!");
+        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber() + " correctly enabled!");
 
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);
@@ -162,19 +174,39 @@ public class AuthMe extends JavaPlugin {
         cleanupTask.runTaskTimerAsynchronously(this, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
     }
 
-    private void initializeServices() throws Exception {
-        // Set the plugin instance and load plugin info from the plugin description.
-        loadPluginInfo();
+    /**
+     * Load the version and build number of the plugin from the description file.
+     */
+    private void loadPluginInfo() {
+        String versionRaw = this.getDescription().getVersion();
+        int index = versionRaw.lastIndexOf("-");
+        if (index != -1) {
+            pluginVersion = versionRaw.substring(0, index);
+            pluginBuildNumber = versionRaw.substring(index + 1);
+            if (pluginBuildNumber.startsWith("b")) {
+                pluginBuildNumber = pluginBuildNumber.substring(1);
+            }
+        }
+    }
 
+    /**
+     * Initialize the plugin and all the services.
+     *
+     * @throws Exception if the initialization fails
+     */
+    private void initialize() throws Exception {
         // Set the Logger instance and log file path
         ConsoleLogger.setLogger(getLogger());
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
 
-        bukkitService = new BukkitService(this);
-        Initializer initializer = new Initializer(this, bukkitService);
+        // Create plugin folder
+        getDataFolder().mkdir();
 
         // Load settings and set up the console and console filter
-        settings = initializer.createSettings();
+        settings = Initializer.createSettings(this);
+        bukkitService = new BukkitService(this, settings);
+        Initializer initializer = new Initializer(this, bukkitService);
+
         ConsoleLogger.setLoggingOptions(settings);
         initializer.setupConsoleFilter(settings, getLogger());
 
@@ -201,27 +233,17 @@ public class AuthMe extends JavaPlugin {
 
         instantiateServices(injector);
 
-        // Reload support hook
-        reloadSupportHook();
+        // TODO: does this still make sense? -sgdc3
+        // If the server is empty (fresh start) just set all the players as unlogged
+        if (bukkitService.getOnlinePlayers().size() == 0) {
+            database.purgeLogged();
+        }
 
         // Register event listeners
         registerEventListeners(injector);
 
         // Start Email recall task if needed
         initializer.scheduleRecallEmailTask(settings, database, messages);
-    }
-
-    // Get version and build number of the plugin
-    private void loadPluginInfo() {
-        String versionRaw = this.getDescription().getVersion();
-        int index = versionRaw.lastIndexOf("-");
-        if (index != -1) {
-            pluginVersion = versionRaw.substring(0, index);
-            pluginBuildNumber = versionRaw.substring(index + 1);
-            if (pluginBuildNumber.startsWith("b")) {
-                pluginBuildNumber = pluginBuildNumber.substring(1);
-            }
-        }
     }
 
     /**
@@ -238,7 +260,7 @@ public class AuthMe extends JavaPlugin {
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
-        geoLiteApi = injector.getSingleton(GeoLiteAPI.class);
+        geoIpService = injector.getSingleton(GeoIpService.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(NewAPI.class);
@@ -305,24 +327,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // TODO: check this, do we really need it? -sgdc3
-    private void reloadSupportHook() {
-        if (database != null) {
-            int playersOnline = bukkitService.getOnlinePlayers().size();
-            if (playersOnline == 0) {
-                database.purgeLogged();
-            } else if (settings.getProperty(SecuritySettings.USE_RELOAD_COMMAND_SUPPORT)) {
-                for (PlayerAuth auth : database.getLoggedPlayers()) {
-                    if (auth != null) {
-                        auth.setLastLogin(new Date().getTime());
-                        database.updateSession(auth);
-                        playerCache.addPlayer(auth);
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void onDisable() {
         // onDisable is also called when we prematurely abort, so any field may be null
@@ -335,7 +339,7 @@ public class AuthMe extends JavaPlugin {
 
         // Do backup on stop if enabled
         if (settings != null) {
-            new PerformBackup(this, settings).doBackup(PerformBackup.BackupCause.STOP);
+            new BackupService(this, settings).doBackup(BackupService.BackupCause.STOP);
         }
 
         // Wait for tasks and close data source
@@ -351,7 +355,7 @@ public class AuthMe extends JavaPlugin {
 
     public String replaceAllInfo(String message, Player player) {
         String playersOnline = Integer.toString(bukkitService.getOnlinePlayers().size());
-        String ipAddress = Utils.getPlayerIp(player);
+        String ipAddress = PlayerUtils.getPlayerIp(player);
         Server server = getServer();
         return message
             .replace("&", "\u00a7")
@@ -364,9 +368,8 @@ public class AuthMe extends JavaPlugin {
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
             // TODO: We should cache info like this, maybe with a class that extends Player?
-            .replace("{COUNTRY}", geoLiteApi.getCountryName(ipAddress));
+            .replace("{COUNTRY}", geoIpService.getCountryName(ipAddress));
     }
-
 
     /**
      * Handle Bukkit commands.

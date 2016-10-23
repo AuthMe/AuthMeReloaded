@@ -1,18 +1,18 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.AntiBotService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
-import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import static fr.xephi.authme.listener.ListenerTestUtils.checkEventIsCanceledForUnauthed;
+import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -80,7 +80,7 @@ public class PlayerListenerTest {
     @Mock
     private DataSource dataSource;
     @Mock
-    private AntiBot antiBot;
+    private AntiBotService antiBotService;
     @Mock
     private Management management;
     @Mock
@@ -112,7 +112,7 @@ public class PlayerListenerTest {
 
         // then
         assertThat(event.isCancelled(), equalTo(true));
-        verifyZeroInteractions(player, management, antiBot);
+        verifyZeroInteractions(player, management, antiBotService);
     }
 
     @Test
@@ -122,14 +122,14 @@ public class PlayerListenerTest {
         String name = "Bobby";
         Player player = mockPlayerWithName(name);
         PlayerKickEvent event = new PlayerKickEvent(player, "You logged in from another location", "");
-        given(antiBot.wasPlayerKicked(name)).willReturn(false);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
 
         // when
         listener.onPlayerKick(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBot).wasPlayerKicked(name);
+        verify(antiBotService).wasPlayerKicked(name);
         verify(management).performQuit(player);
     }
 
@@ -140,28 +140,29 @@ public class PlayerListenerTest {
         String name = "Bobby";
         Player player = mockPlayerWithName(name);
         PlayerKickEvent event = new PlayerKickEvent(player, "No longer desired here!", "");
-        given(antiBot.wasPlayerKicked(name)).willReturn(true);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(true);
 
         // when
         listener.onPlayerKick(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBot).wasPlayerKicked(name);
+        verify(antiBotService).wasPlayerKicked(name);
         verifyZeroInteractions(management);
     }
 
     @Test
     public void shouldHandleSimpleCancelableEvents() {
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerShearEntityEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerFishEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerBedEnterEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerDropItemEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, EntityDamageByEntityEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerItemConsumeEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerInteractEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerPickupItemEvent.class);
-        checkEventIsCanceledForUnauthed(listener, listenerService, PlayerInteractEntityEvent.class);
+        withServiceMock(listenerService)
+            .check(listener::onPlayerShear, PlayerShearEntityEvent.class)
+            .check(listener::onPlayerFish, PlayerFishEvent.class)
+            .check(listener::onPlayerBedEnter, PlayerBedEnterEvent.class)
+            .check(listener::onPlayerDropItem, PlayerDropItemEvent.class)
+            .check(listener::onPlayerHitPlayerEvent, EntityDamageByEntityEvent.class)
+            .check(listener::onPlayerConsumeItem, PlayerItemConsumeEvent.class)
+            .check(listener::onPlayerInteract, PlayerInteractEvent.class)
+            .check(listener::onPlayerPickupItem, PlayerPickupItemEvent.class)
+            .check(listener::onPlayerInteractEntity, PlayerInteractEntityEvent.class);
     }
 
     @Test
@@ -560,11 +561,11 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).refusePlayerForFullServer(event);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
-        verify(onJoinVerifier).checkAntibot(name, true);
+        verify(onJoinVerifier).checkAntibot(player, true);
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkNameCasing(player, auth);
         verify(onJoinVerifier).checkPlayerCountry(true, ip);
-        verify(antiBot).handlePlayerJoin(player);
+        verify(antiBotService).handlePlayerJoin();
         verify(teleportationService).teleportOnJoin(player);
         verifyNoModifyingCalls(event);
     }

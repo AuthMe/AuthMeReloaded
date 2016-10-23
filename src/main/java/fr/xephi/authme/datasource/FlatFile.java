@@ -1,8 +1,8 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.io.BufferedReader;
@@ -15,7 +15,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -211,30 +210,8 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until) {
-        BufferedReader br = null;
-        Set<String> list = new HashSet<>();
-
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                if (args.length >= 4) {
-                    if (Long.parseLong(args[3]) >= until) {
-                        list.add(args[0]);
-                        continue;
-                    }
-                }
-            }
-        } catch (IOException ex) {
-            ConsoleLogger.warning(ex.getMessage());
-            return list;
-        } finally {
-            silentClose(br);
-        }
-
-        return list;
+    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
     @Override

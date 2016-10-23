@@ -1,0 +1,154 @@
+# Lingua Italiana creata da Maxetto e sgdc3.
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ Assistenza AuthMeReloaded ]=========='
+    optional: 'Opzionale'
+    hasPermission: 'Hai il permesso'
+    noPermission: 'Non hai il permesso'
+    default: 'Configurazione base'
+    result: 'Risultato'
+    defaultPermissions:
+        notAllowed: 'Nessuno autorizzato'
+        opOnly: 'Solo per OP'
+        allowed: 'Tutti autorizzati'
+
+# -------------------------------------------------------
+# Titles of the individual help sections
+# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+#   alternatives: ''
+section:
+    command: 'Comando'
+    description: 'Descrizione breve'
+    detailedDescription: 'Descrizione dettagliata'
+    arguments: 'Parametri'
+    permissions: 'Permessi'
+    alternatives: 'Alternative'
+    children: 'Comandi'
+
+# -------------------------------------------------------
+# You can translate the data for all commands using the below pattern.
+# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
+# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
+# Translations don't need to be complete; any missing section will be taken from the default silently
+# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+commands:
+    authme.register:
+        description: 'Registra un giocatore'
+        detailedDescription: 'Registra il giocatore indicato con la password inserita.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore'
+        arg2:
+            label: 'password'
+            description: 'Password'
+    authme.unregister:
+        description: 'Rimuovi un giocatore'
+        detailedDescription: 'Rimuovi il giocatore indicato dal Database.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore'
+    authme.forcelogin:
+        description: 'Forza l''autenticazione ad un giocatore'
+        detailedDescription: 'Autentica il giocatore indicato.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore connesso'
+    authme.password:
+        description: 'Cambia la password di un giocatore'
+        detailedDescription: 'Cambia la password del giocatore indicato.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore'
+        arg2:
+            label: 'password'
+            description: 'Nuova Password'
+    authme.lastlogin:
+        description: 'Ultima autenticazione di un giocatore'
+        detailedDescription: 'Visualizza l''ultima data di autenticazione del giocatore indicato.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore'
+    authme.accounts:
+        description: 'Mostra i profili di un giocatore'
+        detailedDescription: 'Mostra tutti i profili di un giocatore attraverso il nome o l''indirizzo IP.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome o indirizzo IP del giocatore'
+    authme.email:
+        description: 'Mostra l''indirizzo email di un giocatore'
+        detailedDescription: 'Mostra l''indirizzo email del giocatore indicato se impostato.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore'
+    authme.setemail:
+        description: 'Cambia l''indirizzo email di un giocatore'
+        detailedDescription: 'Cambia l''indirizzo email del giocatore indicato.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore'
+        arg2:
+            label: 'email'
+            description: 'Indirizzo email del giocatore'
+    authme.getip:
+        description: 'Mostra l''indirizzo IP di un giocatore'
+        detailedDescription: 'Mostra l''indirizzo IP del giocatore indicato.'
+        arg1:
+            label: 'giocatore'
+            description: 'Nome del giocatore connesso'
+    authme.spawn:
+        description: 'Teletrasportati al punto di rigenerazione'
+        detailedDescription: 'Teletrasportati al punto di rigenerazione.'
+    authme.setspawn:
+        description: 'Cambia il punto di rigenerazione'
+        detailedDescription: 'Cambia il punto di rigenerazione dei giocatori alla tua posizione.'
+    authme.firstspawn:
+        description: 'Teletrasportati al punto di rigenerazione iniziale'
+        detailedDescription: 'Teletrasportati al punto di rigenerazione iniziale.'
+    authme.setfirstspawn:
+        description: 'Cambia il punto di rigenerazione iniziale'
+        detailedDescription: 'Cambia il punto di rigenerazione iniziale dei giocatori alla tua posizione.'
+    authme.purge:
+        description: 'Elimina i vecchi dati'
+        detailedDescription: 'Elimina i dati di AuthMeReloaded più vecchi dei giorni indicati.'
+        arg1:
+            label: 'giorni'
+            description: 'Numero di giorni'
+        arg2:
+            label: 'all'
+            description: 'Aggiungi ''all'' alla fine per eliminare anche i giocatori con l''ultima autenticazione pari a 0'
+    authme.resetpos:
+        description: 'Elimina l''ultima posizione di un giocatore'
+        detailedDescription: 'Elimina l''ultima posizione conosciuta del giocatore indicato o di tutti i giocatori.'
+        arg1:
+            label: 'giocatore/*'
+            description: 'Nome del giocatore o ''*'' per tutti i giocatori'
+    authme.purgebannedplayers:
+        description: 'Elimina i dati dei giocatori banditi'
+        detailedDescription: 'Elimina tutti i dati di AuthMeReloaded dei giocatori banditi.'
+    authme.switchantibot:
+        description: 'Cambia lo stato del servizio di AntiBot'
+        detailedDescription: 'Cambia lo stato del servizio di AntiBot allo stato indicato.'
+        arg1:
+            label: 'stato'
+            description: 'ON / OFF'
+    authme.reload:
+        description: 'Ricarica il plugin'
+        detailedDescription: 'Ricarica il plugin AuthMeReloaded.'
+    authme.version:
+        description: 'Informazioni sulla versione'
+        detailedDescription: 'Mostra informazioni dettagliate riguardo la versione di AuthMeReloaded in uso, gli sviluppatori, i collaboratori e la licenza.'
+    authme.converter:
+        description: 'Comando per il convertitore'
+        detailedDescription: 'Comando per il convertitore di AuthMeReloaded.'
+        arg1:
+            label: 'incarico'
+            description: 'Incarico di conversione: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite'
+    authme.help:
+        description: 'Visualizza l''assistenza'
+        detailedDescription: 'Visualizza informazioni dettagliate per i comandi ''/authme''.'
+        arg1:
+            label: 'comando'
+            description: 'Il comando di cui vuoi ricevere assistenza'

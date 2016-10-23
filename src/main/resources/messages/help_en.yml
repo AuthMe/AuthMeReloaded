@@ -1,0 +1,45 @@
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ AuthMeReloaded HELP ]=========='
+    optional: 'Optional'
+    hasPermission: 'You have permission'
+    noPermission: 'No permission'
+    default: 'Default'
+    result: 'Result'
+    defaultPermissions:
+        notAllowed: 'No permission'
+        opOnly: 'OP''s only'
+        allowed: 'Everyone allowed'
+
+# -------------------------------------------------------
+# Titles of the individual help sections
+# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+#   alternatives: ''
+section:
+    command: 'Command'
+    description: 'Short description'
+    detailedDescription: 'Detailed description'
+    arguments: 'Arguments'
+    permissions: 'Permissions'
+    alternatives: 'Alternatives'
+    children: 'Commands'
+
+# -------------------------------------------------------
+# You can translate the data for all commands using the below pattern.
+# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
+# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
+# Translations don't need to be complete; any missing section will be taken from the default silently
+# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+commands:
+    authme.register:
+        description: 'Register a player'
+        detailedDescription: 'Register the specified player with the specified password.'
+        arg1:
+            label: 'player'
+            description: 'Player name'
+        arg2:
+            label: 'password'
+            description: 'Password'

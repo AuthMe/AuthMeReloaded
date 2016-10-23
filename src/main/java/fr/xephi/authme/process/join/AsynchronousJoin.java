@@ -2,14 +2,14 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.SessionManager;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.hooks.PluginHooks;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -19,9 +19,9 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.PlayerDataTaskManager;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
@@ -32,7 +32,7 @@ import org.bukkit.potion.PotionEffectType;
 import javax.inject.Inject;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
-import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 /**
  * Asynchronous process for when a player joins.
@@ -61,13 +61,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private SessionManager sessionManager;
 
     @Inject
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
 
     @Inject
     private BukkitService bukkitService;
 
     @Inject
-    private PlayerDataTaskManager playerDataTaskManager;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private AsynchronousLogin asynchronousLogin;
@@ -78,7 +78,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
-        final String ip = Utils.getPlayerIp(player);
+        final String ip = PlayerUtils.getPlayerIp(player);
 
         if (isPlayerUnrestricted(name)) {
             return;
@@ -91,20 +91,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
             && !service.hasPermission(player, PlayerStatePermission.BYPASS_FORCE_SURVIVAL)) {
-            bukkitService.runTask(new Runnable() {
-                @Override
-                public void run() {
-                    player.setGameMode(GameMode.SURVIVAL);
-                }
-            });
+            bukkitService.runTask(() -> player.setGameMode(GameMode.SURVIVAL));
         }
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
-            pluginHooks.setEssentialsSocialSpyStatus(player, false);
+            pluginHookService.setEssentialsSocialSpyStatus(player, false);
         }
 
         if (isNameRestricted(name, ip, player.getAddress().getHostName())) {
-            bukkitService.scheduleSyncDelayedTask(new Runnable() {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
                 @Override
                 public void run() {
                     player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
@@ -129,7 +124,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
+                final boolean isAsync = service.getProperty(PluginSettings.USE_ASYNC_TASKS);
+                ProtectInventoryEvent ev = new ProtectInventoryEvent(player, isAsync);
                 bukkitService.callEvent(ev);
                 if (ev.isCancelled()) {
                     player.updateInventory();
@@ -144,12 +140,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 playerCache.removePlayer(name);
                 if (auth != null && auth.getIp().equals(ip)) {
                     service.send(player, MessageKey.SESSION_RECONNECTION);
-                    bukkitService.runTaskAsynchronously(new Runnable() {
-                        @Override
-                        public void run() {
-                            asynchronousLogin.login(player, "dontneed", true);
-                        }
-                    });
+                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                     return;
                 } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
                     service.send(player, MessageKey.SESSION_EXPIRED);
@@ -171,7 +162,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
             @Override
             public void run() {
                 player.setOp(false);
@@ -181,7 +172,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     player.setWalkSpeed(0.0f);
                 }
                 player.setNoDamageTicks(registrationTimeout);
-                if (pluginHooks.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
+                if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
                     player.performCommand("motd");
                 }
                 if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
@@ -194,8 +185,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         });
 
         // Timeout and message task
-        playerDataTaskManager.registerTimeoutTask(player);
-        playerDataTaskManager.registerMessageTask(name, isAuthAvailable);
+        limboPlayerTaskManager.registerTimeoutTask(player);
+        limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
     }
 
     private boolean isPlayerUnrestricted(String name) {
@@ -248,12 +239,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
             && !"localhost".equalsIgnoreCase(ip)
             && countOnlinePlayersByIp(ip) > service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)) {
 
-            bukkitService.scheduleSyncDelayedTask(new Runnable() {
-                @Override
-                public void run() {
-                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE));
-                }
-            });
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                () -> player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE)));
             return false;
         }
         return true;
@@ -262,7 +249,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private int countOnlinePlayersByIp(String ip) {
         int count = 0;
         for (Player player : bukkitService.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))) {
+            if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(player))) {
                 ++count;
             }
         }

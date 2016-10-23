@@ -1,0 +1,28 @@
+common:
+    optional: 'Optional'
+    hasPermission: 'Du hast Berechtigung'
+    noPermission: 'Keine Berechtigung'
+    default: 'Default'
+    result: 'Resultat'
+    defaultPermissions:
+        notAllowed: 'Kein Recht'
+        opOnly: 'Nur OP''s'
+        allowed: 'Allen erlaubt'
+section:
+    command: 'Kommando'
+    description: 'Beschreibung'
+    detailedDescription: 'Detaillierte Beschreibung'
+    arguments: 'Argumente'
+    permissions: 'Rechte'
+    alternatives: 'Alternativen'
+    children: 'Kommandos'
+commands:
+    authme.register:
+        description: 'Registriert einen Benutzer'
+        detailedDescription: 'Registriert den Benutzer mit dem gegebenen Passwort.'
+        arg1:
+            label: 'spieler'
+            description: 'Name des Spielers'
+        arg2:
+            label: 'passwort'
+            description: 'Passwort'

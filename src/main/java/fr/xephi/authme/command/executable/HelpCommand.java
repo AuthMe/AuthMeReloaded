@@ -14,6 +14,11 @@ import java.util.List;
 
 import static fr.xephi.authme.command.FoundResultStatus.MISSING_BASE_COMMAND;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
+import static fr.xephi.authme.command.help.HelpProvider.ALL_OPTIONS;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_ALTERNATIVES;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_CHILDREN;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_COMMAND;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_DESCRIPTION;
 
 public class HelpCommand implements ExecutableCommand {
 
@@ -46,9 +51,9 @@ public class HelpCommand implements ExecutableCommand {
 
         int mappedCommandLevel = result.getCommandDescription().getLabelCount();
         if (mappedCommandLevel == 1) {
-            helpProvider.outputHelp(sender, result, HelpProvider.SHOW_CHILDREN);
+            helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_DESCRIPTION | SHOW_CHILDREN | SHOW_ALTERNATIVES);
         } else {
-            helpProvider.outputHelp(sender, result, HelpProvider.ALL_OPTIONS);
+            helpProvider.outputHelp(sender, result, ALL_OPTIONS);
         }
     }
 

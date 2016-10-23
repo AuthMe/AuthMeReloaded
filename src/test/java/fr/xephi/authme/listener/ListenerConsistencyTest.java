@@ -1,13 +1,18 @@
 package fr.xephi.authme.listener;
 
 import com.google.common.collect.Sets;
+import fr.xephi.authme.ClassCollector;
+import fr.xephi.authme.TestHelper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -20,9 +25,7 @@ import static org.junit.Assert.fail;
  */
 public final class ListenerConsistencyTest {
 
-    private static final Class<?>[] LISTENERS = { BlockListener.class, EntityListener.class,
-        PlayerListener.class, PlayerListener16.class, PlayerListener18.class, PlayerListener19.class,
-        ServerListener.class };
+    private static List<Class<? extends Listener>> classes;
 
     private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet(
         "PlayerListener#onPlayerJoin", "PlayerListener#onPlayerLogin",
@@ -30,16 +33,26 @@ public final class ListenerConsistencyTest {
         "ServerListener#onServerPing", "ServerListener#onPluginEnable",
         "PlayerListener#onJoinMessage");
 
+    @BeforeClass
+    public static void collectListenerClasses() {
+        ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "listener");
+        classes = collector.collectClasses(Listener.class);
+
+        if (classes.isEmpty()) {
+            throw new IllegalStateException("Did not find any Listener classes. Is the folder correct?");
+        }
+    }
+
     @Test
     public void shouldSetIgnoreCancelledToTrue() {
-        for (Class<?> listener : LISTENERS) {
+        for (Class<?> listener : classes) {
             checkCanceledAttribute(listener);
         }
     }
 
     @Test
     public void shouldHaveOnlyEventListenersAsPublicMembers() {
-        for (Class<?> listener : LISTENERS) {
+        for (Class<?> listener : classes) {
             checkPublicMethodsAreListeners(listener);
         }
     }
@@ -47,7 +60,7 @@ public final class ListenerConsistencyTest {
     // #367: Event listeners with EventPriority.MONITOR should not change events
     @Test
     public void shouldNotHaveMonitorLevelEventHandlers() {
-        for (Class<?> listener : LISTENERS) {
+        for (Class<?> listener : classes) {
             verifyListenerIsNotUsingMonitorPriority(listener);
         }
     }
@@ -55,7 +68,7 @@ public final class ListenerConsistencyTest {
     @Test
     public void shouldNotHaveMultipleMethodsWithSameName() {
         Set<String> events = new HashSet<>();
-        for (Class<?> listener : LISTENERS) {
+        for (Class<?> listener : classes) {
             for (Method method : listener.getDeclaredMethods()) {
                 if (isTestableMethod(method) && events.contains(method.getName())) {
                     fail("More than one method '" + method.getName() + "' exists (e.g. class: " + listener + ")");

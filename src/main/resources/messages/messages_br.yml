@@ -75,3 +75,5 @@ kicked_admin_registered: 'Um administrador registrou você; por favor faça logi
 incomplete_email_settings: 'Erro: Nem todas as configurações necessárias estão definidas para o envio de e-mails. Entre em contato com um administrador.'
 recovery_code_sent: 'Um código de recuperação para redefinir sua senha foi enviada para o seu e-mail.'
 recovery_code_incorrect: 'O código de recuperação esta incorreto! Use /email recovery [email] para gerar um novo!'
+# TODO email_show: '&2Your current email address is: &f%email'
+# TODO show_no_email: '&2You currently don''t have email address associated with this account.'

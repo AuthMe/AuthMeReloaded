@@ -4,16 +4,13 @@ import net.ricecode.similarity.LevenshteinDistanceStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
 
-import java.io.File;
-import java.util.Arrays;
-
 /**
  * Utility class for String operations.
  */
 public final class StringUtils {
 
+    // Utility class
     private StringUtils() {
-        // Utility class
     }
 
     /**
@@ -70,44 +67,6 @@ public final class StringUtils {
     }
 
     /**
-     * Join a list of elements into a single string with the specified delimiter.
-     *
-     * @param delimiter The delimiter to use
-     * @param elements  The elements to join
-     *
-     * @return A new String that is composed of the elements separated by the delimiter
-     */
-    public static String join(String delimiter, Iterable<String> elements) {
-        if (delimiter == null) {
-            delimiter = "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String element : elements) {
-            if (!isEmpty(element)) {
-                // Add the separator if it isn't the first element
-                if (sb.length() > 0) {
-                    sb.append(delimiter);
-                }
-                sb.append(element);
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Join a list of elements into a single string with the specified delimiter.
-     *
-     * @param delimiter The delimiter to use
-     * @param elements  The elements to join
-     *
-     * @return A new String that is composed of the elements separated by the delimiter
-     */
-    public static String join(String delimiter, String... elements) {
-        return join(delimiter, Arrays.asList(elements));
-    }
-
-    /**
      * Format the information from a Throwable as string, retaining the type and its message.
      *
      * @param th The throwable to process
@@ -117,16 +76,4 @@ public final class StringUtils {
     public static String formatException(Throwable th) {
         return "[" + th.getClass().getSimpleName() + "]: " + th.getMessage();
     }
-
-    /**
-     * Construct a file path from the given elements, i.e. separate the given elements by the file separator.
-     *
-     * @param elements The elements to create a path with
-     *
-     * @return The created path
-     */
-    public static String makePath(String... elements) {
-        return join(File.separator, elements);
-    }
-
 }

@@ -1,9 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,21 +11,15 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
-import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
-
 public class VersionCommand implements ExecutableCommand {
 
     @Inject
     private BukkitService bukkitService;
 
-    @Inject
-    private CommandService commandService;
-
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
         // Show some version info
-        sender.sendMessage(ChatColor.GOLD + "==========[ " + commandService.getProperty(HELP_HEADER)
-            + " ABOUT ]==========");
+        sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.getPluginName() + " ABOUT ]==========");
         sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName()
             + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");
@@ -43,7 +36,7 @@ public class VersionCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0"
             + ChatColor.GRAY + ChatColor.ITALIC + " (See LICENSE file)");
         sender.sendMessage(ChatColor.GOLD + "Copyright: " + ChatColor.WHITE
-            + "Copyright (c) Xephi 2015. All rights reserved.");
+            + "Copyright (c) AuthMe-Team 2016. All rights reserved.");
     }
 
     /**

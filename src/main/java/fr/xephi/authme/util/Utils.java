@@ -1,9 +1,6 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import java.util.regex.Pattern;
 
 /**
@@ -11,24 +8,13 @@ import java.util.regex.Pattern;
  */
 public final class Utils {
 
-    private Utils() {
-    }
+    /** Number of milliseconds in a minute. */
+    public static final long MILLIS_PER_MINUTE = 60_000L;
+    /** Number of milliseconds in an hour. */
+    public static final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
 
-    /**
-     * Get player's UUID if can, name otherwise.
-     *
-     * @param player Player to retrieve
-     *
-     * @return player's UUID or Name in String.
-     */
-    public static String getUUIDorName(OfflinePlayer player) {
-        // We may made this configurable in future
-        // so we can have uuid support.
-        try {
-            return player.getUniqueId().toString();
-        } catch (NoSuchMethodError ignore) {
-            return player.getName();
-        }
+    // Utility class
+    private Utils() {
     }
 
     /**
@@ -45,17 +31,6 @@ public final class Utils {
             ConsoleLogger.warning("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
             return Pattern.compile(".*?");
         }
-    }
-
-    /**
-     * Returns the IP of the given player.
-     *
-     * @param p The player to return the IP address for
-     *
-     * @return The player's IP address
-     */
-    public static String getPlayerIp(Player p) {
-        return p.getAddress().getAddress().getHostAddress();
     }
 
     /**

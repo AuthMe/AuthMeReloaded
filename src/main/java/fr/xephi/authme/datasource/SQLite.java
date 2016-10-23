@@ -2,7 +2,10 @@ package fr.xephi.authme.datasource;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.Columns;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -299,10 +302,13 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until) {
+    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
         Set<String> list = new HashSet<>();
 
-        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + " < ?";
+        if (!includeEntriesWithLastLoginZero) {
+            select += " AND " + col.LAST_LOGIN + " <> 0";
+        }
         try (PreparedStatement selectPst = con.prepareStatement(select)) {
             selectPst.setLong(1, until);
             try (ResultSet rs = selectPst.executeQuery()) {
@@ -335,7 +341,7 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
-            pst.setString(1, user);
+            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {

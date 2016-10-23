@@ -1,9 +1,9 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.SessionManager;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -11,8 +11,8 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.util.PlayerUtils;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -63,7 +63,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
                 database.updateQuitLoc(auth);
             }
 
-            final String ip = Utils.getPlayerIp(player);
+            final String ip = PlayerUtils.getPlayerIp(player);
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
                 .realName(player.getName())

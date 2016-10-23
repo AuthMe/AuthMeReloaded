@@ -4,7 +4,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.Columns;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.XFBCRYPT;
@@ -12,6 +15,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.RuntimeUtils;
 import fr.xephi.authme.util.StringUtils;
 
 import java.sql.Blob;
@@ -36,6 +40,7 @@ public class MySQL implements DataSource {
     private String password;
     private String database;
     private String tableName;
+    private int poolSize;
     private List<String> columnOthers;
     private Columns col;
     private HashAlgorithm hashAlgorithm;
@@ -94,11 +99,18 @@ public class MySQL implements DataSource {
         this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
+        this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
+        if(poolSize == -1) {
+            poolSize = RuntimeUtils.getCoreCount();
+        }
     }
 
     private void setConnectionArguments() throws RuntimeException {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
+
+        // Pool size
+    	ds.setMaximumPoolSize(poolSize);
 
         // Database URL
         ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
@@ -118,7 +130,7 @@ public class MySQL implements DataSource {
 
         // Caching
         ds.addDataSourceProperty("cachePrepStmts", "true");
-        ds.addDataSourceProperty("prepStmtCacheSize", "250");
+        ds.addDataSourceProperty("prepStmtCacheSize", "275");
         ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
@@ -568,10 +580,13 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until) {
+    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
         Set<String> list = new HashSet<>();
 
-        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + " < ?";
+        if (!includeEntriesWithLastLoginZero) {
+            select += " AND " + col.LAST_LOGIN + " <> 0";
+        }
         try (Connection con = getConnection();
              PreparedStatement selectPst = con.prepareStatement(select)) {
             selectPst.setLong(1, until);
@@ -608,7 +623,7 @@ public class MySQL implements DataSource {
                     }
                 }
             }
-            pst.setString(1, user);
+            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {

@@ -1,14 +1,14 @@
 package fr.xephi.authme.api;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -28,7 +28,7 @@ public class API {
     private static DataSource dataSource;
     private static PasswordSecurity passwordSecurity;
     private static Management management;
-    private static PluginHooks pluginHooks;
+    private static PluginHookService pluginHookService;
     private static ValidationService validationService;
 
     /*
@@ -36,12 +36,12 @@ public class API {
      */
     @Inject
     API(AuthMe instance, DataSource dataSource, PasswordSecurity passwordSecurity, Management management,
-        PluginHooks pluginHooks, ValidationService validationService) {
+        PluginHookService pluginHookService, ValidationService validationService) {
         API.instance = instance;
         API.dataSource = dataSource;
         API.passwordSecurity = passwordSecurity;
         API.management = management;
-        API.pluginHooks = pluginHooks;
+        API.pluginHookService = pluginHookService;
         API.validationService = validationService;
     }
 
@@ -157,7 +157,7 @@ public class API {
      * @param player The player to log in
      */
     public static void forceLogin(Player player) {
-        management.performLogin(player, "dontneed", true);
+        management.forceLogin(player);
     }
 
     public AuthMe getPlugin() {
@@ -171,7 +171,7 @@ public class API {
      * @return true if player is an npc
      */
     public boolean isNPC(Player player) {
-        return pluginHooks.isNpc(player);
+        return pluginHookService.isNpc(player);
     }
 
 }

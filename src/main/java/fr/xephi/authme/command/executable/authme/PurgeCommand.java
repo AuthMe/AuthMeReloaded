@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Command for purging the data of players which have not been since for a given number
+ * Command for purging the data of players which have not been online for a given number
  * of days. Depending on the settings, this removes player data in third-party plugins as well.
  */
 public class PurgeCommand implements ExecutableCommand {
@@ -41,12 +41,24 @@ public class PurgeCommand implements ExecutableCommand {
             return;
         }
 
+        // If second param is available, check that it is equal to "all"
+        boolean includeLastLoginZeroEntries = false;
+        if (arguments.size() >= 2) {
+            if ("all".equals(arguments.get(1))) {
+                includeLastLoginZeroEntries = true;
+            } else {
+                sender.sendMessage("Purge process aborted; use '/authme purge " + days + " all' "
+                    + "to include users with lastlogin = 0");
+                return;
+            }
+        }
+
         // Create a calender instance to determine the date
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -days);
         long until = calendar.getTimeInMillis();
 
         // Run the purge
-        purgeService.runPurge(sender, until);
+        purgeService.runPurge(sender, until, includeLastLoginZeroEntries);
     }
 }

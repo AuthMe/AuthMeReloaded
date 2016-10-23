@@ -2,7 +2,7 @@ package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -32,7 +32,7 @@ public class SpawnLoader implements Reloadable {
 
     private final File authMeConfigurationFile;
     private final Settings settings;
-    private final PluginHooks pluginHooks;
+    private final PluginHookService pluginHookService;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
@@ -42,18 +42,18 @@ public class SpawnLoader implements Reloadable {
      *
      * @param pluginFolder The AuthMe data folder
      * @param settings     The setting instance
-     * @param pluginHooks  The plugin hooks instance
+     * @param pluginHookService  The plugin hooks instance
      * @param dataSource   The plugin auth database instance
      */
     @Inject
-    SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHooks pluginHooks,
+    SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService,
                 DataSource dataSource) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
         this.settings = settings;
-        this.pluginHooks = pluginHooks;
+        this.pluginHookService = pluginHookService;
         reload();
     }
 
@@ -112,7 +112,7 @@ public class SpawnLoader implements Reloadable {
      */
     public void loadEssentialsSpawn() {
         // EssentialsSpawn cannot run without Essentials, so it's fine to get the Essentials data folder
-        File essentialsFolder = pluginHooks.getEssentialsDataFolder();
+        File essentialsFolder = pluginHookService.getEssentialsDataFolder();
         if (essentialsFolder == null) {
             return;
         }
@@ -160,7 +160,7 @@ public class SpawnLoader implements Reloadable {
                     break;
                 case "multiverse":
                     if (settings.getProperty(HooksSettings.MULTIVERSE)) {
-                        spawnLoc = pluginHooks.getMultiverseSpawn(world);
+                        spawnLoc = pluginHookService.getMultiverseSpawn(world);
                     }
                     break;
                 case "essentials":

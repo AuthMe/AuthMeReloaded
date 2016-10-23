@@ -2,12 +2,12 @@ package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 
-import static fr.xephi.authme.util.StringUtils.makePath;
+import static fr.xephi.authme.util.FileUtils.makePath;
 
 /**
  * Executes the purge operations.
@@ -33,7 +33,7 @@ class PurgeExecutor {
     private PermissionsManager permissionsManager;
 
     @Inject
-    private PluginHooks pluginHooks;
+    private PluginHookService pluginHookService;
 
     @Inject
     private BukkitService bukkitService;
@@ -152,7 +152,7 @@ class PurgeExecutor {
             , makePath(settings.getProperty(PurgeSettings.DEFAULT_WORLD), "players"));
 
         for (OfflinePlayer offlinePlayer : cleared) {
-            File playerFile = new File(dataFolder, Utils.getUUIDorName(offlinePlayer) + ".dat");
+            File playerFile = new File(dataFolder, PlayerUtils.getUUIDorName(offlinePlayer) + ".dat");
             if (playerFile.delete()) {
                 i++;
             }
@@ -172,7 +172,7 @@ class PurgeExecutor {
         }
 
         int i = 0;
-        File essentialsDataFolder = pluginHooks.getEssentialsDataFolder();
+        File essentialsDataFolder = pluginHookService.getEssentialsDataFolder();
         if (essentialsDataFolder == null) {
             ConsoleLogger.info("Cannot purge Essentials: plugin is not loaded");
             return;
@@ -184,7 +184,7 @@ class PurgeExecutor {
         }
 
         for (OfflinePlayer offlinePlayer : cleared) {
-            File playerFile = new File(userDataFolder, Utils.getUUIDorName(offlinePlayer) + ".yml");
+            File playerFile = new File(userDataFolder, PlayerUtils.getUUIDorName(offlinePlayer) + ".yml");
             if (playerFile.exists() && playerFile.delete()) {
                 i++;
             }

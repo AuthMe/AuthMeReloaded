@@ -7,6 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
+
 /**
  * Test for {@link PlayerListener16}.
  */
@@ -21,7 +23,8 @@ public class PlayerListener16Test {
 
     @Test
     public void shouldCancelEvent() {
-        ListenerTestUtils.checkEventIsCanceledForUnauthed(listener, listenerService, PlayerEditBookEvent.class);
+        withServiceMock(listenerService)
+            .check(listener::onPlayerEditBook, PlayerEditBookEvent.class);
     }
 
 }

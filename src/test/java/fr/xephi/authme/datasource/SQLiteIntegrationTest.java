@@ -1,9 +1,12 @@
 package fr.xephi.authme.datasource;
 
+import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.AbstractDataSourceIntegrationTest;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +59,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         });
         set(DatabaseSettings.MYSQL_DATABASE, "sqlite-test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
-        TestHelper.setupLogger();
+        TestHelper.setRealLogger();
 
         Path sqlInitFile = TestHelper.getJarPath(TestHelper.PROJECT_ROOT + "datasource/sql-initialize.sql");
         // Note ljacqu 20160221: It appears that we can only run one statement per Statement.execute() so we split

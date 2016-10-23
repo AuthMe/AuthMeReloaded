@@ -1,22 +1,22 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -40,7 +40,7 @@ class OnJoinVerifier implements Reloadable {
     @Inject
     private PermissionsManager permissionsManager;
     @Inject
-    private AntiBot antiBot;
+    private AntiBotService antiBotService;
     @Inject
     private ValidationService validationService;
     @Inject
@@ -50,7 +50,8 @@ class OnJoinVerifier implements Reloadable {
 
     private Pattern nicknamePattern;
 
-    OnJoinVerifier() { }
+    OnJoinVerifier() {
+    }
 
 
     @PostConstruct
@@ -63,12 +64,15 @@ class OnJoinVerifier implements Reloadable {
     /**
      * Checks if Antibot is enabled.
      *
-     * @param playerName the name of the player (lowercase)
+     * @param player          the player
      * @param isAuthAvailable whether or not the player is registered
      */
-    public void checkAntibot(String playerName, boolean isAuthAvailable) throws FailedVerificationException {
-        if (antiBot.getAntiBotStatus() == AntiBot.AntiBotStatus.ACTIVE && !isAuthAvailable) {
-            antiBot.addPlayerKick(playerName);
+    public void checkAntibot(Player player, boolean isAuthAvailable) throws FailedVerificationException {
+        if (permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)) {
+            return;
+        }
+        if (antiBotService.shouldKick(isAuthAvailable)) {
+            antiBotService.addPlayerKick(player.getName());
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }
     }
@@ -105,6 +109,7 @@ class OnJoinVerifier implements Reloadable {
      * joining player is a VIP.
      *
      * @param event the login event to verify
+     *
      * @return true if the player's connection should be refused (i.e. the event does not need to be processed
      * further), false if the player is not refused
      */
@@ -141,7 +146,7 @@ class OnJoinVerifier implements Reloadable {
      * Checks that the casing in the username corresponds to the one in the database, if so configured.
      *
      * @param player the player to verify
-     * @param auth the auth object associated with the player
+     * @param auth   the auth object associated with the player
      */
     public void checkNameCasing(Player player, PlayerAuth auth) throws FailedVerificationException {
         if (auth != null && settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)) {
@@ -160,7 +165,7 @@ class OnJoinVerifier implements Reloadable {
      * Checks that the player's country is admitted.
      *
      * @param isAuthAvailable whether or not the user is registered
-     * @param playerIp the ip address of the player
+     * @param playerIp        the ip address of the player
      */
     public void checkPlayerCountry(boolean isAuthAvailable,
                                    String playerIp) throws FailedVerificationException {
@@ -193,6 +198,7 @@ class OnJoinVerifier implements Reloadable {
      * Selects a non-VIP player to kick when a VIP player joins the server when full.
      *
      * @param onlinePlayers list of online players
+     *
      * @return the player to kick, or null if none applicable
      */
     private Player generateKickPlayer(Collection<? extends Player> onlinePlayers) {

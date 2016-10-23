@@ -1,6 +1,6 @@
 package fr.xephi.authme.command;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
@@ -11,6 +11,7 @@ import fr.xephi.authme.command.executable.authme.ForceLoginCommand;
 import fr.xephi.authme.command.executable.authme.GetEmailCommand;
 import fr.xephi.authme.command.executable.authme.GetIpCommand;
 import fr.xephi.authme.command.executable.authme.LastLoginCommand;
+import fr.xephi.authme.command.executable.authme.MessagesCommand;
 import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
 import fr.xephi.authme.command.executable.authme.PurgeCommand;
 import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
@@ -29,6 +30,7 @@ import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
+import fr.xephi.authme.command.executable.email.ShowEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.command.executable.register.RegisterCommand;
@@ -39,14 +41,13 @@ import fr.xephi.authme.permission.PlayerPermission;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Initializes all available AuthMe commands.
  */
 public class CommandInitializer {
 
-    private Set<CommandDescription> commands;
+    private List<CommandDescription> commands;
 
     public CommandInitializer() {
         buildCommands();
@@ -57,7 +58,7 @@ public class CommandInitializer {
      *
      * @return the command descriptions
      */
-    public Set<CommandDescription> getCommands() {
+    public List<CommandDescription> getCommands() {
         return commands;
     }
 
@@ -65,10 +66,10 @@ public class CommandInitializer {
         // Register the base AuthMe Reloaded command
         final CommandDescription AUTHME_BASE = CommandDescription.builder()
             .labels("authme")
-            .description("Main command")
+            .description("AuthMe op commands")
             .detailedDescription("The main AuthMeReloaded command. The root for all admin commands.")
             .executableCommand(AuthMeCommand.class)
-            .build();
+            .register();
 
         // Register the register command
         CommandDescription.builder()
@@ -80,7 +81,7 @@ public class CommandInitializer {
             .withArgument("password", "Password", false)
             .permission(AdminPermission.REGISTER)
             .executableCommand(RegisterAdminCommand.class)
-            .build();
+            .register();
 
         // Register the unregister command
         CommandDescription.builder()
@@ -91,7 +92,7 @@ public class CommandInitializer {
             .withArgument("player", "Player name", false)
             .permission(AdminPermission.UNREGISTER)
             .executableCommand(UnregisterAdminCommand.class)
-            .build();
+            .register();
 
         // Register the forcelogin command
         CommandDescription.builder()
@@ -102,7 +103,7 @@ public class CommandInitializer {
             .withArgument("player", "Online player name", true)
             .permission(AdminPermission.FORCE_LOGIN)
             .executableCommand(ForceLoginCommand.class)
-            .build();
+            .register();
 
         // Register the changepassword command
         CommandDescription.builder()
@@ -114,7 +115,7 @@ public class CommandInitializer {
             .withArgument("pwd", "New password", false)
             .permission(AdminPermission.CHANGE_PASSWORD)
             .executableCommand(ChangePasswordAdminCommand.class)
-            .build();
+            .register();
 
         // Register the last login command
         CommandDescription.builder()
@@ -125,7 +126,7 @@ public class CommandInitializer {
             .withArgument("player", "Player name", true)
             .permission(AdminPermission.LAST_LOGIN)
             .executableCommand(LastLoginCommand.class)
-            .build();
+            .register();
 
         // Register the accounts command
         CommandDescription.builder()
@@ -136,7 +137,7 @@ public class CommandInitializer {
             .withArgument("player", "Player name or IP", true)
             .permission(AdminPermission.ACCOUNTS)
             .executableCommand(AccountsCommand.class)
-            .build();
+            .register();
 
         // Register the getemail command
         CommandDescription.builder()
@@ -147,7 +148,7 @@ public class CommandInitializer {
             .withArgument("player", "Player name", true)
             .permission(AdminPermission.GET_EMAIL)
             .executableCommand(GetEmailCommand.class)
-            .build();
+            .register();
 
         // Register the setemail command
         CommandDescription.builder()
@@ -159,7 +160,7 @@ public class CommandInitializer {
             .withArgument("email", "Player email", false)
             .permission(AdminPermission.CHANGE_EMAIL)
             .executableCommand(SetEmailCommand.class)
-            .build();
+            .register();
 
         // Register the getip command
         CommandDescription.builder()
@@ -170,7 +171,7 @@ public class CommandInitializer {
             .withArgument("player", "Player name", false)
             .permission(AdminPermission.GET_IP)
             .executableCommand(GetIpCommand.class)
-            .build();
+            .register();
 
         // Register the spawn command
         CommandDescription.builder()
@@ -180,7 +181,7 @@ public class CommandInitializer {
             .detailedDescription("Teleport to the spawn.")
             .permission(AdminPermission.SPAWN)
             .executableCommand(SpawnCommand.class)
-            .build();
+            .register();
 
         // Register the setspawn command
         CommandDescription.builder()
@@ -190,7 +191,7 @@ public class CommandInitializer {
             .detailedDescription("Change the player's spawn to your current position.")
             .permission(AdminPermission.SET_SPAWN)
             .executableCommand(SetSpawnCommand.class)
-            .build();
+            .register();
 
         // Register the firstspawn command
         CommandDescription.builder()
@@ -200,7 +201,7 @@ public class CommandInitializer {
             .detailedDescription("Teleport to the first spawn.")
             .permission(AdminPermission.FIRST_SPAWN)
             .executableCommand(FirstSpawnCommand.class)
-            .build();
+            .register();
 
         // Register the setfirstspawn command
         CommandDescription.builder()
@@ -210,7 +211,7 @@ public class CommandInitializer {
             .detailedDescription("Change the first player's spawn to your current position.")
             .permission(AdminPermission.SET_FIRST_SPAWN)
             .executableCommand(SetFirstSpawnCommand.class)
-            .build();
+            .register();
 
         // Register the purge command
         CommandDescription.builder()
@@ -219,9 +220,10 @@ public class CommandInitializer {
             .description("Purge old data")
             .detailedDescription("Purge old AuthMeReloaded data longer than the specified amount of days ago.")
             .withArgument("days", "Number of days", false)
+            .withArgument("all", "Add 'all' at the end to also purge players with lastlogin = 0", true)
             .permission(AdminPermission.PURGE)
             .executableCommand(PurgeCommand.class)
-            .build();
+            .register();
 
         // Register the purgelastposition command
         CommandDescription.builder()
@@ -233,7 +235,7 @@ public class CommandInitializer {
             .withArgument("player/*", "Player name or * for all players", false)
             .permission(AdminPermission.PURGE_LAST_POSITION)
             .executableCommand(PurgeLastPositionCommand.class)
-            .build();
+            .register();
 
         // Register the purgebannedplayers command
         CommandDescription.builder()
@@ -243,7 +245,7 @@ public class CommandInitializer {
             .detailedDescription("Purge all AuthMeReloaded data for banned players.")
             .permission(AdminPermission.PURGE_BANNED_PLAYERS)
             .executableCommand(PurgeBannedPlayersCommand.class)
-            .build();
+            .register();
 
         // Register the switchantibot command
         CommandDescription.builder()
@@ -254,7 +256,7 @@ public class CommandInitializer {
             .withArgument("mode", "ON / OFF", true)
             .permission(AdminPermission.SWITCH_ANTIBOT)
             .executableCommand(SwitchAntiBotCommand.class)
-            .build();
+            .register();
 
         // Register the reload command
         CommandDescription.builder()
@@ -264,7 +266,7 @@ public class CommandInitializer {
             .detailedDescription("Reload the AuthMeReloaded plugin.")
             .permission(AdminPermission.RELOAD)
             .executableCommand(ReloadCommand.class)
-            .build();
+            .register();
 
         // Register the version command
         CommandDescription.builder()
@@ -274,7 +276,7 @@ public class CommandInitializer {
             .detailedDescription("Show detailed information about the installed AuthMeReloaded version, the "
                 + "developers, contributors, and license.")
             .executableCommand(VersionCommand.class)
-            .build();
+            .register();
 
         CommandDescription.builder()
             .parent(AUTHME_BASE)
@@ -282,10 +284,19 @@ public class CommandInitializer {
             .description("Converter command")
             .detailedDescription("Converter command for AuthMeReloaded.")
             .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
-                "royalauth / vauth / sqlitetosql", false)
+                "royalauth / vauth / sqliteToSql / mysqlToSqlite", false)
             .permission(AdminPermission.CONVERTER)
             .executableCommand(ConverterCommand.class)
-            .build();
+            .register();
+
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
+            .labels("messages", "msg")
+            .description("Add missing messages")
+            .detailedDescription("Adds missing messages to the current messages file.")
+            .permission(AdminPermission.UPDATE_MESSAGES)
+            .executableCommand(MessagesCommand.class)
+            .register();
 
         // Register the base login command
         final CommandDescription LOGIN_BASE = CommandDescription.builder()
@@ -296,7 +307,7 @@ public class CommandInitializer {
             .withArgument("password", "Login password", false)
             .permission(PlayerPermission.LOGIN)
             .executableCommand(LoginCommand.class)
-            .build();
+            .register();
 
         // Register the base logout command
         CommandDescription LOGOUT_BASE = CommandDescription.builder()
@@ -306,51 +317,60 @@ public class CommandInitializer {
             .detailedDescription("Command to logout using AuthMeReloaded.")
             .permission(PlayerPermission.LOGOUT)
             .executableCommand(LogoutCommand.class)
-            .build();
+            .register();
 
         // Register the base register command
         final CommandDescription REGISTER_BASE = CommandDescription.builder()
             .parent(null)
             .labels("register", "reg")
-            .description("Registration command")
+            .description("Register an account")
             .detailedDescription("Command to register using AuthMeReloaded.")
             .withArgument("password", "Password", true)
             .withArgument("verifyPassword", "Verify password", true)
             .permission(PlayerPermission.REGISTER)
             .executableCommand(RegisterCommand.class)
-            .build();
+            .register();
 
         // Register the base unregister command
         CommandDescription UNREGISTER_BASE = CommandDescription.builder()
             .parent(null)
             .labels("unregister", "unreg")
-            .description("Unregistration Command")
+            .description("Unregister an account")
             .detailedDescription("Command to unregister using AuthMeReloaded.")
             .withArgument("password", "Password", false)
             .permission(PlayerPermission.UNREGISTER)
             .executableCommand(UnregisterCommand.class)
-            .build();
+            .register();
 
         // Register the base changepassword command
         final CommandDescription CHANGE_PASSWORD_BASE = CommandDescription.builder()
             .parent(null)
             .labels("changepassword", "changepass", "cp")
-            .description("Change password Command")
+            .description("Change password of an account")
             .detailedDescription("Command to change your password using AuthMeReloaded.")
-            .withArgument("oldPassword", "Old Password", false)
-            .withArgument("newPassword", "New Password.", false)
+            .withArgument("oldPassword", "Old password", false)
+            .withArgument("newPassword", "New password", false)
             .permission(PlayerPermission.CHANGE_PASSWORD)
             .executableCommand(ChangePasswordCommand.class)
-            .build();
+            .register();
 
         // Register the base Email command
         CommandDescription EMAIL_BASE = CommandDescription.builder()
             .parent(null)
             .labels("email")
-            .description("Email command")
-            .detailedDescription("The AuthMeReloaded Email command base.")
+            .description("Add email or recover password")
+            .detailedDescription("The AuthMeReloaded email command base.")
             .executableCommand(EmailBaseCommand.class)
-            .build();
+            .register();
+
+        // Register the show command
+        CommandDescription.builder()
+            .parent(EMAIL_BASE)
+            .labels("show", "myemail")
+            .description("Show Email")
+            .detailedDescription("Show your current email address.")
+            .executableCommand(ShowEmailCommand.class)
+            .register();
 
         // Register the add command
         CommandDescription.builder()
@@ -362,7 +382,7 @@ public class CommandInitializer {
             .withArgument("verifyEmail", "Email address verification", false)
             .permission(PlayerPermission.ADD_EMAIL)
             .executableCommand(AddEmailCommand.class)
-            .build();
+            .register();
 
         // Register the change command
         CommandDescription.builder()
@@ -374,19 +394,20 @@ public class CommandInitializer {
             .withArgument("newEmail", "New email address", false)
             .permission(PlayerPermission.CHANGE_EMAIL)
             .executableCommand(ChangeEmailCommand.class)
-            .build();
+            .register();
 
         // Register the recover command
         CommandDescription.builder()
             .parent(EMAIL_BASE)
             .labels("recover", "recovery", "recoveremail", "recovermail")
-            .description("Recover password using Email")
+            .description("Recover password using email")
             .detailedDescription("Recover your account using an Email address by sending a mail containing " +
                 "a new password.")
             .withArgument("email", "Email address", false)
+            .withArgument("code", "Recovery code", true)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(RecoverEmailCommand.class)
-            .build();
+            .register();
 
         // Register the base captcha command
         CommandDescription CAPTCHA_BASE = CommandDescription.builder()
@@ -397,9 +418,9 @@ public class CommandInitializer {
             .withArgument("captcha", "The Captcha", false)
             .permission(PlayerPermission.CAPTCHA)
             .executableCommand(CaptchaCommand.class)
-            .build();
+            .register();
 
-        Set<CommandDescription> baseCommands = ImmutableSet.of(
+        List<CommandDescription> baseCommands = ImmutableList.of(
             AUTHME_BASE,
             LOGIN_BASE,
             LOGOUT_BASE,
@@ -429,7 +450,7 @@ public class CommandInitializer {
                 .detailedDescription("View detailed help for /" + base.getLabels().get(0) + " commands.")
                 .withArgument("query", "The command or query to view help for.", true)
                 .executableCommand(HelpCommand.class)
-                .build();
+                .register();
         }
     }
 }

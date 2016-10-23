@@ -1,19 +1,19 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AntiBot;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.TeleportationService;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,7 +62,7 @@ public class PlayerListener implements Listener {
     @Inject
     private DataSource dataSource;
     @Inject
-    private AntiBot antiBot;
+    private AntiBotService antiBotService;
     @Inject
     private Management management;
     @Inject
@@ -218,13 +218,12 @@ public class PlayerListener implements Listener {
             // Fast stuff
             onJoinVerifier.checkSingleSession(name);
             onJoinVerifier.checkIsValidName(name);
-            
+
             // Get the auth later as this may cause the single session check to fail
             // Slow stuff
             final PlayerAuth auth = dataSource.getAuth(name);
             final boolean isAuthAvailable = (auth != null);
-            final String lowerName = name.toLowerCase();
-            onJoinVerifier.checkAntibot(lowerName, isAuthAvailable);
+            onJoinVerifier.checkAntibot(player, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkNameCasing(player, auth);
             onJoinVerifier.checkPlayerCountry(isAuthAvailable, event.getAddress().getHostAddress());
@@ -234,7 +233,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        antiBot.handlePlayerJoin(player);
+        antiBotService.handlePlayerJoin();
         teleportationService.teleportOnJoin(player);
     }
 
@@ -245,12 +244,12 @@ public class PlayerListener implements Listener {
         if (settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)) {
             event.setQuitMessage(null);
         } else if (settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)) {
-            if(listenerService.shouldCancelEvent(event)) {
+            if (listenerService.shouldCancelEvent(event)) {
                 event.setQuitMessage(null);
             }
         }
 
-        if (antiBot.wasPlayerKicked(player.getName())) {
+        if (antiBotService.wasPlayerKicked(player.getName())) {
             return;
         }
 
@@ -268,7 +267,7 @@ public class PlayerListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-        if (!antiBot.wasPlayerKicked(player.getName())) {
+        if (!antiBotService.wasPlayerKicked(player.getName())) {
             management.performQuit(player);
         }
     }

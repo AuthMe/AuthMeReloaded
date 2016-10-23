@@ -1,14 +1,14 @@
 package fr.xephi.authme.events;
 
+import fr.xephi.authme.ClassCollector;
+import fr.xephi.authme.TestHelper;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.event.Event;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -20,25 +20,14 @@ import static org.junit.Assert.assertThat;
  */
 public class EventsConsistencyTest {
 
-    private static final String SRC_FOLDER = "src/main/java/";
-    private static final String EVENTS_FOLDER = SRC_FOLDER + "/fr/xephi/authme/events/";
+    private static final String EVENTS_FOLDER = TestHelper.PROJECT_ROOT + "events/";
     private static List<Class<? extends Event>> classes;
 
     @BeforeClass
     public static void scanEventClasses() {
-        File eventsFolder = new File(EVENTS_FOLDER);
-        File[] filesInFolder = eventsFolder.listFiles();
-        if (filesInFolder == null || filesInFolder.length == 0) {
-            throw new IllegalStateException("Could not read folder '" + EVENTS_FOLDER + "'. Is it correct?");
-        }
+        ClassCollector classCollector = new ClassCollector(TestHelper.SOURCES_FOLDER, EVENTS_FOLDER);
+        classes = classCollector.collectClasses(Event.class);
 
-        classes = new ArrayList<>();
-        for (File file : filesInFolder) {
-            Class<? extends Event> clazz = getEventClassFromFile(file);
-            if (clazz != null) {
-                classes.add(clazz);
-            }
-        }
         if (classes.isEmpty()) {
             throw new IllegalStateException("Did not find any AuthMe event classes. Is the folder correct?");
         }
@@ -74,22 +63,4 @@ public class EventsConsistencyTest {
     private static boolean canBeInstantiated(Class<?> clazz) {
         return !clazz.isInterface() && !clazz.isEnum() && !Modifier.isAbstract(clazz.getModifiers());
     }
-
-    @SuppressWarnings("unchecked")
-    private static Class<? extends Event> getEventClassFromFile(File file) {
-        String fileName = file.getPath();
-        String className = fileName
-            .substring(SRC_FOLDER.length(), fileName.length() - ".java".length())
-            .replace(File.separator, ".");
-        try {
-            Class<?> clazz = EventsConsistencyTest.class.getClassLoader().loadClass(className);
-            if (Event.class.isAssignableFrom(clazz)) {
-                return (Class<? extends Event>) clazz;
-            }
-            return null;
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Could not load class '" + className + "'", e);
-        }
-    }
-
 }

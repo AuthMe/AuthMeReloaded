@@ -1,31 +1,33 @@
 package fr.xephi.authme.api;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.ValidationService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The current API of AuthMe. Recommended method of retrieving the API object:
  * <code>
- * NewAPI authmeApi = NewAPI.getInstance();
+ * NewAPI authmeApi = AuthMe.getApi();
  * </code>
  */
 public class NewAPI {
 
     public static NewAPI singleton;
     public final AuthMe plugin;
-    private final PluginHooks pluginHooks;
+    private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
@@ -36,10 +38,10 @@ public class NewAPI {
      * Constructor for NewAPI.
      */
     @Inject
-    NewAPI(AuthMe plugin, PluginHooks pluginHooks, DataSource dataSource, PasswordSecurity passwordSecurity,
+    NewAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
            Management management, ValidationService validationService, PlayerCache playerCache) {
         this.plugin = plugin;
-        this.pluginHooks = pluginHooks;
+        this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
@@ -98,7 +100,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return pluginHooks.isNpc(player);
+        return pluginHookService.isNpc(player);
     }
 
     /**
@@ -177,7 +179,7 @@ public class NewAPI {
      * @param player The player to log in
      */
     public void forceLogin(Player player) {
-        management.performLogin(player, "dontneed", true);
+        management.forceLogin(player);
     }
 
     /**
@@ -217,5 +219,36 @@ public class NewAPI {
      */
     public void forceUnregister(Player player) {
         management.performUnregisterByAdmin(null, player.getName(), player);
+    }
+
+    /**
+     * Unregister a player from AuthMe by name.
+     *
+     * @param name the name of the player (case-insensitive)
+     */
+    public void forceUnregister(String name) {
+        management.performUnregisterByAdmin(null, name, Bukkit.getPlayer(name));
+    }
+
+    /**
+     * Get all the registered names (lowercase)
+     *
+     * @return registered names
+     */
+    public List<String> getRegisteredNames() {
+        List<String> registeredNames = new ArrayList<>();
+        dataSource.getAllAuths().forEach(auth -> registeredNames.add(auth.getNickname()));
+        return registeredNames;
+    }
+
+    /**
+     * Get all the registered real-names (original case)
+     *
+     * @return registered real-names
+     */
+    public List<String> getRegisteredRealNames() {
+        List<String> registeredNames = new ArrayList<>();
+        dataSource.getAllAuths().forEach(auth -> registeredNames.add(auth.getRealName()));
+        return registeredNames;
     }
 }

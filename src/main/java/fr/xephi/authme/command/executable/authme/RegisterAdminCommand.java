@@ -1,17 +1,17 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.ValidationService;
-import fr.xephi.authme.util.ValidationService.ValidationResult;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -55,7 +55,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
             return;
         }
 
-        bukkitService.runTaskAsynchronously(new Runnable() {
+        bukkitService.runTaskOptionallyAsync(new Runnable() {
 
             @Override
             public void run() {
@@ -80,7 +80,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
                 final Player player = bukkitService.getPlayerExact(playerName);
                 if (player != null) {
-                    bukkitService.scheduleSyncDelayedTask(new Runnable() {
+                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
                         @Override
                         public void run() {
                             limboCache.restoreData(player);

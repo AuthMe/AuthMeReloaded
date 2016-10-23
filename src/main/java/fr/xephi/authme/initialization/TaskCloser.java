@@ -1,5 +1,6 @@
 package fr.xephi.authme.initialization;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -50,7 +51,7 @@ public class TaskCloser implements Runnable {
             }
 
             try {
-                Thread.sleep(1000);
+                sleep();
             } catch (InterruptedException ignored) {
                 Thread.currentThread().interrupt();
                 break;
@@ -71,6 +72,12 @@ public class TaskCloser implements Runnable {
         if (dataSource != null) {
             dataSource.close();
         }
+    }
+
+    /** Makes the current thread sleep for one second. */
+    @VisibleForTesting
+    void sleep() throws InterruptedException {
+        Thread.sleep(1000);
     }
 
     private List<Integer> getPendingTasks() {

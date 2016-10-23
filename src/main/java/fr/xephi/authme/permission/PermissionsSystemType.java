@@ -21,11 +21,6 @@ public enum PermissionsSystemType {
     B_PERMISSIONS("bPermissions", "bPermissions"),
 
     /**
-     * Essentials Group Manager.
-     */
-    ESSENTIALS_GROUP_MANAGER("Essentials Group Manager", "GroupManager"),
-
-    /**
      * zPermissions.
      */
     Z_PERMISSIONS("zPermissions", "zPermissions"),

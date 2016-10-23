@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -37,7 +37,7 @@ public class ForceLoginCommand implements ExecutableCommand {
         } else if (!permissionsManager.hasPermission(player, CAN_LOGIN_BE_FORCED)) {
             sender.sendMessage("You cannot force login the player " + playerName + "!");
         } else {
-            management.performLogin(player, "dontneed", true);
+            management.forceLogin(player);
             sender.sendMessage("Force login for " + playerName + " performed!");
         }
     }

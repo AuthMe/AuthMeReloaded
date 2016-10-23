@@ -34,15 +34,6 @@ public final class ReflectionTestUtils {
         }
     }
 
-    public static void setField(Field field, Object instance, Object value) {
-        try {
-            field.setAccessible(true);
-            field.set(instance, value);
-        } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException(e);
-        }
-    }
-
     private static <T> Field getField(Class<T> clazz, T instance, String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
@@ -54,21 +45,11 @@ public final class ReflectionTestUtils {
         }
     }
 
-    public static Object getFieldValue(Field field, Object instance) {
-        try {
-            field.setAccessible(true);
-            return field.get(instance);
-        } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("Cannot get value of field '"
-                + field + "' for '" + instance + "'", e);
-        }
-    }
-
-
-    public static <T> Object getFieldValue(Class<T> clazz, T instance, String fieldName) {
+    @SuppressWarnings("unchecked")
+    public static <T, V> V getFieldValue(Class<T> clazz, T instance, String fieldName) {
         Field field = getField(clazz, instance, fieldName);
         try {
-            return field.get(instance);
+            return (V) field.get(instance);
         } catch (IllegalAccessException e) {
             throw new UnsupportedOperationException("Could not get value of field '" + fieldName + "'", e);
         }

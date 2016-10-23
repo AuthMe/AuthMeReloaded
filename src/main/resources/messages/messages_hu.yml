@@ -70,3 +70,7 @@ incomplete_email_settings: 'Hiba: nem lett beállítva az össze szükséges be�
 accounts_owned_other: 'A %name nevű játékosnak, %count db regisztrációja van:'
 kicked_admin_registered: 'Adminisztrátor által regisztrálva lettél; kérlek lépj be újra!'
 accounts_owned_self: '%count db regisztrációd van:'
+recovery_code_incorrect: 'A visszaállító kód helytelen volt! Használd a következő parancsot: /email recovery [email címed] egy új generálásához'
+recovery_code_sent: 'A jelszavad visszaállításához szükséges kódot sikeresen kiküldtük az email címedre!'
+# TODO email_show: '&2Your current email address is: &f%email'
+# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
