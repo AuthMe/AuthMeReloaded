@@ -7,10 +7,12 @@ import tools.utils.ToolsConstants;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Gatherer to generate up-to-date lists of the AuthMe permission nodes.
@@ -28,6 +30,11 @@ public class PermissionNodesGatherer {
         + "\\s+([A-Z_]+)\\("); // Match the enum name (e.g. 'LOGIN'), until before the first '('
 
     /**
+     * List of all enum classes that implement the {@link PermissionNode} interface.
+     */
+    private List<Class<? extends PermissionNode>> permissionClasses;
+
+    /**
      * Return a sorted collection of all permission nodes, including its JavaDoc description.
      *
      * @return Ordered map whose keys are the permission nodes and the values the associated JavaDoc
@@ -39,12 +46,25 @@ public class PermissionNodesGatherer {
         result.put("authme.player.*", "Permission to use all player (non-admin) commands.");
         result.put("authme.player.email", "Grants all email permissions.");
 
-        new ClassCollector(ToolsConstants.MAIN_SOURCE_ROOT, "")
-            .collectClasses(PermissionNode.class)
-            .stream()
-            .filter(Class::isEnum)
-            .forEach(clz -> addDescriptionsForClass((Class<T>) clz, result));
+        getPermissionClasses().forEach(clz -> addDescriptionsForClass((Class<T>) clz, result));
         return result;
+    }
+
+    /**
+     * Return all enum classes implementing the PermissionNode interface.
+     *
+     * @return all permission node enums
+     */
+    public List<Class<? extends PermissionNode>> getPermissionClasses() {
+        if (permissionClasses == null) {
+            ClassCollector classCollector = new ClassCollector(ToolsConstants.MAIN_SOURCE_ROOT, "");
+            permissionClasses = classCollector
+                .collectClasses(PermissionNode.class)
+                .stream()
+                .filter(Class::isEnum)
+                .collect(Collectors.toList());
+        }
+        return permissionClasses;
     }
 
     private <T extends Enum<T> & PermissionNode> void addDescriptionsForClass(Class<T> clazz,

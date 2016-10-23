@@ -26,7 +26,7 @@ public class PermissionConsistencyTest {
 
     /** All classes defining permission nodes. */
     private static final Set<Class<? extends PermissionNode>> PERMISSION_CLASSES = ImmutableSet
-        .<Class<? extends PermissionNode>>of(PlayerPermission.class, AdminPermission.class, PlayerStatePermission.class);
+        .of(PlayerPermission.class, AdminPermission.class, PlayerStatePermission.class);
 
     /** Wildcard permissions (present in plugin.yml but not in the codebase). */
     private static final Set<String> PLUGIN_YML_PERMISSIONS_WILDCARDS =

@@ -80,7 +80,7 @@ public class HelpProvider implements Reloadable {
 
         if (hasFlag(SHOW_COMMAND, options)) {
             lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMAND) + ": "
-                + CommandSyntaxHelper.getSyntax(command, correctLabels));
+                + CommandUtils.buildSyntax(command, correctLabels));
         }
         if (hasFlag(SHOW_DESCRIPTION, options)) {
             lines.add(ChatColor.GOLD + helpMessagesService.getMessage(SHORT_DESCRIPTION) + ": "
@@ -194,7 +194,7 @@ public class HelpProvider implements Reloadable {
         // Create a list of alternatives
         for (String label : command.getLabels()) {
             if (!label.equalsIgnoreCase(usedLabel)) {
-                lines.add(" " + CommandSyntaxHelper.getSyntax(command, commandLabelsFn.apply(label)));
+                lines.add(" " + CommandUtils.buildSyntax(command, commandLabelsFn.apply(label)));
             }
         }
     }

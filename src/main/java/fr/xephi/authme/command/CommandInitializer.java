@@ -1,6 +1,6 @@
 package fr.xephi.authme.command;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
@@ -41,14 +41,13 @@ import fr.xephi.authme.permission.PlayerPermission;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Initializes all available AuthMe commands.
  */
 public class CommandInitializer {
 
-    private Set<CommandDescription> commands;
+    private List<CommandDescription> commands;
 
     public CommandInitializer() {
         buildCommands();
@@ -59,7 +58,7 @@ public class CommandInitializer {
      *
      * @return the command descriptions
      */
-    public Set<CommandDescription> getCommands() {
+    public List<CommandDescription> getCommands() {
         return commands;
     }
 
@@ -67,7 +66,7 @@ public class CommandInitializer {
         // Register the base AuthMe Reloaded command
         final CommandDescription AUTHME_BASE = CommandDescription.builder()
             .labels("authme")
-            .description("Main command")
+            .description("AuthMe op commands")
             .detailedDescription("The main AuthMeReloaded command. The root for all admin commands.")
             .executableCommand(AuthMeCommand.class)
             .register();
@@ -324,7 +323,7 @@ public class CommandInitializer {
         final CommandDescription REGISTER_BASE = CommandDescription.builder()
             .parent(null)
             .labels("register", "reg")
-            .description("Registration command")
+            .description("Register an account")
             .detailedDescription("Command to register using AuthMeReloaded.")
             .withArgument("password", "Password", true)
             .withArgument("verifyPassword", "Verify password", true)
@@ -336,7 +335,7 @@ public class CommandInitializer {
         CommandDescription UNREGISTER_BASE = CommandDescription.builder()
             .parent(null)
             .labels("unregister", "unreg")
-            .description("Unregistration Command")
+            .description("Unregister an account")
             .detailedDescription("Command to unregister using AuthMeReloaded.")
             .withArgument("password", "Password", false)
             .permission(PlayerPermission.UNREGISTER)
@@ -347,10 +346,10 @@ public class CommandInitializer {
         final CommandDescription CHANGE_PASSWORD_BASE = CommandDescription.builder()
             .parent(null)
             .labels("changepassword", "changepass", "cp")
-            .description("Change password Command")
+            .description("Change password of an account")
             .detailedDescription("Command to change your password using AuthMeReloaded.")
-            .withArgument("oldPassword", "Old Password", false)
-            .withArgument("newPassword", "New Password.", false)
+            .withArgument("oldPassword", "Old password", false)
+            .withArgument("newPassword", "New password", false)
             .permission(PlayerPermission.CHANGE_PASSWORD)
             .executableCommand(ChangePasswordCommand.class)
             .register();
@@ -359,8 +358,8 @@ public class CommandInitializer {
         CommandDescription EMAIL_BASE = CommandDescription.builder()
             .parent(null)
             .labels("email")
-            .description("Email command")
-            .detailedDescription("The AuthMeReloaded Email command base.")
+            .description("Add email or recover password")
+            .detailedDescription("The AuthMeReloaded email command base.")
             .executableCommand(EmailBaseCommand.class)
             .register();
 
@@ -401,7 +400,7 @@ public class CommandInitializer {
         CommandDescription.builder()
             .parent(EMAIL_BASE)
             .labels("recover", "recovery", "recoveremail", "recovermail")
-            .description("Recover password using Email")
+            .description("Recover password using email")
             .detailedDescription("Recover your account using an Email address by sending a mail containing " +
                 "a new password.")
             .withArgument("email", "Email address", false)
@@ -421,7 +420,7 @@ public class CommandInitializer {
             .executableCommand(CaptchaCommand.class)
             .register();
 
-        Set<CommandDescription> baseCommands = ImmutableSet.of(
+        List<CommandDescription> baseCommands = ImmutableList.of(
             AUTHME_BASE,
             LOGIN_BASE,
             LOGOUT_BASE,

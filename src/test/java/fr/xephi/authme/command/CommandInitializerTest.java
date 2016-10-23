@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -32,7 +33,7 @@ public class CommandInitializerTest {
      */
     private static int MAX_ALLOWED_DEPTH = 1;
 
-    private static Set<CommandDescription> commands;
+    private static Collection<CommandDescription> commands;
 
     @BeforeClass
     public static void initializeCommandCollection() {
@@ -46,7 +47,7 @@ public class CommandInitializerTest {
         // It obviously doesn't make sense to test much of the concrete data
         // that is being initialized; we just want to guarantee with this test
         // that data is indeed being initialized and we take a few "probes"
-        assertThat(commands.size(), equalTo(8));
+        assertThat(commands, hasSize(8));
         assertThat(commandsIncludeLabel(commands, "authme"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "register"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "help"), equalTo(false));

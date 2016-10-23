@@ -20,9 +20,9 @@ import org.mockito.Mock;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(DelayedInjectionRunner.class)
 public class HelpProviderTest {
 
-    private static Set<CommandDescription> commands;
+    private static Collection<CommandDescription> commands;
 
     @InjectDelayed
     private HelpProvider helpProvider;

@@ -1,5 +1,6 @@
 package fr.xephi.authme.command;
 
+import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
@@ -8,9 +9,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -27,7 +26,7 @@ public final class TestCommandsUtil {
      *
      * @return The generated commands
      */
-    public static Set<CommandDescription> generateCommands() {
+    public static List<CommandDescription> generateCommands() {
         // Register /authme
         CommandDescription authMeBase = createCommand(null, null, singletonList("authme"), ExecutableCommand.class);
         // Register /authme login <password>
@@ -48,7 +47,7 @@ public final class TestCommandsUtil {
         CommandDescription unregisterBase = createCommand(AdminPermission.UNREGISTER, null,
             asList("unregister", "unreg"), TestUnregisterCommand.class, newArgument("player", false));
 
-        return newHashSet(authMeBase, emailBase, unregisterBase);
+        return ImmutableList.of(authMeBase, emailBase, unregisterBase);
     }
 
     /**

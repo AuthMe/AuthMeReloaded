@@ -9,8 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -78,7 +78,7 @@ public class HelpMessagesConsistencyTest {
      * @return the CommandDescription object for the {@code /authme register} command.
      */
     private static CommandDescription getAuthMeRegisterDescription() {
-        Set<CommandDescription> commands = new CommandInitializer().getCommands();
+        Collection<CommandDescription> commands = new CommandInitializer().getCommands();
 
         List<CommandDescription> children = commands.stream()
             .filter(command -> command.getLabels().contains("authme"))

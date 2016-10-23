@@ -13,7 +13,6 @@ import tools.utils.ToolsConstants;
 
 import java.util.Collection;
 import java.util.Scanner;
-import java.util.Set;
 
 public class CommandPageCreater implements AutoToolTask {
 
@@ -32,7 +31,7 @@ public class CommandPageCreater implements AutoToolTask {
     @Override
     public void executeDefault() {
         CommandInitializer commandInitializer = new CommandInitializer();
-        final Set<CommandDescription> baseCommands = commandInitializer.getCommands();
+        final Collection<CommandDescription> baseCommands = commandInitializer.getCommands();
         NestedTagValue commandTags = new NestedTagValue();
         addCommandsInfo(commandTags, baseCommands);
 

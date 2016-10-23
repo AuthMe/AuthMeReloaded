@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.Function;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
@@ -31,7 +31,7 @@ import static org.mockito.Matchers.any;
 public class HelpMessagesServiceTest {
 
     private static final String TEST_FILE = "/fr/xephi/authme/command/help/help_test.yml";
-    private static final Set<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
+    private static final Collection<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
 
     @InjectDelayed
     private HelpMessagesService helpMessagesService;
