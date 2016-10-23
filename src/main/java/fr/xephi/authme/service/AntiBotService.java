@@ -30,6 +30,7 @@ public class AntiBotService implements SettingsDependent {
     private int duration;
     private int sensibility;
     private int delay;
+    private int interval;
 
     // Service status
     private AntiBotStatus antiBotStatus;
@@ -60,6 +61,7 @@ public class AntiBotService implements SettingsDependent {
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
         delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
+        interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
 
         // Stop existing protection
         stopProtection();
@@ -174,7 +176,7 @@ public class AntiBotService implements SettingsDependent {
             public void run() {
                 antibotPlayers--;
             }
-        }, 5 * TICKS_PER_SECOND);
+        }, interval * TICKS_PER_SECOND);
     }
 
     /**

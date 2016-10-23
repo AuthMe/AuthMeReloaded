@@ -37,8 +37,12 @@ public class ProtectionSettings implements SettingsHolder {
     public static final Property<Boolean> ENABLE_ANTIBOT =
         newProperty("Protection.enableAntiBot", true);
 
+    @Comment("The interval in seconds")
+    public static final Property<Integer> ANTIBOT_INTERVAL =
+        newProperty("Protection.antiBotInterval", 5);
+
     @Comment({
-        "Max number of players allowed to login in 5 secs",
+        "Max number of players allowed to login in the interval",
         "before the AntiBot system is enabled automatically"})
     public static final Property<Integer> ANTIBOT_SENSIBILITY =
         newProperty("Protection.antiBotSensibility", 10);

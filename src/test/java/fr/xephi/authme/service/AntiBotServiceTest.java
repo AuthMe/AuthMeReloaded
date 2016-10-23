@@ -52,6 +52,7 @@ public class AntiBotServiceTest {
     @BeforeInjecting
     public void initSettings() {
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DURATION)).willReturn(10);
+        given(settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(true);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DELAY)).willReturn(8);
