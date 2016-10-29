@@ -3,7 +3,6 @@
 # -------------------------------------------------------
 # List of texts used in the help section
 common:
-    header: '==========[ CraftSkull HELP ]=========='
     optional: 'Opcional'
     hasPermission: 'Você tem permissão'
     noPermission: 'Sem Permissão'
