@@ -68,10 +68,10 @@ class OnJoinVerifier implements Reloadable {
      * @param isAuthAvailable whether or not the player is registered
      */
     public void checkAntibot(Player player, boolean isAuthAvailable) throws FailedVerificationException {
-        if (permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)) {
+        if (isAuthAvailable || permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)) {
             return;
         }
-        if (antiBotService.shouldKick(isAuthAvailable)) {
+        if (antiBotService.shouldKick()) {
             antiBotService.addPlayerKick(player.getName());
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }

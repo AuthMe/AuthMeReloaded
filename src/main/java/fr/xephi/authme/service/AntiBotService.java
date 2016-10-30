@@ -31,6 +31,7 @@ public class AntiBotService implements SettingsDependent {
     private int duration;
     private int sensibility;
     private int delay;
+    private int interval;
     // Service status
     private AntiBotStatus antiBotStatus;
     private boolean startup;
@@ -60,6 +61,7 @@ public class AntiBotService implements SettingsDependent {
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
         delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
+        interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
 
         // Stop existing protection
         stopProtection();
@@ -145,23 +147,19 @@ public class AntiBotService implements SettingsDependent {
     /**
      * Returns if a player should be kicked due to antibot service.
      *
-     * @param isAuthAvailable if the player is registered
-     *
      * @return if the player should be kicked
      */
-    public boolean shouldKick(boolean isAuthAvailable) {
-        if (antiBotStatus == AntiBotStatus.DISABLED || isAuthAvailable) {
+    public boolean shouldKick() {
+        if (antiBotStatus == AntiBotStatus.DISABLED) {
             return false;
-        }
-
-        if (antiBotStatus == AntiBotStatus.ACTIVE) {
+        } else if (antiBotStatus == AntiBotStatus.ACTIVE) {
             return true;
         }
 
         if (lastFlaggedJoin == null) {
             lastFlaggedJoin = Instant.now();
         }
-        if (ChronoUnit.SECONDS.between(lastFlaggedJoin, Instant.now()) <= 5) {
+        if (ChronoUnit.SECONDS.between(lastFlaggedJoin, Instant.now()) <= interval) {
             flagged++;
         } else {
             // reset to 1 because this player is also count as not registered

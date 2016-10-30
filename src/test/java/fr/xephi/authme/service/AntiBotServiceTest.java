@@ -131,25 +131,10 @@ public class AntiBotServiceTest {
         runSyncDelayedTaskWithDelay(bukkitService);
 
         // when
-        boolean result = antiBotService.shouldKick(false);
+        boolean result = antiBotService.shouldKick();
 
         // then
         assertThat(result, equalTo(false));
-    }
-
-    @Test
-    public void shouldRejectPlayerWithoutAuth() {
-        // given - active antibot
-        runSyncDelayedTaskWithDelay(bukkitService);
-        antiBotService.overrideAntiBotStatus(true);
-
-        // when
-        boolean kickWithoutAuth = antiBotService.shouldKick(false);
-        boolean kickWithAuth = antiBotService.shouldKick(true);
-
-        // then
-        assertThat(kickWithoutAuth, equalTo(true));
-        assertThat(kickWithAuth, equalTo(false));
     }
 
     @Test
@@ -162,12 +147,12 @@ public class AntiBotServiceTest {
         runSyncDelayedTaskWithDelay(bukkitService);
 
         for (int i = 0; i < sensitivity; ++i) {
-            antiBotService.shouldKick(false);
+            antiBotService.shouldKick();
         }
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
 
         // when
-        antiBotService.shouldKick(false);
+        antiBotService.shouldKick();
 
         // then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.ACTIVE));
