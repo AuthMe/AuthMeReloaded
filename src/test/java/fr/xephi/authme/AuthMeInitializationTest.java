@@ -21,7 +21,6 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -80,7 +79,6 @@ public class AuthMeInitializationTest {
         // Mock / wire various Bukkit components
         given(server.getLogger()).willReturn(mock(Logger.class));
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        given(server.getScheduler()).willReturn(mock(BukkitScheduler.class));
         given(server.getPluginManager()).willReturn(pluginManager);
 
         // PluginDescriptionFile is final: need to create a sample one

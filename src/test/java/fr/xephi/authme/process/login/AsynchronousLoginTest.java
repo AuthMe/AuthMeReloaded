@@ -9,12 +9,12 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,9 +31,9 @@ import java.util.Collection;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -162,7 +162,7 @@ public class AsynchronousLoginTest {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                invocation.getArgumentAt(0, AuthMeAsyncPreLoginEvent.class).setCanLogin(false);
+                ((AuthMeAsyncPreLoginEvent) invocation.getArgument(0)).setCanLogin(false);
                 return null;
             }
         }).when(bukkitService).callEvent(any(AuthMeAsyncPreLoginEvent.class));
@@ -271,7 +271,6 @@ public class AsynchronousLoginTest {
         // 192.168.0.0: france (offline)
         Player playerF = mockPlayer("france");
         TestHelper.mockPlayerIp(playerF, "192.168.0.0");
-        given(dataSource.isLogged(playerF.getName())).willReturn(false);
 
         Collection onlinePlayers = Arrays.asList(playerA, playerB, playerC, playerD, playerE, playerF);
         given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);

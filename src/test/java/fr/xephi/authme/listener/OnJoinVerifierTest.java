@@ -175,10 +175,7 @@ public class OnJoinVerifierTest {
 
     @Test
     public void shouldNotKickRegisteredPlayer() throws FailedVerificationException {
-        // given
-        given(settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)).willReturn(true);
-
-        // when
+        // given / when / then
         onJoinVerifier.checkKickNonRegistered(true);
     }
 
@@ -206,7 +203,6 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldRejectTooLongName() throws FailedVerificationException {
         // given
-        given(settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)).willReturn(4);
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
@@ -324,7 +320,6 @@ public class OnJoinVerifierTest {
         // given
         Player player = newPlayerWithName("MyPlayer");
         PlayerAuth auth = null;
-        given(settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)).willReturn(true);
 
         // when
         onJoinVerifier.checkNameCasing(player, auth);
@@ -460,7 +455,6 @@ public class OnJoinVerifierTest {
         // given
         String ip = "192.168.0.1";
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
-        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
@@ -490,7 +484,6 @@ public class OnJoinVerifierTest {
         // given
         String ip = "192.168.40.0";
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
-        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(false);
 
         // expect

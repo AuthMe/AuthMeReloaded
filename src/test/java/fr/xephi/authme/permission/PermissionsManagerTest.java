@@ -62,7 +62,6 @@ public class PermissionsManagerTest {
         // given
         PermissionNode node = TestPermissions.WORLD_DOMINATION;
         CommandSender sender = mock(CommandSender.class);
-        given(sender.isOp()).willReturn(true);
 
         // when
         boolean result = permissionsManager.hasPermission(sender, node);
@@ -116,7 +115,6 @@ public class PermissionsManagerTest {
         // given
         PermissionNode node = TestPermissions.WORLD_DOMINATION;
         Player player = mock(Player.class);
-        given(player.isOp()).willReturn(true);
 
         // when
         boolean result = permissionsManager.hasPermission(player, node);

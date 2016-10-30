@@ -27,14 +27,14 @@ import org.mockito.stubbing.Answer;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link PasswordSecurity}.
@@ -233,7 +233,6 @@ public class PasswordSecurityTest {
         String password = "?topSecretPass\\";
         String username = "someone12";
         HashedPassword hashedPassword = new HashedPassword("~T!est#Hash");
-        given(method.computeHash(password, username)).willReturn(hashedPassword);
         given(method.hasSeparateSalt()).willReturn(true);
         initSettings(HashAlgorithm.XAUTH, false);
         PasswordSecurity security = newPasswordSecurity();

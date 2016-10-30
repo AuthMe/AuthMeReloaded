@@ -35,16 +35,16 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link PurgeTask}.
@@ -191,7 +191,7 @@ public class PurgeTaskTest {
             .willAnswer(new Answer<Boolean>() {
                 @Override
                 public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
-                    OfflinePlayer player = (OfflinePlayer) invocationOnMock.getArguments()[0];
+                    OfflinePlayer player = invocationOnMock.getArgument(0);
                     Boolean hasPermission = playerBypassAssignments.get(player);
                     if (hasPermission == null) {
                         throw new IllegalStateException("Unexpected check of '" + BYPASS_NODE

@@ -4,9 +4,6 @@ import com.github.authme.configme.properties.Property;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.datasource.AbstractDataSourceIntegrationTest;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
@@ -22,7 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

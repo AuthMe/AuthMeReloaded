@@ -4,9 +4,9 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,15 +32,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyCollectionOf;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link PurgeService}.
@@ -100,7 +100,6 @@ public class PurgeServiceTest {
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
         Set<String> playerNames = newHashSet("alpha", "bravo", "charlie", "delta");
         given(dataSource.getRecordsToPurge(anyLong(), eq(false))).willReturn(playerNames);
-        mockReturnedOfflinePlayers();
 
         // when
         purgeService.runAutoPurge();
@@ -119,7 +118,7 @@ public class PurgeServiceTest {
         // given
         final long delay = 123012301L;
         final boolean includeLastLoginZeroEntries = true;
-        given(dataSource.getRecordsToPurge(delay, includeLastLoginZeroEntries)).willReturn(Collections.<String>emptySet());
+        given(dataSource.getRecordsToPurge(delay, includeLastLoginZeroEntries)).willReturn(Collections.emptySet());
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -127,7 +126,7 @@ public class PurgeServiceTest {
 
         // then
         verify(dataSource).getRecordsToPurge(delay, includeLastLoginZeroEntries);
-        verify(dataSource, never()).purgeRecords(anyCollectionOf(String.class));
+        verify(dataSource, never()).purgeRecords(anyCollection());
         verify(sender).sendMessage("No players to purge");
         verifyZeroInteractions(bukkitService, permissionsManager);
     }
@@ -139,7 +138,6 @@ public class PurgeServiceTest {
         final boolean includeLastLoginZeroEntries = false;
         Set<String> playerNames = newHashSet("charlie", "delta", "echo", "foxtrot");
         given(dataSource.getRecordsToPurge(delay, includeLastLoginZeroEntries)).willReturn(playerNames);
-        mockReturnedOfflinePlayers();
         Player sender = mock(Player.class);
         UUID uuid = UUID.randomUUID();
         given(sender.getUniqueId()).willReturn(uuid);
@@ -157,10 +155,10 @@ public class PurgeServiceTest {
         // given
         purgeService.setPurging(true);
         CommandSender sender = mock(CommandSender.class);
-        OfflinePlayer[] players = mockReturnedOfflinePlayers();
+        OfflinePlayer[] offlinePlayers = new OfflinePlayer[]{mock(OfflinePlayer.class), mock(OfflinePlayer.class)};
 
         // when
-        purgeService.purgePlayers(sender, newHashSet("test", "names"), players);
+        purgeService.purgePlayers(sender, newHashSet("test", "names"), offlinePlayers);
 
         // then
         verify(sender).sendMessage(argThat(containsString("Purge is already in progress")));
@@ -170,32 +168,15 @@ public class PurgeServiceTest {
     @Test
     public void shouldExecutePurgeActions() {
         // given
-        List<OfflinePlayer> players = Arrays.asList(mockReturnedOfflinePlayers());
         List<String> names = Arrays.asList("alpha", "bravo", "foxtrot");
+        List<OfflinePlayer> offlinePlayers = Arrays.asList(
+            mock(OfflinePlayer.class), mock(OfflinePlayer.class), mock(OfflinePlayer.class));
 
         // when
-        purgeService.executePurge(players, names);
+        purgeService.executePurge(offlinePlayers, names);
 
         // then
-        verify(executor).executePurge(players, names);
-    }
-
-    /**
-     * Returns mock OfflinePlayer objects with names corresponding to A - G of the NATO phonetic alphabet,
-     * in various casing.
-     *
-     * @return list of offline players BukkitService is mocked to return
-     */
-    private OfflinePlayer[] mockReturnedOfflinePlayers() {
-        String[] names = { "alfa", "Bravo", "charLIE", "delta", "ECHO", "Foxtrot", "golf" };
-        OfflinePlayer[] players = new OfflinePlayer[names.length];
-        for (int i = 0; i < names.length; ++i) {
-            OfflinePlayer player = mock(OfflinePlayer.class);
-            given(player.getName()).willReturn(names[i]);
-            players[i] = player;
-        }
-        given(bukkitService.getOfflinePlayers()).willReturn(players);
-        return players;
+        verify(executor).executePurge(offlinePlayers, names);
     }
 
     private void assertCorrectPurgeTimestamp(long timestamp, int configuredDays) {

@@ -12,10 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -41,7 +40,7 @@ public class AddEmailCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verifyZeroInteractions(management);
@@ -52,7 +51,6 @@ public class AddEmailCommandTest {
         // given
         Player sender = mock(Player.class);
         String email = "mail@example";
-        given(commandService.validateEmail(email)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, email));
@@ -66,7 +64,6 @@ public class AddEmailCommandTest {
         // given
         Player sender = mock(Player.class);
         String email = "asdfasdf@example.com";
-        given(commandService.validateEmail(email)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, "wrongConf"));

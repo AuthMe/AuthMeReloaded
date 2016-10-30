@@ -13,9 +13,9 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link SetSpawnCommand}.
@@ -39,7 +39,7 @@ public class SetSpawnCommandTest {
         given(spawnLoader.setSpawn(location)).willReturn(true);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(spawnLoader).setSpawn(location);
@@ -55,7 +55,7 @@ public class SetSpawnCommandTest {
         given(spawnLoader.setSpawn(location)).willReturn(false);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(spawnLoader).setSpawn(location);

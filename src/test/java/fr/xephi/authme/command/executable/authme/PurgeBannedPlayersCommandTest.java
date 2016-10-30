@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
@@ -16,11 +16,11 @@ import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link PurgeBannedPlayersCommand}.

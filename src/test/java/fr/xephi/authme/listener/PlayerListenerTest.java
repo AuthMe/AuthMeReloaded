@@ -50,9 +50,9 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -379,7 +379,6 @@ public class PlayerListenerTest {
         Location to = new Location(world, 199, 70, 199);
         PlayerMoveEvent event = spy(new PlayerMoveEvent(player, from, to));
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.REMOVE_SPEED)).willReturn(false);
 
         // when
         listener.onPlayerMove(event);

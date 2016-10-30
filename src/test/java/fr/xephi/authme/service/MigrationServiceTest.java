@@ -21,13 +21,13 @@ import java.util.Arrays;
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link MigrationService}.
@@ -126,7 +126,7 @@ public class MigrationServiceTest {
         given(sha256.computeHash(anyString(), anyString())).willAnswer(new Answer<HashedPassword>() {
             @Override
             public HashedPassword answer(InvocationOnMock invocation) {
-                String plainPassword = (String) invocation.getArguments()[0];
+                String plainPassword = invocation.getArgument(0);
                 return new HashedPassword(plainPassword.toUpperCase(), null);
             }
         });

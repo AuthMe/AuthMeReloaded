@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
@@ -11,7 +11,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.RecoveryCodeService;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,10 +25,10 @@ import java.util.Collections;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -172,10 +171,6 @@ public class RecoverEmailCommandTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
         given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(email));
-        int codeLength = 7;
-        given(commandService.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(codeLength);
-        int hoursValid = 12;
-        given(commandService.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(hoursValid);
         String code = "a94f37";
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(true);
         given(recoveryCodeService.generateCode(name)).willReturn(code);
@@ -202,7 +197,6 @@ public class RecoverEmailCommandTest {
         String email = "vulture@example.com";
         PlayerAuth auth = newAuthWithEmail(email);
         given(dataSource.getAuth(name)).willReturn(auth);
-        given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(20);
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(true);
         given(recoveryCodeService.isCodeValid(name, "bogus")).willReturn(false);
 
@@ -230,7 +224,7 @@ public class RecoverEmailCommandTest {
         given(dataSource.getAuth(name)).willReturn(auth);
         given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(20);
         given(passwordSecurity.computeHash(anyString(), eq(name)))
-            .willAnswer(invocation -> new HashedPassword((String) invocation.getArguments()[0]));
+            .willAnswer(invocation -> new HashedPassword(invocation.getArgument(0)));
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(true);
         given(recoveryCodeService.isCodeValid(name, code)).willReturn(true);
 
@@ -263,7 +257,7 @@ public class RecoverEmailCommandTest {
         given(dataSource.getAuth(name)).willReturn(auth);
         given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(20);
         given(passwordSecurity.computeHash(anyString(), eq(name)))
-            .willAnswer(invocation -> new HashedPassword((String) invocation.getArguments()[0]));
+            .willAnswer(invocation -> new HashedPassword(invocation.getArgument(0)));
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(false);
 
         // when

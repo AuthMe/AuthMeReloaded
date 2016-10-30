@@ -61,7 +61,6 @@ public class UnregisterAdminCommandTest {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);
-        given(dataSource.removeAuth(user)).willReturn(false);
         Player player = mock(Player.class);
         given(bukkitService.getPlayerExact(user)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
@@ -80,7 +79,6 @@ public class UnregisterAdminCommandTest {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);
-        given(dataSource.removeAuth(user)).willReturn(false);
         given(bukkitService.getPlayerExact(user)).willReturn(null);
         CommandSender sender = mock(CommandSender.class);
 

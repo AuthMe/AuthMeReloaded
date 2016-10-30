@@ -6,10 +6,10 @@ import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.junit.BeforeClass;
@@ -19,10 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -98,9 +98,6 @@ public class LimboPlayerTaskManagerTest {
         // given
         String name = "Tester1";
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
-        BukkitTask bukkiTask = mock(BukkitTask.class);
-        given(bukkitService.runTask(any(MessageTask.class))).willReturn(bukkiTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(0);
 
         // when
@@ -178,9 +175,7 @@ public class LimboPlayerTaskManagerTest {
         // given
         String name = "snail";
         Player player = mock(Player.class);
-        given(player.getName()).willReturn(name);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(0);
 
         // when

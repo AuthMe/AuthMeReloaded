@@ -81,7 +81,7 @@ class PurgeTask extends BukkitRunnable {
         }
 
         if (!toPurge.isEmpty() && playerPortion.isEmpty()) {
-            ConsoleLogger.info("Finished lookup up offlinePlayers. Begin looking purging player names only");
+            ConsoleLogger.info("Finished lookup of offlinePlayers. Begin looking purging player names only");
 
             //we went through all offlineplayers but there are still names remaining
             for (String name : toPurge) {

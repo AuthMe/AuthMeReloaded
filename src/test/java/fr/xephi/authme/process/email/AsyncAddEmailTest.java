@@ -15,8 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -79,7 +79,6 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
-        given(dataSource.countAuthsByEmail(email)).willReturn(0);
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(false);
         given(service.validateEmail(email)).willReturn(true);
         given(service.isEmailFreeForRegistration(email, player)).willReturn(true);

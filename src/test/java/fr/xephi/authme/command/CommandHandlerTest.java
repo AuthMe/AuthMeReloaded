@@ -29,18 +29,18 @@ import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link CommandHandler}.
@@ -85,7 +85,7 @@ public class CommandHandlerTest {
         given(injector.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                Class<?> clazz = (Class<?>) invocation.getArguments()[0];
+                Class<?> clazz = invocation.getArgument(0);
                 if (ExecutableCommand.class.isAssignableFrom(clazz)) {
                     Class<? extends ExecutableCommand> commandClass = (Class<? extends ExecutableCommand>) clazz;
                     ExecutableCommand mock = mock(commandClass);
@@ -108,7 +108,7 @@ public class CommandHandlerTest {
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
         doReturn(TestLoginCommand.class).when(command).getExecutableCommand();
-        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class)))
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList()))
             .willReturn(new FoundCommandResult(command, asList("Authme", "Login"), asList("myPass"), 0.0, SUCCESS));
 
         // when
@@ -129,7 +129,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class)))
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList()))
             .willReturn(new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, NO_PERMISSION));
 
         // when
@@ -148,7 +148,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList())).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
 
@@ -170,7 +170,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList())).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(false);
 
@@ -192,7 +192,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList())).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, MISSING_BASE_COMMAND));
 
         // when
@@ -212,7 +212,7 @@ public class CommandHandlerTest {
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
         given(command.getLabels()).willReturn(Collections.singletonList("test_cmd"));
-        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList())).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.01, UNKNOWN_LABEL));
 
         // when
@@ -237,8 +237,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
-        given(command.getLabels()).willReturn(Collections.singletonList("test_cmd"));
-        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList())).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 1.0, UNKNOWN_LABEL));
 
         // when
@@ -263,7 +262,7 @@ public class CommandHandlerTest {
 
         CommandDescription command = mock(CommandDescription.class);
         doReturn(TestRegisterCommand.class).when(command).getExecutableCommand();
-        given(commandMapper.mapPartsToCommand(eq(sender), anyListOf(String.class)))
+        given(commandMapper.mapPartsToCommand(eq(sender), anyList()))
             .willReturn(new FoundCommandResult(command, asList("AuthMe", "REGISTER"), asList("testArg"), 0.0, SUCCESS));
 
         // when
