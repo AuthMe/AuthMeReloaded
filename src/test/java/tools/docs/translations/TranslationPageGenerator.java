@@ -34,8 +34,6 @@ public class TranslationPageGenerator implements AutoToolTask {
     private static final int[] COLOR_1 = {12,  9, 0};
     private static final int[] COLOR_2 = { 6, 15, 6};
 
-    private final TranslationsGatherer gatherer = new TranslationsGatherer();
-
     @Override
     public String getTaskName() {
         return "updateTranslations";
@@ -43,6 +41,7 @@ public class TranslationPageGenerator implements AutoToolTask {
 
     @Override
     public void executeDefault() {
+        TranslationsGatherer gatherer = new TranslationsGatherer();
         NestedTagValue translationValuesHolder = new NestedTagValue();
 
         for (TranslationInfo translation : gatherer.getTranslationInfo()) {

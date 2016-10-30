@@ -8,6 +8,8 @@ import tools.utils.ToolsConstants;
 import java.io.File;
 import java.util.Scanner;
 
+import static tools.utils.FileIoUtils.listFilesOrThrow;
+
 /**
  * Task which exports all messages to a local folder.
  */
@@ -22,11 +24,7 @@ public class WriteAllExportsTask extends ExportMessagesTask {
 
     @Override
     public void execute(Scanner scanner) {
-        File[] messageFiles = new File(MESSAGES_FOLDER).listFiles();
-        if (messageFiles == null || messageFiles.length == 0) {
-            throw new IllegalStateException("Could not read messages folder");
-        }
-
+        final File[] messageFiles = listFilesOrThrow(new File(MESSAGES_FOLDER));
         final FileConfiguration defaultMessages = loadDefaultMessages();
         for (File file : messageFiles) {
             String code = file.getName().substring("messages_".length(), file.getName().length() - ".yml".length());

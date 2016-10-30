@@ -10,6 +10,8 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static tools.utils.FileIoUtils.listFilesOrThrow;
+
 /**
  * Verifies the help translations for validity and completeness.
  */
@@ -57,10 +59,7 @@ public class VerifyHelpTranslations implements ToolTask {
     }
 
     private static List<File> getHelpTranslations() {
-        File[] files = new File(FOLDER).listFiles();
-        if (files == null) {
-            throw new IllegalStateException("Could not get files from '" + FOLDER + "'");
-        }
+        File[] files = listFilesOrThrow(new File(FOLDER));
         List<File> helpFiles = Arrays.stream(files)
             .filter(file -> HELP_MESSAGE_PATTERN.matcher(file.getName()).matches())
             .collect(Collectors.toList());

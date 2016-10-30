@@ -1,5 +1,6 @@
 package tools.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -62,4 +63,19 @@ public final class FileIoUtils {
         }
     }
 
+    /**
+     * Returns a folder's files or throws an exception if the folder could not be read or if it is empty.
+     *
+     * @param folder the folder to read
+     * @return the files in the folder
+     */
+    public static File[] listFilesOrThrow(File folder) {
+        File[] files = folder.listFiles();
+        if (files == null) {
+            throw new IllegalStateException("Could not read folder '" + folder + "'");
+        } else if (files.length == 0) {
+            throw new IllegalStateException("Folder '" + folder + "' is empty");
+        }
+        return files;
+    }
 }
