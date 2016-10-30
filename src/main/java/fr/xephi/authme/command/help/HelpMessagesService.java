@@ -67,6 +67,10 @@ public class HelpMessagesService implements Reloadable {
         return localCommand;
     }
 
+    public String getDescription(CommandDescription command) {
+        return getText(getCommandPath(command) + DESCRIPTION_SUFFIX, command::getDescription);
+    }
+
     public String getMessage(HelpMessage message) {
         return messageFileHandler.getMessage(message.getKey());
     }

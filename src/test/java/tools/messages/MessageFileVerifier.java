@@ -8,7 +8,7 @@ import com.google.common.collect.Multimap;
 import fr.xephi.authme.message.MessageKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class MessageFileVerifier {
      * @param defaultMessages The collection of default messages
      */
     public void addMissingKeys(FileConfiguration defaultMessages) {
-        final List<String> fileLines = FileUtils.readLinesFromFile(messagesFile.toPath());
+        final List<String> fileLines = FileIoUtils.readLinesFromFile(messagesFile.toPath());
 
         List<MissingKey> keysToAdd = new ArrayList<>();
         for (MissingKey entry : missingKeys) {
@@ -135,7 +135,7 @@ public class MessageFileVerifier {
             addCommentForMissingTags(fileLines, key, entry.getValue());
         }
 
-        FileUtils.writeToFile(messagesFile.toPath(), String.join("\n", fileLines));
+        FileIoUtils.writeToFile(messagesFile.toPath(), String.join("\n", fileLines));
     }
 
     /**

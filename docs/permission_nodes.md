@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Oct 02 10:47:16 CEST 2016. See permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sun Oct 23 15:38:58 CEST 2016. See permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -26,25 +26,27 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.admin.spawn** – Administrator command to teleport to the AuthMe spawn.
 - **authme.admin.switchantibot** – Administrator command to toggle the AntiBot protection status.
 - **authme.admin.unregister** – Administrator command to unregister an existing user.
+- **authme.admin.updatemessages** – Permission to use the update messages command.
 - **authme.allowmultipleaccounts** – Permission to be able to register multiple accounts.
 - **authme.bypassantibot** – Permission node to bypass AntiBot protection.
 - **authme.bypassforcesurvival** – Permission for users to bypass force-survival mode.
-- **authme.bypasspurge** – Permission to bypass the purging process
+- **authme.bypasspurge** – Permission to bypass the purging process.
 - **authme.player.*** – Permission to use all player (non-admin) commands.
 - **authme.player.canbeforced** – Permission for users a login can be forced to.
 - **authme.player.captcha** – Command permission to use captcha.
 - **authme.player.changepassword** – Command permission to change the password.
+- **authme.player.email** – Grants all email permissions.
 - **authme.player.email.add** – Command permission to add an email address.
 - **authme.player.email.change** – Command permission to change the email address.
-- **authme.player.email.recover** – Command permission to recover an account using it's email address.
+- **authme.player.email.recover** – Command permission to recover an account using its email address.
 - **authme.player.login** – Command permission to login.
 - **authme.player.logout** – Command permission to logout.
 - **authme.player.register** – Command permission to register.
 - **authme.player.seeownaccounts** – Permission to use to see own other accounts.
 - **authme.player.unregister** – Command permission to unregister.
-- **authme.vip** – Permission node to identify VIP users.
+- **authme.vip** – When the server is full and someone with this permission joins the server, someone will be kicked.
 
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 02 10:47:16 CEST 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 23 15:38:58 CEST 2016

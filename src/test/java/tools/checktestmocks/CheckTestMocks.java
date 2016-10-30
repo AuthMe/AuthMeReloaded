@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,11 +26,6 @@ public class CheckTestMocks implements AutoToolTask {
     @Override
     public String getTaskName() {
         return "checkTestMocks";
-    }
-
-    @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
     }
 
     @Override

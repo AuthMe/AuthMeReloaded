@@ -9,11 +9,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
- * Utility class for reading from and writing to files.
+ * Utility class for I/O operations on files.
  */
-public final class FileUtils {
+public final class FileIoUtils {
 
-    private FileUtils() {
+    private FileIoUtils() {
     }
 
     public static void generateFileFromTemplate(String templateFile, String destinationFile, TagValueHolder tags) {
@@ -43,8 +43,12 @@ public final class FileUtils {
     }
 
     public static String readFromFile(String file) {
+        return readFromFile(Paths.get(file));
+    }
+
+    public static String readFromFile(Path file) {
         try {
-            return new String(Files.readAllBytes(Paths.get(file)), StandardCharsets.UTF_8);
+            return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }

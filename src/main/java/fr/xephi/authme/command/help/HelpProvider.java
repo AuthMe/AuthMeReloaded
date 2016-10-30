@@ -15,11 +15,12 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static fr.xephi.authme.command.help.HelpSection.DETAILED_DESCRIPTION;
 import static fr.xephi.authme.command.help.HelpSection.SHORT_DESCRIPTION;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 /**
@@ -79,7 +80,7 @@ public class HelpProvider implements Reloadable {
 
         if (hasFlag(SHOW_COMMAND, options)) {
             lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMAND) + ": "
-                + CommandSyntaxHelper.getSyntax(command, correctLabels));
+                + CommandUtils.buildSyntax(command, correctLabels));
         }
         if (hasFlag(SHOW_DESCRIPTION, options)) {
             lines.add(ChatColor.GOLD + helpMessagesService.getMessage(SHORT_DESCRIPTION) + ": "
@@ -171,19 +172,29 @@ public class HelpProvider implements Reloadable {
     }
 
     private void printAlternatives(CommandDescription command, List<String> correctLabels, List<String> lines) {
-        if (command.getLabels().size() <= 1 || correctLabels.size() <= 1) {
+        if (command.getLabels().size() <= 1) {
             return;
         }
 
         lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.ALTERNATIVES) + ":");
-        // Get the label used
-        final String parentLabel = correctLabels.get(0);
-        final String childLabel = correctLabels.get(1);
+
+        // Label with which the command was called -> don't show it as an alternative
+        final String usedLabel;
+        // Takes alternative label and constructs list of labels, e.g. "reg" -> [authme, reg]
+        final Function<String, List<String>> commandLabelsFn;
+
+        if (correctLabels.size() == 1) {
+            usedLabel = correctLabels.get(0);
+            commandLabelsFn = label -> singletonList(label);
+        } else {
+            usedLabel = correctLabels.get(1);
+            commandLabelsFn = label -> Arrays.asList(correctLabels.get(0), label);
+        }
 
         // Create a list of alternatives
-        for (String entry : command.getLabels()) {
-            if (!entry.equalsIgnoreCase(childLabel)) {
-                lines.add(" " + CommandSyntaxHelper.getSyntax(command, asList(parentLabel, entry)));
+        for (String label : command.getLabels()) {
+            if (!label.equalsIgnoreCase(usedLabel)) {
+                lines.add(" " + CommandUtils.buildSyntax(command, commandLabelsFn.apply(label)));
             }
         }
     }
@@ -238,7 +249,7 @@ public class HelpProvider implements Reloadable {
         String parentCommandPath = String.join(" ", parentLabels);
         for (CommandDescription child : command.getChildren()) {
             lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
-                + ChatColor.GRAY + ChatColor.ITALIC + ": " + child.getDescription());
+                + ChatColor.GRAY + ChatColor.ITALIC + ": " + helpMessagesService.getDescription(child));
         }
     }
 

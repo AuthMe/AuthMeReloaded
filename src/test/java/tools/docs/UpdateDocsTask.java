@@ -1,25 +1,19 @@
 package tools.docs;
 
-import com.google.common.collect.ImmutableSet;
-import tools.docs.commands.CommandPageCreater;
-import tools.docs.hashmethods.HashAlgorithmsDescriptionTask;
-import tools.docs.permissions.PermissionsListWriter;
-import tools.docs.translations.TranslationPageGenerator;
+import fr.xephi.authme.ClassCollector;
+import fr.xephi.authme.TestHelper;
 import tools.utils.AutoToolTask;
 import tools.utils.ToolTask;
 
+import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Task that runs all tasks which update files in the docs folder.
  */
 public class UpdateDocsTask implements AutoToolTask {
-
-    private static final Set<Class<? extends ToolTask>> TASKS = ImmutableSet
-        .of(CommandPageCreater.class, HashAlgorithmsDescriptionTask.class,
-            PermissionsListWriter.class, TranslationPageGenerator.class);
 
     @Override
     public String getTaskName() {
@@ -40,19 +34,18 @@ public class UpdateDocsTask implements AutoToolTask {
         });
     }
 
-    private static ToolTask instantiateTask(Class<? extends ToolTask> clazz) {
-        try {
-            return clazz.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
-            throw new UnsupportedOperationException("Could not instantiate task class '" + clazz + "'", e);
-        }
-    }
-
-    private static void executeTasks(Consumer<ToolTask> taskRunner) {
-        for (Class<? extends ToolTask> taskClass : TASKS) {
-            ToolTask task = instantiateTask(taskClass);
+    private void executeTasks(Consumer<ToolTask> taskRunner) {
+        for (ToolTask task : getDocTasks()) {
             System.out.println("\nRunning " + task.getTaskName() + "\n-------------------");
             taskRunner.accept(task);
         }
+    }
+
+    private List<ToolTask> getDocTasks() {
+        ClassCollector classCollector =
+            new ClassCollector(TestHelper.TEST_SOURCES_FOLDER, "tools/docs");
+        return classCollector.getInstancesOfType(ToolTask.class).stream()
+            .filter(task -> task.getClass() != getClass())
+            .collect(Collectors.toList());
     }
 }

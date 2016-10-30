@@ -1,13 +1,12 @@
 package tools.docs.permissions;
 
 import tools.utils.AutoToolTask;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
 import java.util.Map;
-import java.util.Scanner;
 
 /**
  * Task responsible for formatting a permissions node list and
@@ -24,22 +23,12 @@ public class PermissionsListWriter implements AutoToolTask {
     }
 
     @Override
-    public void execute(Scanner scanner) {
-        generateAndWriteFile();
-    }
-
-    @Override
     public void executeDefault() {
-        generateAndWriteFile();
-    }
-
-    private static void generateAndWriteFile() {
         final NestedTagValue permissionsTagValue = generatePermissionsList();
 
         TagValueHolder tags = TagValueHolder.create().put("nodes", permissionsTagValue);
-        FileUtils.generateFileFromTemplate(TEMPLATE_FILE, PERMISSIONS_OUTPUT_FILE, tags);
+        FileIoUtils.generateFileFromTemplate(TEMPLATE_FILE, PERMISSIONS_OUTPUT_FILE, tags);
         System.out.println("Wrote to '" + PERMISSIONS_OUTPUT_FILE + "'");
-        System.out.println("Before committing, please verify the output!");
     }
 
     private static NestedTagValue generatePermissionsList() {

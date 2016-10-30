@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Oct 01 23:33:39 CEST 2016. See commands/commands.tpl.md -->
+<!-- File auto-generated on Sun Oct 23 18:25:12 CEST 2016. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -45,6 +45,8 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/authme version**: Show detailed information about the installed AuthMeReloaded version, the developers, contributors, and license.
 - **/authme converter** &lt;job>: Converter command for AuthMeReloaded.
   <br />Requires `authme.admin.converter`
+- **/authme messages**: Adds missing messages to the current messages file.
+  <br />Requires `authme.admin.updatemessages`
 - **/authme help** [query]: View detailed help for /authme commands.
 - **/login** &lt;password>: Command to log in using AuthMeReloaded.
   <br />Requires `authme.player.login`
@@ -61,7 +63,8 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/changepassword** &lt;oldPassword> &lt;newPassword>: Command to change your password using AuthMeReloaded.
   <br />Requires `authme.player.changepassword`
 - **/changepassword help** [query]: View detailed help for /changepassword commands.
-- **/email**: The AuthMeReloaded Email command base.
+- **/email**: The AuthMeReloaded email command base.
+- **/email show**: Show your current email address.
 - **/email add** &lt;email> &lt;verifyEmail>: Add a new email address to your account.
   <br />Requires `authme.player.email.add`
 - **/email change** &lt;oldEmail> &lt;newEmail>: Change an email address of your account.
@@ -73,7 +76,6 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help for /captcha commands.
 
-
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 01 23:33:39 CEST 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 23 18:25:12 CEST 2016

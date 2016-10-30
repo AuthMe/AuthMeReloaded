@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(DelayedInjectionRunner.class)
 public class CommandMapperTest {
 
-    private static Set<CommandDescription> commands;
+    private static List<CommandDescription> commands;
 
     @InjectDelayed
     private CommandMapper mapper;

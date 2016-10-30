@@ -2,13 +2,12 @@ package tools.docs.hashmethods;
 
 import fr.xephi.authme.security.HashAlgorithm;
 import tools.utils.AutoToolTask;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
 import java.util.Map;
-import java.util.Scanner;
 
 /**
  * Task for generating the markdown page describing the AuthMe hash algorithms.
@@ -21,11 +20,6 @@ public class HashAlgorithmsDescriptionTask implements AutoToolTask {
     private static final String OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "hash_algorithms.md";
 
     @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
-    }
-
-    @Override
     public void executeDefault() {
         // Gather info and construct a row for each method
         EncryptionMethodInfoGatherer infoGatherer = new EncryptionMethodInfoGatherer();
@@ -34,7 +28,8 @@ public class HashAlgorithmsDescriptionTask implements AutoToolTask {
 
         // Write to the docs file
         TagValueHolder tags = TagValueHolder.create().put("algorithms", methodRows);
-        FileUtils.generateFileFromTemplate(CUR_FOLDER + "hash_algorithms.tpl.md", OUTPUT_FILE, tags);
+        FileIoUtils.generateFileFromTemplate(CUR_FOLDER + "hash_algorithms.tpl.md", OUTPUT_FILE, tags);
+        System.out.println("Wrote to '" + OUTPUT_FILE + "'");
     }
 
     private static NestedTagValue constructMethodRows(Map<HashAlgorithm, MethodDescription> descriptions) {

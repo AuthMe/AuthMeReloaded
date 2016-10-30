@@ -3,14 +3,13 @@ package tools.docs.translations;
 import com.google.common.collect.ImmutableMap;
 import tools.docs.translations.TranslationsGatherer.TranslationInfo;
 import tools.utils.AutoToolTask;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Objects.firstNonNull;
@@ -43,11 +42,6 @@ public class TranslationPageGenerator implements AutoToolTask {
     }
 
     @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
-    }
-
-    @Override
     public void executeDefault() {
         NestedTagValue translationValuesHolder = new NestedTagValue();
 
@@ -63,7 +57,8 @@ public class TranslationPageGenerator implements AutoToolTask {
         }
 
         TagValueHolder tags = TagValueHolder.create().put("languages", translationValuesHolder);
-        FileUtils.generateFileFromTemplate(TEMPLATE_FILE, DOCS_PAGE, tags);
+        FileIoUtils.generateFileFromTemplate(TEMPLATE_FILE, DOCS_PAGE, tags);
+        System.out.println("Wrote to '" + DOCS_PAGE + "'");
     }
 
     /**

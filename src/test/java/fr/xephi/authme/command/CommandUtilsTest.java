@@ -1,7 +1,14 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.TestHelper;
+import org.bukkit.ChatColor;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -11,6 +18,13 @@ import static org.junit.Assert.assertThat;
  */
 public class CommandUtilsTest {
 
+    private static Collection<CommandDescription> commands;
+
+    @BeforeClass
+    public static void setUpTestCommands() {
+        commands = TestCommandsUtil.generateCommands();
+    }
+
     @Test
     public void shouldReturnCommandPath() {
         // given
@@ -19,14 +33,14 @@ public class CommandUtilsTest {
             .description("Base")
             .detailedDescription("Test base command.")
             .executableCommand(ExecutableCommand.class)
-            .build();
+            .register();
         CommandDescription command = CommandDescription.builder()
             .parent(base)
             .labels("help", "h", "?")
             .description("Child")
             .detailedDescription("Test child command.")
             .executableCommand(ExecutableCommand.class)
-            .build();
+            .register();
 
         // when
         String commandPath = CommandUtils.constructCommandPath(command);
@@ -42,7 +56,7 @@ public class CommandUtilsTest {
     @Test
     public void shouldComputeMinAndMaxOnEmptyCommand() {
         // given
-        CommandDescription command = getBuilderForArgsTest().build();
+        CommandDescription command = getBuilderForArgsTest().register();
 
         // when / then
         checkArgumentCount(command, 0, 0);
@@ -54,7 +68,7 @@ public class CommandUtilsTest {
         CommandDescription command = getBuilderForArgsTest()
             .withArgument("Test", "Arg description", false)
             .withArgument("Test22", "Arg description 2", false)
-            .build();
+            .register();
 
         // when / then
         checkArgumentCount(command, 2, 2);
@@ -67,7 +81,7 @@ public class CommandUtilsTest {
             .withArgument("arg1", "Arg description", false)
             .withArgument("arg2", "Arg description 2", true)
             .withArgument("arg3", "Arg description 3", true)
-            .build();
+            .register();
 
         // when / then
         checkArgumentCount(command, 1, 3);
@@ -77,6 +91,46 @@ public class CommandUtilsTest {
     public void shouldHaveHiddenConstructor() {
         // given / when / then
         TestHelper.validateHasOnlyPrivateEmptyConstructor(CommandUtils.class);
+    }
+
+    @Test
+    public void shouldFormatSimpleArgument() {
+        // given
+        CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "authme");
+        List<String> labels = Collections.singletonList("authme");
+
+        // when
+        String result = CommandUtils.buildSyntax(command, labels);
+
+        // then
+        assertThat(result, equalTo(ChatColor.WHITE + "/authme" + ChatColor.YELLOW));
+    }
+
+    @Test
+    public void shouldFormatCommandWithMultipleArguments() {
+        // given
+        CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "authme", "register");
+        List<String> labels = Arrays.asList("authme", "reg");
+
+        // when
+        String result = CommandUtils.buildSyntax(command, labels);
+
+        // then
+        assertThat(result, equalTo(ChatColor.WHITE + "/authme" + ChatColor.YELLOW + " reg <password> <confirmation>"));
+    }
+
+
+    @Test
+    public void shouldFormatCommandWithOptionalArgument() {
+        // given
+        CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "email");
+        List<String> labels = Collections.singletonList("email");
+
+        // when
+        String result = CommandUtils.buildSyntax(command, labels);
+
+        // then
+        assertThat(result, equalTo(ChatColor.WHITE + "/email" + ChatColor.YELLOW + " [player]"));
     }
 
 

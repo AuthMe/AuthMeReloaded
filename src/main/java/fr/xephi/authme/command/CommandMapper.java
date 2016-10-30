@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class CommandMapper {
      */
     private static final Class<? extends ExecutableCommand> HELP_COMMAND_CLASS = HelpCommand.class;
 
-    private final Set<CommandDescription> baseCommands;
+    private final Collection<CommandDescription> baseCommands;
     private final PermissionsManager permissionsManager;
 
     @Inject

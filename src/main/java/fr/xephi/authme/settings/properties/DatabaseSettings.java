@@ -98,6 +98,10 @@ public class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_GROUP =
         newProperty("ExternalBoardOptions.mySQLColumnGroup", "");
 
+    @Comment("Overrides the size of the DB Connection Pool, -1 = Auto")
+    public static final Property<Integer> MYSQL_POOL_SIZE =
+        newProperty("DataSource.poolSize", -1);
+
     private DatabaseSettings() {
     }
 

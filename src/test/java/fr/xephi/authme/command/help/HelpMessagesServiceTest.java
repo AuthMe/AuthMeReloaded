@@ -12,10 +12,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.Function;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
+import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.sameInstance;
@@ -30,7 +31,7 @@ import static org.mockito.Matchers.any;
 public class HelpMessagesServiceTest {
 
     private static final String TEST_FILE = "/fr/xephi/authme/command/help/help_test.yml";
-    private static final Set<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
+    private static final Collection<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
 
     @InjectDelayed
     private HelpMessagesService helpMessagesService;
@@ -48,7 +49,7 @@ public class HelpMessagesServiceTest {
     @Test
     public void shouldReturnLocalizedCommand() {
         // given
-        CommandDescription command = TestCommandsUtil.getCommandWithLabel(COMMANDS, "authme", "register");
+        CommandDescription command = getCommandWithLabel(COMMANDS, "authme", "register");
 
         // when
         CommandDescription localCommand = helpMessagesService.buildLocalizedDescription(command);
@@ -68,7 +69,7 @@ public class HelpMessagesServiceTest {
     @Test
     public void shouldReturnLocalizedCommandWithDefaults() {
         // given
-        CommandDescription command = TestCommandsUtil.getCommandWithLabel(COMMANDS, "authme", "login");
+        CommandDescription command = getCommandWithLabel(COMMANDS, "authme", "login");
 
         // when
         CommandDescription localCommand = helpMessagesService.buildLocalizedDescription(command);
@@ -84,7 +85,7 @@ public class HelpMessagesServiceTest {
     @Test
     public void shouldReturnSameCommandForNoLocalization() {
         // given
-        CommandDescription command = TestCommandsUtil.getCommandWithLabel(COMMANDS, "email");
+        CommandDescription command = getCommandWithLabel(COMMANDS, "email");
 
         // when
         CommandDescription localCommand = helpMessagesService.buildLocalizedDescription(command);
@@ -96,7 +97,7 @@ public class HelpMessagesServiceTest {
     @Test
     public void shouldKeepChildrenInLocalCommand() {
         // given
-        CommandDescription command = TestCommandsUtil.getCommandWithLabel(COMMANDS, "authme");
+        CommandDescription command = getCommandWithLabel(COMMANDS, "authme");
 
         // when
         CommandDescription localCommand = helpMessagesService.buildLocalizedDescription(command);
@@ -113,5 +114,29 @@ public class HelpMessagesServiceTest {
         assertThat(helpMessagesService.getMessage(DefaultPermission.OP_ONLY), equalTo("only op"));
         assertThat(helpMessagesService.getMessage(HelpMessage.RESULT), equalTo("res."));
         assertThat(helpMessagesService.getMessage(HelpSection.ARGUMENTS), equalTo("arg."));
+    }
+
+    @Test
+    public void shouldGetLocalCommandDescription() {
+        // given
+        CommandDescription command = getCommandWithLabel(COMMANDS, "authme", "register");
+
+        // when
+        String description = helpMessagesService.getDescription(command);
+
+        // then
+        assertThat(description, equalTo("Registration"));
+    }
+
+    @Test
+    public void shouldFallbackToDescriptionOnCommandObject() {
+        // given
+        CommandDescription command = getCommandWithLabel(COMMANDS, "unregister");
+
+        // when
+        String description = helpMessagesService.getDescription(command);
+
+        // then
+        assertThat(description, equalTo(command.getDescription()));
     }
 }

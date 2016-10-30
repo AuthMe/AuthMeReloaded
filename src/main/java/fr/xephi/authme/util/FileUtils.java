@@ -23,7 +23,7 @@ public final class FileUtils {
      * Copy a resource file (from the JAR) to the given file if it doesn't exist.
      *
      * @param destinationFile The file to check and copy to (outside of JAR)
-     * @param resourcePath    Absolute path to the resource file (path to file within JAR)
+     * @param resourcePath    Local path to the resource file (path to file within JAR)
      *
      * @return False if the file does not exist and could not be copied, true otherwise
      */
@@ -35,9 +35,7 @@ public final class FileUtils {
             return false;
         }
 
-        // ClassLoader#getResourceAsStream does not deal with the '\' path separator: replace to '/'
-        final String normalizedPath = resourcePath.replace("\\", "/");
-        try (InputStream is = AuthMe.class.getClassLoader().getResourceAsStream(normalizedPath)) {
+        try (InputStream is = getResourceFromJar(resourcePath)) {
             if (is == null) {
                 ConsoleLogger.warning(format("Cannot copy resource '%s' to file '%s': cannot load resource",
                     resourcePath, destinationFile.getPath()));
@@ -50,6 +48,18 @@ public final class FileUtils {
                 resourcePath, destinationFile.getPath()), e);
         }
         return false;
+    }
+
+    /**
+     * Returns a JAR file as stream. Returns null if it doesn't exist.
+     *
+     * @param path the local path (starting from resources project, e.g. "config.yml" for 'resources/config.yml')
+     * @return the stream if the file exists, or false otherwise
+     */
+    public static InputStream getResourceFromJar(String path) {
+        // ClassLoader#getResourceAsStream does not deal with the '\' path separator: replace to '/'
+        final String normalizedPath = path.replace("\\", "/");
+        return AuthMe.class.getClassLoader().getResourceAsStream(normalizedPath);
     }
 
     /**

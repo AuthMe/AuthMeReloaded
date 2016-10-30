@@ -20,9 +20,9 @@ import org.mockito.Mock;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(DelayedInjectionRunner.class)
 public class HelpProviderTest {
 
-    private static Set<CommandDescription> commands;
+    private static Collection<CommandDescription> commands;
 
     @InjectDelayed
     private HelpProvider helpProvider;
@@ -251,6 +251,10 @@ public class HelpProviderTest {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "login")))
+            .willReturn("Command for login [localized]");
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "register")))
+            .willReturn("Registration command [localized]");
 
         // when
         helpProvider.outputHelp(sender, result, SHOW_CHILDREN);
@@ -258,9 +262,9 @@ public class HelpProviderTest {
         // then
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(4));
-        assertThat(lines.get(1), containsString("Children:"));
-        assertThat(lines.get(2), containsString("/authme login: login cmd"));
-        assertThat(lines.get(3), containsString("/authme register: register cmd"));
+        assertThat(lines.get(1), equalTo("Children:"));
+        assertThat(lines.get(2), equalTo(" /authme login: Command for login [localized]"));
+        assertThat(lines.get(3), equalTo(" /authme register: Registration command [localized]"));
     }
 
     @Test
@@ -393,6 +397,24 @@ public class HelpProviderTest {
         List<String> lines = getLines(sender);
         assertThat(lines, hasSize(1));
         assertThat(lines.get(0), equalTo("Command: /authme register <password> <confirmation>"));
+    }
+
+    @Test
+    public void shouldShowAlternativesForRootCommand() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "unregister");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("unreg"));
+
+        // when
+        helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_ALTERNATIVES);
+
+        // then
+        List<String> lines = getLines(sender);
+        assertThat(lines, hasSize(4));
+        assertThat(lines.get(0), equalTo("Header"));
+        assertThat(lines.get(1), equalTo("Command: /unreg <player>"));
+        assertThat(lines.get(2), equalTo("Alternatives:"));
+        assertThat(lines.get(3), equalTo(" /unregister <player>"));
     }
 
     /**

@@ -36,7 +36,10 @@ public class PluginSettings implements SettingsHolder {
     public static final Property<Boolean> SESSIONS_EXPIRE_ON_IP_CHANGE =
         newProperty("settings.sessions.sessionExpireOnIpChange", true);
 
-    @Comment("Message language, available: en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt")
+    @Comment({
+        "Message language, available languages:",
+        "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md"
+    })
     public static final Property<String> MESSAGES_LANGUAGE =
         newProperty("settings.messagesLanguage", "en");
 
@@ -65,8 +68,8 @@ public class PluginSettings implements SettingsHolder {
         newProperty(LogLevel.class, "settings.logLevel", LogLevel.FINE);
 
     @Comment({
-        "By default we schedule async tasks when talking to the database",
-        "If you want typical communication with the database to happen synchronously, set this to false"
+        "By default we schedule async tasks when talking to the database. If you want",
+        "typical communication with the database to happen synchronously, set this to false"
     })
     public static final Property<Boolean> USE_ASYNC_TASKS =
         newProperty("settings.useAsyncTasks", true);

@@ -6,14 +6,12 @@ import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
 import tools.utils.AutoToolTask;
-import tools.utils.FileUtils;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
 import java.util.Collection;
-import java.util.Scanner;
-import java.util.Set;
 
 public class CommandPageCreater implements AutoToolTask {
 
@@ -25,18 +23,13 @@ public class CommandPageCreater implements AutoToolTask {
     }
 
     @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
-    }
-
-    @Override
     public void executeDefault() {
         CommandInitializer commandInitializer = new CommandInitializer();
-        final Set<CommandDescription> baseCommands = commandInitializer.getCommands();
+        final Collection<CommandDescription> baseCommands = commandInitializer.getCommands();
         NestedTagValue commandTags = new NestedTagValue();
         addCommandsInfo(commandTags, baseCommands);
 
-        FileUtils.generateFileFromTemplate(
+        FileIoUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "docs/commands/commands.tpl.md",
             OUTPUT_FILE,
             TagValueHolder.create().put("commands", commandTags));

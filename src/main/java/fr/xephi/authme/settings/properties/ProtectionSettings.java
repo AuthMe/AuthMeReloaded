@@ -20,13 +20,16 @@ public class ProtectionSettings implements SettingsHolder {
     public static final Property<Boolean> ENABLE_PROTECTION_REGISTERED =
         newProperty("Protection.enableProtectionRegistered", true);
 
-    @Comment({"Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes",
-            "PLEASE USE QUOTES!"})
+    @Comment({
+        "Countries allowed to join the server and register. For country codes, see",
+        "http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/",
+        "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_WHITELIST =
         newListProperty("Protection.countries", "US", "GB");
 
-    @Comment({"Countries not allowed to join the server and register",
-    "PLEASE USE QUOTES!"})
+    @Comment({
+        "Countries not allowed to join the server and register",
+        "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_BLACKLIST =
         newListProperty("Protection.countriesBlacklist", "A1");
 
@@ -34,7 +37,13 @@ public class ProtectionSettings implements SettingsHolder {
     public static final Property<Boolean> ENABLE_ANTIBOT =
         newProperty("Protection.enableAntiBot", true);
 
-    @Comment("Max number of players allowed to login in 5 secs before the AntiBot system is enabled automatically")
+    @Comment("The interval in seconds")
+    public static final Property<Integer> ANTIBOT_INTERVAL =
+        newProperty("Protection.antiBotInterval", 5);
+
+    @Comment({
+        "Max number of players allowed to login in the interval",
+        "before the AntiBot system is enabled automatically"})
     public static final Property<Integer> ANTIBOT_SENSIBILITY =
         newProperty("Protection.antiBotSensibility", 10);
 

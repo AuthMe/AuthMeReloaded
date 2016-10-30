@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -47,15 +49,15 @@ public class FileUtilsTest {
     public void shouldCopyFileFromJar() throws IOException {
         // given
         File folder = temporaryFolder.newFolder();
-        File file = new File(folder, "some/folders/config.yml");
+        File file = new File(folder, "some/folders/welcome.txt");
 
         // when
-        boolean result = FileUtils.copyFileFromResource(file, "config.yml");
+        boolean result = FileUtils.copyFileFromResource(file, "welcome.txt");
 
         // then
         assertThat(result, equalTo(true));
         assertThat(file.exists(), equalTo(true));
-        File configJarFile = TestHelper.getJarFile("/config.yml");
+        File configJarFile = TestHelper.getJarFile("/welcome.txt");
         assertThat(file.length(), equalTo(configJarFile.length()));
     }
 
@@ -117,6 +119,13 @@ public class FileUtilsTest {
 
         // then
         // Nothing happens
+    }
+
+    @Test
+    public void shouldGetResourceFromJar() {
+        // given / when / then
+        assertThat(FileUtils.getResourceFromJar("config.yml"), not(nullValue()));
+        assertThat(FileUtils.getResourceFromJar("does-not-exist"), nullValue());
     }
 
     @Test
