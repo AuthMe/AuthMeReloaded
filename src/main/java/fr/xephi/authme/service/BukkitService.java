@@ -308,4 +308,12 @@ public class BukkitService implements SettingsDependent {
         return Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, source);
     }
 
+    /**
+     * Dispatch a command as console
+     *
+     * @param command the command
+     */
+    public void dispatchConsoleCommand(String command) {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+    }
 }

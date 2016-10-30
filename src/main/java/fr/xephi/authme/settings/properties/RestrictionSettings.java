@@ -4,6 +4,7 @@ import com.github.authme.configme.Comment;
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
@@ -187,6 +188,14 @@ public class RestrictionSettings implements SettingsHolder {
     public static final Property<List<String>> UNRESTRICTED_NAMES =
         newLowercaseListProperty("settings.unrestrictions.UnrestrictedName");
 
+    @Comment("Threshold of the other accounts command, a value less than 1 means disabled.")
+    public static final Property<Integer> OTHER_ACCOUNTS_CMD_THRESHOLD =
+        newProperty("settings.restrictions.otherAccountsCmdThreshold", 0);
+
+    @Comment("The other accounts command, available variables: %playername%, %playerip%")
+    public static final Property<String> OTHER_ACCOUNTS_CMD =
+        newProperty("settings.restrictions.otherAccountsCmd",
+            "say The player %playername% with ip %playerip% has multiple accounts!");
 
     private RestrictionSettings() {
     }

@@ -223,7 +223,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
             player.setNoDamageTicks(0);
 
             service.send(player, MessageKey.LOGIN_SUCCESS);
-            displayOtherAccounts(auth, player);
+
+            // Other auths
+            List<String> auths = dataSource.getAllAuthsByIp(auth.getIp());
+            runCommandOtherAccounts(auths, player, auth.getIp());
+            displayOtherAccounts(auths, player);
 
             final String email = auth.getEmail();
             if (service.getProperty(EmailSettings.RECALL_PLAYERS)
@@ -251,12 +255,29 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
     }
 
-    private void displayOtherAccounts(PlayerAuth auth, Player player) {
-        if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auth == null) {
+    private void runCommandOtherAccounts(List<String> auths, Player player, String ip) {
+        int threshold = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD_THRESHOLD);
+        String command = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD);
+
+        if(threshold <= 1 || command.isEmpty()) {
             return;
         }
 
-        List<String> auths = dataSource.getAllAuthsByIp(auth.getIp());
+        if (auths.size() >= threshold) {
+            return;
+        }
+
+        bukkitService.dispatchConsoleCommand(command
+            .replaceAll("%playername%", player.getName())
+            .replaceAll("%playerip%", ip)
+        );
+    }
+
+    private void displayOtherAccounts(List<String> auths, Player player) {
+        if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS)) {
+            return;
+        }
+
         if (auths.size() <= 1) {
             return;
         }

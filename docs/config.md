@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Oct 23 21:08:57 CEST 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Oct 30 12:57:15 CET 2016. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -124,7 +124,7 @@ settings:
         # The value 0 means an unlimited number of registrations!
         maxRegPerIp: 1
         # Minimum allowed username length
-        minNicknameLength: 4
+        minNicknameLength: 3
         # Maximum allowed username length
         maxNicknameLength: 16
         # When this setting is enabled, online players can't be kicked out
@@ -199,6 +199,10 @@ settings:
         noTeleport: false
         # Regex syntax for allowed chars in passwords
         allowedPasswordCharacters: '[\x21-\x7E]*'
+        # Threshold of the other accounts command, a value less than 1 means disabled.
+        otherAccountsCmdThreshold: 0
+        # The other accounts command, available variables: %playername%, %playerip%
+        otherAccountsCmd: 'say The player %playername% with ip %playerip% has multiple accounts!'
     # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
     # FINE for some additional detailed ones (like password failed),
     # and DEBUG for debugging
@@ -246,9 +250,11 @@ settings:
         # AuthMe will update the password to the new password hash
         supportOldPasswordHash: false
         # Prevent unsafe passwords from being used; put them in lowercase!
+        # You should always set 'help' as unsafePassword due to possible conflicts.
         # unsafePasswords:
         # - '123456'
         # - 'password'
+        # - 'help'
         unsafePasswords: 
         - '123456'
         - 'password'
@@ -256,6 +262,7 @@ settings:
         - '12345'
         - '54321'
         - '123456789'
+        - 'help'
     registration:
         # Enable registration on the server?
         enabled: true
@@ -378,7 +385,9 @@ Protection:
     - 'A1'
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
-    # Max number of players allowed to login in 5 secs
+    # The interval in seconds
+    antiBotInterval: 5
+    # Max number of players allowed to login in the interval
     # before the AntiBot system is enabled automatically
     antiBotSensibility: 10
     # Duration in minutes of the antibot automatic system
@@ -408,9 +417,6 @@ Security:
         # Take care with this, if you set this to false,
         # AuthMe will automatically disable and the server won't be protected!
         stopServer: true
-    ReloadCommand:
-        # /reload support
-        useReloadCommandSupport: true
     console:
         # Remove passwords from console?
         removePassword: true
@@ -455,4 +461,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 23 21:08:57 CEST 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 30 12:57:15 CET 2016
