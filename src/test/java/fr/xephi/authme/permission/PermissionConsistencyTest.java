@@ -2,6 +2,9 @@ package fr.xephi.authme.permission;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import fr.xephi.authme.ClassCollector;
+import fr.xephi.authme.TestHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,9 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
 import static org.junit.Assert.fail;
@@ -24,16 +29,15 @@ import static org.junit.Assert.fail;
  */
 public class PermissionConsistencyTest {
 
-    /** All classes defining permission nodes. */
-    private static final Set<Class<? extends PermissionNode>> PERMISSION_CLASSES = ImmutableSet
-        .of(PlayerPermission.class, AdminPermission.class, PlayerStatePermission.class);
-
     /** Wildcard permissions (present in plugin.yml but not in the codebase). */
     private static final Set<String> PLUGIN_YML_PERMISSIONS_WILDCARDS =
         ImmutableSet.of("authme.admin.*", "authme.player.*", "authme.player.email");
 
     /** Name of the fields that make up a permission entry in plugin.yml. */
     private static final Set<String> PERMISSION_FIELDS = ImmutableSet.of("description", "default", "children");
+
+    /** All classes defining permission nodes. */
+    private static List<Class<? extends PermissionNode>> permissionClasses;
 
     /** All known PermissionNode objects. */
     private static List<PermissionNode> permissionNodes;
@@ -43,6 +47,10 @@ public class PermissionConsistencyTest {
 
     @BeforeClass
     public static void gatherPermissionNodes() {
+        permissionClasses = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "permission")
+            .collectClasses(PermissionNode.class).stream()
+            .filter(clz -> !clz.isInterface())
+            .collect(Collectors.toList());
         permissionNodes = getPermissionsFromClasses();
         pluginYmlPermissions = getPermissionsFromPluginYmlFile();
     }
@@ -109,7 +117,7 @@ public class PermissionConsistencyTest {
      */
     private static List<PermissionNode> getPermissionsFromClasses() {
         List<PermissionNode> nodes = new ArrayList<>();
-        for (Class<? extends PermissionNode> clazz : PERMISSION_CLASSES) {
+        for (Class<? extends PermissionNode> clazz : permissionClasses) {
             nodes.addAll(Arrays.<PermissionNode>asList(clazz.getEnumConstants()));
         }
         return Collections.unmodifiableList(nodes);
@@ -163,15 +171,16 @@ public class PermissionConsistencyTest {
         // Replace ending .* in path if present, e.g. authme.player.* -> authme.player
         // Add ending '.' since we want all children to be children, i.e. authme.playertest would not be OK
         String root = definition.node.replaceAll("\\.\\*$", "") + ".";
-        List<String> badChildren = new ArrayList<>();
-        for (String child : definition.children) {
-            if (!child.startsWith(root)) {
-                badChildren.add(child);
-            }
+        Set<String> expectedChildren = permissionNodes.stream().map(PermissionNode::getNode)
+            .filter(n -> n.startsWith(root)).collect(Collectors.toSet());
+        Set<String> missingChildren = Sets.difference(expectedChildren, definition.children);
+        Set<String> unexpectedChildren = Sets.difference(definition.children, expectedChildren);
+
+        if (!missingChildren.isEmpty()) {
+            errorList.add("Node '" + definition.node + "' has missing children: " + missingChildren);
         }
-        if (!badChildren.isEmpty()) {
-            errorList.add("Permission '" + definition.node + "' has children that are not logically below it: "
-                + String.join(", ", badChildren));
+        if (!unexpectedChildren.isEmpty()) {
+            errorList.add("Node '" + definition.node + "' has unexpected children: " + unexpectedChildren);
         }
     }
 
@@ -181,7 +190,7 @@ public class PermissionConsistencyTest {
     private static final class PermissionDefinition {
 
         private final String node;
-        private final List<String> children;
+        private final Set<String> children;
         private final DefaultPermission expectedDefault;
 
         PermissionDefinition(MemorySection memorySection) {
@@ -193,7 +202,7 @@ public class PermissionConsistencyTest {
                 collectChildren((MemorySection) memorySection.get("children"), children);
                 this.children = removeStart(memorySection.getCurrentPath() + ".children.", children);
             } else {
-                this.children = Collections.emptyList();
+                this.children = Collections.emptySet();
             }
         }
 
@@ -243,6 +252,10 @@ public class PermissionConsistencyTest {
                 if (entry.getValue() instanceof MemorySection) {
                     collectChildren((MemorySection) entry.getValue(), children);
                 } else if (entry.getValue() instanceof Boolean) {
+                    if (!Boolean.TRUE.equals(entry.getValue())) {
+                        throw new IllegalStateException("Child entry '" + entry.getKey()
+                            + "' has unexpected value '" + entry.getValue() + "'");
+                    }
                     children.add(parentSection.getCurrentPath() + "." + entry.getKey());
                 } else {
                     throw new IllegalStateException("Found child entry at '" + entry.getKey() + "' with value "
@@ -258,8 +271,8 @@ public class PermissionConsistencyTest {
          * @param list the entries to modify
          * @return list with shortened entries
          */
-        private static List<String> removeStart(String start, List<String> list) {
-            List<String> result = new ArrayList<>(list.size());
+        private static Set<String> removeStart(String start, List<String> list) {
+            Set<String> result = new HashSet<>(list.size());
             for (String entry : list) {
                 result.add(entry.substring(start.length()));
             }
