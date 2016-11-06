@@ -3,6 +3,7 @@ package fr.xephi.authme.initialization;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.service.BukkitService;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitWorker;
 
@@ -22,22 +23,27 @@ public class TaskCloser implements Runnable {
     private final Logger logger;
     private final AuthMe plugin;
     private final DataSource dataSource;
+    private final BukkitService bukkitService;
 
     /**
      * Constructor.
      *
      * @param plugin the plugin instance
      * @param dataSource the data source (nullable)
+     * @param bukkitService the bukkit service instance (nullable)
      */
-    public TaskCloser(AuthMe plugin, DataSource dataSource) {
+    public TaskCloser(AuthMe plugin, DataSource dataSource, BukkitService bukkitService) {
         this.scheduler = plugin.getServer().getScheduler();
         this.logger = plugin.getLogger();
         this.plugin = plugin;
         this.dataSource = dataSource;
+        this.bukkitService = bukkitService;
     }
 
     @Override
     public void run() {
+        logger.info("Closing scheduled tasks:");
+
         List<Integer> pendingTasks = getPendingTasks();
         logger.log(Level.INFO, "Waiting for {0} tasks to finish", pendingTasks.size());
         int progress = 0;
@@ -69,6 +75,16 @@ public class TaskCloser implements Runnable {
             tries--;
         }
 
+        logger.info("Closing async tasks...");
+        if(bukkitService != null) {
+            try {
+                bukkitService.closeAsyncPool();
+            } catch (InterruptedException e) {
+                logger.log(Level.WARNING, "Unable to close some async task", e);
+            }
+        }
+
+        logger.info("Closing datasource...");
         if (dataSource != null) {
             dataSource.close();
         }

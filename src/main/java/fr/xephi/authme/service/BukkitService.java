@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -25,6 +26,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service for operations requiring the Bukkit API, such as for scheduling.
@@ -41,11 +46,33 @@ public class BukkitService implements SettingsDependent {
     private Method getOnlinePlayers;
     private boolean useAsyncTasks;
 
+    // Async executor
+    private ThreadPoolExecutor asyncExecutor;
+
     @Inject
     BukkitService(AuthMe authMe, Settings settings) {
         this.authMe = authMe;
         getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
+
+        int coreCount = Utils.getCoreCount();
+        // Keep 1 free core for the main thread and the OS
+        if(coreCount != 1) {
+            coreCount--;
+        }
+        asyncExecutor = new ThreadPoolExecutor(coreCount, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
+            new SynchronousQueue<>());
+
         reload(settings);
+    }
+
+    /**
+     * Wait the shutdown of the async execution pool.
+     *
+     * @throws InterruptedException if the shutdown is interrupted
+     */
+    public void closeAsyncPool() throws InterruptedException {
+        asyncExecutor.shutdown();
+        asyncExecutor.awaitTermination(30, TimeUnit.SECONDS);
     }
 
     /**
@@ -135,12 +162,12 @@ public class BukkitService implements SettingsDependent {
      * Returns a task that will run asynchronously.
      *
      * @param task the task to be run
-     * @return a BukkitTask that contains the id number
      * @throws IllegalArgumentException if plugin is null
      * @throws IllegalArgumentException if task is null
      */
-    public BukkitTask runTaskAsynchronously(Runnable task) {
-        return Bukkit.getScheduler().runTaskAsynchronously(authMe, task);
+    public void runTaskAsynchronously(Runnable task) {
+        asyncExecutor.execute(task);
+        //Bukkit.getScheduler().runTaskAsynchronously(authMe, task);
     }
 
     /**

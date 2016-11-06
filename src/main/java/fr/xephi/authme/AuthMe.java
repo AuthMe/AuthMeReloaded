@@ -333,7 +333,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Wait for tasks and close data source
-        new TaskCloser(this, database).run();
+        new TaskCloser(this, database, bukkitService).run();
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
