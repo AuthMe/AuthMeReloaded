@@ -17,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -40,7 +41,8 @@ public class BukkitService implements SettingsDependent {
     private Method getOnlinePlayers;
     private boolean useAsyncTasks;
 
-    public BukkitService(AuthMe authMe, Settings settings) {
+    @Inject
+    BukkitService(AuthMe authMe, Settings settings) {
         this.authMe = authMe;
         getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
         reload(settings);

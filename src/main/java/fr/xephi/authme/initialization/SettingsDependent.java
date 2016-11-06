@@ -4,6 +4,8 @@ import fr.xephi.authme.settings.Settings;
 
 /**
  * Interface for classes that keep a local copy of certain settings.
+ *
+ * @see fr.xephi.authme.command.executable.authme.ReloadCommand
  */
 public interface SettingsDependent {
 

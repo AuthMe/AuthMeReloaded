@@ -5,13 +5,14 @@ import ch.jalu.injector.InjectorBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.initialization.Initializer;
-import fr.xephi.authme.initialization.MetricsManager;
+import fr.xephi.authme.initialization.DataSourceProvider;
 import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
+import fr.xephi.authme.initialization.OnStartupTasks;
+import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
@@ -20,20 +21,19 @@ import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.service.BackupService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.GeoIpService;
+import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -68,7 +68,6 @@ public class AuthMe extends JavaPlugin {
     private CommandHandler commandHandler;
     private PermissionsManager permsMan;
     private Settings settings;
-    private Messages messages;
     private DataSource database;
     private BukkitService bukkitService;
     private Injector injector;
@@ -156,7 +155,7 @@ public class AuthMe extends JavaPlugin {
         new BackupService(this, settings).doBackup(BackupService.BackupCause.START);
 
         // Set up Metrics
-        MetricsManager.sendMetrics(this, settings);
+        OnStartupTasks.sendMetrics(this, settings);
 
         // Sponsor messages
         ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
@@ -202,36 +201,26 @@ public class AuthMe extends JavaPlugin {
         // Create plugin folder
         getDataFolder().mkdir();
 
-        // Load settings and set up the console and console filter
-        settings = Initializer.createSettings(this);
-        bukkitService = new BukkitService(this, settings);
-        Initializer initializer = new Initializer(this, bukkitService);
-
-        ConsoleLogger.setLoggingOptions(settings);
-        initializer.setupConsoleFilter(settings, getLogger());
-
-        // Connect to the database and set up tables
-        database = initializer.setupDatabase(settings);
-
-        // Convert deprecated PLAINTEXT hash entries
-        MigrationService.changePlainTextToSha256(settings, database, new SHA256());
-
-        // Injector initialization
+        // Create injector, provide elements from the Bukkit environment and register providers
         injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
-
-        // Register elements of the Bukkit / JavaPlugin environment
         injector.register(AuthMe.class, this);
         injector.register(Server.class, getServer());
         injector.register(PluginManager.class, getServer().getPluginManager());
         injector.register(BukkitScheduler.class, getServer().getScheduler());
         injector.provide(DataFolder.class, getDataFolder());
+        injector.registerProvider(Settings.class, SettingsProvider.class);
+        injector.registerProvider(DataSource.class, DataSourceProvider.class);
 
-        // Register elements we instantiate manually
-        injector.register(Settings.class, settings);
-        injector.register(DataSource.class, database);
-        injector.register(BukkitService.class, bukkitService);
+        // Get settings and set up logger
+        settings = injector.getSingleton(Settings.class);
+        ConsoleLogger.setLoggingOptions(settings);
+        OnStartupTasks.setupConsoleFilter(settings, getLogger());
 
+        // Set all service fields on the AuthMe class
         instantiateServices(injector);
+
+        // Convert deprecated PLAINTEXT hash entries
+        MigrationService.changePlainTextToSha256(settings, database, new SHA256());
 
         // TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged
@@ -243,7 +232,8 @@ public class AuthMe extends JavaPlugin {
         registerEventListeners(injector);
 
         // Start Email recall task if needed
-        initializer.scheduleRecallEmailTask(settings, database, messages);
+        OnStartupTasks onStartupTasks = injector.newInstance(OnStartupTasks.class);
+        onStartupTasks.scheduleRecallEmailTask();
     }
 
     /**
@@ -256,7 +246,7 @@ public class AuthMe extends JavaPlugin {
         playerCache = PlayerCache.getInstance();
         injector.register(PlayerCache.class, playerCache);
 
-        messages = injector.getSingleton(Messages.class);
+        database = injector.getSingleton(DataSource.class);
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
