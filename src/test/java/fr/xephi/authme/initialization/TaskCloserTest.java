@@ -3,7 +3,6 @@ package fr.xephi.authme.initialization;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
@@ -50,8 +49,6 @@ public class TaskCloserTest {
     private BukkitScheduler bukkitScheduler;
     @Mock
     private DataSource dataSource;
-    @Mock
-    private BukkitService bukkitService;
 
     @Before
     public void initAuthMe() {
@@ -59,7 +56,7 @@ public class TaskCloserTest {
         given(server.getScheduler()).willReturn(bukkitScheduler);
         ReflectionTestUtils.setField(JavaPlugin.class, authMe, "server", server);
         ReflectionTestUtils.setField(JavaPlugin.class, authMe, "logger", logger);
-        taskCloser = spy(new TaskCloser(authMe, dataSource, bukkitService));
+        taskCloser = spy(new TaskCloser(authMe, dataSource));
     }
 
     @Test
@@ -123,7 +120,7 @@ public class TaskCloserTest {
     /** Test implementation for {@link #shouldStopForInterruptedThread()}. */
     private void shouldStopForInterruptedThread0() throws InterruptedException {
         // given
-        taskCloser = spy(new TaskCloser(authMe, null, bukkitService));
+        taskCloser = spy(new TaskCloser(authMe, null));
         // First two times do nothing, third time throw exception when we sleep
         doNothing().doNothing().doThrow(InterruptedException.class).when(taskCloser).sleep();
         mockActiveWorkers();
