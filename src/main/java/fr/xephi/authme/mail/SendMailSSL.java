@@ -2,18 +2,20 @@ package fr.xephi.authme.mail;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailConstants;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
+import javax.activation.CommandMap;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.activation.MailcapCommandMap;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.mail.Session;
@@ -147,6 +149,15 @@ public class SendMailSSL {
 
     private static boolean sendEmail(String content, HtmlEmail email) {
         Thread.currentThread().setContextClassLoader(SendMailSSL.class.getClassLoader());
+        // Issue #999: Prevent UnsupportedDataTypeException: no object DCH for MIME type multipart/alternative
+        // cf. http://stackoverflow.com/questions/21856211/unsupporteddatatypeexception-no-object-dch-for-mime-type
+        MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+        mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
+        mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml");
+        mc.addMailcap("text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain");
+        mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
+        mc.addMailcap("message/rfc822;; x-java-content- handler=com.sun.mail.handlers.message_rfc822");
+
         try {
             email.setHtmlMsg(content);
             email.setTextMsg(content);
