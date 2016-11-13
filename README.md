@@ -38,10 +38,6 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 <img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
 
-#####Development history:
-Outdated!
-[![Gource AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
-
 <hr>
 
 #####Compiling Requirements:
@@ -104,11 +100,11 @@ You can also create your own translation file and, if you want, you can share it
   <li><strong>Cached database queries!</strong></li>
   <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
-  <li>Restricted users (associate a Username with an IP)</li>
-  <li>Protect player's inventory until a correct Authentication</li>
+  <li>Restricted users (associate a username with an IP)</li>
+  <li>Protect player's inventory until correct authentication</li>
   <li>Saves the quit location of the player</li>
-  <li>Automatic database Backup</li>
-  <li>Available languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr, vn (feel free to send new translations)</li>
+  <li>Automatic database backup</li>
+  <li>Available languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, id, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr, vn (feel free to send new translations)</li>
   <li>Built-in Deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
   <li><strong>Import your old database from other plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
 </ul>
@@ -130,7 +126,7 @@ You can also create your own translation file and, if you want, you can share it
 - [Website integration](http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/)
 - [Click here for an example of the config file](https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml)
 - [How to convert from Rakamak](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/)
-- Convert from FlatFile (auths.db but not the sqlite one) to MySQL: /authme converter
+- Convert between database types (e.g. SQLite to MySQL): /authme converter
 
 <hr>
 

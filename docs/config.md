@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Nov 13 10:33:55 CET 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Nov 13 12:06:04 CET 2016. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -150,7 +150,7 @@ settings:
         # to enable this option and configure the AllowedRestrictedUser field.
         AllowRestrictedUser: false
         # The restricted user feature will kick players listed below
-        # if they don't match the defined IP address.
+        # if they don't match the defined IP address. Names are case-insensitive.
         # Example:
         #     AllowedRestrictedUser:
         #     - playername;127.0.0.1
@@ -214,13 +214,13 @@ settings:
         # Force survival gamemode when player joins?
         ForceSurvivalMode: false
     unrestrictions:
-        # Below you can list all account names that
-        # AuthMe will ignore for registration or login, configure it
-        # at your own risk!! Remember that if you are going to add
-        # nickname with [], you have to delimit name with ' '.
-        # this option add compatibility with BuildCraft and some
-        # other mods.
-        # It is case-sensitive!
+        # Below you can list all account names that AuthMe will ignore
+        # for registration or login. Configure it at your own risk!!
+        # This option adds compatibility with BuildCraft and some other mods.
+        # It is case-insensitive! Example:
+        # UnrestrictedName:
+        # - 'npcPlayer'
+        # - 'npcPlayer2'
         UnrestrictedName: []
     security:
         # Minimum length of password
@@ -463,4 +463,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Nov 13 10:33:55 CET 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Nov 13 12:06:04 CET 2016

@@ -4,7 +4,6 @@ import com.github.authme.configme.Comment;
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
@@ -78,7 +77,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment({
         "The restricted user feature will kick players listed below",
-        "if they don't match the defined IP address.",
+        "if they don't match the defined IP address. Names are case-insensitive.",
         "Example:",
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1"})
@@ -177,13 +176,13 @@ public class RestrictionSettings implements SettingsHolder {
         newProperty("settings.GameMode.ForceSurvivalMode", false);
 
     @Comment({
-        "Below you can list all account names that",
-        "AuthMe will ignore for registration or login, configure it",
-        "at your own risk!! Remember that if you are going to add",
-        "nickname with [], you have to delimit name with ' '.",
-        "this option add compatibility with BuildCraft and some",
-        "other mods.",
-        "It is case-sensitive!"
+        "Below you can list all account names that AuthMe will ignore",
+        "for registration or login. Configure it at your own risk!!",
+        "This option adds compatibility with BuildCraft and some other mods.",
+        "It is case-insensitive! Example:",
+        "UnrestrictedName:",
+        "- 'npcPlayer'",
+        "- 'npcPlayer2'"
     })
     public static final Property<List<String>> UNRESTRICTED_NAMES =
         newLowercaseListProperty("settings.unrestrictions.UnrestrictedName");
