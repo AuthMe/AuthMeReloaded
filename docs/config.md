@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Oct 30 12:57:15 CET 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Nov 13 10:33:55 CET 2016. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -245,10 +245,12 @@ settings:
         passwordHash: 'SHA256'
         # Salt length for the SALTED2MD5 MD5(MD5(password)+salt)
         doubleMD5SaltLength: 8
-        # If password checking return false, do we need to check with all
-        # other password algorithm to check an old password?
-        # AuthMe will update the password to the new password hash
-        supportOldPasswordHash: false
+        # If a password check fails, AuthMe will also try to check with the following hash methods.
+        # Use this setting when you change from one hash method to another.
+        # AuthMe will update the password to the new hash. Example:
+        # legacyHashes:
+        # - 'SHA1'
+        legacyHashes: []
         # Prevent unsafe passwords from being used; put them in lowercase!
         # You should always set 'help' as unsafePassword due to possible conflicts.
         # unsafePasswords:
@@ -461,4 +463,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 30 12:57:15 CET 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Nov 13 10:33:55 CET 2016

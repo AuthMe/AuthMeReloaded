@@ -7,6 +7,7 @@ import com.google.common.base.Objects;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -49,6 +50,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | migrateForceSpawnSettings(resource)
             | changeBooleanSettingToLogLevelProperty(resource)
             | hasOldHelpHeaderProperty(resource)
+            | hasSupportOldPasswordProperty(resource)
             || hasDeprecatedProperties(resource);
     }
 
@@ -158,6 +160,16 @@ public class SettingsMigrationService extends PlainMigrationService {
         if (resource.contains("settings.helpHeader")) {
             ConsoleLogger.warning("Help header setting is now in messages/help_xx.yml, "
                 + "please check the file to set it again");
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean hasSupportOldPasswordProperty(PropertyResource resource) {
+        String path = "settings.security.supportOldPasswordHash";
+        if (resource.contains(path)) {
+            ConsoleLogger.warning("Property '" + path + "' is no longer supported. "
+                + "Use '" + SecuritySettings.LEGACY_HASHES.getPath() + "' instead.");
             return true;
         }
         return false;

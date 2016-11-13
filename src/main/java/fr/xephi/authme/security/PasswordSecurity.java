@@ -12,6 +12,7 @@ import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Manager class for password-related operations.
@@ -31,7 +32,7 @@ public class PasswordSecurity implements Reloadable {
     private Injector injector;
 
     private HashAlgorithm algorithm;
-    private boolean supportOldAlgorithm;
+    private Collection<HashAlgorithm> legacyAlgorithms;
 
     /**
      * Load or reload the configuration.
@@ -40,7 +41,7 @@ public class PasswordSecurity implements Reloadable {
     @Override
     public void reload() {
         this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
-        this.supportOldAlgorithm = settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH);
+        this.legacyAlgorithms = settings.getProperty(SecuritySettings.LEGACY_HASHES);
     }
 
     /**
@@ -83,7 +84,7 @@ public class PasswordSecurity implements Reloadable {
         EncryptionMethod method = initializeEncryptionMethodWithEvent(algorithm, playerName);
         String playerLowerCase = playerName.toLowerCase();
         return methodMatches(method, password, hashedPassword, playerLowerCase)
-            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, hashedPassword, playerLowerCase);
+            || compareWithLegacyHashes(password, hashedPassword, playerLowerCase);
     }
 
     /**
@@ -97,14 +98,12 @@ public class PasswordSecurity implements Reloadable {
      *
      * @return True if there was a password match with another encryption method, false otherwise
      */
-    private boolean compareWithAllEncryptionMethods(String password, HashedPassword hashedPassword, String playerName) {
-        for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
-                EncryptionMethod method = initializeEncryptionMethod(algorithm);
-                if (methodMatches(method, password, hashedPassword, playerName)) {
-                    hashPasswordForNewAlgorithm(password, playerName);
-                    return true;
-                }
+    private boolean compareWithLegacyHashes(String password, HashedPassword hashedPassword, String playerName) {
+        for (HashAlgorithm algorithm : legacyAlgorithms) {
+            EncryptionMethod method = initializeEncryptionMethod(algorithm);
+            if (methodMatches(method, password, hashedPassword, playerName)) {
+                hashPasswordForNewAlgorithm(password, playerName);
+                return true;
             }
         }
         return false;

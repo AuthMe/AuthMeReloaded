@@ -24,6 +24,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import java.util.Collections;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertThat;
@@ -97,7 +101,7 @@ public class PasswordSecurityTest {
 
         given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(true);
-        initSettings(HashAlgorithm.BCRYPT, false);
+        initSettings(HashAlgorithm.BCRYPT);
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -120,7 +124,7 @@ public class PasswordSecurityTest {
 
         given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
-        initSettings(HashAlgorithm.CUSTOM, false);
+        initSettings(HashAlgorithm.CUSTOM);
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -140,7 +144,7 @@ public class PasswordSecurityTest {
         String clearTextPass = "tables";
 
         given(dataSource.getPassword(playerName)).willReturn(null);
-        initSettings(HashAlgorithm.MD5, false);
+        initSettings(HashAlgorithm.MD5);
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -168,7 +172,8 @@ public class PasswordSecurityTest {
         given(dataSource.getPassword(argThat(equalToIgnoringCase(playerName)))).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         given(method.computeHash(clearTextPass, playerLowerCase)).willReturn(newPassword);
-        initSettings(HashAlgorithm.MD5, true);
+        initSettings(HashAlgorithm.MD5);
+        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(newArrayList(HashAlgorithm.BCRYPT));
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -193,7 +198,7 @@ public class PasswordSecurityTest {
         String clearTextPass = "someInvalidPassword";
         given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerName)).willReturn(false);
-        initSettings(HashAlgorithm.MD5, true);
+        initSettings(HashAlgorithm.MD5);
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -212,7 +217,7 @@ public class PasswordSecurityTest {
         String usernameLowerCase = username.toLowerCase();
         HashedPassword hashedPassword = new HashedPassword("$T$est#Hash", "__someSalt__");
         given(method.computeHash(password, usernameLowerCase)).willReturn(hashedPassword);
-        initSettings(HashAlgorithm.JOOMLA, true);
+        initSettings(HashAlgorithm.JOOMLA);
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -234,7 +239,7 @@ public class PasswordSecurityTest {
         String username = "someone12";
         HashedPassword hashedPassword = new HashedPassword("~T!est#Hash");
         given(method.hasSeparateSalt()).willReturn(true);
-        initSettings(HashAlgorithm.XAUTH, false);
+        initSettings(HashAlgorithm.XAUTH);
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -250,19 +255,20 @@ public class PasswordSecurityTest {
     @Test
     public void shouldReloadSettings() {
         // given
-        initSettings(HashAlgorithm.BCRYPT, false);
+        initSettings(HashAlgorithm.BCRYPT);
         PasswordSecurity passwordSecurity = newPasswordSecurity();
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
-        given(settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH)).willReturn(true);
+        List<HashAlgorithm> legacyHashes = newArrayList(HashAlgorithm.CUSTOM, HashAlgorithm.BCRYPT);
+        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(legacyHashes);
 
         // when
         passwordSecurity.reload();
 
         // then
         assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "algorithm"),
-            equalTo((Object) HashAlgorithm.MD5));
-        assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "supportOldAlgorithm"),
-            equalTo((Object) Boolean.TRUE));
+            equalTo(HashAlgorithm.MD5));
+        assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "legacyAlgorithms"),
+            equalTo(legacyHashes));
     }
 
     private PasswordSecurity newPasswordSecurity() {
@@ -275,11 +281,10 @@ public class PasswordSecurityTest {
         return passwordSecurity;
     }
 
-    private void initSettings(HashAlgorithm algorithm, boolean supportOldPassword) {
+    private void initSettings(HashAlgorithm algorithm) {
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(algorithm);
-        given(settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH)).willReturn(supportOldPassword);
+        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(Collections.emptyList());
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
-        given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
     }
 
 }

@@ -4,7 +4,9 @@ import com.github.authme.configme.Comment;
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.settings.EnumSetProperty;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.github.authme.configme.properties.PropertyInitializer.newLowercaseListProperty;
@@ -74,11 +76,15 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> DOUBLE_MD5_SALT_LENGTH =
         newProperty("settings.security.doubleMD5SaltLength", 8);
 
-    @Comment({"If password checking return false, do we need to check with all",
-        "other password algorithm to check an old password?",
-        "AuthMe will update the password to the new password hash"})
-    public static final Property<Boolean> SUPPORT_OLD_PASSWORD_HASH =
-        newProperty("settings.security.supportOldPasswordHash", false);
+    @Comment({
+        "If a password check fails, AuthMe will also try to check with the following hash methods.",
+        "Use this setting when you change from one hash method to another.",
+        "AuthMe will update the password to the new hash. Example:",
+        "legacyHashes:",
+        "- 'SHA1'"
+    })
+    public static final Property<List<HashAlgorithm>> LEGACY_HASHES =
+        new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes", Collections.emptyList());
 
     @Comment({"Prevent unsafe passwords from being used; put them in lowercase!",
         "You should always set 'help' as unsafePassword due to possible conflicts.",
