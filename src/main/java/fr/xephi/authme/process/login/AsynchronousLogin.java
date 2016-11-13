@@ -263,7 +263,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return;
         }
 
-        if (auths.size() >= threshold) {
+        if (auths.size() < threshold) {
             return;
         }
 
