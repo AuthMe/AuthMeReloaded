@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Nov 13 12:06:04 CET 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Nov 13 13:34:49 CET 2016. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -199,9 +199,10 @@ settings:
         noTeleport: false
         # Regex syntax for allowed chars in passwords
         allowedPasswordCharacters: '[\x21-\x7E]*'
-        # Threshold of the other accounts command, a value less than 1 means disabled.
+        # Threshold of the other accounts command, a value less than 2 means disabled.
         otherAccountsCmdThreshold: 0
-        # The other accounts command, available variables: %playername%, %playerip%
+        # Command to run when a user has more accounts than the configured threshold.
+        # Available variables: %playername%, %playerip%
         otherAccountsCmd: 'say The player %playername% with ip %playerip% has multiple accounts!'
     # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
     # FINE for some additional detailed ones (like password failed),
@@ -463,4 +464,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Nov 13 12:06:04 CET 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Nov 13 13:34:49 CET 2016

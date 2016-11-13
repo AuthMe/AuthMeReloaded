@@ -259,7 +259,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         int threshold = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD_THRESHOLD);
         String command = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD);
 
-        if(threshold <= 1 || command.isEmpty()) {
+        if(threshold < 2 || command.isEmpty()) {
             return;
         }
 
