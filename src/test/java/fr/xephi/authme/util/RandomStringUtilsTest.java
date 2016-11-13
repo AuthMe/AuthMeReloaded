@@ -1,6 +1,5 @@
-package fr.xephi.authme.security;
+package fr.xephi.authme.util;
 
-import fr.xephi.authme.util.RandomStringUtils;
 import org.junit.Test;
 
 import java.util.regex.Pattern;
