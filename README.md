@@ -1,32 +1,28 @@
 <p align="center"><img src="http://i61.tinypic.com/291dm49.png"></p>
-<p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
+<p align="center"><strong>The most used authentication plugin for Spigot and CraftBukkit!</strong></p>
 <hr>
 
-#####Development tools:
+#####Links and Contacts:
 
-- MAIN REPO (**release sources, issue tracker!**): [Github Main Page](https://github.com/Xephi/AuthMeReloaded)
+- GitHub pages:
+  - [Main](https://github.com/Xephi/AuthMeReloaded) (**release sources, issue tracker!**)
+  - [Development](https://github.com/AuthMe/AuthMeReloaded) (**latest sources, please send PRs here!**):
 
-- DEVELOPMENT TEAM REPO (**latest sources, please send PRs here!**): [Github Development Page](https://github.com/AuthMe/AuthMeReloaded)
+- Contacts:
+  - [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-- Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+- CI Services:
+  - [Official Jenkins](http://ci.xephi.fr/job/AuthMeReloaded) (**DEVELOPMENT BUILDS**)
+  - Travis CI: [![Travis CI](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded)
+  - CircleCI: [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 
-- Build Server (**DEVELOPMENT BUILDS**): [Xephi's Jenkins](http://ci.xephi.fr/job/AuthMeReloaded)
+- Project status:
+  - Dependencies: [![Dependencies status](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d/badge.svg)](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d)
+  - Test coverage: [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
 
-- Build status: [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded)
-
-- Dependencies: [![Dependency Status](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d/badge.svg)](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d)
-
-- Build status (CircleCI): [![Circle CI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
-- Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
-- JitPack (just in case): [![](https://jitpack.io/v/AuthMe/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe/AuthMeReloaded)
-
-- Code Coverage: [![Coverage Status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
-
-- Issue Tracking : [![Stories in Ready](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=ready&title=Ready)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in Bugs](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=bugs&title=Bugs)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in In%20Progress](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=in%20progress&title=In%20Progress)](https://waffle.io/Xephi/AuthMeReloaded)
-
-- JavaDoc: <a href="http://ci.xephi.fr/job/AuthMeReloaded/javadoc/">AuthMe Javadoc</a>
-
-- Maven Repo: <a href="http://ci.xephi.fr/plugin/repository/everything/">AuthMe Repo</a>
+- Development resources:
+  - <a href="http://ci.xephi.fr/job/AuthMeReloaded/javadoc/">JavaDocs</a>
+  - <a href="http://ci.xephi.fr/plugin/repository/everything/">Maven Repository</a>
 
 #####Statistics:
 
@@ -40,19 +36,19 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 <hr>
 
-#####Compiling Requirements:
+#####Compiling requirements:
 >- JDK 1.8
 >- Maven
 >- Git/Github (Optional)
 
 #####How to compile the project:
 >- Clone the project with Git/Github
->- Execute command "mvn clean install"
+>- Execute command "mvn clean package"
 
-#####Running Requirements:
+#####Running requirements:
 >- Java 1.8
->- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X, 1.9.X, 1.10.X)
->- ProtocolLib (optional, required by the protectInventory feature)
+>- TacoSpigot, PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X)
+>- ProtocolLib (optional, required by some features)
 
 <hr>
 ###Plugin Description:
@@ -98,19 +94,19 @@ You can also create your own translation file and, if you want, you can share it
   </ul></li>
   <li>Custom MySQL tables/columns names (useful with forums databases)</li>
   <li><strong>Cached database queries!</strong></li>
-  <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!</strong></li>
+  <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus!</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
   <li>Restricted users (associate a username with an IP)</li>
-  <li>Protect player's inventory until correct authentication</li>
+  <li>Protect player's inventory until correct authentication (requires ProtocolLib)</li>
   <li>Saves the quit location of the player</li>
   <li>Automatic database backup</li>
-  <li>Available languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, id, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr, vn (feel free to send new translations)</li>
+  <li>Available languages: <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md">translations</a></li>
   <li>Built-in Deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
   <li><strong>Import your old database from other plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
 </ul>
 
 ####Configuration
-<a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/configure-auth-me/">How to Configure Authme</a>
+<a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/config.md">How to configure Authme</a>
 ####Email Recovery Dependency
 <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-configure-email-recovery-system/">How to configure email recovery system?</a>
 ####Commands
@@ -121,30 +117,21 @@ You can also create your own translation file and, if you want, you can share it
 - [List of all permission nodes](http://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/permission_nodes.md)
 
 ####How To
-- [How to install and set up](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/)
 - [How to import database from xAuth](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-xauth/)
 - [Website integration](http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/)
-- [Click here for an example of the config file](https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml)
 - [How to convert from Rakamak](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/)
 - Convert between database types (e.g. SQLite to MySQL): /authme converter
 
 <hr>
-
-#####GeoIP
-This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com
-
-<hr>
-
-#####Donate
-<p>Do you like our work? Do you want to buy us a coffee? :)<br>
-EUR: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QLMM9SNCX825Y"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a>
-USD: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=PWQMYCP2SAH6L"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a></p>
 
 #####Sponsor
 GameHosting.it is leader in Italy as Game Server Provider. With its own DataCenter offers Anti-DDoS solutions at affordable prices. Game Server of Minecraft based on Multicraft are equipped with the latest technology in hardware.
 [![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
 
 #####Credits
-<p>Team members: look at the <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/team.txt">team.txt file</a>
+<p>Team members: look at the <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/team.txt">member list</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
+
+#####GeoIP License
+This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com
