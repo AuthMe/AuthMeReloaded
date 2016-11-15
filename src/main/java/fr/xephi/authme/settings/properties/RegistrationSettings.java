@@ -108,7 +108,7 @@ public class RegistrationSettings implements SettingsHolder {
         "Do we need to prevent people to login with another case?",
         "If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI"})
     public static final Property<Boolean> PREVENT_OTHER_CASE =
-        newProperty("settings.preventOtherCase", false);
+        newProperty("settings.preventOtherCase", true);
 
 
     private RegistrationSettings() {

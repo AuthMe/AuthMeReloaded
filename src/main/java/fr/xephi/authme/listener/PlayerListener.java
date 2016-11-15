@@ -208,9 +208,11 @@ public class PlayerListener implements Listener {
         final String name = player.getName();
         if (validationService.isUnrestricted(name)) {
             return;
-        } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
+        }
+        if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
-        } else if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+        }
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
         }
 
@@ -223,8 +225,8 @@ public class PlayerListener implements Listener {
             // Slow stuff
             final PlayerAuth auth = dataSource.getAuth(name);
             final boolean isAuthAvailable = (auth != null);
-            onJoinVerifier.checkAntibot(player, isAuthAvailable);
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+            onJoinVerifier.checkAntibot(player, isAuthAvailable);
             onJoinVerifier.checkNameCasing(player, auth);
             onJoinVerifier.checkPlayerCountry(isAuthAvailable, event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {

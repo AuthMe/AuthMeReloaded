@@ -90,7 +90,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment("Should players be kicked on wrong password?")
     public static final Property<Boolean> KICK_ON_WRONG_PASSWORD =
-        newProperty("settings.restrictions.kickOnWrongPassword", false);
+        newProperty("settings.restrictions.kickOnWrongPassword", true);
 
     @Comment({
         "Should not logged in players be teleported to the spawn?",
@@ -139,7 +139,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment("Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.")
     public static final Property<Boolean> DENY_TABCOMPLETE_BEFORE_LOGIN =
-        newProperty("settings.restrictions.DenyTabCompleteBeforeLogin", true);
+        newProperty("settings.restrictions.DenyTabCompleteBeforeLogin", false);
 
     @Comment({
         "Should we display all other accounts from a player when he joins?",

@@ -14,22 +14,16 @@ import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.settings.properties.PluginSettings.KEEP_COLLISIONS_DISABLED;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
-
-    private static final boolean RESTORE_COLLISIONS = MethodUtils
-        .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     @Inject
     private AuthMe plugin;
@@ -86,10 +80,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             limboCache.deletePlayerData(player);
             // do we really need to use location from database for now?
             // because LimboCache#restoreData teleport player to last location.
-        }
-
-        if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
-            player.setCollidable(true);
         }
 
         if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {

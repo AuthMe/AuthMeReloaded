@@ -53,13 +53,6 @@ public class PluginSettings implements SettingsHolder {
         newProperty("permission.EnablePermissionCheck", false);
 
     @Comment({
-        "Keeps collisions disabled for logged players",
-        "Works only with MC 1.9"
-    })
-    public static final Property<Boolean> KEEP_COLLISIONS_DISABLED =
-        newProperty("settings.restrictions.keepCollisionsDisabled", false);
-
-    @Comment({
         "Log level: INFO, FINE, DEBUG. Use INFO for general messages,",
         "FINE for some additional detailed ones (like password failed),",
         "and DEBUG for debugging"

@@ -22,9 +22,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.PlayerUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.GameMode;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -38,9 +36,6 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
  * Asynchronous process for when a player joins.
  */
 public class AsynchronousJoin implements AsynchronousProcess {
-
-    private static final boolean DISABLE_COLLISIONS = MethodUtils
-        .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     @Inject
     private AuthMe plugin;
@@ -75,18 +70,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
     AsynchronousJoin() {
     }
 
-
     public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
 
-        if (isPlayerUnrestricted(name)) {
+        if (service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name)) {
             return;
-        }
-
-        // Prevent player collisions in 1.9
-        if (DISABLE_COLLISIONS) {
-            player.setCollidable(false);
         }
 
         if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
@@ -114,7 +103,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
         if (!validatePlayerCountForIp(player, ip)) {
             return;
         }
-
 
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
@@ -187,10 +175,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
         // Timeout and message task
         limboPlayerTaskManager.registerTimeoutTask(player);
         limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
-    }
-
-    private boolean isPlayerUnrestricted(String name) {
-        return service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name);
     }
 
     /**
