@@ -173,7 +173,6 @@ public class LimboPlayerTaskManagerTest {
     @Test
     public void shouldNotRegisterTimeoutTaskForZeroTimeout() {
         // given
-        String name = "snail";
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(0);

@@ -85,7 +85,6 @@ public class MessageUpdater {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void copyMissingMessages() {
         for (Property<String> property : properties) {
             String message = userConfiguration.getString(property.getPath());
