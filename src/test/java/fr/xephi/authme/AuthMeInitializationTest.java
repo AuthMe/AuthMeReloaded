@@ -50,9 +50,6 @@ import static org.mockito.Mockito.mock;
 public class AuthMeInitializationTest {
 
     @Mock
-    private JavaPluginLoader pluginLoader;
-
-    @Mock
     private Server server;
 
     @Mock
@@ -60,7 +57,6 @@ public class AuthMeInitializationTest {
 
     private AuthMe authMe;
     private File dataFolder;
-    private File settingsFile;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -73,7 +69,8 @@ public class AuthMeInitializationTest {
     @Before
     public void initAuthMe() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        settingsFile = new File(dataFolder, "config.yml");
+        File settingsFile = new File(dataFolder, "config.yml");
+        JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
 
         // Mock / wire various Bukkit components
@@ -86,7 +83,7 @@ public class AuthMeInitializationTest {
             "AuthMe", "N/A", AuthMe.class.getCanonicalName());
 
         // Initialize AuthMe
-        authMe = new AuthMe(pluginLoader, server, descriptionFile, dataFolder, null);
+        authMe = new AuthMe(pluginLoader, descriptionFile, dataFolder, null);
     }
 
     @Test

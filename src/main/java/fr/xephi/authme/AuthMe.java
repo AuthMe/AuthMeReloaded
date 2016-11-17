@@ -85,8 +85,7 @@ public class AuthMe extends JavaPlugin {
      */
     @VisibleForTesting
     @SuppressWarnings("deprecation") // the super constructor is deprecated to mark it for unit testing only
-    protected AuthMe(final JavaPluginLoader loader, final Server server, final PluginDescriptionFile description,
-                     final File dataFolder, final File file) {
+    protected AuthMe(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }
 
