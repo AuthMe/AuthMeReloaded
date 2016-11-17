@@ -7,12 +7,12 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.PlayerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -33,17 +33,10 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
-    ProcessSyncPasswordRegister() {
-    }
+    @Inject
+    private CommandManager commandManager;
 
-    private void forceCommands(Player player) {
-        for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS)) {
-            player.performCommand(command.replace("%p", player.getName()));
-        }
-        for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS_AS_CONSOLE)) {
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                command.replace("%p", player.getName()));
-        }
+    ProcessSyncPasswordRegister() {
     }
 
     /**
@@ -83,7 +76,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         // Register is now finished; we can force all commands
-        forceCommands(player);
+        commandManager.runCommandsOnRegister(player);
 
         // Request login after registration
         if (service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)) {

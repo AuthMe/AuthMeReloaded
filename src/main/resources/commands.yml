@@ -1,0 +1,24 @@
+
+# This configuration file allows you to execute commands on various events.
+# %p in commands will be replaced with the player name.
+# For example, if you want to message a welcome message to a player who just registered:
+# onRegister:
+#   welcome:
+#     command: 'msg %p Welcome to the server!'
+#     as: CONSOLE
+# 
+# This will make the console execute the msg command to the player.
+# Each command under an event has a name you can choose freely (e.g. 'welcome' as above),
+# after which a mandatory 'command' field defines the command to run, 
+# and 'as' defines who will run the command (either PLAYER or CONSOLE). Longer example:
+# onLogin:
+#   welcome:
+#     command: 'msg %p Welcome back!'
+#     # as: PLAYER  # player is the default, you can leave this out if you want
+#   broadcast:
+#     command: 'broadcast %p has joined, welcome back!'
+#     as: CONSOLE
+onLogin:
+    welcome:
+        command: 'msg %p Welcome back!'
+        executor: 'PLAYER'

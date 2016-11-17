@@ -10,6 +10,7 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -273,6 +274,27 @@ public class BukkitService implements SettingsDependent {
         return Bukkit.getWorld(name);
     }
 
+    /**
+     * Dispatches a command on this server, and executes it if found.
+     *
+     * @param sender the apparent sender of the command
+     * @param commandLine the command + arguments. Example: <code>test abc 123</code>
+     * @return returns false if no target is found
+     */
+    public boolean dispatchCommand(CommandSender sender, String commandLine) {
+        return Bukkit.dispatchCommand(sender, commandLine);
+    }
+
+    /**
+     * Dispatches a command to be run as console user on this server, and executes it if found.
+     *
+     * @param commandLine the command + arguments. Example: <code>test abc 123</code>
+     * @return returns false if no target is found
+     */
+    public boolean dispatchConsoleCommand(String commandLine) {
+        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+    }
+
     @Override
     public void reload(Settings settings) {
         useAsyncTasks = settings.getProperty(PluginSettings.USE_ASYNC_TASKS);
@@ -308,14 +330,5 @@ public class BukkitService implements SettingsDependent {
      */
     public BanEntry banIp(String ip, String reason, Date expires, String source) {
         return Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, source);
-    }
-
-    /**
-     * Dispatch a command as console
-     *
-     * @param command the command
-     */
-    public void dispatchConsoleCommand(String command) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 }
