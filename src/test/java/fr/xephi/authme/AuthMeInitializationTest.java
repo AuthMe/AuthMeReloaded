@@ -19,8 +19,8 @@ import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
 public class AuthMeInitializationTest {
 
     @Mock
-    private PluginLoader pluginLoader;
+    private JavaPluginLoader pluginLoader;
 
     @Mock
     private Server server;

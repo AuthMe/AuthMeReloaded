@@ -40,9 +40,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
@@ -85,9 +85,9 @@ public class AuthMe extends JavaPlugin {
      */
     @VisibleForTesting
     @SuppressWarnings("deprecation") // the super constructor is deprecated to mark it for unit testing only
-    protected AuthMe(final PluginLoader loader, final Server server, final PluginDescriptionFile description,
+    protected AuthMe(final JavaPluginLoader loader, final Server server, final PluginDescriptionFile description,
                      final File dataFolder, final File file) {
-        super(loader, server, description, dataFolder, file);
+        super(loader, description, dataFolder, file);
     }
 
     /**
