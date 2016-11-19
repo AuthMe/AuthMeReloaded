@@ -17,6 +17,7 @@ import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.listener.PlayerListener111;
 import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
@@ -300,6 +301,11 @@ public class AuthMe extends JavaPlugin {
         // Try to register 1.9 player listeners
         if (isClassLoaded("org.bukkit.event.player.PlayerSwapHandItemsEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
+        }
+
+        // Register listener for 1.11 events if available
+        if (isClassLoaded("org.bukkit.event.entity.EntityAirChangeEvent")) {
+            pluginManager.registerEvents(injector.getSingleton(PlayerListener111.class), this);
         }
     }
 
