@@ -1,0 +1,45 @@
+# Tlumaczenie configu dla AuthMe pomoc, kiedy wpiszesz /authme help lub /authme help register podana wiadomosc zostanie wyslana
+
+# -------------------------------------------------------
+# Lista tekstu uzyta w pomocy.
+common:
+    header: '==========[ AuthMeReloaded - Pomoc ]=========='
+    optional: 'Opcjonalnie'
+    hasPermission: 'Nie posidasz permisji'
+    noPermission: 'Brak permisji'
+    default: 'Domyslnie'
+    result: 'Wynik'
+    defaultPermissions:
+        notAllowed: 'Nie posiadasz permisji'
+        opOnly: 'Tylko OP'
+        allowed: 'Dozwolone dla wszyskich'
+
+# -------------------------------------------------------
+# Tytuly z inwidualnych stref w pomoc.
+# Zostaw tlumaczenie puste aby wylaczyc dana komende. Np.:
+#   alternatives: ''
+section:
+    command: 'Komenda'
+    description: 'Krotki opis'
+    detailedDescription: 'Dlugi opis'
+    arguments: 'Argumenty'
+    permissions: 'Permisje'
+    alternatives: 'Alternatywy'
+    children: 'Komendy'
+
+# -------------------------------------------------------
+# Mozesz przetlumaczyc wszystkie komendy uzywajac tego wzoru.
+# Na przyklad jesli chcesz przetlumaczyc /authme reload, utworz selekcje "authme.reload", lub "login" dla /login
+# Jesli komenda posiada argumenty, mozesz uzyc arg1 aby przetlumaczyc pierwszy argument, i nastepne
+# Tlumaczenia nie musza byc kompletne; kazde braki beda uzupelniane domyslnymi wiadomosciami z pluginu.
+# Uwaga: Postaw glowna klase (np. "authme") przed ich dziecmi (np. "authme.reload")
+commands:
+    authme.register:
+        description: 'Rejestracja gracza'
+        detailedDescription: 'Rerejestracja gracza z okreslonym haslem'
+        arg1:
+            label: 'player'
+            description: 'Nazwa gracza'
+        arg2:
+            label: 'password'
+            description: 'Haslo'
