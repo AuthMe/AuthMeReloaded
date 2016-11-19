@@ -55,8 +55,7 @@ public class SettingsTest {
 
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.getBoolean(RegistrationSettings.USE_WELCOME_MESSAGE.getPath())).willReturn(true);
-        Settings settings = new Settings(testPluginFolder, resource,
-            TestSettingsMigrationServices.alwaysFulfilled(), CONFIG_DATA);
+        Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
         String[] result = settings.getWelcomeMessage();
@@ -75,8 +74,7 @@ public class SettingsTest {
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
         PropertyResource resource = mock(PropertyResource.class);
-        Settings settings = new Settings(testPluginFolder, resource,
-            TestSettingsMigrationServices.alwaysFulfilled(), CONFIG_DATA);
+        Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
         String result = settings.getPasswordEmailMessage();

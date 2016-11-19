@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import static fr.xephi.authme.settings.TestSettingsMigrationServices.alwaysFulfilled;
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -90,7 +89,7 @@ public class AuthMeInitializationTest {
     public void shouldInitializeAllServices() {
         // given
         Settings settings =
-            new Settings(dataFolder, mock(PropertyResource.class), alwaysFulfilled(), buildConfigurationData());
+            new Settings(dataFolder, mock(PropertyResource.class), null, buildConfigurationData());
 
         Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
         injector.provide(DataFolder.class, dataFolder);
