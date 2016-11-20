@@ -71,7 +71,7 @@ two_factor_create: '&2Twoj sekretny kod to %code. Mozesz zeskanowac go tutaj %ur
 not_owner_error: 'Nie jestes wlascicielem tego konta, wybierz inny nick!'
 email_show: '&2Twoj aktualny adres email to: &f%email'
 show_no_email: '&2Nie posiadasz adresu email przypisanego do tego konta.'
-# TODO kicked_admin_registered: 'An admin just registered you; please log in again'
+kicked_admin_registered: 'Administrator zarejestrowal Ciebie, mozesz sie zalogowac.'
 incomplete_email_settings: 'Error: Nie wszystkie opcje odpowiedzialne za wysylanie emaili zostaly ustawione. Skontaktuj sie z administracja.'
 recovery_code_sent: 'Kod odzyskiwania hasla zostal wyslany na adres email przypisany do konta.'
 recovery_code_incorrect: 'Kod odzyskiwania hasla jest bledny! Uzyj /email recovery [email] aby wygenerowac nowy.'
