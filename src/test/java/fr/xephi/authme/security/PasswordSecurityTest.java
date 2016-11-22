@@ -26,8 +26,10 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertThat;
@@ -173,7 +175,7 @@ public class PasswordSecurityTest {
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         given(method.computeHash(clearTextPass, playerLowerCase)).willReturn(newPassword);
         initSettings(HashAlgorithm.MD5);
-        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(newArrayList(HashAlgorithm.BCRYPT));
+        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(newArrayList(HashAlgorithm.BCRYPT.name()));
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -258,7 +260,7 @@ public class PasswordSecurityTest {
         initSettings(HashAlgorithm.BCRYPT);
         PasswordSecurity passwordSecurity = newPasswordSecurity();
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
-        List<HashAlgorithm> legacyHashes = newArrayList(HashAlgorithm.CUSTOM, HashAlgorithm.BCRYPT);
+        List<String> legacyHashes = newArrayList(HashAlgorithm.CUSTOM.name(), HashAlgorithm.BCRYPT.name());
         given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(legacyHashes);
 
         // when
@@ -267,8 +269,9 @@ public class PasswordSecurityTest {
         // then
         assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "algorithm"),
             equalTo(HashAlgorithm.MD5));
+        Set<HashAlgorithm> legacyHashesSet = newHashSet(HashAlgorithm.CUSTOM, HashAlgorithm.BCRYPT);
         assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "legacyAlgorithms"),
-            equalTo(legacyHashes));
+            equalTo(legacyHashesSet));
     }
 
     private PasswordSecurity newPasswordSecurity() {
