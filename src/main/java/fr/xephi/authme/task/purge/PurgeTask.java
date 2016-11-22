@@ -72,7 +72,7 @@ class PurgeTask extends BukkitRunnable {
             }
 
             OfflinePlayer offlinePlayer = offlinePlayers[nextPosition];
-            if (toPurge.remove(offlinePlayer.getName().toLowerCase())) {
+            if (offlinePlayer.getName() != null && toPurge.remove(offlinePlayer.getName().toLowerCase())) {
                 if (!permissionsManager.hasPermissionOffline(offlinePlayer, PlayerStatePermission.BYPASS_PURGE)) {
                     playerPortion.add(offlinePlayer);
                     namePortion.add(offlinePlayer.getName());

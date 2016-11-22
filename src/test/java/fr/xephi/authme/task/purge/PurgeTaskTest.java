@@ -124,6 +124,27 @@ public class PurgeTaskTest {
         assertRanPurgeWithNames("foxtrot");
     }
 
+    /**
+     * #1008: OfflinePlayer#getName may return null.
+     */
+    @Test
+    public void shouldHandleOfflinePlayerWithNullName() {
+        // given
+        Set<String> names = newHashSet("name1", "name2");
+        OfflinePlayer[] players = asArray(
+            mockOfflinePlayer(null, false),  mockOfflinePlayer("charlie", false),  mockOfflinePlayer("name1", false));
+        reset(purgeService, permissionsManager);
+        setPermissionsBehavior();
+
+        PurgeTask task = new PurgeTask(purgeService, permissionsManager, null, names, players);
+
+        // when
+        task.run();
+
+        // then
+        assertRanPurgeWithPlayers(players[2]);
+    }
+
     @Test
     public void shouldStopTaskAndInformSenderUponCompletion() {
         // given

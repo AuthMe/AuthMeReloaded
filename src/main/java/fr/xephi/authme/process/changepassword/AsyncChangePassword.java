@@ -27,7 +27,8 @@ public class AsyncChangePassword implements AsynchronousProcess {
     @Inject
     private PlayerCache playerCache;
 
-    AsyncChangePassword() { }
+    AsyncChangePassword() {
+    }
 
 
     public void changePassword(final Player player, String oldPassword, String newPassword) {

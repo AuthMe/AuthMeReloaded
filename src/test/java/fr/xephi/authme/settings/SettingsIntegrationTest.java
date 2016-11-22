@@ -121,8 +121,7 @@ public class SettingsIntegrationTest {
         // given
         File configFile = temporaryFolder.newFile();
         PropertyResource resource = new YamlFileResource(configFile);
-        Settings settings = new Settings(testPluginFolder, resource,
-            TestSettingsMigrationServices.alwaysFulfilled(), CONFIG_DATA);
+        Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
         assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER), equalTo(TestEnum.SECOND)); // default value

@@ -189,7 +189,7 @@ public class PlayerAuth {
      * @return String
      */
     public String serialize() {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         char d = ';';
         str.append(this.nickname).append(d);
         str.append(this.realName).append(d);

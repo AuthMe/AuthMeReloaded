@@ -54,7 +54,7 @@ public final class Utils {
      *
      * @return the core count
      */
-	public static int getCoreCount() {
-		return Runtime.getRuntime().availableProcessors();
-	}
+    public static int getCoreCount() {
+        return Runtime.getRuntime().availableProcessors();
+    }
 }

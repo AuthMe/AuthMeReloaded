@@ -23,7 +23,7 @@ public class ShowEmailCommand extends PlayerCommand {
     @Override
     public void runCommand(Player player, List<String> arguments) {
         PlayerAuth auth = playerCache.getAuth(player.getName());
-        if (auth.getEmail() != null && !auth.getEmail().equalsIgnoreCase("your@email.com")) {
+        if (auth.getEmail() != null && !"your@email.com".equalsIgnoreCase(auth.getEmail())) {
             commandService.send(player, MessageKey.EMAIL_SHOW, auth.getEmail());
         } else {
             commandService.send(player, MessageKey.SHOW_NO_EMAIL);

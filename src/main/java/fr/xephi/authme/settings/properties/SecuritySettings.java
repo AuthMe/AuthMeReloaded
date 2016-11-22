@@ -6,7 +6,6 @@ import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.EnumSetProperty;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.github.authme.configme.properties.PropertyInitializer.newLowercaseListProperty;
@@ -83,8 +82,8 @@ public class SecuritySettings implements SettingsHolder {
         "legacyHashes:",
         "- 'SHA1'"
     })
-    public static final Property<List<HashAlgorithm>> LEGACY_HASHES =
-        new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes", Collections.emptyList());
+    public static final Property<List<String>> LEGACY_HASHES =
+        new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes");
 
     @Comment({"Prevent unsafe passwords from being used; put them in lowercase!",
         "You should always set 'help' as unsafePassword due to possible conflicts.",

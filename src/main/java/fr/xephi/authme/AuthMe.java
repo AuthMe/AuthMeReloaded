@@ -17,6 +17,7 @@ import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.listener.PlayerListener111;
 import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
@@ -40,9 +41,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
@@ -60,7 +61,7 @@ public class AuthMe extends JavaPlugin {
     private static final String LOG_FILENAME = "authme.log";
     private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
 
-    // Default version and build number values;
+    // Default version and build number values
     private static String pluginVersion = "N/D";
     private static String pluginBuildNumber = "Unknown";
 
@@ -85,9 +86,8 @@ public class AuthMe extends JavaPlugin {
      */
     @VisibleForTesting
     @SuppressWarnings("deprecation") // the super constructor is deprecated to mark it for unit testing only
-    protected AuthMe(final PluginLoader loader, final Server server, final PluginDescriptionFile description,
-                     final File dataFolder, final File file) {
-        super(loader, server, description, dataFolder, file);
+    protected AuthMe(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
     }
 
     /**
@@ -132,7 +132,7 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onEnable() {
         // Load the plugin version data from the plugin description file
-        loadPluginInfo();
+        loadPluginInfo(getDescription().getVersion());
 
         // Initialize the plugin
         try {
@@ -175,9 +175,10 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Load the version and build number of the plugin from the description file.
+     *
+     * @param versionRaw the version as given by the plugin description file
      */
-    private void loadPluginInfo() {
-        String versionRaw = this.getDescription().getVersion();
+    private static void loadPluginInfo(String versionRaw) {
         int index = versionRaw.lastIndexOf("-");
         if (index != -1) {
             pluginVersion = versionRaw.substring(0, index);
@@ -190,10 +191,8 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Initialize the plugin and all the services.
-     *
-     * @throws Exception if the initialization fails
      */
-    private void initialize() throws Exception {
+    private void initialize() {
         // Set the Logger instance and log file path
         ConsoleLogger.setLogger(getLogger());
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
@@ -224,7 +223,7 @@ public class AuthMe extends JavaPlugin {
 
         // TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged
-        if (bukkitService.getOnlinePlayers().size() == 0) {
+        if (bukkitService.getOnlinePlayers().isEmpty()) {
             database.purgeLogged();
         }
 
@@ -301,6 +300,11 @@ public class AuthMe extends JavaPlugin {
         // Try to register 1.9 player listeners
         if (isClassLoaded("org.bukkit.event.player.PlayerSwapHandItemsEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
+        }
+
+        // Register listener for 1.11 events if available
+        if (isClassLoaded("org.bukkit.event.entity.EntityAirChangeEvent")) {
+            pluginManager.registerEvents(injector.getSingleton(PlayerListener111.class), this);
         }
     }
 

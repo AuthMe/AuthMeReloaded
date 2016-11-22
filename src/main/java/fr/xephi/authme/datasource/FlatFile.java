@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -295,19 +294,11 @@ public class FlatFile implements DataSource {
                     break;
                 }
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.warning(ex.getMessage());
-            return false;
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(auth.getNickname());
@@ -330,19 +321,11 @@ public class FlatFile implements DataSource {
                 }
             }
             return countIp;
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.warning(ex.getMessage());
-            return new ArrayList<>();
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return new ArrayList<>();
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
     }
 
@@ -363,12 +346,7 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         return 0;
     }
