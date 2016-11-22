@@ -42,6 +42,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,7 +54,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
  */
 public class PlayerListener implements Listener {
 
-    public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
+    public static final Map<String, String> joinMessage = new ConcurrentHashMap<>();
 
     @Inject
     private Settings settings;
@@ -81,7 +82,7 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
-        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && cmd.equals("/motd")) {
+        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && "/motd".equals(cmd)) {
             return;
         }
         if (settings.getProperty(RestrictionSettings.ALLOW_COMMANDS).contains(cmd)) {
@@ -113,7 +114,7 @@ public class PlayerListener implements Listener {
                     iter.remove();
                 }
             }
-            if (recipients.size() == 0) {
+            if (recipients.isEmpty()) {
                 event.setCancelled(true);
             }
         }
@@ -224,7 +225,7 @@ public class PlayerListener implements Listener {
             // Get the auth later as this may cause the single session check to fail
             // Slow stuff
             final PlayerAuth auth = dataSource.getAuth(name);
-            final boolean isAuthAvailable = (auth != null);
+            final boolean isAuthAvailable = auth != null;
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkAntibot(player, isAuthAvailable);
             onJoinVerifier.checkNameCasing(player, auth);

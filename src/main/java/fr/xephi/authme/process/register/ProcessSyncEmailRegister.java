@@ -21,8 +21,8 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
-    ProcessSyncEmailRegister() { }
-
+    ProcessSyncEmailRegister() {
+    }
 
     public void processEmailRegister(Player player) {
         final String name = player.getName().toLowerCase();

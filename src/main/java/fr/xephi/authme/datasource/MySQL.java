@@ -47,7 +47,7 @@ public class MySQL implements DataSource {
     private int phpBbGroup;
     private String wordpressPrefix;
 
-    public MySQL(Settings settings) throws ClassNotFoundException, SQLException, PoolInitializationException {
+    public MySQL(Settings settings) throws ClassNotFoundException, SQLException {
         setParameters(settings);
 
         // Set the connection arguments (and check if connection is ok)
@@ -102,12 +102,12 @@ public class MySQL implements DataSource {
         }
     }
 
-    private void setConnectionArguments() throws RuntimeException {
+    private void setConnectionArguments() {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
 
         // Pool size
-    	ds.setMaximumPoolSize(poolSize);
+        ds.setMaximumPoolSize(poolSize);
 
         // Database URL
         ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
@@ -134,7 +134,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void reload() throws RuntimeException {
+    public void reload() {
         if (ds != null) {
             ds.close();
         }

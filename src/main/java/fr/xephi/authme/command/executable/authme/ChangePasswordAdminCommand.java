@@ -54,33 +54,40 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
         }
 
         // Set the password
-        final String playerNameLowerCase = playerName.toLowerCase();
-        bukkitService.runTaskOptionallyAsync(new Runnable() {
+        bukkitService.runTaskOptionallyAsync(() -> changePassword(playerName.toLowerCase(), playerPass, sender));
+    }
 
-            @Override
-            public void run() {
-                PlayerAuth auth = null;
-                if (playerCache.isAuthenticated(playerNameLowerCase)) {
-                    auth = playerCache.getAuth(playerNameLowerCase);
-                } else if (dataSource.isAuthAvailable(playerNameLowerCase)) {
-                    auth = dataSource.getAuth(playerNameLowerCase);
-                }
-                if (auth == null) {
-                    commandService.send(sender, MessageKey.UNKNOWN_USER);
-                    return;
-                }
+    /**
+     * Changes the password of the given player to the given password.
+     *
+     * @param nameLowercase the name of the player
+     * @param password the password to set
+     * @param sender the sender initiating the password change
+     */
+    private void changePassword(String nameLowercase, String password, CommandSender sender) {
+        PlayerAuth auth = getAuth(nameLowercase);
+        if (auth == null) {
+            commandService.send(sender, MessageKey.UNKNOWN_USER);
+            return;
+        }
 
-                HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
-                auth.setPassword(hashedPassword);
+        HashedPassword hashedPassword = passwordSecurity.computeHash(password, nameLowercase);
+        auth.setPassword(hashedPassword);
 
-                if (dataSource.updatePassword(auth)) {
-                    commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
-                    ConsoleLogger.info(sender.getName() + " changed password of " + playerNameLowerCase);
-                } else {
-                    commandService.send(sender, MessageKey.ERROR);
-                }
-            }
+        if (dataSource.updatePassword(auth)) {
+            commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
+            ConsoleLogger.info(sender.getName() + " changed password of " + nameLowercase);
+        } else {
+            commandService.send(sender, MessageKey.ERROR);
+        }
+    }
 
-        });
+    private PlayerAuth getAuth(String nameLowercase) {
+        if (playerCache.isAuthenticated(nameLowercase)) {
+            return playerCache.getAuth(nameLowercase);
+        } else if (dataSource.isAuthAvailable(nameLowercase)) {
+            return dataSource.getAuth(nameLowercase);
+        }
+        return null;
     }
 }

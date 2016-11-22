@@ -31,7 +31,8 @@ public class AuthGroupHandler implements Reloadable {
     private String unregisteredGroup;
     private String registeredGroup;
 
-    AuthGroupHandler() { }
+    AuthGroupHandler() {
+    }
 
     /**
      * Set the group of a player, by its AuthMe group type.

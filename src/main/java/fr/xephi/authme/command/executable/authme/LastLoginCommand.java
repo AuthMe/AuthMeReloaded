@@ -25,7 +25,7 @@ public class LastLoginCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
         // Get the player
-        String playerName = (arguments.size() >= 1) ? arguments.get(0) : sender.getName();
+        String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         PlayerAuth auth = dataSource.getAuth(playerName);
         if (auth == null) {

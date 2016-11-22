@@ -78,12 +78,12 @@ public class PermissionsManager implements Reloadable {
                 if (handler != null) {
                     // Show a success message and return
                     this.handler = handler;
-                    ConsoleLogger.info("Hooked into " + type.getName() + "!");
+                    ConsoleLogger.info("Hooked into " + type.getDisplayName() + "!");
                     return;
                 }
             } catch (Exception ex) {
                 // An error occurred, show a warning message
-                ConsoleLogger.logException("Error while hooking into " + type.getName(), ex);
+                ConsoleLogger.logException("Error while hooking into " + type.getDisplayName(), ex);
             }
         }
 
@@ -101,7 +101,7 @@ public class PermissionsManager implements Reloadable {
 
         // Make sure the plugin is enabled before hooking
         if (!plugin.isEnabled()) {
-            ConsoleLogger.info("Not hooking into " + type.getName() + " because it's disabled!");
+            ConsoleLogger.info("Not hooking into " + type.getDisplayName() + " because it's disabled!");
             return null;
         }
 
@@ -414,7 +414,7 @@ public class PermissionsManager implements Reloadable {
      */
     public boolean setGroups(Player player, List<String> groupNames) {
         // If no permissions system is used or if there's no group supplied, return false
-        if (!isEnabled() || groupNames.size() <= 0)
+        if (!isEnabled() || groupNames.isEmpty())
             return false;
 
         // Set the main group

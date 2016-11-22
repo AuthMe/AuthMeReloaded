@@ -77,7 +77,7 @@ public class PermissionsExHandler implements PermissionHandler {
         PermissionUser user = permissionManager.getUser(player);
 
         List<String> groups = user.getParentIdentifiers(null);
-        if (groups.size() == 0)
+        if (groups.isEmpty())
             return null;
 
         return groups.get(0);

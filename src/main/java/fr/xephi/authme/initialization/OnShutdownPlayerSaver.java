@@ -76,10 +76,8 @@ public class OnShutdownPlayerSaver {
             dataSource.updateQuitLoc(auth);
         }
         if (settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
-            && !settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-            if (!limboPlayerStorage.hasData(player)) {
-                limboPlayerStorage.saveData(player);
-            }
+            && !settings.getProperty(RestrictionSettings.NO_TELEPORT) && !limboPlayerStorage.hasData(player)) {
+            limboPlayerStorage.saveData(player);
         }
     }
 }

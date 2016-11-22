@@ -19,12 +19,13 @@ import javax.inject.Inject;
 
 /**
  * Deprecated API of AuthMe. Please use {@link NewAPI} instead.
+ *
+ * @deprecated Use {@link NewAPI}
  */
 @Deprecated
 public class API {
 
-    public static final String newline = System.getProperty("line.separator");
-    public static AuthMe instance;
+    private static AuthMe instance;
     private static DataSource dataSource;
     private static PasswordSecurity passwordSecurity;
     private static Management management;
@@ -83,28 +84,17 @@ public class API {
     }
 
     public static Location getLastLocation(Player player) {
-        try {
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
+        PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
-            if (auth != null) {
-                Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
-                return loc;
-            } else {
-                return null;
-            }
-
-        } catch (NullPointerException ex) {
-            return null;
+        if (auth != null) {
+            return new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
         }
+        return null;
     }
 
-    public static void setPlayerInventory(Player player, ItemStack[] content,
-                                          ItemStack[] armor) {
-        try {
-            player.getInventory().setContents(content);
-            player.getInventory().setArmorContents(armor);
-        } catch (NullPointerException ignored) {
-        }
+    public static void setPlayerInventory(Player player, ItemStack[] content, ItemStack[] armor) {
+        player.getInventory().setContents(content);
+        player.getInventory().setArmorContents(armor);
     }
 
     /**

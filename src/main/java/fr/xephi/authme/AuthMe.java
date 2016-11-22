@@ -61,7 +61,7 @@ public class AuthMe extends JavaPlugin {
     private static final String LOG_FILENAME = "authme.log";
     private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
 
-    // Default version and build number values;
+    // Default version and build number values
     private static String pluginVersion = "N/D";
     private static String pluginBuildNumber = "Unknown";
 
@@ -132,7 +132,7 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onEnable() {
         // Load the plugin version data from the plugin description file
-        loadPluginInfo();
+        loadPluginInfo(getDescription().getVersion());
 
         // Initialize the plugin
         try {
@@ -175,9 +175,10 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Load the version and build number of the plugin from the description file.
+     *
+     * @param versionRaw the version as given by the plugin description file
      */
-    private void loadPluginInfo() {
-        String versionRaw = this.getDescription().getVersion();
+    private static void loadPluginInfo(String versionRaw) {
         int index = versionRaw.lastIndexOf("-");
         if (index != -1) {
             pluginVersion = versionRaw.substring(0, index);
@@ -190,10 +191,8 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Initialize the plugin and all the services.
-     *
-     * @throws Exception if the initialization fails
      */
-    private void initialize() throws Exception {
+    private void initialize() {
         // Set the Logger instance and log file path
         ConsoleLogger.setLogger(getLogger());
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
@@ -224,7 +223,7 @@ public class AuthMe extends JavaPlugin {
 
         // TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged
-        if (bukkitService.getOnlinePlayers().size() == 0) {
+        if (bukkitService.getOnlinePlayers().isEmpty()) {
             database.purgeLogged();
         }
 

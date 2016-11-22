@@ -14,6 +14,7 @@ import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -90,16 +91,13 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // We can now display the join message (if delayed)
-        String jm = PlayerListener.joinMessage.get(name);
-        if (jm != null) {
-            if (!jm.isEmpty()) {
-                for (Player p : bukkitService.getOnlinePlayers()) {
-                    if (p.isOnline()) {
-                        p.sendMessage(jm);
-                    }
+        String joinMessage = PlayerListener.joinMessage.remove(name);
+        if (!StringUtils.isEmpty(joinMessage)) {
+            for (Player p : bukkitService.getOnlinePlayers()) {
+                if (p.isOnline()) {
+                    p.sendMessage(joinMessage);
                 }
             }
-            PlayerListener.joinMessage.remove(name);
         }
 
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

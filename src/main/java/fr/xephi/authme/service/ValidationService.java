@@ -40,7 +40,8 @@ public class ValidationService implements Reloadable {
     private Pattern passwordRegex;
     private Set<String> unrestrictedNames;
 
-    ValidationService() { }
+    ValidationService() {
+    }
 
     @PostConstruct
     @Override
