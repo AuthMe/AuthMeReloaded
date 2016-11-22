@@ -42,4 +42,9 @@ public class Command {
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
+
+    @Override
+    public String toString() {
+        return command + " (" + executor + ")";
+    }
 }

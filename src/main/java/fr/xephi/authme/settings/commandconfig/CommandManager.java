@@ -10,7 +10,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.entity.Player;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Map;
@@ -20,23 +19,21 @@ import java.util.Map;
  */
 public class CommandManager implements Reloadable {
 
+    private final File dataFolder;
+    private final BukkitService bukkitService;
+    private final CommandsMigrater commandsMigrater;
+    private final Settings settings;
+
     private CommandConfig commandConfig;
 
     @Inject
-    @DataFolder
-    private File dataFolder;
-
-    @Inject
-    private BukkitService bukkitService;
-
-    @Inject
-    private CommandsMigrater commandsMigrater;
-
-    @Inject
-    private Settings settings;
-
-
-    CommandManager() {
+    CommandManager(@DataFolder File dataFolder, BukkitService bukkitService,
+                   CommandsMigrater commandsMigrater, Settings settings) {
+        this.dataFolder = dataFolder;
+        this.bukkitService = bukkitService;
+        this.commandsMigrater = commandsMigrater;
+        this.settings = settings;
+        reload();
     }
 
     public void runCommandsOnJoin(Player player) {
@@ -62,7 +59,6 @@ public class CommandManager implements Reloadable {
         }
     }
 
-    @PostConstruct
     @Override
     public void reload() {
         File file = new File(dataFolder, "commands.yml");

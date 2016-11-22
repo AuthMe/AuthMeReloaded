@@ -21,6 +21,12 @@ class CommandsMigrater {
     CommandsMigrater() {
     }
 
+    /**
+     * Adds command settings from their old location (in config.yml) to the given command configuration object.
+     *
+     * @param commandConfig the command config object to move old commands to
+     * @return true if commands have been moved, false if no migration was necessary
+     */
     boolean transformOldCommands(CommandConfig commandConfig) {
         boolean didMoveCommands = false;
         for (MigratableCommandSection section : MigratableCommandSection.values()) {
@@ -37,12 +43,12 @@ class CommandsMigrater {
         ON_JOIN(
             SettingsMigrationService::getOnLoginCommands,
             Executor.PLAYER,
-            CommandConfig::getOnJoin),
+            CommandConfig::getOnLogin),
 
         ON_JOIN_CONSOLE(
             SettingsMigrationService::getOnLoginConsoleCommands,
             Executor.CONSOLE,
-            CommandConfig::getOnJoin),
+            CommandConfig::getOnLogin),
 
         ON_REGISTER(
             SettingsMigrationService::getOnRegisterCommands,
@@ -91,7 +97,7 @@ class CommandsMigrater {
             }
             Map<String, Command> commandMap = commandMapGetter.apply(commandConfig);
             commands.forEach(cmd -> commandMap.put(RandomStringUtils.generate(10), cmd));
-            ConsoleLogger.info("Migrated " + commands.size() + " of type " + this);
+            ConsoleLogger.info("Migrated " + commands.size() + " commands of type " + this);
             return true;
         }
     }
