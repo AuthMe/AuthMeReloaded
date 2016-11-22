@@ -68,7 +68,7 @@ public class Settings extends SettingsManager {
     private void loadSettingsFromFiles() {
         passwordEmailMessage = readFile("email.html");
         recoveryCodeEmailMessage = readFile("recovery_code_email.html");
-        welcomeMessage = readFile("welcome.txt").split("\n");
+        welcomeMessage = readFile("welcome.txt").split("\\n");
     }
 
     @Override

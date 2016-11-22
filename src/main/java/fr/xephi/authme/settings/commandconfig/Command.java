@@ -10,6 +10,23 @@ public class Command {
     /** The executor of the command. */
     private Executor executor = Executor.PLAYER;
 
+    /**
+     * Default constructor (for bean mapping).
+     */
+    public Command() {
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param command the command
+     * @param executor the executor of the command
+     */
+    public Command(String command, Executor executor) {
+        this.command = command;
+        this.executor = executor;
+    }
+
     public String getCommand() {
         return command;
     }

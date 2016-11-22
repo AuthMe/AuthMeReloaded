@@ -2,16 +2,20 @@ package fr.xephi.authme.settings;
 
 import com.github.authme.configme.migration.PlainMigrationService;
 import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.properties.StringListProperty;
 import com.github.authme.configme.resource.PropertyResource;
 import com.google.common.base.Objects;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
@@ -28,10 +32,20 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
  */
 public class SettingsMigrationService extends PlainMigrationService {
 
-    private final File pluginFolder;
+    @Inject
+    @DataFolder
+    private File pluginFolder;
 
-    public SettingsMigrationService(File pluginFolder) {
-        this.pluginFolder = pluginFolder;
+    // Stores old commands that need to be migrated to the new commands configuration
+    // We need to store it in here for retrieval when we build the CommandConfig. Retrieving it from the config.yml is
+    // not possible since this migration service may trigger config.yml to be resaved. As the old command settings
+    // don't exist in the code anymore, as soon as config.yml is resaved we lose this information.
+    private List<String> onLoginCommands = Collections.emptyList();
+    private List<String> onLoginConsoleCommands = Collections.emptyList();
+    private List<String> onRegisterCommands = Collections.emptyList();
+    private List<String> onRegisterConsoleCommands = Collections.emptyList();
+
+    SettingsMigrationService() {
     }
 
     @Override
@@ -41,6 +55,8 @@ public class SettingsMigrationService extends PlainMigrationService {
             resource.setValue(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
             changes = true;
         }
+
+        gatherOldCommandSettings(resource);
 
         // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
         // ensures that all migrations will be performed
@@ -59,13 +75,46 @@ public class SettingsMigrationService extends PlainMigrationService {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
             "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt",
             "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional", "DataSource.mySQLWebsite",
-            "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping"};
+            "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping",
+            "settings.restrictions.keepCollisionsDisabled", "settings.forceCommands", "settings.forceCommandsAsConsole",
+            "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole"};
         for (String deprecatedPath : deprecatedProperties) {
             if (resource.contains(deprecatedPath)) {
                 return true;
             }
         }
         return false;
+    }
+
+    // ----------------
+    // Forced commands relocation (from config.yml to commands.yml)
+    // ----------------
+    private void gatherOldCommandSettings(PropertyResource resource) {
+        onLoginCommands = getStringList(resource, "settings.forceCommands");
+        onLoginConsoleCommands = getStringList(resource, "settings.forceCommandsAsConsole");
+        onRegisterCommands = getStringList(resource, "settings.forceRegisterCommands");
+        onRegisterConsoleCommands = getStringList(resource, "settings.forceRegisterCommandsAsConsole");
+    }
+
+    private List<String> getStringList(PropertyResource resource, String path) {
+        List<String> entries = new StringListProperty(path).getFromResource(resource);
+        return entries == null ? Collections.emptyList() : entries;
+    }
+
+    public List<String> getOnLoginCommands() {
+        return onLoginCommands;
+    }
+
+    public List<String> getOnLoginConsoleCommands() {
+        return onLoginConsoleCommands;
+    }
+
+    public List<String> getOnRegisterCommands() {
+        return onRegisterCommands;
+    }
+
+    public List<String> getOnRegisterConsoleCommands() {
+        return onRegisterConsoleCommands;
     }
 
     // --------

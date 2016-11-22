@@ -20,6 +20,8 @@ public class SettingsProvider implements Provider<Settings> {
     @Inject
     @DataFolder
     private File dataFolder;
+    @Inject
+    private SettingsMigrationService migrationService;
 
     SettingsProvider() {
     }
@@ -36,7 +38,6 @@ public class SettingsProvider implements Provider<Settings> {
             FileUtils.create(configFile);
         }
         PropertyResource resource = new YamlFileResource(configFile);
-        SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
         ConfigurationData configurationData = AuthMeSettingsRetriever.buildConfigurationData();
         return new Settings(dataFolder, resource, migrationService, configurationData);
     }

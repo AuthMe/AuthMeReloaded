@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,9 +10,9 @@ import java.util.Map;
  */
 public class CommandConfig {
 
-    private Map<String, Command> onJoin = Collections.emptyMap();
-    private Map<String, Command> onLogin = Collections.emptyMap();
-    private Map<String, Command> onRegister = Collections.emptyMap();
+    private Map<String, Command> onJoin = new HashMap<>();
+    private Map<String, Command> onLogin = new HashMap<>();
+    private Map<String, Command> onRegister = new HashMap<>();
 
     public Map<String, Command> getOnJoin() {
         return onJoin;

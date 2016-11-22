@@ -11,6 +11,7 @@ import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
@@ -49,6 +50,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private CommandManager commandManager;
+
     ProcessSyncPlayerLogin() {
     }
 
@@ -57,16 +61,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         pluginManager.callEvent(event);
         if (!event.isCancelled()) {
             player.updateInventory();
-        }
-    }
-
-    private void forceCommands(Player player) {
-        for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS)) {
-            player.performCommand(command.replace("%p", player.getName()));
-        }
-        for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS_AS_CONSOLE)) {
-            Bukkit.getServer().dispatchCommand(
-                Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
         }
     }
 
@@ -124,7 +118,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
 
         // Login is now finished; we can force all commands
-        forceCommands(player);
+        commandManager.runCommandsOnLogin(player);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
         bungeeService.connectPlayer(player);

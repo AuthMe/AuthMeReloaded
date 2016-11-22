@@ -4,9 +4,6 @@ import com.github.authme.configme.Comment;
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
 
-import java.util.List;
-
-import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
 import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 
 public class RegistrationSettings implements SettingsHolder {
@@ -47,26 +44,6 @@ public class RegistrationSettings implements SettingsHolder {
     @Comment("Does AuthMe need to enforce a /login after a successful registration?")
     public static final Property<Boolean> FORCE_LOGIN_AFTER_REGISTER =
         newProperty("settings.registration.forceLoginAfterRegister", false);
-
-    @Comment("Force these commands after /login, without any '/', use %p to replace with player name")
-    public static final Property<List<String>> FORCE_COMMANDS =
-        newListProperty("settings.forceCommands");
-
-    @Comment({
-        "Force these commands after /login as service console, without any '/'.",
-        "Use %p to replace with player name"})
-    public static final Property<List<String>> FORCE_COMMANDS_AS_CONSOLE =
-        newListProperty("settings.forceCommandsAsConsole");
-
-    @Comment("Force these commands after /register, without any '/', use %p to replace with player name")
-    public static final Property<List<String>> FORCE_REGISTER_COMMANDS =
-        newListProperty("settings.forceRegisterCommands");
-
-    @Comment({
-        "Force these commands after /register as a server console, without any '/'.",
-        "Use %p to replace with player name"})
-    public static final Property<List<String>> FORCE_REGISTER_COMMANDS_AS_CONSOLE =
-        newListProperty("settings.forceRegisterCommandsAsConsole");
 
     @Comment({
         "Enable to display the welcome message (welcome.txt) after a login",
