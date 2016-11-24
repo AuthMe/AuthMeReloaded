@@ -2,11 +2,9 @@ package fr.xephi.authme.settings.commandconfig;
 
 import com.github.authme.configme.SettingsManager;
 import com.github.authme.configme.resource.YamlFileResource;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.entity.Player;
 
@@ -22,17 +20,14 @@ public class CommandManager implements Reloadable {
     private final File dataFolder;
     private final BukkitService bukkitService;
     private final CommandsMigrater commandsMigrater;
-    private final Settings settings;
 
     private CommandConfig commandConfig;
 
     @Inject
-    CommandManager(@DataFolder File dataFolder, BukkitService bukkitService,
-                   CommandsMigrater commandsMigrater, Settings settings) {
+    CommandManager(@DataFolder File dataFolder, BukkitService bukkitService, CommandsMigrater commandsMigrater) {
         this.dataFolder = dataFolder;
         this.bukkitService = bukkitService;
         this.commandsMigrater = commandsMigrater;
-        this.settings = settings;
         reload();
     }
 
@@ -65,21 +60,8 @@ public class CommandManager implements Reloadable {
         FileUtils.copyFileFromResource(file, "commands.yml");
 
         SettingsManager settingsManager = new SettingsManager(
-            new YamlFileResource(file), null, CommandSettingsHolder.class);
-        CommandConfig commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
-
-        if (commandsMigrater.transformOldCommands(commandConfig)) {
-            ConsoleLogger.warning("Old setting properties (such as settings.forceCommands) were found. "
-                + "They have been moved to commands.yml");
-            settingsManager.setProperty(CommandSettingsHolder.COMMANDS, commandConfig);
-            settingsManager.save();
-            settingsManager.reload();
-            settings.save();
-            settings.reload();
-
-            commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
-        }
-        this.commandConfig = commandConfig;
+            new YamlFileResource(file), commandsMigrater, CommandSettingsHolder.class);
+        commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
     }
 
 

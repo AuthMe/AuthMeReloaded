@@ -15,7 +15,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,7 +52,7 @@ public class ForceLoginCommandTest {
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
-        verify(sender).sendMessage(argThat(equalTo("Player needs to be online!")));
+        verify(sender).sendMessage("Player needs to be online!");
         verifyZeroInteractions(management);
     }
 
@@ -69,7 +68,7 @@ public class ForceLoginCommandTest {
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
-        verify(sender).sendMessage(argThat(equalTo("Player needs to be online!")));
+        verify(sender).sendMessage("Player needs to be online!");
         verifyZeroInteractions(management);
     }
 

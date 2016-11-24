@@ -1,14 +1,19 @@
 package fr.xephi.authme.settings.commandconfig;
 
+import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
+import com.github.authme.configme.resource.PropertyResource;
+import com.github.authme.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,5 +112,20 @@ public class CommandsMigraterTest {
             isCommand("existing2", Executor.PLAYER),
             isCommand("log %p registered", Executor.CONSOLE),
             isCommand("whois %p", Executor.CONSOLE)));
+    }
+
+    @Test
+    @Ignore // TODO ConfigMe/#29: Create PropertyResource#getKeys
+    public void shouldRewriteForEmptyFile() {
+        // given
+        File commandFile = TestHelper.getJarFile("/fr/xephi/authme/settings/commandconfig/commands.empty.yml");
+        PropertyResource resource = new YamlFileResource(commandFile);
+
+        // when
+        boolean result = commandsMigrater.checkAndMigrate(
+            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+
+        // then
+        assertThat(result, equalTo(true));
     }
 }

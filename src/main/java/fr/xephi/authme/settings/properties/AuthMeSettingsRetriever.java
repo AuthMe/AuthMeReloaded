@@ -6,8 +6,7 @@ import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
 import com.github.authme.configme.properties.Property;
 
 /**
- * Utility class responsible for retrieving all {@link Property} fields
- * from {@link SettingsHolder} implementations via reflection.
+ * Utility class responsible for retrieving all {@link Property} fields from {@link SettingsHolder} classes.
  */
 public final class AuthMeSettingsRetriever {
 

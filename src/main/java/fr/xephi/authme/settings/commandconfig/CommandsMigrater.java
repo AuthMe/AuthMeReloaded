@@ -1,5 +1,9 @@
 package fr.xephi.authme.settings.commandconfig;
 
+import com.github.authme.configme.migration.MigrationService;
+import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.resource.PropertyResource;
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.util.RandomStringUtils;
@@ -13,12 +17,24 @@ import java.util.stream.Collectors;
 /**
  * Migrates the commands from their old location, in config.yml, to the dedicated commands configuration file.
  */
-class CommandsMigrater {
+class CommandsMigrater implements MigrationService {
 
     @Inject
     private SettingsMigrationService settingsMigrationService;
 
     CommandsMigrater() {
+    }
+
+    @Override
+    public boolean checkAndMigrate(PropertyResource resource, List<Property<?>> properties) {
+        final CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.getValue(resource);
+        final boolean didMoveCommands = transformOldCommands(commandConfig);
+
+        if (didMoveCommands) { // TODO ConfigMe/#29: Check that loaded file isn't completely empty
+            resource.setValue("", commandConfig);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -27,6 +43,7 @@ class CommandsMigrater {
      * @param commandConfig the command config object to move old commands to
      * @return true if commands have been moved, false if no migration was necessary
      */
+    @VisibleForTesting
     boolean transformOldCommands(CommandConfig commandConfig) {
         boolean didMoveCommands = false;
         for (MigratableCommandSection section : MigratableCommandSection.values()) {
@@ -97,7 +114,8 @@ class CommandsMigrater {
             }
             Map<String, Command> commandMap = commandMapGetter.apply(commandConfig);
             commands.forEach(cmd -> commandMap.put(RandomStringUtils.generate(10), cmd));
-            ConsoleLogger.info("Migrated " + commands.size() + " commands of type " + this);
+            ConsoleLogger.info("Moving " + commands.size() + " commands of type " + this
+                + " from config.yml to commands.yml");
             return true;
         }
     }

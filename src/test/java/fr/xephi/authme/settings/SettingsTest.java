@@ -83,6 +83,24 @@ public class SettingsTest {
         assertThat(result, equalTo(emailMessage));
     }
 
+    @Test
+    public void shouldLoadRecoveryCodeMessage() throws IOException {
+        // given
+        String emailMessage = "Your recovery code is %code.";
+        File emailFile = new File(testPluginFolder, "recovery_code_email.html");
+        createFile(emailFile);
+        Files.write(emailFile.toPath(), emailMessage.getBytes());
+
+        PropertyResource resource = mock(PropertyResource.class);
+        Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
+
+        // when
+        String result = settings.getRecoveryCodeEmailMessage();
+
+        // then
+        assertThat(result, equalTo(emailMessage));
+    }
+
     private static void createFile(File file) {
         try {
             file.getParentFile().mkdirs();

@@ -19,7 +19,7 @@ final class CommandConfigTestHelper {
      * @param executor the expected executor
      * @return the matcher
      */
-    public static Matcher<Command> isCommand(String cmd, Executor executor) {
+    static Matcher<Command> isCommand(String cmd, Executor executor) {
         return new TypeSafeMatcher<Command>() {
             @Override
             protected boolean matchesSafely(Command item) {
