@@ -32,9 +32,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
  */
 public class SettingsMigrationService extends PlainMigrationService {
 
-    @Inject
-    @DataFolder
-    private File pluginFolder;
+    private final File pluginFolder;
 
     // Stores old commands that need to be migrated to the new commands configuration
     // We need to store it in here for retrieval when we build the CommandConfig. Retrieving it from the config.yml is
@@ -45,7 +43,9 @@ public class SettingsMigrationService extends PlainMigrationService {
     private List<String> onRegisterCommands = Collections.emptyList();
     private List<String> onRegisterConsoleCommands = Collections.emptyList();
 
-    SettingsMigrationService() {
+    @Inject
+    SettingsMigrationService(@DataFolder File pluginFolder) {
+        this.pluginFolder = pluginFolder;
     }
 
     @Override
@@ -169,7 +169,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     }
 
     /**
-     * Detect old "force spawn loc on join" and "force spawn on these worlds" settings and moves them
+     * Detects old "force spawn loc on join" and "force spawn on these worlds" settings and moves them
      * to the new paths.
      *
      * @param resource The property resource
