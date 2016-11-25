@@ -7,7 +7,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 @Recommendation(Usage.RECOMMENDED)
-public class CryptPBKDF2 extends HexSaltedMethod {
+public class Pbkdf2 extends HexSaltedMethod {
 
     private static final int NUMBER_OF_ITERATIONS = 10_000;
 

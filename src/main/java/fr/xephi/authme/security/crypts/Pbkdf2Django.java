@@ -9,7 +9,7 @@ import fr.xephi.authme.util.StringUtils;
 import javax.xml.bind.DatatypeConverter;
 
 @AsciiRestricted
-public class CryptPBKDF2Django extends HexSaltedMethod {
+public class Pbkdf2Django extends HexSaltedMethod {
 
     private static final int DEFAULT_ITERATIONS = 24000;
 
@@ -32,7 +32,7 @@ public class CryptPBKDF2Django extends HexSaltedMethod {
         try {
             iterations = Integer.parseInt(line[1]);
         } catch (NumberFormatException e) {
-            ConsoleLogger.warning("Could not read number of rounds for CryptPBKDF2Django:"
+            ConsoleLogger.warning("Could not read number of rounds for Pbkdf2Django:"
                 + StringUtils.formatException(e));
             return false;
         }
