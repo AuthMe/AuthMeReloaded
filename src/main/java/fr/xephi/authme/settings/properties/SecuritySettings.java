@@ -86,6 +86,10 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<List<String>> LEGACY_HASHES =
         new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes");
 
+    @Comment("Number of rounds to use if passwordHash is set to PBKDF2. Default is 10000")
+    public static final Property<Integer> PBKDF2_NUMBER_OF_ROUNDS =
+        newProperty("settings.security.pbkdf2Rounds", 10000);
+
     @Comment({"Prevent unsafe passwords from being used; put them in lowercase!",
         "You should always set 'help' as unsafePassword due to possible conflicts.",
         "unsafePasswords:",

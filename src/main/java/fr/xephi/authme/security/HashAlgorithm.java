@@ -1,8 +1,6 @@
 package fr.xephi.authme.security;
 
 import fr.xephi.authme.security.crypts.EncryptionMethod;
-import fr.xephi.authme.security.crypts.Pbkdf2;
-import fr.xephi.authme.security.crypts.Pbkdf2Django;
 
 /**
  * Hash algorithms supported by AuthMe.
@@ -19,8 +17,8 @@ public enum HashAlgorithm {
     MD5(fr.xephi.authme.security.crypts.MD5.class),
     MD5VB(fr.xephi.authme.security.crypts.MD5VB.class),
     MYBB(fr.xephi.authme.security.crypts.MYBB.class),
-    PBKDF2(Pbkdf2.class),
-    PBKDF2DJANGO(Pbkdf2Django.class),
+    PBKDF2(fr.xephi.authme.security.crypts.Pbkdf2.class),
+    PBKDF2DJANGO(fr.xephi.authme.security.crypts.Pbkdf2Django.class),
     PHPBB(fr.xephi.authme.security.crypts.PHPBB.class),
     PHPFUSION(fr.xephi.authme.security.crypts.PHPFUSION.class),
     @Deprecated

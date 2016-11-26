@@ -32,6 +32,7 @@ public class HashAlgorithmIntegrationTest {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
+        given(settings.getProperty(SecuritySettings.PBKDF2_NUMBER_OF_ROUNDS)).willReturn(10_000);
         injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
         injector.register(Settings.class, settings);
     }

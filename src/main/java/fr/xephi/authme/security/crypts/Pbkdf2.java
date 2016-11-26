@@ -3,18 +3,30 @@ package fr.xephi.authme.security.crypts;
 import de.rtner.misc.BinTools;
 import de.rtner.security.auth.spi.PBKDF2Engine;
 import de.rtner.security.auth.spi.PBKDF2Parameters;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
+
+import javax.inject.Inject;
 
 @Recommendation(Usage.RECOMMENDED)
 public class Pbkdf2 extends HexSaltedMethod {
 
-    private static final int NUMBER_OF_ITERATIONS = 10_000;
+    private static final int DEFAULT_ROUNDS = 10_000;
+    private int numberOfRounds;
+
+    @Inject
+    Pbkdf2(Settings settings) {
+        int configuredRounds = settings.getProperty(SecuritySettings.PBKDF2_NUMBER_OF_ROUNDS);
+        this.numberOfRounds = configuredRounds > 0 ? configuredRounds : DEFAULT_ROUNDS;
+    }
 
     @Override
     public String computeHash(String password, String salt, String name) {
-        String result = "pbkdf2_sha256$" + NUMBER_OF_ITERATIONS + "$" + salt + "$";
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "UTF-8", salt.getBytes(), NUMBER_OF_ITERATIONS);
+        String result = "pbkdf2_sha256$" + numberOfRounds + "$" + salt + "$";
+        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "UTF-8", salt.getBytes(), numberOfRounds);
         PBKDF2Engine engine = new PBKDF2Engine(params);
 
         return result + BinTools.bin2hex(engine.deriveKey(password, 64));
@@ -26,9 +38,16 @@ public class Pbkdf2 extends HexSaltedMethod {
         if (line.length != 4) {
             return false;
         }
+        int iterations;
+        try {
+            iterations = Integer.parseInt(line[1]);
+        } catch (NumberFormatException e) {
+            ConsoleLogger.logException("Cannot read number of rounds for Pbkdf2", e);
+            return false;
+        }
         String salt = line[2];
         byte[] derivedKey = BinTools.hex2bin(line[3]);
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "UTF-8", salt.getBytes(), 10000, derivedKey);
+        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "UTF-8", salt.getBytes(), iterations, derivedKey);
         PBKDF2Engine engine = new PBKDF2Engine(params);
         return engine.verifyKey(password);
     }

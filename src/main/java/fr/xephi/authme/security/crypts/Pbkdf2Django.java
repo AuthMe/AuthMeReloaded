@@ -4,7 +4,6 @@ import de.rtner.security.auth.spi.PBKDF2Engine;
 import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
-import fr.xephi.authme.util.StringUtils;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -32,8 +31,7 @@ public class Pbkdf2Django extends HexSaltedMethod {
         try {
             iterations = Integer.parseInt(line[1]);
         } catch (NumberFormatException e) {
-            ConsoleLogger.warning("Could not read number of rounds for Pbkdf2Django:"
-                + StringUtils.formatException(e));
+            ConsoleLogger.logException("Could not read number of rounds for Pbkdf2Django:", e);
             return false;
         }
         String salt = line[2];
