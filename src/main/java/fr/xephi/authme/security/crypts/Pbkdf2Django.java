@@ -1,15 +1,15 @@
 package fr.xephi.authme.security.crypts;
 
+import de.rtner.security.auth.spi.PBKDF2Engine;
+import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
-import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
-import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 import fr.xephi.authme.util.StringUtils;
 
 import javax.xml.bind.DatatypeConverter;
 
 @AsciiRestricted
-public class CryptPBKDF2Django extends HexSaltedMethod {
+public class Pbkdf2Django extends HexSaltedMethod {
 
     private static final int DEFAULT_ITERATIONS = 24000;
 
@@ -19,7 +19,7 @@ public class CryptPBKDF2Django extends HexSaltedMethod {
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), DEFAULT_ITERATIONS);
         PBKDF2Engine engine = new PBKDF2Engine(params);
 
-        return result + String.valueOf(DatatypeConverter.printBase64Binary(engine.deriveKey(password, 32)));
+        return result + DatatypeConverter.printBase64Binary(engine.deriveKey(password, 32));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CryptPBKDF2Django extends HexSaltedMethod {
         try {
             iterations = Integer.parseInt(line[1]);
         } catch (NumberFormatException e) {
-            ConsoleLogger.warning("Could not read number of rounds for CryptPBKDF2Django:"
+            ConsoleLogger.warning("Could not read number of rounds for Pbkdf2Django:"
                 + StringUtils.formatException(e));
             return false;
         }

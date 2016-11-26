@@ -1,33 +1,39 @@
 <?php
 
 /***********************************************************
- * AuthMe website integration logic for SHA256             *
+ * AuthMe website integration logic for PBKDF2             *
  * ------------------------------------------------------- *
  * See AuthMeController for details.                       *
  *                                                         *
- * Source: https://github.com/AuthMe/AuthMeReloaded/       *
+ * Source: https://github.com/AuthMe-Team/AuthMeReloaded/  *
  ***********************************************************/
-class Sha256 extends AuthMeController {
+class Pbkdf2 extends AuthMeController {
 
     /** @var string[] range of characters for salt generation */
     private $CHARS;
 
     const SALT_LENGTH = 16;
+    const NUMBER_OF_ITERATIONS = 10000;
 
     public function __construct() {
         $this->CHARS = self::initCharRange();
     }
 
     protected function isValidPassword($password, $hash) {
-        // $SHA$salt$hash, where hash := sha256(sha256(password) . salt)
+        // hash := pbkdf2_sha256$iterations$salt$hash
         $parts = explode('$', $hash);
-        return count($parts) === 4 && $parts[3] === hash('sha256', hash('sha256', $password) . $parts[2]);
+        return count($parts) === 4 && $hash === $this->computeHash($parts[1], $parts[2], $password);
     }
 
     protected function hash($password) {
         $salt = $this->generateSalt();
-        return '$SHA$' . $salt . '$' . hash('sha256', hash('sha256', $password) . $salt);
+		return $this->computeHash(self::NUMBER_OF_ITERATIONS, $salt, $password);
     }
+	
+	private function computeHash($iterations, $salt, $password) {
+	    return 'pbkdf2_sha256$' . self::NUMBER_OF_ITERATIONS . '$' . $salt 
+			. '$' . hash_pbkdf2('sha256', $password, $salt, self::NUMBER_OF_ITERATIONS, 64, false);
+	}
 
     /**
      * @return string randomly generated salt
@@ -44,5 +50,4 @@ class Sha256 extends AuthMeController {
     private static function initCharRange() {
         return array_merge(range('0', '9'), range('a', 'f'));
     }
-
 }

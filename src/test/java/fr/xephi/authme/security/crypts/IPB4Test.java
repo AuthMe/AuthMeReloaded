@@ -1,17 +1,9 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-
 /**
  * Test for {@link IPB4}.
  */
 public class IPB4Test extends AbstractEncryptionMethodTest {
-
-    @BeforeClass
-    public static void setUpSettings() {
-        TestHelper.setupLogger();
-    }
 
     public IPB4Test() {
         super(new IPB4(),

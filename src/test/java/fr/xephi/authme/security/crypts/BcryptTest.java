@@ -1,9 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import org.junit.BeforeClass;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -12,11 +10,6 @@ import static org.mockito.Mockito.mock;
  * Test for {@link BCRYPT}.
  */
 public class BcryptTest extends AbstractEncryptionMethodTest {
-
-    @BeforeClass
-    public static void initializeLogger() {
-        TestHelper.setupLogger();
-    }
 
     public BcryptTest() {
         super(new BCRYPT(mockSettings()),

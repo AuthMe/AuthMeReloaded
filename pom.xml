@@ -269,6 +269,10 @@
                                     <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>de.rtner</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.de.rtner</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>javax.inject</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
                                 </relocation>
@@ -318,6 +322,10 @@
                                 <relocation>
                                     <pattern>net.ricecode.similarity</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>de.rtner</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.de.rtner</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.inject</pattern>
@@ -522,6 +530,13 @@
             <version>1.7.21</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+
+        <!-- PBKDF2 implementation -->
+        <dependency>
+            <groupId>de.rtner</groupId>
+            <artifactId>PBKDF2</artifactId>
+            <version>1.1.2</version>
         </dependency>
 
         <!-- Spigot API, http://www.spigotmc.org/ or http://bukkit.org/ -->
