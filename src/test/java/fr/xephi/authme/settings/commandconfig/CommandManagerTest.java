@@ -42,7 +42,7 @@ public class CommandManagerTest {
 
     private CommandManager manager;
     @InjectMocks
-    private CommandsMigrater commandsMigrater;
+    private CommandMigrationService commandMigrationService;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -158,7 +158,7 @@ public class CommandManagerTest {
     }
 
     private void initManager() {
-        manager = new CommandManager(testFolder, bukkitService, commandsMigrater);
+        manager = new CommandManager(testFolder, bukkitService, commandMigrationService);
     }
 
     private void copyJarFileAsCommandsYml(String path) {

@@ -19,26 +19,42 @@ public class CommandManager implements Reloadable {
 
     private final File dataFolder;
     private final BukkitService bukkitService;
-    private final CommandsMigrater commandsMigrater;
+    private final CommandMigrationService commandMigrationService;
 
     private CommandConfig commandConfig;
 
     @Inject
-    CommandManager(@DataFolder File dataFolder, BukkitService bukkitService, CommandsMigrater commandsMigrater) {
+    CommandManager(@DataFolder File dataFolder, BukkitService bukkitService,
+                   CommandMigrationService commandMigrationService) {
         this.dataFolder = dataFolder;
         this.bukkitService = bukkitService;
-        this.commandsMigrater = commandsMigrater;
+        this.commandMigrationService = commandMigrationService;
         reload();
     }
 
+    /**
+     * Runs the configured commands for when a player has joined.
+     *
+     * @param player the joining player
+     */
     public void runCommandsOnJoin(Player player) {
         executeCommands(player, commandConfig.getOnJoin());
     }
 
+    /**
+     * Runs the configured commands for when a player has successfully registered.
+     *
+     * @param player the player who has registered
+     */
     public void runCommandsOnRegister(Player player) {
         executeCommands(player, commandConfig.getOnRegister());
     }
 
+    /**
+     * Runs the configured commands for when a player has logged in successfully.
+     *
+     * @param player the player that logged in
+     */
     public void runCommandsOnLogin(Player player) {
         executeCommands(player, commandConfig.getOnLogin());
     }
@@ -60,7 +76,7 @@ public class CommandManager implements Reloadable {
         FileUtils.copyFileFromResource(file, "commands.yml");
 
         SettingsManager settingsManager = new SettingsManager(
-            new YamlFileResource(file), commandsMigrater, CommandSettingsHolder.class);
+            new YamlFileResource(file), commandMigrationService, CommandSettingsHolder.class);
         commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
     }
 

@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 /**
  * Migrates the commands from their old location, in config.yml, to the dedicated commands configuration file.
  */
-class CommandsMigrater implements MigrationService {
+class CommandMigrationService implements MigrationService {
 
     @Inject
     private SettingsMigrationService settingsMigrationService;
 
-    CommandsMigrater() {
+    CommandMigrationService() {
     }
 
     @Override

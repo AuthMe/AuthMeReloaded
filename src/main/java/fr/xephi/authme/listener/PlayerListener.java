@@ -157,9 +157,7 @@ public class PlayerListener implements Listener {
         if (spawn != null && spawn.getWorld() != null) {
             if (!player.getWorld().equals(spawn.getWorld())) {
                 player.teleport(spawn);
-                return;
-            }
-            if (spawn.distance(player.getLocation()) > settings.getProperty(ALLOWED_MOVEMENT_RADIUS)) {
+            } else if (spawn.distance(player.getLocation()) > settings.getProperty(ALLOWED_MOVEMENT_RADIUS)) {
                 player.teleport(spawn);
             }
         }
@@ -313,17 +311,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() == null) {
-            return;
+        if (listenerService.shouldCancelEvent(event.getWhoClicked())) {
+            event.setCancelled(true);
         }
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-        Player player = (Player) event.getWhoClicked();
-        if (!listenerService.shouldCancelEvent(player)) {
-            return;
-        }
-        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)

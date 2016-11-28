@@ -15,6 +15,7 @@ import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.login.AsynchronousLogin;
+import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -66,6 +67,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private AsynchronousLogin asynchronousLogin;
+
+    @Inject
+    private CommandManager commandManager;
 
     AsynchronousJoin() {
     }
@@ -150,26 +154,23 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
-            @Override
-            public void run() {
-                player.setOp(false);
-                if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-                    && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-                    player.setFlySpeed(0.0f);
-                    player.setWalkSpeed(0.0f);
-                }
-                player.setNoDamageTicks(registrationTimeout);
-                if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
-                    player.performCommand("motd");
-                }
-                if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-                    // Allow infinite blindness effect
-                    int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
-                }
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            player.setOp(false);
+            if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+                && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+                player.setFlySpeed(0.0f);
+                player.setWalkSpeed(0.0f);
             }
-
+            player.setNoDamageTicks(registrationTimeout);
+            if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
+                player.performCommand("motd");
+            }
+            if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+                // Allow infinite blindness effect
+                int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
+            }
+            commandManager.runCommandsOnJoin(player);
         });
 
         // Timeout and message task

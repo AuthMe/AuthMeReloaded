@@ -33,13 +33,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Test for {@link CommandsMigrater}.
+ * Test for {@link CommandMigrationService}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class CommandsMigraterTest {
+public class CommandMigrationServiceTest {
 
     @InjectMocks
-    private CommandsMigrater commandsMigrater;
+    private CommandMigrationService commandMigrationService;
 
     @Mock
     private SettingsMigrationService settingsMigrationService;
@@ -62,7 +62,7 @@ public class CommandsMigraterTest {
         CommandConfig configSpy = spy(commandConfig);
 
         // when
-        boolean result = commandsMigrater.transformOldCommands(configSpy);
+        boolean result = commandMigrationService.transformOldCommands(configSpy);
 
         // then
         assertThat(result, equalTo(false));
@@ -92,7 +92,7 @@ public class CommandsMigraterTest {
         commandConfig.setOnRegister(onRegisterCommands);
 
         // when
-        boolean result = commandsMigrater.transformOldCommands(commandConfig);
+        boolean result = commandMigrationService.transformOldCommands(commandConfig);
 
         // then
         assertThat(result, equalTo(true));
@@ -122,7 +122,7 @@ public class CommandsMigraterTest {
         PropertyResource resource = new YamlFileResource(commandFile);
 
         // when
-        boolean result = commandsMigrater.checkAndMigrate(
+        boolean result = commandMigrationService.checkAndMigrate(
             resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
 
         // then

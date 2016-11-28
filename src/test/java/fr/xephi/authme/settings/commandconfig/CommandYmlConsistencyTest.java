@@ -28,7 +28,7 @@ import static org.mockito.BDDMockito.given;
 public class CommandYmlConsistencyTest {
 
     @InjectMocks
-    private CommandsMigrater commandsMigrater;
+    private CommandMigrationService commandMigrationService;
 
     @Mock
     private SettingsMigrationService settingsMigrationService;
@@ -51,7 +51,7 @@ public class CommandYmlConsistencyTest {
         PropertyResource resource = new YamlFileResource(commandFile);
 
         // when
-        boolean result = commandsMigrater.checkAndMigrate(
+        boolean result = commandMigrationService.checkAndMigrate(
             resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
 
         // then
