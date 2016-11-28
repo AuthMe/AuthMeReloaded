@@ -109,7 +109,6 @@ abstract class AuthMeController {
      * @return string|null the hash, or null if unavailable (e.g. username doesn't exist)
      */
     private function getHashFromDatabase($username) {
-        // Add here your database host, username, password and database name
         $mysqli = $this->getAuthmeMySqli();
         if ($mysqli !== null) {
             $stmt = $mysqli->prepare('SELECT password FROM ' . self::AUTHME_TABLE . ' WHERE username = ?');

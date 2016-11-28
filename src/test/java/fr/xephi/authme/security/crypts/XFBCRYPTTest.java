@@ -1,17 +1,9 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-
 /**
  * Test for {@link XFBCRYPT}.
  */
 public class XFBCRYPTTest extends AbstractEncryptionMethodTest {
-
-    @BeforeClass
-    public static void setup() {
-        TestHelper.setupLogger();
-    }
 
     public XFBCRYPTTest() {
         super(new XFBCRYPT(),

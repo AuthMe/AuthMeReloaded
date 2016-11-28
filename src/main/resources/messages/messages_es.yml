@@ -71,7 +71,7 @@ kick_antibot: '¡El modo de protección AntiBot está habilitado! Tienes que esp
 email_exists: '&c¡El correo de recuperación ya ha sido enviado! Puedes descartarlo y enviar uno nuevo utilizando el siguiente comando:'
 password_error_nick: '&cNo puedes utilizar tu nombre como contraseña, por favor elige otra...'
 accounts_owned_other: 'El jugador %name tiene %count cuentas:'
-incomplete_email_settings: 'Error: no todos los ajustes necesario se han configurado para enviar correos. Por favor, contacta con un administrador.'
+incomplete_email_settings: 'Error: no todos los ajustes necesarios se han configurado para enviar correos. Por favor, contacta con un administrador.'
 recovery_code_sent: 'El código de recuperación para recuperar tu contraseña se ha enviado a tu correo.'
 invalid_name_case: 'Solo puedes unirte mediante el nombre de usuario %valid, no %invalid.'
 email_show: '&2Tu dirección de E-Mail actual es: &f%email'

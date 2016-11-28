@@ -64,9 +64,10 @@ public class SecuritySettings implements SettingsHolder {
         newProperty("settings.security.unLoggedinGroup", "unLoggedinGroup");
 
     @Comment({
-        "Possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,",
-        "MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,",
-        "DOUBLEMD5, PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only)"
+        "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,",
+        "MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,",
+        "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at",
+        "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md"
     })
     public static final Property<HashAlgorithm> PASSWORD_HASH =
         newProperty(HashAlgorithm.class, "settings.security.passwordHash", HashAlgorithm.SHA256);
@@ -84,6 +85,10 @@ public class SecuritySettings implements SettingsHolder {
     })
     public static final Property<List<String>> LEGACY_HASHES =
         new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes");
+
+    @Comment("Number of rounds to use if passwordHash is set to PBKDF2. Default is 10000")
+    public static final Property<Integer> PBKDF2_NUMBER_OF_ROUNDS =
+        newProperty("settings.security.pbkdf2Rounds", 10000);
 
     @Comment({"Prevent unsafe passwords from being used; put them in lowercase!",
         "You should always set 'help' as unsafePassword due to possible conflicts.",
