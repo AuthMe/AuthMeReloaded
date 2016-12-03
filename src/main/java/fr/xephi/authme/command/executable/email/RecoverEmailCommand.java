@@ -1,17 +1,17 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.RecoveryCodeService;
+import fr.xephi.authme.util.RandomStringUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -28,7 +28,7 @@ public class RecoverEmailCommand extends PlayerCommand {
     private PasswordSecurity passwordSecurity;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private DataSource dataSource;
@@ -49,23 +49,23 @@ public class RecoverEmailCommand extends PlayerCommand {
 
         if (!sendMailSsl.hasAllInformation()) {
             ConsoleLogger.warning("Mail API is not set");
-            commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
+            commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
         }
         if (playerCache.isAuthenticated(playerName)) {
-            commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            commonService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return;
         }
 
         PlayerAuth auth = dataSource.getAuth(playerName); // TODO: Create method to get email only
         if (auth == null) {
-            commandService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+            commonService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
             return;
         }
 
         final String email = auth.getEmail();
         if (email == null || !email.equalsIgnoreCase(playerMail) || "your@email.com".equalsIgnoreCase(email)) {
-            commandService.send(player, MessageKey.INVALID_EMAIL);
+            commonService.send(player, MessageKey.INVALID_EMAIL);
             return;
         }
 
@@ -85,13 +85,13 @@ public class RecoverEmailCommand extends PlayerCommand {
     private void createAndSendRecoveryCode(Player player, String email) {
         String recoveryCode = recoveryCodeService.generateCode(player.getName());
         sendMailSsl.sendRecoveryCode(player.getName(), email, recoveryCode);
-        commandService.send(player, MessageKey.RECOVERY_CODE_SENT);
+        commonService.send(player, MessageKey.RECOVERY_CODE_SENT);
     }
 
     private void processRecoveryCode(Player player, String code, String email) {
         final String name = player.getName();
         if (!recoveryCodeService.isCodeValid(name, code)) {
-            commandService.send(player, MessageKey.INCORRECT_RECOVERY_CODE);
+            commonService.send(player, MessageKey.INCORRECT_RECOVERY_CODE);
             return;
         }
 
@@ -101,11 +101,11 @@ public class RecoverEmailCommand extends PlayerCommand {
 
     private void generateAndSendNewPassword(Player player, String email) {
         String name = player.getName();
-        String thePass = RandomStringUtils.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
+        String thePass = RandomStringUtils.generate(commonService.getProperty(RECOVERY_PASSWORD_LENGTH));
         HashedPassword hashNew = passwordSecurity.computeHash(thePass, name);
 
         dataSource.updatePassword(name, hashNew);
         sendMailSsl.sendPasswordMail(name, email, thePass);
-        commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+        commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
     }
 }

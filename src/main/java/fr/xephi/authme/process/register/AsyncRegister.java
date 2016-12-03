@@ -7,7 +7,7 @@ import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -51,7 +51,7 @@ public class AsyncRegister implements AsynchronousProcess {
     @Inject
     private PasswordSecurity passwordSecurity;
     @Inject
-    private ProcessService service;
+    private CommonService service;
     @Inject
     private SyncProcessManager syncProcessManager;
     @Inject

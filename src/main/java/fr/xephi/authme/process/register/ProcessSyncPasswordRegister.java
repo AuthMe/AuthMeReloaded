@@ -4,7 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
@@ -25,7 +25,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private BungeeService bungeeService;
 
     @Inject
-    private ProcessService service;
+    private CommonService service;
 
     @Inject
     private LimboCache limboCache;

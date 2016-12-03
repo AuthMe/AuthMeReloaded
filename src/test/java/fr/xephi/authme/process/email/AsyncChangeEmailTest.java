@@ -4,7 +4,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 import org.junit.Test;
@@ -39,7 +40,10 @@ public class AsyncChangeEmailTest {
     private DataSource dataSource;
 
     @Mock
-    private ProcessService service;
+    private CommonService service;
+
+    @Mock
+    private ValidationService validationService;
 
     @Test
     public void shouldAddEmail() {
@@ -50,8 +54,8 @@ public class AsyncChangeEmailTest {
         PlayerAuth auth = authWithMail("old@mail.tld");
         given(playerCache.getAuth("bobby")).willReturn(auth);
         given(dataSource.updateEmail(auth)).willReturn(true);
-        given(service.validateEmail(newEmail)).willReturn(true);
-        given(service.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        given(validationService.validateEmail(newEmail)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
 
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
@@ -71,8 +75,8 @@ public class AsyncChangeEmailTest {
         PlayerAuth auth = authWithMail("old@mail.tld");
         given(playerCache.getAuth("bobby")).willReturn(auth);
         given(dataSource.updateEmail(auth)).willReturn(false);
-        given(service.validateEmail(newEmail)).willReturn(true);
-        given(service.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        given(validationService.validateEmail(newEmail)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
 
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
@@ -108,7 +112,7 @@ public class AsyncChangeEmailTest {
         given(playerCache.isAuthenticated("bobby")).willReturn(true);
         PlayerAuth auth = authWithMail("old@mail.tld");
         given(playerCache.getAuth("bobby")).willReturn(auth);
-        given(service.validateEmail(newEmail)).willReturn(false);
+        given(validationService.validateEmail(newEmail)).willReturn(false);
 
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
@@ -127,7 +131,7 @@ public class AsyncChangeEmailTest {
         given(playerCache.isAuthenticated("bobby")).willReturn(true);
         PlayerAuth auth = authWithMail("other@address.email");
         given(playerCache.getAuth("bobby")).willReturn(auth);
-        given(service.validateEmail(newEmail)).willReturn(true);
+        given(validationService.validateEmail(newEmail)).willReturn(true);
 
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
@@ -146,8 +150,8 @@ public class AsyncChangeEmailTest {
         given(playerCache.isAuthenticated("username")).willReturn(true);
         PlayerAuth auth = authWithMail("old@example.com");
         given(playerCache.getAuth("username")).willReturn(auth);
-        given(service.validateEmail(newEmail)).willReturn(true);
-        given(service.isEmailFreeForRegistration(newEmail, player)).willReturn(false);
+        given(validationService.validateEmail(newEmail)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(false);
 
         // when
         process.changeEmail(player, "old@example.com", newEmail);

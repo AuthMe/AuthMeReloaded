@@ -1,11 +1,12 @@
 package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -21,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -44,13 +44,16 @@ public class RegisterCommandTest {
     private RegisterCommand command;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private Management management;
 
     @Mock
     private SendMailSSL sendMailSsl;
+
+    @Mock
+    private ValidationService validationService;
 
     @BeforeClass
     public static void setup() {
@@ -70,7 +73,7 @@ public class RegisterCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(sender).sendMessage(argThat(containsString("Player only!")));
@@ -84,7 +87,7 @@ public class RegisterCommandTest {
         Player player = mock(Player.class);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(management).performRegister(player, "", "", true);
@@ -97,7 +100,7 @@ public class RegisterCommandTest {
         Player player = mock(Player.class);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_REGISTER);
@@ -154,7 +157,7 @@ public class RegisterCommandTest {
     public void shouldRejectInvalidEmail() {
         // given
         String playerMail = "player@example.org";
-        given(commandService.validateEmail(playerMail)).willReturn(false);
+        given(validationService.validateEmail(playerMail)).willReturn(false);
 
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
@@ -165,7 +168,7 @@ public class RegisterCommandTest {
         command.executeCommand(player, Arrays.asList(playerMail, playerMail));
 
         // then
-        verify(commandService).validateEmail(playerMail);
+        verify(validationService).validateEmail(playerMail);
         verify(commandService).send(player, MessageKey.INVALID_EMAIL);
         verifyZeroInteractions(management);
     }
@@ -174,7 +177,7 @@ public class RegisterCommandTest {
     public void shouldRejectInvalidEmailConfirmation() {
         // given
         String playerMail = "bobber@bobby.org";
-        given(commandService.validateEmail(playerMail)).willReturn(true);
+        given(validationService.validateEmail(playerMail)).willReturn(true);
 
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
@@ -194,7 +197,7 @@ public class RegisterCommandTest {
     public void shouldPerformEmailRegistration() {
         // given
         String playerMail = "asfd@lakjgre.lds";
-        given(commandService.validateEmail(playerMail)).willReturn(true);
+        given(validationService.validateEmail(playerMail)).willReturn(true);
         int passLength = 7;
         given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(passLength);
 
@@ -207,7 +210,7 @@ public class RegisterCommandTest {
         command.executeCommand(player, Arrays.asList(playerMail, playerMail));
 
         // then
-        verify(commandService).validateEmail(playerMail);
+        verify(validationService).validateEmail(playerMail);
         verify(sendMailSsl).hasAllInformation();
         verify(management).performRegister(eq(player), argThat(stringWithLength(passLength)), eq(playerMail), eq(true));
     }

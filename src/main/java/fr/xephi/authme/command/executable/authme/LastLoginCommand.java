@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ public class LastLoginCommand implements ExecutableCommand {
     private DataSource dataSource;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
@@ -29,7 +29,7 @@ public class LastLoginCommand implements ExecutableCommand {
 
         PlayerAuth auth = dataSource.getAuth(playerName);
         if (auth == null) {
-            commandService.send(sender, MessageKey.USER_NOT_REGISTERED);
+            commonService.send(sender, MessageKey.USER_NOT_REGISTERED);
             return;
         }
 

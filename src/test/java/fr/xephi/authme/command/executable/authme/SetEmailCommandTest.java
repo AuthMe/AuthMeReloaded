@@ -1,11 +1,12 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,27 +38,30 @@ public class SetEmailCommandTest {
     private DataSource dataSource;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private PlayerCache playerCache;
 
     @Mock
     private BukkitService bukkitService;
+    
+    @Mock
+    private ValidationService validationService;
 
     @Test
     public void shouldRejectInvalidMail() {
         // given
         String user = "somebody";
         String email = "some.test@example.org";
-        given(commandService.validateEmail(email)).willReturn(false);
+        given(validationService.validateEmail(email)).willReturn(false);
         CommandSender sender = mock(CommandSender.class);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
 
         // then
-        verify(commandService).validateEmail(email);
+        verify(validationService).validateEmail(email);
         verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
         verifyZeroInteractions(dataSource);
     }
@@ -67,7 +71,7 @@ public class SetEmailCommandTest {
         // given
         String user = "nonexistent";
         String email = "mail@example.com";
-        given(commandService.validateEmail(email)).willReturn(true);
+        given(validationService.validateEmail(email)).willReturn(true);
         given(dataSource.getAuth(user)).willReturn(null);
         CommandSender sender = mock(CommandSender.class);
 
@@ -76,7 +80,7 @@ public class SetEmailCommandTest {
         runOptionallyAsyncTask(bukkitService);
 
         // then
-        verify(commandService).validateEmail(email);
+        verify(validationService).validateEmail(email);
         verify(dataSource).getAuth(user);
         verify(commandService).send(sender, MessageKey.UNKNOWN_USER);
         verifyNoMoreInteractions(dataSource);
@@ -87,20 +91,20 @@ public class SetEmailCommandTest {
         // given
         String user = "someone";
         String email = "mail@example.com";
-        given(commandService.validateEmail(email)).willReturn(true);
+        given(validationService.validateEmail(email)).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(dataSource.getAuth(user)).willReturn(auth);
         CommandSender sender = mock(CommandSender.class);
-        given(commandService.isEmailFreeForRegistration(email, sender)).willReturn(false);
+        given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
         runOptionallyAsyncTask(bukkitService);
 
         // then
-        verify(commandService).validateEmail(email);
+        verify(validationService).validateEmail(email);
         verify(dataSource).getAuth(user);
-        verify(commandService).isEmailFreeForRegistration(email, sender);
+        verify(validationService).isEmailFreeForRegistration(email, sender);
         verify(commandService).send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
         verifyNoMoreInteractions(dataSource);
         verifyZeroInteractions(auth);
@@ -111,11 +115,11 @@ public class SetEmailCommandTest {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
-        given(commandService.validateEmail(email)).willReturn(true);
+        given(validationService.validateEmail(email)).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(dataSource.getAuth(user)).willReturn(auth);
         CommandSender sender = mock(CommandSender.class);
-        given(commandService.isEmailFreeForRegistration(email, sender)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
         given(dataSource.updateEmail(auth)).willReturn(false);
 
         // when
@@ -123,9 +127,9 @@ public class SetEmailCommandTest {
         runOptionallyAsyncTask(bukkitService);
 
         // then
-        verify(commandService).validateEmail(email);
+        verify(validationService).validateEmail(email);
         verify(dataSource).getAuth(user);
-        verify(commandService).isEmailFreeForRegistration(email, sender);
+        verify(validationService).isEmailFreeForRegistration(email, sender);
         verify(commandService).send(sender, MessageKey.ERROR);
         verify(dataSource).updateEmail(auth);
         verifyNoMoreInteractions(dataSource);
@@ -136,11 +140,11 @@ public class SetEmailCommandTest {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
-        given(commandService.validateEmail(email)).willReturn(true);
+        given(validationService.validateEmail(email)).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(dataSource.getAuth(user)).willReturn(auth);
         CommandSender sender = mock(CommandSender.class);
-        given(commandService.isEmailFreeForRegistration(email, sender)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(playerCache.getAuth(user)).willReturn(null);
 
@@ -149,9 +153,9 @@ public class SetEmailCommandTest {
         runOptionallyAsyncTask(bukkitService);
 
         // then
-        verify(commandService).validateEmail(email);
+        verify(validationService).validateEmail(email);
         verify(dataSource).getAuth(user);
-        verify(commandService).isEmailFreeForRegistration(email, sender);
+        verify(validationService).isEmailFreeForRegistration(email, sender);
         verify(commandService).send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
         verify(dataSource).updateEmail(auth);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
@@ -163,11 +167,11 @@ public class SetEmailCommandTest {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
-        given(commandService.validateEmail(email)).willReturn(true);
+        given(validationService.validateEmail(email)).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(dataSource.getAuth(user)).willReturn(auth);
         CommandSender sender = mock(CommandSender.class);
-        given(commandService.isEmailFreeForRegistration(email, sender)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(playerCache.getAuth(user)).willReturn(mock(PlayerAuth.class));
 
@@ -176,9 +180,9 @@ public class SetEmailCommandTest {
         runOptionallyAsyncTask(bukkitService);
 
         // then
-        verify(commandService).validateEmail(email);
+        verify(validationService).validateEmail(email);
         verify(dataSource).getAuth(user);
-        verify(commandService).isEmailFreeForRegistration(email, sender);
+        verify(validationService).isEmailFreeForRegistration(email, sender);
         verify(commandService).send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
         verify(dataSource).updateEmail(auth);
         verify(playerCache).updatePlayer(auth);

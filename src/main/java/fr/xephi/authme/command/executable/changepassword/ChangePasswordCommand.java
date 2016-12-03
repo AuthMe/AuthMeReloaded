@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.executable.changepassword;
 
-import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.entity.Player;
@@ -18,7 +18,7 @@ import java.util.List;
 public class ChangePasswordCommand extends PlayerCommand {
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private PlayerCache playerCache;
@@ -36,14 +36,14 @@ public class ChangePasswordCommand extends PlayerCommand {
 
         String name = player.getName().toLowerCase();
         if (!playerCache.isAuthenticated(name)) {
-            commandService.send(player, MessageKey.NOT_LOGGED_IN);
+            commonService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }
 
         // Make sure the password is allowed
         ValidationResult passwordValidation = validationService.validatePassword(newPassword, name);
         if (passwordValidation.hasError()) {
-            commandService.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
+            commonService.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
             return;
         }
 

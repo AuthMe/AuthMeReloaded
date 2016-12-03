@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.executable.unregister;
 
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,7 @@ public class UnregisterCommandTest {
     private Management management;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private PlayerCache playerCache;

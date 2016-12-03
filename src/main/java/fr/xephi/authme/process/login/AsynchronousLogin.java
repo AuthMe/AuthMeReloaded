@@ -16,7 +16,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -44,7 +44,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private DataSource dataSource;
 
     @Inject
-    private ProcessService service;
+    private CommonService service;
 
     @Inject
     private PermissionsManager permissionsManager;

@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -9,6 +8,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
@@ -51,7 +51,7 @@ public class RegisterAdminCommandTest {
     private BukkitService bukkitService;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private ValidationService validationService;
@@ -164,7 +164,7 @@ public class RegisterAdminCommandTest {
         Player player = mock(Player.class);
         given(bukkitService.getPlayerExact(user)).willReturn(player);
         String kickForAdminRegister = "Admin registered you -- log in again";
-        given(commandService.retrieveSingle(MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
+        given(commandService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
         CommandSender sender = mock(CommandSender.class);
 
         // when

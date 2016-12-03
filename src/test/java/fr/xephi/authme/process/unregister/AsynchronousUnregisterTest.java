@@ -8,7 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
@@ -45,7 +45,7 @@ public class AsynchronousUnregisterTest {
     @Mock
     private DataSource dataSource;
     @Mock
-    private ProcessService service;
+    private CommonService service;
     @Mock
     private PasswordSecurity passwordSecurity;
     @Mock

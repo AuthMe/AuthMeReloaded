@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -18,7 +18,7 @@ public class AddEmailCommand extends PlayerCommand {
     private Management management;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
@@ -29,7 +29,7 @@ public class AddEmailCommand extends PlayerCommand {
             // Closer inspection of the mail address handled by the async task
             management.performAddEmail(player, email);
         } else {
-            commandService.send(player, MessageKey.CONFIRM_EMAIL_MESSAGE);
+            commonService.send(player, MessageKey.CONFIRM_EMAIL_MESSAGE);
         }
     }
 }

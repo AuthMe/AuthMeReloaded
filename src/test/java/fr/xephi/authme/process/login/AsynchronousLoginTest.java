@@ -8,7 +8,7 @@ import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -56,7 +56,7 @@ public class AsynchronousLoginTest {
     @Mock
     private PlayerCache playerCache;
     @Mock
-    private ProcessService processService;
+    private CommonService commonService;
     @Mock
     private LimboPlayerTaskManager limboPlayerTaskManager;
     @Mock
@@ -81,7 +81,7 @@ public class AsynchronousLoginTest {
 
         // then
         verify(playerCache, only()).isAuthenticated(name);
-        verify(processService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+        verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
         verifyZeroInteractions(dataSource);
     }
 
@@ -98,7 +98,7 @@ public class AsynchronousLoginTest {
 
         // then
         verify(playerCache, only()).isAuthenticated(name);
-        verify(processService).send(player, MessageKey.USER_NOT_REGISTERED);
+        verify(commonService).send(player, MessageKey.USER_NOT_REGISTERED);
         verify(dataSource, only()).getAuth(name);
     }
 
@@ -111,15 +111,15 @@ public class AsynchronousLoginTest {
         int groupId = 13;
         PlayerAuth auth = PlayerAuth.builder().name(name).groupId(groupId).build();
         given(dataSource.getAuth(name)).willReturn(auth);
-        given(processService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("group");
-        given(processService.getProperty(HooksSettings.NON_ACTIVATED_USERS_GROUP)).willReturn(groupId);
+        given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("group");
+        given(commonService.getProperty(HooksSettings.NON_ACTIVATED_USERS_GROUP)).willReturn(groupId);
 
         // when
         asynchronousLogin.forceLogin(player);
 
         // then
         verify(playerCache, only()).isAuthenticated(name);
-        verify(processService).send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
+        verify(commonService).send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
         verify(dataSource, only()).getAuth(name);
     }
 
@@ -133,7 +133,7 @@ public class AsynchronousLoginTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
         given(dataSource.getAuth(name)).willReturn(auth);
-        given(processService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
+        given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
         doReturn(true).when(asynchronousLogin).hasReachedMaxLoggedInPlayersForIp(any(Player.class), anyString());
 
         // when
@@ -141,7 +141,7 @@ public class AsynchronousLoginTest {
 
         // then
         verify(playerCache, only()).isAuthenticated(name);
-        verify(processService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+        verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
         verify(dataSource, only()).getAuth(name);
         verify(asynchronousLogin).hasReachedMaxLoggedInPlayersForIp(player, ip);
     }
@@ -156,8 +156,8 @@ public class AsynchronousLoginTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
         given(dataSource.getAuth(name)).willReturn(auth);
-        given(processService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
-        given(processService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
+        given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
+        given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         doReturn(false).when(asynchronousLogin).hasReachedMaxLoggedInPlayersForIp(any(Player.class), anyString());
         doAnswer(new Answer<Void>() {
             @Override
@@ -181,7 +181,7 @@ public class AsynchronousLoginTest {
     public void shouldPassMaxLoginPerIpCheck() {
         // given
         Player player = mockPlayer("Carl");
-        given(processService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
+        given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
         mockOnlinePlayersInBukkitService();
 
@@ -198,7 +198,7 @@ public class AsynchronousLoginTest {
     public void shouldSkipIpCheckForZeroThreshold() {
         // given
         Player player = mockPlayer("Fiona");
-        given(processService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
+        given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
 
         // when
         boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "192.168.0.1");
@@ -212,7 +212,7 @@ public class AsynchronousLoginTest {
     public void shouldSkipIpCheckForPlayerWithMultipleAccountsPermission() {
         // given
         Player player = mockPlayer("Frank");
-        given(processService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(1);
+        given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(1);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
 
         // when
@@ -228,7 +228,7 @@ public class AsynchronousLoginTest {
     public void shouldFailIpCheckForIpWithTooManyPlayersOnline() {
         // given
         Player player = mockPlayer("Ian");
-        given(processService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
+        given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
         mockOnlinePlayersInBukkitService();
 

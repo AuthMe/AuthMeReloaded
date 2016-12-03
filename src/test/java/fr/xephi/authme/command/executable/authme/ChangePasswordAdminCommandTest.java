@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -9,6 +8,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
@@ -39,7 +39,7 @@ public class ChangePasswordAdminCommandTest {
     private ChangePasswordAdminCommand command;
 
     @Mock
-    private CommandService service;
+    private CommonService service;
 
     @Mock
     private PasswordSecurity passwordSecurity;

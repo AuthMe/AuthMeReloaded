@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -9,6 +8,7 @@ import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.RecoveryCodeService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.entity.Player;
@@ -50,7 +50,7 @@ public class RecoverEmailCommandTest {
     private PasswordSecurity passwordSecurity;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private DataSource dataSource;

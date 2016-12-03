@@ -3,7 +3,7 @@ package fr.xephi.authme.process.register;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
 public class ProcessSyncEmailRegister implements SynchronousProcess {
 
     @Inject
-    private ProcessService service;
+    private CommonService service;
 
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;

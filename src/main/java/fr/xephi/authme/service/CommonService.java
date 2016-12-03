@@ -1,4 +1,4 @@
-package fr.xephi.authme.process;
+package fr.xephi.authme.service;
 
 import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.message.MessageKey;
@@ -8,16 +8,15 @@ import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
 /**
- * Service for asynchronous and synchronous processes.
+ * Service for the most common operations regarding settings, messages and permissions.
  */
-public class ProcessService {
+public class CommonService {
 
     @Inject
     private Settings settings;
@@ -26,16 +25,16 @@ public class ProcessService {
     private Messages messages;
 
     @Inject
-    private ValidationService validationService;
-
-    @Inject
     private PermissionsManager permissionsManager;
 
     @Inject
     private AuthGroupHandler authGroupHandler;
 
+    CommonService() {
+    }
+
     /**
-     * Retrieve a property's value.
+     * Retrieves a property's value.
      *
      * @param property the property to retrieve
      * @param <T> the property type
@@ -46,16 +45,7 @@ public class ProcessService {
     }
 
     /**
-     * Return the settings manager.
-     *
-     * @return settings manager
-     */
-    public Settings getSettings() {
-        return settings;
-    }
-
-    /**
-     * Send a message to the command sender.
+     * Sends a message to the command sender.
      *
      * @param sender the command sender
      * @param key the message key
@@ -65,7 +55,7 @@ public class ProcessService {
     }
 
     /**
-     * Send a message to the command sender with the given replacements.
+     * Sends a message to the command sender with the given replacements.
      *
      * @param sender the command sender
      * @param key the message key
@@ -76,7 +66,7 @@ public class ProcessService {
     }
 
     /**
-     * Retrieve a message.
+     * Retrieves a message.
      *
      * @param key the key of the message
      * @return the message, split by line
@@ -86,7 +76,7 @@ public class ProcessService {
     }
 
     /**
-     * Retrieve a message as one piece.
+     * Retrieves a message in one piece.
      *
      * @param key the key of the message
      * @return the message
@@ -95,18 +85,24 @@ public class ProcessService {
         return messages.retrieveSingle(key);
     }
 
-    public boolean validateEmail(String email) {
-        return validationService.validateEmail(email);
-    }
-
-    public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
-        return validationService.isEmailFreeForRegistration(email, sender);
-    }
-
+    /**
+     * Checks whether the player has the given permission.
+     *
+     * @param player the player
+     * @param node the permission node to check
+     * @return true if player has permission, false otherwise
+     */
     public boolean hasPermission(Player player, PermissionNode node) {
         return permissionsManager.hasPermission(player, node);
     }
 
+    /**
+     * Sets the permission group of the given player.
+     *
+     * @param player the player to process
+     * @param group the group to add the player to
+     * @return true on success, false otherwise
+     */
     public boolean setGroup(Player player, AuthGroupType group) {
         return authGroupHandler.setGroup(player, group);
     }

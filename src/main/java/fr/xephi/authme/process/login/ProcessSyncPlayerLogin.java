@@ -8,13 +8,13 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -34,9 +34,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private BungeeService bungeeService;
 
     @Inject
-    private ProcessService service;
-
-    @Inject
     private LimboCache limboCache;
 
     @Inject
@@ -53,6 +50,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
     private CommandManager commandManager;
+
+    @Inject
+    private Settings settings;
 
     ProcessSyncPlayerLogin() {
     }
@@ -77,7 +77,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             // because LimboCache#restoreData teleport player to last location.
         }
 
-        if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
+        if (settings.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
             restoreInventory(player);
         }
 
@@ -94,7 +94,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             }
         }
 
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+        if (settings.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
@@ -103,13 +103,13 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         player.saveData();
 
         // Login is done, display welcome message
-        if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                for (String s : service.getSettings().getWelcomeMessage()) {
+        if (settings.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            if (settings.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
+                for (String s : settings.getWelcomeMessage()) {
                     Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
-                for (String s : service.getSettings().getWelcomeMessage()) {
+                for (String s : settings.getWelcomeMessage()) {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }

@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.executable.unregister;
 
-import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -19,7 +19,7 @@ public class UnregisterCommand extends PlayerCommand {
     private Management management;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private PlayerCache playerCache;
@@ -31,7 +31,7 @@ public class UnregisterCommand extends PlayerCommand {
 
         // Make sure the player is authenticated
         if (!playerCache.isAuthenticated(playerName)) {
-            commandService.send(player, MessageKey.NOT_LOGGED_IN);
+            commonService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }
 

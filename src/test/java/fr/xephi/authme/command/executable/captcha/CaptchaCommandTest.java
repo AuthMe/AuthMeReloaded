@@ -2,8 +2,8 @@ package fr.xephi.authme.command.executable.captcha;
 
 import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +34,7 @@ public class CaptchaCommandTest {
     private PlayerCache playerCache;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Test
     public void shouldDetectIfPlayerIsLoggedIn() {

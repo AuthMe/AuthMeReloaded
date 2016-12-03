@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class UnregisterAdminCommandTest {
     private DataSource dataSource;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private BukkitService bukkitService;

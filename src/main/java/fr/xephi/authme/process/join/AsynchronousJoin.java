@@ -13,7 +13,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -45,7 +45,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private DataSource database;
 
     @Inject
-    private ProcessService service;
+    private CommonService service;
 
     @Inject
     private PlayerCache playerCache;

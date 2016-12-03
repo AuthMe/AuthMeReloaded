@@ -3,13 +3,13 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.limbo.LimboCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
@@ -27,7 +27,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
     private PasswordSecurity passwordSecurity;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private DataSource dataSource;
@@ -51,7 +51,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
         // Command logic
         ValidationResult passwordValidation = validationService.validatePassword(playerPass, playerName);
         if (passwordValidation.hasError()) {
-            commandService.send(sender, passwordValidation.getMessageKey(), passwordValidation.getArgs());
+            commonService.send(sender, passwordValidation.getMessageKey(), passwordValidation.getArgs());
             return;
         }
 
@@ -60,7 +60,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
             @Override
             public void run() {
                 if (dataSource.isAuthAvailable(playerNameLowerCase)) {
-                    commandService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
+                    commonService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
                     return;
                 }
                 HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
@@ -71,12 +71,12 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     .build();
 
                 if (!dataSource.saveAuth(auth)) {
-                    commandService.send(sender, MessageKey.ERROR);
+                    commonService.send(sender, MessageKey.ERROR);
                     return;
                 }
                 dataSource.setUnlogged(playerNameLowerCase);
 
-                commandService.send(sender, MessageKey.REGISTER_SUCCESS);
+                commonService.send(sender, MessageKey.REGISTER_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
                 final Player player = bukkitService.getPlayerExact(playerName);
                 if (player != null) {
@@ -84,7 +84,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
                         @Override
                         public void run() {
                             limboCache.restoreData(player);
-                            player.kickPlayer(commandService.retrieveSingle(MessageKey.KICK_FOR_ADMIN_REGISTER));
+                            player.kickPlayer(commonService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER));
                         }
                     });
                 }
