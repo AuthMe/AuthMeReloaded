@@ -124,6 +124,7 @@ public class TranslationPageGenerator implements AutoToolTask {
             .put("nl", "Dutch")
             .put("pl", "Polish")
             .put("pt", "Portuguese")
+            .put("ro", "Romanian")
             .put("ru", "Russian")
             .put("sk", "Slovakian")
             .put("tr", "Turkish")
