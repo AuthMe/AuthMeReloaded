@@ -1,8 +1,8 @@
 package fr.xephi.authme.mail;
 
-import fr.xephi.authme.AuthMe;
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -11,6 +11,7 @@ import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailConstants;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.bukkit.Server;
 
 import javax.activation.CommandMap;
 import javax.activation.DataSource;
@@ -29,18 +30,19 @@ import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 
 
 /**
- * @author Xephi59
+ * Sends emails to players on behalf of the server.
  */
 public class SendMailSSL {
 
-    @Inject
-    private AuthMe plugin;
-    @Inject
-    private Settings settings;
-    @Inject
-    private BukkitService bukkitService;
+    private final File dataFolder;
+    private final String serverName;
+    private final Settings settings;
 
-    SendMailSSL() {
+    @Inject
+    SendMailSSL(@DataFolder File dataFolder, Server server, Settings settings) {
+        this.dataFolder = dataFolder;
+        this.serverName = server.getServerName();
+        this.settings = settings;
     }
 
     /**
@@ -59,62 +61,57 @@ public class SendMailSSL {
      * @param name the name of the player
      * @param mailAddress the player's email
      * @param newPass the new password
+     * @return true if email could be sent, false otherwise
      */
-    public void sendPasswordMail(String name, String mailAddress, String newPass) {
+    public boolean sendPasswordMail(String name, String mailAddress, String newPass) {
         if (!hasAllInformation()) {
             ConsoleLogger.warning("Cannot perform email registration: not all email settings are complete");
-            return;
+            return false;
         }
 
-        final String mailText = replaceTagsForPasswordMail(settings.getPasswordEmailMessage(), name, newPass);
-        bukkitService.runTaskAsynchronously(new Runnable() {
+        HtmlEmail email;
+        try {
+            email = initializeMail(mailAddress);
+        } catch (EmailException e) {
+            ConsoleLogger.logException("Failed to create email with the given settings:", e);
+            return false;
+        }
 
-            @Override
-            public void run() {
-                HtmlEmail email;
-                try {
-                    email = initializeMail(mailAddress);
-                } catch (EmailException e) {
-                    ConsoleLogger.logException("Failed to create email with the given settings:", e);
-                    return;
-                }
-
-                String content = mailText;
-                // Generate an image?
-                File file = null;
-                if (settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)) {
-                    try {
-                        file = generateImage(name, plugin, newPass);
-                        content = embedImageIntoEmailContent(file, email, content);
-                    } catch (IOException | EmailException e) {
-                        ConsoleLogger.logException(
-                            "Unable to send new password as image for email " + mailAddress + ":", e);
-                    }
-                }
-
-                sendEmail(content, email);
-                FileUtils.delete(file);
+        String mailText = replaceTagsForPasswordMail(settings.getPasswordEmailMessage(), name, newPass);
+        // Generate an image?
+        File file = null;
+        if (settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)) {
+            try {
+                file = generateImage(name, newPass);
+                mailText = embedImageIntoEmailContent(file, email, mailText);
+            } catch (IOException | EmailException e) {
+                ConsoleLogger.logException(
+                    "Unable to send new password as image for email " + mailAddress + ":", e);
             }
-        });
+        }
+
+        boolean couldSendEmail = sendEmail(mailText, email);
+        FileUtils.delete(file);
+        return couldSendEmail;
     }
 
-    public void sendRecoveryCode(String name, String email, String code) {
-        String message = replaceTagsForRecoveryCodeMail(settings.getRecoveryCodeEmailMessage(),
-            name, code, settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID));
-
+    public boolean sendRecoveryCode(String name, String email, String code) {
         HtmlEmail htmlEmail;
         try {
             htmlEmail = initializeMail(email);
         } catch (EmailException e) {
             ConsoleLogger.logException("Failed to create email for recovery code:", e);
-            return;
+            return false;
         }
-        sendEmail(message, htmlEmail);
+
+        String message = replaceTagsForRecoveryCodeMail(settings.getRecoveryCodeEmailMessage(),
+            name, code, settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID));
+        return sendEmail(message, htmlEmail);
     }
 
-    private static File generateImage(String name, AuthMe plugin, String newPass) throws IOException {
+    private File generateImage(String name, String newPass) throws IOException {
         ImageGenerator gen = new ImageGenerator(newPass);
-        File file = new File(plugin.getDataFolder(), name + "_new_pass.jpg");
+        File file = new File(dataFolder, name + "_new_pass.jpg");
         ImageIO.write(gen.generateImage(), "jpg", file);
         return file;
     }
@@ -126,7 +123,8 @@ public class SendMailSSL {
         return content.replace("<image />", "<img src=\"cid:" + tag + "\">");
     }
 
-    private HtmlEmail initializeMail(String emailAddress) throws EmailException {
+    @VisibleForTesting
+    HtmlEmail initializeMail(String emailAddress) throws EmailException {
         String senderMail = settings.getProperty(EmailSettings.MAIL_ACCOUNT);
         String senderName = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_SENDER_NAME))
             ? senderMail
@@ -147,7 +145,8 @@ public class SendMailSSL {
         return email;
     }
 
-    private static boolean sendEmail(String content, HtmlEmail email) {
+    @VisibleForTesting
+    boolean sendEmail(String content, HtmlEmail email) {
         Thread.currentThread().setContextClassLoader(SendMailSSL.class.getClassLoader());
         // Issue #999: Prevent UnsupportedDataTypeException: no object DCH for MIME type multipart/alternative
         // cf. http://stackoverflow.com/questions/21856211/unsupporteddatatypeexception-no-object-dch-for-mime-type
@@ -177,14 +176,14 @@ public class SendMailSSL {
     private String replaceTagsForPasswordMail(String mailText, String name, String newPass) {
         return mailText
             .replace("<playername />", name)
-            .replace("<servername />", plugin.getServer().getServerName())
+            .replace("<servername />", serverName)
             .replace("<generatedpass />", newPass);
     }
 
     private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {
         return mailText
             .replace("<playername />", name)
-            .replace("<servername />", plugin.getServer().getServerName())
+            .replace("<servername />", serverName)
             .replace("<recoverycode />", code)
             .replace("<hoursvalid />", String.valueOf(hoursValid));
     }

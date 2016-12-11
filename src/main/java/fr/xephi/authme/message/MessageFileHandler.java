@@ -53,7 +53,7 @@ public class MessageFileHandler {
 
         if (message == null) {
             ConsoleLogger.warning("Error getting message with key '" + key + "'. "
-                + "Please verify your config file at '" + filename + "'");
+                + "Please update your config file '" + filename + "' (or run /authme messages)");
             return getDefault(key);
         }
         return message;

@@ -168,6 +168,7 @@ public class RecoverEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(sendMailSsl.sendRecoveryCode(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
         given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(email));
@@ -217,6 +218,7 @@ public class RecoverEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
         String code = "A6EF3AC8";
@@ -251,6 +253,7 @@ public class RecoverEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "shark@example.org";
         PlayerAuth auth = newAuthWithEmail(email);

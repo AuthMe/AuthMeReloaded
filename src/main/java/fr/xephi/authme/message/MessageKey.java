@@ -153,6 +153,8 @@ public enum MessageKey {
 
     INCOMPLETE_EMAIL_SETTINGS("incomplete_email_settings"),
 
+    EMAIL_SEND_FAILURE("email_send_failure"),
+
     RECOVERY_CODE_SENT("recovery_code_sent"),
 
     INCORRECT_RECOVERY_CODE("recovery_code_incorrect");

@@ -84,19 +84,22 @@ public class RecoverEmailCommand extends PlayerCommand {
 
     private void createAndSendRecoveryCode(Player player, String email) {
         String recoveryCode = recoveryCodeService.generateCode(player.getName());
-        sendMailSsl.sendRecoveryCode(player.getName(), email, recoveryCode);
-        commonService.send(player, MessageKey.RECOVERY_CODE_SENT);
+        boolean couldSendMail = sendMailSsl.sendRecoveryCode(player.getName(), email, recoveryCode);
+        if (couldSendMail) {
+            commonService.send(player, MessageKey.RECOVERY_CODE_SENT);
+        } else {
+            commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
+        }
     }
 
     private void processRecoveryCode(Player player, String code, String email) {
         final String name = player.getName();
-        if (!recoveryCodeService.isCodeValid(name, code)) {
+        if (recoveryCodeService.isCodeValid(name, code)) {
+            generateAndSendNewPassword(player, email);
+            recoveryCodeService.removeCode(name);
+        } else {
             commonService.send(player, MessageKey.INCORRECT_RECOVERY_CODE);
-            return;
         }
-
-        generateAndSendNewPassword(player, email);
-        recoveryCodeService.removeCode(name);
     }
 
     private void generateAndSendNewPassword(Player player, String email) {
@@ -105,7 +108,11 @@ public class RecoverEmailCommand extends PlayerCommand {
         HashedPassword hashNew = passwordSecurity.computeHash(thePass, name);
 
         dataSource.updatePassword(name, hashNew);
-        sendMailSsl.sendPasswordMail(name, email, thePass);
-        commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+        boolean couldSendMail = sendMailSsl.sendPasswordMail(name, email, thePass);
+        if (couldSendMail) {
+            commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+        } else {
+            commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
+        }
     }
 }
