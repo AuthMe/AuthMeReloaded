@@ -15,6 +15,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class CacheDataSource implements DataSource {
 
     private final DataSource source;
-    private final LoadingCache<String, PlayerAuth> cachedAuths;
+    private final LoadingCache<String, Optional<PlayerAuth>> cachedAuths;
     private final ListeningExecutorService executorService;
 
     /**
@@ -41,20 +42,20 @@ public class CacheDataSource implements DataSource {
         cachedAuths = CacheBuilder.newBuilder()
             .refreshAfterWrite(5, TimeUnit.MINUTES)
             .expireAfterAccess(15, TimeUnit.MINUTES)
-            .build(new CacheLoader<String, PlayerAuth>() {
+            .build(new CacheLoader<String, Optional<PlayerAuth>>() {
                 @Override
-                public PlayerAuth load(String key) {
-                    return source.getAuth(key);
+                public Optional<PlayerAuth> load(String key) {
+                    return Optional.ofNullable(source.getAuth(key));
                 }
 
                 @Override
-                public ListenableFuture<PlayerAuth> reload(final String key, PlayerAuth oldValue) {
+                public ListenableFuture<Optional<PlayerAuth>> reload(final String key, Optional<PlayerAuth> oldValue) {
                     return executorService.submit(() -> load(key));
                 }
             });
     }
 
-    public LoadingCache<String, PlayerAuth> getCachedAuths() {
+    public LoadingCache<String, Optional<PlayerAuth>> getCachedAuths() {
         return cachedAuths;
     }
 
@@ -71,9 +72,9 @@ public class CacheDataSource implements DataSource {
     @Override
     public HashedPassword getPassword(String user) {
         user = user.toLowerCase();
-        PlayerAuth auth = cachedAuths.getIfPresent(user);
-        if (auth != null) {
-            return auth.getPassword();
+        Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user);
+        if (pAuthOpt != null && pAuthOpt.isPresent()) {
+            return pAuthOpt.get().getPassword();
         }
         return source.getPassword(user);
     }
@@ -81,7 +82,7 @@ public class CacheDataSource implements DataSource {
     @Override
     public PlayerAuth getAuth(String user) {
         user = user.toLowerCase();
-        return cachedAuths.getUnchecked(user);
+        return cachedAuths.getUnchecked(user).orElse(null);
     }
 
     @Override
