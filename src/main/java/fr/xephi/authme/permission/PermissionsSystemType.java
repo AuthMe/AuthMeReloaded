@@ -33,21 +33,21 @@ public enum PermissionsSystemType {
     /**
      * The display name of the permissions system.
      */
-    public String name;
+    private String displayName;
 
     /**
      * The name of the permissions system plugin.
      */
-    public String pluginName;
+    private String pluginName;
 
     /**
      * Constructor for PermissionsSystemType.
      *
-     * @param name       Display name of the permissions system.
+     * @param displayName Display name of the permissions system.
      * @param pluginName Name of the plugin.
      */
-    PermissionsSystemType(String name, String pluginName) {
-        this.name = name;
+    PermissionsSystemType(String displayName, String pluginName) {
+        this.displayName = displayName;
         this.pluginName = pluginName;
     }
 
@@ -56,8 +56,8 @@ public enum PermissionsSystemType {
      *
      * @return Display name.
      */
-    public String getName() {
-        return this.name;
+    public String getDisplayName() {
+        return this.displayName;
     }
 
     /**
@@ -76,7 +76,7 @@ public enum PermissionsSystemType {
      */
     @Override
     public String toString() {
-        return getName();
+        return getDisplayName();
     }
 
     /**

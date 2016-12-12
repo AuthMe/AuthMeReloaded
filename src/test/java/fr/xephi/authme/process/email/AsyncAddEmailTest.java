@@ -5,7 +5,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
@@ -13,10 +14,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -40,7 +41,10 @@ public class AsyncAddEmailTest {
     private PlayerCache playerCache;
 
     @Mock
-    private ProcessService service;
+    private CommonService service;
+
+    @Mock
+    private ValidationService validationService;
 
     @BeforeClass
     public static void setUp() {
@@ -57,8 +61,8 @@ public class AsyncAddEmailTest {
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(true);
-        given(service.validateEmail(email)).willReturn(true);
-        given(service.isEmailFreeForRegistration(email, player)).willReturn(true);
+        given(validationService.validateEmail(email)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(email, player)).willReturn(true);
 
         // when
         asyncAddEmail.addEmail(player, email);
@@ -79,10 +83,9 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
-        given(dataSource.countAuthsByEmail(email)).willReturn(0);
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(false);
-        given(service.validateEmail(email)).willReturn(true);
-        given(service.isEmailFreeForRegistration(email, player)).willReturn(true);
+        given(validationService.validateEmail(email)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(email, player)).willReturn(true);
 
         // when
         asyncAddEmail.addEmail(player, email);
@@ -118,7 +121,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("my_player")).willReturn(auth);
-        given(service.validateEmail(email)).willReturn(false);
+        given(validationService.validateEmail(email)).willReturn(false);
 
         // when
         asyncAddEmail.addEmail(player, email);
@@ -137,8 +140,8 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("testname")).willReturn(auth);
-        given(service.validateEmail(email)).willReturn(true);
-        given(service.isEmailFreeForRegistration(email, player)).willReturn(false);
+        given(validationService.validateEmail(email)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(email, player)).willReturn(false);
 
         // when
         asyncAddEmail.addEmail(player, email);

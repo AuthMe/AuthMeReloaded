@@ -99,6 +99,22 @@ public final class FileUtils {
     }
 
     /**
+     * Creates the given file or throws an exception.
+     *
+     * @param file the file to create
+     */
+    public static void create(File file) {
+        try {
+            boolean result = file.createNewFile();
+            if (!result) {
+                throw new IllegalStateException("Could not create file '" + file + "'");
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Error while creating file '" + file + "'", e);
+        }
+    }
+
+    /**
      * Construct a file path from the given elements, i.e. separate the given elements by the file separator.
      *
      * @param elements The elements to create a path with

@@ -1,15 +1,16 @@
 package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.util.RandomStringUtils;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.RandomStringUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -20,20 +21,26 @@ import static fr.xephi.authme.settings.properties.RegistrationSettings.ENABLE_CO
 import static fr.xephi.authme.settings.properties.RegistrationSettings.USE_EMAIL_REGISTRATION;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION;
 
+/**
+ * Command for /register.
+ */
 public class RegisterCommand extends PlayerCommand {
 
     @Inject
     private Management management;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private SendMailSSL sendMailSsl;
 
+    @Inject
+    private ValidationService validationService;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
-        if (commandService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
+        if (commonService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
             management.performRegister(player, "", "", true);
             return;
@@ -42,11 +49,11 @@ public class RegisterCommand extends PlayerCommand {
         // Ensure that there is 1 argument, or 2 if confirmation is required
         final boolean useConfirmation = isConfirmationRequired();
         if (arguments.isEmpty() || useConfirmation && arguments.size() < 2) {
-            commandService.send(player, MessageKey.USAGE_REGISTER);
+            commonService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
 
-        if (commandService.getProperty(USE_EMAIL_REGISTRATION)) {
+        if (commonService.getProperty(USE_EMAIL_REGISTRATION)) {
             handleEmailRegistration(player, arguments);
         } else {
             handlePasswordRegistration(player, arguments);
@@ -59,8 +66,8 @@ public class RegisterCommand extends PlayerCommand {
     }
 
     private void handlePasswordRegistration(Player player, List<String> arguments) {
-        if (commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION) && !arguments.get(0).equals(arguments.get(1))) {
-            commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
+        if (commonService.getProperty(ENABLE_PASSWORD_CONFIRMATION) && !arguments.get(0).equals(arguments.get(1))) {
+            commonService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
         } else {
             management.performRegister(player, arguments.get(0), "", true);
         }
@@ -68,19 +75,19 @@ public class RegisterCommand extends PlayerCommand {
 
     private void handleEmailRegistration(Player player, List<String> arguments) {
         if (!sendMailSsl.hasAllInformation()) {
-            commandService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
+            commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             ConsoleLogger.warning("Cannot register player '" + player.getName() + "': no email or password is set "
                 + "to send emails from. Please adjust your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
             return;
         }
 
         final String email = arguments.get(0);
-        if (!commandService.validateEmail(email)) {
-            commandService.send(player, MessageKey.INVALID_EMAIL);
-        } else if (commandService.getProperty(ENABLE_CONFIRM_EMAIL) && !email.equals(arguments.get(1))) {
-            commandService.send(player, MessageKey.USAGE_REGISTER);
+        if (!validationService.validateEmail(email)) {
+            commonService.send(player, MessageKey.INVALID_EMAIL);
+        } else if (commonService.getProperty(ENABLE_CONFIRM_EMAIL) && !email.equals(arguments.get(1))) {
+            commonService.send(player, MessageKey.USAGE_REGISTER);
         } else {
-            String thePass = RandomStringUtils.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
+            String thePass = RandomStringUtils.generate(commonService.getProperty(RECOVERY_PASSWORD_LENGTH));
             management.performRegister(player, thePass, email, true);
         }
     }
@@ -91,8 +98,8 @@ public class RegisterCommand extends PlayerCommand {
      * @return True if the confirmation is needed, false otherwise
      */
     private boolean isConfirmationRequired() {
-        return commandService.getProperty(USE_EMAIL_REGISTRATION)
-            ? commandService.getProperty(ENABLE_CONFIRM_EMAIL)
-            : commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION);
+        return commonService.getProperty(USE_EMAIL_REGISTRATION)
+            ? commonService.getProperty(ENABLE_CONFIRM_EMAIL)
+            : commonService.getProperty(ENABLE_PASSWORD_CONFIRMATION);
     }
 }

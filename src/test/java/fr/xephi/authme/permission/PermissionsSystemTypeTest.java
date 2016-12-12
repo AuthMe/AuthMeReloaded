@@ -23,15 +23,15 @@ public class PermissionsSystemTypeTest {
         List<String> pluginNames = new ArrayList<>(PermissionsSystemType.values().length);
 
         for (PermissionsSystemType system : PermissionsSystemType.values()) {
-            assertThat("Name for enum entry '" + system + "' is not null",
-                system.getName(), not(nullValue()));
+            assertThat("Display name for enum entry '" + system + "' is not null",
+                system.getDisplayName(), not(nullValue()));
             assertThat("Plugin name for enum entry '" + system + "' is not null",
                 system.getPluginName(), not(nullValue()));
-            assertThat("Only one enum entry has name '" + system.getName() + "'",
-                names, not(hasItem(system.getName())));
+            assertThat("Only one enum entry has display name '" + system.getDisplayName() + "'",
+                names, not(hasItem(system.getDisplayName())));
             assertThat("Only one enum entry has plugin name '" + system.getPluginName() + "'",
                 pluginNames, not(hasItem(system.getPluginName())));
-            names.add(system.getName());
+            names.add(system.getDisplayName());
             pluginNames.add(system.getPluginName());
         }
     }

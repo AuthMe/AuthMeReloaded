@@ -7,10 +7,11 @@ import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
@@ -25,18 +26,18 @@ public class AntiBotService implements SettingsDependent {
     private final Messages messages;
     private final PermissionsManager permissionsManager;
     private final BukkitService bukkitService;
-
+    private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<>();
     // Settings
     private int duration;
     private int sensibility;
     private int delay;
-
+    private int interval;
     // Service status
     private AntiBotStatus antiBotStatus;
     private boolean startup;
     private BukkitTask disableTask;
-    private int antibotPlayers;
-    private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<>();
+    private Instant lastFlaggedJoin;
+    private int flagged = 0;
 
     @Inject
     AntiBotService(Settings settings, Messages messages, PermissionsManager permissionsManager,
@@ -47,7 +48,7 @@ public class AntiBotService implements SettingsDependent {
         this.bukkitService = bukkitService;
         // Initial status
         disableTask = null;
-        antibotPlayers = 0;
+        flagged = 0;
         antiBotStatus = AntiBotStatus.DISABLED;
         startup = true;
         // Load settings and start if required
@@ -60,6 +61,7 @@ public class AntiBotService implements SettingsDependent {
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
         delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
+        interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
 
         // Stop existing protection
         stopProtection();
@@ -71,15 +73,10 @@ public class AntiBotService implements SettingsDependent {
         }
 
         // Bot activation task
-        Runnable enableTask = new Runnable() {
-            @Override
-            public void run() {
-                antiBotStatus = AntiBotStatus.LISTENING;
-            }
-        };
+        Runnable enableTask = () -> antiBotStatus = AntiBotStatus.LISTENING;
 
         // Delay the schedule on first start
-        if(startup) {
+        if (startup) {
             bukkitService.scheduleSyncDelayedTask(enableTask, delay * TICKS_PER_SECOND);
             startup = false;
         } else {
@@ -94,19 +91,12 @@ public class AntiBotService implements SettingsDependent {
         antiBotStatus = AntiBotStatus.ACTIVE;
 
         // Inform admins
-        for (Player player : bukkitService.getOnlinePlayers()) {
-            if (permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES)) {
-                messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
-            }
-        }
+        bukkitService.getOnlinePlayers().stream()
+            .filter(player -> permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES))
+            .forEach(player -> messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE));
 
         // Schedule auto-disable
-        disableTask = bukkitService.runTaskLater(new Runnable() {
-            @Override
-            public void run() {
-                stopProtection();
-            }
-        }, duration * TICKS_PER_MINUTE);
+        disableTask = bukkitService.runTaskLater(this::stopProtection, duration * TICKS_PER_MINUTE);
     }
 
     private void stopProtection() {
@@ -116,7 +106,7 @@ public class AntiBotService implements SettingsDependent {
 
         // Change status
         antiBotStatus = AntiBotStatus.LISTENING;
-        antibotPlayers = 0;
+        flagged = 0;
         antibotKicked.clear();
 
         // Cancel auto-disable task
@@ -124,11 +114,10 @@ public class AntiBotService implements SettingsDependent {
         disableTask = null;
 
         // Inform admins
-        for (Player player : bukkitService.getOnlinePlayers()) {
-            if (permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES)) {
-                messages.send(player, MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE, Integer.toString(duration));
-            }
-        }
+        String durationString = Integer.toString(duration);
+        bukkitService.getOnlinePlayers().stream()
+            .filter(player -> permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES))
+            .forEach(player -> messages.send(player, MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE, durationString));
     }
 
     /**
@@ -156,35 +145,32 @@ public class AntiBotService implements SettingsDependent {
     }
 
     /**
-     * Handles a player joining the server and checks if AntiBot needs to be activated.
-     */
-    public void handlePlayerJoin() {
-        if (antiBotStatus != AntiBotStatus.LISTENING) {
-            return;
-        }
-
-        antibotPlayers++;
-        if (antibotPlayers > sensibility) {
-            startProtection();
-            return;
-        }
-
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                antibotPlayers--;
-            }
-        }, 5 * TICKS_PER_SECOND);
-    }
-
-    /**
      * Returns if a player should be kicked due to antibot service.
      *
-     * @param isAuthAvailable if the player is registered
      * @return if the player should be kicked
      */
-    public boolean shouldKick(boolean isAuthAvailable) {
-        return !isAuthAvailable && (antiBotStatus == AntiBotStatus.ACTIVE);
+    public boolean shouldKick() {
+        if (antiBotStatus == AntiBotStatus.DISABLED) {
+            return false;
+        } else if (antiBotStatus == AntiBotStatus.ACTIVE) {
+            return true;
+        }
+
+        if (lastFlaggedJoin == null) {
+            lastFlaggedJoin = Instant.now();
+        }
+        if (ChronoUnit.SECONDS.between(lastFlaggedJoin, Instant.now()) <= interval) {
+            flagged++;
+        } else {
+            // reset to 1 because this player is also count as not registered
+            flagged = 1;
+            lastFlaggedJoin = null;
+        }
+        if (flagged > sensibility) {
+            startProtection();
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -18,14 +18,14 @@ public class XAUTH extends HexSaltedMethod {
     @Override
     public String computeHash(String password, String salt, String name) {
         String hash = getWhirlpool(salt + password).toLowerCase();
-        int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
+        int saltPos = password.length() >= hash.length() ? hash.length() - 1 : password.length();
         return hash.substring(0, saltPos) + salt + hash.substring(saltPos);
     }
 
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
         String hash = hashedPassword.getHash();
-        int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
+        int saltPos = password.length() >= hash.length() ? hash.length() - 1 : password.length();
         if (saltPos + 12 > hash.length()) {
             return false;
         }

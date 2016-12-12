@@ -12,14 +12,9 @@ import org.apache.logging.log4j.message.Message;
  *
  * @author Xephi59
  */
-@SuppressWarnings("serial")
 public class Log4JFilter extends AbstractFilter {
 
-    /**
-     * Constructor.
-     */
-    public Log4JFilter() {
-    }
+    private static final long serialVersionUID = -5594073755007974254L;
 
     /**
      * Validates a Message instance and returns the {@link Result} value

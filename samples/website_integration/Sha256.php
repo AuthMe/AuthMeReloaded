@@ -15,7 +15,7 @@ class Sha256 extends AuthMeController {
     const SALT_LENGTH = 16;
 
     public function __construct() {
-        $this->CHARS = self::initRandomChars();
+        $this->CHARS = self::initCharRange();
     }
 
     protected function isValidPassword($password, $hash) {
@@ -41,7 +41,7 @@ class Sha256 extends AuthMeController {
         return $salt;
     }
 
-    private static function initRandomChars() {
+    private static function initCharRange() {
         return array_merge(range('0', '9'), range('a', 'f'));
     }
 

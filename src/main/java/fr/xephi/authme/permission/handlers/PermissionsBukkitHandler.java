@@ -54,7 +54,7 @@ public class PermissionsBukkitHandler implements PermissionHandler {
         List<String> groups = getGroups(player);
 
         // Make sure there is any group available, or return null
-        if (groups.size() == 0)
+        if (groups.isEmpty())
             return null;
 
         // Return the first group

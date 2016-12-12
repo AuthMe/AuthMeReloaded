@@ -8,37 +8,30 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.service.BungeeService;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.TeleportationService;
-import org.apache.commons.lang.reflect.MethodUtils;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.commandconfig.CommandManager;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.settings.properties.PluginSettings.KEEP_COLLISIONS_DISABLED;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
-
-    private static final boolean RESTORE_COLLISIONS = MethodUtils
-        .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     @Inject
     private AuthMe plugin;
 
     @Inject
     private BungeeService bungeeService;
-
-    @Inject
-    private ProcessService service;
 
     @Inject
     private LimboCache limboCache;
@@ -55,6 +48,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private CommandManager commandManager;
+
+    @Inject
+    private Settings settings;
+
     ProcessSyncPlayerLogin() {
     }
 
@@ -63,16 +62,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         pluginManager.callEvent(event);
         if (!event.isCancelled()) {
             player.updateInventory();
-        }
-    }
-
-    private void forceCommands(Player player) {
-        for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS)) {
-            player.performCommand(command.replace("%p", player.getName()));
-        }
-        for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS_AS_CONSOLE)) {
-            Bukkit.getServer().dispatchCommand(
-                Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
         }
     }
 
@@ -88,11 +77,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             // because LimboCache#restoreData teleport player to last location.
         }
 
-        if (RESTORE_COLLISIONS && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
-            player.setCollidable(true);
-        }
-
-        if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
+        if (settings.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
             restoreInventory(player);
         }
 
@@ -100,19 +85,16 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // We can now display the join message (if delayed)
-        String jm = PlayerListener.joinMessage.get(name);
-        if (jm != null) {
-            if (!jm.isEmpty()) {
-                for (Player p : bukkitService.getOnlinePlayers()) {
-                    if (p.isOnline()) {
-                        p.sendMessage(jm);
-                    }
+        String joinMessage = PlayerListener.joinMessage.remove(name);
+        if (!StringUtils.isEmpty(joinMessage)) {
+            for (Player p : bukkitService.getOnlinePlayers()) {
+                if (p.isOnline()) {
+                    p.sendMessage(joinMessage);
                 }
             }
-            PlayerListener.joinMessage.remove(name);
         }
 
-        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+        if (settings.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
@@ -121,20 +103,20 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         player.saveData();
 
         // Login is done, display welcome message
-        if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                for (String s : service.getSettings().getWelcomeMessage()) {
+        if (settings.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            if (settings.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
+                for (String s : settings.getWelcomeMessage()) {
                     Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
-                for (String s : service.getSettings().getWelcomeMessage()) {
+                for (String s : settings.getWelcomeMessage()) {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
         }
 
         // Login is now finished; we can force all commands
-        forceCommands(player);
+        commandManager.runCommandsOnLogin(player);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
         bungeeService.connectPlayer(player);

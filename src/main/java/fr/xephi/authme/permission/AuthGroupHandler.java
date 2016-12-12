@@ -10,6 +10,7 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Arrays;
 
@@ -31,7 +32,8 @@ public class AuthGroupHandler implements Reloadable {
     private String unregisteredGroup;
     private String registeredGroup;
 
-    AuthGroupHandler() { }
+    AuthGroupHandler() {
+    }
 
     /**
      * Set the group of a player, by its AuthMe group type.
@@ -114,6 +116,7 @@ public class AuthGroupHandler implements Reloadable {
     }
 
     @Override
+    @PostConstruct
     public void reload() {
         unloggedInGroup = settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP);
         unregisteredGroup = settings.getProperty(HooksSettings.UNREGISTERED_GROUP);

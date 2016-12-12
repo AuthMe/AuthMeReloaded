@@ -1,17 +1,17 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -33,7 +33,7 @@ public class UnregisterAdminCommandTest {
     private DataSource dataSource;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private BukkitService bukkitService;
@@ -61,7 +61,6 @@ public class UnregisterAdminCommandTest {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);
-        given(dataSource.removeAuth(user)).willReturn(false);
         Player player = mock(Player.class);
         given(bukkitService.getPlayerExact(user)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
@@ -80,7 +79,6 @@ public class UnregisterAdminCommandTest {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);
-        given(dataSource.removeAuth(user)).willReturn(false);
         given(bukkitService.getPlayerExact(user)).willReturn(null);
         CommandSender sender = mock(CommandSender.class);
 

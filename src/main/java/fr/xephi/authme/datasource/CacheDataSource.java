@@ -1,6 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -11,15 +10,13 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -48,17 +45,12 @@ public class CacheDataSource implements DataSource {
             .build(new CacheLoader<String, Optional<PlayerAuth>>() {
                 @Override
                 public Optional<PlayerAuth> load(String key) {
-                    return Optional.fromNullable(source.getAuth(key));
+                    return Optional.ofNullable(source.getAuth(key));
                 }
 
                 @Override
                 public ListenableFuture<Optional<PlayerAuth>> reload(final String key, Optional<PlayerAuth> oldValue) {
-                    return executorService.submit(new Callable<Optional<PlayerAuth>>() {
-                        @Override
-                        public Optional<PlayerAuth> call() {
-                            return load(key);
-                        }
-                    });
+                    return executorService.submit(() -> load(key));
                 }
             });
     }
@@ -90,7 +82,7 @@ public class CacheDataSource implements DataSource {
     @Override
     public PlayerAuth getAuth(String user) {
         user = user.toLowerCase();
-        return cachedAuths.getUnchecked(user).orNull();
+        return cachedAuths.getUnchecked(user).orElse(null);
     }
 
     @Override

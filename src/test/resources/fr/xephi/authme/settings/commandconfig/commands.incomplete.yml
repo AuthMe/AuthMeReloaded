@@ -1,0 +1,20 @@
+# Sample commands.yml file with wrong and missing sections
+
+onJoin:
+    broadcast:
+        command: 'broadcast %p has joined'
+        executor: CONSOLE
+onLogin:
+    welcome:
+        command: 'msg %p Welcome back'
+        executor: CONSOLE
+    show_motd:
+        # command: 'motd' <-- mandatory property, so entry should be ignored
+        executor: PLAYER
+    display_list:
+        command: 'list'
+        executor: WRONG_EXECUTOR
+doesNotExist:
+    wrongEntry:
+        command: 'should be ignored'
+        executor: PLAYER

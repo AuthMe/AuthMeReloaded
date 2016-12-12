@@ -2,7 +2,9 @@ package fr.xephi.authme.security.crypts;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -98,6 +100,11 @@ public abstract class AbstractEncryptionMethodTest {
             GIVEN_PASSWORDS[1], result1,
             GIVEN_PASSWORDS[2], result2,
             GIVEN_PASSWORDS[3], result3);
+    }
+
+    @BeforeClass
+    public static void setupLogger() {
+        TestHelper.setupLogger();
     }
 
     @Test

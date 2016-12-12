@@ -8,14 +8,14 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
@@ -23,10 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
@@ -45,7 +45,7 @@ public class AsynchronousUnregisterTest {
     @Mock
     private DataSource dataSource;
     @Mock
-    private ProcessService service;
+    private CommonService service;
     @Mock
     private PasswordSecurity passwordSecurity;
     @Mock
@@ -185,7 +185,6 @@ public class AsynchronousUnregisterTest {
         Player player = mock(Player.class);
         String name = "Frank21";
         given(player.getName()).willReturn(name);
-        given(player.isOnline()).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(playerCache.getAuth(name)).willReturn(auth);
         HashedPassword password = new HashedPassword("password", "in_auth_obj");
@@ -218,9 +217,6 @@ public class AsynchronousUnregisterTest {
         String userPassword = "pass";
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
-        given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
-        given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
-        given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(12);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -238,7 +234,6 @@ public class AsynchronousUnregisterTest {
         // given
         Player player = mock(Player.class);
         String name = "Frank21";
-        given(player.getName()).willReturn(name);
         given(player.isOnline()).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);

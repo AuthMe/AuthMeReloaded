@@ -36,7 +36,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment("Minimum allowed username length")
     public static final Property<Integer> MIN_NICKNAME_LENGTH =
-        newProperty("settings.restrictions.minNicknameLength", 4);
+        newProperty("settings.restrictions.minNicknameLength", 3);
 
     @Comment("Maximum allowed username length")
     public static final Property<Integer> MAX_NICKNAME_LENGTH =
@@ -50,9 +50,9 @@ public class RestrictionSettings implements SettingsHolder {
         newProperty("settings.restrictions.ForceSingleSession", true);
 
     @Comment({
-        "If enabled, every player that spawn in one of the world listed in \"ForceSpawnLocOnJoin.worlds\"",
-        "will be teleported to the spawnpoint after successful authentication.",
-        "The quit location of the player will be overwritten.",
+        "If enabled, every player that spawn in one of the world listed in",
+        "\"ForceSpawnLocOnJoin.worlds\" will be teleported to the spawnpoint after successful",
+        "authentication. The quit location of the player will be overwritten.",
         "This is different from \"teleportUnAuthedToSpawn\" that teleport player",
         "to the spawnpoint on join."})
     public static final Property<Boolean> FORCE_SPAWN_LOCATION_AFTER_LOGIN =
@@ -77,7 +77,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment({
         "The restricted user feature will kick players listed below",
-        "if they don't match the defined IP address.",
+        "if they don't match the defined IP address. Names are case-insensitive.",
         "Example:",
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1"})
@@ -90,7 +90,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment("Should players be kicked on wrong password?")
     public static final Property<Boolean> KICK_ON_WRONG_PASSWORD =
-        newProperty("settings.restrictions.kickOnWrongPassword", false);
+        newProperty("settings.restrictions.kickOnWrongPassword", true);
 
     @Comment({
         "Should not logged in players be teleported to the spawn?",
@@ -139,7 +139,7 @@ public class RestrictionSettings implements SettingsHolder {
 
     @Comment("Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.")
     public static final Property<Boolean> DENY_TABCOMPLETE_BEFORE_LOGIN =
-        newProperty("settings.restrictions.DenyTabCompleteBeforeLogin", true);
+        newProperty("settings.restrictions.DenyTabCompleteBeforeLogin", false);
 
     @Comment({
         "Should we display all other accounts from a player when he joins?",
@@ -176,17 +176,28 @@ public class RestrictionSettings implements SettingsHolder {
         newProperty("settings.GameMode.ForceSurvivalMode", false);
 
     @Comment({
-        "Below you can list all account names that",
-        "AuthMe will ignore for registration or login, configure it",
-        "at your own risk!! Remember that if you are going to add",
-        "nickname with [], you have to delimit name with ' '.",
-        "this option add compatibility with BuildCraft and some",
-        "other mods.",
-        "It is case-sensitive!"
+        "Below you can list all account names that AuthMe will ignore",
+        "for registration or login. Configure it at your own risk!!",
+        "This option adds compatibility with BuildCraft and some other mods.",
+        "It is case-insensitive! Example:",
+        "UnrestrictedName:",
+        "- 'npcPlayer'",
+        "- 'npcPlayer2'"
     })
     public static final Property<List<String>> UNRESTRICTED_NAMES =
         newLowercaseListProperty("settings.unrestrictions.UnrestrictedName");
 
+    @Comment("Threshold of the other accounts command, a value less than 2 means disabled.")
+    public static final Property<Integer> OTHER_ACCOUNTS_CMD_THRESHOLD =
+        newProperty("settings.restrictions.otherAccountsCmdThreshold", 0);
+
+    @Comment({
+        "Command to run when a user has more accounts than the configured threshold.",
+        "Available variables: %playername%, %playerip%"
+    })
+    public static final Property<String> OTHER_ACCOUNTS_CMD =
+        newProperty("settings.restrictions.otherAccountsCmd",
+            "say The player %playername% with ip %playerip% has multiple accounts!");
 
     private RestrictionSettings() {
     }

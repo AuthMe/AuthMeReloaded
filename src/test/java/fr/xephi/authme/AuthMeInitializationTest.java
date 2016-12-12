@@ -19,9 +19,8 @@ import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -29,13 +28,12 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import static fr.xephi.authme.settings.TestSettingsMigrationServices.alwaysFulfilled;
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -51,9 +49,6 @@ import static org.mockito.Mockito.mock;
 public class AuthMeInitializationTest {
 
     @Mock
-    private PluginLoader pluginLoader;
-
-    @Mock
     private Server server;
 
     @Mock
@@ -61,7 +56,6 @@ public class AuthMeInitializationTest {
 
     private AuthMe authMe;
     private File dataFolder;
-    private File settingsFile;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -74,13 +68,13 @@ public class AuthMeInitializationTest {
     @Before
     public void initAuthMe() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        settingsFile = new File(dataFolder, "config.yml");
+        File settingsFile = new File(dataFolder, "config.yml");
+        JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
 
         // Mock / wire various Bukkit components
         given(server.getLogger()).willReturn(mock(Logger.class));
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        given(server.getScheduler()).willReturn(mock(BukkitScheduler.class));
         given(server.getPluginManager()).willReturn(pluginManager);
 
         // PluginDescriptionFile is final: need to create a sample one
@@ -88,14 +82,14 @@ public class AuthMeInitializationTest {
             "AuthMe", "N/A", AuthMe.class.getCanonicalName());
 
         // Initialize AuthMe
-        authMe = new AuthMe(pluginLoader, server, descriptionFile, dataFolder, null);
+        authMe = new AuthMe(pluginLoader, descriptionFile, dataFolder, null);
     }
 
     @Test
     public void shouldInitializeAllServices() {
         // given
         Settings settings =
-            new Settings(dataFolder, mock(PropertyResource.class), alwaysFulfilled(), buildConfigurationData());
+            new Settings(dataFolder, mock(PropertyResource.class), null, buildConfigurationData());
 
         Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
         injector.provide(DataFolder.class, dataFolder);

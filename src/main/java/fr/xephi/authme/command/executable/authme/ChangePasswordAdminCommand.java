@@ -1,15 +1,15 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
@@ -38,7 +38,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
     private ValidationService validationService;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
@@ -49,38 +49,45 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
         // Validate the password
         ValidationResult validationResult = validationService.validatePassword(playerPass, playerName);
         if (validationResult.hasError()) {
-            commandService.send(sender, validationResult.getMessageKey(), validationResult.getArgs());
+            commonService.send(sender, validationResult.getMessageKey(), validationResult.getArgs());
             return;
         }
 
         // Set the password
-        final String playerNameLowerCase = playerName.toLowerCase();
-        bukkitService.runTaskOptionallyAsync(new Runnable() {
+        bukkitService.runTaskOptionallyAsync(() -> changePassword(playerName.toLowerCase(), playerPass, sender));
+    }
 
-            @Override
-            public void run() {
-                PlayerAuth auth = null;
-                if (playerCache.isAuthenticated(playerNameLowerCase)) {
-                    auth = playerCache.getAuth(playerNameLowerCase);
-                } else if (dataSource.isAuthAvailable(playerNameLowerCase)) {
-                    auth = dataSource.getAuth(playerNameLowerCase);
-                }
-                if (auth == null) {
-                    commandService.send(sender, MessageKey.UNKNOWN_USER);
-                    return;
-                }
+    /**
+     * Changes the password of the given player to the given password.
+     *
+     * @param nameLowercase the name of the player
+     * @param password the password to set
+     * @param sender the sender initiating the password change
+     */
+    private void changePassword(String nameLowercase, String password, CommandSender sender) {
+        PlayerAuth auth = getAuth(nameLowercase);
+        if (auth == null) {
+            commonService.send(sender, MessageKey.UNKNOWN_USER);
+            return;
+        }
 
-                HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
-                auth.setPassword(hashedPassword);
+        HashedPassword hashedPassword = passwordSecurity.computeHash(password, nameLowercase);
+        auth.setPassword(hashedPassword);
 
-                if (dataSource.updatePassword(auth)) {
-                    commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
-                    ConsoleLogger.info(sender.getName() + " changed password of " + playerNameLowerCase);
-                } else {
-                    commandService.send(sender, MessageKey.ERROR);
-                }
-            }
+        if (dataSource.updatePassword(auth)) {
+            commonService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
+            ConsoleLogger.info(sender.getName() + " changed password of " + nameLowercase);
+        } else {
+            commonService.send(sender, MessageKey.ERROR);
+        }
+    }
 
-        });
+    private PlayerAuth getAuth(String nameLowercase) {
+        if (playerCache.isAuthenticated(nameLowercase)) {
+            return playerCache.getAuth(nameLowercase);
+        } else if (dataSource.isAuthAvailable(nameLowercase)) {
+            return dataSource.getAuth(nameLowercase);
+        }
+        return null;
     }
 }

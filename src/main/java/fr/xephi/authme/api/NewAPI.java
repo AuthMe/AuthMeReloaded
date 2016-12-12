@@ -25,8 +25,8 @@ import java.util.List;
  */
 public class NewAPI {
 
-    public static NewAPI singleton;
-    public final AuthMe plugin;
+    private static NewAPI singleton;
+    private final AuthMe plugin;
     private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;

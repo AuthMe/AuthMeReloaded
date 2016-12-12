@@ -7,7 +7,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -27,7 +27,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
     private DataSource database;
 
     @Inject
-    private ProcessService service;
+    private CommonService service;
 
     @Inject
     private PlayerCache playerCache;

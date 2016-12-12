@@ -1,8 +1,8 @@
 package tools.docs.hashmethods;
 
 import fr.xephi.authme.security.HashAlgorithm;
-import tools.utils.FileUtils;
-import tools.utils.SimpleAutoTask;
+import tools.utils.AutoToolTask;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @see fr.xephi.authme.security.HashAlgorithm
  */
-public class HashAlgorithmsDescriptionTask extends SimpleAutoTask {
+public class HashAlgorithmsDescriptionTask implements AutoToolTask {
 
     private static final String CUR_FOLDER = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/hashmethods/";
     private static final String OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "hash_algorithms.md";
@@ -28,7 +28,8 @@ public class HashAlgorithmsDescriptionTask extends SimpleAutoTask {
 
         // Write to the docs file
         TagValueHolder tags = TagValueHolder.create().put("algorithms", methodRows);
-        FileUtils.generateFileFromTemplate(CUR_FOLDER + "hash_algorithms.tpl.md", OUTPUT_FILE, tags);
+        FileIoUtils.generateFileFromTemplate(CUR_FOLDER + "hash_algorithms.tpl.md", OUTPUT_FILE, tags);
+        System.out.println("Wrote to '" + OUTPUT_FILE + "'");
     }
 
     private static NestedTagValue constructMethodRows(Map<HashAlgorithm, MethodDescription> descriptions) {

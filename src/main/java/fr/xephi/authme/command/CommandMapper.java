@@ -87,10 +87,10 @@ public class CommandMapper {
         return classes;
     }
 
-    private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
+    private static FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
         // Return the base command with incorrect arg count error if we only have one part
         if (parts.size() <= 1) {
-            return new FoundCommandResult(base, parts, new ArrayList<String>(), 0.0, INCORRECT_ARGUMENTS);
+            return new FoundCommandResult(base, parts, new ArrayList<>(), 0.0, INCORRECT_ARGUMENTS);
         }
 
         final String childLabel = parts.get(1);
@@ -115,7 +115,7 @@ public class CommandMapper {
         final int partsSize = parts.size();
         List<String> labels = parts.subList(0, Math.min(closestCommand.getLabelCount(), partsSize));
         List<String> arguments = (labels.size() == partsSize)
-            ? new ArrayList<String>()
+            ? new ArrayList<>()
             : parts.subList(labels.size(), partsSize);
 
         return new FoundCommandResult(closestCommand, labels, arguments, minDifference, status);
@@ -141,7 +141,7 @@ public class CommandMapper {
      *
      * @return A command if there was a complete match (including proper argument count), null otherwise
      */
-    private CommandDescription getSuitableChild(CommandDescription baseCommand, List<String> parts) {
+    private static CommandDescription getSuitableChild(CommandDescription baseCommand, List<String> parts) {
         if (CollectionUtils.isEmpty(parts)) {
             return null;
         }

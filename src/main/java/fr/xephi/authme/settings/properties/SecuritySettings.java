@@ -4,6 +4,7 @@ import com.github.authme.configme.Comment;
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.settings.EnumSetProperty;
 
 import java.util.List;
 
@@ -17,10 +18,6 @@ public class SecuritySettings implements SettingsHolder {
         "AuthMe will automatically disable and the server won't be protected!"})
     public static final Property<Boolean> STOP_SERVER_ON_PROBLEM =
         newProperty("Security.SQLProblem.stopServer", true);
-
-    @Comment("/reload support")
-    public static final Property<Boolean> USE_RELOAD_COMMAND_SUPPORT =
-        newProperty("Security.ReloadCommand.useReloadCommandSupport", true);
 
     @Comment("Remove passwords from console?")
     public static final Property<Boolean> REMOVE_PASSWORD_FROM_CONSOLE =
@@ -67,9 +64,10 @@ public class SecuritySettings implements SettingsHolder {
         newProperty("settings.security.unLoggedinGroup", "unLoggedinGroup");
 
     @Comment({
-        "Possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,",
-        "MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,",
-        "DOUBLEMD5, PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only)"
+        "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,",
+        "MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,",
+        "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at",
+        "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md"
     })
     public static final Property<HashAlgorithm> PASSWORD_HASH =
         newProperty(HashAlgorithm.class, "settings.security.passwordHash", HashAlgorithm.SHA256);
@@ -78,18 +76,28 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> DOUBLE_MD5_SALT_LENGTH =
         newProperty("settings.security.doubleMD5SaltLength", 8);
 
-    @Comment({"If password checking return false, do we need to check with all",
-        "other password algorithm to check an old password?",
-        "AuthMe will update the password to the new password hash"})
-    public static final Property<Boolean> SUPPORT_OLD_PASSWORD_HASH =
-        newProperty("settings.security.supportOldPasswordHash", false);
+    @Comment({
+        "If a password check fails, AuthMe will also try to check with the following hash methods.",
+        "Use this setting when you change from one hash method to another.",
+        "AuthMe will update the password to the new hash. Example:",
+        "legacyHashes:",
+        "- 'SHA1'"
+    })
+    public static final Property<List<String>> LEGACY_HASHES =
+        new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes");
+
+    @Comment("Number of rounds to use if passwordHash is set to PBKDF2. Default is 10000")
+    public static final Property<Integer> PBKDF2_NUMBER_OF_ROUNDS =
+        newProperty("settings.security.pbkdf2Rounds", 10000);
 
     @Comment({"Prevent unsafe passwords from being used; put them in lowercase!",
+        "You should always set 'help' as unsafePassword due to possible conflicts.",
         "unsafePasswords:",
         "- '123456'",
-        "- 'password'"})
+        "- 'password'",
+        "- 'help'"})
     public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321", "123456789");
+        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321", "123456789", "help");
 
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")
     public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =

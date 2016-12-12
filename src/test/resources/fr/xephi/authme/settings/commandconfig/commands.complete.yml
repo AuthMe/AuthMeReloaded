@@ -1,0 +1,23 @@
+# Sample commands.yml file
+
+onJoin:
+    broadcast:
+        command: 'broadcast %p has joined'
+        executor: CONSOLE
+onRegister:
+    announce:
+        command: 'me I just registered'
+        executor: PLAYER
+    notify:
+        command: 'log %p registered'
+        executor: CONSOLE
+onLogin:
+    welcome:
+        command: 'msg %p Welcome back'
+        executor: CONSOLE
+    show_motd:
+        command: 'motd'
+        executor: PLAYER
+    display_list:
+        command: 'list'
+        executor: PLAYER

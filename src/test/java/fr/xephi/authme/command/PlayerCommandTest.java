@@ -10,10 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link PlayerCommand}.
@@ -27,7 +27,7 @@ public class PlayerCommandTest {
         PlayerCommandImpl command = new PlayerCommandImpl();
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(sender).sendMessage(argThat(containsString("only for players")));
@@ -54,7 +54,7 @@ public class PlayerCommandTest {
         PlayerCommandWithAlt command = new PlayerCommandWithAlt();
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(sender, times(1)).sendMessage(argThat(containsString("use /authme test <command> instead")));

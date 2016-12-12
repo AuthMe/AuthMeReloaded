@@ -2,8 +2,8 @@ package tools.docs.translations;
 
 import com.google.common.collect.ImmutableMap;
 import tools.docs.translations.TranslationsGatherer.TranslationInfo;
-import tools.utils.FileUtils;
-import tools.utils.SimpleAutoTask;
+import tools.utils.AutoToolTask;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
@@ -17,7 +17,7 @@ import static com.google.common.base.Objects.firstNonNull;
 /**
  * Generates the translations page in docs.
  */
-public class TranslationPageGenerator extends SimpleAutoTask {
+public class TranslationPageGenerator implements AutoToolTask {
 
     private static final String DOCS_PAGE = ToolsConstants.DOCS_FOLDER + "translations.md";
     private static final String TEMPLATE_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/translations/translations.tpl.md";
@@ -34,8 +34,6 @@ public class TranslationPageGenerator extends SimpleAutoTask {
     private static final int[] COLOR_1 = {12,  9, 0};
     private static final int[] COLOR_2 = { 6, 15, 6};
 
-    private final TranslationsGatherer gatherer = new TranslationsGatherer();
-
     @Override
     public String getTaskName() {
         return "updateTranslations";
@@ -43,6 +41,7 @@ public class TranslationPageGenerator extends SimpleAutoTask {
 
     @Override
     public void executeDefault() {
+        TranslationsGatherer gatherer = new TranslationsGatherer();
         NestedTagValue translationValuesHolder = new NestedTagValue();
 
         for (TranslationInfo translation : gatherer.getTranslationInfo()) {
@@ -57,7 +56,8 @@ public class TranslationPageGenerator extends SimpleAutoTask {
         }
 
         TagValueHolder tags = TagValueHolder.create().put("languages", translationValuesHolder);
-        FileUtils.generateFileFromTemplate(TEMPLATE_FILE, DOCS_PAGE, tags);
+        FileIoUtils.generateFileFromTemplate(TEMPLATE_FILE, DOCS_PAGE, tags);
+        System.out.println("Wrote to '" + DOCS_PAGE + "'");
     }
 
     /**
@@ -124,6 +124,7 @@ public class TranslationPageGenerator extends SimpleAutoTask {
             .put("nl", "Dutch")
             .put("pl", "Polish")
             .put("pt", "Portuguese")
+            .put("ro", "Romanian")
             .put("ru", "Russian")
             .put("sk", "Slovakian")
             .put("tr", "Turkish")

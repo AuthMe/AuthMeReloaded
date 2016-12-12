@@ -3,9 +3,6 @@ package fr.xephi.authme.datasource;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.Columns;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -397,7 +394,7 @@ public class SQLite implements DataSource {
         }
     }
 
-    private void close(Statement st) {
+    private static void close(Statement st) {
         if (st != null) {
             try {
                 st.close();
@@ -407,7 +404,7 @@ public class SQLite implements DataSource {
         }
     }
 
-    private void close(Connection con) {
+    private static void close(Connection con) {
         if (con != null) {
             try {
                 con.close();
@@ -417,7 +414,7 @@ public class SQLite implements DataSource {
         }
     }
 
-    private void close(ResultSet rs) {
+    private static void close(ResultSet rs) {
         if (rs != null) {
             try {
                 rs.close();
@@ -479,7 +476,7 @@ public class SQLite implements DataSource {
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next())
-                return (rs.getInt(col.IS_LOGGED) == 1);
+                return rs.getInt(col.IS_LOGGED) == 1;
         } catch (SQLException ex) {
             logSqlException(ex);
         } finally {

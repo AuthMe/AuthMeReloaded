@@ -48,10 +48,10 @@ public class SpawnLoader implements Reloadable {
     @Inject
     SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService,
                 DataSource dataSource) {
-        File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
+        File spawnFile = new File(pluginFolder, "spawn.yml");
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
-        this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
+        this.authMeConfigurationFile = spawnFile;
         this.settings = settings;
         this.pluginHookService = pluginHookService;
         reload();

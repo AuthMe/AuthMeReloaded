@@ -37,11 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -105,7 +105,7 @@ public abstract class AbstractResourceClosingTest {
         given(settings.getProperty(any(Property.class))).willAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) {
-                return ((Property) invocation.getArguments()[0]).getDefaultValue();
+                return ((Property<?>) invocation.getArguments()[0]).getDefaultValue();
             }
         });
         TestHelper.setupLogger();

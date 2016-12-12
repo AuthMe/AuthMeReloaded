@@ -1,11 +1,11 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -21,7 +21,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
     private DataSource dataSource;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private BukkitService bukkitService;
@@ -38,7 +38,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
 
         // Make sure the user exists
         if (!dataSource.isAuthAvailable(playerName)) {
-            commandService.send(sender, MessageKey.UNKNOWN_USER);
+            commonService.send(sender, MessageKey.UNKNOWN_USER);
             return;
         }
 

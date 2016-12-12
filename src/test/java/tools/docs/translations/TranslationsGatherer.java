@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static tools.utils.FileIoUtils.listFilesOrThrow;
+
 /**
  * Gathers all available translations of AuthMe.
  */
@@ -31,10 +33,7 @@ public class TranslationsGatherer {
     }
 
     private void gatherTranslations() {
-        File[] files = new File(MESSAGES_FOLDER).listFiles();
-        if (files == null) {
-            throw new IllegalStateException("Cannot read files of '" + MESSAGES_FOLDER + "'");
-        }
+        File[] files = listFilesOrThrow(new File(MESSAGES_FOLDER));
         for (File file : files) {
             String code = getLanguageCode(file.getName());
             if (code != null) {

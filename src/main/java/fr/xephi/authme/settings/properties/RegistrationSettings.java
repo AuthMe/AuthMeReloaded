@@ -4,9 +4,6 @@ import com.github.authme.configme.Comment;
 import com.github.authme.configme.SettingsHolder;
 import com.github.authme.configme.properties.Property;
 
-import java.util.List;
-
-import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
 import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
 
 public class RegistrationSettings implements SettingsHolder {
@@ -48,35 +45,19 @@ public class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> FORCE_LOGIN_AFTER_REGISTER =
         newProperty("settings.registration.forceLoginAfterRegister", false);
 
-    @Comment("Force these commands after /login, without any '/', use %p to replace with player name")
-    public static final Property<List<String>> FORCE_COMMANDS =
-        newListProperty("settings.forceCommands");
-
-    @Comment("Force these commands after /login as service console, without any '/'. "
-        + "Use %p to replace with player name")
-    public static final Property<List<String>> FORCE_COMMANDS_AS_CONSOLE =
-        newListProperty("settings.forceCommandsAsConsole");
-
-    @Comment("Force these commands after /register, without any '/', use %p to replace with player name")
-    public static final Property<List<String>> FORCE_REGISTER_COMMANDS =
-        newListProperty("settings.forceRegisterCommands");
-
-    @Comment("Force these commands after /register as a server console, without any '/'. "
-        + "Use %p to replace with player name")
-    public static final Property<List<String>> FORCE_REGISTER_COMMANDS_AS_CONSOLE =
-        newListProperty("settings.forceRegisterCommandsAsConsole");
-
     @Comment({
         "Enable to display the welcome message (welcome.txt) after a login",
         "You can use colors in this welcome.txt + some replaced strings:",
-        "{PLAYER}: player name, {ONLINE}: display number of online players, {MAXPLAYERS}: display server slots,",
-        "{IP}: player ip, {LOGINS}: number of players logged, {WORLD}: player current world, {SERVER}: server name",
+        "{PLAYER}: player name, {ONLINE}: display number of online players,",
+        "{MAXPLAYERS}: display server slots, {IP}: player ip, {LOGINS}: number of players logged,",
+        "{WORLD}: player current world, {SERVER}: server name",
         "{VERSION}: get current bukkit version, {COUNTRY}: player country"})
     public static final Property<Boolean> USE_WELCOME_MESSAGE =
         newProperty("settings.useWelcomeMessage", true);
 
-    @Comment("Do we need to broadcast the welcome message to all server or only to the player? set true for "
-        + "server or false for player")
+    @Comment({
+        "Broadcast the welcome message to the server or only to the player?",
+        "set true for server or false for player"})
     public static final Property<Boolean> BROADCAST_WELCOME_MESSAGE =
         newProperty("settings.broadcastWelcomeMessage", false);
 
@@ -104,7 +85,7 @@ public class RegistrationSettings implements SettingsHolder {
         "Do we need to prevent people to login with another case?",
         "If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI"})
     public static final Property<Boolean> PREVENT_OTHER_CASE =
-        newProperty("settings.preventOtherCase", false);
+        newProperty("settings.preventOtherCase", true);
 
 
     private RegistrationSettings() {

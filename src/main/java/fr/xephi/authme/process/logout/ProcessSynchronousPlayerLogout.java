@@ -6,7 +6,7 @@ import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -25,7 +25,7 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     @Inject
-    private ProcessService service;
+    private CommonService service;
 
     @Inject
     private BukkitService bukkitService;

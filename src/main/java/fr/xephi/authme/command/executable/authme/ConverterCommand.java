@@ -4,7 +4,6 @@ import ch.jalu.injector.Injector;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.datasource.converter.CrazyLoginConverter;
@@ -16,6 +15,7 @@ import fr.xephi.authme.datasource.converter.vAuthConverter;
 import fr.xephi.authme.datasource.converter.xAuthConverter;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -31,7 +31,7 @@ public class ConverterCommand implements ExecutableCommand {
     static final Map<String, Class<? extends Converter>> CONVERTERS = getConverters();
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private BukkitService bukkitService;
@@ -61,7 +61,7 @@ public class ConverterCommand implements ExecutableCommand {
                 try {
                     converter.execute(sender);
                 } catch (Exception e) {
-                    commandService.send(sender, MessageKey.ERROR);
+                    commonService.send(sender, MessageKey.ERROR);
                     ConsoleLogger.logException("Error during conversion:", e);
                 }
             }

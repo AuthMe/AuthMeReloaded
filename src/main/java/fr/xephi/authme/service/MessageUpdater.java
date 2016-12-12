@@ -57,7 +57,7 @@ public class MessageUpdater {
 
         properties = buildPropertyEntriesForMessageKeys();
         settingsManager = new SettingsManager(
-            new YamlFileResource(userFile), (r, p) -> true, new ConfigurationData((List) properties));
+            new YamlFileResource(userFile), null, new ConfigurationData(properties));
     }
 
     /**
@@ -85,7 +85,6 @@ public class MessageUpdater {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void copyMissingMessages() {
         for (Property<String> property : properties) {
             String message = userConfiguration.getString(property.getPath());

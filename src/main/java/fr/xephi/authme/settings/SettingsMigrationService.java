@@ -2,15 +2,20 @@ package fr.xephi.authme.settings;
 
 import com.github.authme.configme.migration.PlainMigrationService;
 import com.github.authme.configme.properties.Property;
+import com.github.authme.configme.properties.StringListProperty;
 import com.github.authme.configme.resource.PropertyResource;
 import com.google.common.base.Objects;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
@@ -29,7 +34,17 @@ public class SettingsMigrationService extends PlainMigrationService {
 
     private final File pluginFolder;
 
-    public SettingsMigrationService(File pluginFolder) {
+    // Stores old commands that need to be migrated to the new commands configuration
+    // We need to store it in here for retrieval when we build the CommandConfig. Retrieving it from the config.yml is
+    // not possible since this migration service may trigger config.yml to be resaved. As the old command settings
+    // don't exist in the code anymore, as soon as config.yml is resaved we lose this information.
+    private List<String> onLoginCommands = Collections.emptyList();
+    private List<String> onLoginConsoleCommands = Collections.emptyList();
+    private List<String> onRegisterCommands = Collections.emptyList();
+    private List<String> onRegisterConsoleCommands = Collections.emptyList();
+
+    @Inject
+    SettingsMigrationService(@DataFolder File pluginFolder) {
         this.pluginFolder = pluginFolder;
     }
 
@@ -41,6 +56,8 @@ public class SettingsMigrationService extends PlainMigrationService {
             changes = true;
         }
 
+        gatherOldCommandSettings(resource);
+
         // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
         // ensures that all migrations will be performed
         return changes
@@ -49,6 +66,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | migrateForceSpawnSettings(resource)
             | changeBooleanSettingToLogLevelProperty(resource)
             | hasOldHelpHeaderProperty(resource)
+            | hasSupportOldPasswordProperty(resource)
             || hasDeprecatedProperties(resource);
     }
 
@@ -57,13 +75,46 @@ public class SettingsMigrationService extends PlainMigrationService {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
             "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt",
             "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional", "DataSource.mySQLWebsite",
-            "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping"};
+            "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping",
+            "settings.restrictions.keepCollisionsDisabled", "settings.forceCommands", "settings.forceCommandsAsConsole",
+            "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole"};
         for (String deprecatedPath : deprecatedProperties) {
             if (resource.contains(deprecatedPath)) {
                 return true;
             }
         }
         return false;
+    }
+
+    // ----------------
+    // Forced commands relocation (from config.yml to commands.yml)
+    // ----------------
+    private void gatherOldCommandSettings(PropertyResource resource) {
+        onLoginCommands = getStringList(resource, "settings.forceCommands");
+        onLoginConsoleCommands = getStringList(resource, "settings.forceCommandsAsConsole");
+        onRegisterCommands = getStringList(resource, "settings.forceRegisterCommands");
+        onRegisterConsoleCommands = getStringList(resource, "settings.forceRegisterCommandsAsConsole");
+    }
+
+    private List<String> getStringList(PropertyResource resource, String path) {
+        List<String> entries = new StringListProperty(path).getFromResource(resource);
+        return entries == null ? Collections.emptyList() : entries;
+    }
+
+    public List<String> getOnLoginCommands() {
+        return onLoginCommands;
+    }
+
+    public List<String> getOnLoginConsoleCommands() {
+        return onLoginConsoleCommands;
+    }
+
+    public List<String> getOnRegisterCommands() {
+        return onRegisterCommands;
+    }
+
+    public List<String> getOnRegisterConsoleCommands() {
+        return onRegisterConsoleCommands;
     }
 
     // --------
@@ -118,7 +169,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     }
 
     /**
-     * Detect old "force spawn loc on join" and "force spawn on these worlds" settings and moves them
+     * Detects old "force spawn loc on join" and "force spawn on these worlds" settings and moves them
      * to the new paths.
      *
      * @param resource The property resource
@@ -158,6 +209,16 @@ public class SettingsMigrationService extends PlainMigrationService {
         if (resource.contains("settings.helpHeader")) {
             ConsoleLogger.warning("Help header setting is now in messages/help_xx.yml, "
                 + "please check the file to set it again");
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean hasSupportOldPasswordProperty(PropertyResource resource) {
+        String path = "settings.security.supportOldPasswordHash";
+        if (resource.contains(path)) {
+            ConsoleLogger.warning("Property '" + path + "' is no longer supported. "
+                + "Use '" + SecuritySettings.LEGACY_HASHES.getPath() + "' instead.");
             return true;
         }
         return false;

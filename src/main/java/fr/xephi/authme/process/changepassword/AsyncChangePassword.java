@@ -6,7 +6,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
     private DataSource dataSource;
 
     @Inject
-    private ProcessService processService;
+    private CommonService commonService;
 
     @Inject
     private PasswordSecurity passwordSecurity;
@@ -27,7 +27,8 @@ public class AsyncChangePassword implements AsynchronousProcess {
     @Inject
     private PlayerCache playerCache;
 
-    AsyncChangePassword() { }
+    AsyncChangePassword() {
+    }
 
 
     public void changePassword(final Player player, String oldPassword, String newPassword) {
@@ -38,15 +39,15 @@ public class AsyncChangePassword implements AsynchronousProcess {
             auth.setPassword(hashedPassword);
 
             if (!dataSource.updatePassword(auth)) {
-                processService.send(player, MessageKey.ERROR);
+                commonService.send(player, MessageKey.ERROR);
                 return;
             }
 
             playerCache.updatePlayer(auth);
-            processService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
+            commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             ConsoleLogger.info(player.getName() + " changed his password");
         } else {
-            processService.send(player, MessageKey.WRONG_PASSWORD);
+            commonService.send(player, MessageKey.WRONG_PASSWORD);
         }
     }
 }

@@ -17,6 +17,8 @@ import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
+import static com.maxmind.geoip.LookupService.GEOIP_MEMORY_CACHE;
+
 public class GeoIpService {
     private static final String LICENSE =
         "[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com";
@@ -57,7 +59,7 @@ public class GeoIpService {
             boolean dataIsOld = (System.currentTimeMillis() - dataFile.lastModified()) > TimeUnit.DAYS.toMillis(30);
             if (!dataIsOld) {
                 try {
-                    lookupService = new LookupService(dataFile);
+                    lookupService = new LookupService(dataFile, GEOIP_MEMORY_CACHE);
                     ConsoleLogger.info(LICENSE);
                     return true;
                 } catch (IOException e) {

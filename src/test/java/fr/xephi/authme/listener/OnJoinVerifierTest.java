@@ -8,12 +8,12 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.service.AntiBotService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -27,7 +27,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -175,10 +175,7 @@ public class OnJoinVerifierTest {
 
     @Test
     public void shouldNotKickRegisteredPlayer() throws FailedVerificationException {
-        // given
-        given(settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)).willReturn(true);
-
-        // when
+        // given / when / then
         onJoinVerifier.checkKickNonRegistered(true);
     }
 
@@ -206,7 +203,6 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldRejectTooLongName() throws FailedVerificationException {
         // given
-        given(settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)).willReturn(4);
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
@@ -324,7 +320,6 @@ public class OnJoinVerifierTest {
         // given
         Player player = newPlayerWithName("MyPlayer");
         PlayerAuth auth = null;
-        given(settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)).willReturn(true);
 
         // when
         onJoinVerifier.checkNameCasing(player, auth);
@@ -381,14 +376,27 @@ public class OnJoinVerifierTest {
         Player player = newPlayerWithName("Bobby");
         boolean isAuthAvailable = false;
         given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
-        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(false);
+        given(antiBotService.shouldKick()).willReturn(false);
 
         // when
         onJoinVerifier.checkAntibot(player, isAuthAvailable);
 
         // then
         verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
-        verify(antiBotService).shouldKick(isAuthAvailable);
+        verify(antiBotService).shouldKick();
+    }
+
+    @Test
+    public void shouldAllowUserWithAuth() throws FailedVerificationException {
+        // given
+        Player player = newPlayerWithName("Lacey");
+        boolean isAuthAvailable = true;
+
+        // when
+        onJoinVerifier.checkAntibot(player, isAuthAvailable);
+
+        // then
+        verifyZeroInteractions(permissionsManager, antiBotService);
     }
 
     @Test
@@ -397,13 +405,13 @@ public class OnJoinVerifierTest {
         Player player = newPlayerWithName("Steward");
         boolean isAuthAvailable = false;
         given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(true);
-        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(true);
 
         // when
         onJoinVerifier.checkAntibot(player, isAuthAvailable);
 
         // then
         verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
+        verifyZeroInteractions(antiBotService);
     }
 
     @Test
@@ -412,7 +420,7 @@ public class OnJoinVerifierTest {
         Player player = newPlayerWithName("D3");
         boolean isAuthAvailable = false;
         given(permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
-        given(antiBotService.shouldKick(isAuthAvailable)).willReturn(true);
+        given(antiBotService.shouldKick()).willReturn(true);
 
         // when / then
         try {
@@ -420,7 +428,7 @@ public class OnJoinVerifierTest {
             fail("Expected exception to be thrown");
         } catch (FailedVerificationException e) {
             verify(permissionsManager).hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT);
-            verify(antiBotService).shouldKick(isAuthAvailable);
+            verify(antiBotService).shouldKick();
         }
 
     }
@@ -447,7 +455,6 @@ public class OnJoinVerifierTest {
         // given
         String ip = "192.168.0.1";
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
-        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
@@ -477,7 +484,6 @@ public class OnJoinVerifierTest {
         // given
         String ip = "192.168.40.0";
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
-        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(false);
 
         // expect

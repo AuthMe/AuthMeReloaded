@@ -84,10 +84,10 @@ public class LimboCache {
             float walkSpeed = data.getWalkSpeed();
             float flySpeed = data.getFlySpeed();
             // Reset the speed value if it was 0
-            if(walkSpeed == 0f) {
+            if(walkSpeed < 0.01f) {
                 walkSpeed = 0.2f;
             }
-            if(flySpeed == 0f) {
+            if(flySpeed < 0.01f) {
                 flySpeed = 0.2f;
             }
             player.setWalkSpeed(walkSpeed);

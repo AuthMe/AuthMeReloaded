@@ -5,9 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.Columns;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.XFBCRYPT;
@@ -15,8 +12,8 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.RuntimeUtils;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 
 import java.sql.Blob;
 import java.sql.Connection;
@@ -50,7 +47,7 @@ public class MySQL implements DataSource {
     private int phpBbGroup;
     private String wordpressPrefix;
 
-    public MySQL(Settings settings) throws ClassNotFoundException, SQLException, PoolInitializationException {
+    public MySQL(Settings settings) throws ClassNotFoundException, SQLException {
         setParameters(settings);
 
         // Set the connection arguments (and check if connection is ok)
@@ -100,17 +97,17 @@ public class MySQL implements DataSource {
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
-        if(poolSize == -1) {
-            poolSize = RuntimeUtils.getCoreCount();
+        if (poolSize == -1) {
+            poolSize = Utils.getCoreCount();
         }
     }
 
-    private void setConnectionArguments() throws RuntimeException {
+    private void setConnectionArguments() {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
 
         // Pool size
-    	ds.setMaximumPoolSize(poolSize);
+        ds.setMaximumPoolSize(poolSize);
 
         // Database URL
         ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
@@ -137,7 +134,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void reload() throws RuntimeException {
+    public void reload() {
         if (ds != null) {
             ds.close();
         }

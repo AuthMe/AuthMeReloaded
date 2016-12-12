@@ -28,9 +28,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -257,7 +258,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = asList("email", "helptest", "arg1");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManager.hasPermission(eq(sender), any(PermissionNode.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), isNull())).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);

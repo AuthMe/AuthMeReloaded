@@ -6,14 +6,14 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,6 +42,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,7 +54,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
  */
 public class PlayerListener implements Listener {
 
-    public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
+    public static final Map<String, String> joinMessage = new ConcurrentHashMap<>();
 
     @Inject
     private Settings settings;
@@ -81,7 +82,7 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
-        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && cmd.equals("/motd")) {
+        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && "/motd".equals(cmd)) {
             return;
         }
         if (settings.getProperty(RestrictionSettings.ALLOW_COMMANDS).contains(cmd)) {
@@ -113,7 +114,7 @@ public class PlayerListener implements Listener {
                     iter.remove();
                 }
             }
-            if (recipients.size() == 0) {
+            if (recipients.isEmpty()) {
                 event.setCancelled(true);
             }
         }
@@ -156,9 +157,7 @@ public class PlayerListener implements Listener {
         if (spawn != null && spawn.getWorld() != null) {
             if (!player.getWorld().equals(spawn.getWorld())) {
                 player.teleport(spawn);
-                return;
-            }
-            if (spawn.distance(player.getLocation()) > settings.getProperty(ALLOWED_MOVEMENT_RADIUS)) {
+            } else if (spawn.distance(player.getLocation()) > settings.getProperty(ALLOWED_MOVEMENT_RADIUS)) {
                 player.teleport(spawn);
             }
         }
@@ -208,9 +207,11 @@ public class PlayerListener implements Listener {
         final String name = player.getName();
         if (validationService.isUnrestricted(name)) {
             return;
-        } else if (onJoinVerifier.refusePlayerForFullServer(event)) {
+        }
+        if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
-        } else if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+        }
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
         }
 
@@ -222,9 +223,9 @@ public class PlayerListener implements Listener {
             // Get the auth later as this may cause the single session check to fail
             // Slow stuff
             final PlayerAuth auth = dataSource.getAuth(name);
-            final boolean isAuthAvailable = (auth != null);
-            onJoinVerifier.checkAntibot(player, isAuthAvailable);
+            final boolean isAuthAvailable = auth != null;
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+            onJoinVerifier.checkAntibot(player, isAuthAvailable);
             onJoinVerifier.checkNameCasing(player, auth);
             onJoinVerifier.checkPlayerCountry(isAuthAvailable, event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
@@ -233,7 +234,6 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        antiBotService.handlePlayerJoin();
         teleportationService.teleportOnJoin(player);
     }
 
@@ -306,27 +306,14 @@ public class PlayerListener implements Listener {
          * @note little hack cause InventoryOpenEvent cannot be cancelled for
          * real, cause no packet is send to server by client for the main inv
          */
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                player.closeInventory();
-            }
-        }, 1);
+        bukkitService.scheduleSyncDelayedTask(player::closeInventory, 1);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() == null) {
-            return;
+        if (listenerService.shouldCancelEvent(event.getWhoClicked())) {
+            event.setCancelled(true);
         }
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-        Player player = (Player) event.getWhoClicked();
-        if (!listenerService.shouldCancelEvent(player)) {
-            return;
-        }
-        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)

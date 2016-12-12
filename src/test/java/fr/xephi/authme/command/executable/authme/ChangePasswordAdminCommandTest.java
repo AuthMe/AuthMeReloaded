@@ -3,12 +3,12 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
@@ -17,13 +17,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
 import static fr.xephi.authme.TestHelper.runOptionallyAsyncTask;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,7 +39,7 @@ public class ChangePasswordAdminCommandTest {
     private ChangePasswordAdminCommand command;
 
     @Mock
-    private CommandService service;
+    private CommonService service;
 
     @Mock
     private PasswordSecurity passwordSecurity;
@@ -84,7 +84,6 @@ public class ChangePasswordAdminCommandTest {
         String player = "player";
         String password = "password";
         given(playerCache.isAuthenticated(player)).willReturn(false);
-        given(dataSource.getAuth(player)).willReturn(null);
         given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         // when

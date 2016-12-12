@@ -3,8 +3,7 @@ package fr.xephi.authme.security;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 
 /**
- * The list of hash algorithms supported by AuthMe. The linked {@link EncryptionMethod} implementation
- * must be able to be instantiated with the default constructor.
+ * Hash algorithms supported by AuthMe.
  */
 public enum HashAlgorithm {
 
@@ -18,8 +17,8 @@ public enum HashAlgorithm {
     MD5(fr.xephi.authme.security.crypts.MD5.class),
     MD5VB(fr.xephi.authme.security.crypts.MD5VB.class),
     MYBB(fr.xephi.authme.security.crypts.MYBB.class),
-    PBKDF2(fr.xephi.authme.security.crypts.CryptPBKDF2.class),
-    PBKDF2DJANGO(fr.xephi.authme.security.crypts.CryptPBKDF2Django.class),
+    PBKDF2(fr.xephi.authme.security.crypts.Pbkdf2.class),
+    PBKDF2DJANGO(fr.xephi.authme.security.crypts.Pbkdf2Django.class),
     PHPBB(fr.xephi.authme.security.crypts.PHPBB.class),
     PHPFUSION(fr.xephi.authme.security.crypts.PHPFUSION.class),
     @Deprecated

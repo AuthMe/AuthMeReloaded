@@ -6,7 +6,8 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 
@@ -18,13 +19,16 @@ import javax.inject.Inject;
 public class AsyncAddEmail implements AsynchronousProcess {
 
     @Inject
-    private ProcessService service;
+    private CommonService service;
 
     @Inject
     private DataSource dataSource;
 
     @Inject
     private PlayerCache playerCache;
+
+    @Inject
+    private ValidationService validationService;
 
     AsyncAddEmail() { }
 
@@ -37,9 +41,9 @@ public class AsyncAddEmail implements AsynchronousProcess {
 
             if (currentEmail != null && !"your@email.com".equals(currentEmail)) {
                 service.send(player, MessageKey.USAGE_CHANGE_EMAIL);
-            } else if (!service.validateEmail(email)) {
+            } else if (!validationService.validateEmail(email)) {
                 service.send(player, MessageKey.INVALID_EMAIL);
-            } else if (!service.isEmailFreeForRegistration(email, player)) {
+            } else if (!validationService.isEmailFreeForRegistration(email, player)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 auth.setEmail(email);

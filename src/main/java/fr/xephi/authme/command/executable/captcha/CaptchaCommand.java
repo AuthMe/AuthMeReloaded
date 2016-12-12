@@ -1,11 +1,13 @@
 package fr.xephi.authme.command.executable.captcha;
 
+import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -20,7 +22,7 @@ public class CaptchaCommand extends PlayerCommand {
     private CaptchaManager captchaManager;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Inject
     private LimboCache limboCache;
@@ -30,9 +32,9 @@ public class CaptchaCommand extends PlayerCommand {
         final String playerName = player.getName().toLowerCase();
 
         if (playerCache.isAuthenticated(playerName)) {
-            commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            commonService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
         } else if (!captchaManager.isCaptchaRequired(playerName)) {
-            commandService.send(player, MessageKey.USAGE_LOGIN);
+            commonService.send(player, MessageKey.USAGE_LOGIN);
         } else {
             checkCaptcha(player, arguments.get(0));
         }
@@ -46,7 +48,7 @@ public class CaptchaCommand extends PlayerCommand {
             limboCache.getPlayerData(player.getName()).getMessageTask().setMuted(false);
         } else {
             String newCode = captchaManager.generateCode(player.getName());
-            commandService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
+            commonService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
     }
 }

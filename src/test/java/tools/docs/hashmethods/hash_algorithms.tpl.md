@@ -1,5 +1,5 @@
 <!-- {gen_warning} -->
-<!-- File auto-generated on {gen_date}. See hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on {gen_date}. See docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.

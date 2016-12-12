@@ -104,36 +104,22 @@ public class BackupService {
             dirBackup.mkdir();
         }
         String backupWindowsPath = settings.getProperty(BackupSettings.MYSQL_WINDOWS_PATH);
-        if (checkWindows(backupWindowsPath)) {
-            String executeCmd = backupWindowsPath + "\\bin\\mysqldump.exe -u " + dbUserName + " -p" + dbPassword + " " + dbName + " --tables " + tblname + " -r " + path + ".sql";
-            Process runtimeProcess;
-            try {
-                runtimeProcess = Runtime.getRuntime().exec(executeCmd);
-                int processComplete = runtimeProcess.waitFor();
-                if (processComplete == 0) {
-                    ConsoleLogger.info("Backup created successfully.");
-                    return true;
-                } else {
-                    ConsoleLogger.warning("Could not create the backup! (Windows)");
-                }
-            } catch (IOException | InterruptedException e) {
-                ConsoleLogger.logException("Error during Windows backup:", e);
+        boolean isUsingWindows = checkWindows(backupWindowsPath);
+        String backupCommand = isUsingWindows
+            ? backupWindowsPath + "\\bin\\mysqldump.exe" + buildMysqlDumpArguments()
+            : "mysqldump" + buildMysqlDumpArguments();
+
+        try {
+            Process runtimeProcess = Runtime.getRuntime().exec(backupCommand);
+            int processComplete = runtimeProcess.waitFor();
+            if (processComplete == 0) {
+                ConsoleLogger.info("Backup created successfully. (Using Windows = " + isUsingWindows + ")");
+                return true;
+            } else {
+                ConsoleLogger.warning("Could not create the backup! (Using Windows = " + isUsingWindows + ")");
             }
-        } else {
-            String executeCmd = "mysqldump -u " + dbUserName + " -p" + dbPassword + " " + dbName + " --tables " + tblname + " -r " + path + ".sql";
-            Process runtimeProcess;
-            try {
-                runtimeProcess = Runtime.getRuntime().exec(executeCmd);
-                int processComplete = runtimeProcess.waitFor();
-                if (processComplete == 0) {
-                    ConsoleLogger.info("Backup created successfully.");
-                    return true;
-                } else {
-                    ConsoleLogger.warning("Could not create the backup!");
-                }
-            } catch (IOException | InterruptedException e) {
-                ConsoleLogger.logException("Error during backup:", e);
-            }
+        } catch (IOException | InterruptedException e) {
+            ConsoleLogger.logException("Error during backup (using Windows = " + isUsingWindows + "):", e);
         }
         return false;
     }
@@ -171,6 +157,16 @@ public class BackupService {
             }
         }
         return false;
+    }
+
+    /**
+     * Builds the command line arguments to pass along when running the {@code mysqldump} command.
+     *
+     * @return the mysqldump command line arguments
+     */
+    private String buildMysqlDumpArguments() {
+        return " -u " + dbUserName + " -p" + dbPassword + " " + dbName
+            + " --tables " + tblname + " -r " + path + ".sql";
     }
 
     private static void copy(String src, String dst) throws IOException {

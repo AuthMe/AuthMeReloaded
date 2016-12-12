@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,12 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -30,7 +29,7 @@ public class AddEmailCommandTest {
     private AddEmailCommand command;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private Management management;
@@ -41,7 +40,7 @@ public class AddEmailCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verifyZeroInteractions(management);
@@ -52,7 +51,6 @@ public class AddEmailCommandTest {
         // given
         Player sender = mock(Player.class);
         String email = "mail@example";
-        given(commandService.validateEmail(email)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, email));
@@ -66,7 +64,6 @@ public class AddEmailCommandTest {
         // given
         Player sender = mock(Player.class);
         String email = "asdfasdf@example.com";
-        given(commandService.validateEmail(email)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, "wrongConf"));

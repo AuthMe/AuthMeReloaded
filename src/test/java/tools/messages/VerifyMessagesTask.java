@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static tools.utils.FileIoUtils.listFilesOrThrow;
+
 /**
  * Task to verify the keys in the messages files.
  */
@@ -124,12 +126,7 @@ public final class VerifyMessagesTask implements ToolTask {
     }
 
     private static List<File> getMessagesFiles() {
-        File folder = new File(MESSAGES_FOLDER);
-        File[] files = folder.listFiles();
-        if (files == null) {
-            throw new IllegalStateException("Could not read files from folder '" + folder.getName() + "'");
-        }
-
+        File[] files = listFilesOrThrow(new File(MESSAGES_FOLDER));
         List<File> messageFiles = new ArrayList<>();
         for (File file : files) {
             if (MESSAGE_FILE_PATTERN.matcher(file.getName()).matches()) {

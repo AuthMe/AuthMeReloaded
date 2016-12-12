@@ -6,10 +6,10 @@ import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.junit.BeforeClass;
@@ -17,13 +17,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -174,11 +171,8 @@ public class LimboPlayerTaskManagerTest {
     @Test
     public void shouldNotRegisterTimeoutTaskForZeroTimeout() {
         // given
-        String name = "snail";
         Player player = mock(Player.class);
-        given(player.getName()).willReturn(name);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(0);
 
         // when

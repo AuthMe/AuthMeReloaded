@@ -48,4 +48,13 @@ public final class Utils {
             return false;
         }
     }
+
+    /**
+     * Return the available core count of the JVM.
+     *
+     * @return the core count
+     */
+    public static int getCoreCount() {
+        return Runtime.getRuntime().availableProcessors();
+    }
 }

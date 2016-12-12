@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static tools.utils.FileIoUtils.listFilesOrThrow;
 import static org.junit.Assert.fail;
 
 /**
@@ -28,11 +29,7 @@ public class YamlTextFileCheckerTest {
     @BeforeClass
     public static void loadMessagesFiles() {
         File folder = TestHelper.getJarFile(MESSAGES_FOLDER);
-        File[] files = folder.listFiles();
-        if (files == null || files.length == 0) {
-            throw new IllegalStateException("Could not read folder '" + folder.getName() + "'");
-        }
-        messageFiles = Arrays.asList(files);
+        messageFiles = Arrays.asList(listFilesOrThrow(folder));
     }
 
     @Test
@@ -82,17 +79,13 @@ public class YamlTextFileCheckerTest {
      * @param errors collection of errors to add to if the verification fails
      */
     private void checkFile(File file, String mandatoryKey, List<String> errors) {
-        String error = null;
         try {
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
             if (StringUtils.isEmpty(configuration.getString(mandatoryKey))) {
-                error = "Message for '" + mandatoryKey + "' is empty";
+                errors.add("Message for '" + mandatoryKey + "' is empty");
             }
         } catch (Exception e) {
-            error = "Could not load file: " + StringUtils.formatException(e);
-        }
-        if (!StringUtils.isEmpty(error)) {
-            errors.add(file.getName() + ": " + error);
+            errors.add("Could not load file: " + StringUtils.formatException(e));
         }
     }
 }

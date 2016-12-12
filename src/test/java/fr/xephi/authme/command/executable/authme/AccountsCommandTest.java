@@ -1,17 +1,17 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +20,8 @@ import java.util.List;
 import static fr.xephi.authme.TestHelper.runInnerRunnable;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -36,7 +36,7 @@ public class AccountsCommandTest {
     @InjectMocks
     private AccountsCommand command;
     @Mock
-    private CommandService service;
+    private CommonService service;
     @Mock
     private DataSource dataSource;
     @Mock
@@ -83,7 +83,6 @@ public class AccountsCommandTest {
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
-        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String>emptyList());
 
         // when
         command.executeCommand(sender, arguments);

@@ -3,12 +3,12 @@ package fr.xephi.authme.command.executable.authme;
 import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.bukkit.command.CommandSender;
@@ -35,7 +35,7 @@ public class ReloadCommand implements ExecutableCommand {
     private DataSource dataSource;
 
     @Inject
-    private CommandService commandService;
+    private CommonService commonService;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
@@ -48,7 +48,7 @@ public class ReloadCommand implements ExecutableCommand {
                 sender.sendMessage("Note: cannot change database type during /authme reload");
             }
             performReloadOnServices();
-            commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
+            commonService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
             sender.sendMessage("Error occurred during reload of AuthMe: aborting");
             ConsoleLogger.logException("Aborting! Encountered exception during reload of AuthMe:", e);

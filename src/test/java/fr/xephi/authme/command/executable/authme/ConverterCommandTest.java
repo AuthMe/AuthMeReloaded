@@ -2,10 +2,10 @@ package fr.xephi.authme.command.executable.authme;
 
 import ch.jalu.injector.Injector;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,14 +23,14 @@ import java.util.Set;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link ConverterCommand}.
@@ -42,7 +42,7 @@ public class ConverterCommandTest {
     private ConverterCommand command;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private BukkitService bukkitService;

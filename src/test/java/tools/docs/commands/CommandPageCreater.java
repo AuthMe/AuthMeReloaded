@@ -5,15 +5,15 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
-import tools.utils.FileUtils;
-import tools.utils.SimpleAutoTask;
+import tools.utils.AutoToolTask;
+import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
 import java.util.Collection;
 
-public class CommandPageCreater extends SimpleAutoTask {
+public class CommandPageCreater implements AutoToolTask {
 
     private static final String OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "commands.md";
 
@@ -29,7 +29,7 @@ public class CommandPageCreater extends SimpleAutoTask {
         NestedTagValue commandTags = new NestedTagValue();
         addCommandsInfo(commandTags, baseCommands);
 
-        FileUtils.generateFileFromTemplate(
+        FileIoUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "docs/commands/commands.tpl.md",
             OUTPUT_FILE,
             TagValueHolder.create().put("commands", commandTags));

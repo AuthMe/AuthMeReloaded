@@ -1,15 +1,15 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -30,7 +30,7 @@ public class ShowEmailCommandTest {
     private ShowEmailCommand command;
 
     @Mock
-    private CommandService commandService;
+    private CommonService commandService;
 
     @Mock
     private PlayerCache playerCache;
