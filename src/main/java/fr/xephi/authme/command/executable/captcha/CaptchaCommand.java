@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.captcha;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.message.MessageKey;
@@ -43,8 +42,8 @@ public class CaptchaCommand extends PlayerCommand {
     private void checkCaptcha(Player player, String captchaCode) {
         final boolean isCorrectCode = captchaManager.checkCode(player.getName(), captchaCode);
         if (isCorrectCode) {
-            commandService.send(player, MessageKey.CAPTCHA_SUCCESS);
-            commandService.send(player, MessageKey.LOGIN_MESSAGE);
+            commonService.send(player, MessageKey.CAPTCHA_SUCCESS);
+            commonService.send(player, MessageKey.LOGIN_MESSAGE);
             limboCache.getPlayerData(player.getName()).getMessageTask().setMuted(false);
         } else {
             String newCode = captchaManager.generateCode(player.getName());

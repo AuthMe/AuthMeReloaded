@@ -20,6 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -97,7 +100,7 @@ public class LimboPlayerTaskManagerTest {
         // given
         String name = "Tester1";
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
+
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(0);
 
         // when
