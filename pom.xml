@@ -617,6 +617,20 @@
             </exclusions>
         </dependency>
 
+        <!-- PermissionsBukkit plugin -->
+        <dependency>
+            <groupId>com.platymuus</groupId>
+            <artifactId>bukkit-permissions</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- zPermissions plugin -->
         <dependency>
             <groupId>org.tyrannyofheaven.bukkit</groupId>

@@ -1,14 +1,28 @@
 package fr.xephi.authme.permission.handlers;
 
+import com.platymuus.bukkit.permissions.Group;
+import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionsBukkitHandler implements PermissionHandler {
+
+    private PermissionsPlugin permissionsBukkitInstance;
+
+    public PermissionsBukkitHandler(PluginManager pluginManager) throws PermissionHandlerException {
+        Plugin plugin = pluginManager.getPlugin("PermissionsBukkit");
+        if (plugin == null) {
+            throw new PermissionHandlerException("Could not get instance of PermissionsBukkit");
+        }
+        permissionsBukkitInstance = (PermissionsPlugin) plugin;
+    }
 
     @Override
     public boolean addToGroup(Player player, String group) {
@@ -44,8 +58,11 @@ public class PermissionsBukkitHandler implements PermissionHandler {
 
     @Override
     public List<String> getGroups(Player player) {
-        // FIXME Gnat008 20160601: Add support for this
-        return new ArrayList<>();
+        List<String> groups = new ArrayList<String>();
+        for (Group group : permissionsBukkitInstance.getGroups(player.getUniqueId())) {
+            groups.add(group.getName());
+        }
+        return groups;
     }
 
     @Override
@@ -54,8 +71,9 @@ public class PermissionsBukkitHandler implements PermissionHandler {
         List<String> groups = getGroups(player);
 
         // Make sure there is any group available, or return null
-        if (groups.isEmpty())
+        if (groups.isEmpty()) {
             return null;
+        }
 
         // Return the first group
         return groups.get(0);

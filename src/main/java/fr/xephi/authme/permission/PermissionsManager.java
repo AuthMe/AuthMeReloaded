@@ -115,7 +115,7 @@ public class PermissionsManager implements Reloadable {
             case B_PERMISSIONS:
                 return new BPermissionsHandler();
             case PERMISSIONS_BUKKIT:
-                return new PermissionsBukkitHandler();
+                return new PermissionsBukkitHandler(pluginManager);
             default:
                 throw new IllegalStateException("Unhandled permission type '" + type + "'");
         }
