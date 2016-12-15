@@ -218,11 +218,11 @@ settings:
         # See restrictions for exceptions
         force: true
         # Does we replace password registration by an Email registration method ?
-        enableEmailRegistrationSystem: false
+        enableEmailRegistrationSystem: true
         # Enable double check of email when you register
         # when it's true, registration require that kind of command:
         # /register <email> <confirmEmail>
-        doubleEmailCheck: false
+        doubleEmailCheck: true
         # Do we force kicking player after a successful registration ?
         # Do not use with login feature below
         forceKickAfterRegister: false

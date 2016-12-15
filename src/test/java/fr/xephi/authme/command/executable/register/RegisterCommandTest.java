@@ -9,7 +9,7 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -63,8 +63,7 @@ public class RegisterCommandTest {
     @Before
     public void linkMocksAndProvideSettingDefaults() {
         given(commandService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
-        given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(false);
-        given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(false);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.PASSWORD);
     }
 
     @Test
@@ -110,7 +109,7 @@ public class RegisterCommandTest {
     @Test
     public void shouldReturnErrorForMissingConfirmation() {
         // given
-        given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(true);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION);
         Player player = mock(Player.class);
 
         // when
@@ -124,8 +123,7 @@ public class RegisterCommandTest {
     @Test
     public void shouldReturnErrorForMissingEmailConfirmation() {
         // given
-        given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
-        given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
         Player player = mock(Player.class);
 
         // when
@@ -139,8 +137,7 @@ public class RegisterCommandTest {
     @Test
     public void shouldThrowErrorForMissingEmailConfiguration() {
         // given
-        given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
-        given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(false);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL);
         given(sendMailSsl.hasAllInformation()).willReturn(false);
         Player player = mock(Player.class);
 
@@ -158,9 +155,7 @@ public class RegisterCommandTest {
         // given
         String playerMail = "player@example.org";
         given(validationService.validateEmail(playerMail)).willReturn(false);
-
-        given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
-        given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
@@ -178,9 +173,7 @@ public class RegisterCommandTest {
         // given
         String playerMail = "bobber@bobby.org";
         given(validationService.validateEmail(playerMail)).willReturn(true);
-
-        given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
-        given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
@@ -201,8 +194,7 @@ public class RegisterCommandTest {
         int passLength = 7;
         given(commandService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(passLength);
 
-        given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
-        given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
@@ -218,7 +210,7 @@ public class RegisterCommandTest {
     @Test
     public void shouldRejectInvalidPasswordConfirmation() {
         // given
-        given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(true);
+        given(commandService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION);
         Player player = mock(Player.class);
 
         // when

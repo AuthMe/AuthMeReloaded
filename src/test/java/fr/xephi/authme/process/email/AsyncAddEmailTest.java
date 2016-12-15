@@ -8,6 +8,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -172,7 +173,7 @@ public class AsyncAddEmailTest {
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
         given(dataSource.isAuthAvailable("user")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL);
 
         // when
         asyncAddEmail.addEmail(player, "test@mail.com");
@@ -188,7 +189,7 @@ public class AsyncAddEmailTest {
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
         given(dataSource.isAuthAvailable("user")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(false);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION);
 
         // when
         asyncAddEmail.addEmail(player, "test@mail.com");

@@ -126,13 +126,6 @@ public class RestrictionSettings implements SettingsHolder {
     public static final Property<Integer> ALLOWED_MOVEMENT_RADIUS =
         newProperty("settings.restrictions.allowedMovementRadius", 100);
 
-    @Comment({
-        "Enable double check of password when you register",
-        "when it's true, registration requires that kind of command:",
-        "/register <password> <confirmPassword>"})
-    public static final Property<Boolean> ENABLE_PASSWORD_CONFIRMATION =
-        newProperty("settings.restrictions.enablePasswordConfirmation", true);
-
     @Comment("Should we protect the player inventory before logging in? Requires ProtocolLib.")
     public static final Property<Boolean> PROTECT_INVENTORY_BEFORE_LOGIN =
         newProperty("settings.restrictions.ProtectInventoryBeforeLogIn", true);

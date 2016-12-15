@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Nov 13 13:34:49 CET 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Thu Dec 15 22:27:25 CET 2016. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -102,10 +102,14 @@ settings:
     # Message language, available languages:
     # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md
     messagesLanguage: 'en'
+    # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
+    # FINE for some additional detailed ones (like password failed),
+    # and DEBUG for debugging
+    logLevel: 'FINE'
+    # By default we schedule async tasks when talking to the database. If you want
+    # typical communication with the database to happen synchronously, set this to false
+    useAsyncTasks: true
     restrictions:
-        # Keeps collisions disabled for logged players
-        # Works only with MC 1.9
-        keepCollisionsDisabled: false
         # Can not authenticated players chat?
         # Keep in mind that this feature also blocks all commands not
         # listed in the list below.
@@ -158,7 +162,7 @@ settings:
         # Should unregistered players be kicked immediately?
         kickNonRegistered: false
         # Should players be kicked on wrong password?
-        kickOnWrongPassword: false
+        kickOnWrongPassword: true
         # Should not logged in players be teleported to the spawn?
         # After the authentication they will be teleported back to
         # their normal position.
@@ -176,14 +180,10 @@ settings:
         # How far can unregistered players walk?
         # Set to 0 for unlimited radius
         allowedMovementRadius: 100
-        # Enable double check of password when you register
-        # when it's true, registration requires that kind of command:
-        # /register <password> <confirmPassword>
-        enablePasswordConfirmation: true
         # Should we protect the player inventory before logging in? Requires ProtocolLib.
         ProtectInventoryBeforeLogIn: true
         # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
-        DenyTabCompleteBeforeLogin: true
+        DenyTabCompleteBeforeLogin: false
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
@@ -204,13 +204,6 @@ settings:
         # Command to run when a user has more accounts than the configured threshold.
         # Available variables: %playername%, %playerip%
         otherAccountsCmd: 'say The player %playername% with ip %playerip% has multiple accounts!'
-    # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
-    # FINE for some additional detailed ones (like password failed),
-    # and DEBUG for debugging
-    logLevel: 'FINE'
-    # By default we schedule async tasks when talking to the database. If you want
-    # typical communication with the database to happen synchronously, set this to false
-    useAsyncTasks: true
     GameMode:
         # Force survival gamemode when player joins?
         ForceSurvivalMode: false
@@ -240,9 +233,10 @@ settings:
         # Otherwise your group will be wiped and the player will join in the default group []!
         # Example unLoggedinGroup: NotLogged
         unLoggedinGroup: 'unLoggedinGroup'
-        # Possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,
-        # MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
-        # DOUBLEMD5, PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only)
+        # Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,
+        # MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,
+        # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at
+        # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md
         passwordHash: 'SHA256'
         # Salt length for the SALTED2MD5 MD5(MD5(password)+salt)
         doubleMD5SaltLength: 8
@@ -252,6 +246,8 @@ settings:
         # legacyHashes:
         # - 'SHA1'
         legacyHashes: []
+        # Number of rounds to use if passwordHash is set to PBKDF2. Default is 10000
+        pbkdf2Rounds: 10000
         # Prevent unsafe passwords from being used; put them in lowercase!
         # You should always set 'help' as unsafePassword due to possible conflicts.
         # unsafePasswords:
@@ -275,27 +271,14 @@ settings:
         # Only registered and logged in players can play.
         # See restrictions for exceptions
         force: true
-        # Do we replace password registration by an email registration method?
-        enableEmailRegistrationSystem: false
-        # Enable double check of email when you register
-        # when it's true, registration requires that kind of command:
-        # /register <email> <confirmEmail>
-        doubleEmailCheck: false
+        # Type of registration: PASSWORD, PASSWORD_WITH_CONFIRMATION, EMAIL
+        # EMAIL_WITH_CONFIRMATION, PASSWORD_WITH_EMAIL
+        type: 'PASSWORD_WITH_CONFIRMATION'
         # Do we force kick a player after a successful registration?
         # Do not use with login feature below
         forceKickAfterRegister: false
         # Does AuthMe need to enforce a /login after a successful registration?
         forceLoginAfterRegister: false
-    # Force these commands after /login, without any '/', use %p to replace with player name
-    forceCommands: []
-    # Force these commands after /login as service console, without any '/'.
-    # Use %p to replace with player name
-    forceCommandsAsConsole: []
-    # Force these commands after /register, without any '/', use %p to replace with player name
-    forceRegisterCommands: []
-    # Force these commands after /register as a server console, without any '/'.
-    # Use %p to replace with player name
-    forceRegisterCommandsAsConsole: []
     # Enable to display the welcome message (welcome.txt) after a login
     # You can use colors in this welcome.txt + some replaced strings:
     # {PLAYER}: player name, {ONLINE}: display number of online players,
@@ -318,7 +301,7 @@ settings:
     applyBlindEffect: false
     # Do we need to prevent people to login with another case?
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
-    preventOtherCase: false
+    preventOtherCase: true
 permission:
     # Take care with this option; if you want
     # to use group switching of AuthMe
@@ -363,7 +346,7 @@ Hooks:
     # Send player to this BungeeCord server after register/login
     sendPlayerTo: ''
     # Do we need to disable Essentials SocialSpy on join?
-    disableSocialSpy: true
+    disableSocialSpy: false
     # Do we need to force /motd Essentials command on join?
     useEssentialsMotd: false
 GroupOptions:
@@ -464,4 +447,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Nov 13 13:34:49 CET 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Dec 15 22:27:25 CET 2016

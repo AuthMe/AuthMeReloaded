@@ -6,10 +6,11 @@ import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RegistrationArgumentType.Execution;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -95,7 +96,7 @@ public class LimboPlayerTaskManager {
         if (isRegistered) {
             return MessageKey.LOGIN_MESSAGE;
         } else {
-            return settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
+            return settings.getProperty(RegistrationSettings.REGISTRATION_TYPE).getExecution() == Execution.EMAIL
                 ? MessageKey.REGISTER_EMAIL_MESSAGE
                 : MessageKey.REGISTER_MESSAGE;
         }
