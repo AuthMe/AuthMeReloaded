@@ -19,6 +19,8 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
+import static fr.xephi.authme.settings.properties.RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION;
+import static fr.xephi.authme.settings.properties.RegistrationArgumentType.PASSWORD_WITH_EMAIL;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REGISTRATION_TYPE;
 
 /**
@@ -66,11 +68,15 @@ public class RegisterCommand extends PlayerCommand {
     }
 
     private void handlePasswordRegistration(Player player, List<String> arguments) {
-        if (commonService.getProperty(REGISTRATION_TYPE) == RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION
-                && !arguments.get(0).equals(arguments.get(1))) {
+        RegistrationArgumentType registrationType = commonService.getProperty(REGISTRATION_TYPE);
+        if (registrationType == PASSWORD_WITH_CONFIRMATION && !arguments.get(0).equals(arguments.get(1))) {
             commonService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
+        } else if (registrationType == PASSWORD_WITH_EMAIL && !validationService.validateEmail(arguments.get(1))) {
+            commonService.send(player, MessageKey.INVALID_EMAIL);
         } else {
-            management.performRegister(player, arguments.get(0), "", true);
+            // We might only have received one argument, need to check that it's safe to do arguments.get(1)
+            String email = registrationType == PASSWORD_WITH_EMAIL ? arguments.get(1) : null;
+            management.performRegister(player, arguments.get(0), email, true);
         }
     }
 

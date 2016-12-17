@@ -15,9 +15,10 @@ public enum RegistrationArgumentType {
     EMAIL(Execution.EMAIL, 1),
 
     /** /register [email] [email] */
-    EMAIL_WITH_CONFIRMATION(Execution.EMAIL, 2);
+    EMAIL_WITH_CONFIRMATION(Execution.EMAIL, 2),
 
-    // TODO #427: PASSWORD_WITH_EMAIL(PASSWORD, 2);
+    /** /register [password] [email] */
+    PASSWORD_WITH_EMAIL(Execution.PASSWORD, 2);
 
     private final Execution execution;
     private final int requiredNumberOfArgs;

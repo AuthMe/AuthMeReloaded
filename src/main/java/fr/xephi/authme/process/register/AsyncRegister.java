@@ -7,23 +7,23 @@ import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.ValidationService.ValidationResult;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RegistrationArgumentType.Execution;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.PlayerUtils;
-import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
+import static fr.xephi.authme.settings.properties.RegistrationArgumentType.PASSWORD_WITH_EMAIL;
 
 /**
  * Asynchronous processing of a request for registration.
@@ -111,10 +112,10 @@ public class AsyncRegister implements AsynchronousProcess {
 
     public void register(Player player, String password, String email, boolean autoLogin) {
         if (preRegisterCheck(player, password)) {
-            if (!StringUtils.isEmpty(email)) {
+            if (Execution.EMAIL == service.getProperty(RegistrationSettings.REGISTRATION_TYPE).getExecution()) {
                 emailRegister(player, password, email);
             } else {
-                passwordRegister(player, password, autoLogin);
+                passwordRegister(player, password, email, autoLogin);
             }
         }
     }
@@ -156,7 +157,8 @@ public class AsyncRegister implements AsynchronousProcess {
         }
     }
 
-    private void passwordRegister(final Player player, String password, boolean autoLogin) {
+    // Email arg might be the password depending on the registration type. TODO #830: Fix with more specific methods
+    private void passwordRegister(Player player, String password, String email, boolean autoLogin) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
         final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
@@ -167,6 +169,10 @@ public class AsyncRegister implements AsynchronousProcess {
             .ip(ip)
             .location(player.getLocation())
             .build();
+
+        if (service.getProperty(RegistrationSettings.REGISTRATION_TYPE) == PASSWORD_WITH_EMAIL) {
+            auth.setEmail(email);
+        }
 
         if (!database.saveAuth(auth)) {
             service.send(player, MessageKey.ERROR);
