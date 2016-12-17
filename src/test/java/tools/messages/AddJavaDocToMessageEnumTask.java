@@ -45,6 +45,6 @@ public class AddJavaDocToMessageEnumTask implements AutoToolTask {
         return configuration.getString(key.getKey())
             .replaceAll("&[0-9a-f]", "")
             .replace("&", "&amp;")
-            .replace("<", "&gt;");
+            .replace("<", "&lt;");
     }
 }

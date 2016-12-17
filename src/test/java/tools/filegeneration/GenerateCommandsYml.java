@@ -11,7 +11,6 @@ import tools.utils.AutoToolTask;
 import tools.utils.ToolsConstants;
 
 import java.io.File;
-import java.util.Scanner;
 
 /**
  * Generates the commands.yml file that corresponds to the default in the code.
@@ -19,11 +18,6 @@ import java.util.Scanner;
 public class GenerateCommandsYml implements AutoToolTask {
 
     private static final String COMMANDS_YML_FILE = ToolsConstants.MAIN_RESOURCES_ROOT + "commands.yml";
-
-    @Override
-    public void execute(Scanner scanner) {
-        executeDefault();
-    }
 
     @Override
     public void executeDefault() {

@@ -26,10 +26,10 @@ public enum MessageKey {
     /** You're not logged in! */
     NOT_LOGGED_IN("not_logged_in"),
 
-    /** You can register yourself to the server with the command "/register &gt;password> &gt;ConfirmPassword>" */
+    /** You can register yourself to the server with the command "/register &lt;password> &lt;ConfirmPassword>" */
     REGISTER_VOLUNTARILY("reg_voluntarily"),
 
-    /** Usage: /login &gt;password> */
+    /** Usage: /login &lt;password> */
     USAGE_LOGIN("usage_log"),
 
     /** Wrong password! */
@@ -59,22 +59,22 @@ public enum MessageKey {
     /** An unexpected error occurred, please contact an administrator! */
     ERROR("error"),
 
-    /** Please, login with the command "/login &gt;password>" */
+    /** Please, login with the command "/login &lt;password>" */
     LOGIN_MESSAGE("login_msg"),
 
-    /** Please, register to the server with the command "/register &gt;password> &gt;ConfirmPassword>" */
+    /** Please, register to the server with the command "/register &lt;password> &lt;ConfirmPassword>" */
     REGISTER_MESSAGE("reg_msg"),
 
-    /** Please, register to the server with the command "/register &gt;email> &gt;confirmEmail>" */
+    /** Please, register to the server with the command "/register &lt;email> &lt;confirmEmail>" */
     REGISTER_EMAIL_MESSAGE("reg_email_msg"),
 
     /** You have exceeded the maximum number of registrations (%reg_count/%max_acc %reg_names) for your connection! */
     MAX_REGISTER_EXCEEDED("max_reg", "%max_acc", "%reg_count", "%reg_names"),
 
-    /** Usage: /register &gt;password> &gt;ConfirmPassword> */
+    /** Usage: /register &lt;password> &lt;ConfirmPassword> */
     USAGE_REGISTER("usage_reg"),
 
-    /** Usage: /unregister &gt;password> */
+    /** Usage: /unregister &lt;password> */
     USAGE_UNREGISTER("usage_unreg"),
 
     /** Password changed successfully! */
@@ -122,7 +122,7 @@ public enum MessageKey {
     /** Login timeout exceeded, you have been kicked from the server, please try again! */
     LOGIN_TIMEOUT_ERROR("timeout"),
 
-    /** Usage: /changepassword &gt;oldPassword> &gt;newPassword> */
+    /** Usage: /changepassword &lt;oldPassword> &lt;newPassword> */
     USAGE_CHANGE_PASSWORD("usage_changepassword"),
 
     /** Your username is either too short or too long! */
@@ -131,13 +131,13 @@ public enum MessageKey {
     /** Your username contains illegal characters. Allowed chars: REG_EX */
     INVALID_NAME_CHARACTERS("regex", "REG_EX"),
 
-    /** Please add your email to your account with the command "/email add &gt;yourEmail> &gt;confirmEmail>" */
+    /** Please add your email to your account with the command "/email add &lt;yourEmail> &lt;confirmEmail>" */
     ADD_EMAIL_MESSAGE("add_email"),
 
-    /** Forgot your password? Please use the command "/email recovery &gt;yourEmail>" */
+    /** Forgot your password? Please use the command "/email recovery &lt;yourEmail>" */
     FORGOT_PASSWORD_MESSAGE("recovery_email"),
 
-    /** To login you have to solve a captcha code, please use the command "/captcha &gt;theCaptcha>" */
+    /** To login you have to solve a captcha code, please use the command "/captcha &lt;theCaptcha>" */
     USAGE_CAPTCHA("usage_captcha", "<theCaptcha>"),
 
     /** Wrong captcha, please type "/captcha THE_CAPTCHA" into the chat! */
@@ -152,13 +152,13 @@ public enum MessageKey {
     /** The server is full, try again later! */
     KICK_FULL_SERVER("kick_fullserver"),
 
-    /** Usage: /email add &gt;email> &gt;confirmEmail> */
+    /** Usage: /email add &lt;email> &lt;confirmEmail> */
     USAGE_ADD_EMAIL("usage_email_add"),
 
-    /** Usage: /email change &gt;oldEmail> &gt;newEmail> */
+    /** Usage: /email change &lt;oldEmail> &lt;newEmail> */
     USAGE_CHANGE_EMAIL("usage_email_change"),
 
-    /** Usage: /email recovery &gt;Email> */
+    /** Usage: /email recovery &lt;Email> */
     USAGE_RECOVER_EMAIL("usage_email_recovery"),
 
     /** Invalid new email, try again! */
