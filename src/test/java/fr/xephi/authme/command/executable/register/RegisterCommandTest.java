@@ -4,12 +4,13 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.register.executors.RegistrationExecutor;
+import fr.xephi.authme.process.register.executors.RegistrationExecutorProvider;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RegistrationArgumentType;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -25,9 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -54,6 +53,9 @@ public class RegisterCommandTest {
 
     @Mock
     private ValidationService validationService;
+
+    @Mock
+    private RegistrationExecutorProvider registrationExecutorProvider;
 
     @BeforeClass
     public static void setup() {
@@ -84,12 +86,14 @@ public class RegisterCommandTest {
         // given
         given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.TWO_FACTOR);
         Player player = mock(Player.class);
+        RegistrationExecutor executor = mock(RegistrationExecutor.class);
+        given(registrationExecutorProvider.getTwoFactorRegisterExecutor(player)).willReturn(executor);
 
         // when
         command.executeCommand(player, Collections.emptyList());
 
         // then
-        verify(management).performRegister(player, "", "", true);
+        verify(management).performRegister(player, executor);
         verifyZeroInteractions(sendMailSsl);
     }
 
@@ -191,12 +195,11 @@ public class RegisterCommandTest {
         // given
         String playerMail = "asfd@lakjgre.lds";
         given(validationService.validateEmail(playerMail)).willReturn(true);
-        int passLength = 7;
-        given(commonService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(passLength);
-
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
         given(sendMailSsl.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
+        RegistrationExecutor executor = mock(RegistrationExecutor.class);
+        given(registrationExecutorProvider.getEmailRegisterExecutor(player, playerMail)).willReturn(executor);
 
         // when
         command.executeCommand(player, Arrays.asList(playerMail, playerMail));
@@ -204,7 +207,7 @@ public class RegisterCommandTest {
         // then
         verify(validationService).validateEmail(playerMail);
         verify(sendMailSsl).hasAllInformation();
-        verify(management).performRegister(eq(player), argThat(stringWithLength(passLength)), eq(playerMail), eq(true));
+        verify(management).performRegister(player, executor);
     }
 
     @Test
@@ -225,12 +228,14 @@ public class RegisterCommandTest {
     public void shouldPerformPasswordValidation() {
         // given
         Player player = mock(Player.class);
+        RegistrationExecutor executor = mock(RegistrationExecutor.class);
+        given(registrationExecutorProvider.getPasswordRegisterExecutor(player, "myPass")).willReturn(executor);
 
         // when
         command.executeCommand(player, Collections.singletonList("myPass"));
 
         // then
-        verify(management).performRegister(player, "myPass", null, true);
+        verify(management).performRegister(player, executor);
     }
 
     @Test
@@ -241,13 +246,15 @@ public class RegisterCommandTest {
         String email = "email@example.org";
         given(validationService.validateEmail(email)).willReturn(true);
         Player player = mock(Player.class);
+        RegistrationExecutor executor = mock(RegistrationExecutor.class);
+        given(registrationExecutorProvider.getPasswordRegisterExecutor(player, "myPass", email)).willReturn(executor);
 
         // when
         command.executeCommand(player, Arrays.asList("myPass", email));
 
         // then
         verify(validationService).validateEmail(email);
-        verify(management).performRegister(player, "myPass", email, true);
+        verify(management).performRegister(player, executor);
     }
 
     @Test

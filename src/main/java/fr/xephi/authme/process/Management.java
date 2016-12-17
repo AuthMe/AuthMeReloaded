@@ -8,6 +8,7 @@ import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.process.logout.AsynchronousLogout;
 import fr.xephi.authme.process.quit.AsynchronousQuit;
 import fr.xephi.authme.process.register.AsyncRegister;
+import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
@@ -59,8 +60,8 @@ public class Management {
         runTask(() -> asynchronousLogout.logout(player));
     }
 
-    public void performRegister(Player player, String password, String email, boolean autoLogin) {
-        runTask(() -> asyncRegister.register(player, password, email, autoLogin));
+    public void performRegister(Player player, RegistrationExecutor registrationExecutor) {
+        runTask(() -> asyncRegister.register(player, registrationExecutor));
     }
 
     public void performUnregister(Player player, String password) {

@@ -4,10 +4,11 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.register.executors.RegistrationExecutorProvider;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,13 +34,15 @@ public class NewAPI {
     private final Management management;
     private final ValidationService validationService;
     private final PlayerCache playerCache;
+    private final RegistrationExecutorProvider registrationExecutorProvider;
 
     /*
      * Constructor for NewAPI.
      */
     @Inject
     NewAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
-           Management management, ValidationService validationService, PlayerCache playerCache) {
+           Management management, ValidationService validationService, PlayerCache playerCache,
+           RegistrationExecutorProvider registrationExecutorProvider) {
         this.plugin = plugin;
         this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
@@ -47,6 +50,7 @@ public class NewAPI {
         this.management = management;
         this.validationService = validationService;
         this.playerCache = playerCache;
+        this.registrationExecutorProvider = registrationExecutorProvider;
         NewAPI.singleton = this;
     }
 
@@ -199,7 +203,8 @@ public class NewAPI {
      * @param autoLogin Should the player be authenticated automatically after the registration?
      */
     public void forceRegister(Player player, String password, boolean autoLogin) {
-        management.performRegister(player, password, null, autoLogin);
+        management.performRegister(player,
+            registrationExecutorProvider.getPasswordRegisterExecutor(player, password, autoLogin));
     }
 
     /**

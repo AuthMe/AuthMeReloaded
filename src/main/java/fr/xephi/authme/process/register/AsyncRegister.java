@@ -3,73 +3,51 @@ package fr.xephi.authme.process.register;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.process.SyncProcessManager;
-import fr.xephi.authme.process.login.AsynchronousLogin;
-import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.security.crypts.TwoFactor;
-import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.ValidationService.ValidationResult;
-import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RegistrationArgumentType.Execution;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.PlayerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
-import static fr.xephi.authme.settings.properties.RegistrationArgumentType.PASSWORD_WITH_EMAIL;
 
 /**
  * Asynchronous processing of a request for registration.
  */
 public class AsyncRegister implements AsynchronousProcess {
 
-    /**
-     * Number of ticks to wait before running the login action when it is run synchronously.
-     * A small delay is necessary or the database won't return the newly saved PlayerAuth object
-     * and the login process thinks the user is not registered.
-     */
-    private static final int SYNC_LOGIN_DELAY = 5;
-
     @Inject
     private DataSource database;
     @Inject
     private PlayerCache playerCache;
     @Inject
-    private PasswordSecurity passwordSecurity;
-    @Inject
     private CommonService service;
     @Inject
-    private SyncProcessManager syncProcessManager;
-    @Inject
     private PermissionsManager permissionsManager;
-    @Inject
-    private ValidationService validationService;
-    @Inject
-    private SendMailSSL sendMailSsl;
-    @Inject
-    private AsynchronousLogin asynchronousLogin;
-    @Inject
-    private BukkitService bukkitService;
 
     AsyncRegister() {
     }
 
-    private boolean preRegisterCheck(Player player, String password) {
+    /**
+     * Performs the registration process for the given player.
+     *
+     * @param player the player to register
+     * @param executor the registration executor to perform the registration with
+     */
+    public void register(Player player, RegistrationExecutor executor) {
+        if (preRegisterCheck(player) && executor.isRegistrationAdmitted()) {
+            executeRegistration(player, executor);
+        }
+    }
+
+    private boolean preRegisterCheck(Player player) {
         final String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -77,23 +55,36 @@ public class AsyncRegister implements AsynchronousProcess {
         } else if (!service.getProperty(RegistrationSettings.IS_ENABLED)) {
             service.send(player, MessageKey.REGISTRATION_DISABLED);
             return false;
-        }
-
-        //check the password safety only if it's not a automatically generated password
-        if (service.getProperty(SecuritySettings.PASSWORD_HASH) != HashAlgorithm.TWO_FACTOR) {
-            ValidationResult passwordValidation = validationService.validatePassword(password, player.getName());
-            if (passwordValidation.hasError()) {
-                service.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
-                return false;
-            }
-        }
-
-        //check this in both possibilities so don't use 'else if'
-        if (database.isAuthAvailable(name)) {
+        } else if (database.isAuthAvailable(name)) {
             service.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
         }
 
+        return isPlayerIpAllowedToRegister(player);
+    }
+
+    /**
+     * Executes the registration.
+     *
+     * @param player the player to register
+     * @param executor the executor to perform the registration process with
+     */
+    private void executeRegistration(Player player, RegistrationExecutor executor) {
+        PlayerAuth auth = executor.buildPlayerAuth();
+        if (database.saveAuth(auth)) {
+            executor.executePostPersistAction();
+        } else {
+            service.send(player, MessageKey.ERROR);
+        }
+    }
+
+    /**
+     * Checks whether the registration threshold has been exceeded for the given player's IP address.
+     *
+     * @param player the player to check
+     * @return true if registration may take place, false otherwise (IP check failed)
+     */
+    private boolean isPlayerIpAllowedToRegister(Player player) {
         final int maxRegPerIp = service.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP);
         final String ip = PlayerUtils.getPlayerIp(player);
         if (maxRegPerIp > 0
@@ -108,90 +99,5 @@ public class AsyncRegister implements AsynchronousProcess {
             }
         }
         return true;
-    }
-
-    public void register(Player player, String password, String email, boolean autoLogin) {
-        if (preRegisterCheck(player, password)) {
-            if (Execution.EMAIL == service.getProperty(RegistrationSettings.REGISTRATION_TYPE).getExecution()) {
-                emailRegister(player, password, email);
-            } else {
-                passwordRegister(player, password, email, autoLogin);
-            }
-        }
-    }
-
-    private void emailRegister(Player player, String password, String email) {
-        final String name = player.getName().toLowerCase();
-        final int maxRegPerEmail = service.getProperty(EmailSettings.MAX_REG_PER_EMAIL);
-        if (maxRegPerEmail > 0 && !permissionsManager.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
-            int otherAccounts = database.countAuthsByEmail(email);
-            if (otherAccounts >= maxRegPerEmail) {
-                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerEmail),
-                    Integer.toString(otherAccounts), "@");
-                return;
-            }
-        }
-
-        final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
-        final String ip = PlayerUtils.getPlayerIp(player);
-        PlayerAuth auth = PlayerAuth.builder()
-            .name(name)
-            .realName(player.getName())
-            .password(hashedPassword)
-            .ip(ip)
-            .location(player.getLocation())
-            .email(email)
-            .build();
-
-        if (!database.saveAuth(auth)) {
-            service.send(player, MessageKey.ERROR);
-            return;
-        }
-        database.updateEmail(auth);
-        database.updateSession(auth);
-        boolean couldSendMail = sendMailSsl.sendPasswordMail(name, email, password);
-        if (couldSendMail) {
-            syncProcessManager.processSyncEmailRegister(player);
-        } else {
-            service.send(player, MessageKey.EMAIL_SEND_FAILURE);
-        }
-    }
-
-    // Email arg might be the password depending on the registration type. TODO #830: Fix with more specific methods
-    private void passwordRegister(Player player, String password, String email, boolean autoLogin) {
-        final String name = player.getName().toLowerCase();
-        final String ip = PlayerUtils.getPlayerIp(player);
-        final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
-        PlayerAuth auth = PlayerAuth.builder()
-            .name(name)
-            .realName(player.getName())
-            .password(hashedPassword)
-            .ip(ip)
-            .location(player.getLocation())
-            .build();
-
-        if (service.getProperty(RegistrationSettings.REGISTRATION_TYPE) == PASSWORD_WITH_EMAIL) {
-            auth.setEmail(email);
-        }
-
-        if (!database.saveAuth(auth)) {
-            service.send(player, MessageKey.ERROR);
-            return;
-        }
-
-        if (!service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER) && autoLogin) {
-            if (service.getProperty(PluginSettings.USE_ASYNC_TASKS)) {
-                bukkitService.runTaskAsynchronously(() -> asynchronousLogin.forceLogin(player));
-            } else {
-                bukkitService.scheduleSyncDelayedTask(() -> asynchronousLogin.forceLogin(player), SYNC_LOGIN_DELAY);
-            }
-        }
-        syncProcessManager.processSyncPasswordRegister(player);
-
-        //give the user the secret code to setup their app code generation
-        if (service.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
-            String qrCodeUrl = TwoFactor.getQRBarcodeURL(player.getName(), Bukkit.getIp(), hashedPassword.getHash());
-            service.send(player, MessageKey.TWO_FACTOR_CREATE, hashedPassword.getHash(), qrCodeUrl);
-        }
     }
 }
