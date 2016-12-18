@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
  */
 final class PlayerAuthBuilderHelper {
 
+    private PlayerAuthBuilderHelper() {
+    }
+
     static PlayerAuth createPlayerAuth(Player player, HashedPassword hashedPassword, String email) {
         return PlayerAuth.builder()
             .name(player.getName().toLowerCase())
@@ -20,7 +23,4 @@ final class PlayerAuthBuilderHelper {
             .location(player.getLocation())
             .build();
     }
-
-
-
 }

@@ -10,6 +10,9 @@ public interface RegistrationExecutor {
     /**
      * Returns whether the registration may take place. Use this method to execute
      * checks specific to the registration method.
+     * <p>
+     * If this method returns {@code false}, it is expected that the executor inform
+     * the player about the error within this method call.
      *
      * @return true if registration may be performed, false otherwise
      */

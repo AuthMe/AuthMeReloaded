@@ -20,7 +20,9 @@ import javax.inject.Inject;
 
 import static fr.xephi.authme.process.register.executors.PlayerAuthBuilderHelper.createPlayerAuth;
 
-
+/**
+ * Provides registration executors for password-based registration variants.
+ */
 class PasswordRegisterExecutorProvider {
 
     /**

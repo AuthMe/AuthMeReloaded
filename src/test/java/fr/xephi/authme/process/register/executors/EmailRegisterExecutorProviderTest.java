@@ -1,0 +1,173 @@
+package fr.xephi.authme.process.register.executors;
+
+import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.settings.properties.EmailSettings;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
+import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
+import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+
+/**
+ * Test for {@link EmailRegisterExecutorProvider}.
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class EmailRegisterExecutorProviderTest {
+
+    @InjectMocks
+    private EmailRegisterExecutorProvider emailRegisterExecutorProvider;
+
+    @Mock
+    private PermissionsManager permissionsManager;
+    @Mock
+    private DataSource dataSource;
+    @Mock
+    private CommonService commonService;
+    @Mock
+    private SendMailSSL sendMailSsl;
+    @Mock
+    private SyncProcessManager syncProcessManager;
+    @Mock
+    private PasswordSecurity passwordSecurity;
+
+    @Test
+    public void shouldNotPassEmailValidation() {
+        // given
+        given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
+        String email = "test@example.com";
+        given(dataSource.countAuthsByEmail(email)).willReturn(4);
+        Player player = mock(Player.class);
+        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, email);
+
+        // when
+        boolean result = executor.isRegistrationAdmitted();
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(dataSource).countAuthsByEmail(email);
+        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(commonService).send(player, MessageKey.MAX_REGISTER_EXCEEDED, "3", "4", "@");
+    }
+
+    @Test
+    public void shouldPassVerificationForPlayerWithPermission() {
+        // given
+        given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
+        Player player = mock(Player.class);
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
+        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+
+        // when
+        boolean result = executor.isRegistrationAdmitted();
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+    }
+
+    @Test
+    public void shouldPassVerificationForPreviouslyUnregisteredIp() {
+        // given
+        given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(1);
+        String email = "test@example.com";
+        given(dataSource.countAuthsByEmail(email)).willReturn(0);
+        Player player = mock(Player.class);
+        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+
+        // when
+        boolean result = executor.isRegistrationAdmitted();
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(dataSource).countAuthsByEmail(email);
+    }
+
+    @Test
+    public void shouldCreatePlayerAuth() {
+        // given
+        given(commonService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(12);
+        given(passwordSecurity.computeHash(anyString(), anyString())).willAnswer(
+            invocation -> new HashedPassword(invocation.getArgument(0)));
+        Player player = mock(Player.class);
+        TestHelper.mockPlayerIp(player, "123.45.67.89");
+        given(player.getName()).willReturn("Veronica");
+        World world = mock(World.class);
+        given(world.getName()).willReturn("someWorld");
+        given(player.getLocation()).willReturn(new Location(world, 48, 96, 144));
+        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+
+        // when
+        PlayerAuth auth = executor.buildPlayerAuth();
+
+        // then
+        assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", "123.45.67.89"));
+        assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld"));
+        assertThat(auth.getPassword().getHash(), stringWithLength(12));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldPerformActionAfterDataSourceSave() {
+        // given
+        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Laleh");
+        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+        String password = "A892C#@";
+        ReflectionTestUtils.setField((Class) executor.getClass(), executor, "password", password);
+
+        // when
+        executor.executePostPersistAction();
+
+        // then
+        verify(sendMailSsl).sendPasswordMail("Laleh", "test@example.com", password);
+        verify(syncProcessManager).processSyncEmailRegister(player);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldHandleEmailSendingFailure() {
+        // given
+        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(false);
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Laleh");
+        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+        String password = "A892C#@";
+        ReflectionTestUtils.setField((Class) executor.getClass(), executor, "password", password);
+
+        // when
+        executor.executePostPersistAction();
+
+        // then
+        verify(sendMailSsl).sendPasswordMail("Laleh", "test@example.com", password);
+        verify(commonService).send(player, MessageKey.EMAIL_SEND_FAILURE);
+        verifyZeroInteractions(syncProcessManager);
+    }
+
+}
