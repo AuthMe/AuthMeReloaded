@@ -9,6 +9,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import javax.inject.Inject;
@@ -67,6 +69,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | changeBooleanSettingToLogLevelProperty(resource)
             | hasOldHelpHeaderProperty(resource)
             | hasSupportOldPasswordProperty(resource)
+            | convertToRegistrationType(resource)
             || hasDeprecatedProperties(resource);
     }
 
@@ -222,6 +225,34 @@ public class SettingsMigrationService extends PlainMigrationService {
             return true;
         }
         return false;
+    }
+
+    private static boolean convertToRegistrationType(PropertyResource resource) {
+        if (RegistrationSettings.REGISTRATION_TYPE.isPresent(resource)) {
+            return false;
+        }
+
+        boolean useEmail = newProperty("settings.registration.enableEmailRegistrationSystem", false).getValue(resource);
+        String useConfirmationPath = useEmail
+            ? "settings.registration.doubleEmailCheck"
+            : "settings.restrictions.enablePasswordConfirmation";
+        boolean hasConfirmation = newProperty(useConfirmationPath, false).getValue(resource);
+
+        RegistrationArgumentType registerType;
+        if (useEmail) {
+            registerType = hasConfirmation
+                ? RegistrationArgumentType.EMAIL_WITH_CONFIRMATION
+                : RegistrationArgumentType.EMAIL;
+        } else {
+            registerType = hasConfirmation
+                ? RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION
+                : RegistrationArgumentType.PASSWORD;
+        }
+
+        ConsoleLogger.warning("Merging old registration settings into '"
+            + RegistrationSettings.REGISTRATION_TYPE.getPath() + "'");
+        resource.setValue(RegistrationSettings.REGISTRATION_TYPE.getPath(), registerType);
+        return true;
     }
 
     /**

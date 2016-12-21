@@ -7,6 +7,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -184,7 +185,7 @@ public class AsyncChangeEmailTest {
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
         given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
 
         // when
         process.changeEmail(player, "old@mail.tld", "new@mail.tld");
@@ -201,7 +202,7 @@ public class AsyncChangeEmailTest {
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
         given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(false);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.PASSWORD);
 
         // when
         process.changeEmail(player, "old@mail.tld", "new@mail.tld");

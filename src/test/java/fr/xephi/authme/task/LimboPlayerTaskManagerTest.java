@@ -9,6 +9,7 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -67,7 +68,7 @@ public class LimboPlayerTaskManagerTest {
         given(messages.retrieve(key)).willReturn(new String[]{"Please register!"});
         int interval = 12;
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(interval);
-        given(settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
 
         // when
         limboPlayerTaskManager.registerMessageTask(name, false);
@@ -123,7 +124,7 @@ public class LimboPlayerTaskManagerTest {
             .willReturn(new String[]{"Please register", "Use /register"});
 
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
-        given(settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL);
 
         // when
         limboPlayerTaskManager.registerMessageTask(name, false);

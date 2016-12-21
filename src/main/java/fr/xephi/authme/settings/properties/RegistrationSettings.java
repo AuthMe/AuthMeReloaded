@@ -24,16 +24,12 @@ public class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> FORCE =
         newProperty("settings.registration.force", true);
 
-    @Comment("Do we replace password registration by an email registration method?")
-    public static final Property<Boolean> USE_EMAIL_REGISTRATION =
-        newProperty("settings.registration.enableEmailRegistrationSystem", false);
-
     @Comment({
-        "Enable double check of email when you register",
-        "when it's true, registration requires that kind of command:",
-        "/register <email> <confirmEmail>"})
-    public static final Property<Boolean> ENABLE_CONFIRM_EMAIL =
-        newProperty("settings.registration.doubleEmailCheck", false);
+        "Type of registration: PASSWORD, PASSWORD_WITH_CONFIRMATION, EMAIL",
+        "EMAIL_WITH_CONFIRMATION, PASSWORD_WITH_EMAIL"
+    })
+    public static final Property<RegistrationArgumentType> REGISTRATION_TYPE =
+        newProperty(RegistrationArgumentType.class, "settings.registration.type", RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION);
 
     @Comment({
         "Do we force kick a player after a successful registration?",
