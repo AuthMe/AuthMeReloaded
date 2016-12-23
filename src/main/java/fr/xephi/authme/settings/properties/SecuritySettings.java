@@ -7,6 +7,7 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.EnumSetProperty;
 
 import java.util.List;
+import java.util.Set;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
@@ -83,7 +84,7 @@ public class SecuritySettings implements SettingsHolder {
         "legacyHashes:",
         "- 'SHA1'"
     })
-    public static final Property<List<String>> LEGACY_HASHES =
+    public static final Property<Set<HashAlgorithm>> LEGACY_HASHES =
         new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes");
 
     @Comment("Number of rounds to use if passwordHash is set to PBKDF2. Default is 10000")

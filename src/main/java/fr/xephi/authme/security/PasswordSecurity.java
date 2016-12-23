@@ -6,7 +6,6 @@ import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.EnumSetProperty;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.plugin.PluginManager;
@@ -42,8 +41,7 @@ public class PasswordSecurity implements Reloadable {
     @Override
     public void reload() {
         this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
-        // TODO #1014: Need to cast to specific type because ConfigMe ignores fields of child Property types
-        this.legacyAlgorithms = ((EnumSetProperty<HashAlgorithm>) SecuritySettings.LEGACY_HASHES).asEnumSet(settings);
+        this.legacyAlgorithms = settings.getProperty(SecuritySettings.LEGACY_HASHES);
     }
 
     /**

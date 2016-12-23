@@ -25,10 +25,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
@@ -175,7 +173,7 @@ public class PasswordSecurityTest {
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         given(method.computeHash(clearTextPass, playerLowerCase)).willReturn(newPassword);
         initSettings(HashAlgorithm.MD5);
-        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(newArrayList(HashAlgorithm.BCRYPT.name()));
+        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(newHashSet(HashAlgorithm.BCRYPT));
         PasswordSecurity security = newPasswordSecurity();
 
         // when
@@ -260,8 +258,8 @@ public class PasswordSecurityTest {
         initSettings(HashAlgorithm.BCRYPT);
         PasswordSecurity passwordSecurity = newPasswordSecurity();
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
-        List<String> legacyHashes = newArrayList(HashAlgorithm.CUSTOM.name(), HashAlgorithm.BCRYPT.name());
-        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(legacyHashes);
+        given(settings.getProperty(SecuritySettings.LEGACY_HASHES))
+            .willReturn(newHashSet(HashAlgorithm.CUSTOM, HashAlgorithm.BCRYPT));
 
         // when
         passwordSecurity.reload();
@@ -286,7 +284,7 @@ public class PasswordSecurityTest {
 
     private void initSettings(HashAlgorithm algorithm) {
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(algorithm);
-        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(Collections.emptyList());
+        given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(Collections.emptySet());
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
     }
 

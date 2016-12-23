@@ -46,8 +46,7 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "Supported command events: onLogin, onJoin, onRegister"
         };
         Map<String, String[]> commentMap = new HashMap<>();
-        // TODO ConfigMe/#25 cannot set comments on the root ("")
-        commentMap.put("onLogin", comments);
+        commentMap.put("", comments);
         return commentMap;
     }
 
