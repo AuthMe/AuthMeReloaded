@@ -210,7 +210,7 @@ public class AsyncChangeEmailTest {
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
-        verify(service).send(player, MessageKey.REGISTER_MESSAGE);
+        verify(service).send(player, MessageKey.REGISTER_NO_REPEAT_MESSAGE);
     }
 
     private static PlayerAuth authWithMail(String email) {
