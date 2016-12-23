@@ -120,7 +120,7 @@ public class LimboPlayerTaskManagerTest {
 
         String name = "bobby";
         given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
-        given(messages.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE))
+        given(messages.retrieve(MessageKey.REGISTER_EMAIL_NO_REPEAT_MESSAGE))
             .willReturn(new String[]{"Please register", "Use /register"});
 
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
@@ -131,7 +131,7 @@ public class LimboPlayerTaskManagerTest {
 
         // then
         verify(limboPlayer).setMessageTask(any(MessageTask.class));
-        verify(messages).retrieve(MessageKey.REGISTER_EMAIL_MESSAGE);
+        verify(messages).retrieve(MessageKey.REGISTER_EMAIL_NO_REPEAT_MESSAGE);
         verify(existingMessageTask).cancel();
     }
 

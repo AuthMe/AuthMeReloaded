@@ -179,7 +179,7 @@ public class AsyncAddEmailTest {
         asyncAddEmail.addEmail(player, "test@mail.com");
 
         // then
-        verify(service).send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+        verify(service).send(player, MessageKey.REGISTER_EMAIL_NO_REPEAT_MESSAGE);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 
