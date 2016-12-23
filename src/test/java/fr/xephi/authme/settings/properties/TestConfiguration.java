@@ -1,12 +1,12 @@
 package fr.xephi.authme.settings.properties;
 
-import com.github.authme.configme.SettingsHolder;
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.properties.Property;
 
 import java.util.List;
 
-import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
-import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
 /**
  * Sample properties for testing purposes.

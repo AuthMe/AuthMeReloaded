@@ -1,9 +1,9 @@
 package fr.xephi.authme.settings.properties;
 
-import com.github.authme.configme.SettingsHolder;
-import com.github.authme.configme.knownproperties.ConfigurationData;
-import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
+import ch.jalu.configme.properties.Property;
 
 /**
  * Utility class responsible for retrieving all {@link Property} fields from {@link SettingsHolder} classes.

@@ -1,7 +1,7 @@
 package tools.filegeneration;
 
-import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.settings.commandconfig.Command;
 import fr.xephi.authme.settings.commandconfig.CommandConfig;

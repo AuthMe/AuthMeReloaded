@@ -1,9 +1,9 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.knownproperties.ConfigurationData;
-import com.github.authme.configme.migration.MigrationService;
-import com.github.authme.configme.resource.PropertyResource;
+import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.migration.MigrationService;
+import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 

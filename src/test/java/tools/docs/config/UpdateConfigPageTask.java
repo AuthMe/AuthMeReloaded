@@ -1,7 +1,7 @@
 package tools.docs.config;
 
-import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.util.FileUtils;
 import tools.utils.AutoToolTask;

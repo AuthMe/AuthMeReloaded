@@ -1,8 +1,8 @@
 package tools.docs.hashmethods;
 
+import ch.jalu.configme.properties.Property;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
-import com.github.authme.configme.properties.Property;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.EncryptionMethod;

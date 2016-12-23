@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.resource.PropertyResource;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.resource.PropertyResource;
+import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.output.LogLevel;

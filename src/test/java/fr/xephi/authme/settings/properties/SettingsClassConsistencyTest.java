@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings.properties;
 
-import com.github.authme.configme.SettingsHolder;
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;

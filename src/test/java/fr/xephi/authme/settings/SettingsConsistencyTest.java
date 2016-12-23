@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.knownproperties.ConfigurationData;
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import org.junit.BeforeClass;
 import org.junit.Test;

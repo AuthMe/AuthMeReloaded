@@ -1,11 +1,11 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.knownproperties.ConfigurationData;
-import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
-import com.github.authme.configme.migration.PlainMigrationService;
-import com.github.authme.configme.properties.Property;
-import com.github.authme.configme.resource.PropertyResource;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
+import ch.jalu.configme.migration.PlainMigrationService;
+import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.resource.PropertyResource;
+import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;

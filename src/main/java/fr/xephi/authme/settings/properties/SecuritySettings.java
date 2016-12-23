@@ -1,15 +1,15 @@
 package fr.xephi.authme.settings.properties;
 
-import com.github.authme.configme.Comment;
-import com.github.authme.configme.SettingsHolder;
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.Comment;
+import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.EnumSetProperty;
 
 import java.util.List;
 
-import static com.github.authme.configme.properties.PropertyInitializer.newLowercaseListProperty;
-import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseListProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
 public class SecuritySettings implements SettingsHolder {
 

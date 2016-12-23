@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.properties.StringListProperty;
+import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.properties.StringListProperty;
 
 import java.util.List;
 import java.util.Set;

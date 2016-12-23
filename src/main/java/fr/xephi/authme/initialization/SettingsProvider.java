@@ -1,8 +1,8 @@
 package fr.xephi.authme.initialization;
 
-import com.github.authme.configme.knownproperties.ConfigurationData;
-import com.github.authme.configme.resource.PropertyResource;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.resource.PropertyResource;
+import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;

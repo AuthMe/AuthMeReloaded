@@ -1,8 +1,8 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
-import com.github.authme.configme.resource.PropertyResource;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
+import ch.jalu.configme.resource.PropertyResource;
+import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.junit.Before;

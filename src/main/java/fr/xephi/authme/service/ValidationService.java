@@ -1,6 +1,6 @@
 package fr.xephi.authme.service;
 
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.message.MessageKey;

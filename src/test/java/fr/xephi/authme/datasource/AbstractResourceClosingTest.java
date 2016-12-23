@@ -1,6 +1,6 @@
 package fr.xephi.authme.datasource;
 
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.properties.Property;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;

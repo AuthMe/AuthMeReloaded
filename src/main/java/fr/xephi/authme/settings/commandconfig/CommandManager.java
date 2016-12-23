@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.service.BukkitService;

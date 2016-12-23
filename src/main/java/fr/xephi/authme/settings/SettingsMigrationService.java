@@ -1,16 +1,16 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.migration.PlainMigrationService;
-import com.github.authme.configme.properties.Property;
-import com.github.authme.configme.properties.StringListProperty;
-import com.github.authme.configme.resource.PropertyResource;
+import ch.jalu.configme.migration.PlainMigrationService;
+import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.properties.StringListProperty;
+import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.base.Objects;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RegistrationArgumentType;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import javax.inject.Inject;
@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import static com.github.authme.configme.properties.PropertyInitializer.newListProperty;
-import static com.github.authme.configme.properties.PropertyInitializer.newProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.DELAY_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_LEAVE_MESSAGE;
@@ -100,8 +100,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     }
 
     private List<String> getStringList(PropertyResource resource, String path) {
-        List<String> entries = new StringListProperty(path).getFromResource(resource);
-        return entries == null ? Collections.emptyList() : entries;
+        return new StringListProperty(path).getValue(resource);
     }
 
     public List<String> getOnLoginCommands() {

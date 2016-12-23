@@ -1,10 +1,10 @@
 package fr.xephi.authme.service;
 
-import com.github.authme.configme.SettingsManager;
-import com.github.authme.configme.knownproperties.ConfigurationData;
-import com.github.authme.configme.properties.Property;
-import com.github.authme.configme.properties.StringProperty;
-import com.github.authme.configme.resource.YamlFileResource;
+import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.properties.StringProperty;
+import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.FileUtils;

@@ -1,8 +1,8 @@
 package fr.xephi.authme.settings;
 
-import com.github.authme.configme.knownproperties.ConfigurationData;
-import com.github.authme.configme.knownproperties.ConfigurationDataBuilder;
-import com.github.authme.configme.resource.PropertyResource;
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
+import ch.jalu.configme.resource.PropertyResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.TestConfiguration;

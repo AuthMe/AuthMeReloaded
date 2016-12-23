@@ -1,6 +1,6 @@
 package fr.xephi.authme.datasource;
 
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;

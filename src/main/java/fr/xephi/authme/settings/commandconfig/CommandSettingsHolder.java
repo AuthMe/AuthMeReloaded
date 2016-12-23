@@ -1,9 +1,9 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import com.github.authme.configme.SectionComments;
-import com.github.authme.configme.SettingsHolder;
-import com.github.authme.configme.beanmapper.BeanProperty;
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.SectionComments;
+import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.properties.BeanProperty;
+import ch.jalu.configme.properties.Property;
 
 import java.util.HashMap;
 import java.util.Map;

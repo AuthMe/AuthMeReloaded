@@ -1,6 +1,6 @@
 package fr.xephi.authme.datasource;
 
-import com.github.authme.configme.properties.Property;
+import ch.jalu.configme.properties.Property;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;

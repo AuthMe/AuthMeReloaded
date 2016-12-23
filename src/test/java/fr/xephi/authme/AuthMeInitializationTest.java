@@ -1,8 +1,8 @@
 package fr.xephi.authme;
 
+import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
-import com.github.authme.configme.resource.PropertyResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
