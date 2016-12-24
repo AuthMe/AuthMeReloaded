@@ -74,3 +74,7 @@ kicked_admin_registered: 'Un administrator tocmai te-a inregistrat, te rog auten
 incomplete_email_settings: 'Eroare: nu toate setarile necesare pentru trimiterea email-ului sunt facute! Te rugam contacteaza un administrator.'
 recovery_code_sent: 'Un cod de recuperare a parolei a fost trimis catre email-ul tau.'
 recovery_code_incorrect: 'Codul de recuperare nu este corect! Foloseste /email recovery [email] pentru a genera unul nou.'
+# TODO reg_no_repeat_msg: '&3Please, register to the server with the command "/register <password>"'
+# TODO reg_email_no_repeat_msg: '&3Please, register to the server with the command "/register <email>"'
+# TODO reg_psw_email_msg: '&3Please, register to the server with the command "/register <password> <email>"'
+# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
