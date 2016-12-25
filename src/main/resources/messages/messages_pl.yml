@@ -78,4 +78,4 @@ kicked_admin_registered: 'Administrator zarejestrowal Ciebie, mozesz sie zalogow
 incomplete_email_settings: 'Error: Nie wszystkie opcje odpowiedzialne za wysylanie emaili zostaly ustawione. Skontaktuj sie z administracja.'
 recovery_code_sent: 'Kod odzyskiwania hasla zostal wyslany na adres email przypisany do konta.'
 recovery_code_incorrect: 'Kod odzyskiwania hasla jest bledny! Uzyj /email recovery [email] aby wygenerowac nowy.'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
+email_send_failure: 'Nie mozna wyslac emaila. Skontaktuj sie z administracja.'
