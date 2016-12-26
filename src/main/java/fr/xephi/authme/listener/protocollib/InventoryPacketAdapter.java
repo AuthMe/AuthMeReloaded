@@ -22,13 +22,18 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.auth.PlayerCache;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 class InventoryPacketAdapter extends PacketAdapter {
@@ -72,7 +77,16 @@ class InventoryPacketAdapter extends PacketAdapter {
 
         ItemStack[] blankInventory = new ItemStack[inventorySize];
         Arrays.fill(blankInventory, new ItemStack(Material.AIR));
-        inventoryPacket.getItemArrayModifier().write(0, blankInventory);
+
+        //old minecraft versions
+        StructureModifier<ItemStack[]> itemArrayModifier = inventoryPacket.getItemArrayModifier();
+        if (itemArrayModifier.size() > 0) {
+            itemArrayModifier.write(0, blankInventory);
+        } else {
+            //minecraft versions above 1.11
+            StructureModifier<List<ItemStack>> itemListModifier = inventoryPacket.getItemListModifier();
+            itemListModifier.write(0, Arrays.asList(blankInventory));
+        }
 
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);
