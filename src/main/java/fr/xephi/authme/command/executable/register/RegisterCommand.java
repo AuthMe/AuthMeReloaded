@@ -75,7 +75,7 @@ public class RegisterCommand extends PlayerCommand {
         RegistrationArgumentType registrationType = commonService.getProperty(REGISTRATION_TYPE);
         if (registrationType == PASSWORD_WITH_CONFIRMATION && !arguments.get(0).equals(arguments.get(1))) {
             commonService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
-        } else if (registrationType == PASSWORD_WITH_EMAIL) {
+        } else if (registrationType == PASSWORD_WITH_EMAIL && arguments.size() > 1) {
             handlePasswordWithEmailRegistration(player, arguments);
         } else {
             management.performRegister(player, registrationExecutorProvider

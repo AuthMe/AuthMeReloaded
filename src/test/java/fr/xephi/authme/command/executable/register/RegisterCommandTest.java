@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -276,17 +278,19 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldFailForInsufficientArguments() {
+    public void shouldPerformNormalPasswordRegisterForOneArgument() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE))
             .willReturn(RegistrationArgumentType.PASSWORD_WITH_EMAIL);
         Player player = mock(Player.class);
+        RegistrationExecutor executor = mock(RegistrationExecutor.class);
+        given(registrationExecutorProvider.getPasswordRegisterExecutor(eq(player), anyString())).willReturn(executor);
 
         // when
         command.executeCommand(player, Collections.singletonList("myPass"));
 
         // then
-        verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management);
+        verify(registrationExecutorProvider).getPasswordRegisterExecutor(player, "myPass");
+        verify(management).performRegister(player, executor);
     }
 }

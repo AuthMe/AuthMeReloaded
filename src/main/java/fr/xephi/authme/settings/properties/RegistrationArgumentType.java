@@ -20,7 +20,7 @@ public enum RegistrationArgumentType {
     EMAIL_WITH_CONFIRMATION(Execution.EMAIL, 2, MessageKey.REGISTER_EMAIL_MESSAGE),
 
     /** /register [password] [email] */
-    PASSWORD_WITH_EMAIL(Execution.PASSWORD, 2, MessageKey.REGISTER_PASSWORD_EMAIL_MESSAGE);
+    PASSWORD_WITH_EMAIL(Execution.PASSWORD, 1, MessageKey.REGISTER_PASSWORD_EMAIL_MESSAGE);
 
     private final Execution execution;
     private final int requiredNumberOfArgs;
