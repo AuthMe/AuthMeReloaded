@@ -2,16 +2,11 @@ package fr.xephi.authme.service;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.datasource.FlatFile;
-import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import java.util.List;
@@ -53,32 +48,4 @@ public final class MigrationService {
             ConsoleLogger.info("Migrated " + allAuths.size() + " accounts from plaintext to SHA256");
         }
     }
-
-    /**
-     * Converts the data source from the deprecated FLATFILE type to SQLITE.
-     *
-     * @param settings The settings instance
-     * @param dataSource The data source
-     * @return The converted datasource (SQLite), or null if no migration was necessary
-     */
-    public static DataSource convertFlatfileToSqlite(Settings settings, DataSource dataSource) {
-        if (DataSourceType.FILE == settings.getProperty(DatabaseSettings.BACKEND)) {
-            ConsoleLogger.warning("FlatFile backend has been detected and is now deprecated; it will be changed "
-                + "to SQLite... Connection will be impossible until conversion is done!");
-            FlatFile flatFile = (FlatFile) dataSource;
-            try {
-                SQLite sqlite = new SQLite(settings);
-                ForceFlatToSqlite converter = new ForceFlatToSqlite(flatFile, sqlite);
-                converter.execute(null);
-                settings.setProperty(DatabaseSettings.BACKEND, DataSourceType.SQLITE);
-                settings.save();
-                return sqlite;
-            } catch (Exception e) {
-                ConsoleLogger.logException("Error during conversion from Flatfile to SQLite", e);
-                throw new IllegalStateException(e);
-            }
-        }
-        return null;
-    }
-
 }
