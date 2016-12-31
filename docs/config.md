@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Dec 15 22:27:25 CET 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Dec 31 15:11:17 CET 2016. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -271,9 +271,15 @@ settings:
         # Only registered and logged in players can play.
         # See restrictions for exceptions
         force: true
-        # Type of registration: PASSWORD, PASSWORD_WITH_CONFIRMATION, EMAIL
-        # EMAIL_WITH_CONFIRMATION, PASSWORD_WITH_EMAIL
-        type: 'PASSWORD_WITH_CONFIRMATION'
+        # Type of registration: PASSWORD or EMAIL
+        # Password = account is registered with a password supplied by the user;
+        # Email = password is generated and sent to the email provided by the user.
+        type: 'PASSWORD'
+        # Second argument the /register command should take: NONE = no 2nd argument
+        # CONFIRMATION = must repeat first argument (pass or email)
+        # EMAIL_OPTIONAL = for password register: 2nd argument can be empty or have email address
+        # EMAIL_MANDATORY = for password register: 2nd argument MUST be an email address
+        secondArg: 'CONFIRMATION'
         # Do we force kick a player after a successful registration?
         # Do not use with login feature below
         forceKickAfterRegister: false
@@ -447,4 +453,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Dec 15 22:27:25 CET 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Dec 31 15:11:17 CET 2016

@@ -1,9 +1,5 @@
 package fr.xephi.authme.process.email;
 
-import javax.inject.Inject;
-
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -12,6 +8,10 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.util.Utils;
+import org.bukkit.entity.Player;
+
+import javax.inject.Inject;
 
 /**
  * Async task for changing the email.
@@ -68,7 +68,10 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         if (dataSource.isAuthAvailable(player.getName())) {
             service.send(player, MessageKey.LOGIN_MESSAGE);
         } else {
-        	service.send(player, service.getProperty(RegistrationSettings.REGISTRATION_TYPE).getMessageKey());
+            MessageKey registerMessage = Utils.getRegisterMessage(
+                service.getProperty(RegistrationSettings.REGISTRATION_TYPE),
+                service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
+            service.send(player, registerMessage);
         }
     }
 }

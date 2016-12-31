@@ -4,10 +4,11 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.process.register.RegisterSecondaryArgument;
+import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -185,7 +186,8 @@ public class AsyncChangeEmailTest {
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
         given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
+        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
 
         // when
         process.changeEmail(player, "old@mail.tld", "new@mail.tld");
@@ -202,7 +204,8 @@ public class AsyncChangeEmailTest {
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
         given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.PASSWORD);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
+        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
 
         // when
         process.changeEmail(player, "old@mail.tld", "new@mail.tld");

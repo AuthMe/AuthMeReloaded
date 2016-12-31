@@ -37,7 +37,7 @@ public class SettingsConsistencyTest {
         // when / then
         for (Property<?> property : properties) {
             if (configurationData.getCommentsForSection(property.getPath()).length == 0) {
-                fail("No comment defined for '" + property + "'");
+                fail("No comment defined for " + property);
             }
         }
     }

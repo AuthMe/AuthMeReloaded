@@ -18,10 +18,6 @@ public class RegistrationExecutorProvider {
     RegistrationExecutorProvider() {
     }
 
-    public RegistrationExecutor getPasswordRegisterExecutor(Player player, String password) {
-        return getPasswordRegisterExecutor(player, password, null);
-    }
-
     public RegistrationExecutor getPasswordRegisterExecutor(Player player, String password, String email) {
         return passwordRegisterExecutorProvider.new PasswordRegisterExecutor(player, password, email);
     }

@@ -3,6 +3,8 @@ package fr.xephi.authme.settings.properties;
 import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.properties.Property;
+import fr.xephi.authme.process.register.RegisterSecondaryArgument;
+import fr.xephi.authme.process.register.RegistrationType;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
@@ -25,11 +27,21 @@ public class RegistrationSettings implements SettingsHolder {
         newProperty("settings.registration.force", true);
 
     @Comment({
-        "Type of registration: PASSWORD, PASSWORD_WITH_CONFIRMATION, EMAIL",
-        "EMAIL_WITH_CONFIRMATION, PASSWORD_WITH_EMAIL"
+        "Type of registration: PASSWORD or EMAIL",
+        "Password = account is registered with a password supplied by the user;",
+        "Email = password is generated and sent to the email provided by the user."
     })
-    public static final Property<RegistrationArgumentType> REGISTRATION_TYPE =
-        newProperty(RegistrationArgumentType.class, "settings.registration.type", RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION);
+    public static final Property<RegistrationType> REGISTRATION_TYPE =
+        newProperty(RegistrationType.class, "settings.registration.type", RegistrationType.PASSWORD);
+
+    @Comment({
+        "Second argument the /register command should take: NONE = no 2nd argument",
+        "CONFIRMATION = must repeat first argument (pass or email)",
+        "EMAIL_OPTIONAL = for password register: 2nd argument can be empty or have email address",
+        "EMAIL_MANDATORY = for password register: 2nd argument MUST be an email address"
+    })
+    public static final Property<RegisterSecondaryArgument> REGISTER_SECOND_ARGUMENT =
+        newProperty(RegisterSecondaryArgument.class, "settings.registration.secondArg", RegisterSecondaryArgument.CONFIRMATION);
 
     @Comment({
         "Do we force kick a player after a successful registration?",

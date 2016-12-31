@@ -5,8 +5,9 @@ import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.output.LogLevel;
+import fr.xephi.authme.process.register.RegisterSecondaryArgument;
+import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
-import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import static fr.xephi.authme.TestHelper.getJarFile;
 import static fr.xephi.authme.settings.properties.PluginSettings.LOG_LEVEL;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.DELAY_JOIN_MESSAGE;
+import static fr.xephi.authme.settings.properties.RegistrationSettings.REGISTER_SECOND_ARGUMENT;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REGISTRATION_TYPE;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN;
@@ -61,7 +63,8 @@ public class SettingsMigrationServiceTest {
         assertThat(settings.getProperty(FORCE_SPAWN_LOCATION_AFTER_LOGIN), equalTo(true));
         assertThat(settings.getProperty(FORCE_SPAWN_ON_WORLDS), contains("survival", "survival_nether", "creative"));
         assertThat(settings.getProperty(LOG_LEVEL), equalTo(LogLevel.INFO));
-        assertThat(settings.getProperty(REGISTRATION_TYPE), equalTo(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION));
+        assertThat(settings.getProperty(REGISTRATION_TYPE), equalTo(RegistrationType.EMAIL));
+        assertThat(settings.getProperty(REGISTER_SECOND_ARGUMENT), equalTo(RegisterSecondaryArgument.CONFIRMATION));
 
         // Check migration of old setting to email.html
         assertThat(Files.readLines(new File(dataFolder, "email.html"), StandardCharsets.UTF_8),

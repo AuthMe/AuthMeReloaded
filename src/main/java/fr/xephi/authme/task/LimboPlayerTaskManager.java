@@ -1,13 +1,5 @@
 package fr.xephi.authme.task;
 
-import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
-
-import javax.inject.Inject;
-
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboCache;
@@ -18,6 +10,14 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.Utils;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
+import javax.inject.Inject;
+
+import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 /**
  * Registers tasks associated with a PlayerData.
@@ -96,7 +96,9 @@ public class LimboPlayerTaskManager {
         if (isRegistered) {
             return MessageKey.LOGIN_MESSAGE;
         } else {
-        	return settings.getProperty(RegistrationSettings.REGISTRATION_TYPE).getMessageKey();
+            return Utils.getRegisterMessage(
+                settings.getProperty(RegistrationSettings.REGISTRATION_TYPE),
+                settings.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
         }
     }
 

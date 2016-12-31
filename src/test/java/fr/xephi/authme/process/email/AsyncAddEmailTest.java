@@ -5,10 +5,11 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.process.register.RegisterSecondaryArgument;
+import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -173,7 +174,8 @@ public class AsyncAddEmailTest {
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
         given(dataSource.isAuthAvailable("user")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
+        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
 
         // when
         asyncAddEmail.addEmail(player, "test@mail.com");
@@ -189,7 +191,8 @@ public class AsyncAddEmailTest {
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
         given(dataSource.isAuthAvailable("user")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION);
+        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
+        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
 
         // when
         asyncAddEmail.addEmail(player, "test@mail.com");

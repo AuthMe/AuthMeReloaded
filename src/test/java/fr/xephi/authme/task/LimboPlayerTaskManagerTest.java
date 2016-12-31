@@ -6,10 +6,11 @@ import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.process.register.RegisterSecondaryArgument;
+import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -68,7 +69,8 @@ public class LimboPlayerTaskManagerTest {
         given(messages.retrieve(key)).willReturn(new String[]{"Please register!"});
         int interval = 12;
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(interval);
-        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL_WITH_CONFIRMATION);
+        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
+        given(settings.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
 
         // when
         limboPlayerTaskManager.registerMessageTask(name, false);
@@ -124,7 +126,8 @@ public class LimboPlayerTaskManagerTest {
             .willReturn(new String[]{"Please register", "Use /register"});
 
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
-        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationArgumentType.EMAIL);
+        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
+        given(settings.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
 
         // when
         limboPlayerTaskManager.registerMessageTask(name, false);

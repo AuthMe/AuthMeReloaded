@@ -8,8 +8,9 @@ import com.google.common.base.Objects;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
+import fr.xephi.authme.process.register.RegisterSecondaryArgument;
+import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RegistrationArgumentType;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
@@ -232,25 +233,20 @@ public class SettingsMigrationService extends PlainMigrationService {
         }
 
         boolean useEmail = newProperty("settings.registration.enableEmailRegistrationSystem", false).getValue(resource);
+        RegistrationType registrationType = useEmail ? RegistrationType.EMAIL : RegistrationType.PASSWORD;
+
         String useConfirmationPath = useEmail
             ? "settings.registration.doubleEmailCheck"
             : "settings.restrictions.enablePasswordConfirmation";
         boolean hasConfirmation = newProperty(useConfirmationPath, false).getValue(resource);
-
-        RegistrationArgumentType registerType;
-        if (useEmail) {
-            registerType = hasConfirmation
-                ? RegistrationArgumentType.EMAIL_WITH_CONFIRMATION
-                : RegistrationArgumentType.EMAIL;
-        } else {
-            registerType = hasConfirmation
-                ? RegistrationArgumentType.PASSWORD_WITH_CONFIRMATION
-                : RegistrationArgumentType.PASSWORD;
-        }
+        RegisterSecondaryArgument secondaryArgument = hasConfirmation
+            ? RegisterSecondaryArgument.CONFIRMATION
+            : RegisterSecondaryArgument.NONE;
 
         ConsoleLogger.warning("Merging old registration settings into '"
             + RegistrationSettings.REGISTRATION_TYPE.getPath() + "'");
-        resource.setValue(RegistrationSettings.REGISTRATION_TYPE.getPath(), registerType);
+        resource.setValue(RegistrationSettings.REGISTRATION_TYPE.getPath(), registrationType);
+        resource.setValue(RegistrationSettings.REGISTER_SECOND_ARGUMENT.getPath(), secondaryArgument);
         return true;
     }
 
