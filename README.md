@@ -70,7 +70,7 @@ You can also create your own translation file and, if you want, you can share it
 <ul>
   <li><strong>E-Mail Recovery System !!!</strong></li>
   <li>Username spoofing protection.</li>
-  <li>Countries Whitelist/Blacklist! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a></li>
+  <li>Countries Whitelist/Blacklist! <a href="http://dev.maxmind.com/geoip/legacy/codes/iso3166/">(countries codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
   <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
