@@ -175,7 +175,7 @@ public class BukkitService implements SettingsDependent {
      * @see BukkitScheduler#runTaskTimer(Plugin, Runnable, long, long)
      */
     public BukkitTask runTaskTimer(BukkitRunnable task, long delay, long period) {
-        return task.runTaskTimer(authMe, period, delay);
+        return task.runTaskTimer(authMe, delay, period);
     }
 
     /**
