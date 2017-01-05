@@ -170,6 +170,11 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        String customJoinMessage = settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE);
+        if (customJoinMessage.isEmpty() && ! customJoinMessage.equalsIgnoreCase("none")) {
+            event.setJoinMessage(customJoinMessage.replace("{PLAYERNAME}", player.getName())
+                .replace("{DISPLAYNAME]", player.getDisplayName()));
+        }
         if (settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)) {
             event.setJoinMessage(null);
             return;

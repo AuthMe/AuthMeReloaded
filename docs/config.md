@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Dec 31 15:11:17 CET 2016. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Thu Jan 05 01:38:39 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -297,6 +297,12 @@ settings:
     broadcastWelcomeMessage: false
     # Should we delay the join message and display it once the player has logged in?
     delayJoinMessage: false
+    # The custom join message that will be sent after a successful login,
+    # use 'none' to use the original one.
+    # Available variables:,
+    # {PLAYERNAME}: the player name (no colors)
+    # {DISPLAYNAME}: the player name (with colors)
+    customJoinMessage: 'none'
     # Should we remove the leave messages of unlogged users?
     removeUnloggedLeaveMessage: false
     # Should we remove join messages altogether?
@@ -453,4 +459,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Dec 31 15:11:17 CET 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Jan 05 01:38:39 CET 2017

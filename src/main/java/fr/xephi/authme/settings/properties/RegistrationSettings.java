@@ -73,6 +73,15 @@ public class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> DELAY_JOIN_MESSAGE =
         newProperty("settings.delayJoinMessage", false);
 
+    @Comment({
+        "The custom join message that will be sent after a successful login,",
+        "use 'none' to use the original one.",
+        "Available variables:,",
+        "{PLAYERNAME}: the player name (no colors)",
+        "{DISPLAYNAME}: the player name (with colors)"})
+    public static final Property<String> CUSTOM_JOIN_MESSAGE =
+        newProperty("settings.customJoinMessage", "none");
+
     @Comment("Should we remove the leave messages of unlogged users?")
     public static final Property<Boolean> REMOVE_UNLOGGED_LEAVE_MESSAGE =
         newProperty("settings.removeUnloggedLeaveMessage", false);
