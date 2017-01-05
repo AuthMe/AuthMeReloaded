@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
@@ -39,11 +38,11 @@ public class LoginCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verifyZeroInteractions(management);
-        verify(sender).sendMessage(argThat(containsString("only for players")));
+        verify(sender).sendMessage(argThat(containsString("/authme forcelogin <player>")));
     }
 
     @Test

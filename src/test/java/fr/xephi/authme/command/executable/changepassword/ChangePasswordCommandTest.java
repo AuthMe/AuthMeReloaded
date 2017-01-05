@@ -58,7 +58,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(sender).sendMessage(argThat(containsString("only for players")));
+        verify(sender).sendMessage(argThat(containsString("use /authme password <playername> <password> instead")));
     }
 
     @Test

@@ -3,6 +3,8 @@ package fr.xephi.authme.command;
 import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
@@ -29,6 +31,7 @@ public class CommandHandler {
 
     private final CommandMapper commandMapper;
     private final PermissionsManager permissionsManager;
+    private final Messages messages;
     private final HelpProvider helpProvider;
 
     /**
@@ -37,10 +40,11 @@ public class CommandHandler {
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> commands = new HashMap<>();
 
     @Inject
-    public CommandHandler(Injector injector, CommandMapper commandMapper,
-                          PermissionsManager permissionsManager, HelpProvider helpProvider) {
+    CommandHandler(Injector injector, CommandMapper commandMapper, PermissionsManager permissionsManager,
+                          Messages messages, HelpProvider helpProvider) {
         this.commandMapper = commandMapper;
         this.permissionsManager = permissionsManager;
+        this.messages = messages;
         this.helpProvider = helpProvider;
         initializeCommands(injector, commandMapper.getCommandClasses());
     }
@@ -80,7 +84,7 @@ public class CommandHandler {
                 sendUnknownCommandMessage(sender, result);
                 break;
             case NO_PERMISSION:
-                sendPermissionDeniedError(sender);
+                messages.send(sender, MessageKey.NO_PERMISSION);
                 break;
             default:
                 throw new IllegalStateException("Unknown result status '" + result.getResultStatus() + "'");
@@ -151,11 +155,20 @@ public class CommandHandler {
     private void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result) {
         CommandDescription command = result.getCommandDescription();
         if (!permissionsManager.hasPermission(sender, command.getPermission())) {
-            sendPermissionDeniedError(sender);
+            messages.send(sender, MessageKey.NO_PERMISSION);
             return;
         }
 
-        // Show the command argument help
+        ExecutableCommand executableCommand = commands.get(command.getExecutableCommand());
+        MessageKey usageMessage = executableCommand.getArgumentsMismatchMessage();
+        if (usageMessage == null) {
+            showHelpForCommand(sender, result);
+        } else {
+            messages.send(sender, usageMessage);
+        }
+    }
+
+    private void showHelpForCommand(CommandSender sender, FoundCommandResult result) {
         sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
         helpProvider.outputHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
 
@@ -164,10 +177,4 @@ public class CommandHandler {
         sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE
             + "/" + labels.get(0) + " help " + childLabel);
     }
-
-    // TODO ljacqu 20151212: Remove me once I am a MessageKey
-    private static void sendPermissionDeniedError(CommandSender sender) {
-        sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
-    }
-
 }

@@ -49,4 +49,9 @@ public class ChangePasswordCommand extends PlayerCommand {
 
         management.performPasswordChange(player, oldPassword, newPassword);
     }
+
+    @Override
+    protected String getAlternativeCommand() {
+        return "/authme password <playername> <password>";
+    }
 }

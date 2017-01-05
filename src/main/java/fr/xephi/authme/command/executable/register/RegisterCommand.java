@@ -72,6 +72,11 @@ public class RegisterCommand extends PlayerCommand {
         return "/authme register <playername> <password>";
     }
 
+    @Override
+    public MessageKey getArgumentsMismatchMessage() {
+        return MessageKey.USAGE_LOGIN;
+    }
+
     private void handlePasswordRegistration(Player player, List<String> arguments) {
         if (isSecondArgValidForPasswordRegistration(player, arguments)) {
             final String password = arguments.get(0);

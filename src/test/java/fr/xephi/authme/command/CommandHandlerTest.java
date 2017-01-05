@@ -6,6 +6,8 @@ import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -60,6 +62,8 @@ public class CommandHandlerTest {
     @Mock
     private PermissionsManager permissionsManager;
     @Mock
+    private Messages messages;
+    @Mock
     private HelpProvider helpProvider;
 
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
@@ -71,7 +75,7 @@ public class CommandHandlerTest {
             ExecutableCommand.class, TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
         setInjectorToMockExecutableCommandClasses();
 
-        handler = new CommandHandler(injector, commandMapper, permissionsManager, helpProvider);
+        handler = new CommandHandler(injector, commandMapper, permissionsManager, messages, helpProvider);
     }
 
     /**
@@ -138,7 +142,7 @@ public class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        verify(sender).sendMessage(argThat(containsString("don't have permission")));
+        verify(messages).send(sender, MessageKey.NO_PERMISSION);
     }
 
     @Test
@@ -148,6 +152,7 @@ public class CommandHandlerTest {
         String[] bukkitArgs = {"testPlayer"};
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
+        given(command.getExecutableCommand()).willReturn((Class) TestUnregisterCommand.class);
         given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList())).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
         given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
@@ -157,10 +162,30 @@ public class CommandHandlerTest {
 
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
-        verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, atLeastOnce()).sendMessage(captor.capture());
-        assertThat(captor.getAllValues().get(0), containsString("Incorrect command arguments"));
+        verify(sender, atLeastOnce()).sendMessage(argThat(containsString("Incorrect command arguments")));
+    }
+
+    @Test
+    public void shouldUseCustomMessageUponArgumentMismatch() {
+        // given
+        String bukkitLabel = "unreg";
+        String[] bukkitArgs = {"testPlayer"};
+        CommandSender sender = mock(CommandSender.class);
+        CommandDescription command = mock(CommandDescription.class);
+        given(command.getExecutableCommand()).willReturn((Class) TestUnregisterCommand.class);
+        given(mockedCommands.get(TestUnregisterCommand.class).getArgumentsMismatchMessage())
+            .willReturn(MessageKey.USAGE_RECOVER_EMAIL);
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList())).willReturn(
+            new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
+        given(permissionsManager.hasPermission(sender, command.getPermission())).willReturn(true);
+
+        // when
+        handler.processCommand(sender, bukkitLabel, bukkitArgs);
+
+        // then
+        verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
+        verify(messages).send(sender, MessageKey.USAGE_RECOVER_EMAIL);
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -180,9 +205,7 @@ public class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString("You don't have permission"));
+        verify(messages).send(sender, MessageKey.NO_PERMISSION);
     }
 
     @Test
