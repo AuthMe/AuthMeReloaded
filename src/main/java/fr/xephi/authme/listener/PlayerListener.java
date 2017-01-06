@@ -166,7 +166,9 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoinMessage(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        if (player == null) {
+
+        if (settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)) {
+            event.setJoinMessage(null);
             return;
         }
 
@@ -175,10 +177,7 @@ public class PlayerListener implements Listener {
             event.setJoinMessage(customJoinMessage.replace("{PLAYERNAME}", player.getName())
                 .replace("{DISPLAYNAME]", player.getDisplayName()));
         }
-        if (settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)) {
-            event.setJoinMessage(null);
-            return;
-        }
+
         if (!settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)) {
             return;
         }
