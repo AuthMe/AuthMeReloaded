@@ -59,7 +59,7 @@ public class RecoverEmailCommand extends PlayerCommand {
 
         PlayerAuth auth = dataSource.getAuth(playerName); // TODO: Create method to get email only
         if (auth == null) {
-            commonService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+            commonService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
 

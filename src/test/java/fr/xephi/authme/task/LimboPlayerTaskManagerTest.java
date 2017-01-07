@@ -6,8 +6,6 @@ import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
-import fr.xephi.authme.process.register.RegisterSecondaryArgument;
-import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -65,12 +63,10 @@ public class LimboPlayerTaskManagerTest {
         String name = "bobby";
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
         given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
-        MessageKey key = MessageKey.REGISTER_EMAIL_MESSAGE;
+        MessageKey key = MessageKey.REGISTER_MESSAGE;
         given(messages.retrieve(key)).willReturn(new String[]{"Please register!"});
         int interval = 12;
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(interval);
-        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(settings.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
 
         // when
         limboPlayerTaskManager.registerMessageTask(name, false);
@@ -122,19 +118,14 @@ public class LimboPlayerTaskManagerTest {
 
         String name = "bobby";
         given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
-        given(messages.retrieve(MessageKey.REGISTER_EMAIL_NO_REPEAT_MESSAGE))
-            .willReturn(new String[]{"Please register", "Use /register"});
-
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
-        given(settings.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(settings.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
 
         // when
         limboPlayerTaskManager.registerMessageTask(name, false);
 
         // then
         verify(limboPlayer).setMessageTask(any(MessageTask.class));
-        verify(messages).retrieve(MessageKey.REGISTER_EMAIL_NO_REPEAT_MESSAGE);
+        verify(messages).retrieve(MessageKey.REGISTER_MESSAGE);
         verify(existingMessageTask).cancel();
     }
 

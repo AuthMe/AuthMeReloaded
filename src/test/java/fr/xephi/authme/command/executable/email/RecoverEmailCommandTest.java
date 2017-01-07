@@ -118,7 +118,7 @@ public class RecoverEmailCommandTest {
         verify(sendMailSsl).hasAllInformation();
         verify(dataSource).getAuth(name);
         verifyNoMoreInteractions(dataSource);
-        verify(commandService).send(sender, MessageKey.REGISTER_EMAIL_MESSAGE);
+        verify(commandService).send(sender, MessageKey.USAGE_REGISTER);
     }
 
     @Test

@@ -7,8 +7,6 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -68,10 +66,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         if (dataSource.isAuthAvailable(player.getName())) {
             service.send(player, MessageKey.LOGIN_MESSAGE);
         } else {
-            MessageKey registerMessage = Utils.getRegisterMessage(
-                service.getProperty(RegistrationSettings.REGISTRATION_TYPE),
-                service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
-            service.send(player, registerMessage);
+            service.send(player, MessageKey.REGISTER_MESSAGE);
         }
     }
 }

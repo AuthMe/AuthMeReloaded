@@ -4,11 +4,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.process.register.RegisterSecondaryArgument;
-import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -181,31 +178,11 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldShowEmailRegistrationMessage() {
-        // given
-        given(player.getName()).willReturn("Bobby");
-        given(playerCache.isAuthenticated("bobby")).willReturn(false);
-        given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
-
-        // when
-        process.changeEmail(player, "old@mail.tld", "new@mail.tld");
-
-        // then
-        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
-        verify(service).send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
-    }
-
-    @Test
     public void shouldShowRegistrationMessage() {
         // given
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
         given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
-        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
 
         // when
         process.changeEmail(player, "old@mail.tld", "new@mail.tld");
@@ -213,7 +190,7 @@ public class AsyncChangeEmailTest {
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
-        verify(service).send(player, MessageKey.REGISTER_NO_REPEAT_MESSAGE);
+        verify(service).send(player, MessageKey.REGISTER_MESSAGE);
     }
 
     private static PlayerAuth authWithMail(String email) {

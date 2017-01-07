@@ -64,18 +64,6 @@ public enum MessageKey {
 
     /** Please, register to the server with the command "/register &lt;password> &lt;ConfirmPassword>" */
     REGISTER_MESSAGE("reg_msg"),
-    
-    /** Please, register to the server with the command "/register &lt;password>" */
-    REGISTER_NO_REPEAT_MESSAGE("reg_no_repeat_msg"),
-
-    /** Please, register to the server with the command "/register &lt;email> &lt;confirmEmail>" */
-    REGISTER_EMAIL_MESSAGE("reg_email_msg"),
-    
-    /** Please, register to the server with the command "/register &lt;email>" */
-    REGISTER_EMAIL_NO_REPEAT_MESSAGE("reg_email_no_repeat_msg"),
-    
-    /** Please, register to the server with the command "/register &lt;password> &lt;email>" */
-    REGISTER_PASSWORD_EMAIL_MESSAGE("reg_psw_email_msg"),
 
     /** You have exceeded the maximum number of registrations (%reg_count/%max_acc %reg_names) for your connection! */
     MAX_REGISTER_EXCEEDED("max_reg", "%max_acc", "%reg_count", "%reg_names"),

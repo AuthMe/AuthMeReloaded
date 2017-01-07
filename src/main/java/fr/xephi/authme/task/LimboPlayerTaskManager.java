@@ -10,7 +10,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -96,9 +95,7 @@ public class LimboPlayerTaskManager {
         if (isRegistered) {
             return MessageKey.LOGIN_MESSAGE;
         } else {
-            return Utils.getRegisterMessage(
-                settings.getProperty(RegistrationSettings.REGISTRATION_TYPE),
-                settings.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
+            return MessageKey.REGISTER_MESSAGE;
         }
     }
 

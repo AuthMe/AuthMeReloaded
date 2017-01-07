@@ -1,9 +1,6 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.process.register.RegisterSecondaryArgument;
-import fr.xephi.authme.process.register.RegistrationType;
 
 import java.util.regex.Pattern;
 
@@ -62,30 +59,4 @@ public final class Utils {
         return Runtime.getRuntime().availableProcessors();
     }
 
-    /**
-     * Returns the proper message key for the given registration types.
-     *
-     * @param registrationType the registration type
-     * @param secondaryArgType secondary argument type for the register command
-     * @return the message key
-     */
-    // TODO #1037: Remove this method
-    public static MessageKey getRegisterMessage(RegistrationType registrationType,
-                                                RegisterSecondaryArgument secondaryArgType) {
-        if (registrationType == RegistrationType.PASSWORD) {
-            if (secondaryArgType == RegisterSecondaryArgument.CONFIRMATION) {
-                return MessageKey.REGISTER_MESSAGE;
-            } else if (secondaryArgType == RegisterSecondaryArgument.NONE) {
-                return MessageKey.REGISTER_NO_REPEAT_MESSAGE;
-            } else { /* EMAIL_MANDATORY || EMAIL_OPTIONAL */
-                return MessageKey.REGISTER_PASSWORD_EMAIL_MESSAGE;
-            }
-        } else { /* registrationType == EMAIL */
-            if (secondaryArgType == RegisterSecondaryArgument.NONE) {
-                return MessageKey.REGISTER_EMAIL_NO_REPEAT_MESSAGE;
-            } else { /* CONFIRMATION || EMAIL_MANDATORY || EMAIL_OPTIONAL */
-                return MessageKey.REGISTER_EMAIL_MESSAGE;
-            }
-        }
-    }
 }

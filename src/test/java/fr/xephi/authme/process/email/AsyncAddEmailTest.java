@@ -5,11 +5,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.process.register.RegisterSecondaryArgument;
-import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -169,30 +166,11 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldShowEmailRegisterMessage() {
+    public void shouldShowRegisterMessage() {
         // given
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
         given(dataSource.isAuthAvailable("user")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
-
-        // when
-        asyncAddEmail.addEmail(player, "test@mail.com");
-
-        // then
-        verify(service).send(player, MessageKey.REGISTER_EMAIL_NO_REPEAT_MESSAGE);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
-    }
-
-    @Test
-    public void shouldShowRegularRegisterMessage() {
-        // given
-        given(player.getName()).willReturn("user");
-        given(playerCache.isAuthenticated("user")).willReturn(false);
-        given(dataSource.isAuthAvailable("user")).willReturn(false);
-        given(service.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
-        given(service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
 
         // when
         asyncAddEmail.addEmail(player, "test@mail.com");
