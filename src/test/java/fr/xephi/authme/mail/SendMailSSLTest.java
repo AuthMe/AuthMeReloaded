@@ -200,8 +200,8 @@ public class SendMailSSLTest {
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(465);
         String smtpHost = "mail.example.com";
         given(settings.getProperty(EmailSettings.SMTP_HOST)).willReturn(smtpHost);
-        String senderMail = "sender@example.org";
-        given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderMail);
+        String senderAccount = "sender@example.org";
+        given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderAccount);
         String senderName = "Server administration";
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
 
@@ -212,7 +212,33 @@ public class SendMailSSLTest {
         assertThat(email, not(nullValue()));
         assertThat(email.getToAddresses(), hasSize(1));
         assertThat(email.getToAddresses().get(0).getAddress(), equalTo("recipient@example.com"));
-        assertThat(email.getFromAddress().getAddress(), equalTo(senderMail));
+        assertThat(email.getFromAddress().getAddress(), equalTo(senderAccount));
+        assertThat(email.getFromAddress().getPersonal(), equalTo(senderName));
+        assertThat(email.getHostName(), equalTo(smtpHost));
+        assertThat(email.getSmtpPort(), equalTo("465"));
+    }
+
+    @Test
+    public void shouldCreateEmailObjectWithAddress() throws EmailException {
+        // given
+        given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(465);
+        String smtpHost = "mail.example.com";
+        given(settings.getProperty(EmailSettings.SMTP_HOST)).willReturn(smtpHost);
+        String senderAccount = "exampleAccount";
+        given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderAccount);
+        String senderAddress = "mail@example.com";
+        given(settings.getProperty(EmailSettings.MAIL_ADDRESS)).willReturn(senderAddress);
+        String senderName = "Server administration";
+        given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
+
+        // when
+        HtmlEmail email = sendMailSSL.initializeMail("recipient@example.com");
+
+        // then
+        assertThat(email, not(nullValue()));
+        assertThat(email.getToAddresses(), hasSize(1));
+        assertThat(email.getToAddresses().get(0).getAddress(), equalTo("recipient@example.com"));
+        assertThat(email.getFromAddress().getAddress(), equalTo(senderAddress));
         assertThat(email.getFromAddress().getPersonal(), equalTo(senderName));
         assertThat(email.getHostName(), equalTo(smtpHost));
         assertThat(email.getSmtpPort(), equalTo("465"));

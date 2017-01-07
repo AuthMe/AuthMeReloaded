@@ -318,6 +318,8 @@ Email:
     mailAccount: ''
     # Email account password
     mailPassword: ''
+    # Email address, fill when mailAccount is not email address of the account
+    mailAddress: ''
     # Custom SenderName, that replace the mailAccount name in the email
     mailSenderName: ''
     # Random password length
