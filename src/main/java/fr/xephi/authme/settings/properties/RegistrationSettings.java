@@ -28,8 +28,9 @@ public class RegistrationSettings implements SettingsHolder {
 
     @Comment({
         "Type of registration: PASSWORD or EMAIL",
-        "Password = account is registered with a password supplied by the user;",
-        "Email = password is generated and sent to the email provided by the user."
+        "PASSWORD = account is registered with a password supplied by the user;",
+        "EMAIL = password is generated and sent to the email provided by the user.",
+        "More info at https://github.com/AuthMe/AuthMeReloaded/wiki/Registration"
     })
     public static final Property<RegistrationType> REGISTRATION_TYPE =
         newProperty(RegistrationType.class, "settings.registration.type", RegistrationType.PASSWORD);

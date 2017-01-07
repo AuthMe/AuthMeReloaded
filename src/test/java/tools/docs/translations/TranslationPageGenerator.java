@@ -132,6 +132,7 @@ public class TranslationPageGenerator implements AutoToolTask {
             .put("vn", "Vietnamese")
             .put("zhcn", "Chinese (China)")
             .put("zhhk", "Chinese (Hong Kong)")
+            .put("zhmc", "Chinese (Macau)")
             .put("zhtw", "Chinese (Taiwan)")
             .build();
     }
