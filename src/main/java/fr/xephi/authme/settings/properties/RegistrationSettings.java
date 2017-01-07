@@ -76,12 +76,12 @@ public class RegistrationSettings implements SettingsHolder {
 
     @Comment({
         "The custom join message that will be sent after a successful login,",
-        "use 'none' to use the original one.",
-        "Available variables:,",
+        "keep empty to use the original one.",
+        "Available variables:",
         "{PLAYERNAME}: the player name (no colors)",
         "{DISPLAYNAME}: the player name (with colors)"})
     public static final Property<String> CUSTOM_JOIN_MESSAGE =
-        newProperty("settings.customJoinMessage", "none");
+        newProperty("settings.customJoinMessage", "");
 
     @Comment("Should we remove the leave messages of unlogged users?")
     public static final Property<Boolean> REMOVE_UNLOGGED_LEAVE_MESSAGE =
