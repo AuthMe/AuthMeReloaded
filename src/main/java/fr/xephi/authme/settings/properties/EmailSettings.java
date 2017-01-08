@@ -27,6 +27,10 @@ public class EmailSettings implements SettingsHolder {
     public static final Property<String> MAIL_PASSWORD =
         newProperty("Email.mailPassword", "");
 
+    @Comment("Email address, fill when mailAccount is not the email address of the account")
+    public static final Property<String> MAIL_ADDRESS =
+        newProperty("Email.mailAddress", "");
+
     @Comment("Custom sender name, replacing the mailAccount name in the email")
     public static final Property<String> MAIL_SENDER_NAME =
         newProperty("Email.mailSenderName", "");

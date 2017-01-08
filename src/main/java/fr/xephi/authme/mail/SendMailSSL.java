@@ -125,7 +125,10 @@ public class SendMailSSL {
 
     @VisibleForTesting
     HtmlEmail initializeMail(String emailAddress) throws EmailException {
-        String senderMail = settings.getProperty(EmailSettings.MAIL_ACCOUNT);
+        String senderMail = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_ADDRESS))
+            ? settings.getProperty(EmailSettings.MAIL_ACCOUNT)
+            : settings.getProperty(EmailSettings.MAIL_ADDRESS);
+
         String senderName = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_SENDER_NAME))
             ? senderMail
             : settings.getProperty(EmailSettings.MAIL_SENDER_NAME);
@@ -139,7 +142,7 @@ public class SendMailSSL {
         email.addTo(emailAddress);
         email.setFrom(senderMail, senderName);
         email.setSubject(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT));
-        email.setAuthentication(senderMail, mailPassword);
+        email.setAuthentication(settings.getProperty(EmailSettings.MAIL_ACCOUNT), mailPassword);
 
         setPropertiesForPort(email, port);
         return email;
