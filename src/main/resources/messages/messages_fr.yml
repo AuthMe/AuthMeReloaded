@@ -1,42 +1,42 @@
-# Traduction par: André
+# Traduction par: André & Twonox
 
-# Enregistrement
-reg_msg: '&cPour vous inscrire, utilisez "/register <motdepasse> <confirmermotdepasse>"'
-usage_reg: '&cUtilisez la commande /register motdepasse confirmermotdepasse'
-reg_voluntarily: '&fVous venez d''arriver? Faites un "/register motdepasse confirmermotdepasse"'
-reg_only: '&fSeul les joueurs enregistrés sont admis! Visitez http://example.com'
-kicked_admin_registered: 'Un admin vient de vous enregistrer, veuillez vous reconnecter.'
-registered: '&aEnregistrement réussi avec succès !'
-reg_disabled: '&cL''enregistrement est désactivé.'
-user_regged: '&cCe pseudo est déjà utilisé.'
-max_reg: 'Vous avez atteint la limite d''enregistrement! &o(%reg_count/%max_acc : %reg_names)'
+# Pour afficher une guillemet, mettez deux guillemets consécutivement (ex: "J''ai" au lieu de "J'ai").
+# Pour passer à la ligne, vous pouvez utiliser "%nl%"
 
-# Erreurs MDP pour l'enregistrement
-password_error: '&cCe mot de passe est incorrect.'
-password_error_nick: '&fTu ne peux pas utiliser ton pseudo comme mot de passe.'
-password_error_unsafe: '&fCe mot de passe n''est pas accepté, choisis en un autre.'
-password_error_chars: '&4Ton mot de passe contient des caractères non autorisés. Caractères parmis : REG_EX'
-pass_len: '&cVotre mot de passe est trop court ou long !'
+# Inscription
+reg_msg: '&cPour vous inscrire, utilisez "/register <MotDePasse> <ConfirmerMotDePasse>"'
+usage_reg: '&cUsage: /register <MotDePasse> <ConfirmerMotDePasse>'
+kicked_admin_registered: 'Un admin vient de vous inscrire, veuillez vous reconnecter.'
+registered: '&aInscription effectué !'
+reg_disabled: '&cL''inscription est désactivé.'
+user_regged: '&cCet utilisateur est déjà inscrit.'
+max_reg: 'Vous avez atteint la limite d''inscription! &o(%reg_count/%max_acc : %reg_names)'
+
+# Erreurs MDP pour l'inscription
+password_error: '&cLe mot de passe de confirmation ne correspond pas.'
+password_error_nick: '&cVous ne pouvez pas utiliser votre pseudo comme mot de passe.'
+password_error_unsafe: '&cCe mot de passe n''est pas accepté, choisissez-en un autre.'
+password_error_chars: '&cVotre mot de passe contient des caractères non autorisés. Caractères permis : REG_EX'
+pass_len: '&cVotre mot de passe est trop court ou trop long !'
 
 # Connexion
-usage_log: '&cUtilisez: /login motdepasse'
+usage_log: '&cUsage: /login <MotDePasse>'
 wrong_pwd: '&cMauvais mot de passe !'
-login_msg: '&cPour vous connecter, utilisez: /login motdepasse'
+login_msg: '&cPour vous connecter, utilisez "/login <MotDePasse>"'
 login: '&aConnexion effectuée !'
-timeout: '&fVous avez été expulsé car vous êtes trop lent pour vous enregistrer/connecter !'
-logged_in: '&cVous êtes déjà connecté.'
+timeout: 'Vous avez été expulsé car vous êtes trop lent pour vous enregistrer/connecter !'
+logged_in: '&aVous êtes déjà connecté.'
 
 # Erreurs
-unknown_user: '&fUtilisateur non enregistré.'
-user_unknown: '&cCe compte n''est pas enregistré.'
+unknown_user: '&cUtilisateur introuvable.'
 denied_command: '&cVous devez être connecté pour pouvoir utiliser cette commande.'
-denied_chat: 'Vous devez être connecté pour pouvoir parler !'
-not_logged_in: '&cNon connecté !'
+denied_chat: '&cVous devez être connecté pour pouvoir écrire dans le chat.'
+not_logged_in: '&cUtilisateur non connecté !'
 tempban_max_logins: '&cVous êtes temporairement banni suite à plusieurs échecs de connexions !'
-no_perm: '&cVous n''avez pas la permission.'
-error: '&fUne erreur est apparue, veuillez contacter un administrateur.'
-unsafe_spawn: '&fTéléportation dans un endroit sûr.'
-kick_forvip: '&cUn joueur VIP a rejoint le serveur plein !'
+no_perm: '&cVous n''êtes pas autorisé à utiliser cette commande.'
+error: '&cUne erreur est apparue, veuillez contacter un administrateur.'
+unsafe_spawn: 'Téléportation dans un endroit sûr.'
+kick_forvip: 'Un joueur VIP a rejoint le serveur à votre place (serveur plein).'
 
 # AntiBot
 antibot_auto_enabled: 'AntiBot activé automatiquement à cause de nombreuses connexions !'
@@ -45,31 +45,32 @@ kick_antibot: 'AntiBot est activé, veuillez attendre %m minutes avant de joindr
 
 # Autres messages
 vb_nonActiv: '&fCe compte n''est pas actif, consultez vos emails !'
-usage_unreg: '&cPour supprimer ce compte, utilisez: /unregister <motdepasse>'
-unregistered: '&cCe compte a été supprimé !'
-usage_changepassword: '&fPour changer de mot de passe, utilisez: /changepassword ancienmdp nouveaumdp'
+usage_unreg: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'
+unregistered: '&aCompte supprimé !'
+usage_changepassword: '&cPour changer de mot de passe, utilisez "/changepassword <AncienMotDePasse> <NouveauMotDePasse>"'
 pwd_changed: '&aMot de passe changé avec succès !'
 logout: '&cVous avez été déconnecté !'
-reload: '&fConfiguration et BDD relancé avec succès'
-two_factor_create: '&2Votre code secret est %code. Vous pouvez le scanner depuis %url'
-accounts_owned_self: '&fVous avez %count comptes:'
-accounts_owned_other: '&fLe joueur %name a %count comptes:'
+reload: '&aAuthMe a été relancé avec succès.'
+two_factor_create: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
+accounts_owned_self: 'Vous avez %count comptes:'
+accounts_owned_other: 'Le joueur %name a %count comptes:'
 recovery_code_sent: 'Un code de récupération a été envoyé à votre adresse email afin de réinitialiser votre mot de passe.'
-recovery_code_incorrect: 'Le code de réinitialisation est incorrect! Faites "/email recovery [email]" pour en générer un nouveau.'
+recovery_code_incorrect: '&cLe code de réinitialisation est incorrect!%nl%Faites "/email recovery [email]" pour en générer un nouveau.'
 
 # Messages de session
-valid_session: '&aVous êtes authentifié !'
-invalid_session: '&fSession expirée suite à un changement d''IP.'
+valid_session: '&aVous avez été automatiquement connecté !'
+invalid_session: 'Session expirée suite à un changement d''IP.'
 
 # Erreurs pour rejoindre le serveur
-name_len: '&cVotre pseudo est trop long ou trop court.'
-regex: '&cCaractères de pseudo autorisés: REG_EX'
-same_nick: '&fUne personne ayant ce même pseudo joue déjà.'
+name_len: 'Votre pseudo est trop long ou trop court.'
+regex: 'Caractères de pseudo autorisés: REG_EX'
+same_nick: 'Un joueur ayant le même pseudo est déjà connecté.'
 country_banned: 'Votre pays est banni de ce serveur.'
 same_ip_online: 'Un joueur avec la même adresse IP joue déjà !'
-not_owner_error: 'Vous n''êtes pas le propriétaire de ce compte. Veuillez utiliser un autre nom !'
+not_owner_error: 'Vous n''êtes pas le propriétaire de ce compte. Veuillez utiliser un autre pseudo !'
 kick_fullserver: '&cLe serveur est actuellement plein, désolé !'
-invalid_name_case: 'Veuillez vous connecter avec %valid et non pas avec %invalid.'
+invalid_name_case: 'Veuillez vous connecter avec "%valid" et non pas avec "%invalid".'
+reg_only: 'Seul les joueurs enregistrés sont admis!%nl%Veuillez vous rendre sur http://example.com pour plus d''infos.'
 
 # Email
 usage_email_add: '&fUsage: /email add <Email> <ConfirmeEmail> '
@@ -85,11 +86,11 @@ email_send: '[AuthMe] Email de récupération envoyé !'
 email_exists: '&cUn email de restauration a déjà été envoyé ! Vous pouvez le jeter et vous en faire envoyez un nouveau en utilisant :'
 email_show: '&2Votre adresse email actuelle est: &f%email'
 incomplete_email_settings: '&cErreur : Tous les paramètres requis ne sont pas présent pour l''envoi de mail, veuillez contacter un admin.'
-show_no_email: '&2Vous n''avez aucune adresse email enregistré sur votre compte.'
-add_email: '&cMerci d''ajouter votre email : /email add yourEmail confirmEmail'
-recovery_email: '&cVous avez oublié votre MotdePasse ? Utilisez /email recovery <votreEmail>'
-email_already_used: '&4L''adresse email a déjà été utilisée.'
-email_send_failure: 'L''email n''a pas pu être envoyé. Veuillez contacter un admin.'
+show_no_email: 'Vous n''avez aucune adresse email enregistré sur votre compte.'
+add_email: '&cMerci d''ajouter votre email : /email add <votreEmail> <confirmerEmail>'
+recovery_email: '&cVous avez oublié votre Mot de Passe? Utilisez /email recovery <votreEmail>'
+email_already_used: '&cCette adresse email est déjà utilisée !'
+email_send_failure: '&cL''email n''a pas pu être envoyé. Veuillez contacter un admin.'
 
 # Captcha
 usage_captcha: '&cTrop de tentatives de connexion échouées, utilisez: /captcha <theCaptcha>'
