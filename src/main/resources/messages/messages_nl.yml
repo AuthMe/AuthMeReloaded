@@ -1,7 +1,6 @@
-unknown_user: Gebruiker is niet gevonden in de database
+unknown_user: '&cGebruikersnaam niet geregistreerd'
 unsafe_spawn: De locatie waar je de vorige keer het spel verliet was gevaarlijk, je bent geteleporteerd naar de spawn
 not_logged_in: '&cNiet ingelogt!'
-reg_voluntarily: Je kunt je gebruikersnaam registreren met "/register <wachtwoord> <herhaalWachtwoord>"
 usage_log: '&cGebruik: /login <wachtwoord>'
 wrong_pwd: '&cFout wachtwoord'
 unregistered: '&cRegistratie succesvol ongedaan gemaakt!'
@@ -21,7 +20,6 @@ login_msg: '&cLog in met "/login <wachtwoord>"'
 reg_msg: '&cRegistreer met "/register <wachtwoord> <herhaalWachtwoord>"'
 usage_unreg: '&cGebruik: /unregister password'
 pwd_changed: '&cWachtwoord aangepast!'
-user_unknown: '&cGebruikersnaam niet geregistreerd'
 password_error: 'Wachtwoord incorrect!'
 password_error_chars: '&cJouw wachtwoord bevat illegale tekens. Toegestaane karakters: REG_EX'
 invalid_session: 'Sessie beschadigd, wacht tot de sessie is verlopen en verbindt opnieuw.'

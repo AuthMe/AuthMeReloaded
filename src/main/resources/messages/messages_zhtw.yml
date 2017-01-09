@@ -2,10 +2,9 @@
 # Last modif: 1459528742 UTC                   #
 # -------------------------------------------- #
 kick_antibot: '&b【AuthMe】&cAntiBotMod 正在啟用中，請稍後再嘗試登入吧！'
-unknown_user: "&b【AuthMe】&6沒有在資料庫內找到該玩家。"
+unknown_user: '&b【AuthMe】&6這個帳號還沒有註冊過'
 unsafe_spawn: '&b【AuthMe】&6你登出的地點不安全，已傳送你到安全的地點。'
 not_logged_in: '&b【AuthMe】&6你還沒有登入!'
-reg_voluntarily: '&b【AuthMe】&6使用 &c"/register <密碼> <確認密碼>" &6來註冊你的暱稱'
 usage_log: '&b【AuthMe】&6用法: &c"/login <密碼>"'
 wrong_pwd: '&b【AuthMe】&6密碼錯誤!'
 unregistered: '&b【AuthMe】&6你已經成功取消註冊。'
@@ -23,7 +22,6 @@ login_msg: '&b【AuthMe】&6請使用 &c"/login <密碼>" &6來登入。'
 reg_msg: '&b【AuthMe】&6請使用 "&c/register <密碼> <確認密碼>" 來註冊。'
 usage_unreg: '&b【AuthMe】&6用法: &c"/unregister <密碼>"'
 pwd_changed: '&b【AuthMe】&6密碼變更成功!'
-user_unknown: '&b【AuthMe】&6這個帳號還沒有註冊過'
 password_error: '&b【AuthMe】&6兩次輸入的密碼不一致!'
 password_error_nick: '&b【AuthMe】&6你不可以用你的 ID ( 名稱 ) 來當作密碼 !'
 password_error_unsafe: '&b【AuthMe】&6你不可以使用這個不安全的密碼'

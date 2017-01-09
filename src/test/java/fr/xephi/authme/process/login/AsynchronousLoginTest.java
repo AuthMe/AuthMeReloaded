@@ -98,7 +98,7 @@ public class AsynchronousLoginTest {
 
         // then
         verify(playerCache, only()).isAuthenticated(name);
-        verify(commonService).send(player, MessageKey.USER_NOT_REGISTERED);
+        verify(commonService).send(player, MessageKey.UNKNOWN_USER);
         verify(dataSource, only()).getAuth(name);
     }
 

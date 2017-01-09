@@ -117,7 +117,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
         PlayerAuth auth = dataSource.getAuth(name);
         if (auth == null) {
-            service.send(player, MessageKey.USER_NOT_REGISTERED);
+            service.send(player, MessageKey.UNKNOWN_USER);
             // Recreate the message task to immediately send the message again as response
             // and to make sure we send the right register message (password vs. email registration)
             limboPlayerTaskManager.registerMessageTask(name, false);

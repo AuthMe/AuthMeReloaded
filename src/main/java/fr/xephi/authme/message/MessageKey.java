@@ -26,9 +26,6 @@ public enum MessageKey {
     /** You're not logged in! */
     NOT_LOGGED_IN("not_logged_in"),
 
-    /** You can register yourself to the server with the command "/register &lt;password> &lt;ConfirmPassword>" */
-    REGISTER_VOLUNTARILY("reg_voluntarily"),
-
     /** Usage: /login &lt;password> */
     USAGE_LOGIN("usage_log"),
 
@@ -76,9 +73,6 @@ public enum MessageKey {
 
     /** Password changed successfully! */
     PASSWORD_CHANGED_SUCCESS("pwd_changed"),
-
-    /** This user isn't registered! */
-    USER_NOT_REGISTERED("user_unknown"),
 
     /** Passwords didn't match, check them again! */
     PASSWORD_MATCH_ERROR("password_error"),

@@ -56,7 +56,7 @@ public class AccountsCommand implements ExecutableCommand {
 
                     List<String> accountList = dataSource.getAllAuthsByIp(auth.getIp());
                     if (accountList.isEmpty()) {
-                        commonService.send(sender, MessageKey.USER_NOT_REGISTERED);
+                        commonService.send(sender, MessageKey.UNKNOWN_USER);
                     } else if (accountList.size() == 1) {
                         sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
                     } else {

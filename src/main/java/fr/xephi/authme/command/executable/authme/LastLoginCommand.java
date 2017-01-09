@@ -29,7 +29,7 @@ public class LastLoginCommand implements ExecutableCommand {
 
         PlayerAuth auth = dataSource.getAuth(playerName);
         if (auth == null) {
-            commonService.send(sender, MessageKey.USER_NOT_REGISTERED);
+            commonService.send(sender, MessageKey.UNKNOWN_USER);
             return;
         }
 

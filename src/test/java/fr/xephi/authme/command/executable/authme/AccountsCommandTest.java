@@ -89,7 +89,7 @@ public class AccountsCommandTest {
         runInnerRunnable(bukkitService);
 
         // then
-        verify(service).send(sender, MessageKey.USER_NOT_REGISTERED);
+        verify(service).send(sender, MessageKey.UNKNOWN_USER);
         verify(sender, never()).sendMessage(anyString());
     }
 

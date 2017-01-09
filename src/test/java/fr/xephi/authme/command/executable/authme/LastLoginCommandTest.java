@@ -54,7 +54,7 @@ public class LastLoginCommandTest {
 
         // then
         verify(dataSource).getAuth(player);
-        verify(service).send(sender, MessageKey.USER_NOT_REGISTERED);
+        verify(service).send(sender, MessageKey.UNKNOWN_USER);
     }
 
     @Test
