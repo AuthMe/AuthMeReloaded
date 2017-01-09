@@ -75,4 +75,4 @@ recovery_code_sent: 'El código de recuperación para recuperar tu contraseña s
 invalid_name_case: 'Solo puedes unirte mediante el nombre de usuario %valid, no %invalid.'
 email_show: '&2Tu dirección de E-Mail actual es: &f%email'
 show_no_email: '&2No tienes ningun E-Mail asociado en esta cuenta.'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
+email_send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
