@@ -1,0 +1,45 @@
+# Traduction des messages d'aide d'AuthMe (pour la commande "/authme help (<argument>)" ou "/register help"  par exemple)
+
+# -------------------------------------------------------
+# Liste de texte dans les sections d'aide
+common:
+    header: '==========[ AIDE & INFOS - AuthMe ]=========='
+    optional: 'Optionnel'
+    hasPermission: 'Vous avez la permission'
+    noPermission: 'Pas de permission'
+    default: 'Par défaut'
+    result: 'Résultat'
+    defaultPermissions:
+        notAllowed: 'Non permis'
+        opOnly: 'Seulement pour OP'
+        allowed: 'Tout le monde est permis'
+
+# -------------------------------------------------------
+# Nom individuel des sections d'aide
+# Vous pouvez vider la zone de texte d'une section afin de la cacher, ex. pour cacher la section "alternatives":
+#   alternatives: ''
+section:
+    command: 'Commande'
+    description: 'Description'
+    detailedDescription: 'Description détaillée'
+    arguments: 'Arguments'
+    permissions: 'Permissions'
+    alternatives: 'Alternatives'
+    children: 'Commandes'
+
+# -------------------------------------------------------
+# Vous pouvez traduire tout les textes d'aide en utilisant la syntax ci-dessous.
+# Par exemple, pour traduire l'aide du "/authme reload" créez une section nommé "autme.reload", ou "login" pour "/login".
+# Si la commande a des arguments, pour pouvez utiliser "arg1" pour traduire le premier argument, "arg2" pour le 2ème, ainsi de suite.
+# Les sections non traduit auront leur texte par défaut (en anglais), il n'est donc pas obligatoire de tout traduire.
+# Important: Mettez la commande principale avant une sous-commande (ex. "authme.reload" pour "/authme reload")
+commands:
+    authme.register:
+        description: 'Inscrire un pseudo'
+        detailedDescription: 'Inscrire un pseudo avec le mot de passe de votre choix'
+        arg1:
+            label: 'pseudo'
+            description: 'Pseudo du joueur à inscrire'
+        arg2:
+            label: 'mdp'
+            description: 'Mot de passe de connexion'
