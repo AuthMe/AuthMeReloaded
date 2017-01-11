@@ -1,9 +1,9 @@
 package tools.messages;
 
 import com.google.common.collect.Multimap;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import tools.utils.FileIoUtils;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -54,9 +54,9 @@ public final class VerifyMessagesTask implements ToolTask {
             messageFiles = Collections.singletonList(customFile);
         }
 
-        FileConfiguration defaultMessages = null;
+        List<MessageFileElement> defaultFileElements = null;
         if (addMissingKeys) {
-            defaultMessages = YamlConfiguration.loadConfiguration(new File(DEFAULT_MESSAGES_FILE));
+            defaultFileElements = MessageFileElementReader.readFileIntoElements(new File(DEFAULT_MESSAGES_FILE));
         }
 
         // Verify the given files
@@ -64,9 +64,10 @@ public final class VerifyMessagesTask implements ToolTask {
             System.out.println("Verifying '" + file.getName() + "'");
             MessageFileVerifier verifier = new MessageFileVerifier(file);
             if (addMissingKeys) {
-                verifyFileAndAddKeys(verifier, defaultMessages);
+                outputVerificationResults(verifier);
+                updateMessagesFile(file, verifier, defaultFileElements);
             } else {
-                verifyFile(verifier);
+                outputVerificationResults(verifier);
             }
         }
 
@@ -75,8 +76,13 @@ public final class VerifyMessagesTask implements ToolTask {
         }
     }
 
-    private static void verifyFile(MessageFileVerifier verifier) {
-        List<MissingKey> missingKeys = verifier.getMissingKeys();
+    /**
+     * Outputs the verification results to the console.
+     *
+     * @param verifier the verifier whose results should be output
+     */
+    private static void outputVerificationResults(MessageFileVerifier verifier) {
+        Set<MessageKey> missingKeys = verifier.getMissingKeys();
         if (!missingKeys.isEmpty()) {
             System.out.println("  Missing keys: " + missingKeys);
         }
@@ -86,44 +92,32 @@ public final class VerifyMessagesTask implements ToolTask {
             System.out.println("  Unknown keys: " + unknownKeys);
         }
 
-        Multimap<String, String> missingTags = verifier.getMissingTags();
-        for (Map.Entry<String, String> entry : missingTags.entries()) {
-            System.out.println("  Missing tag '" + entry.getValue() + "' in entry with key '" + entry.getKey() + "'");
+        Multimap<MessageKey, String> missingTags = verifier.getMissingTags();
+        for (Map.Entry<MessageKey, String> entry : missingTags.entries()) {
+            System.out.println("  Missing tag '" + entry.getValue() + "' in entry '" + entry.getKey() + "'");
         }
     }
 
-    public static void verifyFileAndAddKeys(MessageFileVerifier verifier, FileConfiguration defaultMessages) {
-        List<MissingKey> missingKeys = verifier.getMissingKeys();
-        if (!missingKeys.isEmpty() || !verifier.getMissingTags().isEmpty()) {
-            verifier.addMissingKeys(defaultMessages);
-            List<String> addedKeys = getMissingKeysWithAdded(missingKeys, true);
-            System.out.println("  Added missing keys " + addedKeys);
-
-            List<String> unsuccessfulKeys = getMissingKeysWithAdded(missingKeys, false);
-            if (!unsuccessfulKeys.isEmpty()) {
-                System.err.println("  Warning! Could not add all missing keys (problem with loading " +
-                    "default messages?)");
-                System.err.println("  Could not add keys " + unsuccessfulKeys);
-            }
-        }
-
-        Set<String> unknownKeys = verifier.getUnknownKeys();
-        if (!unknownKeys.isEmpty()) {
-            System.out.println("  Unknown keys: " + unknownKeys);
-        }
-
-        Multimap<String, String> missingTags = verifier.getMissingTags();
-        for (Map.Entry<String, String> entry : missingTags.entries()) {
-            System.out.println("  Missing tag '" + entry.getValue() + "' in entry with key '" + entry.getKey() + "'");
-        }
+    /**
+     * Updates a messages file to have the same order as the default file and to contain all
+     * failed verifications as comments.
+     *
+     * @param file the file to update
+     * @param verifier the verifier whose results should be used
+     * @param defaultFileElements default file elements to base the new file structure on
+     */
+    private static void updateMessagesFile(File file, MessageFileVerifier verifier,
+                                           List<MessageFileElement> defaultFileElements) {
+        List<MessageFileElement> messageFileElements = MessageFileElementReader.readFileIntoElements(file);
+        String newMessageFileContents = MessageFileElementMerger
+            .mergeElements(messageFileElements, defaultFileElements, verifier.getMissingTags().asMap())
+            .stream()
+            .map(MessageFileElement::getLines)
+            .flatMap(List::stream)
+            .collect(Collectors.joining("\n"));
+        FileIoUtils.writeToFile(file.toPath(), newMessageFileContents + "\n");
     }
 
-    private static List<String> getMissingKeysWithAdded(List<MissingKey> missingKeys, boolean wasAdded) {
-        return missingKeys.stream()
-            .filter(e -> e.getWasAdded() == wasAdded)
-            .map(MissingKey::getKey)
-            .collect(Collectors.toList());
-    }
 
     private static List<File> getMessagesFiles() {
         File[] files = listFilesOrThrow(new File(MESSAGES_FOLDER));

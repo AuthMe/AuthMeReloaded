@@ -252,4 +252,9 @@ public enum MessageKey {
     public String[] getTags() {
         return tags;
     }
+
+    @Override
+    public String toString() {
+        return key;
+    }
 }
