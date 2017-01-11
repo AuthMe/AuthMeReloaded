@@ -6,11 +6,11 @@
 # Inscription
 reg_msg: '&cPour vous inscrire, utilisez "/register <MotDePasse> <ConfirmerMotDePasse>"'
 usage_reg: '&cUsage: /register <MotDePasse> <ConfirmerMotDePasse>'
+reg_only: 'Seul les joueurs enregistrés sont admis!%nl%Veuillez vous rendre sur http://example.com pour plus d''infos.'
 kicked_admin_registered: 'Un admin vient de vous inscrire, veuillez vous reconnecter.'
 registered: '&aInscription effectué !'
 reg_disabled: '&cL''inscription est désactivé.'
 user_regged: '&cCet utilisateur est déjà inscrit.'
-max_reg: 'Vous avez atteint la limite d''inscription! &o(%reg_count/%max_acc : %reg_names)'
 
 # Erreurs MDP pour l'inscription
 password_error: '&cLe mot de passe de confirmation ne correspond pas.'
@@ -22,10 +22,9 @@ pass_len: '&cVotre mot de passe est trop court ou trop long !'
 # Connexion
 usage_log: '&cUsage: /login <MotDePasse>'
 wrong_pwd: '&cMauvais mot de passe !'
-login_msg: '&cPour vous connecter, utilisez "/login <MotDePasse>"'
 login: '&aConnexion effectuée !'
+login_msg: '&cPour vous connecter, utilisez "/login <MotDePasse>"'
 timeout: 'Vous avez été expulsé car vous êtes trop lent pour vous enregistrer/connecter !'
-logged_in: '&aVous êtes déjà connecté.'
 
 # Erreurs
 unknown_user: '&cUtilisateur introuvable.'
@@ -33,44 +32,45 @@ denied_command: '&cVous devez être connecté pour pouvoir utiliser cette comman
 denied_chat: '&cVous devez être connecté pour pouvoir écrire dans le chat.'
 not_logged_in: '&cUtilisateur non connecté !'
 tempban_max_logins: '&cVous êtes temporairement banni suite à plusieurs échecs de connexions !'
+max_reg: 'Vous avez atteint la limite d''inscription! &o(%reg_count/%max_acc : %reg_names)'
 no_perm: '&cVous n''êtes pas autorisé à utiliser cette commande.'
 error: '&cUne erreur est apparue, veuillez contacter un administrateur.'
 unsafe_spawn: 'Téléportation dans un endroit sûr.'
 kick_forvip: 'Un joueur VIP a rejoint le serveur à votre place (serveur plein).'
 
 # AntiBot
+kick_antibot: 'AntiBot est activé, veuillez attendre %m minutes avant de joindre le serveur.'
 antibot_auto_enabled: 'AntiBot activé automatiquement à cause de nombreuses connexions !'
 antibot_auto_disabled: 'AntiBot désactivé automatiquement après %m minutes, espérons que l''invasion soit arrêtée !'
-kick_antibot: 'AntiBot est activé, veuillez attendre %m minutes avant de joindre le serveur.'
 
 # Autres messages
-vb_nonActiv: '&fCe compte n''est pas actif, consultez vos emails !'
-usage_unreg: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'
 unregistered: '&aCompte supprimé !'
-usage_changepassword: '&cPour changer de mot de passe, utilisez "/changepassword <AncienMotDePasse> <NouveauMotDePasse>"'
-pwd_changed: '&aMot de passe changé avec succès !'
-logout: '&cVous avez été déconnecté !'
-reload: '&aAuthMe a été relancé avec succès.'
-two_factor_create: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
 accounts_owned_self: 'Vous avez %count comptes:'
 accounts_owned_other: 'Le joueur %name a %count comptes:'
+two_factor_create: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
 recovery_code_sent: 'Un code de récupération a été envoyé à votre adresse email afin de réinitialiser votre mot de passe.'
 recovery_code_incorrect: '&cLe code de réinitialisation est incorrect!%nl%Faites "/email recovery [email]" pour en générer un nouveau.'
+vb_nonActiv: '&fCe compte n''est pas actif, consultez vos emails !'
+usage_unreg: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'
+pwd_changed: '&aMot de passe changé avec succès !'
+logged_in: '&aVous êtes déjà connecté.'
+logout: '&cVous avez été déconnecté !'
+reload: '&aAuthMe a été relancé avec succès.'
+usage_changepassword: '&cPour changer de mot de passe, utilisez "/changepassword <AncienMotDePasse> <NouveauMotDePasse>"'
 
 # Messages de session
-valid_session: '&aVous avez été automatiquement connecté !'
 invalid_session: 'Session expirée suite à un changement d''IP.'
+valid_session: '&aVous avez été automatiquement connecté !'
 
 # Erreurs pour rejoindre le serveur
 name_len: 'Votre pseudo est trop long ou trop court.'
 regex: 'Caractères de pseudo autorisés: REG_EX'
-same_nick: 'Un joueur ayant le même pseudo est déjà connecté.'
 country_banned: 'Votre pays est banni de ce serveur.'
-same_ip_online: 'Un joueur avec la même adresse IP joue déjà !'
 not_owner_error: 'Vous n''êtes pas le propriétaire de ce compte. Veuillez utiliser un autre pseudo !'
 kick_fullserver: '&cLe serveur est actuellement plein, désolé !'
+same_nick: 'Un joueur ayant le même pseudo est déjà connecté.'
 invalid_name_case: 'Veuillez vous connecter avec "%valid" et non pas avec "%invalid".'
-reg_only: 'Seul les joueurs enregistrés sont admis!%nl%Veuillez vous rendre sur http://example.com pour plus d''infos.'
+same_ip_online: 'Un joueur avec la même adresse IP joue déjà !'
 
 # Email
 usage_email_add: '&fUsage: /email add <Email> <ConfirmeEmail> '
@@ -86,11 +86,11 @@ email_send: '[AuthMe] Email de récupération envoyé !'
 email_exists: '&cUn email de restauration a déjà été envoyé ! Vous pouvez le jeter et vous en faire envoyez un nouveau en utilisant :'
 email_show: '&2Votre adresse email actuelle est: &f%email'
 incomplete_email_settings: '&cErreur : Tous les paramètres requis ne sont pas présent pour l''envoi de mail, veuillez contacter un admin.'
+email_already_used: '&cCette adresse email est déjà utilisée !'
+email_send_failure: '&cL''email n''a pas pu être envoyé. Veuillez contacter un admin.'
 show_no_email: 'Vous n''avez aucune adresse email enregistré sur votre compte.'
 add_email: '&cMerci d''ajouter votre email : /email add <votreEmail> <confirmerEmail>'
 recovery_email: '&cVous avez oublié votre Mot de Passe? Utilisez /email recovery <votreEmail>'
-email_already_used: '&cCette adresse email est déjà utilisée !'
-email_send_failure: '&cL''email n''a pas pu être envoyé. Veuillez contacter un admin.'
 
 # Captcha
 usage_captcha: '&cTrop de tentatives de connexion échouées, utilisez: /captcha <theCaptcha>'

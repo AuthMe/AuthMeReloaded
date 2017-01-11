@@ -73,6 +73,6 @@ public class MessageFileElementReader {
     }
 
     private static boolean isTodoComment(String line) {
-        return line.startsWith("# TODO ");
+        return line.startsWith("# TODO");
     }
 }
