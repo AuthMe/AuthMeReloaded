@@ -1,4 +1,4 @@
-# Traduction des messages d'aide d'AuthMe (pour la commande "/authme help (<argument>)" ou "/register help"  par exemple)
+# Traduction des messages d'aide d'AuthMe (pour la commande "/authme help (<argument>)" ou "/register help" par exemple)
 
 # -------------------------------------------------------
 # Liste de texte dans les sections d'aide
@@ -16,23 +16,23 @@ common:
 
 # -------------------------------------------------------
 # Nom individuel des sections d'aide
-# Vous pouvez vider la zone de texte d'une section afin de la cacher, ex. pour cacher la section "alternatives":
-#   alternatives: ''
+# Vous pouvez vider la zone de texte d'une section afin de la cacher, ex. pour cacher la section des alternatives:
+#   alternative(s): ''
 section:
     command: 'Commande'
     description: 'Description'
     detailedDescription: 'Description détaillée'
-    arguments: 'Arguments'
-    permissions: 'Permissions'
-    alternatives: 'Alternatives'
-    children: 'Commandes'
+    arguments: 'Argument(s)'
+    permissions: 'Permission'
+    alternatives: 'Alternative(s)'
+    children: 'Sous-commande(s)'
 
 # -------------------------------------------------------
-# Vous pouvez traduire tout les textes d'aide en utilisant la syntax ci-dessous.
-# Par exemple, pour traduire l'aide du "/authme reload" créez une section nommé "autme.reload", ou "login" pour "/login".
-# Si la commande a des arguments, pour pouvez utiliser "arg1" pour traduire le premier argument, "arg2" pour le 2ème, ainsi de suite.
-# Les sections non traduit auront leur texte par défaut (en anglais), il n'est donc pas obligatoire de tout traduire.
-# Important: Mettez la commande principale avant une sous-commande (ex. "authme.reload" pour "/authme reload")
+# Vous pouvez traduire tous les textes d'aide en utilisant la syntaxe ci-dessous.
+# Par exemple, pour traduire l'aide du "/authme reload" créez une section nommée "authme.reload", ou "login" pour "/login".
+# Si la commande a des arguments, vour pouvez utiliser "arg1" pour traduire le premier argument, "arg2" pour le 2ème, ainsi de suite.
+# Les sections non traduites auront leur texte par défaut (en anglais), il n'est donc pas obligatoire de tout traduire.
+# Important: Il faut mettre la commande principale (authme) avant sa sous-commande (ex. "authme.register" pour "/authme register")
 commands:
     authme.register:
         description: 'Inscrire un pseudo'
