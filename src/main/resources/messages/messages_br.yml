@@ -44,7 +44,7 @@ antibot_auto_disabled: '&2Desativando o AntiBot passados %m minutos!'
 
 # Other messages
 unregistered: '&cConta deletada!'
-accounts_owned_self: 'Vecê tem %count contas:'
+accounts_owned_self: 'Você tem %count contas:'
 accounts_owned_other: 'O jogador %name tem %count contas:'
 two_factor_create: '&2O seu código secreto é %code. Você pode verificá-lo a partir daqui %url'
 recovery_code_sent: 'Um código de recuperação para redefinir sua senha foi enviada para o seu e-mail.'
