@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Jan 07 11:33:48 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Jan 14 22:12:16 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -34,6 +34,8 @@ DataSource:
     mySQLRealName: 'realname'
     # Column for storing players passwords
     mySQLColumnPassword: 'password'
+    # Request mysql over SSL
+    mySQLUseSSL: true
     # Column for storing players emails
     mySQLColumnEmail: 'email'
     # Column for storing if a player is logged in or not
@@ -330,6 +332,8 @@ Email:
     mailAccount: ''
     # Email account password
     mailPassword: ''
+    # Email address, fill when mailAccount is not the email address of the account
+    mailAddress: ''
     # Custom sender name, replacing the mailAccount name in the email
     mailSenderName: ''
     # Recovery password length
@@ -460,4 +464,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Jan 07 11:33:48 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Jan 14 22:12:16 CET 2017

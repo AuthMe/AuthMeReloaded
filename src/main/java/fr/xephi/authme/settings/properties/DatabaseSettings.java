@@ -58,6 +58,10 @@ public class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_PASSWORD =
         newProperty("DataSource.mySQLColumnPassword", "password");
 
+    @Comment("Request mysql over SSL")
+    public static final Property<Boolean> MYSQL_USE_SSL =
+        newProperty("DataSource.mySQLUseSSL", true);
+
     @Comment("Column for storing players passwords salts")
     public static final Property<String> MYSQL_COL_SALT =
         newProperty("ExternalBoardOptions.mySQLColumnSalt", "");

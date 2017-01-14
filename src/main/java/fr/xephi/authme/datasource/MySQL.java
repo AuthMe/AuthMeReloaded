@@ -31,6 +31,7 @@ import java.util.Set;
 
 public class MySQL implements DataSource {
 
+    private boolean useSSL;
     private String host;
     private String port;
     private String username;
@@ -100,6 +101,7 @@ public class MySQL implements DataSource {
         if (poolSize == -1) {
             poolSize = Utils.getCoreCount();
         }
+        this.useSSL = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
 
     private void setConnectionArguments() {
@@ -115,6 +117,9 @@ public class MySQL implements DataSource {
         // Auth
         ds.setUsername(this.username);
         ds.setPassword(this.password);
+
+        // Request mysql over SSL
+        ds.addDataSourceProperty("useSSL", useSSL);
 
         // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
