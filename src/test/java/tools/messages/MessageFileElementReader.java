@@ -38,19 +38,17 @@ public class MessageFileElementReader {
     private void loadElements(Path path) {
         List<String> currentCommentSection = new ArrayList<>(10);
         for (String line : FileIoUtils.readLinesFromFile(path)) {
-            if (isTodoComment(line)) {
-                continue;
-            }
-
             if (isCommentLine(line)) {
                 currentCommentSection.add(line);
-            } else if (MessageFileEntry.isMessageEntry(line)) {
+            } else {
                 if (!currentCommentSection.isEmpty()) {
                     processTempCommentsList(currentCommentSection);
                 }
-                elements.add(new MessageFileEntry(line));
-            } else {
-                throw new IllegalStateException("Could not match line '" + line + "' to any type");
+                if (MessageFileEntry.isMessageEntry(line)) {
+                    elements.add(new MessageFileEntry(line));
+                } else if (!isTodoComment(line)) {
+                    throw new IllegalStateException("Could not match line '" + line + "' to any type");
+                }
             }
         }
     }
@@ -69,7 +67,8 @@ public class MessageFileElementReader {
     }
 
     private static boolean isCommentLine(String line) {
-        return line.trim().isEmpty() || line.trim().startsWith("#");
+        return !isTodoComment(line)
+            && (line.trim().isEmpty() || line.trim().startsWith("#"));
     }
 
     private static boolean isTodoComment(String line) {
