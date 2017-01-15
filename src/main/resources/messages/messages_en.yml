@@ -1,5 +1,5 @@
 # Registration
-reg_msg: '&3Please, register to the server with the command "/register <password> <ConfirmPassword>"'
+reg_msg: '&3Please, register to the server with the command: /register <password> <ConfirmPassword>'
 usage_reg: '&cUsage: /register <password> <ConfirmPassword>'
 reg_only: '&4Only registered users can join the server! Please visit http://example.com to register yourself!'
 kicked_admin_registered: 'An admin just registered you; please log in again'
@@ -18,7 +18,7 @@ pass_len: '&cYour password is too short or too long! Please try with another one
 usage_log: '&cUsage: /login <password>'
 wrong_pwd: '&cWrong password!'
 login: '&2Successful login!'
-login_msg: '&cPlease, login with the command "/login <password>"'
+login_msg: '&cPlease, login with the command: /login <password>'
 timeout: '&4Login timeout exceeded, you have been kicked from the server, please try again!'
 
 # Errors
@@ -44,7 +44,7 @@ accounts_owned_self: 'You own %count accounts:'
 accounts_owned_other: 'The player %name has %count accounts:'
 two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
 recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
-recovery_code_incorrect: 'The recovery code is not correct! Use /email recovery [email] to generate a new one'
+recovery_code_incorrect: 'The recovery code is not correct! Use "/email recovery [email]" to generate a new one'
 vb_nonActiv: '&cYour account isn''t activated yet, please check your emails!'
 usage_unreg: '&cUsage: /unregister <password>'
 pwd_changed: '&2Password changed successfully!'
@@ -84,10 +84,10 @@ incomplete_email_settings: 'Error: not all required settings are set for sending
 email_already_used: '&4The email address is already being used'
 email_send_failure: 'The email could not be sent. Please contact an administrator.'
 show_no_email: '&2You currently don''t have email address associated with this account.'
-add_email: '&3Please add your email to your account with the command "/email add <yourEmail> <confirmEmail>"'
-recovery_email: '&3Forgot your password? Please use the command "/email recovery <yourEmail>"'
+add_email: '&3Please add your email to your account with the command: /email add <yourEmail> <confirmEmail>'
+recovery_email: '&3Forgot your password? Please use the command: /email recovery <yourEmail>'
 
 # Captcha
-usage_captcha: '&3To login you have to solve a captcha code, please use the command "/captcha <theCaptcha>"'
+usage_captcha: '&3To login you have to solve a captcha code, please use the command: /captcha <theCaptcha>'
 wrong_captcha: '&cWrong captcha, please type "/captcha THE_CAPTCHA" into the chat!'
 valid_captcha: '&2Captcha code solved correctly!'

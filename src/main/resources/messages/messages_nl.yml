@@ -1,5 +1,5 @@
 # Registration
-reg_msg: '&cRegistreer met "/register <wachtwoord> <herhaalWachtwoord>"'
+reg_msg: '&cRegistreer met het commando: /register <wachtwoord> <herhaalWachtwoord>'
 usage_reg: '&cGebruik: /register <wachtwoord> <herhaalWachtwoord>'
 reg_only: 'Alleen voor geregistreerde spelers! Bezoek http://example.com om te registreren!'
 kicked_admin_registered: 'Een administrator heeft je net geregistreerd; log alsjeblieft opnieuw in.'
@@ -18,7 +18,7 @@ pass_len: 'Jouw gekozen wachtwoord voldoet niet aan de minimum of maximum lengte
 usage_log: '&cGebruik: /login <wachtwoord>'
 wrong_pwd: '&cFout wachtwoord'
 login: '&cSuccesvol ingelogd!'
-login_msg: '&cLog in met "/login <wachtwoord>"'
+login_msg: '&cLog in met: /login <wachtwoord>'
 timeout: 'Login time-out: het duurde te lang tot je inlogde.'
 
 # Errors
@@ -44,7 +44,7 @@ accounts_owned_self: 'Je bezit %count accounts:'
 accounts_owned_other: 'De speler %name heeft %count accounts:'
 two_factor_create: '&2Je geheime code is %code. Je kunt hem scannen op %url'
 recovery_code_sent: 'Een herstelcode voor je wachtwoord is naar je mailbox gestuurd.'
-recovery_code_incorrect: 'De herstelcode is niet correct! Gebruik /email recovery [email] om een nieuwe te krijgen'
+recovery_code_incorrect: 'De herstelcode is niet correct! Gebruik "/email recovery [email]" om een nieuwe te krijgen'
 vb_nonActiv: 'Je account is nog niet geactiveerd, controleer je mailbox!'
 usage_unreg: '&cGebruik: /unregister password'
 pwd_changed: '&cWachtwoord succesvol aangepast!'
@@ -85,9 +85,9 @@ email_already_used: '&4Dit E-mailadres wordt al gebruikt'
 email_send_failure: 'De E-mail kon niet verzonden worden. Neem contact op met een administrator.'
 show_no_email: '&2Je hebt nog geen E-mailadres toegevoegd aan dit account.'
 add_email: '&3Voeg jouw E-mailadres alsjeblieft toe met: /email add <E-mail> <wachtwoord> <herhaalWachtwoord>'
-recovery_email: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando "/email recovery <E-mail>"'
+recovery_email: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando: /email recovery <E-mail>'
 
 # Captcha
-usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik: /captcha <captcha>'
-wrong_captcha: '&cVerkeerde captcha-code, gebruik alsjeblieft: "/captcha THE_CAPTCHA" in de chat!'
+usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <captcha>'
+wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha THE_CAPTCHA" in de chat!'
 valid_captcha: '&2De captcha-code is geldig!'
