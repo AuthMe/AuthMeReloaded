@@ -1,7 +1,7 @@
 # Lingua Italiana creata da Maxetto e sgdc3.
 
-# Registration
-reg_msg: '&3Per favore, esegui la registrazione con il comando: "/register <password> <confermaPassword>"'
+# Registrazione
+reg_msg: '&3Per favore, esegui la registrazione con il comando: /register <password> <confermaPassword>'
 usage_reg: '&cUtilizzo: /register <password> <confermaPassword>'
 reg_only: '&4Puoi giocare in questo server solo dopo aver eseguito la registrazione attraverso il sito web! Per favore, vai su http://esempio.it per procedere!'
 kicked_admin_registered: 'Un amministratore ti ha appena registrato, per favore rientra nel server'
@@ -9,21 +9,21 @@ registered: '&2Registrato correttamente!'
 reg_disabled: '&cLa registrazione tramite i comandi di gioco è disabilitata.'
 user_regged: '&cHai già eseguito la registrazione, non puoi eseguirla nuovamente.'
 
-# Password errors on registration
+# Errori della password durante la registrazione
 password_error: '&cLe password non corrispondono!'
 password_error_nick: '&cNon puoi usare il tuo nome utente come password, per favore scegline un''altra...'
 password_error_unsafe: '&cLa password che hai inserito non è sicura, per favore scegline un''altra...'
 password_error_chars: '&4La tua password contiene caratteri non consentiti. I caratteri consentiti sono: REG_EX'
 pass_len: '&cLa password che hai inserito è troppo corta o troppo lunga, per favore scegline un''altra...'
 
-# Login
+# Autenticazione
 usage_log: '&cUtilizzo: /login <password>'
 wrong_pwd: '&cPassword non corretta!'
 login: '&2Autenticazone eseguita correttamente!'
-login_msg: '&cPer favore, esegui l''autenticazione con il comando: "/login <password>"'
+login_msg: '&cPer favore, esegui l''autenticazione con il comando: /login <password>'
 timeout: '&4Tempo scaduto per eseguire l''autenticazione, sei stato espulso dal server, per favore riprova!'
 
-# Errors
+# Errori
 unknown_user: '&cL''utente non ha ancora eseguito la registrazione.'
 denied_command: '&cPer poter usare questo comando devi essere autenticato!'
 denied_chat: '&cPer poter scrivere messaggi in chat devi essere autenticato!'
@@ -40,13 +40,13 @@ kick_antibot: 'Il servizio di AntiBot è attualmente attivo! Devi aspettare qual
 antibot_auto_enabled: '&4Il servizio di AntiBot è stato automaticamente abilitato a seguito delle numerose connessioni!'
 antibot_auto_disabled: "&2Il servizio di AntiBot è stato automaticamente disabilitato dopo %m minuti!"
 
-# Other messages
+# Altri messaggi
 unregistered: '&2Sei stato correttamente rimosso dal database!'
 accounts_owned_self: 'Possiedi %count account:'
 accounts_owned_other: 'Il giocatore %name possiede %count account:'
 two_factor_create: '&2Il tuo codice segreto è: &f%code%%nl%&2Puoi anche scannerizzare il codice QR da qui: &f%url'
 recovery_code_sent: 'Una email contenente il codice di recupero per reimpostare la tua password è stata appena inviata al tuo indirizzo email.'
-recovery_code_incorrect: 'Il codice di recupero inserito non è corretto! Scrivi /email recovery <email> per generarne uno nuovo'
+recovery_code_incorrect: 'Il codice di recupero inserito non è corretto! Scrivi "/email recovery <email>" per generarne uno nuovo'
 vb_nonActiv: '&cIl tuo account non è stato ancora verificato, controlla fra le tue email per scoprire come attivarlo!'
 usage_unreg: '&cUtilizzo: /unregister <password>'
 pwd_changed: '&2Password cambiata correttamente!'
@@ -55,11 +55,11 @@ logout: '&2Disconnessione avvenuta correttamente!'
 reload: '&2La configurazione e il database sono stati ricaricati correttamente!'
 usage_changepassword: '&cUtilizzo: /changepassword <vecchiaPassword> <nuovaPassword>'
 
-# Session messages
+# Messaggi della sessione
 invalid_session: '&cIl tuo indirizzo IP è cambiato e la tua sessione è stata terminata!'
 valid_session: '&2Autenticato automaticamente attraverso la precedente sessione!'
 
-# Error messages when joining
+# Messaggi di errore durante il collegamento
 name_len: '&4Il tuo nome utente è troppo corto o troppo lungo!'
 regex: '&4Il tuo nome utente contiene caratteri non consentiti. I caratteri consentiti sono: REG_EX'
 country_banned: '&4Il tuo paese è bandito da questo server!'
@@ -86,10 +86,10 @@ incomplete_email_settings: 'Errore: non tutte le impostazioni richieste per invi
 email_already_used: '&4L''indirizzo email inserito è già in uso'
 email_send_failure: 'Non è stato possibile inviare l''email contenente la tua nuova password. Per favore contatta un amministratore.'
 show_no_email: '&2Al momento non hai nessun indirizzo email associato al tuo account.'
-add_email: '&3Per poter recuperare la password in futuro, aggiungi un indirizzo email al tuo account con il comando: "/email add <tuaEmail> <confermaEmail>"'
-recovery_email: '&3Hai dimenticato la tua password? Puoi recuperarla eseguendo il comando: "/email recovery <email>"'
+add_email: '&3Per poter recuperare la password in futuro, aggiungi un indirizzo email al tuo account con il comando: /email add <tuaEmail> <confermaEmail>'
+recovery_email: '&3Hai dimenticato la tua password? Puoi recuperarla eseguendo il comando: /email recovery <email>'
 
 # Captcha
-usage_captcha: '&3Per poterti autenticare devi risolvere un captcha, per favore scrivi: "/captcha <theCaptcha>"'
+usage_captcha: '&3Per poterti autenticare devi risolvere un captcha, per favore scrivi: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha sbagliato, per favore riprova scrivendo: "/captcha THE_CAPTCHA" in chat!'
 valid_captcha: '&2Il captcha inserito è valido!'
