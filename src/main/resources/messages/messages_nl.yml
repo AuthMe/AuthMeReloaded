@@ -1,4 +1,4 @@
-# Registration
+# Registratie
 reg_msg: '&cRegistreer met het commando: /register <wachtwoord> <herhaalWachtwoord>'
 usage_reg: '&cGebruik: /register <wachtwoord> <herhaalWachtwoord>'
 reg_only: 'Alleen voor geregistreerde spelers! Bezoek http://example.com om te registreren!'
@@ -7,21 +7,21 @@ registered: '&cSuccesvol geregistreerd!'
 reg_disabled: '&cRegistratie is uitgeschakeld!'
 user_regged: '&cJe hebt deze gebruikersnaam al geregistreerd!'
 
-# Password errors on registration
+# Wachtwoord fouten tijdens registratie
 password_error: 'Uw wachtwoorden komen niet overeen, controleer ze opnieuw!'
 password_error_nick: '&fJe kunt je gebruikersnaam niet als wachtwoord gebruiken, kies een ander wachtwoord...'
 password_error_unsafe: '&fDit wachtwoord is onveilig, kies een ander wachtwoord...'
 password_error_chars: '&cJouw wachtwoord bevat ongeldige tekens. Toegestane karakters zijn: REG_EX'
 pass_len: 'Jouw gekozen wachtwoord voldoet niet aan de minimum of maximum lengte, kies een ander wachtwoord...'
 
-# Login
+# Inloggen
 usage_log: '&cGebruik: /login <wachtwoord>'
 wrong_pwd: '&cFout wachtwoord'
 login: '&cSuccesvol ingelogd!'
 login_msg: '&cLog in met: /login <wachtwoord>'
 timeout: 'Login time-out: het duurde te lang tot je inlogde.'
 
-# Errors
+# Fouten
 unknown_user: '&cDeze gebruikersnaam is niet geregistreerd!'
 denied_command: '&cJe moet ingelogd zijn om dit commando te gebruiken!'
 denied_chat: '&cJe moet ingelogd zijn om te kunnen chatten!'
@@ -38,7 +38,7 @@ kick_antibot: 'AntiBot is aangezet! Wacht alsjeblieft enkele minuten voor je je 
 antibot_auto_enabled: '[AuthMe] AntiBotMod automatisch aangezet vanwege te veel verbindingen!'
 antibot_auto_disabled: '[AuthMe] AntiBotMod automatisch uitgezet na %m minuten!'
 
-# Other messages
+# Overige berichten
 unregistered: '&cSuccesvol afgemeld!'
 accounts_owned_self: 'Je bezit %count accounts:'
 accounts_owned_other: 'De speler %name heeft %count accounts:'
@@ -53,11 +53,11 @@ logout: '&2Je bent succesvol uitgelogd!'
 reload: '&2De configuratie en database zijn succesvol herladen!'
 usage_changepassword: '&cGebruik: /changepassword <oudWachtwoord> <nieuwWachtwoord>'
 
-# Session messages
+# Sessie berichten
 invalid_session: '&cJouw IP-adres is veranderd en je sessie is verlopen!'
 valid_session: '&2Ingelogd wegens sessie-herverbinding.'
 
-# Error messages when joining
+# Fout berichten tijdens het inloggen
 name_len: '&4Jouw gebruikersnaam is te kort of te lang!'
 regex: '&4Jouw gebruikersnaam bevat ongeldige tekens. Toegestane karakters zijn: REG_EX'
 country_banned: '&4Jouw land is gebanned op deze server!'
@@ -67,7 +67,7 @@ same_nick: '&4Er is al iemand met jouw gebruikersnaam online.'
 invalid_name_case: 'Verbind je alsjeblieft als %valid, niet als %invalid.'
 same_ip_online: 'Een speler met hetzelfde IP-adres is al online!'
 
-# Email
+# E-mail
 usage_email_add: '&cGebruik: /email add <E-mail> <herhaalE-mail>'
 usage_email_change: '&cGebruik: /email change <oudeE-mail> <nieuweE-mail>'
 usage_email_recovery: '&cGebruik: /email recovery <E-mail>'
