@@ -2,6 +2,7 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
 
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 /**
@@ -48,6 +49,16 @@ public final class Utils {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    /**
+     * Null-safe way to check whether a collection is empty or not.
+     *
+     * @param coll The collection to verify
+     * @return True if the collection is null or empty, false otherwise
+     */
+    public static boolean isCollectionEmpty(Collection<?> coll) {
+        return coll == null || coll.isEmpty();
     }
 
     /**

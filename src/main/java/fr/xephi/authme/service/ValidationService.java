@@ -11,7 +11,6 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
@@ -144,11 +143,11 @@ public class ValidationService implements Reloadable {
     private boolean validateWhitelistAndBlacklist(String value, Property<List<String>> whitelist,
                                                   Property<List<String>> blacklist) {
         List<String> whitelistValue = settings.getProperty(whitelist);
-        if (!CollectionUtils.isEmpty(whitelistValue)) {
+        if (!Utils.isCollectionEmpty(whitelistValue)) {
             return containsIgnoreCase(whitelistValue, value);
         }
         List<String> blacklistValue = settings.getProperty(blacklist);
-        return CollectionUtils.isEmpty(blacklistValue) || !containsIgnoreCase(blacklistValue, value);
+        return Utils.isCollectionEmpty(blacklistValue) || !containsIgnoreCase(blacklistValue, value);
     }
 
     private static boolean containsIgnoreCase(Collection<String> coll, String needle) {
