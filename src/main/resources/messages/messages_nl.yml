@@ -88,6 +88,6 @@ add_email: '&3Voeg jouw E-mailadres alsjeblieft toe met: /email add <E-mail> <wa
 recovery_email: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando: /email recovery <E-mail>'
 
 # Captcha
-usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <captcha>'
+usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <theCaptcha>'
 wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha THE_CAPTCHA" in de chat!'
 valid_captcha: '&2De captcha-code is geldig!'
