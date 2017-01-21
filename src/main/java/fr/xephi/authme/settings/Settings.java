@@ -19,7 +19,6 @@ import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 public class Settings extends SettingsManager {
 
     private final File pluginFolder;
-    private String[] welcomeMessage;
     private String passwordEmailMessage;
     private String recoveryCodeEmailMessage;
 
@@ -56,19 +55,9 @@ public class Settings extends SettingsManager {
         return recoveryCodeEmailMessage;
     }
 
-    /**
-     * Return the lines to output after an in-game registration.
-     *
-     * @return The welcome message
-     */
-    public String[] getWelcomeMessage() {
-        return welcomeMessage;
-    }
-
     private void loadSettingsFromFiles() {
         passwordEmailMessage = readFile("email.html");
         recoveryCodeEmailMessage = readFile("recovery_code_email.html");
-        welcomeMessage = readFile("welcome.txt").split("\\n");
     }
 
     @Override

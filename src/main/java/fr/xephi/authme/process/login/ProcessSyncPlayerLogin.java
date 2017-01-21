@@ -13,15 +13,16 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
@@ -53,6 +54,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
     private Settings settings;
+
+    @Inject
+    private WelcomeMessageConfiguration welcomeMessageConfiguration;
 
     ProcessSyncPlayerLogin() {
     }
@@ -103,15 +107,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         player.saveData();
 
         // Login is done, display welcome message
+        List<String> welcomeMessage = welcomeMessageConfiguration.getWelcomeMessage(player);
         if (settings.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
             if (settings.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                for (String s : settings.getWelcomeMessage()) {
-                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
-                }
+                welcomeMessage.forEach(bukkitService::broadcastMessage);
             } else {
-                for (String s : settings.getWelcomeMessage()) {
-                    player.sendMessage(plugin.replaceAllInfo(s, player));
-                }
+                welcomeMessage.forEach(player::sendMessage);
             }
         }
 
