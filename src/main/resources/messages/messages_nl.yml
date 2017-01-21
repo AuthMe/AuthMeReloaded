@@ -8,7 +8,7 @@ reg_disabled: '&cRegistratie is uitgeschakeld!'
 user_regged: '&cJe hebt deze gebruikersnaam al geregistreerd!'
 
 # Wachtwoord fouten tijdens registratie
-password_error: 'Uw wachtwoorden komen niet overeen, controleer ze opnieuw!'
+password_error: 'Jouw wachtwoorden komen niet overeen, controleer ze opnieuw!'
 password_error_nick: '&fJe kunt je gebruikersnaam niet als wachtwoord gebruiken, kies een ander wachtwoord...'
 password_error_unsafe: '&fDit wachtwoord is onveilig, kies een ander wachtwoord...'
 password_error_chars: '&cJouw wachtwoord bevat ongeldige tekens. Toegestane karakters zijn: REG_EX'
