@@ -1,7 +1,7 @@
-# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+# Vertaling configuratie voor de help commando's in AuthMe, bijvoorbeeld bij het gebruik van /authme help of /authme help register
 
 # -------------------------------------------------------
-# List of texts used in the help section
+# Lijst van berichten zichtbaar in het help scherm
 common:
     header: '==========[ AuthMeReloaded HELP ]=========='
     optional: 'Optioneel'
@@ -15,8 +15,8 @@ common:
         allowed: 'Iedereen is toegestaan'
 
 # -------------------------------------------------------
-# Titles of the individual help sections
-# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+# Titels van individuele help secties
+# Stel de vertaling in als lege tekst om alternatieve commando's te verbergen:
 #   alternatives: ''
 section:
     command: 'Commando'
@@ -28,11 +28,11 @@ section:
     children: 'Commando''s'
 
 # -------------------------------------------------------
-# You can translate the data for all commands using the below pattern.
-# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
-# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
-# Translations don't need to be complete; any missing section will be taken from the default silently
-# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+# Je kunt de tekst voor alle commando's hieronder vertalen met het volgende patroon.
+# Bijvoorbeeld: om /authme reload te vertalen, maak een sectie "authme.reload" aan, of "login" voor /login
+# Als het commando argumenten/parameters bevat, kun je arg1 zoals hieronder vertalen, enzovoorts.
+# Vertalingen hoeven niet compleet te zijn; missende secties zullen automatisch vanuit de standaard vertaling gehaald worden.
+# Belangrijk: Plaats basis commando's zoals "authme" vóór hun sub-commando's (zoals "authme.reload")
 commands:
     authme.register:
         description: 'Registreer een speler'
