@@ -228,11 +228,12 @@ public class SettingsMigrationService extends PlainMigrationService {
     }
 
     private static boolean convertToRegistrationType(PropertyResource resource) {
-        if (RegistrationSettings.REGISTRATION_TYPE.isPresent(resource)) {
+        String oldEmailRegistrationPath = "settings.registration.enableEmailRegistrationSystem";
+        if (RegistrationSettings.REGISTRATION_TYPE.isPresent(resource) || !resource.contains(oldEmailRegistrationPath)) {
             return false;
         }
 
-        boolean useEmail = newProperty("settings.registration.enableEmailRegistrationSystem", false).getValue(resource);
+        boolean useEmail = newProperty(oldEmailRegistrationPath, false).getValue(resource);
         RegistrationType registrationType = useEmail ? RegistrationType.EMAIL : RegistrationType.PASSWORD;
 
         String useConfirmationPath = useEmail
