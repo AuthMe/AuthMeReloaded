@@ -65,7 +65,7 @@ abstract class AuthMeController {
             $stmt = $mysqli->prepare('INSERT INTO ' . self::AUTHME_TABLE . ' (username, realname, password, email, ip) '
                 . 'VALUES (?, ?, ?, ?, ?)');
             $username_low = strtolower($username);
-            $stmt->bind_param('sssss', $username, $username_low, $hash, $email, $_SERVER['REMOTE_ADDR']);
+            $stmt->bind_param('sssss', $username_low, $username, $hash, $email, $_SERVER['REMOTE_ADDR']);
             return $stmt->execute();
         }
         return false;
