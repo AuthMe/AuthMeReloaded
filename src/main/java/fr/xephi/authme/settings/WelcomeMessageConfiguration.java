@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
+import static fr.xephi.authme.util.lazytags.TagBuilder.createTag;
 
 /**
  * Configuration for the welcome message (welcome.txt).
@@ -48,16 +49,16 @@ public class WelcomeMessageConfiguration implements Reloadable {
 
     /** List of all supported tags for the welcome message. */
     private final List<Tag> availableTags = Arrays.asList(
-        new Tag("&",            () -> "\u00a7"),
-        new Tag("{PLAYER}",     pl -> pl.getName()),
-        new Tag("{ONLINE}",     () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
-        new Tag("{MAXPLAYERS}", () -> Integer.toString(server.getMaxPlayers())),
-        new Tag("{IP}",         pl -> PlayerUtils.getPlayerIp(pl)),
-        new Tag("{LOGINS}",     () -> Integer.toString(playerCache.getLogged())),
-        new Tag("{WORLD}",      pl -> pl.getWorld().getName()),
-        new Tag("{SERVER}",     () -> server.getServerName()),
-        new Tag("{VERSION}",    () -> server.getBukkitVersion()),
-        new Tag("{COUNTRY}",    pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
+        createTag("&",            () -> "\u00a7"),
+        createTag("{PLAYER}",     pl -> pl.getName()),
+        createTag("{ONLINE}",     () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
+        createTag("{MAXPLAYERS}", () -> Integer.toString(server.getMaxPlayers())),
+        createTag("{IP}",         pl -> PlayerUtils.getPlayerIp(pl)),
+        createTag("{LOGINS}",     () -> Integer.toString(playerCache.getLogged())),
+        createTag("{WORLD}",      pl -> pl.getWorld().getName()),
+        createTag("{SERVER}",     () -> server.getServerName()),
+        createTag("{VERSION}",    () -> server.getBukkitVersion()),
+        createTag("{COUNTRY}",    pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
 
     /** Welcome message, by lines. */
     private List<String> welcomeMessage;
