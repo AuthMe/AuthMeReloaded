@@ -6,6 +6,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.metrics.Metrics;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.service.BukkitService;
@@ -18,10 +19,8 @@ import fr.xephi.authme.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.mcstats.Metrics;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
@@ -45,40 +44,28 @@ public class OnStartupTasks {
     }
 
     public static void sendMetrics(AuthMe plugin, Settings settings) {
-        try {
-            final Metrics metrics = new Metrics(plugin);
+        final Metrics metrics = new Metrics(plugin);
 
-            final Metrics.Graph languageGraph = metrics.createGraph("Messages Language");
-            final String messagesLanguage = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
-            languageGraph.addPlotter(new Metrics.Plotter(messagesLanguage) {
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });
+        metrics.addCustomChart(new Metrics.SimplePie("messages_language") {
+            @Override
+            public String getValue() {
+                return settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
+            }
+        });
 
-            final Metrics.Graph databaseBackend = metrics.createGraph("Database Backend");
-            final String dataSource = settings.getProperty(DatabaseSettings.BACKEND).toString();
-            databaseBackend.addPlotter(new Metrics.Plotter(dataSource) {
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });
-
-            // Submit metrics
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the metrics data
-            ConsoleLogger.logException("Can't send Metrics data! The plugin will work anyway...", e);
-        }
+        metrics.addCustomChart(new Metrics.SimplePie("database_backend") {
+            @Override
+            public String getValue() {
+                return settings.getProperty(DatabaseSettings.BACKEND).toString();
+            }
+        });
     }
 
     /**
      * Sets up the console filter if enabled.
      *
      * @param settings the settings
-     * @param logger the plugin logger
+     * @param logger   the plugin logger
      */
     public static void setupConsoleFilter(Settings settings, Logger logger) {
         if (!settings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {

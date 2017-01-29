@@ -109,10 +109,6 @@
                             <groupId>junit</groupId>
                         </exclusion>
                         <exclusion>
-                            <artifactId>json-simple</artifactId>
-                            <groupId>com.googlecode.json-simple</groupId>
-                        </exclusion>
-                        <exclusion>
                             <artifactId>persistence-api</artifactId>
                             <groupId>javax.persistence</groupId>
                         </exclusion>
@@ -145,10 +141,6 @@
                         <exclusion>
                             <artifactId>junit</artifactId>
                             <groupId>junit</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>json-simple</artifactId>
-                            <groupId>com.googlecode.json-simple</groupId>
                         </exclusion>
                         <exclusion>
                             <artifactId>persistence-api</artifactId>
@@ -276,11 +268,6 @@
                                     <pattern>javax.inject</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
                                 </relocation>
-                                <!-- MCStats.org metrics -->
-                                <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>fr.xephi.authme</shadedPattern>
-                                </relocation>
                             </relocations>
                             <outputFile>target/${project.finalName}-spigot.jar</outputFile>
                         </configuration>
@@ -330,11 +317,6 @@
                                 <relocation>
                                     <pattern>javax.inject</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
-                                </relocation>
-                                <!-- MCStats.org metrics -->
-                                <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
                             </relocations>
                             <outputFile>target/${project.finalName}-legacy.jar</outputFile>
@@ -543,21 +525,6 @@
         <!-- Moved in profiles! -->
 
         <!-- Bukkit Libraries  -->
-
-        <!-- Metrics API -->
-        <dependency>
-            <groupId>org.mcstats.bukkit</groupId>
-            <artifactId>metrics</artifactId>
-            <version>R8-SNAPSHOT</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-            </exclusions>
-            <optional>true</optional>
-        </dependency>
 
         <!-- ProtocolLib -->
         <dependency>
