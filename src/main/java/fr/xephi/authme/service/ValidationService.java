@@ -80,7 +80,7 @@ public class ValidationService implements Reloadable {
      * @return true if the email is valid, false otherwise
      */
     public boolean validateEmail(String email) {
-        if (!email.contains("@") || "your@email.com".equalsIgnoreCase(email)) {
+        if (!email.contains("@") || email.endsWith("@") || "your@email.com".equalsIgnoreCase(email)) {
             return false;
         }
         final String emailDomain = email.split("@")[1];

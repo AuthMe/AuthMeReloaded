@@ -188,6 +188,12 @@ public class ValidationServiceTest {
     }
 
     @Test
+    public void shouldRejectInvalidEmailWithoutDomain() {
+        // given/when/then
+        assertThat(validationService.validateEmail("invalidinput@"), equalTo(false));
+    }
+
+    @Test
     public void shouldRejectDefaultEmail() {
         // given/when/then
         assertThat(validationService.validateEmail("your@email.com"), equalTo(false));
