@@ -2,9 +2,10 @@ package fr.xephi.authme.permission.handlers;
 
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import java.util.Collection;
 
 
 public interface PermissionHandler {
@@ -48,7 +49,9 @@ public interface PermissionHandler {
      * @return True if the player is in the specified group, false otherwise.
      * False is also returned if groups aren't supported by the used permissions system.
      */
-    boolean isInGroup(Player player, String group);
+    default boolean isInGroup(Player player, String group) {
+        return getGroups(player).contains(group);
+    }
 
     /**
      * Remove the permission group of a player, if supported.
@@ -80,7 +83,7 @@ public interface PermissionHandler {
      *
      * @return Permission groups, or an empty list if this feature is not supported.
      */
-    List<String> getGroups(Player player);
+    Collection<String> getGroups(Player player);
 
     /**
      * Get the primary group of a player, if available.
@@ -89,7 +92,13 @@ public interface PermissionHandler {
      *
      * @return The name of the primary permission group. Or null.
      */
-    String getPrimaryGroup(Player player);
+    default String getPrimaryGroup(Player player) {
+        Collection<String> groups = getGroups(player);
+        if (Utils.isCollectionEmpty(groups)) {
+            return null;
+        }
+        return groups.iterator().next();
+    }
 
     /**
      * Get the permission system that is being used.

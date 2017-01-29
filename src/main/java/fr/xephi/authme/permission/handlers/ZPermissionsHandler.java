@@ -6,10 +6,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Handler for zPermissions.
+ *
+ * @see <a href="https://dev.bukkit.org/projects/zpermissions">zPermissions Bukkit page</a>
+ * @see <a href="https://github.com/ZerothAngel/zPermissions">zPermissions on Github</a>
+ */
 public class ZPermissionsHandler implements PermissionHandler {
 
     private ZPermissionsService zPermissionsService;
@@ -43,11 +48,6 @@ public class ZPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean isInGroup(Player player, String group) {
-        return getGroups(player).contains(group);
-    }
-
-    @Override
     public boolean removeFromGroup(Player player, String group) {
         return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " removegroup " + group);
     }
@@ -58,9 +58,9 @@ public class ZPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    public List<String> getGroups(Player player) {
+    public Collection<String> getGroups(Player player) {
         // TODO Gnat008 20160631: Use UUID not name?
-        return new ArrayList<String>(zPermissionsService.getPlayerGroups(player.getName()));
+        return zPermissionsService.getPlayerGroups(player.getName());
     }
 
     @Override

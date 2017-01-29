@@ -12,6 +12,11 @@ import org.bukkit.plugin.PluginManager;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handler for PermissionsBukkit.
+ *
+ * @see <a href="https://dev.bukkit.org/projects/permbukkit">PermissionsBukkit Bukkit page</a>
+ */
 public class PermissionsBukkitHandler implements PermissionHandler {
 
     private PermissionsPlugin permissionsBukkitInstance;
@@ -40,13 +45,6 @@ public class PermissionsBukkitHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean isInGroup(Player player, String group) {
-        List<String> groupNames = getGroups(player);
-
-        return groupNames.contains(group);
-    }
-
-    @Override
     public boolean removeFromGroup(Player player, String group) {
         return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player removegroup " + player.getName() + " " + group);
     }
@@ -63,20 +61,6 @@ public class PermissionsBukkitHandler implements PermissionHandler {
             groups.add(group.getName());
         }
         return groups;
-    }
-
-    @Override
-    public String getPrimaryGroup(Player player) {
-        // Get the groups of the player
-        List<String> groups = getGroups(player);
-
-        // Make sure there is any group available, or return null
-        if (groups.isEmpty()) {
-            return null;
-        }
-
-        // Return the first group
-        return groups.get(0);
     }
 
     @Override

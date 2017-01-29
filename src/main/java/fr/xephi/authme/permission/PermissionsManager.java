@@ -19,8 +19,8 @@ import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * <p>
@@ -255,12 +255,12 @@ public class PermissionsManager implements Reloadable {
      *
      * @param player The player.
      *
-     * @return Permission groups, or an empty list if this feature is not supported.
+     * @return Permission groups, or an empty collection if this feature is not supported.
      */
-    public List<String> getGroups(Player player) {
+    public Collection<String> getGroups(Player player) {
         // If no permissions system is used, return an empty list
         if (!isEnabled())
-            return new ArrayList<>();
+            return Collections.emptyList();
 
         return handler.getGroups(player);
     }
@@ -389,7 +389,7 @@ public class PermissionsManager implements Reloadable {
             return false;
 
         // Get a list of current groups
-        List<String> groupNames = getGroups(player);
+        Collection<String> groupNames = getGroups(player);
 
         // Remove each group
         return removeGroups(player, groupNames.toArray(new String[groupNames.size()]));

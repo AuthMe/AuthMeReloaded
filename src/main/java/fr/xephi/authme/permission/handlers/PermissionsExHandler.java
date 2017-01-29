@@ -10,6 +10,12 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handler for PermissionsEx.
+ *
+ * @see <a href="https://dev.bukkit.org/projects/permissionsex">PermissionsEx Bukkit page</a>
+ * @see <a href="https://github.com/PEXPlugins/PermissionsEx">PermissionsEx on Github</a>
+ */
 public class PermissionsExHandler implements PermissionHandler {
 
     private PermissionManager permissionManager;
@@ -70,17 +76,6 @@ public class PermissionsExHandler implements PermissionHandler {
     public List<String> getGroups(Player player) {
         PermissionUser user = permissionManager.getUser(player);
         return user.getParentIdentifiers(null);
-    }
-
-    @Override
-    public String getPrimaryGroup(Player player) {
-        PermissionUser user = permissionManager.getUser(player);
-
-        List<String> groups = user.getParentIdentifiers(null);
-        if (groups.isEmpty())
-            return null;
-
-        return groups.get(0);
     }
 
     @Override
