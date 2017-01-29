@@ -24,6 +24,7 @@ import fr.xephi.authme.command.executable.authme.SpawnCommand;
 import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
 import fr.xephi.authme.command.executable.authme.UnregisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.VersionCommand;
+import fr.xephi.authme.command.executable.authme.debug.DebugCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
@@ -37,6 +38,7 @@ import fr.xephi.authme.command.executable.register.RegisterCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.permission.PlayerStatePermission;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -296,6 +298,19 @@ public class CommandInitializer {
             .detailedDescription("Adds missing messages to the current messages file.")
             .permission(AdminPermission.UPDATE_MESSAGES)
             .executableCommand(MessagesCommand.class)
+            .register();
+
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
+            .labels("debug", "dbg")
+            .description("Debug features")
+            .detailedDescription("Allows various operations for debugging.")
+            .withArgument("child", "The child to execute", true)
+            .withArgument(".", "meaning varies", true)
+            .withArgument(".", "meaning varies", true)
+            .withArgument(".", "meaning varies", true)
+            .permission(PlayerStatePermission.DEBUG_COMMAND)
+            .executableCommand(DebugCommand.class)
             .register();
 
         // Register the base login command
