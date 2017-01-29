@@ -6,7 +6,7 @@ import de.luricos.bukkit.xAuth.xAuth;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 
@@ -55,7 +55,7 @@ public class xAuthConverter implements Converter {
             sender.sendMessage("[AuthMe] xAuth H2 database not found, checking for MySQL or SQLite data...");
         }
         List<Integer> players = getXAuthPlayers();
-        if (CollectionUtils.isEmpty(players)) {
+        if (Utils.isCollectionEmpty(players)) {
             sender.sendMessage("[AuthMe] Error while importing xAuthPlayers: did not find any players");
             return;
         }

@@ -2,8 +2,8 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -45,7 +45,7 @@ public class CommandMapper {
      * @return The generated {@link FoundCommandResult}
      */
     public FoundCommandResult mapPartsToCommand(CommandSender sender, final List<String> parts) {
-        if (CollectionUtils.isEmpty(parts)) {
+        if (Utils.isCollectionEmpty(parts)) {
             return new FoundCommandResult(null, parts, null, 0.0, MISSING_BASE_COMMAND);
         }
 
@@ -142,7 +142,7 @@ public class CommandMapper {
      * @return A command if there was a complete match (including proper argument count), null otherwise
      */
     private static CommandDescription getSuitableChild(CommandDescription baseCommand, List<String> parts) {
-        if (CollectionUtils.isEmpty(parts)) {
+        if (Utils.isCollectionEmpty(parts)) {
             return null;
         }
 

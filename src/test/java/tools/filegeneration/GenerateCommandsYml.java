@@ -26,7 +26,7 @@ public class GenerateCommandsYml implements AutoToolTask {
         // Get default and add sample entry
         CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.getDefaultValue();
         commandConfig.setOnLogin(
-            ImmutableMap.of("welcome", newCommand("msg %p Welcome back!", Executor.PLAYER)));
+            ImmutableMap.of("welcome", new Command("msg %p Welcome back!", Executor.PLAYER)));
 
         // Export the value to the file
         SettingsManager settingsManager = new SettingsManager(
@@ -40,12 +40,5 @@ public class GenerateCommandsYml implements AutoToolTask {
     @Override
     public String getTaskName() {
         return "generateCommandsYml";
-    }
-
-    private static Command newCommand(String commandLine, Executor executor) {
-        Command command = new Command();
-        command.setCommand(commandLine);
-        command.setExecutor(executor);
-        return command;
     }
 }

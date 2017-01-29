@@ -3,10 +3,10 @@ package fr.xephi.authme.task.purge;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -75,7 +75,7 @@ public class PurgeService {
     public void runPurge(CommandSender sender, long until, boolean includeEntriesWithLastLoginZero) {
         //todo: note this should may run async because it may executes a SQL-Query
         Set<String> toPurge = dataSource.getRecordsToPurge(until, includeEntriesWithLastLoginZero);
-        if (CollectionUtils.isEmpty(toPurge)) {
+        if (Utils.isCollectionEmpty(toPurge)) {
             logAndSendMessage(sender, "No players to purge");
             return;
         }

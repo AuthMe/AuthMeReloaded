@@ -5,12 +5,20 @@ import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.util.FileUtils;
+import fr.xephi.authme.util.PlayerUtils;
+import fr.xephi.authme.util.lazytags.Tag;
+import fr.xephi.authme.util.lazytags.WrappedTagReplacer;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+import static fr.xephi.authme.util.lazytags.TagBuilder.createTag;
 
 /**
  * Manages configurable commands to be run when various events occur.
@@ -19,15 +27,20 @@ public class CommandManager implements Reloadable {
 
     private final File dataFolder;
     private final BukkitService bukkitService;
+    private final GeoIpService geoIpService;
     private final CommandMigrationService commandMigrationService;
+    private final List<Tag<Player>> availableTags = buildAvailableTags();
 
-    private CommandConfig commandConfig;
+    private WrappedTagReplacer<Command, Player> onJoinCommands;
+    private WrappedTagReplacer<Command, Player> onLoginCommands;
+    private WrappedTagReplacer<Command, Player> onRegisterCommands;
 
     @Inject
-    CommandManager(@DataFolder File dataFolder, BukkitService bukkitService,
+    CommandManager(@DataFolder File dataFolder, BukkitService bukkitService, GeoIpService geoIpService,
                    CommandMigrationService commandMigrationService) {
         this.dataFolder = dataFolder;
         this.bukkitService = bukkitService;
+        this.geoIpService = geoIpService;
         this.commandMigrationService = commandMigrationService;
         reload();
     }
@@ -38,7 +51,7 @@ public class CommandManager implements Reloadable {
      * @param player the joining player
      */
     public void runCommandsOnJoin(Player player) {
-        executeCommands(player, commandConfig.getOnJoin());
+        executeCommands(player, onJoinCommands.getAdaptedItems(player));
     }
 
     /**
@@ -47,7 +60,7 @@ public class CommandManager implements Reloadable {
      * @param player the player who has registered
      */
     public void runCommandsOnRegister(Player player) {
-        executeCommands(player, commandConfig.getOnRegister());
+        executeCommands(player, onRegisterCommands.getAdaptedItems(player));
     }
 
     /**
@@ -56,11 +69,11 @@ public class CommandManager implements Reloadable {
      * @param player the player that logged in
      */
     public void runCommandsOnLogin(Player player) {
-        executeCommands(player, commandConfig.getOnLogin());
+        executeCommands(player, onLoginCommands.getAdaptedItems(player));
     }
 
-    private void executeCommands(Player player, Map<String, Command> commands) {
-        for (Command command : commands.values()) {
+    private void executeCommands(Player player, List<Command> commands) {
+        for (Command command : commands) {
             final String execution = command.getCommand().replace("%p", player.getName());
             if (Executor.CONSOLE.equals(command.getExecutor())) {
                 bukkitService.dispatchConsoleCommand(execution);
@@ -77,8 +90,22 @@ public class CommandManager implements Reloadable {
 
         SettingsManager settingsManager = new SettingsManager(
             new YamlFileResource(file), commandMigrationService, CommandSettingsHolder.class);
-        commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
+        CommandConfig commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
+        onJoinCommands = newReplacer(commandConfig.getOnJoin());
+        onLoginCommands = newReplacer(commandConfig.getOnLogin());
+        onRegisterCommands = newReplacer(commandConfig.getOnRegister());
     }
 
+    private WrappedTagReplacer<Command, Player> newReplacer(Map<String, Command> commands) {
+        return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
+            (cmd, text) -> new Command(text, cmd.getExecutor()));
+    }
 
+    private List<Tag<Player>> buildAvailableTags() {
+        return Arrays.asList(
+            createTag("%p",       pl -> pl.getName()),
+            createTag("%nick",    pl -> pl.getDisplayName()),
+            createTag("%ip",      pl -> PlayerUtils.getPlayerIp(pl)),
+            createTag("%country", pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
+    }
 }
