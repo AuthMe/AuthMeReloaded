@@ -71,6 +71,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | hasOldHelpHeaderProperty(resource)
             | hasSupportOldPasswordProperty(resource)
             | convertToRegistrationType(resource)
+            | mergeAndMovePermissionGroupSettings(resource)
             || hasDeprecatedProperties(resource);
     }
 
@@ -251,6 +252,26 @@ public class SettingsMigrationService extends PlainMigrationService {
         return true;
     }
 
+    private static boolean mergeAndMovePermissionGroupSettings(PropertyResource resource) {
+        boolean performedChanges;
+
+        // We have two old settings replaced by only one: move the first non-empty one
+        Property<String> oldUnloggedInGroup = newProperty("settings.security.unLoggedinGroup", "");
+        Property<String> oldRegisteredGroup = newProperty("GroupOptions.RegisteredPlayerGroup", "");
+        if (!oldUnloggedInGroup.getValue(resource).isEmpty()) {
+            performedChanges = moveProperty(oldUnloggedInGroup, PluginSettings.REGISTERED_GROUP, resource);
+        } else {
+            performedChanges = moveProperty(oldRegisteredGroup, PluginSettings.REGISTERED_GROUP, resource);
+        }
+
+        // Move paths of other old options
+        performedChanges |= moveProperty(newProperty("GroupOptions.UnregisteredPlayerGroup", ""),
+            PluginSettings.UNREGISTERED_GROUP, resource);
+        performedChanges |= moveProperty(newProperty("permission.EnablePermissionCheck", false),
+            PluginSettings.ENABLE_PERMISSION_CHECK, resource);
+        return performedChanges;
+    }
+
     /**
      * Checks for an old property path and moves it to a new path if present.
      *
@@ -264,9 +285,10 @@ public class SettingsMigrationService extends PlainMigrationService {
                                             Property<T> newProperty,
                                             PropertyResource resource) {
         if (resource.contains(oldProperty.getPath())) {
-            ConsoleLogger.info("Detected deprecated property " + oldProperty.getPath());
-            if (!resource.contains(newProperty.getPath())) {
-                ConsoleLogger.info("Renamed " + oldProperty.getPath() + " to " + newProperty.getPath());
+            if (resource.contains(newProperty.getPath())) {
+                ConsoleLogger.info("Detected deprecated property " + oldProperty.getPath());
+            } else {
+                ConsoleLogger.info("Renaming " + oldProperty.getPath() + " to " + newProperty.getPath());
                 resource.setValue(newProperty.getPath(), oldProperty.getValue(resource));
             }
             return true;

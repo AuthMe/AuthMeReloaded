@@ -49,22 +49,6 @@ public class SecuritySettings implements SettingsHolder {
         newProperty("settings.security.passwordMaxLength", 30);
 
     @Comment({
-        "This is a very important option: every time a player joins the server,",
-        "if they are registered, AuthMe will switch him to unLoggedInGroup.",
-        "This should prevent all major exploits.",
-        "You can set up your permission plugin with this special group to have no permissions,",
-        "or only permission to chat (or permission to send private messages etc.).",
-        "The better way is to set up this group with few permissions, so if a player",
-        "tries to exploit an account they can do only what you've defined for the group.",
-        "After, a logged in player will be moved to his correct permissions group!",
-        "Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'",
-        "Otherwise your group will be wiped and the player will join in the default group []!",
-        "Example unLoggedinGroup: NotLogged"
-    })
-    public static final Property<String> UNLOGGEDIN_GROUP =
-        newProperty("settings.security.unLoggedinGroup", "unLoggedinGroup");
-
-    @Comment({
         "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,",
         "MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,",
         "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at",

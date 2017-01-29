@@ -5,14 +5,11 @@ import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Arrays;
 
 /**
  * Changes the permission group according to the auth status of the player and the configuration.
@@ -28,7 +25,6 @@ public class AuthGroupHandler implements Reloadable {
     @Inject
     private LimboCache limboCache;
 
-    private String unloggedInGroup;
     private String unregisteredGroup;
     private String registeredGroup;
 
@@ -36,15 +32,15 @@ public class AuthGroupHandler implements Reloadable {
     }
 
     /**
-     * Set the group of a player, by its AuthMe group type.
+     * Sets the group of a player by its authentication status.
      *
-     * @param player The player.
-     * @param group  The group type.
+     * @param player the player
+     * @param groupType the group type
      *
-     * @return True if succeeded, false otherwise. False is also returned if groups aren't supported
+     * @return True upon success, false otherwise. False is also returned if groups aren't supported
      * with the current permissions system.
      */
-    public boolean setGroup(Player player, AuthGroupType group) {
+    public boolean setGroup(Player player, AuthGroupType groupType) {
         // Check whether the permissions check is enabled
         if (!settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)) {
             return false;
@@ -56,71 +52,45 @@ public class AuthGroupHandler implements Reloadable {
             return false;
         }
 
-        switch (group) {
+        switch (groupType) {
             case UNREGISTERED:
-                // Remove the other group type groups, set the current group
-                permissionsManager.removeGroups(player, Arrays.asList(registeredGroup, unloggedInGroup));
+                // Remove the other group, set the current group
+                permissionsManager.removeGroups(player, registeredGroup);
                 return permissionsManager.addGroup(player, unregisteredGroup);
 
-            case REGISTERED:
-                // Remove the other group type groups, set the current group
-                permissionsManager.removeGroups(player, Arrays.asList(unregisteredGroup, unloggedInGroup));
+            case REGISTERED_UNAUTHENTICATED:
+                // Remove the other group, set the current group
+                permissionsManager.removeGroups(player, unregisteredGroup);
                 return permissionsManager.addGroup(player, registeredGroup);
 
-            case NOT_LOGGED_IN:
-                // Remove the other group type groups, set the current group
-                permissionsManager.removeGroups(player, Arrays.asList(unregisteredGroup, registeredGroup));
-                return permissionsManager.addGroup(player, unloggedInGroup);
-
             case LOGGED_IN:
-                // Get the player data
-                LimboPlayer data = limboCache.getPlayerData(player.getName().toLowerCase());
-                if (data == null) {
-                    return false;
-                }
+                return restoreGroup(player);
 
-                // Get the players group
-                String realGroup = data.getGroup();
-
-                // Remove the other group types groups, set the real group
-                permissionsManager.removeGroups(player,
-                    Arrays.asList(unregisteredGroup, registeredGroup, unloggedInGroup)
-                );
-                return permissionsManager.addGroup(player, realGroup);
             default:
-                return false;
+                throw new IllegalStateException("Encountered unhandled auth group type '" + groupType + "'");
         }
     }
 
-    /**
-     * TODO: This method requires better explanation.
-     * <p>
-     * Set the normal group of a player.
-     *
-     * @param player The player.
-     * @param group  The normal group.
-     *
-     * @return True on success, false on failure.
-     */
-    public boolean addNormal(Player player, String group) {
-        // Check whether the permissions check is enabled
-        if (!settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)) {
+    private boolean restoreGroup(Player player) {
+        // Get the player's LimboPlayer
+        LimboPlayer limbo = limboCache.getPlayerData(player.getName());
+        if (limbo == null) {
             return false;
         }
 
-        // Remove old groups
-        permissionsManager.removeGroups(player, Arrays.asList(unregisteredGroup, registeredGroup, unloggedInGroup));
+        // Get the players group
+        String realGroup = limbo.getGroup();
 
-        // Add the normal group, return the result
-        return permissionsManager.addGroup(player, group);
+        // Remove the other group types groups, set the real group
+        permissionsManager.removeGroups(player, unregisteredGroup, registeredGroup);
+        return permissionsManager.addGroup(player, realGroup);
     }
 
     @Override
     @PostConstruct
     public void reload() {
-        unloggedInGroup = settings.getProperty(SecuritySettings.UNLOGGEDIN_GROUP);
-        unregisteredGroup = settings.getProperty(HooksSettings.UNREGISTERED_GROUP);
-        registeredGroup = settings.getProperty(HooksSettings.REGISTERED_GROUP);
+        unregisteredGroup = settings.getProperty(PluginSettings.UNREGISTERED_GROUP);
+        registeredGroup = settings.getProperty(PluginSettings.REGISTERED_GROUP);
     }
 
 }

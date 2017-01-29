@@ -112,7 +112,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         if (isAuthAvailable) {
             limboCache.addPlayerData(player);
-            service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
+            service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
 
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {

@@ -58,13 +58,6 @@ public class HooksSettings implements SettingsHolder {
     public static final Property<String> WORDPRESS_TABLE_PREFIX =
         newProperty("ExternalBoardOptions.wordpressTablePrefix", "wp_");
 
-    @Comment("Unregistered permission group")
-    public static final Property<String> UNREGISTERED_GROUP =
-        newProperty("GroupOptions.UnregisteredPlayerGroup", "");
-
-    @Comment("Registered permission group")
-    public static final Property<String> REGISTERED_GROUP =
-        newProperty("GroupOptions.RegisteredPlayerGroup", "");
 
     private HooksSettings() {
     }

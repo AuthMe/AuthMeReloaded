@@ -4,12 +4,11 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.PlayerUtils;
@@ -56,10 +55,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     }
 
     public void processPasswordRegister(Player player) {
-        if (!service.getProperty(HooksSettings.REGISTERED_GROUP).isEmpty()) {
-            service.setGroup(player, AuthGroupType.REGISTERED);
-        }
-
+        service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
         service.send(player, MessageKey.REGISTER_SUCCESS);
 
         if (!service.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {

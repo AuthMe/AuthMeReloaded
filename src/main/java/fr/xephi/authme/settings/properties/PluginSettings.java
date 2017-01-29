@@ -44,13 +44,33 @@ public class PluginSettings implements SettingsHolder {
         newProperty("settings.messagesLanguage", "en");
 
     @Comment({
-        "Take care with this option; if you want",
-        "to use group switching of AuthMe",
-        "for unloggedIn players, set this setting to true.",
-        "Default is false."
+        "Enables switching a player to defined permission groups before they log in.",
+        "See below for a detailed explanation."
     })
     public static final Property<Boolean> ENABLE_PERMISSION_CHECK =
-        newProperty("permission.EnablePermissionCheck", false);
+        newProperty("GroupOptions.enablePermissionCheck", false);
+
+    @Comment({
+        "This is a very important option: if a registered player joins the server",
+        "AuthMe will switch him to unLoggedInGroup. This should prevent all major exploits.",
+        "You can set up your permission plugin with this special group to have no permissions,",
+        "or only permission to chat (or permission to send private messages etc.).",
+        "The better way is to set up this group with few permissions, so if a player",
+        "tries to exploit an account they can do only what you've defined for the group.",
+        "After login, the player will be moved to his correct permissions group!",
+        "Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'",
+        "Otherwise your group will be wiped and the player will join in the default group []!",
+        "Example: registeredPlayerGroup: 'NotLogged'"
+    })
+    public static final Property<String> REGISTERED_GROUP =
+        newProperty("GroupOptions.registeredPlayerGroup", "");
+
+    @Comment({
+        "Similar to above, unregistered players can be set to the following",
+        "permissions group"
+    })
+    public static final Property<String> UNREGISTERED_GROUP =
+        newProperty("GroupOptions.unregisteredPlayerGroup", "");
 
     @Comment({
         "Log level: INFO, FINE, DEBUG. Use INFO for general messages,",
