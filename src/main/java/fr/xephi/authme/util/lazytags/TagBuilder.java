@@ -1,7 +1,5 @@
 package fr.xephi.authme.util.lazytags;
 
-import org.bukkit.entity.Player;
-
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -13,11 +11,11 @@ public final class TagBuilder {
     private TagBuilder() {
     }
 
-    public static Tag createTag(String name, Function<Player, String> replacementFunction) {
-        return new PlayerTag(name, replacementFunction);
+    public static <A> Tag<A> createTag(String name, Function<A, String> replacementFunction) {
+        return new DependentTag<>(name, replacementFunction);
     }
 
-    public static Tag createTag(String name, Supplier<String> replacementFunction) {
-        return new SimpleTag(name, replacementFunction);
+    public static <A> Tag<A> createTag(String name, Supplier<String> replacementFunction) {
+        return new SimpleTag<>(name, replacementFunction);
     }
 }

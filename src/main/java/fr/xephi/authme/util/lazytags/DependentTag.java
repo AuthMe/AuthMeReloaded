@@ -1,16 +1,16 @@
 package fr.xephi.authme.util.lazytags;
 
-import org.bukkit.entity.Player;
-
 import java.util.function.Function;
 
 /**
- * Replaceable tag whose value depends on the player.
+ * Replaceable tag whose value depends on an argument.
+ *
+ * @param <A> the argument type
  */
-public class PlayerTag implements Tag {
+public class DependentTag<A> implements Tag<A> {
 
     private final String name;
-    private final Function<Player, String> replacementFunction;
+    private final Function<A, String> replacementFunction;
 
     /**
      * Constructor.
@@ -18,7 +18,7 @@ public class PlayerTag implements Tag {
      * @param name the tag (placeholder) that will be replaced
      * @param replacementFunction the function producing the replacement
      */
-    public PlayerTag(String name, Function<Player, String> replacementFunction) {
+    public DependentTag(String name, Function<A, String> replacementFunction) {
         this.name = name;
         this.replacementFunction = replacementFunction;
     }
@@ -29,7 +29,7 @@ public class PlayerTag implements Tag {
     }
 
     @Override
-    public String getValue(Player player) {
-        return replacementFunction.apply(player);
+    public String getValue(A argument) {
+        return replacementFunction.apply(argument);
     }
 }

@@ -1,11 +1,11 @@
 package fr.xephi.authme.util.lazytags;
 
-import org.bukkit.entity.Player;
-
 /**
- * Represents a tag in a text to be replaced with a value (which may depend on the Player).
+ * Represents a tag in a text to be replaced with a value (which may depend on some argument).
+ *
+ * @param <A> argument type the replacement may depend on
  */
-public interface Tag {
+public interface Tag<A> {
 
     /**
      * @return the tag to replace
@@ -13,10 +13,10 @@ public interface Tag {
     String getName();
 
     /**
-     * Returns the value to replace the tag with for the given player.
+     * Returns the value to replace the tag with for the given argument.
      *
-     * @param player the player to evaluate the replacement for
+     * @param argument the argument to evaluate the replacement for
      * @return the replacement
      */
-    String getValue(Player player);
+    String getValue(A argument);
 }

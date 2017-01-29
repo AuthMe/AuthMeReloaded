@@ -8,6 +8,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.lazytags.Tag;
+import fr.xephi.authme.util.lazytags.TagReplacer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
@@ -19,9 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 import static fr.xephi.authme.util.lazytags.TagBuilder.createTag;
@@ -48,7 +47,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
     private PlayerCache playerCache;
 
     /** List of all supported tags for the welcome message. */
-    private final List<Tag> availableTags = Arrays.asList(
+    private final List<Tag<Player>> availableTags = Arrays.asList(
         createTag("&",            () -> "\u00a7"),
         createTag("{PLAYER}",     pl -> pl.getName()),
         createTag("{ONLINE}",     () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
@@ -60,16 +59,13 @@ public class WelcomeMessageConfiguration implements Reloadable {
         createTag("{VERSION}",    () -> server.getBukkitVersion()),
         createTag("{COUNTRY}",    pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
 
-    /** Welcome message, by lines. */
-    private List<String> welcomeMessage;
-    /** Tags used in the welcome message. */
-    private List<Tag> usedTags;
+    private TagReplacer<Player> messageSupplier;
 
     @PostConstruct
     @Override
     public void reload() {
-        welcomeMessage = readWelcomeFile();
-        usedTags = determineUsedTags(welcomeMessage);
+        List<String> welcomeMessage = readWelcomeFile();
+        messageSupplier = TagReplacer.newReplacer(availableTags, welcomeMessage);
     }
 
     /**
@@ -79,22 +75,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
      * @return the welcome message
      */
     public List<String> getWelcomeMessage(Player player) {
-        // Note ljacqu 20170121: Using a Map might seem more natural here but we avoid doing so for performance
-        // Although the performance gain here is probably minimal...
-        List<TagValue> tagValues = new LinkedList<>();
-        for (Tag tag : usedTags) {
-            tagValues.add(new TagValue(tag.getName(), tag.getValue(player)));
-        }
-
-        List<String> adaptedMessages = new LinkedList<>();
-        for (String line : welcomeMessage) {
-            String adaptedLine = line;
-            for (TagValue tagValue : tagValues) {
-                adaptedLine = adaptedLine.replace(tagValue.tag, tagValue.value);
-            }
-            adaptedMessages.add(adaptedLine);
-        }
-        return adaptedMessages;
+        return messageSupplier.getAdaptedMessages(player);
     }
 
     /**
@@ -112,33 +93,5 @@ public class WelcomeMessageConfiguration implements Reloadable {
             ConsoleLogger.warning("Failed to copy welcome.txt from JAR");
         }
         return Collections.emptyList();
-    }
-
-    /**
-     * Determines which tags are used in the message.
-     *
-     * @param welcomeMessage the lines of the welcome message
-     * @return the tags
-     */
-    private List<Tag> determineUsedTags(List<String> welcomeMessage) {
-        return availableTags.stream()
-            .filter(tag -> welcomeMessage.stream().anyMatch(msg -> msg.contains(tag.getName())))
-            .collect(Collectors.toList());
-    }
-
-    private static final class TagValue {
-
-        private final String tag;
-        private final String value;
-
-        TagValue(String tag, String value) {
-            this.tag = tag;
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return "TagValue[tag='" + tag + "', value='" + value + "']";
-        }
     }
 }

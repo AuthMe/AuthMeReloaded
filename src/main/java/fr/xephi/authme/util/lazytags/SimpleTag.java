@@ -1,13 +1,13 @@
 package fr.xephi.authme.util.lazytags;
 
-import org.bukkit.entity.Player;
-
 import java.util.function.Supplier;
 
 /**
- * Tag to be replaced that does not depend on the player.
+ * Tag to be replaced that does not depend on an argument.
+ *
+ * @param <A> type of the argument (not used in this implementation)
  */
-public class SimpleTag implements Tag {
+public class SimpleTag<A> implements Tag<A> {
 
     private final String name;
     private final Supplier<String> replacementFunction;
@@ -23,7 +23,7 @@ public class SimpleTag implements Tag {
     }
 
     @Override
-    public String getValue(Player player) {
+    public String getValue(A argument) {
         return replacementFunction.get();
     }
 }
