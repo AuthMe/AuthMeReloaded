@@ -5,9 +5,8 @@ import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -37,9 +36,6 @@ public class SpawnLoaderTest {
 
     @Mock
     private Settings settings;
-
-    @Mock
-    private DataSource dataSource;
 
     @Mock
     private PluginHookService pluginHookService;

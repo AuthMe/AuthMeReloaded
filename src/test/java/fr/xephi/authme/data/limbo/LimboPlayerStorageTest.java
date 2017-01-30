@@ -1,14 +1,13 @@
-package fr.xephi.authme.data.backup;
+package fr.xephi.authme.data.limbo;
 
 import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.Location;
 import org.bukkit.World;

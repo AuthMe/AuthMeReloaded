@@ -1,7 +1,6 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.data.backup.LimboPlayerStorage;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
