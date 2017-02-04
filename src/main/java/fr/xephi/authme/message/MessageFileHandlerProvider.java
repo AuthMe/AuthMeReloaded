@@ -36,10 +36,23 @@ public class MessageFileHandlerProvider {
      * @return the message file handler
      */
     public MessageFileHandler initializeHandler(Function<String, String> pathBuilder) {
+        return initializeHandler(pathBuilder, null);
+    }
+
+    /**
+     * Initializes a message file handler with the messages file of the configured language.
+     * Ensures beforehand that the messages file exists or creates it otherwise.
+     *
+     * @param pathBuilder function taking the configured language code as argument and returning the messages file
+     * @param updateCommand command to run to update the languages file (nullable)
+     * @return the message file handler
+     */
+    public MessageFileHandler initializeHandler(Function<String, String> pathBuilder, String updateCommand) {
         String language = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
         return new MessageFileHandler(
             initializeFile(language, pathBuilder),
-            pathBuilder.apply(DEFAULT_LANGUAGE));
+            pathBuilder.apply(DEFAULT_LANGUAGE),
+            updateCommand);
     }
 
     /**
@@ -53,7 +66,8 @@ public class MessageFileHandlerProvider {
     File initializeFile(String language, Function<String, String> pathBuilder) {
         String filePath = pathBuilder.apply(language);
         File file = new File(dataFolder, filePath);
-        if (FileUtils.copyFileFromResource(file, filePath)) {
+        // Check that JAR file exists to avoid logging an error
+        if (FileUtils.getResourceFromJar(filePath) != null && FileUtils.copyFileFromResource(file, filePath)) {
             return file;
         }
 

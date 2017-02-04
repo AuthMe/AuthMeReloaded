@@ -107,7 +107,7 @@ public class Messages implements Reloadable {
     @Override
     public void reload() {
         this.messageFileHandler = messageFileHandlerProvider
-            .initializeHandler(lang -> "messages/messages_" + lang + ".yml");
+            .initializeHandler(lang -> "messages/messages_" + lang + ".yml", "/authme messages");
     }
 
     private static String formatMessage(String message) {
