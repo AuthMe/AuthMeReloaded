@@ -233,8 +233,8 @@ public class MessagesIntegrationTest {
     @SuppressWarnings("unchecked")
     private static MessageFileHandlerProvider providerReturning(File file, String defaultFile) {
         MessageFileHandlerProvider handler = mock(MessageFileHandlerProvider.class);
-        given(handler.initializeHandler(any(Function.class)))
-            .willReturn(new MessageFileHandler(file, defaultFile));
+        given(handler.initializeHandler(any(Function.class), anyString()))
+            .willReturn(new MessageFileHandler(file, defaultFile, "/authme messages"));
         return handler;
     }
 }

@@ -2,7 +2,7 @@ package fr.xephi.authme.initialization;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.data.backup.LimboPlayerStorage;
+import fr.xephi.authme.data.limbo.LimboPlayerStorage;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.PluginHookService;

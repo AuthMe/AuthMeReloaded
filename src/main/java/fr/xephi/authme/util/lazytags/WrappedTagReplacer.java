@@ -28,7 +28,7 @@ public class WrappedTagReplacer<T, A> {
      * @param allTags all available tags
      * @param items the items to apply the replacements on
      * @param stringGetter getter of the String property to adapt on the items
-     * @param itemCreator a function of signature (T, String) -> T: the original item and the adapted String are passed
+     * @param itemCreator a function taking (T, String): the original item and the adapted String, returning a new item
      */
     public WrappedTagReplacer(Collection<Tag<A>> allTags,
                               Collection<T> items,
