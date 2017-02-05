@@ -12,7 +12,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -90,6 +93,18 @@ public final class ConsoleLogger {
     }
 
     /**
+     * Log a Throwable with the provided message on WARNING level
+     * and save the stack trace to the log file.
+     *
+     * @param message The message to accompany the exception
+     * @param th      The Throwable to log
+     */
+    public static void logException(String message, Throwable th) {
+        warning(message + " " + StringUtils.formatException(th));
+        writeLog(Throwables.getStackTraceAsString(th));
+    }
+
+    /**
      * Log an INFO message.
      *
      * @param message The message to log
@@ -114,6 +129,10 @@ public final class ConsoleLogger {
         }
     }
 
+    // --------
+    // Debug log methods
+    // --------
+
     /**
      * Log a DEBUG message if enabled.
      * <p>
@@ -124,21 +143,78 @@ public final class ConsoleLogger {
      */
     public static void debug(String message) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            logger.info("Debug: " + message);
-            writeLog("[DEBUG] " + message);
+            String debugMessage = "[DEBUG] " + message;
+            logger.info(debugMessage);
+            writeLog(debugMessage);
         }
     }
 
     /**
-     * Log a Throwable with the provided message on WARNING level
-     * and save the stack trace to the log file.
+     * Log the DEBUG message from the supplier if enabled.
      *
-     * @param message The message to accompany the exception
-     * @param th      The Throwable to log
+     * @param msgSupplier the message supplier
      */
-    public static void logException(String message, Throwable th) {
-        warning(message + " " + StringUtils.formatException(th));
-        writeLog(Throwables.getStackTraceAsString(th));
+    public static void debug(Supplier<String> msgSupplier) {
+        if (logLevel.includes(LogLevel.DEBUG)) {
+            String debugMessage = "[DEBUG] " + msgSupplier.get();
+            logger.info(debugMessage);
+            writeLog(debugMessage);
+        }
+    }
+
+    /**
+     * Log the DEBUG message.
+     *
+     * @param message the message
+     * @param param1 parameter to replace in the message
+     */
+    public static void debug(String message, String param1) {
+        if (logLevel.includes(LogLevel.DEBUG)) {
+            String debugMessage = "[DEBUG] " + message;
+            logger.log(Level.INFO, debugMessage, param1);
+            writeLog(debugMessage + " {" + param1 + "}");
+        }
+    }
+
+    /**
+     * Log the DEBUG message.
+     *
+     * @param message the message
+     * @param param1 first param to replace in message
+     * @param param2 second param to replace in message
+     */
+    // Avoids array creation if DEBUG level is disabled
+    public static void debug(String message, String param1, String param2) {
+        if (logLevel.includes(LogLevel.DEBUG)) {
+            debug(message, new String[]{param1, param2});
+        }
+    }
+
+    /**
+     * Log the DEBUG message.
+     *
+     * @param message the message
+     * @param params the params to replace in the message
+     */
+    // Equivalent to debug(String, Object...) but avoids conversions
+    public static void debug(String message, String... params) {
+        if (logLevel.includes(LogLevel.DEBUG)) {
+            String debugMessage = "[DEBUG] " + message;
+            logger.log(Level.INFO, debugMessage, params);
+            writeLog(debugMessage + " {" + String.join(", ", params) + "}");
+        }
+    }
+
+    /**
+     * Log the DEBUG message.
+     *
+     * @param message the message
+     * @param params the params to replace in the message
+     */
+    public static void debug(String message, Object... params) {
+        if (logLevel.includes(LogLevel.DEBUG)) {
+            debug(message, Arrays.stream(params).map(String::valueOf).toArray(String[]::new));
+        }
     }
 
 
