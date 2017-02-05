@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Jan 14 22:12:16 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Feb 05 13:46:19 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -18,9 +18,11 @@ DataSource:
     mySQLHost: '127.0.0.1'
     # Database port
     mySQLPort: '3306'
-    # Username about Database Connection Infos
+    # Connect to MySQL database over SSL
+    mySQLUseSSL: true
+    # Username to connect to the MySQL database
     mySQLUsername: 'authme'
-    # Password about Database Connection Infos
+    # Password to connect to the MySQL database
     mySQLPassword: '12345'
     # Database Name, use with converters or as SQLITE database name
     mySQLDatabase: 'authme'
@@ -34,8 +36,6 @@ DataSource:
     mySQLRealName: 'realname'
     # Column for storing players passwords
     mySQLColumnPassword: 'password'
-    # Request mysql over SSL
-    mySQLUseSSL: true
     # Column for storing players emails
     mySQLColumnEmail: 'email'
     # Column for storing if a player is logged in or not
@@ -94,13 +94,8 @@ settings:
         # expired, he will not need to authenticate.
         enabled: false
         # After how many minutes should a session expire?
-        # Remember that sessions will end only after the timeout, and
-        # if the player's IP has changed but the timeout hasn't expired,
-        # the player will be kicked from the server due to invalid session
+        # A player's session ends after the timeout or if his IP has changed
         timeout: 10
-        # Should the session expire if the player tries to log in with
-        # another IP address?
-        sessionExpireOnIpChange: true
     # Message language, available languages:
     # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md
     messagesLanguage: 'en'
@@ -161,6 +156,8 @@ settings:
         #     AllowedRestrictedUser:
         #     - playername;127.0.0.1
         AllowedRestrictedUser: []
+        # Ban unknown IPs trying to log in with a restricted username?
+        banUnsafedIP: false
         # Should unregistered players be kicked immediately?
         kickNonRegistered: false
         # Should players be kicked on wrong password?
@@ -177,7 +174,7 @@ settings:
         # After how many seconds should players who fail to login or register
         # be kicked? Set to 0 to disable.
         timeout: 30
-        # Regex syntax of allowed characters in the player name.
+        # Regex pattern of allowed characters in the player name.
         allowedNicknameCharacters: '[a-zA-Z0-9_]*'
         # How far can unregistered players walk?
         # Set to 0 for unlimited radius
@@ -189,8 +186,6 @@ settings:
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
-        # Ban ip when the ip is not the ip registered in database
-        banUnsafedIP: false
         # Spawn priority; values: authme, essentials, multiverse, default
         spawnPriority: 'authme,essentials,multiverse,default'
         # Maximum Login authorized by IP
@@ -223,18 +218,6 @@ settings:
         minPasswordLength: 5
         # Maximum length of password
         passwordMaxLength: 30
-        # This is a very important option: every time a player joins the server,
-        # if they are registered, AuthMe will switch him to unLoggedInGroup.
-        # This should prevent all major exploits.
-        # You can set up your permission plugin with this special group to have no permissions,
-        # or only permission to chat (or permission to send private messages etc.).
-        # The better way is to set up this group with few permissions, so if a player
-        # tries to exploit an account they can do only what you've defined for the group.
-        # After, a logged in player will be moved to his correct permissions group!
-        # Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'
-        # Otherwise your group will be wiped and the player will join in the default group []!
-        # Example unLoggedinGroup: NotLogged
-        unLoggedinGroup: 'unLoggedinGroup'
         # Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,
         # MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,
         # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at
@@ -317,12 +300,24 @@ settings:
     # Do we need to prevent people to login with another case?
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
     preventOtherCase: true
-permission:
-    # Take care with this option; if you want
-    # to use group switching of AuthMe
-    # for unloggedIn players, set this setting to true.
-    # Default is false.
-    EnablePermissionCheck: false
+GroupOptions:
+    # Enables switching a player to defined permission groups before they log in.
+    # See below for a detailed explanation.
+    enablePermissionCheck: false
+    # This is a very important option: if a registered player joins the server
+    # AuthMe will switch him to unLoggedInGroup. This should prevent all major exploits.
+    # You can set up your permission plugin with this special group to have no permissions,
+    # or only permission to chat (or permission to send private messages etc.).
+    # The better way is to set up this group with few permissions, so if a player
+    # tries to exploit an account they can do only what you've defined for the group.
+    # After login, the player will be moved to his correct permissions group!
+    # Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'
+    # Otherwise your group will be wiped and the player will join in the default group []!
+    # Example: registeredPlayerGroup: 'NotLogged'
+    registeredPlayerGroup: ''
+    # Similar to above, unregistered players can be set to the following
+    # permissions group
+    unregisteredPlayerGroup: ''
 Email:
     # Email SMTP server host
     mailSMTP: 'smtp.gmail.com'
@@ -366,18 +361,13 @@ Hooks:
     disableSocialSpy: false
     # Do we need to force /motd Essentials command on join?
     useEssentialsMotd: false
-GroupOptions:
-    # Unregistered permission group
-    UnregisteredPlayerGroup: ''
-    # Registered permission group
-    RegisteredPlayerGroup: ''
 Protection:
     # Enable some servers protection (country based login, antibot)
     enableProtection: false
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
     # Countries allowed to join the server and register. For country codes, see
-    # http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/
+    # https://dev.bukkit.org/projects/authme-reloaded/pages/countries-codes
     # PLEASE USE QUOTES!
     countries: 
     - 'US'
@@ -464,4 +454,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Jan 14 22:12:16 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Feb 05 13:46:19 CET 2017

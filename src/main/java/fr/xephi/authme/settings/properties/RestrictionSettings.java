@@ -84,6 +84,10 @@ public class RestrictionSettings implements SettingsHolder {
     public static final Property<List<String>> ALLOWED_RESTRICTED_USERS =
         newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
 
+    @Comment("Ban unknown IPs trying to log in with a restricted username?")
+    public static final Property<Boolean> BAN_UNKNOWN_IP =
+        newProperty("settings.restrictions.banUnsafedIP", false);
+
     @Comment("Should unregistered players be kicked immediately?")
     public static final Property<Boolean> KICK_NON_REGISTERED =
         newProperty("settings.restrictions.kickNonRegistered", false);
@@ -115,7 +119,7 @@ public class RestrictionSettings implements SettingsHolder {
     public static final Property<Integer> TIMEOUT =
         newProperty("settings.restrictions.timeout", 30);
 
-    @Comment("Regex syntax of allowed characters in the player name.")
+    @Comment("Regex pattern of allowed characters in the player name.")
     public static final Property<String> ALLOWED_NICKNAME_CHARACTERS =
         newProperty("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
 
@@ -139,10 +143,6 @@ public class RestrictionSettings implements SettingsHolder {
         "permission: /authme.admin.accounts"})
     public static final Property<Boolean> DISPLAY_OTHER_ACCOUNTS =
         newProperty("settings.restrictions.displayOtherAccounts", true);
-
-    @Comment("Ban ip when the ip is not the ip registered in database")
-    public static final Property<Boolean> BAN_UNKNOWN_IP =
-        newProperty("settings.restrictions.banUnsafedIP", false);
 
     @Comment("Spawn priority; values: authme, essentials, multiverse, default")
     public static final Property<String> SPAWN_PRIORITY =
