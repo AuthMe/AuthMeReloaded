@@ -134,13 +134,11 @@ public class CommonServiceTest {
         // given
         Player player = mock(Player.class);
         AuthGroupType type = AuthGroupType.LOGGED_IN;
-        given(authGroupHandler.setGroup(player, type)).willReturn(true);
 
         // when
-        boolean result = commonService.setGroup(player, type);
+        commonService.setGroup(player, type);
 
         // then
         verify(authGroupHandler).setGroup(player, type);
-        assertThat(result, equalTo(true));
     }
 }

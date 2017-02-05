@@ -101,10 +101,9 @@ public class CommonService {
      *
      * @param player the player to process
      * @param group the group to add the player to
-     * @return true on success, false otherwise
      */
-    public boolean setGroup(Player player, AuthGroupType group) {
-        return authGroupHandler.setGroup(player, group);
+    public void setGroup(Player player, AuthGroupType group) {
+        authGroupHandler.setGroup(player, group);
     }
 
 }
