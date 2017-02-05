@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import ch.jalu.injector.Injector;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
@@ -13,6 +12,7 @@ import fr.xephi.authme.datasource.converter.RoyalAuthConverter;
 import fr.xephi.authme.datasource.converter.SqliteToSql;
 import fr.xephi.authme.datasource.converter.vAuthConverter;
 import fr.xephi.authme.datasource.converter.xAuthConverter;
+import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
@@ -37,7 +37,7 @@ public class ConverterCommand implements ExecutableCommand {
     private BukkitService bukkitService;
 
     @Inject
-    private Injector injector;
+    private Factory<Converter> converterFactory;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
@@ -52,7 +52,7 @@ public class ConverterCommand implements ExecutableCommand {
         }
 
         // Get the proper converter instance
-        final Converter converter = injector.newInstance(converterClass);
+        final Converter converter = converterFactory.newInstance(converterClass);
 
         // Run the convert job
         bukkitService.runTaskAsynchronously(new Runnable() {

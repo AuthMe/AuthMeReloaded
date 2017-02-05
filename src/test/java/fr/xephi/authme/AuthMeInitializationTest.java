@@ -8,6 +8,7 @@ import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.initialization.factory.FactoryDependencyHandler;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
@@ -91,7 +92,10 @@ public class AuthMeInitializationTest {
         Settings settings =
             new Settings(dataFolder, mock(PropertyResource.class), null, buildConfigurationData());
 
-        Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
+        Injector injector = new InjectorBuilder()
+            .addHandlers(new FactoryDependencyHandler())
+            .addDefaultHandlers("fr.xephi.authme")
+            .create();
         injector.provide(DataFolder.class, dataFolder);
         injector.register(Server.class, server);
         injector.register(PluginManager.class, pluginManager);

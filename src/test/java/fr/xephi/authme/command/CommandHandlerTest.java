@@ -6,6 +6,7 @@ import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -56,7 +57,7 @@ public class CommandHandlerTest {
     private CommandHandler handler;
 
     @Mock
-    private Injector injector;
+    private Factory<ExecutableCommand> commandFactory;
     @Mock
     private CommandMapper commandMapper;
     @Mock
@@ -75,7 +76,7 @@ public class CommandHandlerTest {
             ExecutableCommand.class, TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
         setInjectorToMockExecutableCommandClasses();
 
-        handler = new CommandHandler(injector, commandMapper, permissionsManager, messages, helpProvider);
+        handler = new CommandHandler(commandFactory, commandMapper, permissionsManager, messages, helpProvider);
     }
 
     /**
@@ -86,7 +87,7 @@ public class CommandHandlerTest {
      */
     @SuppressWarnings("unchecked")
     private void setInjectorToMockExecutableCommandClasses() {
-        given(injector.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
+        given(commandFactory.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Class<?> clazz = invocation.getArgument(0);

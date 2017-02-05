@@ -2,6 +2,7 @@ package tools.dependencygraph;
 
 import ch.jalu.injector.handlers.instantiation.DependencyDescription;
 import ch.jalu.injector.handlers.instantiation.Instantiation;
+import ch.jalu.injector.handlers.instantiation.StandardInjectionProvider;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -14,7 +15,6 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import org.bukkit.event.Listener;
-import tools.utils.InjectorUtils;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -114,7 +114,7 @@ public class DrawDependency implements ToolTask {
     }
 
     private List<String> getDependencies(Class<?> clazz) {
-        Instantiation<?> instantiation = InjectorUtils.getInstantiationMethod(clazz);
+        Instantiation<?> instantiation = new StandardInjectionProvider().safeGet(clazz);
         return instantiation == null ? null : formatInjectionDependencies(instantiation);
     }
 

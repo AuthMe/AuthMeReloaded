@@ -6,6 +6,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
+import fr.xephi.authme.initialization.factory.FactoryDependencyHandler;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.JOOMLA;
@@ -84,7 +85,9 @@ public class PasswordSecurityTest {
                 return null;
             }
         }).when(pluginManager).callEvent(any(Event.class));
-        injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
+        injector = new InjectorBuilder()
+            .addHandlers(new FactoryDependencyHandler())
+            .addDefaultHandlers("fr.xephi.authme").create();
         injector.register(Settings.class, settings);
         injector.register(DataSource.class, dataSource);
         injector.register(PluginManager.class, pluginManager);
