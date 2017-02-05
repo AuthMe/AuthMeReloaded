@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.join;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.SessionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -8,30 +7,31 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.login.AsynchronousLogin;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 /**
  * Asynchronous process for when a player joins.
@@ -39,7 +39,7 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
-    private AuthMe plugin;
+    private Server server;
 
     @Inject
     private DataSource database;
@@ -97,7 +97,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 public void run() {
                     player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
                     if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
-                        plugin.getServer().banIP(ip);
+                        server.banIP(ip);
                     }
                 }
             });
@@ -130,12 +130,14 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 PlayerAuth auth = database.getAuth(name);
                 database.setUnlogged(name);
                 playerCache.removePlayer(name);
-                if (auth != null && auth.getIp().equals(ip)) {
-                    service.send(player, MessageKey.SESSION_RECONNECTION);
-                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
-                    return;
-                } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
-                    service.send(player, MessageKey.SESSION_EXPIRED);
+                if (auth != null) {
+                    if (auth.getIp().equals(ip)) {
+                        service.send(player, MessageKey.SESSION_RECONNECTION);
+                        bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                        return;
+                    } else {
+                        service.send(player, MessageKey.SESSION_EXPIRED);
+                    }
                 }
             }
         } else {

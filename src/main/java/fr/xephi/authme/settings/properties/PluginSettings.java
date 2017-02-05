@@ -22,19 +22,10 @@ public class PluginSettings implements SettingsHolder {
 
     @Comment({
         "After how many minutes should a session expire?",
-        "Remember that sessions will end only after the timeout, and",
-        "if the player's IP has changed but the timeout hasn't expired,",
-        "the player will be kicked from the server due to invalid session"
+        "A player's session ends after the timeout or if his IP has changed"
     })
     public static final Property<Integer> SESSIONS_TIMEOUT =
         newProperty("settings.sessions.timeout", 10);
-
-    @Comment({
-        "Should the session expire if the player tries to log in with",
-        "another IP address?"
-    })
-    public static final Property<Boolean> SESSIONS_EXPIRE_ON_IP_CHANGE =
-        newProperty("settings.sessions.sessionExpireOnIpChange", true);
 
     @Comment({
         "Message language, available languages:",

@@ -82,7 +82,8 @@ public class SettingsMigrationService extends PlainMigrationService {
             "VeryGames", "settings.restrictions.allowAllCommandsIfRegistrationIsOptional", "DataSource.mySQLWebsite",
             "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping",
             "settings.restrictions.keepCollisionsDisabled", "settings.forceCommands", "settings.forceCommandsAsConsole",
-            "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole"};
+            "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole",
+            "settings.sessions.sessionExpireOnIpChange"};
         for (String deprecatedPath : deprecatedProperties) {
             if (resource.contains(deprecatedPath)) {
                 return true;
