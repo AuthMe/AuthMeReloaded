@@ -99,7 +99,7 @@ public class MySQL implements DataSource {
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         if (poolSize == -1) {
-            poolSize = Utils.getCoreCount();
+            poolSize = Utils.getCoreCount()*3;
         }
         this.useSSL = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
