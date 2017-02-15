@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Optional;
 
 /**
  * Changes the permission group according to the auth status of the player and the configuration.
@@ -51,11 +52,10 @@ public class AuthGroupHandler implements Reloadable {
             return;
         }
 
-        String primaryGroup = "";
-        LimboPlayer limboPlayer = limboCache.getPlayerData(player.getName());
-        if (limboPlayer != null) {
-            primaryGroup = limboPlayer.getGroup();
-        }
+        String primaryGroup = Optional
+            .ofNullable(limboCache.getPlayerData(player.getName()))
+            .map(LimboPlayer::getGroup)
+            .orElse("");
 
         switch (groupType) {
             // Implementation note: some permission systems don't support players not being in any group,
@@ -71,7 +71,8 @@ public class AuthGroupHandler implements Reloadable {
                 break;
 
             case LOGGED_IN:
-                restoreGroup(player);
+                permissionsManager.addGroup(player, primaryGroup);
+                permissionsManager.removeGroups(player, unregisteredGroup, registeredGroup);
                 break;
 
             default:
@@ -99,20 +100,6 @@ public class AuthGroupHandler implements Reloadable {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Restores the player's original primary group (taken from LimboPlayer).
-     *
-     * @param player the player to process
-     */
-    private void restoreGroup(Player player) {
-        LimboPlayer limbo = limboCache.getPlayerData(player.getName());
-        if (limbo != null) {
-            String primaryGroup = limbo.getGroup();
-            permissionsManager.addGroup(player, primaryGroup);
-        }
-        permissionsManager.removeGroups(player, unregisteredGroup, registeredGroup);
     }
 
     @Override
