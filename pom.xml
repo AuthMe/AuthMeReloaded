@@ -268,6 +268,11 @@
                                     <pattern>javax.inject</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
                                 </relocation>
+                                <!-- bStats metrics class -->
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
+                                </relocation>
                             </relocations>
                             <outputFile>target/${project.finalName}-spigot.jar</outputFile>
                         </configuration>
@@ -317,6 +322,11 @@
                                 <relocation>
                                     <pattern>javax.inject</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
+                                </relocation>
+                                <!-- bStats metrics class -->
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
                             <outputFile>target/${project.finalName}-legacy.jar</outputFile>
@@ -424,6 +434,12 @@
             <id>xephi-repo</id>
             <url>http://ci.xephi.fr/plugin/repository/everything/</url>
         </repository>
+
+        <!-- bStats Repo -->
+        <repository>
+            <id>bstats-repo</id>
+            <url>http://repo.bstats.org/content/groups/public</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -525,6 +541,13 @@
         <!-- Moved in profiles! -->
 
         <!-- Bukkit Libraries  -->
+
+        <!-- bStats metrics -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <!-- ProtocolLib -->
         <dependency>
