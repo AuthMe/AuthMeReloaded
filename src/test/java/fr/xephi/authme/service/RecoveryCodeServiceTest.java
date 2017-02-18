@@ -4,14 +4,12 @@ import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.service.RecoveryCodeService.ExpiringEntry;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.ExpiringMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-
-import java.util.Map;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
@@ -60,22 +58,8 @@ public class RecoveryCodeServiceTest {
         recoveryCodeService.generateCode(name);
 
         // then
-        ExpiringEntry entry = getCodeMap().get(name);
-        assertThat(entry.getCode(), stringWithLength(5));
-    }
-
-    @Test
-    public void shouldNotConsiderExpiredCode() {
-        // given
-        String player = "Cat";
-        String code = "11F235";
-        setCodeInMap(player, code, System.currentTimeMillis() - 500);
-
-        // when
-        boolean result = recoveryCodeService.isCodeValid(player, code);
-
-        // then
-        assertThat(result, equalTo(false));
+        String code = getCodeMap().get(name);
+        assertThat(code, stringWithLength(5));
     }
 
     @Test
@@ -106,12 +90,7 @@ public class RecoveryCodeServiceTest {
     }
 
 
-    private Map<String, ExpiringEntry> getCodeMap() {
+    private ExpiringMap<String, String> getCodeMap() {
         return ReflectionTestUtils.getFieldValue(RecoveryCodeService.class, recoveryCodeService, "recoveryCodes");
-    }
-
-    private void setCodeInMap(String player, String code, long expiration) {
-        Map<String, ExpiringEntry> map = getCodeMap();
-        map.put(player, new ExpiringEntry(code, expiration));
     }
 }
