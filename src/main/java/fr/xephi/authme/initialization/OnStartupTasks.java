@@ -1,5 +1,6 @@
 package fr.xephi.authme.initialization;
 
+import ch.jalu.injector.exceptions.InjectorReflectionException;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -21,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
@@ -110,5 +112,24 @@ public class OnStartupTasks {
                 }
             }
         }, 1, TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));
+    }
+
+    /**
+     * Displays a hint to use the legacy AuthMe JAR if AuthMe could not be started
+     * because Gson was not found.
+     *
+     * @param e the exception to process
+     */
+    public static void displayLegacyJarHint(Exception e) {
+        if (e instanceof InjectorReflectionException) {
+            Throwable causeOfCause = Optional.of(e)
+                .map(Throwable::getCause)
+                .map(Throwable::getCause).orElse(null);
+            if (causeOfCause instanceof NoClassDefFoundError
+                && "Lcom/google/gson/Gson;".equals(causeOfCause.getMessage())) {
+                ConsoleLogger.warning("YOU MUST DOWNLOAD THE LEGACY JAR TO USE AUTHME ON YOUR SERVER");
+                ConsoleLogger.warning("Get authme-legacy.jar from http://ci.xephi.fr/job/AuthMeReloaded/");
+            }
+        }
     }
 }
