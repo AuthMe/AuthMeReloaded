@@ -109,6 +109,21 @@ public class SendMailSSL {
         return sendEmail(message, htmlEmail);
     }
 
+    public boolean sendTestEmail(String email) {
+        HtmlEmail htmlEmail;
+        try {
+            htmlEmail = initializeMail(email);
+        } catch (EmailException e) {
+            ConsoleLogger.logException("Failed to create email for sample email:", e);
+            return false;
+        }
+
+        htmlEmail.setSubject("AuthMe test email");
+        String message = "Hello there!<br />This is a sample email sent to you from a Minecraft server ("
+            + serverName + ") via /authme debug mail. If you're seeing this, sending emails should be fine.";
+        return sendEmail(message, htmlEmail);
+    }
+
     private File generateImage(String name, String newPass) throws IOException {
         ImageGenerator gen = new ImageGenerator(newPass);
         File file = new File(dataFolder, name + "_new_pass.jpg");
