@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpiringMap<K, V> {
 
-    private final Map<K, ExpiringEntry<V>> entries = new ConcurrentHashMap<>();
+    protected final Map<K, ExpiringEntry<V>> entries = new ConcurrentHashMap<>();
     private long expirationMillis;
 
     /**
@@ -89,11 +89,22 @@ public class ExpiringMap<K, V> {
     }
 
     /**
+     * Returns whether this map is empty. This reflects the state of the
+     * internal map, which may contain expired entries only. The result
+     * may change after running {@link #removeExpiredEntries()}.
+     *
+     * @return true if map is really empty, false otherwise
+     */
+    public boolean isEmpty() {
+        return entries.isEmpty();
+    }
+
+    /**
      * Class holding a value paired with an expiration timestamp.
      *
      * @param <V> the value type
      */
-    private static final class ExpiringEntry<V> {
+    protected static final class ExpiringEntry<V> {
 
         private final V value;
         private final long expiration;

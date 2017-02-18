@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import org.junit.Test;
 
 import java.util.Map;
@@ -45,14 +44,14 @@ public class ExpiringMapTest {
     }
 
     @Test
-    public void shouldUpdateExpiration() {
+    public void shouldUpdateExpirationAndSupportNegativeValues() {
         // given
         ExpiringMap<Integer, Integer> map = new ExpiringMap<>(2, TimeUnit.DAYS);
         map.put(2, 4);
         map.put(3, 9);
 
         // when
-        map.setExpiration(0, TimeUnit.SECONDS);
+        map.setExpiration(-100, TimeUnit.MILLISECONDS);
 
         // then
         map.put(5, 25);
@@ -62,19 +61,9 @@ public class ExpiringMapTest {
     }
 
     @Test
-    public void shouldAcceptNegativeExpiration() {
-        // given / when
-        ExpiringMap<Integer, String> map = new ExpiringMap<>(-3, TimeUnit.MINUTES);
-        map.put(3, "trois");
-
-        // then
-        assertThat(map.get(3), nullValue());
-    }
-
-    @Test
     public void shouldCleanUpExpiredEntries() throws InterruptedException {
         // given
-        ExpiringMap<Integer, Integer> map = new ExpiringMap<>(400, TimeUnit.MILLISECONDS);
+        ExpiringMap<Integer, Integer> map = new ExpiringMap<>(200, TimeUnit.MILLISECONDS);
         map.put(144, 12);
         map.put(121, 11);
         map.put(81, 9);
@@ -83,12 +72,24 @@ public class ExpiringMapTest {
         map.put(25, 5);
 
         // when
-        Thread.sleep(400);
+        Thread.sleep(300);
         map.removeExpiredEntries();
 
         // then
-        Map<Integer, ?> internalMap = ReflectionTestUtils.getFieldValue(ExpiringMap.class, map, "entries");
+        Map<Integer, ?> internalMap = map.entries;
         assertThat(internalMap.keySet(), containsInAnyOrder(64, 25));
     }
 
+    @Test
+    public void shouldReturnIfIsEmpty() {
+        // given
+        ExpiringMap<String, String> map = new ExpiringMap<>(-8, TimeUnit.SECONDS);
+
+        // when / then
+        assertThat(map.isEmpty(), equalTo(true));
+        map.put("hoi", "Welt");
+        assertThat(map.isEmpty(), equalTo(false));
+        map.removeExpiredEntries();
+        assertThat(map.isEmpty(), equalTo(true));
+    }
 }
