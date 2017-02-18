@@ -6,11 +6,10 @@ import fr.xephi.authme.initialization.factory.Factory;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Debug command main.
@@ -44,9 +43,12 @@ public class DebugCommand implements ExecutableCommand {
     // Lazy getter
     private Map<String, DebugSection> getSections() {
         if (sections == null) {
-            sections = sectionClasses.stream()
-                .map(debugSectionFactory::newInstance)
-                .collect(Collectors.toMap(DebugSection::getName, Function.identity()));
+            Map<String, DebugSection> sections = new HashMap<>();
+            for (Class<? extends DebugSection> sectionClass : sectionClasses) {
+                DebugSection section = debugSectionFactory.newInstance(sectionClass);
+                sections.put(section.getName(), section);
+            }
+            this.sections = sections;
         }
         return sections;
     }
