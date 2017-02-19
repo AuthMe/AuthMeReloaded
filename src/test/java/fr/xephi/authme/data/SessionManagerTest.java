@@ -3,19 +3,17 @@ package fr.xephi.authme.data;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.ExpiringSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Map;
-
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.anEmptyMap;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link SessionManager}.
@@ -92,24 +90,6 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldDenySessionIfTimeoutHasExpired() {
-        // given
-        int timeout = 20;
-        Settings settings = mockSettings(true, timeout);
-        String player = "patrick";
-        SessionManager manager = new SessionManager(settings);
-        Map<String, Long> sessions = getSessionsMap(manager);
-        // Add session entry for player that just has expired
-        sessions.put(player, System.currentTimeMillis() - 1000);
-
-        // when
-        boolean result = manager.hasSession(player);
-
-        // then
-        assertThat(result, equalTo(false));
-    }
-
-    @Test
     public void shouldClearAllSessionsAfterDisable() {
         // given
         Settings settings = mockSettings(true, 10);
@@ -121,7 +101,7 @@ public class SessionManagerTest {
         manager.reload(mockSettings(false, 20));
 
         // then
-        assertThat(getSessionsMap(manager), anEmptyMap());
+        assertThat(getSessionsMap(manager).isEmpty(), equalTo(true));
     }
 
     @Test
@@ -129,18 +109,14 @@ public class SessionManagerTest {
         // given
         Settings settings = mockSettings(true, 1);
         SessionManager manager = new SessionManager(settings);
-        Map<String, Long> sessions = getSessionsMap(manager);
-        sessions.put("somebody", System.currentTimeMillis() - 123L);
-        sessions.put("someone", System.currentTimeMillis() + 4040L);
-        sessions.put("anyone", System.currentTimeMillis() - 1000L);
-        sessions.put("everyone", System.currentTimeMillis() + 60000L);
+        ExpiringSet<String> expiringSet = mockExpiringSet();
+        setSessionsMap(manager, expiringSet);
 
         // when
         manager.performCleanup();
 
         // then
-        assertThat(sessions, aMapWithSize(2));
-        assertThat(sessions.keySet(), containsInAnyOrder("someone", "everyone"));
+        verify(expiringSet).removeExpiredEntries();
     }
 
     @Test
@@ -148,23 +124,28 @@ public class SessionManagerTest {
         // given
         Settings settings = mockSettings(false, 1);
         SessionManager manager = new SessionManager(settings);
-        Map<String, Long> sessions = getSessionsMap(manager);
-        sessions.put("somebody", System.currentTimeMillis() - 123L);
-        sessions.put("someone", System.currentTimeMillis() + 4040L);
-        sessions.put("anyone", System.currentTimeMillis() - 1000L);
-        sessions.put("everyone", System.currentTimeMillis() + 60000L);
+        ExpiringSet<String> expiringSet = mockExpiringSet();
+        setSessionsMap(manager, expiringSet);
 
         // when
         manager.performCleanup();
 
         // then
-        assertThat(sessions, aMapWithSize(4)); // map not changed -> no cleanup performed
+        verify(expiringSet, never()).removeExpiredEntries();
     }
 
-    private static Map<String, Long> getSessionsMap(SessionManager manager) {
+    private static ExpiringSet<String> getSessionsMap(SessionManager manager) {
         return ReflectionTestUtils.getFieldValue(SessionManager.class, manager, "sessions");
     }
 
+    private static void setSessionsMap(SessionManager manager, ExpiringSet<String> sessionsMap) {
+        ReflectionTestUtils.setField(SessionManager.class, manager, "sessions", sessionsMap);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> ExpiringSet<T> mockExpiringSet() {
+        return mock(ExpiringSet.class);
+    }
 
     private static Settings mockSettings(boolean isEnabled, int sessionTimeout) {
         Settings settings = mock(Settings.class);

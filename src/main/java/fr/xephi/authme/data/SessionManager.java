@@ -5,13 +5,10 @@ import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.ExpiringSet;
 
 import javax.inject.Inject;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manages sessions, allowing players to be automatically logged in if they join again
@@ -19,15 +16,14 @@ import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
  */
 public class SessionManager implements SettingsDependent, HasCleanup {
 
-    // Player -> expiration of session in milliseconds
-    private final Map<String, Long> sessions = new ConcurrentHashMap<>();
-
+    private final ExpiringSet<String> sessions;
     private boolean enabled;
-    private int timeoutInMinutes;
 
     @Inject
     SessionManager(Settings settings) {
-        reload(settings);
+        long timeout = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
+        sessions = new ExpiringSet<>(timeout, TimeUnit.MINUTES);
+        enabled = timeout > 0 && settings.getProperty(PluginSettings.SESSIONS_ENABLED);
     }
 
     /**
@@ -37,13 +33,7 @@ public class SessionManager implements SettingsDependent, HasCleanup {
      * @return True if a session is found.
      */
     public boolean hasSession(String name) {
-        if (enabled) {
-            Long timeout = sessions.get(name.toLowerCase());
-            if (timeout != null) {
-                return System.currentTimeMillis() <= timeout;
-            }
-        }
-        return false;
+        return enabled && sessions.contains(name.toLowerCase());
     }
 
     /**
@@ -53,8 +43,7 @@ public class SessionManager implements SettingsDependent, HasCleanup {
      */
     public void addSession(String name) {
         if (enabled) {
-            long timeout = System.currentTimeMillis() + timeoutInMinutes * MILLIS_PER_MINUTE;
-            sessions.put(name.toLowerCase(), timeout);
+            sessions.add(name.toLowerCase());
         }
     }
 
@@ -64,12 +53,13 @@ public class SessionManager implements SettingsDependent, HasCleanup {
      * @param name The name of the player.
      */
     public void removeSession(String name) {
-        this.sessions.remove(name.toLowerCase());
+        sessions.remove(name.toLowerCase());
     }
 
     @Override
     public void reload(Settings settings) {
-        timeoutInMinutes = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
+        long timeoutInMinutes = settings.getProperty(PluginSettings.SESSIONS_TIMEOUT);
+        sessions.setExpiration(timeoutInMinutes, TimeUnit.MINUTES);
         boolean oldEnabled = enabled;
         enabled = timeoutInMinutes > 0 && settings.getProperty(PluginSettings.SESSIONS_ENABLED);
 
@@ -82,16 +72,8 @@ public class SessionManager implements SettingsDependent, HasCleanup {
 
     @Override
     public void performCleanup() {
-        if (!enabled) {
-            return;
-        }
-        final long currentTime = System.currentTimeMillis();
-        Iterator<Map.Entry<String, Long>> iterator = sessions.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Long> entry = iterator.next();
-            if (entry.getValue() < currentTime) {
-                iterator.remove();
-            }
+        if (enabled) {
+            sessions.removeExpiredEntries();
         }
     }
 }
