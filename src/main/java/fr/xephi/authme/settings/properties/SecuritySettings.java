@@ -40,6 +40,10 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> CAPTCHA_LENGTH =
         newProperty("Security.captcha.captchaLength", 5);
 
+    @Comment("Minutes after which login attempts count is reset for a player")
+    public static final Property<Integer> CAPTCHA_COUNT_MINUTES_BEFORE_RESET =
+        newProperty("Security.captcha.captchaCountReset", 60);
+
     @Comment("Minimum length of password")
     public static final Property<Integer> MIN_PASSWORD_LENGTH =
         newProperty("settings.security.minPasswordLength", 5);
