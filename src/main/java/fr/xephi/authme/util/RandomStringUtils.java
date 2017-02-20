@@ -8,7 +8,7 @@ import java.util.Random;
  */
 public final class RandomStringUtils {
 
-    private static final String CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final char[] CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private static final Random RANDOM = new SecureRandom();
     private static final int HEX_MAX_INDEX = 16;
     private static final int LOWER_ALPHANUMERIC_INDEX = 36;
@@ -46,7 +46,7 @@ public final class RandomStringUtils {
      * @return The random string
      */
     public static String generateLowerUpper(int length) {
-        return generate(length, CHARS.length());
+        return generate(length, CHARS.length);
     }
 
     private static String generate(int length, int maxIndex) {
@@ -55,7 +55,7 @@ public final class RandomStringUtils {
         }
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {
-            sb.append(CHARS.charAt(RANDOM.nextInt(maxIndex)));
+            sb.append(CHARS[RANDOM.nextInt(maxIndex)]);
         }
         return sb.toString();
     }

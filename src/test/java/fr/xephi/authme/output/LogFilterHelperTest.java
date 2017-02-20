@@ -38,7 +38,6 @@ public class LogFilterHelperTest {
             .toArray(String[]::new);
 
         // when / then
-        assertThat(Arrays.asList("test", "toast"), containsInAnyOrder("toast", "test"));
         assertThat(Arrays.asList(LogFilterHelper.COMMANDS_TO_SKIP), containsInAnyOrder(expectedEntries));
 
     }

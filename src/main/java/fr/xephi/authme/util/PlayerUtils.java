@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 /**
  * Player utilities.
  */
-public class PlayerUtils {
+public final class PlayerUtils {
 
     // Utility class
     private PlayerUtils() {
