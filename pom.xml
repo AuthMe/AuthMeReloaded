@@ -241,8 +241,8 @@
                                     <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.github.authme.configme</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.authme.configme</shadedPattern>
+                                    <pattern>ch.jalu.configme</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.jalu.configme</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
@@ -892,7 +892,7 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
             <scope>compile</scope>
             <optional>true</optional>
             <exclusions>
@@ -923,7 +923,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>2.4.1</version>
+            <version>2.7.9</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>

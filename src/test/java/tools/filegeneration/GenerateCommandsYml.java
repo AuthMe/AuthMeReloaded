@@ -2,11 +2,8 @@ package tools.filegeneration;
 
 import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.resource.YamlFileResource;
-import com.google.common.collect.ImmutableMap;
-import fr.xephi.authme.settings.commandconfig.Command;
 import fr.xephi.authme.settings.commandconfig.CommandConfig;
 import fr.xephi.authme.settings.commandconfig.CommandSettingsHolder;
-import fr.xephi.authme.settings.commandconfig.Executor;
 import tools.utils.AutoToolTask;
 import tools.utils.ToolsConstants;
 
@@ -23,10 +20,8 @@ public class GenerateCommandsYml implements AutoToolTask {
     public void executeDefault() {
         File file = new File(COMMANDS_YML_FILE);
 
-        // Get default and add sample entry
+        // Get the default
         CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.getDefaultValue();
-        commandConfig.setOnLogin(
-            ImmutableMap.of("welcome", new Command("msg %p Welcome back!", Executor.PLAYER)));
 
         // Export the value to the file
         SettingsManager settingsManager = new SettingsManager(
