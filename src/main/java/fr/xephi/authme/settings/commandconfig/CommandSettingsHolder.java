@@ -24,7 +24,12 @@ public final class CommandSettingsHolder implements SettingsHolder {
     public static Map<String, String[]> sectionComments() {
         String[] comments = {
             "This configuration file allows you to execute commands on various events.",
-            "%p in commands will be replaced with the player name.",
+            "Supported placeholders in commands:",
+            "  %p is replaced with the player name.",
+            "  %nick is replaced with the player's nick name",
+            "  %ip is replaced with the player's IP address",
+            "  %country is replaced with the player's country",
+            "",
             "For example, if you want to send a welcome message to a player who just registered:",
             "onRegister:",
             "  welcome:",
