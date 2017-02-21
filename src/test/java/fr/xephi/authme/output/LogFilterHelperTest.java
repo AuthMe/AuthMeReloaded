@@ -1,6 +1,6 @@
 package fr.xephi.authme.output;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class LogFilterHelperTest {
             .toArray(String[]::new);
 
         // when / then
-        assertThat(Arrays.asList(LogFilterHelper.COMMANDS_TO_SKIP), containsInAnyOrder(expectedEntries));
+        assertThat(LogFilterHelper.COMMANDS_TO_SKIP, containsInAnyOrder(expectedEntries));
 
     }
 
@@ -59,21 +59,30 @@ public class LogFilterHelperTest {
 
     /**
      * Returns all "command syntaxes" from which the given command can be reached.
-     * For example, the result might be a List containing "/authme changepassword", "/authme changepass"
-     * and "/authme cp".
+     * For example, the result might be a List containing "/authme changepassword", "/authme changepass",
+     * "/authme cp", "/authme:authme changepassword" etc.
      *
      * @param command the command to build syntaxes for
      * @return command syntaxes
      */
     private static List<String> buildCommandSyntaxes(CommandDescription command) {
-        // assumes that parent can only have one label -> if this fails in the future, we need to revise this method
-        Preconditions.checkArgument(command.getParent() == null || command.getParent().getLabels().size() == 1);
+        List<String> prefixes = getCommandPrefixes(command);
 
-        String prefix = command.getParent() == null
-            ? "/"
-            : "/" + command.getParent().getLabels().get(0) + " ";
-        return command.getLabels().stream()
-            .map(label -> prefix + label)
+        return command.getLabels()
+            .stream()
+            .map(label -> Lists.transform(prefixes, p -> p + label))
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+    }
+
+    private static List<String> getCommandPrefixes(CommandDescription command) {
+        if (command.getParent() == null) {
+            return Arrays.asList("/", "/authme:");
+        }
+        return command.getParent().getLabels()
+            .stream()
+            .map(label -> new String[]{"/" + label + " ", "/authme:" + label + " "})
+            .flatMap(Arrays::stream)
             .collect(Collectors.toList());
     }
 }

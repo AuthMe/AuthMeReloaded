@@ -42,7 +42,7 @@ public final class StringUtils {
      *
      * @return True if the string contains at least one of the items
      */
-    public static boolean containsAny(String str, String... pieces) {
+    public static boolean containsAny(String str, Iterable<String> pieces) {
         if (str == null) {
             return false;
         }

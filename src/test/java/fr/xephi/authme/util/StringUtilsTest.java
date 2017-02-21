@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.net.MalformedURLException;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertFalse;
@@ -23,7 +24,7 @@ public class StringUtilsTest {
         String piece = "test";
 
         // when
-        boolean result = StringUtils.containsAny(text, "some", "words", "that", "do not", "exist", piece);
+        boolean result = StringUtils.containsAny(text, asList("some", "words", "that", "do not", "exist", piece));
 
         // then
         assertThat(result, equalTo(true));
@@ -35,7 +36,7 @@ public class StringUtilsTest {
         String text = "This is a test string";
 
         // when
-        boolean result = StringUtils.containsAny(text, "some", "other", "words", null);
+        boolean result = StringUtils.containsAny(text, asList("some", "other", "words", null));
 
         // then
         assertThat(result, equalTo(false));
@@ -44,7 +45,7 @@ public class StringUtilsTest {
     @Test
     public void shouldReturnFalseForNullString() {
         // given/when
-        boolean result = StringUtils.containsAny(null, "some", "words", "to", "check");
+        boolean result = StringUtils.containsAny(null, asList("some", "words", "to", "check"));
 
         // then
         assertThat(result, equalTo(false));
