@@ -1,11 +1,15 @@
 package fr.xephi.authme.message;
 
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class for retrieving and sending translatable messages to players.
@@ -14,6 +18,20 @@ public class Messages implements Reloadable {
 
     // Custom Authme tag replaced to new line
     private static final String NEWLINE_TAG = "%nl%";
+
+    /** Contains the keys of the singular messages for time units. */
+    private static final Map<TimeUnit, MessageKey> TIME_UNIT_SINGULARS = ImmutableMap.<TimeUnit, MessageKey>builder()
+        .put(TimeUnit.SECONDS, MessageKey.SECOND)
+        .put(TimeUnit.MINUTES, MessageKey.MINUTE)
+        .put(TimeUnit.HOURS, MessageKey.HOUR)
+        .put(TimeUnit.DAYS, MessageKey.DAY).build();
+
+    /** Contains the keys of the plural messages for time units. */
+    private static final Map<TimeUnit, MessageKey> TIME_UNIT_PLURALS = ImmutableMap.<TimeUnit, MessageKey>builder()
+        .put(TimeUnit.SECONDS, MessageKey.SECONDS)
+        .put(TimeUnit.MINUTES, MessageKey.MINUTES)
+        .put(TimeUnit.HOURS, MessageKey.HOURS)
+        .put(TimeUnit.DAYS, MessageKey.DAYS).build();
 
     private final MessageFileHandlerProvider messageFileHandlerProvider;
     private MessageFileHandler messageFileHandler;
@@ -69,6 +87,22 @@ public class Messages implements Reloadable {
             return new String[0];
         }
         return message.split("\n");
+    }
+
+    /**
+     * Returns the textual representation for the given duration.
+     * Note that this class only supports the time units days, hour, minutes and seconds.
+     *
+     * @param duration the duration to build a text of
+     * @return text of the duration
+     */
+    public String formatDuration(Duration duration) {
+        long value = duration.getDuration();
+        MessageKey timeUnitKey = value == 1
+            ? TIME_UNIT_SINGULARS.get(duration.getTimeUnit())
+            : TIME_UNIT_PLURALS.get(duration.getTimeUnit());
+
+        return value + " " + retrieveMessage(timeUnitKey);
     }
 
     /**

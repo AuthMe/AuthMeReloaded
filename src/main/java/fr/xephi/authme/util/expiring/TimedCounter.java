@@ -1,6 +1,5 @@
 package fr.xephi.authme.util.expiring;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,9 +41,10 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
      * @return the total of all valid entries
      */
     public int total() {
+        long currentTime = System.currentTimeMillis();
         return entries.values().stream()
+            .filter(entry -> currentTime <= entry.getExpiration())
             .map(ExpiringEntry::getValue)
-            .filter(Objects::nonNull)
             .reduce(0, Integer::sum);
     }
 }

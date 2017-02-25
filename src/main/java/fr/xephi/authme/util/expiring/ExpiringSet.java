@@ -83,23 +83,22 @@ public class ExpiringSet<E> {
 
     /**
      * Returns the duration of the entry until it expires (provided it is not removed or re-added).
-     * If the entry does not exist, -1 is returned.
+     * If the entry does not exist, a duration of -1 seconds is returned.
      *
      * @param entry the entry whose duration before it expires should be returned
-     * @param unit the unit in which to return the duration
      * @return duration the entry will remain in the set (if there are not modifications)
      */
-    public long getExpiration(E entry, TimeUnit unit) {
+    public Duration getExpiration(E entry) {
         Long expiration = entries.get(entry);
         if (expiration == null) {
-            return -1;
+            return new Duration(-1, TimeUnit.SECONDS);
         }
         long stillPresentMillis = expiration - System.currentTimeMillis();
         if (stillPresentMillis < 0) {
             entries.remove(entry);
-            return -1;
+            return new Duration(-1, TimeUnit.SECONDS);
         }
-        return unit.convert(stillPresentMillis, TimeUnit.MILLISECONDS);
+        return Duration.createWithSuitableUnit(stillPresentMillis, TimeUnit.MILLISECONDS);
     }
 
     /**

@@ -46,7 +46,13 @@ public class ExpiringMap<K, V> {
      */
     public V get(K key) {
         ExpiringEntry<V> value = entries.get(key);
-        return value == null ? null : value.getValue();
+        if (value == null) {
+            return null;
+        } else if (System.currentTimeMillis() > value.getExpiration()) {
+            entries.remove(key);
+            return null;
+        }
+        return value.getValue();
     }
 
     /**
@@ -115,7 +121,7 @@ public class ExpiringMap<K, V> {
         }
 
         V getValue() {
-            return System.currentTimeMillis() > expiration ? null : value;
+            return value;
         }
 
         long getExpiration() {
