@@ -5,7 +5,7 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -37,7 +37,7 @@ public class RecoverEmailCommand extends PlayerCommand {
     private PlayerCache playerCache;
 
     @Inject
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
 
     @Inject
     private RecoveryCodeService recoveryCodeService;
@@ -47,7 +47,7 @@ public class RecoverEmailCommand extends PlayerCommand {
         final String playerMail = arguments.get(0);
         final String playerName = player.getName();
 
-        if (!sendMailSsl.hasAllInformation()) {
+        if (!emailService.hasAllInformation()) {
             ConsoleLogger.warning("Mail API is not set");
             commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
@@ -84,7 +84,7 @@ public class RecoverEmailCommand extends PlayerCommand {
 
     private void createAndSendRecoveryCode(Player player, String email) {
         String recoveryCode = recoveryCodeService.generateCode(player.getName());
-        boolean couldSendMail = sendMailSsl.sendRecoveryCode(player.getName(), email, recoveryCode);
+        boolean couldSendMail = emailService.sendRecoveryCode(player.getName(), email, recoveryCode);
         if (couldSendMail) {
             commonService.send(player, MessageKey.RECOVERY_CODE_SENT);
         } else {
@@ -108,7 +108,7 @@ public class RecoverEmailCommand extends PlayerCommand {
         HashedPassword hashNew = passwordSecurity.computeHash(thePass, name);
 
         dataSource.updatePassword(name, hashNew);
-        boolean couldSendMail = sendMailSsl.sendPasswordMail(name, email, thePass);
+        boolean couldSendMail = emailService.sendPasswordMail(name, email, thePass);
         if (couldSendMail) {
             commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
         } else {

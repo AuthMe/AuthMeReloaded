@@ -2,7 +2,7 @@ package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -18,7 +18,7 @@ class TestEmailSender implements DebugSection {
     private DataSource dataSource;
 
     @Inject
-    private SendMailSSL sendMailSSL;
+    private EmailService emailService;
 
 
     @Override
@@ -33,7 +33,7 @@ class TestEmailSender implements DebugSection {
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
-        if (!sendMailSSL.hasAllInformation()) {
+        if (!emailService.hasAllInformation()) {
             sender.sendMessage(ChatColor.RED + "You haven't set all required configurations in config.yml " +
                 "for sending emails. Please check your config.yml");
             return;
@@ -43,7 +43,7 @@ class TestEmailSender implements DebugSection {
 
         // getEmail() takes care of informing the sender of the error if email == null
         if (email != null) {
-            boolean sendMail = sendMailSSL.sendTestEmail(email);
+            boolean sendMail = emailService.sendTestEmail(email);
             if (sendMail) {
                 sender.sendMessage("Test email sent to " + email + " with success");
             } else {

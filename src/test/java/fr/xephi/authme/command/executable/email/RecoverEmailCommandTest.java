@@ -4,7 +4,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -59,7 +59,7 @@ public class RecoverEmailCommandTest {
     private PlayerCache playerCache;
 
     @Mock
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
     
     @Mock
     private RecoveryCodeService recoveryCodeService;
@@ -72,7 +72,7 @@ public class RecoverEmailCommandTest {
     @Test
     public void shouldHandleMissingMailProperties() {
         // given
-        given(sendMailSsl.hasAllInformation()).willReturn(false);
+        given(emailService.hasAllInformation()).willReturn(false);
         Player sender = mock(Player.class);
 
         // when
@@ -89,14 +89,14 @@ public class RecoverEmailCommandTest {
         String name = "Bobby";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(true);
 
         // when
         command.executeCommand(sender, Collections.singletonList("bobby@example.org"));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verifyZeroInteractions(dataSource);
         verify(commandService).send(sender, MessageKey.ALREADY_LOGGED_IN_ERROR);
     }
@@ -107,7 +107,7 @@ public class RecoverEmailCommandTest {
         String name = "Player123";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(dataSource.getAuth(name)).willReturn(null);
 
@@ -115,7 +115,7 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList("someone@example.com"));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(dataSource).getAuth(name);
         verifyNoMoreInteractions(dataSource);
         verify(commandService).send(sender, MessageKey.USAGE_REGISTER);
@@ -127,7 +127,7 @@ public class RecoverEmailCommandTest {
         String name = "Tract0r";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(DEFAULT_EMAIL));
 
@@ -135,7 +135,7 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList(DEFAULT_EMAIL));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(dataSource).getAuth(name);
         verifyNoMoreInteractions(dataSource);
         verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
@@ -147,7 +147,7 @@ public class RecoverEmailCommandTest {
         String name = "Rapt0r";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(dataSource.getAuth(name)).willReturn(newAuthWithEmail("raptor@example.org"));
 
@@ -155,7 +155,7 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList("wrong-email@example.com"));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(dataSource).getAuth(name);
         verifyNoMoreInteractions(dataSource);
         verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
@@ -167,8 +167,8 @@ public class RecoverEmailCommandTest {
         String name = "Vultur3";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
-        given(sendMailSsl.sendRecoveryCode(anyString(), anyString(), anyString())).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
+        given(emailService.sendRecoveryCode(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
         given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(email));
@@ -180,11 +180,11 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList(email.toUpperCase()));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(dataSource).getAuth(name);
         verify(recoveryCodeService).generateCode(name);
         verify(commandService).send(sender, MessageKey.RECOVERY_CODE_SENT);
-        verify(sendMailSsl).sendRecoveryCode(name, email, code);
+        verify(emailService).sendRecoveryCode(name, email, code);
     }
 
     @Test
@@ -193,7 +193,7 @@ public class RecoverEmailCommandTest {
         String name = "Vultur3";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
         PlayerAuth auth = newAuthWithEmail(email);
@@ -205,10 +205,10 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Arrays.asList(email, "bogus"));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(dataSource, only()).getAuth(name);
         verify(commandService).send(sender, MessageKey.INCORRECT_RECOVERY_CODE);
-        verifyNoMoreInteractions(sendMailSsl);
+        verifyNoMoreInteractions(emailService);
     }
 
     @Test
@@ -217,8 +217,8 @@ public class RecoverEmailCommandTest {
         String name = "Vultur3";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
-        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
+        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
         String code = "A6EF3AC8";
@@ -234,7 +234,7 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Arrays.asList(email, code));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(dataSource).getAuth(name);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
         verify(passwordSecurity).computeHash(passwordCaptor.capture(), eq(name));
@@ -242,7 +242,7 @@ public class RecoverEmailCommandTest {
         assertThat(generatedPassword, stringWithLength(20));
         verify(dataSource).updatePassword(eq(name), any(HashedPassword.class));
         verify(recoveryCodeService).removeCode(name);
-        verify(sendMailSsl).sendPasswordMail(name, email, generatedPassword);
+        verify(emailService).sendPasswordMail(name, email, generatedPassword);
         verify(commandService).send(sender, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
     }
 
@@ -252,8 +252,8 @@ public class RecoverEmailCommandTest {
         String name = "sh4rK";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
-        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
+        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "shark@example.org";
         PlayerAuth auth = newAuthWithEmail(email);
@@ -267,14 +267,14 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList(email));
 
         // then
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(dataSource).getAuth(name);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
         verify(passwordSecurity).computeHash(passwordCaptor.capture(), eq(name));
         String generatedPassword = passwordCaptor.getValue();
         assertThat(generatedPassword, stringWithLength(20));
         verify(dataSource).updatePassword(eq(name), any(HashedPassword.class));
-        verify(sendMailSsl).sendPasswordMail(name, email, generatedPassword);
+        verify(emailService).sendPasswordMail(name, email, generatedPassword);
         verify(commandService).send(sender, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
     }
 

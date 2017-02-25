@@ -2,7 +2,7 @@ package fr.xephi.authme.process.register.executors;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.SyncProcessManager;
@@ -15,8 +15,8 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-import static fr.xephi.authme.process.register.executors.PlayerAuthBuilderHelper.createPlayerAuth;
 import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
+import static fr.xephi.authme.process.register.executors.PlayerAuthBuilderHelper.createPlayerAuth;
 import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
 
 /**
@@ -34,7 +34,7 @@ class EmailRegisterExecutorProvider {
     private CommonService commonService;
 
     @Inject
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
 
     @Inject
     private SyncProcessManager syncProcessManager;
@@ -80,7 +80,7 @@ class EmailRegisterExecutorProvider {
 
         @Override
         public void executePostPersistAction() {
-            boolean couldSendMail = sendMailSsl.sendPasswordMail(player.getName(), email, password);
+            boolean couldSendMail = emailService.sendPasswordMail(player.getName(), email, password);
             if (couldSendMail) {
                 syncProcessManager.processSyncEmailRegister(player);
             } else {
