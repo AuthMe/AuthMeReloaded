@@ -1,5 +1,6 @@
 package fr.xephi.authme.util;
 
+import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import java.util.regex.Pattern;
@@ -66,6 +67,12 @@ public class RandomStringUtilsTest {
         RandomStringUtils.generate(-3);
 
         // then - throw exception
+    }
+
+    @Test
+    public void shouldHaveHiddenConstructor() {
+        // given / when / then
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(RandomStringUtils.class);
     }
 
 }

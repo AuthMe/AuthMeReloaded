@@ -64,4 +64,10 @@ public class PlayerUtilsTest {
         // then
         assertThat(result, equalTo(name));
     }
+
+    @Test
+    public void shouldHaveHiddenConstructor() {
+        // given / when / then
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(PlayerUtils.class);
+    }
 }
