@@ -90,8 +90,19 @@ email_send_failure: '&cO e-mail não pôde ser enviado, reporte isso a um admini
 show_no_email: '&2Você atualmente não têm endereço de e-mail associado a esta conta.'
 add_email: '&3Por favor, adicione seu e-mail para a sua conta com o comando "/email add <seuEmail> <seuEmail>"'
 recovery_email: '&3Esqueceu sua senha? Por favor, use o comando "/email recovery <seuEmail>"'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Para iniciar sessão você tem que resolver um código captcha, utilize o comando "/captcha <theCaptcha>"'
 wrong_captcha: '&cCaptcha errado, por favor, escreva "/captcha THE_CAPTCHA" no chat!'
 valid_captcha: '&2Código Captcha resolvido corretamente!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

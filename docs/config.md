@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Feb 05 13:46:19 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Feb 25 21:59:18 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -422,6 +422,8 @@ Security:
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5
+        # Minutes after which login attempts count is reset for a player
+        captchaCountReset: 60
     tempban:
         # Tempban a user's IP address if they enter the wrong password too many times
         enableTempban: false
@@ -438,6 +440,10 @@ Security:
         length: 8
         # How many hours is a recovery code valid for?
         validForHours: 4
+    emailRecovery:
+        # Seconds a user has to wait for before a password recovery mail may be sent again
+        # This prevents an attacker from abusing AuthMe's email feature.
+        cooldown: 60
 BackupSystem:
     # Enable or disable automatic backup
     ActivateBackup: false
@@ -454,4 +460,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Feb 05 13:46:19 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Feb 25 21:59:18 CET 2017

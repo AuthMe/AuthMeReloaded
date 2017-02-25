@@ -86,8 +86,19 @@ email_send_failure: 'Die E-Mail konnte nicht gesendet werden. Bitte kontaktiere 
 show_no_email: '&2Du hast zur Zeit keine E-Mail-Adresse für deinen Account hinterlegt.'
 add_email: '&3Bitte hinterlege deine E-Mail-Adresse: /email add <deineEmail> <emailBestätigen>'
 recovery_email: '&3Passwort vergessen? Nutze "/email recovery <deineEmail>" für ein neues Passwort'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Um dich einzuloggen, tippe dieses Captcha so ein: /captcha <theCaptcha>'
 wrong_captcha: '&cFalsches Captcha, bitte nutze: /captcha THE_CAPTCHA'
 valid_captcha: '&2Das Captcha ist korrekt!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'
