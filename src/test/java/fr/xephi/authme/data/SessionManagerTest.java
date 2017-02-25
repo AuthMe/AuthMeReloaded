@@ -3,7 +3,7 @@ package fr.xephi.authme.data;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.util.ExpiringSet;
+import fr.xephi.authme.util.expiring.ExpiringSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

@@ -7,7 +7,7 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.TimedCounter;
+import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -5,7 +5,7 @@ import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.util.ExpiringSet;
+import fr.xephi.authme.util.expiring.ExpiringSet;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;

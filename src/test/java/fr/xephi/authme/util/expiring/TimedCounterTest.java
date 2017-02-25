@@ -1,4 +1,4 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.util.expiring;
 
 import org.junit.Test;
 

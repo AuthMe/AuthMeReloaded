@@ -1,4 +1,4 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.util.expiring;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,9 +9,10 @@ import java.util.concurrent.TimeUnit;
  * has expired, the set will act as if the entry no longer exists. Time starts
  * counting after the entry has been inserted.
  * <p>
- * Internally, expired entries are not cleared automatically. A cleanup can be
- * triggered with {@link #removeExpiredEntries()}. Adding an entry that is
- * already present effectively resets its expiration.
+ * Internally, expired entries are not guaranteed to be cleared automatically.
+ * A cleanup of all expired entries may be triggered with
+ * {@link #removeExpiredEntries()}. Adding an entry that is already present
+ * effectively resets its expiration.
  *
  * @param <E> the type of the entries
  */
@@ -47,7 +48,14 @@ public class ExpiringSet<E> {
      */
     public boolean contains(E entry) {
         Long expiration = entries.get(entry);
-        return expiration != null && expiration > System.currentTimeMillis();
+        if (expiration == null) {
+            return false;
+        } else if (expiration > System.currentTimeMillis()) {
+            return true;
+        } else {
+            entries.remove(entry);
+            return false;
+        }
     }
 
     /**
@@ -71,6 +79,27 @@ public class ExpiringSet<E> {
      */
     public void removeExpiredEntries() {
         entries.entrySet().removeIf(entry -> System.currentTimeMillis() > entry.getValue());
+    }
+
+    /**
+     * Returns the duration of the entry until it expires (provided it is not removed or re-added).
+     * If the entry does not exist, -1 is returned.
+     *
+     * @param entry the entry whose duration before it expires should be returned
+     * @param unit the unit in which to return the duration
+     * @return duration the entry will remain in the set (if there are not modifications)
+     */
+    public long getExpiration(E entry, TimeUnit unit) {
+        Long expiration = entries.get(entry);
+        if (expiration == null) {
+            return -1;
+        }
+        long stillPresentMillis = expiration - System.currentTimeMillis();
+        if (stillPresentMillis < 0) {
+            entries.remove(entry);
+            return -1;
+        }
+        return unit.convert(stillPresentMillis, TimeUnit.MILLISECONDS);
     }
 
     /**

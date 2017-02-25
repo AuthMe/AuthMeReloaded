@@ -3,7 +3,7 @@ package fr.xephi.authme.data;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.TimedCounter;
+import fr.xephi.authme.util.expiring.TimedCounter;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;

@@ -6,7 +6,7 @@ import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.ExpiringMap;
+import fr.xephi.authme.util.expiring.ExpiringMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

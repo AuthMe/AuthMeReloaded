@@ -3,6 +3,7 @@ package fr.xephi.authme.util;
 import fr.xephi.authme.ConsoleLogger;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -68,6 +69,38 @@ public final class Utils {
      */
     public static int getCoreCount() {
         return Runtime.getRuntime().availableProcessors();
+    }
+
+    public static Duration convertMillisToSuitableUnit(long duration) {
+        TimeUnit targetUnit;
+        if (duration > 1000L * 60L * 60L * 24L) {
+            targetUnit = TimeUnit.DAYS;
+        } else if (duration > 1000L * 60L * 60L) {
+            targetUnit = TimeUnit.HOURS;
+        } else if (duration > 1000L * 60L) {
+            targetUnit = TimeUnit.MINUTES;
+        } else if (duration > 1000L) {
+            targetUnit = TimeUnit.SECONDS;
+        } else {
+            targetUnit = TimeUnit.MILLISECONDS;
+        }
+
+        return new Duration(targetUnit, duration);
+    }
+
+    public static final class Duration {
+
+        private final long duration;
+        private final TimeUnit unit;
+
+        Duration(TimeUnit targetUnit, long durationMillis) {
+            this(targetUnit, durationMillis, TimeUnit.MILLISECONDS);
+        }
+
+        Duration(TimeUnit targetUnit, long sourceDuration, TimeUnit sourceUnit) {
+            this.duration = targetUnit.convert(sourceDuration, sourceUnit);
+            this.unit = targetUnit;
+        }
     }
 
 }

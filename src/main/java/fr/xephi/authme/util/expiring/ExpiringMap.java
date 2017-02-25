@@ -1,4 +1,4 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.util.expiring;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

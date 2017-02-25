@@ -1,9 +1,10 @@
-package fr.xephi.authme.util;
+package fr.xephi.authme.util.expiring;
 
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -87,5 +88,35 @@ public class ExpiringSetTest {
         assertThat(set.contains(2), equalTo(true));
         assertThat(set.contains(3), equalTo(false));
         assertThat(set.contains(6), equalTo(true));
+    }
+
+    @Test
+    public void shouldReturnExpiration() {
+        // given
+        ExpiringSet<String> set = new ExpiringSet<>(123, TimeUnit.MINUTES);
+        set.add("my entry");
+
+        // when
+        long expiresInHours = set.getExpiration("my entry", TimeUnit.HOURS);
+        long expiresInMinutes = set.getExpiration("my entry", TimeUnit.MINUTES);
+        long unknownExpires = set.getExpiration("bogus", TimeUnit.SECONDS);
+
+        // then
+        assertThat(expiresInHours, equalTo(2L));
+        assertThat(expiresInMinutes, either(equalTo(122L)).or(equalTo(123L)));
+        assertThat(unknownExpires, equalTo(-1L));
+    }
+
+    @Test
+    public void shouldReturnMinusOneForExpiredEntry() {
+        // given
+        ExpiringSet<Integer> set = new ExpiringSet<>(-100, TimeUnit.SECONDS);
+        set.add(23);
+
+        // when
+        long expiresInSeconds = set.getExpiration(23, TimeUnit.SECONDS);
+
+        // then
+        assertThat(expiresInSeconds, equalTo(-1L));
     }
 }

@@ -5,7 +5,7 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.RandomStringUtils;
-import fr.xephi.authme.util.TimedCounter;
+import fr.xephi.authme.util.expiring.TimedCounter;
 
 import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
