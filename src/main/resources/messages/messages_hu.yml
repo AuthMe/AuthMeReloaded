@@ -86,8 +86,19 @@ email_already_used: '&4Ez az email cím már használatban van!'
 show_no_email: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
 add_email: '&3Kérlek rendeld hozzá a felhasználódhoz az email címedet "/email add <email címed> <email címed ismét>"'
 recovery_email: '&3Ha elfelejtetted a jelszavad, használd az: "/email recovery <regisztrált email címed>"'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3A bejelentkezéshez CAPTCHA szükséges, kérlek használd a következő parancsot "/captcha <theCaptcha>"'
 wrong_captcha: '&cHibás CAPTCHA, kérlek írd be a következő parancsot: "/captcha THE_CAPTCHA"!'
 valid_captcha: '&2CAPTCHA sikeresen feloldva!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

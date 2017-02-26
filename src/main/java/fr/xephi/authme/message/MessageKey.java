@@ -225,7 +225,35 @@ public enum MessageKey {
     RECOVERY_CODE_SENT("recovery_code_sent"),
 
     /** The recovery code is not correct! Use "/email recovery [email]" to generate a new one */
-    INCORRECT_RECOVERY_CODE("recovery_code_incorrect");
+    INCORRECT_RECOVERY_CODE("recovery_code_incorrect"),
+
+    /** An email was already sent recently. You must wait %time before you can send a new one. */
+    EMAIL_COOLDOWN_ERROR("email_cooldown_error", "%time"),
+
+    /** second */
+    SECOND("second"),
+
+    /** seconds */
+    SECONDS("seconds"),
+
+    /** minute */
+    MINUTE("minute"),
+
+    /** minutes */
+    MINUTES("minutes"),
+
+    /** hour */
+    HOUR("hour"),
+
+    /** hours */
+    HOURS("hours"),
+
+    /** day */
+    DAY("day"),
+
+    /** days */
+    DAYS("days");
+
 
     private String key;
     private String[] tags;

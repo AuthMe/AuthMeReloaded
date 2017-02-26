@@ -88,8 +88,19 @@ email_send_failure: 'Non è stato possibile inviare l''email contenente la tua n
 show_no_email: '&2Al momento non hai nessun indirizzo email associato al tuo account.'
 add_email: '&3Per poter recuperare la password in futuro, aggiungi un indirizzo email al tuo account con il comando: /email add <tuaEmail> <confermaEmail>'
 recovery_email: '&3Hai dimenticato la tua password? Puoi recuperarla eseguendo il comando: /email recovery <email>'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Per poterti autenticare devi risolvere un captcha, per favore scrivi: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha sbagliato, per favore riprova scrivendo: "/captcha THE_CAPTCHA" in chat!'
 valid_captcha: '&2Il captcha inserito è valido!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

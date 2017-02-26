@@ -91,8 +91,19 @@ email_send_failure: '&cL''email n''a pas pu être envoyé. Veuillez contacter un
 show_no_email: 'Vous n''avez aucune adresse email enregistré sur votre compte.'
 add_email: '&cMerci d''ajouter votre email : /email add <votreEmail> <confirmerEmail>'
 recovery_email: '&cVous avez oublié votre Mot de Passe? Utilisez /email recovery <votreEmail>'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&cTrop de tentatives de connexion échouées, utilisez: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha incorrect, écrivez de nouveau : /captcha THE_CAPTCHA'
 valid_captcha: '&aCaptché validé! Veuillez maintenant vous connecter.'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

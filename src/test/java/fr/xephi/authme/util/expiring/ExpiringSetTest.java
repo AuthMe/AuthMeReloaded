@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -97,14 +96,31 @@ public class ExpiringSetTest {
         set.add("my entry");
 
         // when
-        long expiresInHours = set.getExpiration("my entry", TimeUnit.HOURS);
-        long expiresInMinutes = set.getExpiration("my entry", TimeUnit.MINUTES);
-        long unknownExpires = set.getExpiration("bogus", TimeUnit.SECONDS);
+        Duration expiration = set.getExpiration("my entry");
+        Duration unknownExpiration = set.getExpiration("bogus");
 
         // then
-        assertThat(expiresInHours, equalTo(2L));
-        assertThat(expiresInMinutes, either(equalTo(122L)).or(equalTo(123L)));
-        assertThat(unknownExpires, equalTo(-1L));
+        assertIsDuration(expiration, 2, TimeUnit.HOURS);
+        assertIsDuration(unknownExpiration, -1, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void shouldReturnExpirationInSuitableUnits() {
+        // given
+        ExpiringSet<Integer> set = new ExpiringSet<>(601, TimeUnit.SECONDS);
+        set.add(12);
+        set.setExpiration(49, TimeUnit.HOURS);
+        set.add(23);
+
+        // when
+        Duration expiration12 = set.getExpiration(12);
+        Duration expiration23 = set.getExpiration(23);
+        Duration expectedUnknown = set.getExpiration(-100);
+
+        // then
+        assertIsDuration(expiration12, 10, TimeUnit.MINUTES);
+        assertIsDuration(expiration23, 2, TimeUnit.DAYS);
+        assertIsDuration(expectedUnknown, -1, TimeUnit.SECONDS);
     }
 
     @Test
@@ -114,9 +130,14 @@ public class ExpiringSetTest {
         set.add(23);
 
         // when
-        long expiresInSeconds = set.getExpiration(23, TimeUnit.SECONDS);
+        Duration expiration = set.getExpiration(23);
 
         // then
-        assertThat(expiresInSeconds, equalTo(-1L));
+        assertIsDuration(expiration, -1, TimeUnit.SECONDS);
+    }
+
+    private static void assertIsDuration(Duration duration, long expectedDuration, TimeUnit expectedUnit) {
+        assertThat(duration.getTimeUnit(), equalTo(expectedUnit));
+        assertThat(duration.getDuration(), equalTo(expectedDuration));
     }
 }

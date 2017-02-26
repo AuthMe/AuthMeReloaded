@@ -114,6 +114,13 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> RECOVERY_CODE_HOURS_VALID =
         newProperty("Security.recoveryCode.validForHours", 4);
 
+    @Comment({
+        "Seconds a user has to wait for before a password recovery mail may be sent again",
+        "This prevents an attacker from abusing AuthMe's email feature."
+    })
+    public static final Property<Integer> EMAIL_RECOVERY_COOLDOWN_SECONDS =
+        newProperty("Security.emailRecovery.cooldown", 60);
+
     private SecuritySettings() {
     }
 
