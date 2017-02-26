@@ -24,12 +24,8 @@ import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
  */
 public class SendMailSSL {
 
-    private final Settings settings;
-
     @Inject
-    SendMailSSL(Settings settings) {
-        this.settings = settings;
-    }
+    private Settings settings;
 
     /**
      * Returns whether all necessary settings are set for sending mails.
@@ -115,8 +111,10 @@ public class SendMailSSL {
                 }
                 break;
             case 25:
-                email.setStartTLSEnabled(true);
-                email.setSSLCheckServerIdentity(true);
+                if (settings.getProperty(EmailSettings.PORT25_USE_TLS)) {
+                    email.setStartTLSEnabled(true);
+                    email.setSSLCheckServerIdentity(true);
+                }
                 break;
             case 465:
                 email.setSslSmtpPort(Integer.toString(port));

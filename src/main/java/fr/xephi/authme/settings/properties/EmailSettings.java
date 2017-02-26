@@ -19,6 +19,10 @@ public class EmailSettings implements SettingsHolder {
     public static final Property<Integer> SMTP_PORT =
         newProperty("Email.mailPort", 465);
 
+    @Comment("Only affects port 25: enable TLS/STARTTLS?")
+    public static final Property<Boolean> PORT25_USE_TLS =
+        newProperty("Email.useTls", true);
+
     @Comment("Email account which sends the mails")
     public static final Property<String> MAIL_ACCOUNT =
         newProperty("Email.mailAccount", "");

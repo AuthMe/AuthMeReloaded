@@ -30,6 +30,7 @@ import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -268,6 +269,12 @@ public class AuthMe extends JavaPlugin {
         if (settings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
             && settings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
             ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
+        }
+
+        // Use TLS property only affects port 25
+        if (!settings.getProperty(EmailSettings.PORT25_USE_TLS)
+            && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
+            ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
         }
     }
 
