@@ -26,18 +26,21 @@ public class DebugCommand implements ExecutableCommand {
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
-        if (arguments.isEmpty()) {
+        DebugSection debugSection = getDebugSection(arguments);
+        if (debugSection == null) {
             sender.sendMessage("Available sections:");
             getSections().values()
                 .forEach(e -> sender.sendMessage("- " + e.getName() + ": " + e.getDescription()));
         } else {
-            DebugSection debugSection = getSections().get(arguments.get(0).toLowerCase());
-            if (debugSection == null) {
-                sender.sendMessage("Unknown subcommand");
-            } else {
-                debugSection.execute(sender, arguments.subList(1, arguments.size()));
-            }
+            debugSection.execute(sender, arguments.subList(1, arguments.size()));
         }
+    }
+
+    private DebugSection getDebugSection(List<String> arguments) {
+        if (arguments.isEmpty()) {
+            return null;
+        }
+        return getSections().get(arguments.get(0).toLowerCase());
     }
 
     // Lazy getter
