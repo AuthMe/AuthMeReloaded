@@ -269,8 +269,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         bukkitService.dispatchConsoleCommand(command
-            .replaceAll("%playername%", player.getName())
-            .replaceAll("%playerip%", ip)
+            .replace("%playername%", player.getName())
+            .replace("%playerip%", ip)
         );
     }
 
