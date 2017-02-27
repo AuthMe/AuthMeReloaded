@@ -143,8 +143,8 @@ public class LimboCacheTest {
         limboCache.restoreData(player);
 
         // then
-        verify(player).setWalkSpeed(0.2f);
-        verify(player).setFlySpeed(0.2f);
+        verify(player).setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+        verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
     }
 
     @Test

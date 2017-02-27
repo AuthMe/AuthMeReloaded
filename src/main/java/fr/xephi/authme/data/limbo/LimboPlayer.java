@@ -10,6 +10,9 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class LimboPlayer {
 
+    public static final float DEFAULT_WALK_SPEED = 0.2f;
+    public static final float DEFAULT_FLY_SPEED = 0.1f;
+
     private final boolean canFly;
     private final boolean operator;
     private final String group;

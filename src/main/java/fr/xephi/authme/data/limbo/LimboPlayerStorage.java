@@ -148,8 +148,8 @@ public class LimboPlayerStorage {
             String group = "";
             boolean operator = false;
             boolean canFly = false;
-            float walkSpeed = 0.2f;
-            float flySpeed = 0.2f;
+            float walkSpeed = LimboPlayer.DEFAULT_WALK_SPEED;
+            float flySpeed = LimboPlayer.DEFAULT_FLY_SPEED;
 
             JsonElement e;
             if ((e = jsonObject.getAsJsonObject("location")) != null) {
