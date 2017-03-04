@@ -37,7 +37,7 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
     // which is never the case when a converter is launched from the /authme converter command.
     @Override
     public void execute(CommandSender sender) {
-        if (!destinationType.equals(destination.getType())) {
+        if (destinationType != destination.getType()) {
             if (sender != null) {
                 sender.sendMessage("Please configure your connection to "
                     + destinationType + " and re-run this command");
@@ -59,6 +59,7 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
             if (destination.isAuthAvailable(auth.getNickname())) {
                 skippedPlayers.add(auth.getNickname());
             } else {
+                adaptPlayerAuth(auth);
                 destination.saveAuth(auth);
                 destination.updateQuitLoc(auth);
             }
@@ -70,6 +71,15 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
         }
         logAndSendMessage(sender, "Database successfully converted from " + source.getType()
             + " to " + destinationType);
+    }
+
+    /**
+     * Adapts the PlayerAuth from the source before it is saved in the destination.
+     *
+     * @param auth the auth from the source
+     */
+    protected void adaptPlayerAuth(PlayerAuth auth) {
+        // noop
     }
 
     /**

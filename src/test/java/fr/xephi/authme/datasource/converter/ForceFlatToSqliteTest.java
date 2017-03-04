@@ -63,11 +63,11 @@ public class ForceFlatToSqliteTest {
         ArgumentCaptor<PlayerAuth> authCaptor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource, times(7)).saveAuth(authCaptor.capture());
         List<PlayerAuth> auths = authCaptor.getAllValues();
-        assertThat(auths, hasItem(hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89")));
+        assertThat(auths, hasItem(hasAuthBasicData("bobby", "Player", "your@email.com", "123.45.67.89")));
         assertThat(auths, hasItem(hasAuthLocation(1.05, 2.1, 4.2, "world")));
-        assertThat(auths, hasItem(hasAuthBasicData("user", "user", "user@example.org", "34.56.78.90")));
+        assertThat(auths, hasItem(hasAuthBasicData("user", "Player", "user@example.org", "34.56.78.90")));
         assertThat(auths, hasItem(hasAuthLocation(124.1, 76.3, -127.8, "nether")));
-        assertThat(auths, hasItem(hasAuthBasicData("eightfields", "eightFields", "your@email.com", "6.6.6.66")));
+        assertThat(auths, hasItem(hasAuthBasicData("eightfields", "Player", "your@email.com", "6.6.6.66")));
         assertThat(auths, hasItem(hasAuthLocation(8.8, 17.6, 26.4, "eightworld")));
     }
 
