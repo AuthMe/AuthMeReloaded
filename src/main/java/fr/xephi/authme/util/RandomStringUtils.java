@@ -24,7 +24,7 @@ public final class RandomStringUtils {
      * @return The random string
      */
     public static String generate(int length) {
-        return generate(length, LOWER_ALPHANUMERIC_INDEX);
+        return generateString(length, LOWER_ALPHANUMERIC_INDEX);
     }
 
     /**
@@ -35,7 +35,7 @@ public final class RandomStringUtils {
      * @return The random hexadecimal string
      */
     public static String generateHex(int length) {
-        return generate(length, HEX_MAX_INDEX);
+        return generateString(length, HEX_MAX_INDEX);
     }
 
     /**
@@ -46,10 +46,10 @@ public final class RandomStringUtils {
      * @return The random string
      */
     public static String generateLowerUpper(int length) {
-        return generate(length, CHARS.length);
+        return generateString(length, CHARS.length);
     }
 
-    private static String generate(int length, int maxIndex) {
+    private static String generateString(int length, int maxIndex) {
         if (length < 0) {
             throw new IllegalArgumentException("Length must be positive but was " + length);
         }

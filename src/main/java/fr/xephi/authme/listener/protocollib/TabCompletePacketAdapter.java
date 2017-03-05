@@ -12,7 +12,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 
 class TabCompletePacketAdapter extends PacketAdapter {
 
-    public TabCompletePacketAdapter(AuthMe plugin) {
+    TabCompletePacketAdapter(AuthMe plugin) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.TAB_COMPLETE);
     }
 

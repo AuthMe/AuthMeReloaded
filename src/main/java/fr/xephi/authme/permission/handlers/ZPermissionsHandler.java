@@ -30,7 +30,8 @@ public class ZPermissionsHandler implements PermissionHandler {
 
     @Override
     public boolean addToGroup(Player player, String group) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " addgroup " + group);
+        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "permissions player " + player.getName() + " addgroup " + group);
     }
 
     @Override
@@ -41,20 +42,23 @@ public class ZPermissionsHandler implements PermissionHandler {
     @Override
     public boolean hasPermissionOffline(String name, PermissionNode node) {
         Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(null, null, name);
-        if (perms.containsKey(node.getNode()))
+        if (perms.containsKey(node.getNode())) {
             return perms.get(node.getNode());
-        else
+        } else {
             return false;
+        }
     }
 
     @Override
     public boolean removeFromGroup(Player player, String group) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " removegroup " + group);
+        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "permissions player " + player.getName() + " removegroup " + group);
     }
 
     @Override
     public boolean setGroup(Player player, String group) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " setgroup " + group);
+        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "permissions player " + player.getName() + " setgroup " + group);
     }
 
     @Override

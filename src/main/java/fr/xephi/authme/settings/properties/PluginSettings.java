@@ -7,7 +7,7 @@ import fr.xephi.authme.output.LogLevel;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class PluginSettings implements SettingsHolder {
+public final class PluginSettings implements SettingsHolder {
 
     @Comment({
         "Do you want to enable the session feature?",

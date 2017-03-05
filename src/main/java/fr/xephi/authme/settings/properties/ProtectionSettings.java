@@ -10,7 +10,7 @@ import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
 
-public class ProtectionSettings implements SettingsHolder {
+public final class ProtectionSettings implements SettingsHolder {
 
     @Comment("Enable some servers protection (country based login, antibot)")
     public static final Property<Boolean> ENABLE_PROTECTION =

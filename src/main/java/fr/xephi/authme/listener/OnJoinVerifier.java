@@ -111,7 +111,7 @@ class OnJoinVerifier implements Reloadable {
      * @param event the login event to verify
      *
      * @return true if the player's connection should be refused (i.e. the event does not need to be processed
-     * further), false if the player is not refused
+     *         further), false if the player is not refused
      */
     public boolean refusePlayerForFullServer(PlayerLoginEvent event) {
         final Player player = event.getPlayer();

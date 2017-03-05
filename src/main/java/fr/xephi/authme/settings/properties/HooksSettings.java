@@ -9,7 +9,7 @@ import java.util.List;
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class HooksSettings implements SettingsHolder {
+public final class HooksSettings implements SettingsHolder {
 
     @Comment("Do we need to hook with multiverse for spawn checking?")
     public static final Property<Boolean> MULTIVERSE =

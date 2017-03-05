@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package fr.xephi.authme.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
@@ -46,7 +47,7 @@ class InventoryPacketAdapter extends PacketAdapter {
     private static final int MAIN_SIZE = 27;
     private static final int HOTBAR_SIZE = 9;
 
-    public InventoryPacketAdapter(AuthMe plugin) {
+    InventoryPacketAdapter(AuthMe plugin) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
     }
 

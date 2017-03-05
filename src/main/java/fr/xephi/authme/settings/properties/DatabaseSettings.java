@@ -7,7 +7,7 @@ import fr.xephi.authme.datasource.DataSourceType;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class DatabaseSettings implements SettingsHolder {
+public final class DatabaseSettings implements SettingsHolder {
 
     @Comment({"What type of database do you want to use?",
             "Valid values: sqlite, mysql"})

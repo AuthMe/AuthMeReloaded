@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.captcha;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;

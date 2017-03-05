@@ -23,6 +23,7 @@ import javax.inject.Inject;
  * @deprecated Use {@link NewAPI}
  */
 @Deprecated
+@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class API {
 
     private static AuthMe instance;

@@ -6,7 +6,7 @@ import ch.jalu.configme.properties.Property;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class ConverterSettings implements SettingsHolder {
+public final class ConverterSettings implements SettingsHolder {
 
     @Comment("Rakamak file name")
     public static final Property<String> RAKAMAK_FILE_NAME =

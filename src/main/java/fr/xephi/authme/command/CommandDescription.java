@@ -19,7 +19,7 @@ import static java.util.Arrays.asList;
  * {@code /authme} has a child whose label is {@code "register"}, then {@code /authme register} is the command that
  * the child defines.
  */
-public class CommandDescription {
+public final class CommandDescription {
 
     /**
      * Defines the labels to execute the command. For example, if labels are "register" and "r" and the parent is
