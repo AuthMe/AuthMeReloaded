@@ -15,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Manages all {@link LimboPlayer} instances.
  */
-public class LimboCache {
+class LimboCache {
 
     private final Map<String, LimboPlayer> cache = new ConcurrentHashMap<>();
 

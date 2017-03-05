@@ -2,8 +2,8 @@ package fr.xephi.authme.task;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;
@@ -33,7 +33,7 @@ public class LimboPlayerTaskManager {
     private BukkitService bukkitService;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboService limboService;
 
     @Inject
     private PlayerCache playerCache;
@@ -53,7 +53,7 @@ public class LimboPlayerTaskManager {
         final int interval = settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         final MessageKey key = getMessageKey(isRegistered);
         if (interval > 0) {
-            final LimboPlayer limboPlayer = limboCache.getPlayerData(name);
+            final LimboPlayer limboPlayer = limboService.getLimboPlayer(name);
             if (limboPlayer == null) {
                 ConsoleLogger.info("PlayerData for '" + name + "' is not available");
             } else {
@@ -73,7 +73,7 @@ public class LimboPlayerTaskManager {
     public void registerTimeoutTask(Player player) {
         final int timeout = settings.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (timeout > 0) {
-            final LimboPlayer limboPlayer = limboCache.getPlayerData(player.getName());
+            final LimboPlayer limboPlayer = limboService.getLimboPlayer(player.getName());
             if (limboPlayer == null) {
                 ConsoleLogger.info("PlayerData for '" + player.getName() + "' is not available");
             } else {
@@ -82,6 +82,27 @@ public class LimboPlayerTaskManager {
                 BukkitTask task = bukkitService.runTaskLater(new TimeoutTask(player, message, playerCache), timeout);
                 limboPlayer.setTimeoutTask(task);
             }
+        }
+    }
+
+    public void muteMessageTask(Player player) {
+        LimboPlayer limbo = limboService.getLimboPlayer(player.getName());
+        if (limbo != null) {
+            setMuted(limbo.getMessageTask(), true);
+        }
+    }
+
+    public void unmuteMessageTask(Player player) {
+        LimboPlayer limbo = limboService.getLimboPlayer(player.getName());
+        if (limbo != null) {
+            setMuted(limbo.getMessageTask(), false);
+        }
+    }
+
+    public void clearTasks(Player player) {
+        LimboPlayer limbo = limboService.getLimboPlayer(player.getName());
+        if (limbo != null) {
+            limbo.clearTasks();
         }
     }
 
@@ -118,6 +139,18 @@ public class LimboPlayerTaskManager {
     private static void cancelTask(BukkitRunnable task) {
         if (task != null) {
             task.cancel();
+        }
+    }
+
+    /**
+     * Null-safe method to set the muted flag on a message task.
+     *
+     * @param task the task to modify (or null)
+     * @param isMuted the value to set if task is not null
+     */
+    private static void setMuted(MessageTask task, boolean isMuted) {
+        if (task != null) {
+            task.setMuted(isMuted);
         }
     }
 }

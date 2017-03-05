@@ -4,7 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.SessionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.message.MessageKey;
@@ -51,7 +51,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboService limboService;
 
     @Inject
     private SessionManager sessionManager;
@@ -111,7 +111,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
-            limboCache.addPlayerData(player);
+            limboService.createLimboPlayer(player);
             service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
 
             // Protect inventory
@@ -141,9 +141,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
         } else {
+            // TODO #1113: Why delete and add LimboPlayer again?
             // Not Registered. Delete old data, load default one.
-            limboCache.deletePlayerData(player);
-            limboCache.addPlayerData(player);
+            // limboCache.deletePlayerData(player);
+            // limboCache.addPlayerData(player);
 
             // Groups logic
             service.setGroup(player, AuthGroupType.UNREGISTERED);

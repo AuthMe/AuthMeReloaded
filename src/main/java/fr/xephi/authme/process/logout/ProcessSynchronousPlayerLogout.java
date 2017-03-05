@@ -71,8 +71,8 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         teleportationService.teleportOnJoin(player);
 
         // Apply Blindness effect
-        final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+            int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
 

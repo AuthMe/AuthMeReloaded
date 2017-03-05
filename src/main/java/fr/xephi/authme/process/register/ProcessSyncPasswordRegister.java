@@ -1,7 +1,6 @@
 package fr.xephi.authme.process.register;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -27,9 +26,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private CommonService service;
 
     @Inject
-    private LimboCache limboCache;
-
-    @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
@@ -45,7 +41,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
      */
     private void requestLogin(Player player) {
         final String name = player.getName().toLowerCase();
-        limboCache.updatePlayerData(player);
         limboPlayerTaskManager.registerTimeoutTask(player);
         limboPlayerTaskManager.registerMessageTask(name, true);
 

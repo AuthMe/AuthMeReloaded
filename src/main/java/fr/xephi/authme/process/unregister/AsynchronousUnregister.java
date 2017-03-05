@@ -3,19 +3,19 @@ package fr.xephi.authme.process.unregister;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -43,7 +43,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboService limboService;
 
     @Inject
     private LimboPlayerTaskManager limboPlayerTaskManager;
@@ -111,8 +111,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             teleportationService.teleportOnJoin(player);
             player.saveData();
 
-            limboCache.deletePlayerData(player);
-            limboCache.addPlayerData(player);
+            // TODO #1113: Why delete? limboCache.deletePlayerData(player);
+            limboService.createLimboPlayer(player);
 
             limboPlayerTaskManager.registerTimeoutTask(player);
             limboPlayerTaskManager.registerMessageTask(name, false);

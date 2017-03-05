@@ -2,11 +2,9 @@ package fr.xephi.authme.command.executable.captcha;
 
 import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.data.limbo.LimboCache;
-import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.task.LimboPlayerTaskManager;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +38,7 @@ public class CaptchaCommandTest {
     private CommonService commandService;
 
     @Mock
-    private LimboCache limboCache;
+    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Test
     public void shouldDetectIfPlayerIsLoggedIn() {
@@ -82,10 +80,6 @@ public class CaptchaCommandTest {
         given(captchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "3991";
         given(captchaManager.checkCode(name, captchaCode)).willReturn(true);
-        MessageTask messageTask = mock(MessageTask.class);
-        LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(limboPlayer.getMessageTask()).willReturn(messageTask);
-        given(limboCache.getPlayerData(name)).willReturn(limboPlayer);
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
@@ -96,7 +90,7 @@ public class CaptchaCommandTest {
         verifyNoMoreInteractions(captchaManager);
         verify(commandService).send(player, MessageKey.CAPTCHA_SUCCESS);
         verify(commandService).send(player, MessageKey.LOGIN_MESSAGE);
-        verify(messageTask).setMuted(false);
+        verify(limboPlayerTaskManager).unmuteMessageTask(player);
         verifyNoMoreInteractions(commandService);
     }
 

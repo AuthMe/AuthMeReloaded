@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Class used to store player's data (OP, flying, speed, position) to disk.
  */
-public class LimboPlayerStorage {
+class LimboPlayerStorage {
 
     private final Gson gson;
     private final File cacheDir;

@@ -2,15 +2,14 @@ package fr.xephi.authme.initialization;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.data.limbo.LimboPlayerStorage;
-import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -28,17 +27,15 @@ public class OnShutdownPlayerSaver {
     @Inject
     private ValidationService validationService;
     @Inject
-    private LimboCache limboCache;
-    @Inject
     private DataSource dataSource;
-    @Inject
-    private LimboPlayerStorage limboPlayerStorage;
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
     private PluginHookService pluginHookService;
     @Inject
     private PlayerCache playerCache;
+    @Inject
+    private LimboService limboService;
 
     OnShutdownPlayerSaver() {
     }
@@ -57,9 +54,8 @@ public class OnShutdownPlayerSaver {
         if (pluginHookService.isNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
-        if (limboCache.hasPlayerData(name)) {
-            limboCache.restoreData(player);
-            limboCache.removeFromCache(player);
+        if (limboService.hasLimboPlayer(name)) {
+            limboService.restoreData(player);
         } else {
             saveLoggedinPlayer(player);
         }
@@ -74,10 +70,6 @@ public class OnShutdownPlayerSaver {
                 .realName(player.getName())
                 .location(loc).build();
             dataSource.updateQuitLoc(auth);
-        }
-        if (settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)
-            && !settings.getProperty(RestrictionSettings.NO_TELEPORT) && !limboPlayerStorage.hasData(player)) {
-            limboPlayerStorage.saveData(player);
         }
     }
 }

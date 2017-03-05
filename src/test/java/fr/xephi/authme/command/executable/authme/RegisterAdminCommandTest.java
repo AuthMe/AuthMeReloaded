@@ -2,7 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.data.limbo.LimboCache;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -57,7 +57,7 @@ public class RegisterAdminCommandTest {
     private ValidationService validationService;
 
     @Mock
-    private LimboCache limboCache;
+    private LimboService limboService;
 
     @BeforeClass
     public static void setUpLogger() {

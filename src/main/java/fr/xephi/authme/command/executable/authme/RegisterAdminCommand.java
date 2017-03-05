@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -39,7 +39,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
     private ValidationService validationService;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboService limboService;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
@@ -83,7 +83,8 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
                         @Override
                         public void run() {
-                            limboCache.restoreData(player);
+                            // TODO #1113: Is it necessary to restore here or is this covered by the quit process?
+                            limboService.restoreData(player);
                             player.kickPlayer(commonService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER));
                         }
                     });
