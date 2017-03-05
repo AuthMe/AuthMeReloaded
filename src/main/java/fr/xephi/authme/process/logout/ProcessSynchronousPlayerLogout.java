@@ -2,6 +2,7 @@ package fr.xephi.authme.process.logout;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.message.MessageKey;
@@ -37,6 +38,9 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
+    private LimboService limboService;
+
+    @Inject
     private SessionManager sessionManager;
 
     @Inject
@@ -53,10 +57,10 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
             protocolLibService.sendBlankInventoryPacket(player);
         }
 
+        applyLogoutEffect(player);
+
         limboPlayerTaskManager.registerTimeoutTask(player);
         limboPlayerTaskManager.registerMessageTask(name, true);
-
-        applyLogoutEffect(player);
 
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
@@ -77,15 +81,8 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         }
 
         // Set player's data to unauthenticated
+        limboService.createLimboPlayer(player);
         service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
-        player.setOp(false);
-        player.setAllowFlight(false);
-        // Remove speed
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setFlySpeed(0.0f);
-            player.setWalkSpeed(0.0f);
-        }
     }
 
 }

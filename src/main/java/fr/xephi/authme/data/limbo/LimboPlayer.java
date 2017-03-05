@@ -118,13 +118,7 @@ public class LimboPlayer {
      * Clears all tasks associated to the player.
      */
     public void clearTasks() {
-        if (messageTask != null) {
-            messageTask.cancel();
-        }
-        messageTask = null;
-        if (timeoutTask != null) {
-            timeoutTask.cancel();
-        }
-        timeoutTask = null;
+        setMessageTask(null);
+        setTimeoutTask(null);
     }
 }

@@ -14,7 +14,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.LimboPlayerTaskManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -104,8 +103,6 @@ public class AsynchronousUnregisterTest {
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
-        given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
-        given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(12);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -117,7 +114,7 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verify(teleportationService).teleportOnJoin(player);
         verify(authGroupHandler).setGroup(player, AuthGroupType.UNREGISTERED);
-        verify(bukkitService).runTask(any(Runnable.class));
+        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
     }
 
     @Test
@@ -135,8 +132,6 @@ public class AsynchronousUnregisterTest {
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
-        given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
-        given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(0);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -148,7 +143,7 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verify(teleportationService).teleportOnJoin(player);
         verify(authGroupHandler).setGroup(player, AuthGroupType.UNREGISTERED);
-        verify(bukkitService).runTask(any(Runnable.class));
+        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
     }
 
     @Test
@@ -237,8 +232,6 @@ public class AsynchronousUnregisterTest {
         given(player.isOnline()).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
-        given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
-        given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(12);
         CommandSender initiator = mock(CommandSender.class);
 
         // when
@@ -251,7 +244,7 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verify(teleportationService).teleportOnJoin(player);
         verify(authGroupHandler).setGroup(player, AuthGroupType.UNREGISTERED);
-        verify(bukkitService).runTask(any(Runnable.class));
+        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
     }
 
     @Test

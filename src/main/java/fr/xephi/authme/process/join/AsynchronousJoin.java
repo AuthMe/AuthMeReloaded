@@ -111,7 +111,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
-            limboService.createLimboPlayer(player);
             service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
 
             // Protect inventory
@@ -141,11 +140,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
         } else {
-            // TODO #1113: Why delete and add LimboPlayer again?
-            // Not Registered. Delete old data, load default one.
-            // limboCache.deletePlayerData(player);
-            // limboCache.addPlayerData(player);
-
             // Groups logic
             service.setGroup(player, AuthGroupType.UNREGISTERED);
 
@@ -158,12 +152,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            player.setOp(false);
-            if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-                && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-                player.setFlySpeed(0.0f);
-                player.setWalkSpeed(0.0f);
-            }
+            // TODO #1113: Find an elegant way to deop unregistered players (and disable fly status etc.?)
+            limboService.createLimboPlayer(player);
+            limboPlayerTaskManager.registerTimeoutTask(player);
+            limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
+
             player.setNoDamageTicks(registrationTimeout);
             if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
                 player.performCommand("motd");
@@ -175,10 +168,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             commandManager.runCommandsOnJoin(player);
         });
-
-        // Timeout and message task
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
     }
 
     /**
@@ -189,7 +178,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param domain The hostname of the IP address
      *
      * @return True if the name is restricted (IP/domain is not allowed for the given name),
-     * false if the restrictions are met or if the name has no restrictions to it
+     *         false if the restrictions are met or if the name has no restrictions to it
      */
     private boolean isNameRestricted(String name, String ip, String domain) {
         if (!service.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)) {

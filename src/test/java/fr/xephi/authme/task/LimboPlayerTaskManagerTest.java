@@ -20,6 +20,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -112,9 +117,9 @@ public class LimboPlayerTaskManagerTest {
     @Test
     public void shouldCancelExistingMessageTask() {
         // given
-        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        LimboPlayer limboPlayer = new LimboPlayer(null, true, "grp", false, 0.1f, 0.0f);
         MessageTask existingMessageTask = mock(MessageTask.class);
-        given(limboPlayer.getMessageTask()).willReturn(existingMessageTask);
+        limboPlayer.setMessageTask(existingMessageTask);
 
         String name = "bobby";
         given(limboService.getLimboPlayer(name)).willReturn(limboPlayer);
@@ -124,7 +129,8 @@ public class LimboPlayerTaskManagerTest {
         limboPlayerTaskManager.registerMessageTask(name, false);
 
         // then
-        verify(limboPlayer).setMessageTask(any(MessageTask.class));
+        assertThat(limboPlayer.getMessageTask(), not(nullValue()));
+        assertThat(limboPlayer.getMessageTask(), not(sameInstance(existingMessageTask)));
         verify(messages).retrieve(MessageKey.REGISTER_MESSAGE);
         verify(existingMessageTask).cancel();
     }
@@ -186,9 +192,9 @@ public class LimboPlayerTaskManagerTest {
         String name = "l33tPlayer";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        LimboPlayer limboPlayer = new LimboPlayer(null, false, "", true, 0.3f, 0.1f);
         BukkitTask existingTask = mock(BukkitTask.class);
-        given(limboPlayer.getTimeoutTask()).willReturn(existingTask);
+        limboPlayer.setTimeoutTask(existingTask);
         given(limboService.getLimboPlayer(name)).willReturn(limboPlayer);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(18);
         BukkitTask bukkitTask = mock(BukkitTask.class);
@@ -199,7 +205,7 @@ public class LimboPlayerTaskManagerTest {
 
         // then
         verify(existingTask).cancel();
-        verify(limboPlayer).setTimeoutTask(bukkitTask);
+        assertThat(limboPlayer.getTimeoutTask(), equalTo(bukkitTask));
         verify(bukkitService).runTaskLater(any(TimeoutTask.class), eq(360L)); // 18 * TICKS_PER_SECOND
         verify(messages).retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR);
     }

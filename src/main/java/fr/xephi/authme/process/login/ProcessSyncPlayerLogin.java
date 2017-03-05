@@ -65,15 +65,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     public void processPlayerLogin(Player player) {
         final String name = player.getName().toLowerCase();
 
+        commonService.setGroup(player, AuthGroupType.LOGGED_IN);
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
             limboService.restoreData(player);
-            // do we really need to use location from database for now?
-            // because LimboCache#restoreData teleport player to last location.
         }
-        // TODO #1113: Need to set group before deleting limboPlayer??
-        commonService.setGroup(player, AuthGroupType.LOGGED_IN);
 
         if (commonService.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
             restoreInventory(player);

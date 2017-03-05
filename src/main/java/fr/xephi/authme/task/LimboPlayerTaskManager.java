@@ -11,7 +11,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
@@ -19,7 +18,7 @@ import javax.inject.Inject;
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 /**
- * Registers tasks associated with a PlayerData.
+ * Registers tasks associated with a LimboPlayer.
  */
 public class LimboPlayerTaskManager {
 
@@ -55,9 +54,8 @@ public class LimboPlayerTaskManager {
         if (interval > 0) {
             final LimboPlayer limboPlayer = limboService.getLimboPlayer(name);
             if (limboPlayer == null) {
-                ConsoleLogger.info("PlayerData for '" + name + "' is not available");
+                ConsoleLogger.info("LimboPlayer for '" + name + "' is not available (MessageTask)");
             } else {
-                cancelTask(limboPlayer.getMessageTask());
                 MessageTask messageTask = new MessageTask(name, messages.retrieve(key), bukkitService, playerCache);
                 bukkitService.runTaskTimer(messageTask, 2 * TICKS_PER_SECOND, interval * TICKS_PER_SECOND);
                 limboPlayer.setMessageTask(messageTask);
@@ -75,9 +73,8 @@ public class LimboPlayerTaskManager {
         if (timeout > 0) {
             final LimboPlayer limboPlayer = limboService.getLimboPlayer(player.getName());
             if (limboPlayer == null) {
-                ConsoleLogger.info("PlayerData for '" + player.getName() + "' is not available");
+                ConsoleLogger.info("LimboPlayer for '" + player.getName() + "' is not available (TimeoutTask)");
             } else {
-                cancelTask(limboPlayer.getTimeoutTask());
                 String message = messages.retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR);
                 BukkitTask task = bukkitService.runTaskLater(new TimeoutTask(player, message, playerCache), timeout);
                 limboPlayer.setTimeoutTask(task);
@@ -117,28 +114,6 @@ public class LimboPlayerTaskManager {
             return MessageKey.LOGIN_MESSAGE;
         } else {
             return MessageKey.REGISTER_MESSAGE;
-        }
-    }
-
-    /**
-     * Null-safe method to cancel a potentially existing task.
-     *
-     * @param task the task to cancel (or null)
-     */
-    private static void cancelTask(BukkitTask task) {
-        if (task != null) {
-            task.cancel();
-        }
-    }
-
-    /**
-     * Null-safe method to cancel a potentially existing task.
-     *
-     * @param task the task to cancel (or null)
-     */
-    private static void cancelTask(BukkitRunnable task) {
-        if (task != null) {
-            task.cancel();
         }
     }
 

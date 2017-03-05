@@ -111,12 +111,13 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             teleportationService.teleportOnJoin(player);
             player.saveData();
 
-            // TODO #1113: Why delete? limboCache.deletePlayerData(player);
-            limboService.createLimboPlayer(player);
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+                limboService.createLimboPlayer(player);
+                limboPlayerTaskManager.registerTimeoutTask(player);
+                limboPlayerTaskManager.registerMessageTask(name, false);
 
-            limboPlayerTaskManager.registerTimeoutTask(player);
-            limboPlayerTaskManager.registerMessageTask(name, false);
-            applyBlindEffect(player);
+                applyBlindEffect(player);
+            });
         }
         authGroupHandler.setGroup(player, AuthGroupType.UNREGISTERED);
         service.send(player, MessageKey.UNREGISTERED_SUCCESS);
@@ -124,13 +125,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
     private void applyBlindEffect(final Player player) {
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-            bukkitService.runTask(new Runnable() {
-                @Override
-                public void run() {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
-                }
-            });
+            int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
     }
 }
