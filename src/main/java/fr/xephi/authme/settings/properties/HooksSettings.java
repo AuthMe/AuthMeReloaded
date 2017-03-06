@@ -54,6 +54,14 @@ public class HooksSettings implements SettingsHolder {
     public static final Property<Integer> PHPBB_ACTIVATED_GROUP_ID =
         newProperty("ExternalBoardOptions.phpbbActivatedGroupId", 2);
 
+    @Comment("IP Board table prefix defined during the IP Board installation process")
+    public static final Property<String> IPB_TABLE_PREFIX =
+        newProperty("ExternalBoardOptions.IPBTablePrefix", "ipb_");
+    
+    @Comment("IP Board default group ID; 3 is the default registered group defined by IP Board ")
+    public static final Property<Integer> IPB_ACTIVATED_GROUP_ID =
+        newProperty("ExternalBoardOptions.IPBActivatedGroupId", 3);
+
     @Comment("Wordpress prefix defined during WordPress installation")
     public static final Property<String> WORDPRESS_TABLE_PREFIX =
         newProperty("ExternalBoardOptions.wordpressTablePrefix", "wp_");

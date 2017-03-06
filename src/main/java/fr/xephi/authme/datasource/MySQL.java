@@ -45,7 +45,9 @@ public class MySQL implements DataSource {
     private HikariDataSource ds;
 
     private String phpBbPrefix;
+    private String IPBPrefix;
     private int phpBbGroup;
+    private int IPBGroup;
     private String wordpressPrefix;
 
     public MySQL(Settings settings) throws ClassNotFoundException, SQLException {
@@ -96,6 +98,8 @@ public class MySQL implements DataSource {
         this.hashAlgorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
         this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
+        this.IPBPrefix = settings.getProperty(HooksSettings.IPB_TABLE_PREFIX);
+        this.IPBGroup = settings.getProperty(HooksSettings.IPB_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         if (poolSize == -1) {
@@ -334,8 +338,39 @@ public class MySQL implements DataSource {
                     pst.close();
                 }
             }
-
-            if (hashAlgorithm == HashAlgorithm.PHPBB) {
+            if (hashAlgorithm == HashAlgorithm.IPB4){
+                sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
+                pst = con.prepareStatement(sql);
+                pst.setString(1, auth.getNickname());
+                rs = pst.executeQuery();
+                if (rs.next()){
+                    // Update player group in core_members
+                    sql = "UPDATE " + IPBPrefix + tableName + " SET "+ tableName + ".member_group_id=? WHERE " + col.NAME + "=?;";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setInt(1, IPBGroup);
+                    pst2.setString(2, auth.getNickname());
+                    pst2.executeUpdate();
+                    pst2.close();
+                    // Get current time without ms
+                    long time = System.currentTimeMillis() / 1000;
+                    // update joined date
+                    sql = "UPDATE " + IPBPrefix + tableName + " SET "+ tableName + ".joined=? WHERE " + col.NAME + "=?;";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setLong(1, time);
+                    pst2.setString(2, auth.getNickname());
+                    pst2.executeUpdate();
+                    pst2.close();
+                    // Update last_visit
+                    sql = "UPDATE " + IPBPrefix + tableName + " SET " + tableName + ".last_visit=? WHERE " + col.NAME + "=?;";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setLong(1, time);
+                    pst2.setString(2, auth.getNickname());
+                    pst2.executeUpdate();
+                    pst2.close();
+                }
+                rs.close();
+                pst.close();
+            } else if  (hashAlgorithm == HashAlgorithm.PHPBB) {
                 sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, auth.getNickname());
@@ -477,7 +512,7 @@ public class MySQL implements DataSource {
                 pst = con.prepareStatement("SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
-                if (rs.next()) {
+                if (rs.next()) {                    
                     int id = rs.getInt(col.ID);
                     sql = "INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";
                     pst2 = con.prepareStatement(sql);
