@@ -17,13 +17,13 @@ public abstract class UsernameSaltMethod implements EncryptionMethod {
     public abstract HashedPassword computeHash(String password, String name);
 
     @Override
-    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
-        return hashedPassword.getHash().equals(computeHash(password, name).getHash());
+    public String computeHash(String password, String salt, String name) {
+        return computeHash(password, name).getHash();
     }
 
     @Override
-    public String computeHash(String password, String salt, String name) {
-        return computeHash(password, name).getHash();
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
+        return hashedPassword.getHash().equals(computeHash(password, name).getHash());
     }
 
     @Override

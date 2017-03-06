@@ -1,0 +1,30 @@
+engines:
+  duplication:
+    enabled: true
+    config:
+        languages:
+        - java
+        - php
+  checkstyle:
+    enabled: true
+    channel: beta
+    config: '.checkstyle.xml'
+  pmd:
+    enabled: true
+    channel: beta
+    checks:
+      AvoidUsingHardCodedIP:
+        enabled: false
+ratings:
+  paths:
+  # Check only production files
+  - 'src/main/java/**'
+exclude_paths:
+# Exclude code from third-party sources
+- 'src/main/java/fr/xephi/authme/mail/OAuth2Provider.java'
+- 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClient.java'
+- 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClientFactory.java'
+- 'src/main/java/fr/xephi/authme/security/crypts/BCryptService.java'
+- 'src/main/java/fr/xephi/authme/security/crypts/PHPBB.java'
+- 'src/main/java/fr/xephi/authme/security/crypts/WHIRLPOOL.java'
+- 'src/main/java/fr/xephi/authme/security/crypts/WORDPRESS.java'

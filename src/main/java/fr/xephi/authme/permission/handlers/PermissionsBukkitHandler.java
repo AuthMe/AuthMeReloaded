@@ -31,7 +31,8 @@ public class PermissionsBukkitHandler implements PermissionHandler {
 
     @Override
     public boolean addToGroup(Player player, String group) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player addgroup " + player.getName() + " " + group);
+        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "permissions player addgroup " + player.getName() + " " + group);
     }
 
     @Override
@@ -46,17 +47,19 @@ public class PermissionsBukkitHandler implements PermissionHandler {
 
     @Override
     public boolean removeFromGroup(Player player, String group) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player removegroup " + player.getName() + " " + group);
+        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "permissions player removegroup " + player.getName() + " " + group);
     }
 
     @Override
     public boolean setGroup(Player player, String group) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player setgroup " + player.getName() + " " + group);
+        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "permissions player setgroup " + player.getName() + " " + group);
     }
 
     @Override
     public List<String> getGroups(Player player) {
-        List<String> groups = new ArrayList<String>();
+        List<String> groups = new ArrayList<>();
         for (Group group : permissionsBukkitInstance.getGroups(player.getUniqueId())) {
             groups.add(group.getName());
         }

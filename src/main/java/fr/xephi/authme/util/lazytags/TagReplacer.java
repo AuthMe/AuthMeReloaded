@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @param <A> the argument type
  */
-public class TagReplacer<A> {
+public final class TagReplacer<A> {
 
     private final List<Tag<A>> tags;
     private final Collection<String> messages;

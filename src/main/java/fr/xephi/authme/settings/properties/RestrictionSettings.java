@@ -10,7 +10,7 @@ import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class RestrictionSettings implements SettingsHolder {
+public final class RestrictionSettings implements SettingsHolder {
 
     @Comment({
         "Can not authenticated players chat?",

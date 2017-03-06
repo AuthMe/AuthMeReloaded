@@ -86,19 +86,19 @@ email_send_failure: 'Письмо не може быть отправлено. �
 show_no_email: '&2В данный момент к вашему аккаунте не привязана электронная почта.'
 add_email: '&cДобавьте свой email: &e/email add <Ваш Email> <Ваш Email>'
 recovery_email: '&cЗабыли пароль? Используйте &e/email recovery <Ваш Email>'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email_cooldown_error: '&cЭлектронное письмо было отправлено недавно. Пожалуйста, подождите %time прежде чем отправить новое письмо.'
 
 # Каптча
 usage_captcha: '&cВы должны ввести код, используйте: &e/captcha <theCaptcha>'
 wrong_captcha: '&cНеверный код, используйте: &e/captcha THE_CAPTCHA'
 valid_captcha: '&2Вы успешно ввели код!'
 
-# Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+# Единицы времени
+second: 'сек.'
+seconds: 'сек.'
+minute: 'мин.'
+minutes: 'мин.'
+hour: 'ч.'
+hours: 'ч.'
+day: 'дн.'
+days: 'дн.'
