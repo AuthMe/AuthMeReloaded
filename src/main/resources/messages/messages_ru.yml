@@ -44,7 +44,9 @@ accounts_owned_self: 'Вы являетесь владельцем %count акк
 accounts_owned_other: 'Игрок %name имеет %count аккаунтов:'
 two_factor_create: '&2Ваш секретный код %code. Вы должны просканировать его здесь %url'
 recovery_code_sent: 'Код восстановления для сброса пароля был отправлен на вашу электронную почту.'
+# TODO: Missing tags %count
 recovery_code_incorrect: 'Код восстановления неверный! Введите /email recovery <Ваш Email>, чтобы отправить новый код'
+# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
 vb_nonActiv: '&6Ваш аккаунт еще не активирован! Проверьте вашу почту!'
 usage_unreg: '&cИспользование: &e/unregister <Пароль>'
 pwd_changed: '&2Пароль изменен!'

@@ -6,11 +6,10 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.expiring.ExpiringMap;
+import fr.xephi.authme.util.expiring.TimedCounter;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
-
-import static fr.xephi.authme.settings.properties.SecuritySettings.RECOVERY_CODE_HOURS_VALID;
 
 /**
  * Manager for recovery codes.
@@ -18,14 +17,18 @@ import static fr.xephi.authme.settings.properties.SecuritySettings.RECOVERY_CODE
 public class RecoveryCodeService implements SettingsDependent, HasCleanup {
 
     private final ExpiringMap<String, String> recoveryCodes;
+    private final TimedCounter<String> playerTries;
     private int recoveryCodeLength;
     private int recoveryCodeExpiration;
+    private int recoveryCodeMaxTries;
 
     @Inject
     RecoveryCodeService(Settings settings) {
         recoveryCodeLength = settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH);
         recoveryCodeExpiration = settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID);
+        recoveryCodeMaxTries = settings.getProperty(SecuritySettings.RECOVERY_CODE_MAX_TRIES);
         recoveryCodes = new ExpiringMap<>(recoveryCodeExpiration, TimeUnit.HOURS);
+        playerTries = new TimedCounter<>(recoveryCodeExpiration, TimeUnit.HOURS);
     }
 
     /**
@@ -43,6 +46,8 @@ public class RecoveryCodeService implements SettingsDependent, HasCleanup {
      */
     public String generateCode(String player) {
         String code = RandomStringUtils.generateHex(recoveryCodeLength);
+
+        playerTries.put(player, recoveryCodeMaxTries);
         recoveryCodes.put(player, code);
         return code;
     }
@@ -56,7 +61,28 @@ public class RecoveryCodeService implements SettingsDependent, HasCleanup {
      */
     public boolean isCodeValid(String player, String code) {
         String storedCode = recoveryCodes.get(player);
+        playerTries.decrement(player);
         return storedCode != null && storedCode.equals(code);
+    }
+
+    /**
+     * Checks whether a player has tries remaining to enter a code.
+     *
+     * @param player The player to check for.
+     * @return True if the player has tries left.
+     */
+    public boolean hasTriesLeft(String player) {
+        return playerTries.get(player) > 0;
+    }
+
+    /**
+     * Get the number of attempts a player has to enter a code.
+     *
+     * @param player The player to check for.
+     * @return The number of tries left.
+     */
+    public int getTriesLeft(String player) {
+        return playerTries.get(player);
     }
 
     /**
@@ -66,17 +92,20 @@ public class RecoveryCodeService implements SettingsDependent, HasCleanup {
      */
     public void removeCode(String player) {
         recoveryCodes.remove(player);
+        playerTries.remove(player);
     }
 
     @Override
     public void reload(Settings settings) {
         recoveryCodeLength = settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH);
-        recoveryCodeExpiration = settings.getProperty(RECOVERY_CODE_HOURS_VALID);
+        recoveryCodeExpiration = settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID);
+        recoveryCodeMaxTries = settings.getProperty(SecuritySettings.RECOVERY_CODE_MAX_TRIES);
         recoveryCodes.setExpiration(recoveryCodeExpiration, TimeUnit.HOURS);
     }
 
     @Override
     public void performCleanup() {
         recoveryCodes.removeExpiredEntries();
+        playerTries.removeExpiredEntries();
     }
 }

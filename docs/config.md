@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Feb 25 21:59:18 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Mon Mar 06 13:51:04 EST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -323,6 +323,8 @@ Email:
     mailSMTP: 'smtp.gmail.com'
     # Email SMTP server port
     mailPort: 465
+    # Only affects port 25: enable TLS/STARTTLS?
+    useTls: true
     # Email account which sends the mails
     mailAccount: ''
     # Email account password
@@ -440,6 +442,8 @@ Security:
         length: 8
         # How many hours is a recovery code valid for?
         validForHours: 4
+        # Max number of tries to enter recovery code
+        maxTries: 3
     emailRecovery:
         # Seconds a user has to wait for before a password recovery mail may be sent again
         # This prevents an attacker from abusing AuthMe's email feature.
@@ -460,4 +464,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Feb 25 21:59:18 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Mar 06 13:51:04 EST 2017

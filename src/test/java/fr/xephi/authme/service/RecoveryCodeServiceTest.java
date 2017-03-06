@@ -33,6 +33,7 @@ public class RecoveryCodeServiceTest {
     public void initSettings() {
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(4);
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(5);
+        given(settings.getProperty(SecuritySettings.RECOVERY_CODE_MAX_TRIES)).willReturn(3);
     }
 
     @Test
@@ -63,6 +64,35 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
+    public void playerHasTriesLeft() {
+        // given
+        String player = "Dusty";
+        recoveryCodeService.generateCode(player);
+
+        // when
+        boolean result = recoveryCodeService.hasTriesLeft(player);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void playerHasNoTriesLeft() {
+        // given
+        String player = "Dusty";
+        recoveryCodeService.generateCode(player);
+        recoveryCodeService.isCodeValid(player, "1st try");
+        recoveryCodeService.isCodeValid(player, "2nd try");
+        recoveryCodeService.isCodeValid(player, "3rd try");
+
+        // when
+        boolean result = recoveryCodeService.hasTriesLeft(player);
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
     public void shouldRecognizeCorrectCode() {
         // given
         String player = "dragon";
@@ -87,10 +117,15 @@ public class RecoveryCodeServiceTest {
         // then
         assertThat(recoveryCodeService.isCodeValid(player, code), equalTo(false));
         assertThat(getCodeMap().get(player), nullValue());
+        assertThat(getTriesCounter().get(player), equalTo(0));
     }
 
 
     private ExpiringMap<String, String> getCodeMap() {
         return ReflectionTestUtils.getFieldValue(RecoveryCodeService.class, recoveryCodeService, "recoveryCodes");
+    }
+
+    private ExpiringMap<String, String> getTriesCounter() {
+        return ReflectionTestUtils.getFieldValue(RecoveryCodeService.class, recoveryCodeService, "playerTries");
     }
 }

@@ -224,8 +224,11 @@ public enum MessageKey {
     /** A recovery code to reset your password has been sent to your email. */
     RECOVERY_CODE_SENT("recovery_code_sent"),
 
-    /** The recovery code is not correct! Use "/email recovery [email]" to generate a new one */
-    INCORRECT_RECOVERY_CODE("recovery_code_incorrect"),
+    /** The recovery code is not correct! You have %count tries remaining. */
+    INCORRECT_RECOVERY_CODE("recovery_code_incorrect", "%count"),
+
+    /** You have exceeded the maximum number of attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one. */
+    RECOVERY_TRIES_EXCEEDED("recovery_tries_exceeded"),
 
     /** An email was already sent recently. You must wait %time before you can send a new one. */
     EMAIL_COOLDOWN_ERROR("email_cooldown_error", "%time"),

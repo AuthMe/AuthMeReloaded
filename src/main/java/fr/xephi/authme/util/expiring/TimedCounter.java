@@ -36,6 +36,21 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
     }
 
     /**
+     * Decrements the value stored for the provided key.
+     * This method will NOT update the expiration.
+     *
+     * @param key the key to increment the counter for
+     */
+    public void decrement(K key) {
+        ExpiringEntry<Integer> e = entries.get(key);
+
+        if (e != null) {
+            if (e.getValue() <= 0) { remove(key); }
+            else {entries.put(key, new ExpiringEntry<>(e.getValue() - 1, e.getExpiration())); }
+        }
+    }
+
+    /**
      * Calculates the total of all non-expired entries in this counter.
      *
      * @return the total of all valid entries
