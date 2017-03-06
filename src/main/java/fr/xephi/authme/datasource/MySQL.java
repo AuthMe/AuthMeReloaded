@@ -48,6 +48,7 @@ public class MySQL implements DataSource {
     private String IPBPrefix;
     private int phpBbGroup;
     private int IPBGroup;
+    private int XFGroup;
     private String wordpressPrefix;
 
     public MySQL(Settings settings) throws ClassNotFoundException, SQLException {
@@ -100,6 +101,7 @@ public class MySQL implements DataSource {
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
         this.IPBPrefix = settings.getProperty(HooksSettings.IPB_TABLE_PREFIX);
         this.IPBGroup = settings.getProperty(HooksSettings.IPB_ACTIVATED_GROUP_ID);
+        this.XFGroup = settings.getProperty(HooksSettings.XF_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         if (poolSize == -1) {
@@ -523,6 +525,13 @@ public class MySQL implements DataSource {
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
                     pst2.setBlob(3, blob);
+                    pst2.executeUpdate();
+                    pst2.close();
+                    // Update player group in core_members
+                    sql = "UPDATE " + tableName + " SET "+ tableName + ".user_group_id=? WHERE " + col.NAME + "=?;";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setInt(1, XFGroup);
+                    pst2.setString(2, auth.getNickname());
                     pst2.executeUpdate();
                     pst2.close();
                 }
