@@ -45,8 +45,12 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
         ExpiringEntry<Integer> e = entries.get(key);
 
         if (e != null) {
-            if (e.getValue() <= 0) { remove(key); }
-            else {entries.put(key, new ExpiringEntry<>(e.getValue() - 1, e.getExpiration())); }
+            if (e.getValue() <= 0) {
+                remove(key);
+            }
+            else {
+                entries.put(key, new ExpiringEntry<>(e.getValue() - 1, e.getExpiration()));
+            }
         }
     }
 
