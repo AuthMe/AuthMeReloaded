@@ -41,8 +41,8 @@ class TestEmailSender implements DebugSection {
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
         if (!sendMailSSL.hasAllInformation()) {
-            sender.sendMessage(ChatColor.RED + "You haven't set all required configurations in config.yml " +
-                "for sending emails. Please check your config.yml");
+            sender.sendMessage(ChatColor.RED + "You haven't set all required configurations in config.yml "
+                + "for sending emails. Please check your config.yml");
             return;
         }
 
@@ -69,7 +69,8 @@ class TestEmailSender implements DebugSection {
             }
             String email = auth.getEmail();
             if (email == null || "your@email.com".equals(email)) {
-                sender.sendMessage(ChatColor.RED + "No email set for your account! Please use /authme debug mail <email>");
+                sender.sendMessage(ChatColor.RED + "No email set for your account!"
+                    + " Please use /authme debug mail <email>");
                 return null;
             }
             return email;
