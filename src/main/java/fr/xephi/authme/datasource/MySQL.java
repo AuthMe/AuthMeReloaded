@@ -516,6 +516,7 @@ public class MySQL implements DataSource {
                 rs = pst.executeQuery();
                 if (rs.next()) {                    
                     int id = rs.getInt(col.ID);
+                    // Insert player password, salt in xf_user_authenticate
                     sql = "INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";
                     pst2 = con.prepareStatement(sql);
                     pst2.setInt(1, id);
@@ -527,11 +528,37 @@ public class MySQL implements DataSource {
                     pst2.setBlob(3, blob);
                     pst2.executeUpdate();
                     pst2.close();
-                    // Update player group in core_members
+                    // Update player group in xf_users
                     sql = "UPDATE " + tableName + " SET "+ tableName + ".user_group_id=? WHERE " + col.NAME + "=?;";
                     pst2 = con.prepareStatement(sql);
                     pst2.setInt(1, XFGroup);
                     pst2.setString(2, auth.getNickname());
+                    pst2.executeUpdate();
+                    pst2.close();
+                    // Update player permission combination in xf_users
+                    sql = "UPDATE " + tableName + " SET "+ tableName + ".permission_combination_id=? WHERE " + col.NAME + "=?;";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setInt(1, XFGroup);
+                    pst2.setString(2, auth.getNickname());
+                    pst2.executeUpdate();
+                    pst2.close();
+                    // Insert player privacy combination in xf_user_privacy
+                    sql = "INSERT INTO xf_user_privacy (user_id, allow_view_profile, allow_post_profile, allow_send_personal_conversation, allow_view_identities, allow_receive_news_feed) VALUES (?,?,?,?,?,?)";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setInt(1, id);
+                    pst2.setString(2, "everyone");
+                    pst2.setString(3, "members");
+                    pst2.setString(4, "members");
+                    pst2.setString(5, "everyone");
+                    pst2.setString(6, "everyone");
+                    pst2.executeUpdate();
+                    pst2.close();
+                    // Insert player group relation in xf_user_group_relation
+                    sql = "INSERT INTO xf_user_group_relation (user_id, user_group_id, is_primary) VALUES (?,?,?)";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setInt(1, id);
+                    pst2.setInt(2, XFGroup);
+                    pst2.setString(3, "1");
                     pst2.executeUpdate();
                     pst2.close();
                 }
