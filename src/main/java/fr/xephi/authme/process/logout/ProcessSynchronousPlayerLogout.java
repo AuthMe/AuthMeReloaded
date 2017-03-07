@@ -7,13 +7,12 @@ import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -33,9 +32,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
     @Inject
     private ProtocolLibService protocolLibService;
-
-    @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private LimboService limboService;
@@ -59,9 +55,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
         applyLogoutEffect(player);
 
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
-
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));
 
@@ -81,7 +74,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         }
 
         // Set player's data to unauthenticated
-        limboService.createLimboPlayer(player);
+        limboService.createLimboPlayer(player, true);
         service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
 

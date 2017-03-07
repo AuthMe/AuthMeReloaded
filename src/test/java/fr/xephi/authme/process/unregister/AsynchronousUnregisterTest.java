@@ -14,7 +14,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
@@ -54,8 +53,6 @@ public class AsynchronousUnregisterTest {
     @Mock
     private LimboService limboService;
     @Mock
-    private LimboPlayerTaskManager limboPlayerTaskManager;
-    @Mock
     private TeleportationService teleportationService;
     @Mock
     private AuthGroupHandler authGroupHandler;
@@ -84,7 +81,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(service).send(player, MessageKey.WRONG_PASSWORD);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
-        verifyZeroInteractions(dataSource, limboPlayerTaskManager, limboService, authGroupHandler, teleportationService);
+        verifyZeroInteractions(dataSource, limboService, authGroupHandler, teleportationService);
         verify(player, only()).getName();
     }
 
@@ -170,7 +167,7 @@ public class AsynchronousUnregisterTest {
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
         verify(authGroupHandler).setGroup(player, AuthGroupType.UNREGISTERED);
-        verifyZeroInteractions(teleportationService, limboPlayerTaskManager);
+        verifyZeroInteractions(teleportationService, limboService);
         verify(bukkitService, never()).runTask(any(Runnable.class));
     }
 

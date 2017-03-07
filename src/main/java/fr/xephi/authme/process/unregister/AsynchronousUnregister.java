@@ -15,7 +15,6 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -44,9 +43,6 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
     @Inject
     private LimboService limboService;
-
-    @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private TeleportationService teleportationService;
@@ -112,10 +108,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             player.saveData();
 
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-                limboService.createLimboPlayer(player);
-                limboPlayerTaskManager.registerTimeoutTask(player);
-                limboPlayerTaskManager.registerMessageTask(name, false);
-
+                limboService.createLimboPlayer(player, false);
                 applyBlindEffect(player);
             });
         }

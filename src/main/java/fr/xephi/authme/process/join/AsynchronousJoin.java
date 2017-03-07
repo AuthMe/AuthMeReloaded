@@ -20,7 +20,6 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Server;
@@ -61,9 +60,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
-
-    @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
 
     @Inject
     private AsynchronousLogin asynchronousLogin;
@@ -153,9 +149,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
             // TODO #1113: Find an elegant way to deop unregistered players (and disable fly status etc.?)
-            limboService.createLimboPlayer(player);
-            limboPlayerTaskManager.registerTimeoutTask(player);
-            limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
+            limboService.createLimboPlayer(player, isAuthAvailable);
 
             player.setNoDamageTicks(registrationTimeout);
             if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {

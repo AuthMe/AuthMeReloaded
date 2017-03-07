@@ -6,6 +6,7 @@ import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.message.MessageKey;
@@ -23,7 +24,6 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
@@ -66,7 +66,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private TempbanManager tempbanManager;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private LimboService limboService;
 
     AsynchronousLogin() {
     }
@@ -114,8 +114,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (auth == null) {
             service.send(player, MessageKey.UNKNOWN_USER);
             // Recreate the message task to immediately send the message again as response
-            // and to make sure we send the right register message (password vs. email registration)
-            limboPlayerTaskManager.registerMessageTask(name, false);
+            limboService.resetMessageTask(player, false);
             return null;
         }
 
@@ -190,7 +189,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             // If the authentication fails check if Captcha is required and send a message to the player
             if (captchaManager.isCaptchaRequired(player.getName())) {
-                limboPlayerTaskManager.muteMessageTask(player);
+                limboService.muteMessageTask(player);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
                     captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
             }
@@ -241,7 +240,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            limboPlayerTaskManager.clearTasks(player);
             syncProcessManager.processSyncPlayerLogin(player);
         } else {
             ConsoleLogger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");

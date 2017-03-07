@@ -1,11 +1,11 @@
 package fr.xephi.authme.process.register;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 
@@ -18,7 +18,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
     private CommonService service;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private LimboService limboService;
 
     ProcessSyncEmailRegister() {
     }
@@ -27,9 +27,7 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
 
-        final String name = player.getName().toLowerCase();
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
+        limboService.replaceTasksAfterRegistration(player);
 
         player.saveData();
         ConsoleLogger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));

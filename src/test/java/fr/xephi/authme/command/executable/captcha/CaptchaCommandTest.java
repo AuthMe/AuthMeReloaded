@@ -2,9 +2,9 @@ package fr.xephi.authme.command.executable.captcha;
 
 import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ public class CaptchaCommandTest {
     private CommonService commandService;
 
     @Mock
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private LimboService limboService;
 
     @Test
     public void shouldDetectIfPlayerIsLoggedIn() {
@@ -90,7 +90,7 @@ public class CaptchaCommandTest {
         verifyNoMoreInteractions(captchaManager);
         verify(commandService).send(player, MessageKey.CAPTCHA_SUCCESS);
         verify(commandService).send(player, MessageKey.LOGIN_MESSAGE);
-        verify(limboPlayerTaskManager).unmuteMessageTask(player);
+        verify(limboService).unmuteMessageTask(player);
         verifyNoMoreInteractions(commandService);
     }
 
