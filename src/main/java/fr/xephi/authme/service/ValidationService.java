@@ -118,7 +118,7 @@ public class ValidationService implements Reloadable {
         String countryCode = geoIpService.getCountryCode(hostAddress);
         boolean isCountryAllowed = validateWhitelistAndBlacklist(countryCode,
             ProtectionSettings.COUNTRIES_WHITELIST, ProtectionSettings.COUNTRIES_BLACKLIST);
-        ConsoleLogger.debug("Country code '{0}' for '{1}' is allowed: {2}", countryCode, hostAddress, isCountryAllowed);
+        ConsoleLogger.debug("Country code `{0}` for `{1}` is allowed: {2}", countryCode, hostAddress, isCountryAllowed);
         return isCountryAllowed;
     }
 
