@@ -7,10 +7,13 @@ import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
+import fr.xephi.authme.datasource.XenforoDataSource;
 import fr.xephi.authme.datasource.converter.ForceFlatToSqlite;
+import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -57,6 +60,8 @@ public class DataSourceProvider implements Provider<DataSource> {
      */
     private DataSource createDataSource() throws ClassNotFoundException, SQLException, IOException {
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
+        dataSourceType = adaptForXenforoMisuse(dataSourceType);
+
         DataSource dataSource;
         switch (dataSourceType) {
             case FILE:
@@ -69,6 +74,9 @@ public class DataSourceProvider implements Provider<DataSource> {
             case SQLITE:
                 dataSource = new SQLite(settings);
                 break;
+            case XENFORO_SQL:
+                dataSource = new XenforoDataSource(settings);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
         }
@@ -79,12 +87,12 @@ public class DataSourceProvider implements Provider<DataSource> {
             dataSource = new CacheDataSource(dataSource);
         }
         if (DataSourceType.SQLITE.equals(dataSourceType)) {
-            checkDataSourceSize(dataSource, bukkitService);
+            checkDataSourceSize(dataSource);
         }
         return dataSource;
     }
 
-    private void checkDataSourceSize(final DataSource dataSource, BukkitService bukkitService) {
+    private void checkDataSourceSize(DataSource dataSource) {
         bukkitService.runTaskAsynchronously(() -> {
             int accounts = dataSource.getAccountsRegistered();
             if (accounts >= SQLITE_MAX_SIZE) {
@@ -92,6 +100,29 @@ public class DataSourceProvider implements Provider<DataSource> {
                     + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
             }
         });
+    }
+
+    /**
+     * Changes the data source type to MYSQL if the Xenforo data source is configured
+     * but the password hash isn't XFBCRYPT. If XFBCRYPT is configured but the Xenforo
+     * data source isn't used, a note is logged.
+     *
+     * @param dataSourceType the data source type
+     * @return the data source type to use
+     */
+    private DataSourceType adaptForXenforoMisuse(DataSourceType dataSourceType) {
+        HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        if (hash == HashAlgorithm.XFBCRYPT && dataSourceType != DataSourceType.XENFORO_SQL) {
+            ConsoleLogger.warning("Note: to hook into Xenforo, you should set '"
+                + DatabaseSettings.BACKEND.getPath() + "' to XFBCRYPT");
+            return dataSourceType;
+        } else if (hash != HashAlgorithm.XFBCRYPT && dataSourceType == DataSourceType.XENFORO_SQL) {
+            ConsoleLogger.warning("WARNING: Your database backend cannot be XENFORO_SQL if you are not using XFBCRYPT"
+                + " as password hash! Using MYSQL instead.");
+            return DataSourceType.MYSQL;
+        }
+
+        return dataSourceType; // all good
     }
 
     /**

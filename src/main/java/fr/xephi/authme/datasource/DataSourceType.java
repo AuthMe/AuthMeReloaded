@@ -10,6 +10,8 @@ public enum DataSourceType {
     SQLITE,
 
     @Deprecated
-    FILE
+    FILE,
+
+    XENFORO_SQL
 
 }
