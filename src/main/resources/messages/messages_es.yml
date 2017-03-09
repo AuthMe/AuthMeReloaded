@@ -89,7 +89,7 @@ email_send_failure: 'No se ha podido enviar el correo electrónico. Por favor, c
 show_no_email: '&2No tienes ningun E-Mail asociado en esta cuenta.'
 add_email: '&cPor favor agrega tu e-mail con: /email add tuEmail confirmarEmail'
 recovery_email: '&c¿Olvidaste tu contraseña? Por favor usa /email recovery <tuEmail>'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar %time antes de volver a enviar uno nuevo.'
 
 # Captcha
 usage_captcha: '&cUso: /captcha <theCaptcha>'
@@ -97,11 +97,11 @@ wrong_captcha: '&cCaptcha incorrecto, por favor usa: /captcha THE_CAPTCHA'
 valid_captcha: '&c¡ Captcha ingresado correctamente !'
 
 # Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+second: 'segundo'
+seconds: 'segundos'
+minute: 'minuto'
+minutes: 'minutos'
+hour: 'hora'
+hours: 'horas'
+day: 'día'
+days: 'días'
