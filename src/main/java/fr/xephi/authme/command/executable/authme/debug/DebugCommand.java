@@ -20,7 +20,7 @@ public class DebugCommand implements ExecutableCommand {
     private Factory<DebugSection> debugSectionFactory;
 
     private Set<Class<? extends DebugSection>> sectionClasses =
-        ImmutableSet.of(PermissionGroups.class, TestEmailSender.class);
+        ImmutableSet.of(PermissionGroups.class, TestEmailSender.class, CountryLookup.class);
 
     private Map<String, DebugSection> sections;
 
