@@ -148,7 +148,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            // TODO #1113: Find an elegant way to deop unregistered players (and disable fly status etc.?)
             limboService.createLimboPlayer(player, isAuthAvailable);
 
             player.setNoDamageTicks(registrationTimeout);

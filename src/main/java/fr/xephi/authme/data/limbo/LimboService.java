@@ -105,7 +105,7 @@ public class LimboService {
             ConsoleLogger.debug("LimboPlayer for `{0}` was already present", name);
         }
 
-        LimboPlayer limboPlayer = newLimboPlayer(player);
+        LimboPlayer limboPlayer = newLimboPlayer(player, isRegistered);
         taskManager.registerMessageTask(player, limboPlayer, isRegistered);
         taskManager.registerTimeoutTask(player, limboPlayer);
         revokeLimboStates(player);
@@ -157,11 +157,13 @@ public class LimboService {
      * Creates a LimboPlayer with the given player's details.
      *
      * @param player the player to process
+     * @param isRegistered whether the player is registered
      * @return limbo player with the player's data
      */
-    private LimboPlayer newLimboPlayer(Player player) {
+    private LimboPlayer newLimboPlayer(Player player, boolean isRegistered) {
         Location location = spawnLoader.getPlayerLocationOrSpawn(player);
-        boolean isOperator = player.isOp();
+        // For safety reasons an unregistered player should not have OP status after registration
+        boolean isOperator = isRegistered && player.isOp();
         boolean flyEnabled = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
         float flySpeed = player.getFlySpeed();
