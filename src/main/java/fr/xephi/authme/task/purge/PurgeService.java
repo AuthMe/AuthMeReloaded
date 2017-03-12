@@ -9,14 +9,13 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 
 import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
-// TODO: move into services. -sgdc3
+import static fr.xephi.authme.util.Utils.logAndSendMessage;
 
 /**
  * Initiates purge tasks.
@@ -118,13 +117,5 @@ public class PurgeService {
      */
     void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
         purgeExecutor.executePurge(players, names);
-    }
-
-    private static void logAndSendMessage(CommandSender sender, String message) {
-        ConsoleLogger.info(message);
-        // Make sure sender is not console user, which will see the message from ConsoleLogger already
-        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(message);
-        }
     }
 }

@@ -1,6 +1,7 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.configme.properties.Property;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.message.MessageKey;
@@ -115,9 +116,10 @@ public class ValidationService implements Reloadable {
         }
 
         String countryCode = geoIpService.getCountryCode(hostAddress);
-        return validateWhitelistAndBlacklist(countryCode,
-            ProtectionSettings.COUNTRIES_WHITELIST,
-            ProtectionSettings.COUNTRIES_BLACKLIST);
+        boolean isCountryAllowed = validateWhitelistAndBlacklist(countryCode,
+            ProtectionSettings.COUNTRIES_WHITELIST, ProtectionSettings.COUNTRIES_BLACKLIST);
+        ConsoleLogger.debug("Country code `{0}` for `{1}` is allowed: {2}", countryCode, hostAddress, isCountryAllowed);
+        return isCountryAllowed;
     }
 
     /**
@@ -194,6 +196,7 @@ public class ValidationService implements Reloadable {
         public MessageKey getMessageKey() {
             return messageKey;
         }
+
         public String[] getArgs() {
             return args;
         }

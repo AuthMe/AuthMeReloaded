@@ -19,8 +19,9 @@ public class DebugCommand implements ExecutableCommand {
     @Inject
     private Factory<DebugSection> debugSectionFactory;
 
-    private Set<Class<? extends DebugSection>> sectionClasses =
-        ImmutableSet.of(PermissionGroups.class, TestEmailSender.class, PlayerAuthViewer.class, LimboPlayerViewer.class);
+    private Set<Class<? extends DebugSection>> sectionClasses = ImmutableSet.of(
+        PermissionGroups.class, TestEmailSender.class, PlayerAuthViewer.class, LimboPlayerViewer.class,
+        CountryLookup.class);
 
     private Map<String, DebugSection> sections;
 

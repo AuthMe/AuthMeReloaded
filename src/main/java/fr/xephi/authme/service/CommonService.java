@@ -66,16 +66,6 @@ public class CommonService {
     }
 
     /**
-     * Retrieves a message.
-     *
-     * @param key the key of the message
-     * @return the message, split by line
-     */
-    public String[] retrieveMessage(MessageKey key) {
-        return messages.retrieve(key);
-    }
-
-    /**
      * Retrieves a message in one piece.
      *
      * @param key the key of the message
@@ -102,6 +92,7 @@ public class CommonService {
      * @param player the player to process
      * @param group the group to add the player to
      */
+    // TODO ljacqu 20170304: Move this out of CommonService
     public void setGroup(Player player, AuthGroupType group) {
         authGroupHandler.setGroup(player, group);
     }

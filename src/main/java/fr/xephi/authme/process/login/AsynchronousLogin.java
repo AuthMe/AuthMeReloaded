@@ -11,7 +11,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AdminPermission;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -43,9 +42,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private CommonService service;
-
-    @Inject
-    private PermissionsManager permissionsManager;
 
     @Inject
     private PlayerCache playerCache;
@@ -290,10 +286,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(player.getName())
-                && permissionsManager.hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS)) {
+                && service.hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS)) {
                 service.send(onlinePlayer, MessageKey.ACCOUNTS_OWNED_SELF, Integer.toString(auths.size()));
                 onlinePlayer.sendMessage(message);
-            } else if (permissionsManager.hasPermission(onlinePlayer, AdminPermission.SEE_OTHER_ACCOUNTS)) {
+            } else if (service.hasPermission(onlinePlayer, AdminPermission.SEE_OTHER_ACCOUNTS)) {
                 service.send(onlinePlayer, MessageKey.ACCOUNTS_OWNED_OTHER,
                     player.getName(), Integer.toString(auths.size()));
                 onlinePlayer.sendMessage(message);
@@ -313,7 +309,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     boolean hasReachedMaxLoggedInPlayersForIp(Player player, String ip) {
         // Do not perform the check if player has multiple accounts permission or if IP is localhost
         if (service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP) <= 0
-            || permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
+            || service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             || "127.0.0.1".equalsIgnoreCase(ip)
             || "localhost".equalsIgnoreCase(ip)) {
             return false;
