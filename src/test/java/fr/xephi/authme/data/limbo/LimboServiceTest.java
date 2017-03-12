@@ -1,5 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -13,10 +15,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Map;
 
@@ -34,13 +34,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Test for {@link LimboService}.
+ * Test for {@link LimboService}, and {@link LimboServiceHelper}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class LimboServiceTest {
 
-    @InjectMocks
+    @InjectDelayed
     private LimboService limboService;
+
+    @InjectDelayed
+    private LimboServiceHelper limboServiceHelper;
 
     @Mock
     private SpawnLoader spawnLoader;

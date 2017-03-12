@@ -1,11 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -26,20 +22,60 @@ public class LimboService {
     private final Map<String, LimboPlayer> entries = new ConcurrentHashMap<>();
 
     @Inject
-    private SpawnLoader spawnLoader;
-
-    @Inject
-    private PermissionsManager permissionsManager;
-
-    @Inject
     private Settings settings;
 
     @Inject
     private LimboPlayerTaskManager taskManager;
 
+    @Inject
+    private LimboServiceHelper limboServiceHelper;
+
     LimboService() {
     }
 
+    /**
+     * Creates a LimboPlayer for the given player and revokes all "limbo data" from the player.
+     *
+     * @param player the player to process
+     * @param isRegistered whether or not the player is registered
+     */
+    public void createLimboPlayer(Player player, boolean isRegistered) {
+        final String name = player.getName().toLowerCase();
+
+        LimboPlayer existingLimbo = entries.remove(name);
+        if (existingLimbo != null) {
+            existingLimbo.clearTasks();
+            ConsoleLogger.debug("LimboPlayer for `{0}` was already present", name);
+        }
+
+        LimboPlayer limboPlayer = limboServiceHelper.merge(
+            limboServiceHelper.createLimboPlayer(player, isRegistered), existingLimbo);
+
+        taskManager.registerMessageTask(player, limboPlayer, isRegistered);
+        taskManager.registerTimeoutTask(player, limboPlayer);
+        limboServiceHelper.revokeLimboStates(player);
+        entries.put(name, limboPlayer);
+    }
+
+    /**
+     * Returns the limbo player for the given name, or null otherwise.
+     *
+     * @param name the name to retrieve the data for
+     * @return the associated limbo player, or null if none available
+     */
+    public LimboPlayer getLimboPlayer(String name) {
+        return entries.get(name.toLowerCase());
+    }
+
+    /**
+     * Returns whether there is a limbo player for the given name.
+     *
+     * @param name the name to check
+     * @return true if present, false otherwise
+     */
+    public boolean hasLimboPlayer(String name) {
+        return entries.containsKey(name.toLowerCase());
+    }
 
     /**
      * Restores the limbo data and subsequently deletes the entry.
@@ -66,50 +102,8 @@ public class LimboService {
     }
 
     /**
-     * Returns the limbo player for the given name, or null otherwise.
-     *
-     * @param name the name to retrieve the data for
-     * @return the associated limbo player, or null if none available
-     */
-    public LimboPlayer getLimboPlayer(String name) {
-        return entries.get(name.toLowerCase());
-    }
-
-    /**
-     * Returns whether there is a limbo player for the given name.
-     *
-     * @param name the name to check
-     * @return true if present, false otherwise
-     */
-    public boolean hasLimboPlayer(String name) {
-        return entries.containsKey(name.toLowerCase());
-    }
-
-    /**
-     * Creates a LimboPlayer for the given player and revokes all "limbo data" from the player.
-     *
-     * @param player the player to process
-     * @param isRegistered whether or not the player is registered
-     */
-    public void createLimboPlayer(Player player, boolean isRegistered) {
-        final String name = player.getName().toLowerCase();
-
-        LimboPlayer existingLimbo = entries.remove(name);
-        if (existingLimbo != null) {
-            existingLimbo.clearTasks();
-            ConsoleLogger.debug("LimboPlayer for `{0}` was already present", name);
-        }
-
-        LimboPlayer limboPlayer = newLimboPlayer(player, isRegistered);
-        taskManager.registerMessageTask(player, limboPlayer, isRegistered);
-        taskManager.registerTimeoutTask(player, limboPlayer);
-        revokeLimboStates(player);
-        entries.put(name, limboPlayer);
-    }
-
-    /**
      * Creates new tasks for the given player and cancels the old ones for a newly registered player.
-     * This resets his time to log in (TimeoutTask) and updates the messages he is shown (MessageTask).
+     * This resets his time to log in (TimeoutTask) and updates the message he is shown (MessageTask).
      *
      * @param player the player to reset the tasks for
      */
@@ -146,48 +140,6 @@ public class LimboService {
     public void unmuteMessageTask(Player player) {
         getLimboOrLogError(player, "unmute message task")
             .ifPresent(limbo -> LimboPlayerTaskManager.setMuted(limbo.getMessageTask(), false));
-    }
-
-    /**
-     * Creates a LimboPlayer with the given player's details.
-     *
-     * @param player the player to process
-     * @param isRegistered whether the player is registered
-     * @return limbo player with the player's data
-     */
-    private LimboPlayer newLimboPlayer(Player player, boolean isRegistered) {
-        Location location = spawnLoader.getPlayerLocationOrSpawn(player);
-        // For safety reasons an unregistered player should not have OP status after registration
-        boolean isOperator = isRegistered && player.isOp();
-        boolean flyEnabled = player.getAllowFlight();
-        float walkSpeed = player.getWalkSpeed();
-        float flySpeed = player.getFlySpeed();
-        String playerGroup = "";
-        if (permissionsManager.hasGroupSupport()) {
-            playerGroup = permissionsManager.getPrimaryGroup(player);
-        }
-        ConsoleLogger.debug("Player `{0}` has primary group `{1}`", player.getName(), playerGroup);
-
-        return new LimboPlayer(location, isOperator, playerGroup, flyEnabled, walkSpeed, flySpeed);
-    }
-
-    /**
-     * Removes the data that is saved in a LimboPlayer from the player.
-     * <p>
-     * Note that teleportation on the player is performed by {@link fr.xephi.authme.service.TeleportationService} and
-     * changing the permission group is handled by {@link fr.xephi.authme.permission.AuthGroupHandler}.
-     *
-     * @param player the player to set defaults to
-     */
-    private void revokeLimboStates(Player player) {
-        player.setOp(false);
-        player.setAllowFlight(false);
-
-        if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setFlySpeed(0.0f);
-            player.setWalkSpeed(0.0f);
-        }
     }
 
     /**
