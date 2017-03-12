@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Feb 25 21:59:18 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Mar 12 13:39:50 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -73,17 +73,6 @@ ExternalBoardOptions:
     phpbbActivatedGroupId: 2
     # Wordpress prefix defined during WordPress installation
     wordpressTablePrefix: 'wp_'
-Converter:
-    Rakamak:
-        # Rakamak file name
-        fileName: 'users.rak'
-        # Rakamak use IP?
-        useIP: false
-        # Rakamak IP file name
-        ipFileName: 'UsersIp.rak'
-    CrazyLogin:
-        # CrazyLogin database file name
-        fileName: 'accounts.db'
 settings:
     sessions:
         # Do you want to enable the session feature?
@@ -323,6 +312,8 @@ Email:
     mailSMTP: 'smtp.gmail.com'
     # Email SMTP server port
     mailPort: 465
+    # Only affects port 25: enable TLS/STARTTLS?
+    useTls: true
     # Email account which sends the mails
     mailAccount: ''
     # Email account password
@@ -444,6 +435,23 @@ Security:
         # Seconds a user has to wait for before a password recovery mail may be sent again
         # This prevents an attacker from abusing AuthMe's email feature.
         cooldown: 60
+# Before a user logs in, various properties are temporarily removed from the player,
+# such as OP status, ability to fly, and walk/fly speed.
+# Once the user is logged in, we add back the properties we previously saved.
+# In this section, you may define how the properties should be restored.
+limbo:
+    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.
+    # RESTORE sets back the old property from the player.
+    restoreAllowFlight: 'RESTORE'
+    # Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
+    # RESTORE: restore the speed the player had;
+    # DEFAULT: always set to default speed;
+    # MAX_RESTORE: take the maximum of the player's current speed and the previous one
+    # RESTORE_NO_ZERO: Like 'restore' but sets speed to default if the player's speed was 0
+    restoreFlySpeed: 'MAX_RESTORE'
+    # Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
+    # See above for a description of the values.
+    restoreWalkSpeed: 'MAX_RESTORE'
 BackupSystem:
     # Enable or disable automatic backup
     ActivateBackup: false
@@ -453,6 +461,17 @@ BackupSystem:
     OnServerStop: true
     # Windows only mysql installation Path
     MysqlWindowsPath: 'C:\Program Files\MySQL\MySQL Server 5.1\'
+Converter:
+    Rakamak:
+        # Rakamak file name
+        fileName: 'users.rak'
+        # Rakamak use IP?
+        useIP: false
+        # Rakamak IP file name
+        ipFileName: 'UsersIp.rak'
+    CrazyLogin:
+        # CrazyLogin database file name
+        fileName: 'accounts.db'
 ```
 
 To change settings on a running server, save your changes to config.yml and use 
@@ -460,4 +479,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Feb 25 21:59:18 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Mar 12 13:39:50 CET 2017

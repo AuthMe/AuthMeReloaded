@@ -75,10 +75,11 @@ public final class ReflectionTestUtils {
         }
     }
 
-    public static Object invokeMethod(Method method, Object instance, Object... parameters) {
+    @SuppressWarnings("unchecked")
+    public static <V> V invokeMethod(Method method, Object instance, Object... parameters) {
         method.setAccessible(true);
         try {
-            return method.invoke(instance, parameters);
+            return (V) method.invoke(instance, parameters);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new UnsupportedOperationException("Could not invoke method '" + method + "'", e);
         }

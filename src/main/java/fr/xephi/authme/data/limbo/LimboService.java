@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_ALLOW_FLIGHT;
+import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_FLY_SPEED;
+import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_WALK_SPEED;
+
 /**
  * Service for managing players that are in "limbo," a temporary state players are
  * put in which have joined but not yet logged in yet.
@@ -53,18 +57,9 @@ public class LimboService {
             ConsoleLogger.debug("No LimboPlayer found for `{0}` - cannot restore", lowerName);
         } else {
             player.setOp(limbo.isOperator());
-            player.setAllowFlight(limbo.isCanFly());
-            float walkSpeed = limbo.getWalkSpeed();
-            float flySpeed = limbo.getFlySpeed();
-            // Reset the speed value if it was 0
-            if (walkSpeed < 0.01f) {
-                walkSpeed = LimboPlayer.DEFAULT_WALK_SPEED;
-            }
-            if (flySpeed < 0.01f) {
-                flySpeed = LimboPlayer.DEFAULT_FLY_SPEED;
-            }
-            player.setWalkSpeed(walkSpeed);
-            player.setFlySpeed(flySpeed);
+            settings.getProperty(RESTORE_ALLOW_FLIGHT).restoreAllowFlight(player, limbo);
+            settings.getProperty(RESTORE_FLY_SPEED).restoreFlySpeed(player, limbo);
+            settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);
             limbo.clearTasks();
             ConsoleLogger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
         }

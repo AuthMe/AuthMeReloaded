@@ -5,6 +5,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,8 +20,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Map;
 
-import static org.hamcrest.Matchers.anEmptyMap;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -85,7 +84,8 @@ public class LimboServiceTest {
         verify(player).setFlySpeed(0.0f);
         verify(player).setWalkSpeed(0.0f);
 
-        LimboPlayer limbo = getLimboMap().get("bobby");
+        assertThat(limboService.hasLimboPlayer("Bobby"), equalTo(true));
+        LimboPlayer limbo = limboService.getLimboPlayer("Bobby");
         assertThat(limbo, not(nullValue()));
         assertThat(limbo.isOperator(), equalTo(true));
         assertThat(limbo.getWalkSpeed(), equalTo(0.3f));
@@ -114,7 +114,7 @@ public class LimboServiceTest {
         verify(player).setFlySpeed(0.0f);
         verify(player).setWalkSpeed(0.0f);
 
-        LimboPlayer limbo = getLimboMap().get("charles");
+        LimboPlayer limbo = limboService.getLimboPlayer("charles");
         assertThat(limbo, not(nullValue()));
         assertThat(limbo.isOperator(), equalTo(false));
         assertThat(limbo.getWalkSpeed(), equalTo(0.1f));
@@ -127,24 +127,31 @@ public class LimboServiceTest {
     @Test
     public void shouldClearTasksOnAlreadyExistingLimbo() {
         // given
-        LimboPlayer limbo = mock(LimboPlayer.class);
-        getLimboMap().put("carlos", limbo);
+        LimboPlayer existingLimbo = mock(LimboPlayer.class);
+        getLimboMap().put("carlos", existingLimbo);
         Player player = newPlayer("Carlos");
 
         // when
         limboService.createLimboPlayer(player, false);
 
         // then
-        verify(limbo).clearTasks();
-        assertThat(getLimboMap().get("carlos"), both(not(sameInstance(limbo))).and(not(nullValue())));
+        verify(existingLimbo).clearTasks();
+        LimboPlayer newLimbo = limboService.getLimboPlayer("Carlos");
+        assertThat(newLimbo, not(nullValue()));
+        assertThat(newLimbo, not(sameInstance(existingLimbo)));
     }
 
     @Test
     public void shouldRestoreData() {
         // given
-        Player player = newPlayer("John", true, 0.4f, false, 0.2f);
-        LimboPlayer limbo = Mockito.spy(convertToLimboPlayer(player, null, ""));
+        LimboPlayer limbo = Mockito.spy(convertToLimboPlayer(
+            newPlayer("John", true, 0.4f, false, 0.0f), null, ""));
         getLimboMap().put("john", limbo);
+        Player player = newPlayer("John", false, 0.2f, false, 0.7f);
+
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(LimboSettings.RESTORE_WALK_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
+        given(settings.getProperty(LimboSettings.RESTORE_FLY_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE_NO_ZERO);
 
         // when
         limboService.restoreData(player);
@@ -152,10 +159,10 @@ public class LimboServiceTest {
         // then
         verify(player).setOp(true);
         verify(player).setWalkSpeed(0.4f);
-        verify(player).setAllowFlight(false);
-        verify(player).setFlySpeed(0.2f);
+        verify(player).setAllowFlight(true);
+        verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
         verify(limbo).clearTasks();
-        assertThat(getLimboMap(), anEmptyMap());
+        assertThat(limboService.hasLimboPlayer("John"), equalTo(false));
     }
 
     @Test
