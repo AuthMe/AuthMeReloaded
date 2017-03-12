@@ -7,6 +7,7 @@ import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.data.limbo.AllowFlightRestoreType;
 import fr.xephi.authme.data.limbo.WalkFlySpeedRestoreType;
+import fr.xephi.authme.data.limbo.persistence.LimboPersistenceType;
 
 import java.util.Map;
 
@@ -16,6 +17,15 @@ import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
  * Settings for the LimboPlayer feature.
  */
 public final class LimboSettings implements SettingsHolder {
+
+    @Comment({
+        "Besides storing the data in memory, you can define if/how the data should be persisted",
+        "on disk. This is useful in case of a server crash, so next time the server starts we can",
+        "properly restore things like OP status, ability to fly, and walk/fly speed.",
+        "DISABLED: no disk storage, INDIVIDUAL_FILES: each player data in its own file"
+    })
+    public static final Property<LimboPersistenceType> LIMBO_PERSISTENCE_TYPE =
+        newProperty(LimboPersistenceType.class, "limbo.persistence", LimboPersistenceType.INDIVIDUAL_FILES);
 
     @Comment({
         "Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.",
@@ -50,7 +60,7 @@ public final class LimboSettings implements SettingsHolder {
             "Before a user logs in, various properties are temporarily removed from the player,",
             "such as OP status, ability to fly, and walk/fly speed.",
             "Once the user is logged in, we add back the properties we previously saved.",
-            "In this section, you may define how the properties should be restored."
+            "In this section, you may define how these properties should be handled."
         };
         return ImmutableMap.of("limbo", limboExplanation);
     }

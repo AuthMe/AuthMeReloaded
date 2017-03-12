@@ -69,8 +69,7 @@ class LimboServiceHelper {
      * <ul>
      *  <li><code>isOperator, allowFlight</code>: true if either limbo has true</li>
      *  <li><code>flySpeed, walkSpeed</code>: maximum value of either limbo player</li>
-     *  <li><code>group</code>: from old limbo if not empty, otherwise from new limbo</li>
-     *  <li><code>location</code>: from old limbo</li>
+     *  <li><code>group, location</code>: from old limbo if not empty/null, otherwise from new limbo</li>
      * </ul>
      *
      * @param newLimbo the new limbo player
@@ -89,8 +88,9 @@ class LimboServiceHelper {
         float flySpeed = Math.max(newLimbo.getFlySpeed(), oldLimbo.getFlySpeed());
         float walkSpeed = Math.max(newLimbo.getWalkSpeed(), oldLimbo.getWalkSpeed());
         String group = firstNotEmpty(newLimbo.getGroup(), oldLimbo.getGroup());
+        Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 
-        return new LimboPlayer(oldLimbo.getLocation(), isOperator, group, canFly, walkSpeed, flySpeed);
+        return new LimboPlayer(location, isOperator, group, canFly, walkSpeed, flySpeed);
     }
 
     private static String firstNotEmpty(String newGroup, String oldGroup) {
@@ -99,5 +99,9 @@ class LimboServiceHelper {
             return newGroup;
         }
         return oldGroup;
+    }
+
+    private static Location firstNotNull(Location first, Location second) {
+        return first == null ? second : first;
     }
 }

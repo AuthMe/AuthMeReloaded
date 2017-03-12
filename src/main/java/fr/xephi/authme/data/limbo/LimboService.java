@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
@@ -28,7 +29,10 @@ public class LimboService {
     private LimboPlayerTaskManager taskManager;
 
     @Inject
-    private LimboServiceHelper limboServiceHelper;
+    private LimboServiceHelper helper;
+
+    @Inject
+    private LimboPersistence persistence;
 
     LimboService() {
     }
@@ -42,19 +46,25 @@ public class LimboService {
     public void createLimboPlayer(Player player, boolean isRegistered) {
         final String name = player.getName().toLowerCase();
 
+        LimboPlayer limboFromDisk = persistence.getLimboPlayer(player);
+        if (limboFromDisk != null) {
+            ConsoleLogger.debug("LimboPlayer for `{0}` already exists on disk", name);
+        }
+
         LimboPlayer existingLimbo = entries.remove(name);
         if (existingLimbo != null) {
             existingLimbo.clearTasks();
-            ConsoleLogger.debug("LimboPlayer for `{0}` was already present", name);
+            ConsoleLogger.debug("LimboPlayer for `{0}` already present in memory", name);
         }
 
-        LimboPlayer limboPlayer = limboServiceHelper.merge(
-            limboServiceHelper.createLimboPlayer(player, isRegistered), existingLimbo);
+        LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
+        limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered), limboPlayer);
 
         taskManager.registerMessageTask(player, limboPlayer, isRegistered);
         taskManager.registerTimeoutTask(player, limboPlayer);
-        limboServiceHelper.revokeLimboStates(player);
+        helper.revokeLimboStates(player);
         entries.put(name, limboPlayer);
+        persistence.saveLimboPlayer(player, limboPlayer);
     }
 
     /**
@@ -98,6 +108,7 @@ public class LimboService {
             settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);
             limbo.clearTasks();
             ConsoleLogger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
+            persistence.removeLimboPlayer(player);
         }
     }
 

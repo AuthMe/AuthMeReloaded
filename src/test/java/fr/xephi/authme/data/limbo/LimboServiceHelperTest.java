@@ -48,14 +48,13 @@ public class LimboServiceHelperTest {
         // given
         Location newLocation = mock(Location.class);
         LimboPlayer newLimbo = new LimboPlayer(newLocation, false, "grp-new", true, 0.3f, 0.0f);
-        Location oldLocation = mock(Location.class);
-        LimboPlayer oldLimbo = new LimboPlayer(oldLocation, false, "", false, 0.1f, 0.1f);
+        LimboPlayer oldLimbo = new LimboPlayer(null, false, "", false, 0.1f, 0.1f);
 
         // when
         LimboPlayer result = limboServiceHelper.merge(newLimbo, oldLimbo);
 
         // then
-        assertThat(result.getLocation(), equalTo(oldLocation));
+        assertThat(result.getLocation(), equalTo(newLocation));
         assertThat(result.isOperator(), equalTo(false));
         assertThat(result.getGroup(), equalTo("grp-new"));
         assertThat(result.isCanFly(), equalTo(true));

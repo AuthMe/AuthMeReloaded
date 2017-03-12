@@ -4,6 +4,7 @@ import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -56,6 +57,9 @@ public class LimboServiceTest {
 
     @Mock
     private LimboPlayerTaskManager taskManager;
+
+    @Mock
+    private LimboPersistence limboPersistence;
 
     @BeforeClass
     public static void initLogger() {

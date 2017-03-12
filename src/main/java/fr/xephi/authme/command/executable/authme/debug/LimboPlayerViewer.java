@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme.debug;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -28,6 +29,9 @@ class LimboPlayerViewer implements DebugSection {
     private LimboService limboService;
 
     @Inject
+    private LimboPersistence limboPersistence;
+
+    @Inject
     private BukkitService bukkitService;
 
     private Field limboServiceEntries;
@@ -50,22 +54,23 @@ class LimboPlayerViewer implements DebugSection {
             return;
         }
 
-        LimboPlayer limbo = limboService.getLimboPlayer(arguments.get(0));
+        LimboPlayer memoryLimbo = limboService.getLimboPlayer(arguments.get(0));
         Player player = bukkitService.getPlayerExact(arguments.get(0));
-        if (limbo == null && player == null) {
+        LimboPlayer diskLimbo = player != null ? limboPersistence.getLimboPlayer(player) : null;
+        if (memoryLimbo == null && player == null) {
             sender.sendMessage("No limbo info and no player online with name '" + arguments.get(0) + "'");
             return;
         }
 
-        sender.sendMessage(ChatColor.GOLD + "Showing limbo / player info for '" + arguments.get(0) + "'");
-        new InfoDisplayer(sender, limbo, player)
+        sender.sendMessage(ChatColor.GOLD + "Showing disk limbo / limbo / player info for '" + arguments.get(0) + "'");
+        new InfoDisplayer(sender, diskLimbo, memoryLimbo, player)
             .sendEntry("Is op", LimboPlayer::isOperator, Player::isOp)
             .sendEntry("Walk speed", LimboPlayer::getWalkSpeed, Player::getWalkSpeed)
             .sendEntry("Can fly", LimboPlayer::isCanFly, Player::getAllowFlight)
             .sendEntry("Fly speed", LimboPlayer::getFlySpeed, Player::getFlySpeed)
             .sendEntry("Location", l -> formatLocation(l.getLocation()), p -> formatLocation(p.getLocation()))
             .sendEntry("Group", LimboPlayer::getGroup, p -> "");
-        sender.sendMessage("Note: group is only shown for LimboPlayer");
+        sender.sendMessage("Note: group is not shown for Player. Use /authme debug groups");
     }
 
     /**
@@ -102,25 +107,30 @@ class LimboPlayerViewer implements DebugSection {
      */
     private static final class InfoDisplayer {
         private final CommandSender sender;
-        private final Optional<LimboPlayer> limbo;
+        private final Optional<LimboPlayer> diskLimbo;
+        private final Optional<LimboPlayer> memoryLimbo;
         private final Optional<Player> player;
 
         /**
          * Constructor.
          *
          * @param sender command sender to send the information to
-         * @param limbo the limbo player to get data from
+         * @param memoryLimbo the limbo player to get data from
          * @param player the player to get data from
          */
-        InfoDisplayer(CommandSender sender, LimboPlayer limbo, Player player) {
+        InfoDisplayer(CommandSender sender, LimboPlayer diskLimbo, LimboPlayer memoryLimbo, Player player) {
             this.sender = sender;
-            this.limbo = Optional.ofNullable(limbo);
+            this.diskLimbo = Optional.ofNullable(diskLimbo);
+            this.memoryLimbo = Optional.ofNullable(memoryLimbo);
             this.player = Optional.ofNullable(player);
 
-            if (limbo == null) {
+            if (memoryLimbo == null) {
                 sender.sendMessage("Note: no Limbo information available");
-            } else if (player == null) {
+            }
+            if (player == null) {
                 sender.sendMessage("Note: player is not online");
+            } else if (diskLimbo == null) {
+                sender.sendMessage("Note: no Limbo on disk available");
             }
         }
 
@@ -138,10 +148,16 @@ class LimboPlayerViewer implements DebugSection {
                                     Function<Player, T> playerGetter) {
             sender.sendMessage(
                 title + ": "
-                + limbo.map(limboGetter).map(String::valueOf).orElse("--")
+                + getData(diskLimbo, limboGetter)
                 + " / "
-                + player.map(playerGetter).map(String::valueOf).orElse("--"));
+                + getData(memoryLimbo, limboGetter)
+                + " / "
+                + getData(player, playerGetter));
             return this;
+        }
+
+        static <E, T> String getData(Optional<E> entity, Function<E, T> getter) {
+            return entity.map(getter).map(String::valueOf).orElse(" -- ");
         }
     }
 }
