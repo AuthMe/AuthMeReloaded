@@ -85,21 +85,6 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void shouldRetrieveMessage() {
-        // given
-        MessageKey key = MessageKey.ACCOUNT_NOT_ACTIVATED;
-        String[] lines = new String[]{"First message line", "second line"};
-        given(messages.retrieve(key)).willReturn(lines);
-
-        // when
-        String[] result = commonService.retrieveMessage(key);
-
-        // then
-        assertThat(result, equalTo(lines));
-        verify(messages).retrieve(key);
-    }
-
-    @Test
     public void shouldRetrieveSingleMessage() {
         // given
         MessageKey key = MessageKey.ACCOUNT_NOT_ACTIVATED;

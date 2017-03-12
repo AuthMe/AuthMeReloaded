@@ -74,7 +74,7 @@ public class CommandManager implements Reloadable {
 
     private void executeCommands(Player player, List<Command> commands) {
         for (Command command : commands) {
-            final String execution = command.getCommand().replace("%p", player.getName());
+            final String execution = command.getCommand();
             if (Executor.CONSOLE.equals(command.getExecutor())) {
                 bukkitService.dispatchConsoleCommand(execution);
             } else {
