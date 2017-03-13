@@ -9,6 +9,8 @@ public enum LimboPersistenceType {
 
     SINGLE_FILE(SingleFilePersistenceHandler.class),
 
+    SEGMENT_FILES(SegmentFilesPersistenceHolder.class),
+
     DISABLED(NoOpPersistenceHandler.class);
 
     private final Class<? extends LimboPersistenceHandler> implementationClass;
