@@ -90,8 +90,8 @@ recovery_email: '&cPerdeu a sua password? Para a recuperar escreva /email recove
 email_cooldown_error: '&cUm email já foi enviado recentemente.Por favor, espere %time antes de enviar novamente'
 
 # Captcha
-usage_captcha: '&cPrecisa digitar um captcha, escreva: /captcha THE_CAPTCHA'
-wrong_captcha: '&cCaptcha errado, por favor escreva: /captcha <theCaptcha>'
+usage_captcha: '&cPrecisa digitar um captcha, escreva: /captcha <theCaptcha>'
+wrong_captcha: '&cCaptcha errado, por favor escreva: /captcha THE_CAPTCHA'
 valid_captcha: '&cO seu captcha é válido!'
 
 # Time units
