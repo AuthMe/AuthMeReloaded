@@ -22,10 +22,11 @@ public final class LimboSettings implements SettingsHolder {
         "Besides storing the data in memory, you can define if/how the data should be persisted",
         "on disk. This is useful in case of a server crash, so next time the server starts we can",
         "properly restore things like OP status, ability to fly, and walk/fly speed.",
-        "DISABLED: no disk storage, INDIVIDUAL_FILES: each player data in its own file"
+        "DISABLED: no disk storage, INDIVIDUAL_FILES: each player data in its own file,",
+        "SINGLE_FILE: all data in one single file (only if you have a small server!)"
     })
     public static final Property<LimboPersistenceType> LIMBO_PERSISTENCE_TYPE =
-        newProperty(LimboPersistenceType.class, "limbo.persistence", LimboPersistenceType.INDIVIDUAL_FILES);
+        newProperty(LimboPersistenceType.class, "limbo.persistence.type", LimboPersistenceType.INDIVIDUAL_FILES);
 
     @Comment({
         "Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.",
