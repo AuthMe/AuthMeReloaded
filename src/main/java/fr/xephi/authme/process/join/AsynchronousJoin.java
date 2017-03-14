@@ -15,6 +15,7 @@ import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -71,6 +72,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private CommandManager commandManager;
 
+    @Inject
+    private ValidationService validationService;
+
     AsynchronousJoin() {
     }
 
@@ -91,7 +95,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             pluginHookService.setEssentialsSocialSpyStatus(player, false);
         }
 
-        if (isNameRestricted(name, ip, player.getAddress().getHostName())) {
+        if (!validationService.fulfillsNameRestrictions(player)) {
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
                 @Override
                 public void run() {
@@ -178,36 +182,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
         // Timeout and message task
         limboPlayerTaskManager.registerTimeoutTask(player);
         limboPlayerTaskManager.registerMessageTask(name, isAuthAvailable);
-    }
-
-    /**
-     * Returns whether the name is restricted based on the restriction settings.
-     *
-     * @param name   The name to check
-     * @param ip     The IP address of the player
-     * @param domain The hostname of the IP address
-     *
-     * @return True if the name is restricted (IP/domain is not allowed for the given name),
-     * false if the restrictions are met or if the name has no restrictions to it
-     */
-    private boolean isNameRestricted(String name, String ip, String domain) {
-        if (!service.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)) {
-            return false;
-        }
-
-        boolean nameFound = false;
-        for (String entry : service.getProperty(RestrictionSettings.ALLOWED_RESTRICTED_USERS)) {
-            String[] args = entry.split(";");
-            String testName = args[0];
-            String testIp = args[1];
-            if (testName.equalsIgnoreCase(name)) {
-                nameFound = true;
-                if ((ip != null && testIp.equals(ip)) || (domain != null && testIp.equalsIgnoreCase(domain))) {
-                    return false;
-                }
-            }
-        }
-        return nameFound;
     }
 
     /**

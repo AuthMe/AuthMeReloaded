@@ -4,24 +4,30 @@ import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.base.Strings;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.service.ValidationService.ValidationResult;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -55,6 +61,7 @@ public class ValidationServiceTest {
             .willReturn(asList("unsafe", "other-unsafe"));
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(asList("name01", "npc"));
+        given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(false);
     }
 
     @Test
@@ -115,8 +122,8 @@ public class ValidationServiceTest {
     @Test
     public void shouldAcceptEmailWithEmptyLists() {
         // given
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String>emptyList());
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.emptyList());
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.emptyList());
 
         // when
         boolean result = validationService.validateEmail("test@example.org");
@@ -130,7 +137,7 @@ public class ValidationServiceTest {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
             .willReturn(asList("domain.tld", "example.com"));
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.emptyList());
 
         // when
         boolean result = validationService.validateEmail("TesT@Example.com");
@@ -144,7 +151,7 @@ public class ValidationServiceTest {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
             .willReturn(asList("domain.tld", "example.com"));
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.emptyList());
 
         // when
         boolean result = validationService.validateEmail("email@other-domain.abc");
@@ -156,7 +163,7 @@ public class ValidationServiceTest {
     @Test
     public void shouldAcceptEmailNotInBlacklist() {
         // given
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
             .willReturn(asList("Example.org", "a-test-name.tld"));
 
@@ -170,7 +177,7 @@ public class ValidationServiceTest {
     @Test
     public void shouldRejectEmailInBlacklist() {
         // given
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
             .willReturn(asList("Example.org", "a-test-name.tld"));
 
@@ -263,8 +270,8 @@ public class ValidationServiceTest {
     @Test
     public void shouldNotInvokeGeoLiteApiIfCountryListsAreEmpty() {
         // given
-        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
-        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.emptyList());
 
         // when
         boolean result = validationService.isCountryAdmitted("addr");
@@ -278,7 +285,7 @@ public class ValidationServiceTest {
     public void shouldAcceptCountryInWhitelist() {
         // given
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
-        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.emptyList());
         String ip = "127.0.0.1";
         given(geoIpService.getCountryCode(ip)).willReturn("CH");
 
@@ -294,7 +301,7 @@ public class ValidationServiceTest {
     public void shouldRejectCountryMissingFromWhitelist() {
         // given
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
-        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.emptyList());
         String ip = "123.45.67.89";
         given(geoIpService.getCountryCode(ip)).willReturn("BR");
 
@@ -309,7 +316,7 @@ public class ValidationServiceTest {
     @Test
     public void shouldAcceptCountryAbsentFromBlacklist() {
         // given
-        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
         String ip = "127.0.0.1";
         given(geoIpService.getCountryCode(ip)).willReturn("BR");
@@ -325,7 +332,7 @@ public class ValidationServiceTest {
     @Test
     public void shouldRejectCountryInBlacklist() {
         // given
-        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
         String ip = "123.45.67.89";
         given(geoIpService.getCountryCode(ip)).willReturn("IT");
@@ -336,6 +343,54 @@ public class ValidationServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(geoIpService).getCountryCode(ip);
+    }
+
+    @Test
+    public void shouldCheckNameRestrictions() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
+            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;32.24.16.8"));
+        validationService.reload();
+
+        Player bobby = mockPlayer("bobby", "127.0.0.4");
+        Player tamara = mockPlayer("taMARA", "8.8.8.8");
+        Player notRestricted = mockPlayer("notRestricted", "0.0.0.0");
+
+        // when
+        boolean isBobbyAdmitted = validationService.fulfillsNameRestrictions(bobby);
+        boolean isTamaraAdmitted = validationService.fulfillsNameRestrictions(tamara);
+        boolean isNotRestrictedAdmitted = validationService.fulfillsNameRestrictions(notRestricted);
+
+        // then
+        assertThat(isBobbyAdmitted, equalTo(true));
+        assertThat(isTamaraAdmitted, equalTo(false));
+        assertThat(isNotRestrictedAdmitted, equalTo(true));
+    }
+
+    @Test
+    public void shouldLogWarningForInvalidRestrictionRule() {
+        // given
+        Logger logger = TestHelper.setupLogger();
+        given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
+            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;"));
+
+        // when
+        validationService.reload();
+
+        // then
+        ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
+        verify(logger).warning(stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), containsString("Tamara;"));
+    }
+
+    private static Player mockPlayer(String name, String ip) {
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        TestHelper.mockPlayerIp(player, ip);
+        given(player.getAddress().getHostName()).willReturn("--");
+        return player;
     }
 
     private static void assertErrorEquals(ValidationResult validationResult, MessageKey messageKey, String... args) {

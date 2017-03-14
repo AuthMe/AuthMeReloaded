@@ -1,6 +1,8 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.configme.properties.Property;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
@@ -12,8 +14,10 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -22,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import static fr.xephi.authme.util.StringUtils.isInsideString;
 
 /**
  * Validation service.
@@ -39,6 +45,7 @@ public class ValidationService implements Reloadable {
 
     private Pattern passwordRegex;
     private Set<String> unrestrictedNames;
+    private Multimap<String, String> restrictedNames;
 
     ValidationService() {
     }
@@ -49,6 +56,9 @@ public class ValidationService implements Reloadable {
         passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
         // Use Set for more efficient contains() lookup
         unrestrictedNames = new HashSet<>(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES));
+        restrictedNames = settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)
+            ? loadNameRestrictions(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
+            : HashMultimap.create();
     }
 
     /**
@@ -133,6 +143,24 @@ public class ValidationService implements Reloadable {
     }
 
     /**
+     * Checks that the player meets any name restriction if present (IP/domain-based).
+     *
+     * @param player the player to check
+     * @return true if the player may join, false if the player does not satisfy the name restrictions
+     */
+    public boolean fulfillsNameRestrictions(Player player) {
+        Collection<String> restrictions = restrictedNames.get(player.getName().toLowerCase());
+        if (Utils.isCollectionEmpty(restrictions)) {
+            return true;
+        }
+
+        String ip = PlayerUtils.getPlayerIp(player);
+        String domain = player.getAddress().getHostName();
+        return restrictions.stream()
+            .anyMatch(restriction -> ip.equals(restriction) || domain.equalsIgnoreCase(restriction));
+    }
+
+    /**
      * Verifies whether the given value is allowed according to the given whitelist and blacklist settings.
      * Whitelist has precedence over blacklist: if a whitelist is set, the value is rejected if not present
      * in the whitelist.
@@ -159,6 +187,26 @@ public class ValidationService implements Reloadable {
             }
         }
         return false;
+    }
+
+    /**
+     * Loads the configured name restrictions into a Multimap by player name (all-lowercase).
+     *
+     * @param configuredRestrictions the restriction rules to convert to a map
+     * @return map of allowed IPs/domain names by player name
+     */
+    private Multimap<String, String> loadNameRestrictions(List<String> configuredRestrictions) {
+        Multimap<String, String> restrictions = HashMultimap.create();
+        for (String restriction : configuredRestrictions) {
+            if (isInsideString(';', restriction)) {
+                String[] data = restriction.split(";");
+                restrictions.put(data[0].toLowerCase(), data[1]);
+            } else {
+                ConsoleLogger.warning("Restricted user rule must have a ';' separating name from restriction,"
+                    + " but found: '" + restriction + "'");
+            }
+        }
+        return restrictions;
     }
 
     public static final class ValidationResult {

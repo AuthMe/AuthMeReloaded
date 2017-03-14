@@ -76,4 +76,20 @@ public final class StringUtils {
     public static String formatException(Throwable th) {
         return "[" + th.getClass().getSimpleName() + "]: " + th.getMessage();
     }
+
+    /**
+     * Check that the given needle is in the middle of the haystack, i.e. that the haystack
+     * contains the needle and that it is not at the very start or end.
+     *
+     * @param needle the needle to search for
+     * @param haystack the haystack to search in
+     *
+     * @return true if the needle is in the middle of the word, false otherwise
+     */
+    // Note ljacqu 20170314: `needle` is restricted to char type intentionally because something like
+    // isInsideString("11", "2211") would unexpectedly return true...
+    public static boolean isInsideString(char needle, String haystack) {
+        int index = haystack.indexOf(needle);
+        return index > 0 && index < haystack.length() - 1;
+    }
 }
