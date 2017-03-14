@@ -1,0 +1,17 @@
+{
+  "f6a97c88-7c8f-c12e-4931-6206d4ca067d": {
+    "location": {
+      "world": "lobby",
+      "x": -120.31415,
+      "y": 25.0,
+      "z": -80.71234,
+      "yaw": 22.14977,
+      "pitch": 40.649977
+    },
+    "group": "noob",
+    "operator": false,
+    "can-fly": true,
+    "walk-speed": 0.2,
+    "fly-speed": 0.1
+  }
+}

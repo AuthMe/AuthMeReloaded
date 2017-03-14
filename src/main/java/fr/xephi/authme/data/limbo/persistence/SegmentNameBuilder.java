@@ -25,15 +25,28 @@ class SegmentNameBuilder {
         this.charToSegmentChar = buildCharMap(distribution);
     }
 
+    /**
+     * Returns the segment ID for the given UUID.
+     *
+     * @param uuid the player's uuid to get the segment for
+     * @return id the uuid belongs to
+     */
     String createSegmentName(String uuid) {
         if (distribution == 16) {
             return prefix + uuid.substring(0, length);
         } else {
-            return prefix + createSegmentName(uuid.substring(0, length).toCharArray());
+            return prefix + buildSegmentName(uuid.substring(0, length).toCharArray());
         }
     }
 
-    private String createSegmentName(char[] chars) {
+    /**
+     * @return the prefix used for the current segment configuration
+     */
+    String getPrefix() {
+        return prefix;
+    }
+
+    private String buildSegmentName(char[] chars) {
         if (chars.length == 1) {
             return String.valueOf(charToSegmentChar.get(chars[0]));
         }

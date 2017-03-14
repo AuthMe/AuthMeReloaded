@@ -34,14 +34,14 @@ public final class LimboSettings implements SettingsHolder {
         "This setting only affects SEGMENT_FILES persistence. The segment file",
         "persistence attempts to reduce the number of files by distributing players into various",
         "buckets based on their UUID. This setting defines into how many files the players should",
-        "be distributed. Possible values: ONE, TWO, FOUR, EIGHT, SIXTEEN, THIRTY_TWO, SIXTY_FOUR,",
+        "be distributed. Possible values: ONE, FOUR, EIGHT, SIXTEEN, THIRTY_TWO, SIXTY_FOUR,",
         "ONE_TWENTY for 128, TWO_FIFTY for 256.",
         "For example, if you expect 100 non-logged in players, setting to SIXTEEN will average",
         "6.25 players per file (100 / 16). If you set to ONE, like persistence SINGLE_FILE, only",
         "one file will be used. Contrary to SINGLE_FILE, it won't keep the entries in cache, which",
         "may deliver different results in terms of performance.",
-        "Note: if you change this setting you lose all stored LimboPlayer data because the",
-        "distribution of players will be different."
+        "Note: if you change this setting all data will be migrated. If you have a lot of data,",
+        "change this setting only on server restart, not with /authme reload."
     })
     public static final Property<SegmentConfiguration> SEGMENT_DISTRIBUTION =
         newProperty(SegmentConfiguration.class, "limbo.persistence.segmentDistribution", SegmentConfiguration.SIXTEEN);

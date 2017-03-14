@@ -15,7 +15,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.util.logging.Logger;
 
@@ -33,7 +32,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -101,21 +99,6 @@ public class LimboPersistenceTest {
 
         // then
         assertThat(getHandler(), instanceOf(LimboPersistenceType.INDIVIDUAL_FILES.getImplementationClass()));
-    }
-
-    @Test
-    public void shouldNotReinitializeHandlerForSameType() {
-        // given
-        LimboPersistenceHandler currentHandler = getHandler();
-        Mockito.reset(handlerFactory);
-        given(currentHandler.getType()).willCallRealMethod();
-
-        // when
-        limboPersistence.reload(settings);
-
-        // then
-        verifyZeroInteractions(handlerFactory);
-        assertThat(currentHandler, sameInstance(getHandler()));
     }
 
     @Test

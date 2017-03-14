@@ -11,7 +11,6 @@ import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.ONE;
 import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.SIXTEEN;
 import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.SIXTY_FOUR;
 import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.THIRTY_TWO;
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.TWO;
 import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.TWO_FIFTY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -71,17 +70,6 @@ public class SegmentNameBuilderTest {
         assertThat(nameBuilder.createSegmentName("abc"), equalTo("seg1-0"));
         assertThat(nameBuilder.createSegmentName("f0e"), equalTo("seg1-0"));
         assertThat(nameBuilder.createSegmentName("329"), equalTo("seg1-0"));
-    }
-
-    @Test
-    public void shouldCreateTwoSegments() {
-        // given
-        SegmentNameBuilder nameBuilder = new SegmentNameBuilder(TWO);
-
-        // when / then
-        assertThat(nameBuilder.createSegmentName("f6c"), equalTo("seg2-1"));
-        assertThat(nameBuilder.createSegmentName("29f"), equalTo("seg2-0"));
-        assertThat(nameBuilder.createSegmentName("983"), equalTo("seg2-1"));
     }
 
     @Test

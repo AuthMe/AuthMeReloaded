@@ -17,11 +17,14 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Persistence handler for LimboPlayer objects by distributing the objects to store
@@ -51,7 +54,8 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
 
         segmentNameBuilder = new SegmentNameBuilder(settings.getProperty(LimboSettings.SEGMENT_DISTRIBUTION));
 
-        // TODO #1125: Check for other segment files and attempt to convert?
+        convertOldDataToCurrentSegmentScheme();
+        deleteEmptyFiles();
     }
 
     @Override
@@ -94,16 +98,16 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
         }
     }
 
+    @Override
+    public LimboPersistenceType getType() {
+        return LimboPersistenceType.SEGMENT_FILES;
+    }
+
     private void saveEntries(Map<String, LimboPlayer> entries, File file) {
-        if (entries.isEmpty()) {
-            // TODO #1125: Probably should do a sweep of empty files on startup / shutdown, but not all the time
-            FileUtils.delete(file);
-        } else {
-            try (FileWriter fw = new FileWriter(file)) {
-                gson.toJson(entries, fw);
-            } catch (IOException e) {
-                ConsoleLogger.logException("Could not write to '" + file + "':", e);
-            }
+        try (FileWriter fw = new FileWriter(file)) {
+            gson.toJson(entries, fw);
+        } catch (Exception e) {
+            ConsoleLogger.logException("Could not write to '" + file + "':", e);
         }
     }
 
@@ -114,7 +118,7 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
 
         try {
             return gson.fromJson(Files.toString(file, StandardCharsets.UTF_8), LIMBO_MAP_TYPE);
-        } catch (IOException e) {
+        } catch (Exception e) {
             ConsoleLogger.logException("Failed reading '" + file + "':", e);
         }
         return null;
@@ -125,8 +129,98 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
         return new File(cacheFolder, segment + "-limbo.json");
     }
 
-    @Override
-    public LimboPersistenceType getType() {
-        return LimboPersistenceType.SINGLE_FILE;
+    /**
+     * Loads segment files in the cache folder that don't correspond to the current segmenting scheme
+     * and migrates the data into files of the current segments. This allows a player to change the
+     * segment size without any loss of data.
+     */
+    private void convertOldDataToCurrentSegmentScheme() {
+        String currentPrefix = segmentNameBuilder.getPrefix();
+        File[] files = listFiles(cacheFolder);
+        Map<String, LimboPlayer> allLimboPlayers = new HashMap<>();
+        List<File> migratedFiles = new ArrayList<>();
+
+        for (File file : files) {
+            if (isLimboJsonFile(file) && !file.getName().startsWith(currentPrefix)) {
+                Map<String, LimboPlayer> data = readLimboPlayers(file);
+                if (data != null) {
+                    allLimboPlayers.putAll(data);
+                    migratedFiles.add(file);
+                }
+            }
+        }
+
+        if (!allLimboPlayers.isEmpty()) {
+            saveToNewSegments(allLimboPlayers);
+            migratedFiles.forEach(FileUtils::delete);
+        }
+    }
+
+    /**
+     * Saves the LimboPlayer data read from old segmenting schemes into the current segmenting scheme.
+     *
+     * @param limbosFromOldSegments the limbo players to store into the current segment files
+     */
+    private void saveToNewSegments(Map<String, LimboPlayer> limbosFromOldSegments) {
+        Map<String, Map<String, LimboPlayer>> limboBySegment = groupBySegment(limbosFromOldSegments);
+
+        ConsoleLogger.info("Saving " + limbosFromOldSegments.size() + " LimboPlayers from old segments into "
+            + limboBySegment.size() + " current segments");
+        for (Map.Entry<String, Map<String, LimboPlayer>> entry : limboBySegment.entrySet()) {
+            File file = new File(cacheFolder, entry.getKey() + "-limbo.json");
+            Map<String, LimboPlayer> limbosToSave = Optional.ofNullable(readLimboPlayers(file))
+                .orElseGet(HashMap::new);
+            limbosToSave.putAll(entry.getValue());
+            saveEntries(limbosToSave, file);
+        }
+    }
+
+    /**
+     * Converts a Map of UUID to LimboPlayers to a 2-dimensional Map of LimboPlayers by segment ID and UUID.
+     * {@code Map(uuid -> LimboPlayer) to Map(segment -> Map(uuid -> LimboPlayer))}
+     *
+     * @param readLimboPlayers the limbo players to order by segment
+     * @return limbo players ordered by segment ID and associated player UUID
+     */
+    private Map<String, Map<String, LimboPlayer>> groupBySegment(Map<String, LimboPlayer> readLimboPlayers) {
+        Map<String, Map<String, LimboPlayer>> limboBySegment = new HashMap<>();
+        for (Map.Entry<String, LimboPlayer> entry : readLimboPlayers.entrySet()) {
+            String segmentId = segmentNameBuilder.createSegmentName(entry.getKey());
+            limboBySegment.computeIfAbsent(segmentId, s -> new HashMap<>())
+                .put(entry.getKey(), entry.getValue());
+        }
+        return limboBySegment;
+    }
+
+    /**
+     * Deletes files from the current segmenting scheme that are empty.
+     */
+    private void deleteEmptyFiles() {
+        File[] files = listFiles(cacheFolder);
+
+        long deletedFiles = Arrays.stream(files)
+            // typically the size is 2 because there's an empty JSON map: {}
+            .filter(f -> isLimboJsonFile(f) && f.length() < 3)
+            .peek(FileUtils::delete)
+            .count();
+        ConsoleLogger.debug("Limbo: Deleted {0} empty segment files", deletedFiles);
+    }
+
+    /**
+     * @param file the file to check
+     * @return true if it is a segment file storing Limbo data, false otherwise
+     */
+    private static boolean isLimboJsonFile(File file) {
+        String name = file.getName();
+        return name.startsWith("seg") && name.endsWith("-limbo.json");
+    }
+
+    private static File[] listFiles(File folder) {
+        File[] files = folder.listFiles();
+        if (files == null) {
+            ConsoleLogger.warning("Could not get files of '" + folder + "'");
+            return new File[0];
+        }
+        return files;
     }
 }

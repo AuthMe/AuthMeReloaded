@@ -70,13 +70,10 @@ public class LimboPersistence implements SettingsDependent {
     @Override
     public void reload(Settings settings) {
         LimboPersistenceType persistenceType = settings.getProperty(LimboSettings.LIMBO_PERSISTENCE_TYPE);
-        if (handler == null || handler.getType() != persistenceType) {
-            // If we're changing from an existing handler, output a quick hint that nothing is converted.
-            if (handler != null) {
-                ConsoleLogger.info("Limbo persistence type has changed! Note that the data is not converted.");
-            }
-
-            handler = handlerFactory.newInstance(persistenceType.getImplementationClass());
+        // If we're changing from an existing handler, output a quick hint that nothing is converted.
+        if (handler != null && handler.getType() != persistenceType) {
+            ConsoleLogger.info("Limbo persistence type has changed! Note that the data is not converted.");
         }
+        handler = handlerFactory.newInstance(persistenceType.getImplementationClass());
     }
 }

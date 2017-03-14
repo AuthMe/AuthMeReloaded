@@ -32,16 +32,16 @@ public class SegmentConfigurationTest {
     @Test
     public void shouldHaveDifferentSegmentSizes() {
         // given
-        Set<Integer> sizes = new HashSet<>();
+        Set<Integer> segmentTotals = new HashSet<>();
 
         // when / then
         for (SegmentConfiguration entry : SegmentConfiguration.values()) {
-            int segSize = (int) Math.pow(entry.getDistribution(), entry.getLength());
+            int totalSegments = entry.getTotalSegments();
             assertThat(entry + " must have a positive segment size",
-                segSize, greaterThan(0));
+                totalSegments, greaterThan(0));
 
-            assertThat(entry + " has a segment size that was already encountered (" + segSize + ")",
-                sizes.add(segSize), equalTo(true));
+            assertThat(entry + " has a segment total that was already encountered (" + totalSegments + ")",
+                segmentTotals.add(totalSegments), equalTo(true));
         }
     }
 }
