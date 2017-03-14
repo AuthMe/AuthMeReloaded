@@ -89,8 +89,6 @@ public class SetPasswordCommandTest {
     public void shouldDoNothingCantChangePass() {
         // given
         Player player = mock(Player.class);
-        String name = "Carol";
-        given(player.getName()).willReturn(name);
 
         // when
         command.runCommand(player, Collections.singletonList("abc123"));
