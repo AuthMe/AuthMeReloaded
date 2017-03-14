@@ -47,6 +47,7 @@ recovery_code_sent: 'Een herstelcode voor je wachtwoord is naar je mailbox gestu
 # TODO: Missing tags %count
 recovery_code_incorrect: 'De herstelcode is niet correct! Gebruik "/email recovery [email]" om een nieuwe te krijgen'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: 'Je account is nog niet geactiveerd, controleer je mailbox!'
 usage_unreg: '&cGebruik: /unregister password'
 pwd_changed: '&cWachtwoord succesvol aangepast!'
@@ -88,6 +89,7 @@ email_send_failure: 'De E-mail kon niet verzonden worden. Neem contact op met ee
 show_no_email: '&2Je hebt nog geen E-mailadres toegevoegd aan dit account.'
 add_email: '&3Voeg jouw E-mailadres alsjeblieft toe met: /email add <E-mail> <wachtwoord> <herhaalWachtwoord>'
 recovery_email: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando: /email recovery <E-mail>'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
 # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha

@@ -118,6 +118,12 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> RECOVERY_CODE_MAX_TRIES =
         newProperty("Security.recoveryCode.maxTries", 3);
 
+    @Comment({"How long a player has after password recovery to change their password",
+        "without logging in. This is in minutes.",
+        "Default: 2 minutes"})
+    public static final Property<Integer> PASSWORD_CHANGE_TIMEOUT =
+        newProperty("Security.recoveryCode.passwordChangeTimeout", 2);
+
     @Comment({
         "Seconds a user has to wait for before a password recovery mail may be sent again",
         "This prevents an attacker from abusing AuthMe's email feature."

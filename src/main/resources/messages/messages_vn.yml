@@ -47,6 +47,7 @@ recovery_code_sent: 'Một mã khôi phục mật khẩu đã được gửi đ�
 # TODO: Missing tags %count
 recovery_code_incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cTài khoản của bạn chưa được kích hoạt, vui lòng kiểm tra email!'
 usage_unreg: '&cSử dụng: /unregister <mật khẩu>'
 pwd_changed: '&2Thay đổi mật khẩu thành công!'
@@ -88,6 +89,7 @@ email_send_failure: 'Không thể gửi thư. Vui lòng liên hệ với ban qu�
 show_no_email: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
 add_email: '&eVui lòng thêm email của bạn với lệnh "/email add <email> <nhập lại email>"'
 recovery_email: '&aBạn quên mật khẩu? Vui lòng gõ lệnh "/email recovery <email>"'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
 # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha

@@ -51,6 +51,7 @@ recovery_code_sent: 'Um código de recuperação para redefinir sua senha foi en
 # TODO: Missing tags %count
 recovery_code_incorrect: 'O código de recuperação esta incorreto! Use /email recovery [email] para gerar um novo!'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cA sua conta ainda não está ativada, por favor, verifique seus e-mails!'
 usage_unreg: '&cUse: /unregister <senha>'
 pwd_changed: '&2Senha alterada com sucesso!'
@@ -92,6 +93,7 @@ email_send_failure: '&cO e-mail não pôde ser enviado, reporte isso a um admini
 show_no_email: '&2Você atualmente não têm endereço de e-mail associado a esta conta.'
 add_email: '&3Por favor, adicione seu e-mail para a sua conta com o comando "/email add <seuEmail> <seuEmail>"'
 recovery_email: '&3Esqueceu sua senha? Por favor, use o comando "/email recovery <seuEmail>"'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
 # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha

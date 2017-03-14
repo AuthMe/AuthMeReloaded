@@ -230,6 +230,12 @@ public enum MessageKey {
     /** You have exceeded the maximum number of attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one. */
     RECOVERY_TRIES_EXCEEDED("recovery_tries_exceeded"),
 
+    /** Please use the command /email setpassword to change your password immediately. */
+    RECOVERY_CHANGE_PASSWORD("recovery_change_password"),
+
+    /** You cannot change your password using this command anymore. */
+    CHANGE_PASSWORD_EXPIRED("change_password_expired"),
+
     /** An email was already sent recently. You must wait %time before you can send a new one. */
     EMAIL_COOLDOWN_ERROR("email_cooldown_error", "%time"),
 

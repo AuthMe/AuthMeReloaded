@@ -46,6 +46,7 @@ two_factor_create: '&2Ваш секретний код — %code %nl%&2Може�
 # TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
 # TODO recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cВаш акаунт ще не активовано. Будь ласка, провірте свою електронну пошту!'
 usage_unreg: '&cСинтаксис: /unregister <пароль>'
 pwd_changed: '&2Пароль успішно змінено!'
@@ -87,6 +88,7 @@ email_already_used: '&4До цієї електронної пошти прив�
 # TODO show_no_email: '&2You currently don''t have email address associated with this account.'
 add_email: '&3Не забудьте прив’язати електронну пошту до свого акаунта, за допомогою команди "/email add <e-mail> <e-mail повторно>"'
 recovery_email: 'Забули пароль? Можете скористатись командою &9/email recovery &f<&9ваш e-mail&f>'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
 # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha

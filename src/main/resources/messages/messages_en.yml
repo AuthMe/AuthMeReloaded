@@ -46,6 +46,7 @@ two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
 recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
 recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
 recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cYour account isn''t activated yet, please check your emails!'
 usage_unreg: '&cUsage: /unregister <password>'
 pwd_changed: '&2Password changed successfully!'
@@ -87,6 +88,7 @@ email_send_failure: 'The email could not be sent. Please contact an administrato
 show_no_email: '&2You currently don''t have email address associated with this account.'
 add_email: '&3Please add your email to your account with the command: /email add <yourEmail> <confirmEmail>'
 recovery_email: '&3Forgot your password? Please use the command: /email recovery <yourEmail>'
+change_password_expired: 'You cannot change your password using this command anymore.'
 email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha

@@ -32,6 +32,7 @@ import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
 import fr.xephi.authme.command.executable.email.ProcessCodeCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
+import fr.xephi.authme.command.executable.email.SetPasswordCommand;
 import fr.xephi.authme.command.executable.email.ShowEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
@@ -433,6 +434,17 @@ public class CommandInitializer {
             .withArgument("code", "Recovery code", false)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(ProcessCodeCommand.class)
+            .register();
+
+        // Register the change password after recovery command
+        CommandDescription.builder()
+            .parent(EMAIL_BASE)
+            .labels("setpassword")
+            .description("Set new password after recovery")
+            .detailedDescription("Set a new password after successfully recovering your account.")
+            .withArgument("password", "New password", false)
+            .permission(PlayerPermission.RECOVER_EMAIL)
+            .executableCommand(SetPasswordCommand.class)
             .register();
 
         // Register the base captcha command

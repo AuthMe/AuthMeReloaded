@@ -8,6 +8,7 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.expiring.Duration;
 import fr.xephi.authme.util.expiring.ExpiringSet;
@@ -46,11 +47,14 @@ public class PasswordRecoveryService implements Reloadable {
     private Messages messages;
 
     private ExpiringSet<String> emailCooldown;
+    private ExpiringSet<String> successfulRecovers;
 
     @PostConstruct
     private void initEmailCooldownSet() {
         emailCooldown = new ExpiringSet<>(
             commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS), TimeUnit.SECONDS);
+        successfulRecovers = new ExpiringSet<>(
+            commonService.getProperty(SecuritySettings.PASSWORD_CHANGE_TIMEOUT), TimeUnit.MINUTES);
     }
 
     /**
@@ -96,6 +100,11 @@ public class PasswordRecoveryService implements Reloadable {
         if (couldSendMail) {
             commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
             emailCooldown.add(player.getName().toLowerCase());
+
+            String address = PlayerUtils.getPlayerIp(player);
+
+            successfulRecovers.add(address);
+            commonService.send(player, MessageKey.RECOVERY_CHANGE_PASSWORD);
         } else {
             commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
         }
@@ -112,6 +121,23 @@ public class PasswordRecoveryService implements Reloadable {
         if (waitDuration.getDuration() > 0) {
             String durationText = messages.formatDuration(waitDuration);
             messages.send(player, MessageKey.EMAIL_COOLDOWN_ERROR, durationText);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if a player can change their password after recovery
+     * using the /email setpassword command.
+     *
+     * @param player The player to check.
+     * @return True if the player can change their password.
+     */
+    public boolean canChangePassword(Player player) {
+        String address = PlayerUtils.getPlayerIp(player);
+        Duration waitDuration = successfulRecovers.getExpiration(address);
+        if (waitDuration.getDuration() > 0) {
+            messages.send(player, MessageKey.EMAIL_COOLDOWN_ERROR);
             return false;
         }
         return true;

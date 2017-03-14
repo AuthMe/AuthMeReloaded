@@ -49,6 +49,7 @@ recovery_code_sent: 'Una email contenente il codice di recupero per reimpostare 
 # TODO: Missing tags %count
 recovery_code_incorrect: 'Il codice di recupero inserito non è corretto! Scrivi "/email recovery <email>" per generarne uno nuovo'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cIl tuo account non è stato ancora verificato, controlla fra le tue email per scoprire come attivarlo!'
 usage_unreg: '&cUtilizzo: /unregister <password>'
 pwd_changed: '&2Password cambiata correttamente!'
@@ -90,6 +91,7 @@ email_send_failure: 'Non è stato possibile inviare l''email di recupero. Per fa
 show_no_email: '&2Al momento non hai nessun indirizzo email associato al tuo account.'
 add_email: '&3Per poter recuperare la password in futuro, aggiungi un indirizzo email al tuo account con il comando: /email add <tuaEmail> <confermaEmail>'
 recovery_email: '&3Hai dimenticato la tua password? Puoi recuperarla eseguendo il comando: /email recovery <email>'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
 email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentemente. Devi attendere %time prima di poterne richiedere una nuova.'
 
 # Captcha

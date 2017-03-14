@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Mon Mar 06 13:51:04 EST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Mar 14 16:42:26 EDT 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -444,6 +444,10 @@ Security:
         validForHours: 4
         # Max number of tries to enter recovery code
         maxTries: 3
+        # How long a player has after password recovery to change their password
+        # without logging in. This is in minutes.
+        # Default: 2 minutes
+        passwordChangeTimeout: 2
     emailRecovery:
         # Seconds a user has to wait for before a password recovery mail may be sent again
         # This prevents an attacker from abusing AuthMe's email feature.
@@ -464,4 +468,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Mar 06 13:51:04 EST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Mar 14 16:42:26 EDT 2017
