@@ -10,7 +10,7 @@ import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 public final class DatabaseSettings implements SettingsHolder {
 
     @Comment({"What type of database do you want to use?",
-            "Valid values: sqlite, mysql"})
+            "Valid values: SQLITE, MYSQL"})
     public static final Property<DataSourceType> BACKEND =
         newProperty(DataSourceType.class, "DataSource.backend", DataSourceType.SQLITE);
 
