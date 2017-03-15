@@ -36,6 +36,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
+import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -194,6 +195,11 @@ public class AuthMe extends JavaPlugin {
         // Set the Logger instance and log file path
         ConsoleLogger.setLogger(getLogger());
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
+
+        // Check java version
+        if(SystemUtils.isJavaVersionAtLeast(1.8f)) {
+            throw new IllegalStateException("You need Java 1.8 or above to run this plugin!");
+        }
 
         // Create plugin folder
         getDataFolder().mkdir();
