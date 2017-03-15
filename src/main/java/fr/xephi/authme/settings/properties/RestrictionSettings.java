@@ -81,7 +81,7 @@ public final class RestrictionSettings implements SettingsHolder {
         "Example:",
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1"})
-    public static final Property<List<String>> ALLOWED_RESTRICTED_USERS =
+    public static final Property<List<String>> RESTRICTED_USERS =
         newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
 
     @Comment("Ban unknown IPs trying to log in with a restricted username?")
