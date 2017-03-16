@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link SHA1}.
  */
-public class Sha1Test extends AbstractEncryptionMethodTest {
+public class SHA1Test extends AbstractEncryptionMethodTest {
 
-    public Sha1Test() {
+    public SHA1Test() {
         super(new SHA1(),
             "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8",  // password
             "285d0c707f9644b75e1a87a62f25d0efb56800f0",  // PassWord1
