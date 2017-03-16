@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link BCRYPT2Y}.
+ * Test for {@link BCrypt2y}.
  */
 public class BCrypt2yTest extends AbstractEncryptionMethodTest {
 

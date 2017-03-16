@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link WHIRLPOOL}.
+ * Test for {@link Whirlpool}.
  */
 public class WhirlpoolTest extends AbstractEncryptionMethodTest {
 

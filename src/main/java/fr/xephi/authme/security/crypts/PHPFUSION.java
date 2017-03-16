@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 @Recommendation(Usage.DO_NOT_USE)
 @AsciiRestricted
-public class PHPFusion extends SeparateSaltMethod {
+public class PhpFusion extends SeparateSaltMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {

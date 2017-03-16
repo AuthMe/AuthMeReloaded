@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link WORDPRESS}.
+ * Test for {@link Wordpress}.
  */
 public class WordpressTest extends AbstractEncryptionMethodTest {
 

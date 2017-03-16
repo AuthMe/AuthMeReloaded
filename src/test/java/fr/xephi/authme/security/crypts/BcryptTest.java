@@ -7,7 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test for {@link BCRYPT}.
+ * Test for {@link BCrypt}.
  */
 public class BCryptTest extends AbstractEncryptionMethodTest {
 

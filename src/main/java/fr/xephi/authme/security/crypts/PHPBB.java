@@ -9,7 +9,7 @@ import java.security.MessageDigest;
 /**
  * @author stefano
  */
-public class PHPBB extends HexSaltedMethod {
+public class PhpBB extends HexSaltedMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 

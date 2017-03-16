@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import static fr.xephi.authme.security.HashUtils.md5;
 
-public class MD5vB extends HexSaltedMethod {
+public class Md5vB extends HexSaltedMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {

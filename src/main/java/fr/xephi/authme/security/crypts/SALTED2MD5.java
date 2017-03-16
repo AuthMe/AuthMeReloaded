@@ -14,12 +14,12 @@ import static fr.xephi.authme.security.HashUtils.md5;
 
 @Recommendation(Usage.ACCEPTABLE) // presuming that length is something sensible (>= 8)
 @HasSalt(value = SaltType.TEXT)   // length defined by the doubleMd5SaltLength setting
-public class Salted2MD5 extends SeparateSaltMethod {
+public class Salted2Md5 extends SeparateSaltMethod {
 
     private final int saltLength;
 
     @Inject
-    public Salted2MD5(Settings settings) {
+    public Salted2Md5(Settings settings) {
         saltLength = settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH);
     }
 

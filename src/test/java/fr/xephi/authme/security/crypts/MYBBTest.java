@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link MYBB}.
+ * Test for {@link MyBB}.
  */
 public class MyBBTest extends AbstractEncryptionMethodTest {
 

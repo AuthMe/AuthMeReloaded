@@ -6,7 +6,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 @Recommendation(Usage.RECOMMENDED)
-public class SaltedSHA512 extends SeparateSaltMethod {
+public class SaltedSha512 extends SeparateSaltMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {

@@ -7,7 +7,7 @@ import fr.xephi.authme.util.StringUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class XFBCrypt implements EncryptionMethod {
+public class XfBCrypt implements EncryptionMethod {
     public static final String SCHEME_CLASS = "XenForo_Authentication_Core12";
     private static final Pattern HASH_PATTERN = Pattern.compile("\"hash\";s.*\"(.*)?\"");
 

@@ -24,7 +24,7 @@ import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
-import fr.xephi.authme.security.crypts.SHA256;
+import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.GeoIpService;
@@ -219,7 +219,7 @@ public class AuthMe extends JavaPlugin {
         instantiateServices(injector);
 
         // Convert deprecated PLAINTEXT hash entries
-        MigrationService.changePlainTextToSha256(settings, database, new SHA256());
+        MigrationService.changePlainTextToSha256(settings, database, new Sha256());
 
         // TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged

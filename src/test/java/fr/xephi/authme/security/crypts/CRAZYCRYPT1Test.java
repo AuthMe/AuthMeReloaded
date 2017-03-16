@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link CRAZYCRYPT1}.
+ * Test for {@link CrazyCrypt1}.
  */
 public class CrazyCrypt1Test extends AbstractEncryptionMethodTest {
 

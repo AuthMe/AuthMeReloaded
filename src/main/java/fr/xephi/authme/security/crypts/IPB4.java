@@ -14,8 +14,8 @@ import fr.xephi.authme.util.StringUtils;
  * Implementation for IPB4 (Invision Power Board 4).
  * <p>
  * The hash uses standard BCrypt with 13 as log<sub>2</sub> number of rounds. Additionally,
- * IPB4 requires that the salt be stored additionally in the column "members_pass_hash"
- * (even though BCrypt hashes already have the salt in the result).
+ IPB4 requires that the salt be stored additionally in the column "members_pass_hash"
+ (even though BCrypt hashes already have the salt in the result).
  */
 @Recommendation(Usage.DOES_NOT_WORK)
 @HasSalt(value = SaltType.TEXT, length = 22)

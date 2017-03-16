@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link JOOMLA}.
+ * Test for {@link Joomla}.
  */
 public class JoomlaTest extends AbstractEncryptionMethodTest {
 

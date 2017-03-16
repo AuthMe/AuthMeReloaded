@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link XAUTH}.
+ * Test for {@link XAuth}.
  */
 public class XAuthTest extends AbstractEncryptionMethodTest {
 

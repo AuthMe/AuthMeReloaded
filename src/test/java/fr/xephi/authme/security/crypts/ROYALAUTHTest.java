@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link ROYALAUTH}.
+ * Test for {@link RoyalAuth}.
  */
 public class RoyalAuthTest extends AbstractEncryptionMethodTest {
 
