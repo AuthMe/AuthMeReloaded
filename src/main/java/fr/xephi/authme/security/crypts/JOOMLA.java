@@ -5,7 +5,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 @Recommendation(Usage.ACCEPTABLE)
-public class JOOMLA extends HexSaltedMethod {
+public class Joomla extends HexSaltedMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {

@@ -61,7 +61,7 @@ package fr.xephi.authme.security.crypts;
 
 import java.util.Arrays;
 
-public class WHIRLPOOL extends UnsaltedMethod {
+public class Whirlpool extends UnsaltedMethod {
 
     /**
      * The message digest size (in bits)
@@ -158,7 +158,7 @@ public class WHIRLPOOL extends UnsaltedMethod {
     protected final long[] block = new long[8];
     protected final long[] state = new long[8];
 
-    public WHIRLPOOL() {
+    public Whirlpool() {
     }
 
     protected static String display(byte[] array) {

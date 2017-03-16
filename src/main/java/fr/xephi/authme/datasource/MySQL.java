@@ -7,7 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.security.crypts.XFBCRYPT;
+import fr.xephi.authme.security.crypts.XFBCrypt;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -286,7 +286,7 @@ public class MySQL implements DataSource {
                         if (rs.next()) {
                             Blob blob = rs.getBlob("data");
                             byte[] bytes = blob.getBytes(1, (int) blob.length());
-                            auth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
+                            auth.setPassword(new HashedPassword(XFBCrypt.getHashFromBlob(bytes)));
                         }
                     }
                 }
@@ -482,8 +482,8 @@ public class MySQL implements DataSource {
                     sql = "INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";
                     pst2 = con.prepareStatement(sql);
                     pst2.setInt(1, id);
-                    pst2.setString(2, XFBCRYPT.SCHEME_CLASS);
-                    String serializedHash = XFBCRYPT.serializeHash(auth.getPassword().getHash());
+                    pst2.setString(2, XFBCrypt.SCHEME_CLASS);
+                    String serializedHash = XFBCrypt.serializeHash(auth.getPassword().getHash());
                     byte[] bytes = serializedHash.getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
@@ -538,7 +538,7 @@ public class MySQL implements DataSource {
                     // Insert password in the correct table
                     sql = "UPDATE xf_user_authenticate SET data=? WHERE " + col.ID + "=?;";
                     PreparedStatement pst2 = con.prepareStatement(sql);
-                    String serializedHash = XFBCRYPT.serializeHash(password.getHash());
+                    String serializedHash = XFBCrypt.serializeHash(password.getHash());
                     byte[] bytes = serializedHash.getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
@@ -549,7 +549,7 @@ public class MySQL implements DataSource {
                     // ...
                     sql = "UPDATE xf_user_authenticate SET scheme_class=? WHERE " + col.ID + "=?;";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setString(1, XFBCRYPT.SCHEME_CLASS);
+                    pst2.setString(1, XFBCrypt.SCHEME_CLASS);
                     pst2.setInt(2, id);
                     pst2.executeUpdate();
                     pst2.close();
@@ -824,7 +824,7 @@ public class MySQL implements DataSource {
                         if (rs2.next()) {
                             Blob blob = rs2.getBlob("data");
                             byte[] bytes = blob.getBytes(1, (int) blob.length());
-                            pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
+                            pAuth.setPassword(new HashedPassword(XFBCrypt.getHashFromBlob(bytes)));
                         }
                         rs2.close();
                     }
@@ -856,7 +856,7 @@ public class MySQL implements DataSource {
                         if (rs2.next()) {
                             Blob blob = rs2.getBlob("data");
                             byte[] bytes = blob.getBytes(1, (int) blob.length());
-                            pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
+                            pAuth.setPassword(new HashedPassword(XFBCrypt.getHashFromBlob(bytes)));
                         }
                         rs2.close();
                     }

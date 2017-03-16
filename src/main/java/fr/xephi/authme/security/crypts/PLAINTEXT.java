@@ -6,7 +6,7 @@ package fr.xephi.authme.security.crypts;
  * @deprecated Using this is no longer supported. AuthMe will migrate to SHA256 on startup.
  */
 @Deprecated
-public class PLAINTEXT extends UnsaltedMethod {
+public class PlainText extends UnsaltedMethod {
 
     @Override
     public String computeHash(String password) {

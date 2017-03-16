@@ -16,7 +16,7 @@ import java.util.Arrays;
 @HasSalt(value = SaltType.TEXT, length = 9)
 // Note ljacqu 20151228: Wordpress is actually a salted algorithm but salt generation is handled internally
 // and isn't exposed to the outside, so we treat it as an unsalted implementation
-public class WORDPRESS extends UnsaltedMethod {
+public class Wordpress extends UnsaltedMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private final SecureRandom randomGen = new SecureRandom();

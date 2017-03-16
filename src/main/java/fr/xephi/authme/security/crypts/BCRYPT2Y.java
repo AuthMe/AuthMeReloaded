@@ -4,7 +4,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 @Recommendation(Usage.RECOMMENDED)
-public class BCRYPT2Y extends HexSaltedMethod {
+public class BCrypt2y extends HexSaltedMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
