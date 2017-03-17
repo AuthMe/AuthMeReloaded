@@ -197,7 +197,7 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
 
         // Check java version
-        if(SystemUtils.isJavaVersionAtLeast(1.8f)) {
+        if(!SystemUtils.isJavaVersionAtLeast(1.8f)) {
             throw new IllegalStateException("You need Java 1.8 or above to run this plugin!");
         }
 
