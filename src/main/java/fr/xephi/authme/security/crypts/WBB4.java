@@ -6,7 +6,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
 import static fr.xephi.authme.security.crypts.BCryptService.hashpw;
 
 @Recommendation(Usage.RECOMMENDED)
-public class WBB4 extends HexSaltedMethod {
+public class Wbb4 extends HexSaltedMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
