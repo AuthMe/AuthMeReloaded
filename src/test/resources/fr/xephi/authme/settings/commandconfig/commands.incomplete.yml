@@ -6,7 +6,7 @@ onJoin:
         executor: CONSOLE
 onLogin:
     welcome:
-        command: 'msg %p Welcome back'
+        command: 'msg %p Welcome back, %nick'
         executor: CONSOLE
     show_motd:
         # command: 'motd' <-- mandatory property, so entry should be ignored

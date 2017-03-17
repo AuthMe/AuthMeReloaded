@@ -87,8 +87,19 @@ email_send_failure: 'Nie mozna wyslac emaila. Skontaktuj sie z administracja.'
 show_no_email: '&2Nie posiadasz adresu email przypisanego do tego konta.'
 add_email: '&cProsze dodac swoj email: /email add twojEmail powtorzEmail'
 recovery_email: '&cZapomniales hasla? Prosze uzyj komendy /email recovery <TwojEmail>'
+email_cooldown_error: '&cEmail zostal wyslany, musisz poczekac %time przed wyslaniem nastepnego.'
 
 # Captcha
 usage_captcha: '&cWpisz: /captcha <theCaptcha>'
 wrong_captcha: '&cZly kod, prosze wpisac: /captcha THE_CAPTCHA'
 valid_captcha: '&cTwoj kod jest nieprawidlowy!'
+
+# Time units
+second: 'sekundy'
+seconds: 'sekund'
+minute: 'minuty'
+minutes: 'minut'
+hour: 'godziny'
+hours: 'godzin'
+day: 'lata'
+days: 'lat'

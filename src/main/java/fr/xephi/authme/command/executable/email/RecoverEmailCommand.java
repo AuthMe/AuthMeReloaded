@@ -5,24 +5,31 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.RecoveryCodeService;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.RandomStringUtils;
+import fr.xephi.authme.util.expiring.Duration;
+import fr.xephi.authme.util.expiring.ExpiringSet;
 import org.bukkit.entity.Player;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
 
 /**
  * Command for password recovery by email.
  */
-public class RecoverEmailCommand extends PlayerCommand {
+public class RecoverEmailCommand extends PlayerCommand implements Reloadable {
 
     @Inject
     private PasswordSecurity passwordSecurity;
@@ -37,17 +44,28 @@ public class RecoverEmailCommand extends PlayerCommand {
     private PlayerCache playerCache;
 
     @Inject
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
 
     @Inject
     private RecoveryCodeService recoveryCodeService;
 
+    @Inject
+    private Messages messages;
+
+    private ExpiringSet<String> emailCooldown;
+
+    @PostConstruct
+    private void initEmailCooldownSet() {
+        emailCooldown = new ExpiringSet<>(
+            commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS), TimeUnit.SECONDS);
+    }
+
     @Override
-    public void runCommand(Player player, List<String> arguments) {
+    protected void runCommand(Player player, List<String> arguments) {
         final String playerMail = arguments.get(0);
         final String playerName = player.getName();
 
-        if (!sendMailSsl.hasAllInformation()) {
+        if (!emailService.hasAllInformation()) {
             ConsoleLogger.warning("Mail API is not set");
             commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
@@ -78,15 +96,29 @@ public class RecoverEmailCommand extends PlayerCommand {
                 processRecoveryCode(player, arguments.get(1), email);
             }
         } else {
-            generateAndSendNewPassword(player, email);
+            boolean maySendMail = checkEmailCooldown(player);
+            if (maySendMail) {
+                generateAndSendNewPassword(player, email);
+            }
         }
     }
 
+    @Override
+    public void reload() {
+        emailCooldown.setExpiration(
+            commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS), TimeUnit.SECONDS);
+    }
+
     private void createAndSendRecoveryCode(Player player, String email) {
+        if (!checkEmailCooldown(player)) {
+            return;
+        }
+
         String recoveryCode = recoveryCodeService.generateCode(player.getName());
-        boolean couldSendMail = sendMailSsl.sendRecoveryCode(player.getName(), email, recoveryCode);
+        boolean couldSendMail = emailService.sendRecoveryCode(player.getName(), email, recoveryCode);
         if (couldSendMail) {
             commonService.send(player, MessageKey.RECOVERY_CODE_SENT);
+            emailCooldown.add(player.getName().toLowerCase());
         } else {
             commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
         }
@@ -108,11 +140,22 @@ public class RecoverEmailCommand extends PlayerCommand {
         HashedPassword hashNew = passwordSecurity.computeHash(thePass, name);
 
         dataSource.updatePassword(name, hashNew);
-        boolean couldSendMail = sendMailSsl.sendPasswordMail(name, email, thePass);
+        boolean couldSendMail = emailService.sendPasswordMail(name, email, thePass);
         if (couldSendMail) {
             commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+            emailCooldown.add(player.getName().toLowerCase());
         } else {
             commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
         }
+    }
+
+    private boolean checkEmailCooldown(Player player) {
+        Duration waitDuration = emailCooldown.getExpiration(player.getName().toLowerCase());
+        if (waitDuration.getDuration() > 0) {
+            String durationText = messages.formatDuration(waitDuration);
+            messages.send(player, MessageKey.EMAIL_COOLDOWN_ERROR, durationText);
+            return false;
+        }
+        return true;
     }
 }

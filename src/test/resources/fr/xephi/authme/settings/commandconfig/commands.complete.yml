@@ -2,14 +2,14 @@
 
 onJoin:
     broadcast:
-        command: 'broadcast %p has joined'
+        command: 'broadcast %nick has joined'
         executor: CONSOLE
 onRegister:
     announce:
         command: 'me I just registered'
         executor: PLAYER
     notify:
-        command: 'log %p registered'
+        command: 'log %p (%ip, %country) registered'
         executor: CONSOLE
 onLogin:
     welcome:

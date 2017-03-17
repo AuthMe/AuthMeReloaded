@@ -1,19 +1,22 @@
 package fr.xephi.authme.data;
 
+import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.RandomStringUtils;
+import fr.xephi.authme.util.expiring.TimedCounter;
 
 import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manager for the handling of captchas.
  */
-public class CaptchaManager implements SettingsDependent {
+public class CaptchaManager implements SettingsDependent, HasCleanup {
 
-    private final ConcurrentHashMap<String, Integer> playerCounts;
+    private final TimedCounter<String> playerCounts;
     private final ConcurrentHashMap<String, String> captchaCodes;
 
     private boolean isEnabled;
@@ -22,8 +25,9 @@ public class CaptchaManager implements SettingsDependent {
 
     @Inject
     CaptchaManager(Settings settings) {
-        this.playerCounts = new ConcurrentHashMap<>();
         this.captchaCodes = new ConcurrentHashMap<>();
+        long countTimeout = settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET);
+        this.playerCounts = new TimedCounter<>(countTimeout, TimeUnit.MINUTES);
         reload(settings);
     }
 
@@ -35,12 +39,7 @@ public class CaptchaManager implements SettingsDependent {
     public void increaseCount(String name) {
         if (isEnabled) {
             String playerLower = name.toLowerCase();
-            Integer currentCount = playerCounts.get(playerLower);
-            if (currentCount == null) {
-                playerCounts.put(playerLower, 1);
-            } else {
-                playerCounts.put(playerLower, currentCount + 1);
-            }
+            playerCounts.increment(playerLower);
         }
     }
 
@@ -51,21 +50,7 @@ public class CaptchaManager implements SettingsDependent {
      * @return true if the player has to solve a captcha, false otherwise
      */
     public boolean isCaptchaRequired(String name) {
-        if (isEnabled) {
-            Integer count = playerCounts.get(name.toLowerCase());
-            return count != null && count >= threshold;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the stored captcha code for the player.
-     *
-     * @param name the player's name
-     * @return the code the player is required to enter, or null if none registered
-     */
-    public String getCaptchaCode(String name) {
-        return captchaCodes.get(name.toLowerCase());
+        return isEnabled && playerCounts.get(name.toLowerCase()) >= threshold;
     }
 
     /**
@@ -75,7 +60,7 @@ public class CaptchaManager implements SettingsDependent {
      * @return the code the player is required to enter
      */
     public String getCaptchaCodeOrGenerateNew(String name) {
-        String code = getCaptchaCode(name);
+        String code = captchaCodes.get(name.toLowerCase());
         return code == null ? generateCode(name) : code;
     }
 
@@ -127,6 +112,13 @@ public class CaptchaManager implements SettingsDependent {
         this.isEnabled = settings.getProperty(SecuritySettings.USE_CAPTCHA);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TRIES_BEFORE_CAPTCHA);
         this.captchaLength = settings.getProperty(SecuritySettings.CAPTCHA_LENGTH);
+        long countTimeout = settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET);
+        playerCounts.setExpiration(countTimeout, TimeUnit.MINUTES);
+    }
+
+    @Override
+    public void performCleanup() {
+        playerCounts.removeExpiredEntries();
     }
 
 }

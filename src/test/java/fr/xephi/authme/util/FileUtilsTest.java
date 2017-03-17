@@ -137,6 +137,11 @@ public class FileUtilsTest {
         assertThat(result, equalTo("path" + File.separator + "to" + File.separator + "test-file.txt"));
     }
 
+    @Test
+    public void shouldHaveHiddenConstructor() {
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(FileUtils.class);
+    }
+
     private static void createFiles(File... files) throws IOException {
         for (File file : files) {
             boolean result = file.getParentFile().mkdirs() & file.createNewFile();

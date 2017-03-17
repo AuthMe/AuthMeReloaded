@@ -1,5 +1,6 @@
 ### Java files ###
 *.class
+MANIFEST.MF
 
 # Package Files
 #*.jar

@@ -1,11 +1,13 @@
 package fr.xephi.authme.initialization;
 
+import ch.jalu.injector.exceptions.InjectorReflectionException;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import org.bstats.Metrics;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.service.BukkitService;
@@ -18,10 +20,9 @@ import fr.xephi.authme.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.mcstats.Metrics;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
@@ -44,41 +45,35 @@ public class OnStartupTasks {
     OnStartupTasks() {
     }
 
+    /**
+     * Sends bstats metrics.
+     *
+     * @param plugin the plugin instance
+     * @param settings the settings
+     */
     public static void sendMetrics(AuthMe plugin, Settings settings) {
-        try {
-            final Metrics metrics = new Metrics(plugin);
+        final Metrics metrics = new Metrics(plugin);
 
-            final Metrics.Graph languageGraph = metrics.createGraph("Messages Language");
-            final String messagesLanguage = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
-            languageGraph.addPlotter(new Metrics.Plotter(messagesLanguage) {
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });
+        metrics.addCustomChart(new Metrics.SimplePie("messages_language") {
+            @Override
+            public String getValue() {
+                return settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
+            }
+        });
 
-            final Metrics.Graph databaseBackend = metrics.createGraph("Database Backend");
-            final String dataSource = settings.getProperty(DatabaseSettings.BACKEND).toString();
-            databaseBackend.addPlotter(new Metrics.Plotter(dataSource) {
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });
-
-            // Submit metrics
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the metrics data
-            ConsoleLogger.logException("Can't send Metrics data! The plugin will work anyway...", e);
-        }
+        metrics.addCustomChart(new Metrics.SimplePie("database_backend") {
+            @Override
+            public String getValue() {
+                return settings.getProperty(DatabaseSettings.BACKEND).toString();
+            }
+        });
     }
 
     /**
      * Sets up the console filter if enabled.
      *
      * @param settings the settings
-     * @param logger the plugin logger
+     * @param logger   the plugin logger
      */
     public static void setupConsoleFilter(Settings settings, Logger logger) {
         if (!settings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
@@ -123,5 +118,24 @@ public class OnStartupTasks {
                 }
             }
         }, 1, TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));
+    }
+
+    /**
+     * Displays a hint to use the legacy AuthMe JAR if AuthMe could not be started
+     * because Gson was not found.
+     *
+     * @param e the exception to process
+     */
+    public static void displayLegacyJarHint(Exception e) {
+        if (e instanceof InjectorReflectionException) {
+            Throwable causeOfCause = Optional.of(e)
+                .map(Throwable::getCause)
+                .map(Throwable::getCause).orElse(null);
+            if (causeOfCause instanceof NoClassDefFoundError
+                && "Lcom/google/gson/Gson;".equals(causeOfCause.getMessage())) {
+                ConsoleLogger.warning("YOU MUST DOWNLOAD THE LEGACY JAR TO USE AUTHME ON YOUR SERVER");
+                ConsoleLogger.warning("Get authme-legacy.jar from http://ci.xephi.fr/job/AuthMeReloaded/");
+            }
+        }
     }
 }

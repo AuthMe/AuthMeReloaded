@@ -12,7 +12,7 @@ import java.util.Set;
 import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class SecuritySettings implements SettingsHolder {
+public final class SecuritySettings implements SettingsHolder {
 
     @Comment({"Stop the server if we can't contact the sql database",
         "Take care with this, if you set this to false,",
@@ -40,6 +40,10 @@ public class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> CAPTCHA_LENGTH =
         newProperty("Security.captcha.captchaLength", 5);
 
+    @Comment("Minutes after which login attempts count is reset for a player")
+    public static final Property<Integer> CAPTCHA_COUNT_MINUTES_BEFORE_RESET =
+        newProperty("Security.captcha.captchaCountReset", 60);
+
     @Comment("Minimum length of password")
     public static final Property<Integer> MIN_PASSWORD_LENGTH =
         newProperty("settings.security.minPasswordLength", 5);
@@ -47,22 +51,6 @@ public class SecuritySettings implements SettingsHolder {
     @Comment("Maximum length of password")
     public static final Property<Integer> MAX_PASSWORD_LENGTH =
         newProperty("settings.security.passwordMaxLength", 30);
-
-    @Comment({
-        "This is a very important option: every time a player joins the server,",
-        "if they are registered, AuthMe will switch him to unLoggedInGroup.",
-        "This should prevent all major exploits.",
-        "You can set up your permission plugin with this special group to have no permissions,",
-        "or only permission to chat (or permission to send private messages etc.).",
-        "The better way is to set up this group with few permissions, so if a player",
-        "tries to exploit an account they can do only what you've defined for the group.",
-        "After, a logged in player will be moved to his correct permissions group!",
-        "Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'",
-        "Otherwise your group will be wiped and the player will join in the default group []!",
-        "Example unLoggedinGroup: NotLogged"
-    })
-    public static final Property<String> UNLOGGEDIN_GROUP =
-        newProperty("settings.security.unLoggedinGroup", "unLoggedinGroup");
 
     @Comment({
         "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,",
@@ -98,7 +86,8 @@ public class SecuritySettings implements SettingsHolder {
         "- 'password'",
         "- 'help'"})
     public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newLowercaseListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321", "123456789", "help");
+        newLowercaseListProperty("settings.security.unsafePasswords",
+            "123456", "password", "qwerty", "12345", "54321", "123456789", "help");
 
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")
     public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =
@@ -125,6 +114,13 @@ public class SecuritySettings implements SettingsHolder {
     @Comment("How many hours is a recovery code valid for?")
     public static final Property<Integer> RECOVERY_CODE_HOURS_VALID =
         newProperty("Security.recoveryCode.validForHours", 4);
+
+    @Comment({
+        "Seconds a user has to wait for before a password recovery mail may be sent again",
+        "This prevents an attacker from abusing AuthMe's email feature."
+    })
+    public static final Property<Integer> EMAIL_RECOVERY_COOLDOWN_SECONDS =
+        newProperty("Security.emailRecovery.cooldown", 60);
 
     private SecuritySettings() {
     }

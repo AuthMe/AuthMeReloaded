@@ -1,6 +1,6 @@
 package fr.xephi.authme.process.quit;
 
-import fr.xephi.authme.data.backup.LimboPlayerStorage;
+import fr.xephi.authme.data.limbo.LimboPlayerStorage;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.process.SynchronousProcess;
 import org.bukkit.entity.Player;

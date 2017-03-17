@@ -1,38 +1,38 @@
 package fr.xephi.authme.service;
 
-import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.RandomStringUtils;
+import fr.xephi.authme.util.expiring.ExpiringMap;
 
 import javax.inject.Inject;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static fr.xephi.authme.settings.properties.SecuritySettings.RECOVERY_CODE_HOURS_VALID;
-import static fr.xephi.authme.util.Utils.MILLIS_PER_HOUR;
 
 /**
  * Manager for recovery codes.
  */
-public class RecoveryCodeService implements SettingsDependent {
+public class RecoveryCodeService implements SettingsDependent, HasCleanup {
 
-    private Map<String, ExpiringEntry> recoveryCodes = new ConcurrentHashMap<>();
-
+    private final ExpiringMap<String, String> recoveryCodes;
     private int recoveryCodeLength;
-    private long recoveryCodeExpirationMillis;
+    private int recoveryCodeExpiration;
 
     @Inject
     RecoveryCodeService(Settings settings) {
-        reload(settings);
+        recoveryCodeLength = settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH);
+        recoveryCodeExpiration = settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID);
+        recoveryCodes = new ExpiringMap<>(recoveryCodeExpiration, TimeUnit.HOURS);
     }
 
     /**
      * @return whether recovery codes are enabled or not
      */
     public boolean isRecoveryCodeNeeded() {
-        return recoveryCodeLength > 0 && recoveryCodeExpirationMillis > 0;
+        return recoveryCodeLength > 0 && recoveryCodeExpiration > 0;
     }
 
     /**
@@ -43,7 +43,7 @@ public class RecoveryCodeService implements SettingsDependent {
      */
     public String generateCode(String player) {
         String code = RandomStringUtils.generateHex(recoveryCodeLength);
-        recoveryCodes.put(player, new ExpiringEntry(code, System.currentTimeMillis() + recoveryCodeExpirationMillis));
+        recoveryCodes.put(player, code);
         return code;
     }
 
@@ -55,11 +55,8 @@ public class RecoveryCodeService implements SettingsDependent {
      * @return true if the code matches and has not expired, false otherwise
      */
     public boolean isCodeValid(String player, String code) {
-        ExpiringEntry entry = recoveryCodes.get(player);
-        if (entry != null) {
-            return code != null && code.equals(entry.getCode());
-        }
-        return false;
+        String storedCode = recoveryCodes.get(player);
+        return storedCode != null && storedCode.equals(code);
     }
 
     /**
@@ -74,26 +71,12 @@ public class RecoveryCodeService implements SettingsDependent {
     @Override
     public void reload(Settings settings) {
         recoveryCodeLength = settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH);
-        recoveryCodeExpirationMillis = settings.getProperty(RECOVERY_CODE_HOURS_VALID) * MILLIS_PER_HOUR;
+        recoveryCodeExpiration = settings.getProperty(RECOVERY_CODE_HOURS_VALID);
+        recoveryCodes.setExpiration(recoveryCodeExpiration, TimeUnit.HOURS);
     }
 
-    /**
-     * Entry with an expiration.
-     */
-    @VisibleForTesting
-    static final class ExpiringEntry {
-
-        private final String code;
-        private final long expiration;
-
-        ExpiringEntry(String code, long expiration) {
-            this.code = code;
-            this.expiration = expiration;
-        }
-
-        String getCode() {
-            return System.currentTimeMillis() < expiration ? code : null;
-        }
+    @Override
+    public void performCleanup() {
+        recoveryCodes.removeExpiredEntries();
     }
-
 }

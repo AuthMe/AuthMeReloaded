@@ -44,7 +44,7 @@ accounts_owned_self: 'Кількість ваших твінк‒акаунті�
 accounts_owned_other: 'Кількість твінк‒акаунтів гравця %name: %count'
 two_factor_create: '&2Ваш секретний код — %code %nl%&2Можете зкопіювати його за цим посиланням — %url'
 # TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
-# TODO recovery_code_incorrect: 'The recovery code is not correct! Use /email recovery [email] to generate a new one'
+# TODO recovery_code_incorrect: 'The recovery code is not correct! Use "/email recovery [email]" to generate a new one'
 vb_nonActiv: '&cВаш акаунт ще не активовано. Будь ласка, провірте свою електронну пошту!'
 usage_unreg: '&cСинтаксис: /unregister <пароль>'
 pwd_changed: '&2Пароль успішно змінено!'
@@ -86,8 +86,19 @@ email_already_used: '&4До цієї електронної пошти прив�
 # TODO show_no_email: '&2You currently don''t have email address associated with this account.'
 add_email: '&3Не забудьте прив’язати електронну пошту до свого акаунта, за допомогою команди "/email add <e-mail> <e-mail повторно>"'
 recovery_email: 'Забули пароль? Можете скористатись командою &9/email recovery &f<&9ваш e-mail&f>'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Для продовження доведеться ввести капчу — "/captcha <theCaptcha>"'
 wrong_captcha: '&cНевірно введена капча! Спробуйте ще раз — "/captcha THE_CAPTCHA"'
 valid_captcha: '&2Капчу прийнято.'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

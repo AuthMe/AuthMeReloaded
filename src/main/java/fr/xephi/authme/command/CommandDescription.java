@@ -1,8 +1,8 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.permission.PermissionNode;
-import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import static java.util.Arrays.asList;
  * {@code /authme} has a child whose label is {@code "register"}, then {@code /authme register} is the command that
  * the child defines.
  */
+@SuppressWarnings("checkstyle:FinalClass") // Justification: class is mocked in multiple tests
 public class CommandDescription {
 
     /**
@@ -224,7 +225,7 @@ public class CommandDescription {
          * @return The generated CommandDescription object
          */
         public CommandDescription build() {
-            checkArgument(!CollectionUtils.isEmpty(labels), "Labels may not be empty");
+            checkArgument(!Utils.isCollectionEmpty(labels), "Labels may not be empty");
             checkArgument(!StringUtils.isEmpty(description), "Description may not be empty");
             checkArgument(!StringUtils.isEmpty(detailedDescription), "Detailed description may not be empty");
             checkArgument(executableCommand != null, "Executable command must be set");

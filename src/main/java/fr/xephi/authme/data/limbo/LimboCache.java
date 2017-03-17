@@ -1,11 +1,8 @@
 package fr.xephi.authme.data.limbo;
 
-import fr.xephi.authme.data.backup.LimboPlayerStorage;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -23,14 +20,11 @@ public class LimboCache {
     private final Map<String, LimboPlayer> cache = new ConcurrentHashMap<>();
 
     private LimboPlayerStorage limboPlayerStorage;
-    private Settings settings;
     private PermissionsManager permissionsManager;
     private SpawnLoader spawnLoader;
 
     @Inject
-    LimboCache(Settings settings, PermissionsManager permissionsManager,
-               SpawnLoader spawnLoader, LimboPlayerStorage limboPlayerStorage) {
-        this.settings = settings;
+    LimboCache(PermissionsManager permissionsManager, SpawnLoader spawnLoader, LimboPlayerStorage limboPlayerStorage) {
         this.permissionsManager = permissionsManager;
         this.spawnLoader = spawnLoader;
         this.limboPlayerStorage = limboPlayerStorage;
@@ -52,6 +46,7 @@ public class LimboCache {
         if (permissionsManager.hasGroupSupport()) {
             playerGroup = permissionsManager.getPrimaryGroup(player);
         }
+        ConsoleLogger.debug("Player `{0}` has primary group `{1}`", player.getName(), playerGroup);
 
         if (limboPlayerStorage.hasData(player)) {
             LimboPlayer cache = limboPlayerStorage.readData(player);
@@ -84,15 +79,14 @@ public class LimboCache {
             float walkSpeed = data.getWalkSpeed();
             float flySpeed = data.getFlySpeed();
             // Reset the speed value if it was 0
-            if(walkSpeed < 0.01f) {
-                walkSpeed = 0.2f;
+            if (walkSpeed < 0.01f) {
+                walkSpeed = LimboPlayer.DEFAULT_WALK_SPEED;
             }
-            if(flySpeed < 0.01f) {
-                flySpeed = 0.2f;
+            if (flySpeed < 0.01f) {
+                flySpeed = LimboPlayer.DEFAULT_FLY_SPEED;
             }
             player.setWalkSpeed(walkSpeed);
             player.setFlySpeed(flySpeed);
-            restoreGroup(player, data.getGroup());
             data.clearTasks();
         }
     }
@@ -153,12 +147,5 @@ public class LimboCache {
         checkNotNull(player);
         removeFromCache(player);
         addPlayerData(player);
-    }
-
-    private void restoreGroup(Player player, String group) {
-        if (!StringUtils.isEmpty(group) && permissionsManager.hasGroupSupport()
-            && settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)) {
-            permissionsManager.setGroup(player, group);
-        }
     }
 }

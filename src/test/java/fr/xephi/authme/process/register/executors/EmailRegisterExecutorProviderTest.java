@@ -4,7 +4,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -49,7 +49,7 @@ public class EmailRegisterExecutorProviderTest {
     @Mock
     private CommonService commonService;
     @Mock
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
     @Mock
     private SyncProcessManager syncProcessManager;
     @Mock
@@ -135,7 +135,7 @@ public class EmailRegisterExecutorProviderTest {
     @SuppressWarnings("unchecked")
     public void shouldPerformActionAfterDataSourceSave() {
         // given
-        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
+        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Laleh");
         RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
@@ -146,7 +146,7 @@ public class EmailRegisterExecutorProviderTest {
         executor.executePostPersistAction();
 
         // then
-        verify(sendMailSsl).sendPasswordMail("Laleh", "test@example.com", password);
+        verify(emailService).sendPasswordMail("Laleh", "test@example.com", password);
         verify(syncProcessManager).processSyncEmailRegister(player);
     }
 
@@ -154,7 +154,7 @@ public class EmailRegisterExecutorProviderTest {
     @SuppressWarnings("unchecked")
     public void shouldHandleEmailSendingFailure() {
         // given
-        given(sendMailSsl.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(false);
+        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(false);
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Laleh");
         RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
@@ -165,7 +165,7 @@ public class EmailRegisterExecutorProviderTest {
         executor.executePostPersistAction();
 
         // then
-        verify(sendMailSsl).sendPasswordMail("Laleh", "test@example.com", password);
+        verify(emailService).sendPasswordMail("Laleh", "test@example.com", password);
         verify(commonService).send(player, MessageKey.EMAIL_SEND_FAILURE);
         verifyZeroInteractions(syncProcessManager);
     }

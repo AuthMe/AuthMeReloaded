@@ -1,32 +1,32 @@
-# Registration
+# Kayit mesajlari
 reg_msg: '&3Lutfen kayit komutunu kullanin "/register <sifre> <TekrarSifre>"'
 usage_reg: '&cKullanim: /register <sifre> <TekrarSifre>'
 reg_only: '&4Sunucuya kayit sadece internet uzerinden yapilmakta! Lutfen http://ornek.com sitesini kayit icin ziyaret edin!'
-# TODO kicked_admin_registered: 'An admin just registered you; please log in again'
+kicked_admin_registered: 'Bir yetkili seni kayit etti; tekrardan giris yap'
 registered: '&2Basariyla kaydoldun!'
 reg_disabled: '&cOyun icin kayit olma kapatildi!'
 user_regged: '&cSenin adinda daha once birisi kaydolmus!'
 
-# Password errors on registration
+# Kayit aninda sifre hatalari
 password_error: '&cSifre eslesmiyor, tekrar deneyin!'
 password_error_nick: '&cSifrenize adinizi koyamazsiniz, lutfen farkli bir sifre secin...'
 password_error_unsafe: '&cSectiginiz sifre guvenli degil, lutfen farkli bir sifre secin...'
-# TODO password_error_chars: '&4Your password contains illegal characters. Allowed chars: REG_EX'
+password_error_chars: '&4Sifrenizde izin verilmeyen karakterler bulunmakta. Izin verilen karakterler: REG_EX'
 pass_len: '&cSenin sifren ya cok kisa yada cok uzun! Lutfen farkli birsey dene!'
 
-# Login
+# Oturuma giris
 usage_log: '&cKullanim: /login <sifre>'
 wrong_pwd: '&cYanlis sifre!'
 login: '&2Giris basarili!'
 login_msg: '&cLutfen giris komutunu kullanin "/login <sifre>"'
 timeout: '&4Giris izni icin verilen zaman suresini astigin icin sunucudan atildin, tekrar deneyin!'
 
-# Errors
+# Hata mesajlari
 unknown_user: '&cBu oyuncu kayitli degil!'
-# TODO denied_command: '&cIn order to use this command you must be authenticated!'
-# TODO denied_chat: '&cIn order to chat you must be authenticated!'
+denied_command: '&cSuanda bu komutu kullanamazsin!'
+denied_chat: '&cSuanda sohbeti kullanamazsin!'
 not_logged_in: '&cGiris yapmadin!'
-# TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
+tempban_max_logins: '&cBir cok kez yanlis giris yaptiginiz icin gecici olarak banlandiniz.'
 max_reg: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
 no_perm: '&4Bunu yapmak icin iznin yok!'
 error: '&4Beklenmedik bir hata olustu, yetkili ile iletisime gecin!'
@@ -38,13 +38,13 @@ kick_antibot: 'AntiBot koruma modu aktif! Birkac dakika sonra tekrar girmeyi den
 antibot_auto_enabled: '&4[AntiBotServis] Saldiri oldugu icin AntiBot aktif edildi!'
 antibot_auto_disabled: '&2[AntiBotServis] AntiBot, %m dakika sonra deaktif edilecek!'
 
-# Other messages
+# Baska mesajlar
 unregistered: '&cKayit basariyla kaldirildi!'
-# TODO accounts_owned_self: 'You own %count accounts:'
-# TODO accounts_owned_other: 'The player %name has %count accounts:'
+accounts_owned_self: 'Sen %count hesaba sahipsin:'
+accounts_owned_other: 'Oyuncu %name %count hesaba sahip:'
 two_factor_create: '&2Gizli kodunuz %code. Buradan test edebilirsin, %url'
-# TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
-# TODO recovery_code_incorrect: 'The recovery code is not correct! Use /email recovery [email] to generate a new one'
+recovery_code_sent: 'Sifre sifirlama kodu eposta adresinize gonderildi.'
+recovery_code_incorrect: 'Kod dogru degil! Kullanim "/email recovery [eposta]" ile yeni bir kod olustur'
 vb_nonActiv: '&cHeabiniz henuz aktif edilmemis, e-postanizi kontrol edin!'
 usage_unreg: '&cKullanim: /unregister <sifre>'
 pwd_changed: '&2Sifre basariyla degistirildi!'
@@ -53,11 +53,11 @@ logout: '&2Basariyla cikis yaptin!'
 reload: '&2Ayarlar ve veritabani yenilendi!'
 usage_changepassword: '&cKullanim: /changepassword <eskiSifre> <yeniSifre>'
 
-# Session messages
+# Otomatik giris
 invalid_session: '&cIP adresin degistirildi ve oturum suren doldu!'
-valid_session: '&2Oturum icin yeniden giris gerekiyor.'
+valid_session: '&2Oturuma girisiniz otomatikmen yapilmistir.'
 
-# Error messages when joining
+# Servore giris aninda hata mesajlari
 name_len: '&4Senin ismin ya cok kisa yada cok uzun!'
 regex: '&4Senin isminde uygunsuz karakterler bulunmakta. Izin verilen karakterler: REG_EX'
 country_banned: '&4Senin bolgen sunucudan yasaklandi!'
@@ -65,7 +65,7 @@ not_owner_error: 'Bu hesabin sahibi degilsin. Lutfen farkli bir isim sec!'
 kick_fullserver: '&4Sunucu suanda dolu, daha sonra tekrar deneyin!'
 same_nick: '&4Senin isminde bir oyuncu suncuda bulunmakta!'
 invalid_name_case: 'Oyuna %valid isminde katilmalisin. %invalid ismini kullanarak katilamazsin.'
-# TODO same_ip_online: 'A player with the same IP is already in game!'
+same_ip_online: 'Oyunda sizin ipnizden giren biri bulunmakta!'
 
 # Email
 usage_email_add: '&cKullanim: /email add <eposta> <tekrarEposta>'
@@ -79,15 +79,26 @@ email_confirm: '&cLutfen tekrar epostanizi giriniz!'
 email_changed: '&2Epostaniz basariyla degistirildi!'
 email_send: '&2Sifreniz epostaniza gonderildi! Lutfen eposta kutunuzu kontrol edin!'
 email_exists: '&cSifreniz zaten epostanize gonderildi! Bunu iptal etmek veya yeni bir sifre gondermek icin assagidaki komutu kullanabilirsin:'
-# TODO email_show: '&2Your current email address is: &f%email'
-# TODO incomplete_email_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
+email_show: '&2Suanki eposta adresin: &f%email'
+incomplete_email_settings: 'Hata: Gonderilen epostada bazi ayarlar tamamlanmis degil. Yetkili ile iletisime gec.'
 email_already_used: '&4Eposta adresi zaten kullaniliyor.'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
+email_send_failure: 'Eposta gonderilemedi. Yetkili ile iletisime gec.'
+show_no_email: '&2Bu hesapla iliskili bir eposta bulunmuyor.'
 add_email: '&3Lutfen hesabinize eposta adresinizi komut ile ekleyin "/email add <eposta> <tekrarEposta>"'
 recovery_email: '&3Sifreni mi unuttun ? Komut kullanarak ogrenebilirsin "/email recovery <eposta>"'
+email_cooldown_error: '&cKisa bir sure once eposta gonderildi. Yeni bir eposta almak icin %time beklemelisin.'
 
 # Captcha
 usage_captcha: '&3Giris yapmak icin guvenlik kodunu komut yazarak girin "/captcha <theCaptcha>"'
 wrong_captcha: '&cYanlis guvenlik kodu, kullanim sekli "/captcha THE_CAPTCHA" sohbete yazin!'
 valid_captcha: '&2Guvenlik kodu dogrulandi!'
+
+# Zaman birimleri
+second: 'saniye'
+seconds: 'saniye'
+minute: 'dakika'
+minutes: 'dakika'
+hour: 'saat'
+hours: 'saat'
+day: 'gun'
+days: 'gun'

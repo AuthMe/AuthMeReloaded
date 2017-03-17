@@ -86,8 +86,19 @@ email_send_failure: 'Email nemohl být odeslán. Kontaktujte prosím admina.'
 show_no_email: '&2K tomuto účtu nemáte přidanou žádnou emailovou adresu.'
 add_email: '&cPřidej prosím svůj email pomocí : /email add TvůjEmail TvůjEmail'
 recovery_email: '&cZapomněl jsi heslo? Napiš: /email recovery <TvůjEmail>'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&cPoužij: /captcha <theCaptcha>'
 wrong_captcha: '&cŠpatné opsana Captcha, pouzij prosim: /captcha THE_CAPTCHA'
 valid_captcha: '&cZadaná captcha je v pořádku!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

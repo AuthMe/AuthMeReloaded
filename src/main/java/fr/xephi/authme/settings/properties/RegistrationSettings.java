@@ -8,7 +8,7 @@ import fr.xephi.authme.process.register.RegistrationType;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class RegistrationSettings implements SettingsHolder {
+public final class RegistrationSettings implements SettingsHolder {
 
     @Comment("Enable registration on the server?")
     public static final Property<Boolean> IS_ENABLED =
@@ -42,7 +42,8 @@ public class RegistrationSettings implements SettingsHolder {
         "EMAIL_MANDATORY = for password register: 2nd argument MUST be an email address"
     })
     public static final Property<RegisterSecondaryArgument> REGISTER_SECOND_ARGUMENT =
-        newProperty(RegisterSecondaryArgument.class, "settings.registration.secondArg", RegisterSecondaryArgument.CONFIRMATION);
+        newProperty(RegisterSecondaryArgument.class, "settings.registration.secondArg",
+            RegisterSecondaryArgument.CONFIRMATION);
 
     @Comment({
         "Do we force kick a player after a successful registration?",

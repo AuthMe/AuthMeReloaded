@@ -3,12 +3,10 @@ package fr.xephi.authme.data;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.expiring.TimedCounter;
 import org.junit.Test;
 
-import java.util.Map;
-
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -57,11 +55,6 @@ public class CaptchaManagerTest {
         assertThat(manager.checkCode(player, "bogus"), equalTo(true));
     }
 
-    /**
-     * Tests {@link CaptchaManager#getCaptchaCode} and {@link CaptchaManager#getCaptchaCodeOrGenerateNew}.
-     * The former method should never change the code (and so return {@code null} for no code) while the latter should
-     * generate a new code if no code is yet present. If a code is saved, it should never generate a new one.
-     */
     @Test
     public void shouldHaveSameCodeAfterGeneration() {
         // given
@@ -70,18 +63,14 @@ public class CaptchaManagerTest {
         CaptchaManager manager = new CaptchaManager(settings);
 
         // when
-        String code1 = manager.getCaptchaCode(player);
+        String code1 = manager.getCaptchaCodeOrGenerateNew(player);
         String code2 = manager.getCaptchaCodeOrGenerateNew(player);
-        String code3 = manager.getCaptchaCode(player);
-        String code4 = manager.getCaptchaCodeOrGenerateNew(player);
-        String code5 = manager.getCaptchaCode(player);
+        String code3 = manager.getCaptchaCodeOrGenerateNew(player);
 
         // then
-        assertThat(code1, nullValue());
-        assertThat(code2.length(), equalTo(5));
-        assertThat(code3, equalTo(code2));
-        assertThat(code4, equalTo(code2));
-        assertThat(code5, equalTo(code2));
+        assertThat(code1.length(), equalTo(5));
+        assertThat(code2, equalTo(code1));
+        assertThat(code3, equalTo(code1));
     }
 
     @Test
@@ -104,7 +93,7 @@ public class CaptchaManagerTest {
 
         // then 2
         assertThat(manager.isCaptchaRequired(player), equalTo(false));
-        assertHasCount(manager, player, null);
+        assertHasCount(manager, player, 0);
     }
 
     @Test
@@ -120,7 +109,7 @@ public class CaptchaManagerTest {
 
         // then
         assertThat(manager.isCaptchaRequired(player), equalTo(false));
-        assertHasCount(manager, player, null);
+        assertHasCount(manager, player, 0);
     }
 
     @Test
@@ -149,11 +138,12 @@ public class CaptchaManagerTest {
         given(settings.getProperty(SecuritySettings.USE_CAPTCHA)).willReturn(true);
         given(settings.getProperty(SecuritySettings.MAX_LOGIN_TRIES_BEFORE_CAPTCHA)).willReturn(maxTries);
         given(settings.getProperty(SecuritySettings.CAPTCHA_LENGTH)).willReturn(captchaLength);
+        given(settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET)).willReturn(30);
         return settings;
     }
 
     private static void assertHasCount(CaptchaManager manager, String player, Integer count) {
-        Map<String, Integer> playerCounts = ReflectionTestUtils
+        TimedCounter<String> playerCounts = ReflectionTestUtils
             .getFieldValue(CaptchaManager.class, manager, "playerCounts");
         assertThat(playerCounts.get(player.toLowerCase()), equalTo(count));
     }

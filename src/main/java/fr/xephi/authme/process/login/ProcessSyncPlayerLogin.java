@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.login;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
@@ -8,27 +7,25 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
-
-    @Inject
-    private AuthMe plugin;
 
     @Inject
     private BungeeService bungeeService;
@@ -40,9 +37,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private BukkitService bukkitService;
 
     @Inject
-    private PluginManager pluginManager;
-
-    @Inject
     private TeleportationService teleportationService;
 
     @Inject
@@ -52,14 +46,17 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private CommandManager commandManager;
 
     @Inject
-    private Settings settings;
+    private CommonService commonService;
+
+    @Inject
+    private WelcomeMessageConfiguration welcomeMessageConfiguration;
 
     ProcessSyncPlayerLogin() {
     }
 
     private void restoreInventory(Player player) {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-        pluginManager.callEvent(event);
+        bukkitService.callEvent(event);
         if (!event.isCancelled()) {
             player.updateInventory();
         }
@@ -76,8 +73,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             // do we really need to use location from database for now?
             // because LimboCache#restoreData teleport player to last location.
         }
+        commonService.setGroup(player, AuthGroupType.LOGGED_IN);
 
-        if (settings.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
+        if (commonService.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
             restoreInventory(player);
         }
 
@@ -94,7 +92,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             }
         }
 
-        if (settings.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+        if (commonService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
@@ -103,15 +101,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         player.saveData();
 
         // Login is done, display welcome message
-        if (settings.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (settings.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                for (String s : settings.getWelcomeMessage()) {
-                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
-                }
+        List<String> welcomeMessage = welcomeMessageConfiguration.getWelcomeMessage(player);
+        if (commonService.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            if (commonService.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
+                welcomeMessage.forEach(bukkitService::broadcastMessage);
             } else {
-                for (String s : settings.getWelcomeMessage()) {
-                    player.sendMessage(plugin.replaceAllInfo(s, player));
-                }
+                welcomeMessage.forEach(player::sendMessage);
             }
         }
 

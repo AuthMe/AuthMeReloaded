@@ -1,9 +1,9 @@
-# Traduction des messages d'aide d'AuthMe (pour la commande "/authme help (<argument>)" ou "/register help" par exemple)
+# Traduction des messages d'aide d'AuthMe (par exemple, pour les messages de "/authme help (<argument>)" ou de "/register help")
 
 # -------------------------------------------------------
 # Liste de texte dans les sections d'aide
 common:
-    header: '==========[ AIDE & INFOS - AuthMe ]=========='
+    header: '==========[ AuthMe - AIDE & INFOS ]=========='
     optional: 'Optionnel'
     hasPermission: 'Vous avez la permission'
     noPermission: 'Pas de permission'

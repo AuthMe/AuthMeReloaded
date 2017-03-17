@@ -1,9 +1,9 @@
 package fr.xephi.authme.security;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
@@ -29,7 +29,7 @@ public class PasswordSecurity implements Reloadable {
     private PluginManager pluginManager;
 
     @Inject
-    private Injector injector;
+    private Factory<EncryptionMethod> hashAlgorithmFactory;
 
     private HashAlgorithm algorithm;
     private Collection<HashAlgorithm> legacyAlgorithms;
@@ -154,7 +154,7 @@ public class PasswordSecurity implements Reloadable {
         if (HashAlgorithm.CUSTOM.equals(algorithm) || HashAlgorithm.PLAINTEXT.equals(algorithm)) {
             return null;
         }
-        return injector.newInstance(algorithm.getClazz());
+        return hashAlgorithmFactory.newInstance(algorithm.getClazz());
     }
 
     private void hashPasswordForNewAlgorithm(String password, String playerName) {

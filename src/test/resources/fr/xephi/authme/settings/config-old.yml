@@ -290,7 +290,7 @@ permission:
     # to use Vault and Group Switching of
     # AuthMe for unloggedIn players put true
     # below, default is false.
-    EnablePermissionCheck: false
+    EnablePermissionCheck: true
 BackupSystem:
    # Enable or Disable Automatic Backup
     ActivateBackup: false

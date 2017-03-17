@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
@@ -52,7 +52,7 @@ public class RegisterCommandTest {
     private Management management;
 
     @Mock
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
 
     @Mock
     private ValidationService validationService;
@@ -82,7 +82,7 @@ public class RegisterCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("Player only!")));
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class RegisterCommandTest {
 
         // then
         verify(management).performRegister(player, executor);
-        verifyZeroInteractions(sendMailSsl);
+        verifyZeroInteractions(emailService);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test
@@ -126,13 +126,13 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test
     public void shouldReturnErrorForMissingEmailConfirmation() {
         // given
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_MANDATORY);
         given(validationService.validateEmail(anyString())).willReturn(true);
@@ -150,7 +150,7 @@ public class RegisterCommandTest {
     public void shouldThrowErrorForMissingEmailConfiguration() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(sendMailSsl.hasAllInformation()).willReturn(false);
+        given(emailService.hasAllInformation()).willReturn(false);
         Player player = mock(Player.class);
 
         // when
@@ -158,7 +158,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verifyZeroInteractions(management);
     }
 
@@ -168,7 +168,7 @@ public class RegisterCommandTest {
         String playerMail = "player@example.org";
         given(validationService.validateEmail(playerMail)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
         // when
@@ -187,7 +187,7 @@ public class RegisterCommandTest {
         given(validationService.validateEmail(playerMail)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
         // when
@@ -195,7 +195,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verifyZeroInteractions(management);
     }
 
@@ -206,7 +206,7 @@ public class RegisterCommandTest {
         given(validationService.validateEmail(playerMail)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
         RegistrationExecutor executor = mock(RegistrationExecutor.class);
         given(registrationExecutorProvider.getEmailRegisterExecutor(player, playerMail)).willReturn(executor);
@@ -216,7 +216,7 @@ public class RegisterCommandTest {
 
         // then
         verify(validationService).validateEmail(playerMail);
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verify(management).performRegister(player, executor);
     }
 
@@ -232,7 +232,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.PASSWORD_MATCH_ERROR);
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test

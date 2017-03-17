@@ -1,4 +1,4 @@
-package fr.xephi.authme.data.backup;
+package fr.xephi.authme.data.limbo;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
@@ -10,11 +10,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Location;
@@ -149,8 +148,8 @@ public class LimboPlayerStorage {
             String group = "";
             boolean operator = false;
             boolean canFly = false;
-            float walkSpeed = 0.2f;
-            float flySpeed = 0.2f;
+            float walkSpeed = LimboPlayer.DEFAULT_WALK_SPEED;
+            float flySpeed = LimboPlayer.DEFAULT_FLY_SPEED;
 
             JsonElement e;
             if ((e = jsonObject.getAsJsonObject("location")) != null) {

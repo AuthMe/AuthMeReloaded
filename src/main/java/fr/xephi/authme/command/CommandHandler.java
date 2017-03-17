@@ -1,8 +1,8 @@
 package fr.xephi.authme.command;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -40,13 +40,13 @@ public class CommandHandler {
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> commands = new HashMap<>();
 
     @Inject
-    CommandHandler(Injector injector, CommandMapper commandMapper, PermissionsManager permissionsManager,
-                          Messages messages, HelpProvider helpProvider) {
+    CommandHandler(Factory<ExecutableCommand> commandFactory, CommandMapper commandMapper,
+                   PermissionsManager permissionsManager, Messages messages, HelpProvider helpProvider) {
         this.commandMapper = commandMapper;
         this.permissionsManager = permissionsManager;
         this.messages = messages;
         this.helpProvider = helpProvider;
-        initializeCommands(injector, commandMapper.getCommandClasses());
+        initializeCommands(commandFactory, commandMapper.getCommandClasses());
     }
 
     /**
@@ -94,13 +94,13 @@ public class CommandHandler {
     /**
      * Initialize all required ExecutableCommand objects.
      *
-     * @param injector the injector
+     * @param commandFactory factory to create command objects
      * @param commandClasses the classes to instantiate
      */
-    private void initializeCommands(Injector injector,
+    private void initializeCommands(Factory<ExecutableCommand> commandFactory,
                                     Set<Class<? extends ExecutableCommand>> commandClasses) {
         for (Class<? extends ExecutableCommand> clazz : commandClasses) {
-            commands.put(clazz, injector.newInstance(clazz));
+            commands.put(clazz, commandFactory.newInstance(clazz));
         }
     }
 

@@ -1,7 +1,9 @@
 package fr.xephi.authme.message;
 
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -11,6 +13,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -230,11 +234,31 @@ public class MessagesIntegrationTest {
         assertThat(result, equalTo("Use /captcha 24680 to solve the captcha"));
     }
 
+    @Test
+    public void shouldFormatDurationObjects() {
+        // given
+        Map<Duration, String> expectedTexts = ImmutableMap.<Duration, String>builder()
+            .put(new Duration(1, TimeUnit.SECONDS), "1 second")
+            .put(new Duration(12, TimeUnit.SECONDS), "12 seconds")
+            .put(new Duration(1, TimeUnit.MINUTES), "1 minute")
+            .put(new Duration(0, TimeUnit.MINUTES), "0 minutes")
+            .put(new Duration(1, TimeUnit.HOURS), "1 hour")
+            .put(new Duration(-4, TimeUnit.HOURS), "-4 hours")
+            .put(new Duration(1, TimeUnit.DAYS), "1 day")
+            .put(new Duration(44, TimeUnit.DAYS), "44 days")
+            .build();
+
+        // when / then
+        for (Map.Entry<Duration, String> entry : expectedTexts.entrySet()) {
+            assertThat(messages.formatDuration(entry.getKey()), equalTo(entry.getValue()));
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static MessageFileHandlerProvider providerReturning(File file, String defaultFile) {
         MessageFileHandlerProvider handler = mock(MessageFileHandlerProvider.class);
-        given(handler.initializeHandler(any(Function.class)))
-            .willReturn(new MessageFileHandler(file, defaultFile));
+        given(handler.initializeHandler(any(Function.class), anyString()))
+            .willReturn(new MessageFileHandler(file, defaultFile, "/authme messages"));
         return handler;
     }
 }

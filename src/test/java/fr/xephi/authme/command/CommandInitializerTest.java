@@ -1,7 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.permission.AdminPermission;
-import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,7 +14,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
-import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -197,32 +194,6 @@ public class CommandInitializerTest {
 
         // when/then
         walkThroughCommands(commands, noArgumentForParentChecker);
-    }
-
-    /**
-     * Test that commands defined with the OP_ONLY default permission have at least one admin permission node.
-     */
-    @Test
-    public void shouldNotHavePlayerPermissionIfDefaultsToOpOnly() {
-        // given
-        BiConsumer<CommandDescription, Integer> adminPermissionChecker = new BiConsumer<CommandDescription, Integer>() {
-            @Override
-            public void accept(CommandDescription command, Integer depth) {
-                PermissionNode permission = command.getPermission();
-                if (permission != null && OP_ONLY.equals(permission.getDefaultPermission())
-                    && !hasAdminNode(permission)) {
-                    fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
-                        + "permission but no permission node on admin level");
-                }
-            }
-
-            private boolean hasAdminNode(PermissionNode permission) {
-                return permission instanceof AdminPermission;
-            }
-        };
-
-        // when/then
-        walkThroughCommands(commands, adminPermissionChecker);
     }
 
     /**

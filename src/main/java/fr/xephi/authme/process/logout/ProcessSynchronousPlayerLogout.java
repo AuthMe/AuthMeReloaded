@@ -77,7 +77,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         }
 
         // Set player's data to unauthenticated
-        service.setGroup(player, AuthGroupType.NOT_LOGGED_IN);
+        service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
         player.setOp(false);
         player.setAllowFlight(false);
         // Remove speed

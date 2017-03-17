@@ -8,7 +8,7 @@ import java.util.Random;
  */
 public final class RandomStringUtils {
 
-    private static final String CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final char[] CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private static final Random RANDOM = new SecureRandom();
     private static final int HEX_MAX_INDEX = 16;
     private static final int LOWER_ALPHANUMERIC_INDEX = 36;
@@ -24,7 +24,7 @@ public final class RandomStringUtils {
      * @return The random string
      */
     public static String generate(int length) {
-        return generate(length, LOWER_ALPHANUMERIC_INDEX);
+        return generateString(length, LOWER_ALPHANUMERIC_INDEX);
     }
 
     /**
@@ -35,7 +35,7 @@ public final class RandomStringUtils {
      * @return The random hexadecimal string
      */
     public static String generateHex(int length) {
-        return generate(length, HEX_MAX_INDEX);
+        return generateString(length, HEX_MAX_INDEX);
     }
 
     /**
@@ -46,16 +46,16 @@ public final class RandomStringUtils {
      * @return The random string
      */
     public static String generateLowerUpper(int length) {
-        return generate(length, CHARS.length());
+        return generateString(length, CHARS.length);
     }
 
-    private static String generate(int length, int maxIndex) {
+    private static String generateString(int length, int maxIndex) {
         if (length < 0) {
             throw new IllegalArgumentException("Length must be positive but was " + length);
         }
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {
-            sb.append(CHARS.charAt(RANDOM.nextInt(maxIndex)));
+            sb.append(CHARS[RANDOM.nextInt(maxIndex)]);
         }
         return sb.toString();
     }

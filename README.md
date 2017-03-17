@@ -19,20 +19,14 @@
 - Project status:
   - Dependencies: [![Dependencies status](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d/badge.svg)](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d)
   - Test coverage: [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
+  - Code climate: [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
 
 - Development resources:
   - <a href="http://ci.xephi.fr/job/AuthMeReloaded/javadoc/">JavaDocs</a>
   - <a href="http://ci.xephi.fr/plugin/repository/everything/">Maven Repository</a>
 
-#####Statistics:
-
-McStats: http://mcstats.org/plugin/AuthMe
-
-<img src="http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png">
-
-<img src="http://i.mcstats.org/AuthMe/Rank.borderless.png">
-
-<img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
+- Statistics:
+  - bStats: [AuthMe on bstats.org](https://bstats.org/plugin/bukkit/AuthMe)
 
 <hr>
 
@@ -92,7 +86,7 @@ You can also create your own translation file and, if you want, you can share it
     <li>DoubleSaltedMD5: SALTED2MD5</li>
     <li>WordPress: WORDPRESS</li>
   </ul></li>
-  <li>Custom MySQL tables/columns names (useful with forums databases)</li>
+  <li>Custom MySQL tables/columns names (useful with forum databases)</li>
   <li><strong>Cached database queries!</strong></li>
   <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus!</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>

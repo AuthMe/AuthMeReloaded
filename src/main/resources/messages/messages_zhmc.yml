@@ -86,8 +86,19 @@ email_already_used: '&4此電子郵件地址已被使用'
 # TODO show_no_email: '&2You currently don''t have email address associated with this account.'
 add_email: '&3請使用命令: /email add [你的電郵地址] [重覆確認你的電郵地址] 將您的電子郵件添加到您的帳戶"'
 recovery_email: '&3忘記密碼了嗎？ 請使用命令: "/email recovery [你的電郵地址]"'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3T要登錄您必須使用captcha驗證碼,請使用命令: "/captcha <theCaptcha>"'
 wrong_captcha: '&c驗證碼錯誤!請按T在聊天中輸入 "/captcha THE_CAPTCHA"'
 valid_captcha: '&2驗證碼正確!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

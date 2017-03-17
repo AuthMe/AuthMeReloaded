@@ -6,7 +6,7 @@ import ch.jalu.configme.properties.Property;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class BackupSettings implements SettingsHolder {
+public final class BackupSettings implements SettingsHolder {
 
     @Comment("Enable or disable automatic backup")
     public static final Property<Boolean> ENABLED =

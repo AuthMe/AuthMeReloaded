@@ -86,8 +86,19 @@ email_send_failure: 'De E-mail kon niet verzonden worden. Neem contact op met ee
 show_no_email: '&2Je hebt nog geen E-mailadres toegevoegd aan dit account.'
 add_email: '&3Voeg jouw E-mailadres alsjeblieft toe met: /email add <E-mail> <wachtwoord> <herhaalWachtwoord>'
 recovery_email: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando: /email recovery <E-mail>'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <theCaptcha>'
 wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha THE_CAPTCHA" in de chat!'
 valid_captcha: '&2De captcha-code is geldig!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

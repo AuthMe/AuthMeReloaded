@@ -1,6 +1,7 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.util.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -16,6 +17,7 @@ public class MessageFileHandler {
     // regular file
     private final String filename;
     private final FileConfiguration configuration;
+    private final String updateAddition;
     // default file
     private final String defaultFile;
     private FileConfiguration defaultConfiguration;
@@ -25,11 +27,15 @@ public class MessageFileHandler {
      *
      * @param file the file to use for messages
      * @param defaultFile the default file from the JAR to use if no message is found
+     * @param updateCommand command to update the messages file (nullable) to show in error messages
      */
-    public MessageFileHandler(File file, String defaultFile) {
+    public MessageFileHandler(File file, String defaultFile, String updateCommand) {
         this.filename = file.getName();
         this.configuration = YamlConfiguration.loadConfiguration(file);
         this.defaultFile = defaultFile;
+        this.updateAddition = updateCommand == null
+            ? ""
+            : " (or run " + updateCommand + ")";
     }
 
     /**
@@ -53,7 +59,7 @@ public class MessageFileHandler {
 
         if (message == null) {
             ConsoleLogger.warning("Error getting message with key '" + key + "'. "
-                + "Please update your config file '" + filename + "' (or run /authme messages)");
+                + "Please update your config file '" + filename + "'" + updateAddition);
             return getDefault(key);
         }
         return message;
@@ -78,7 +84,7 @@ public class MessageFileHandler {
      */
     private String getDefault(String key) {
         if (defaultConfiguration == null) {
-            InputStream stream = MessageFileHandler.class.getClassLoader().getResourceAsStream(defaultFile);
+            InputStream stream = FileUtils.getResourceFromJar(defaultFile);
             defaultConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
         }
         String message = defaultConfiguration.getString(key);

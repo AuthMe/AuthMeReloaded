@@ -24,6 +24,7 @@ import java.util.List;
  * NewAPI authmeApi = AuthMe.getApi();
  * </code>
  */
+@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class NewAPI {
 
     private static NewAPI singleton;

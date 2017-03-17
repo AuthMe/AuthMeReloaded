@@ -10,6 +10,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Handler for permissions via Vault.
+ *
+ * @see <a href="https://dev.bukkit.org/projects/vault">Vault Bukkit page</a>
+ * @see <a href="https://github.com/milkbowl/Vault">Vault on Github</a>
+ */
 public class VaultHandler implements PermissionHandler {
 
     private Permission vaultProvider;

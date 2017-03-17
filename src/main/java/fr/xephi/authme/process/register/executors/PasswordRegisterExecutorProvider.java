@@ -56,10 +56,10 @@ class PasswordRegisterExecutorProvider {
     /** Registration executor for password registration. */
     class PasswordRegisterExecutor implements RegistrationExecutor {
 
-        protected final Player player;
+        private final Player player;
         private final String password;
         private final String email;
-        protected HashedPassword hashedPassword;
+        private HashedPassword hashedPassword;
 
         /**
          * Constructor.
@@ -105,6 +105,14 @@ class PasswordRegisterExecutorProvider {
             }
             syncProcessManager.processSyncPasswordRegister(player);
         }
+
+        protected Player getPlayer() {
+            return player;
+        }
+
+        protected HashedPassword getHashedPassword() {
+            return hashedPassword;
+        }
     }
 
     /** Executor for password registration via API call. */
@@ -147,8 +155,9 @@ class PasswordRegisterExecutorProvider {
         public void executePostPersistAction() {
             super.executePostPersistAction();
 
-            String qrCodeUrl = TwoFactor.getQRBarcodeURL(player.getName(), Bukkit.getIp(), hashedPassword.getHash());
-            commonService.send(player, MessageKey.TWO_FACTOR_CREATE, hashedPassword.getHash(), qrCodeUrl);
+            String hash = getHashedPassword().getHash();
+            String qrCodeUrl = TwoFactor.getQRBarcodeURL(getPlayer().getName(), Bukkit.getIp(), hash);
+            commonService.send(getPlayer(), MessageKey.TWO_FACTOR_CREATE, hash, qrCodeUrl);
         }
 
     }

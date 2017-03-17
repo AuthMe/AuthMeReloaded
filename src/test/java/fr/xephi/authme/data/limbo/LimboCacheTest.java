@@ -1,11 +1,8 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.data.backup.LimboPlayerStorage;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.junit.Test;
@@ -33,9 +30,6 @@ public class LimboCacheTest {
 
     @InjectMocks
     private LimboCache limboCache;
-
-    @Mock
-    private Settings settings;
 
     @Mock
     private PermissionsManager permissionsManager;
@@ -119,11 +113,7 @@ public class LimboCacheTest {
         given(limboPlayer.isCanFly()).willReturn(true);
         float flySpeed = 1.0f;
         given(limboPlayer.getFlySpeed()).willReturn(flySpeed);
-        String group = "primary-group";
-        given(limboPlayer.getGroup()).willReturn(group);
         getCache().put(name.toLowerCase(), limboPlayer);
-        given(settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)).willReturn(true);
-        given(permissionsManager.hasGroupSupport()).willReturn(true);
 
         // when
         limboCache.restoreData(player);
@@ -133,7 +123,6 @@ public class LimboCacheTest {
         verify(player).setWalkSpeed(walkSpeed);
         verify(player).setAllowFlight(true);
         verify(player).setFlySpeed(flySpeed);
-        verify(permissionsManager).setGroup(player, group);
         verify(limboPlayer).clearTasks();
     }
 
@@ -148,18 +137,14 @@ public class LimboCacheTest {
         given(limboPlayer.getWalkSpeed()).willReturn(0f);
         given(limboPlayer.isCanFly()).willReturn(true);
         given(limboPlayer.getFlySpeed()).willReturn(0f);
-        String group = "primary-group";
-        given(limboPlayer.getGroup()).willReturn(group);
         getCache().put(name.toLowerCase(), limboPlayer);
-        given(settings.getProperty(PluginSettings.ENABLE_PERMISSION_CHECK)).willReturn(true);
-        given(permissionsManager.hasGroupSupport()).willReturn(true);
 
         // when
         limboCache.restoreData(player);
 
         // then
-        verify(player).setWalkSpeed(0.2f);
-        verify(player).setFlySpeed(0.2f);
+        verify(player).setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+        verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
     }
 
     @Test
