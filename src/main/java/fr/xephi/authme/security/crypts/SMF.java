@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
 
-public class SMF extends UsernameSaltMethod {
+public class Smf extends UsernameSaltMethod {
 
     @Override
     public HashedPassword computeHash(String password, String name) {

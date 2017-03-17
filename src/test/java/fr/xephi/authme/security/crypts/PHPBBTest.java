@@ -1,12 +1,12 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link PHPBB}.
+ * Test for {@link PhpBB}.
  */
-public class PHPBBTest extends AbstractEncryptionMethodTest {
+public class PhpBBTest extends AbstractEncryptionMethodTest {
 
-    public PHPBBTest() {
-        super(new PHPBB(),
+    public PhpBBTest() {
+        super(new PhpBB(),
             "$H$7MaSGQb0xe3Fp/a.Q.Ewpw.UKfCv.t0",  // password
             "$H$7ESfAVjzqajC7fJFcZKZIhyds41MuW.",  // PassWord1
             "$H$7G65SXRPbR69jLg.qZTjtqsw36Ciw7.",  // &^%te$t?Pw@_

@@ -4,15 +4,15 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 @Recommendation(Usage.RECOMMENDED)
-public class XAUTH extends HexSaltedMethod {
+public class XAuth extends HexSaltedMethod {
 
     private static String getWhirlpool(String message) {
-        WHIRLPOOL w = new WHIRLPOOL();
-        byte[] digest = new byte[WHIRLPOOL.DIGESTBYTES];
+        Whirlpool w = new Whirlpool();
+        byte[] digest = new byte[Whirlpool.DIGESTBYTES];
         w.NESSIEinit();
         w.NESSIEadd(message);
         w.NESSIEfinalize(digest);
-        return WHIRLPOOL.display(digest);
+        return Whirlpool.display(digest);
     }
 
     @Override

@@ -1,12 +1,12 @@
 package fr.xephi.authme.security.crypts;
 
 /**
- * Test for {@link CRAZYCRYPT1}.
+ * Test for {@link CrazyCrypt1}.
  */
-public class CRAZYCRYPT1Test extends AbstractEncryptionMethodTest {
+public class CrazyCrypt1Test extends AbstractEncryptionMethodTest {
 
-    public CRAZYCRYPT1Test() {
-        super(new CRAZYCRYPT1(),
+    public CrazyCrypt1Test() {
+        super(new CrazyCrypt1(),
             "d5c76eb36417d4e97ec62609619e40a9e549a2598d0dab5a7194fd997a9305af78de2b93f958e150d19dd1e7f821043379ddf5f9c7f352bf27df91ae4913f3e8",  // password
             "49c63f827c88196871e344e589bd46cc4fa6db3c27801bbad5374c0d216381977627c1d76f2114667d5dd117e046f7493eb06e4f461f4f848aa08f6f40a3e934",  // PassWord1
             "6fefb0233bab6e6efb9c16f82cb0d8f569488905e2dae0e7c9dde700e7363da67213d37c44bc15f4a05854c9c21e5688389d416413c7309398aa96cb1f341d08",  // &^%te$t?Pw@_

@@ -10,7 +10,7 @@ import static fr.xephi.authme.security.HashUtils.md5;
 
 @Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 5)
-public class IPB3 extends SeparateSaltMethod {
+public class Ipb3 extends SeparateSaltMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
