@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
 
-public class ROYALAUTH extends UnsaltedMethod {
+public class RoyalAuth extends UnsaltedMethod {
 
     @Override
     public String computeHash(String password) {

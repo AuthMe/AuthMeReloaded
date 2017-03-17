@@ -7,12 +7,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test for {@link BCRYPT}.
+ * Test for {@link BCrypt}.
  */
-public class BcryptTest extends AbstractEncryptionMethodTest {
+public class BCryptTest extends AbstractEncryptionMethodTest {
 
-    public BcryptTest() {
-        super(new BCRYPT(mockSettings()),
+    public BCryptTest() {
+        super(new BCrypt(mockSettings()),
             "$2a$10$6iATmYgwJVc3YONhVcZFve3Cfb5GnwvKhJ20r.hMjmcNkIT9.Uh9K", // password
             "$2a$10$LOhUxhEcS0vgDPv/jkXvCurNb7LjP9xUlEolJGk.Uhgikqc6FtIOi", // PassWord1
             "$2a$10$j9da7SGiaakWhzIms9BtwemLUeIhSEphGUQ3XSlvYgpYsGnGCKRBa", // &^%te$t?Pw@_

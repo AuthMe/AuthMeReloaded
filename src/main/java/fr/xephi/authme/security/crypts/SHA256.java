@@ -6,7 +6,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
 import static fr.xephi.authme.security.HashUtils.sha256;
 
 @Recommendation(Usage.RECOMMENDED)
-public class SHA256 extends HexSaltedMethod {
+public class Sha256 extends HexSaltedMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {

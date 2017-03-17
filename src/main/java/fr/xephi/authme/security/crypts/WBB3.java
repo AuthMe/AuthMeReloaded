@@ -10,7 +10,7 @@ import static fr.xephi.authme.security.HashUtils.sha1;
 
 @Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 40)
-public class WBB3 extends SeparateSaltMethod {
+public class Wbb3 extends SeparateSaltMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
