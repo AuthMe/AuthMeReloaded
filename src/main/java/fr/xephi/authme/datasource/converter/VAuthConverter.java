@@ -16,13 +16,13 @@ import java.util.UUID;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
-public class vAuthConverter implements Converter {
+public class VAuthConverter implements Converter {
 
     private final DataSource dataSource;
     private final File vAuthPasswordsFile;
 
     @Inject
-    vAuthConverter(@DataFolder File dataFolder, DataSource dataSource) {
+    VAuthConverter(@DataFolder File dataFolder, DataSource dataSource) {
         vAuthPasswordsFile = new File(dataFolder.getParent(), makePath("vAuth", "passwords.yml"));
         this.dataSource = dataSource;
     }

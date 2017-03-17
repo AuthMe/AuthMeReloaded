@@ -21,7 +21,7 @@ import java.util.List;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
-public class xAuthConverter implements Converter {
+public class XAuthConverter implements Converter {
 
     @Inject
     @DataFolder
@@ -31,7 +31,7 @@ public class xAuthConverter implements Converter {
     @Inject
     private PluginManager pluginManager;
 
-    xAuthConverter() {
+    XAuthConverter() {
     }
 
     @Override

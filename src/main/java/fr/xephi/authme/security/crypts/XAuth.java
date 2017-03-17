@@ -4,7 +4,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 @Recommendation(Usage.RECOMMENDED)
-public class Xauth extends HexSaltedMethod {
+public class XAuth extends HexSaltedMethod {
 
     private static String getWhirlpool(String message) {
         Whirlpool w = new Whirlpool();
