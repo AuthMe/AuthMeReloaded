@@ -160,6 +160,7 @@
             <property name="exceptionVariableName" value="ignore|ignored"/>
         </module>
         <module name="MissingOverride"/>
+        <module name="EqualsHashCode"/>
     </module>
     <module name="FileTabCharacter"/>
 </module>

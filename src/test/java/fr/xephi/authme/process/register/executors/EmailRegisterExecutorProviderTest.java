@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.register.executors;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -34,13 +33,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Test for {@link EmailRegisterExecutorProvider}.
+ * Test for {@link EmailRegisterExecutor}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class EmailRegisterExecutorProviderTest {
 
     @InjectMocks
-    private EmailRegisterExecutorProvider emailRegisterExecutorProvider;
+    private EmailRegisterExecutor executor;
 
     @Mock
     private PermissionsManager permissionsManager;
@@ -62,10 +61,10 @@ public class EmailRegisterExecutorProviderTest {
         String email = "test@example.com";
         given(dataSource.countAuthsByEmail(email)).willReturn(4);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, email);
+        EmailRegisterParams params = EmailRegisterParams.of(player, email);
 
         // when
-        boolean result = executor.isRegistrationAdmitted();
+        boolean result = executor.isRegistrationAdmitted(params);
 
         // then
         assertThat(result, equalTo(false));
@@ -80,10 +79,10 @@ public class EmailRegisterExecutorProviderTest {
         given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         Player player = mock(Player.class);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
-        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+        EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
 
         // when
-        boolean result = executor.isRegistrationAdmitted();
+        boolean result = executor.isRegistrationAdmitted(params);
 
         // then
         assertThat(result, equalTo(true));
@@ -97,10 +96,10 @@ public class EmailRegisterExecutorProviderTest {
         String email = "test@example.com";
         given(dataSource.countAuthsByEmail(email)).willReturn(0);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+        EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
 
         // when
-        boolean result = executor.isRegistrationAdmitted();
+        boolean result = executor.isRegistrationAdmitted(params);
 
         // then
         assertThat(result, equalTo(true));
@@ -120,10 +119,10 @@ public class EmailRegisterExecutorProviderTest {
         World world = mock(World.class);
         given(world.getName()).willReturn("someWorld");
         given(player.getLocation()).willReturn(new Location(world, 48, 96, 144));
-        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+        EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
 
         // when
-        PlayerAuth auth = executor.buildPlayerAuth();
+        PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
         assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", "123.45.67.89"));
@@ -132,18 +131,17 @@ public class EmailRegisterExecutorProviderTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldPerformActionAfterDataSourceSave() {
         // given
         given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Laleh");
-        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+        EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
         String password = "A892C#@";
-        ReflectionTestUtils.setField((Class) executor.getClass(), executor, "password", password);
+        params.setPassword(password);
 
         // when
-        executor.executePostPersistAction();
+        executor.executePostPersistAction(params);
 
         // then
         verify(emailService).sendPasswordMail("Laleh", "test@example.com", password);
@@ -151,18 +149,17 @@ public class EmailRegisterExecutorProviderTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldHandleEmailSendingFailure() {
         // given
         given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(false);
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Laleh");
-        RegistrationExecutor executor = emailRegisterExecutorProvider.new EmailRegisterExecutor(player, "test@example.com");
+        EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
         String password = "A892C#@";
-        ReflectionTestUtils.setField((Class) executor.getClass(), executor, "password", password);
+        params.setPassword(password);
 
         // when
-        executor.executePostPersistAction();
+        executor.executePostPersistAction(params);
 
         // then
         verify(emailService).sendPasswordMail("Laleh", "test@example.com", password);

@@ -15,6 +15,7 @@ import fr.xephi.authme.initialization.OnStartupTasks;
 import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.initialization.factory.FactoryDependencyHandler;
+import fr.xephi.authme.initialization.factory.SingletonStoreDependencyHandler;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -25,7 +26,7 @@ import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
-import fr.xephi.authme.security.crypts.SHA256;
+import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
@@ -36,6 +37,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
+import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -195,12 +197,17 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.setLogger(getLogger());
         ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
 
+        // Check java version
+        if(!SystemUtils.isJavaVersionAtLeast(1.8f)) {
+            throw new IllegalStateException("You need Java 1.8 or above to run this plugin!");
+        }
+
         // Create plugin folder
         getDataFolder().mkdir();
 
         // Create injector, provide elements from the Bukkit environment and register providers
         injector = new InjectorBuilder()
-            .addHandlers(new FactoryDependencyHandler())
+            .addHandlers(new FactoryDependencyHandler(), new SingletonStoreDependencyHandler())
             .addDefaultHandlers("fr.xephi.authme")
             .create();
         injector.register(AuthMe.class, this);
@@ -220,7 +227,7 @@ public class AuthMe extends JavaPlugin {
         instantiateServices(injector);
 
         // Convert deprecated PLAINTEXT hash entries
-        MigrationService.changePlainTextToSha256(settings, database, new SHA256());
+        MigrationService.changePlainTextToSha256(settings, database, new Sha256());
 
         // TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged
