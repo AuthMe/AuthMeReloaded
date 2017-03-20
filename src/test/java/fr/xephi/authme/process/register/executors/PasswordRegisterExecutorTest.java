@@ -34,13 +34,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Test for {@link PasswordRegisterExecutorProvider}.
+ * Test for {@link PasswordRegisterExecutor}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PasswordRegisterExecutorProviderTest {
+public class PasswordRegisterExecutorTest {
 
     @InjectMocks
-    private PasswordRegisterExecutorProvider passwordRegisterExecutorProvider;
+    private PasswordRegisterExecutor executor;
 
     @Mock
     private ValidationService validationService;
@@ -62,10 +62,10 @@ public class PasswordRegisterExecutorProviderTest {
         String name = "player040";
         given(validationService.validatePassword(password, name)).willReturn(new ValidationResult());
         Player player = mockPlayerWithName(name);
-        RegistrationExecutor executor = passwordRegisterExecutorProvider.new PasswordRegisterExecutor(player, password, null);
+        PasswordRegisterParams params = PasswordRegisterParams.of(player, password, null);
 
         // when
-        boolean result = executor.isRegistrationAdmitted();
+        boolean result = executor.isRegistrationAdmitted(params);
 
         // then
         assertThat(result, equalTo(true));
@@ -80,10 +80,10 @@ public class PasswordRegisterExecutorProviderTest {
         given(validationService.validatePassword(password, name)).willReturn(
             new ValidationResult(MessageKey.PASSWORD_CHARACTERS_ERROR, "[a-z]"));
         Player player = mockPlayerWithName(name);
-        RegistrationExecutor executor = passwordRegisterExecutorProvider.new PasswordRegisterExecutor(player, password, null);
+        PasswordRegisterParams params = PasswordRegisterParams.of(player, password, null);
 
         // when
-        boolean result = executor.isRegistrationAdmitted();
+        boolean result = executor.isRegistrationAdmitted(params);
 
         // then
         assertThat(result, equalTo(false));
@@ -101,10 +101,10 @@ public class PasswordRegisterExecutorProviderTest {
         World world = mock(World.class);
         given(world.getName()).willReturn("someWorld");
         given(player.getLocation()).willReturn(new Location(world, 48, 96, 144));
-        RegistrationExecutor executor = passwordRegisterExecutorProvider.new PasswordRegisterExecutor(player, "pass", "mail@example.org");
+        PasswordRegisterParams params = PasswordRegisterParams.of(player, "pass", "mail@example.org");
 
         // when
-        PlayerAuth auth = executor.buildPlayerAuth();
+        PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
         assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", "123.45.67.89"));
@@ -118,10 +118,10 @@ public class PasswordRegisterExecutorProviderTest {
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(false);
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = passwordRegisterExecutorProvider.new PasswordRegisterExecutor(player, "pass", "mail@example.org");
+        PasswordRegisterParams params = PasswordRegisterParams.of(player, "pass", "mail@example.org");
 
         // when
-        executor.executePostPersistAction();
+        executor.executePostPersistAction(params);
 
         // then
         TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
@@ -134,10 +134,10 @@ public class PasswordRegisterExecutorProviderTest {
         // given
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(true);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = passwordRegisterExecutorProvider.new PasswordRegisterExecutor(player, "pass", "mail@example.org");
+        PasswordRegisterParams params = PasswordRegisterParams.of(player, "pass", "mail@example.org");
 
         // when
-        executor.executePostPersistAction();
+        executor.executePostPersistAction(params);
 
         // then
         verifyZeroInteractions(bukkitService, asynchronousLogin);

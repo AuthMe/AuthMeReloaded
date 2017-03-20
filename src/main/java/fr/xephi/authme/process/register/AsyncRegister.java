@@ -3,10 +3,13 @@ package fr.xephi.authme.process.register;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
+import fr.xephi.authme.process.register.executors.RegistrationParameters;
+import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -31,6 +34,8 @@ public class AsyncRegister implements AsynchronousProcess {
     private CommonService service;
     @Inject
     private PermissionsManager permissionsManager;
+    @Inject
+    private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
 
     AsyncRegister() {
     }
@@ -38,12 +43,16 @@ public class AsyncRegister implements AsynchronousProcess {
     /**
      * Performs the registration process for the given player.
      *
-     * @param player the player to register
-     * @param executor the registration executor to perform the registration with
+     * @param variant the registration method
+     * @param parameters the parameters
+     * @param <P> parameters type
      */
-    public void register(Player player, RegistrationExecutor executor) {
-        if (preRegisterCheck(player) && executor.isRegistrationAdmitted()) {
-            executeRegistration(player, executor);
+    public <P extends RegistrationParameters> void register(RegistrationMethod<P> variant, P parameters) {
+        if (preRegisterCheck(parameters.getPlayer())) {
+            RegistrationExecutor<P> executor = registrationExecutorFactory.getSingleton(variant.getExecutorClass());
+            if (executor.isRegistrationAdmitted(parameters)) {
+                executeRegistration(parameters, executor);
+            }
         }
     }
 
@@ -66,15 +75,17 @@ public class AsyncRegister implements AsynchronousProcess {
     /**
      * Executes the registration.
      *
-     * @param player the player to register
+     * @param parameters the registration parameters
      * @param executor the executor to perform the registration process with
+     * @param <P> registration params type
      */
-    private void executeRegistration(Player player, RegistrationExecutor executor) {
-        PlayerAuth auth = executor.buildPlayerAuth();
+    private <P extends RegistrationParameters>
+            void executeRegistration(P parameters, RegistrationExecutor<P> executor) {
+        PlayerAuth auth = executor.buildPlayerAuth(parameters);
         if (database.saveAuth(auth)) {
-            executor.executePostPersistAction();
+            executor.executePostPersistAction(parameters);
         } else {
-            service.send(player, MessageKey.ERROR);
+            service.send(parameters.getPlayer(), MessageKey.ERROR);
         }
     }
 
