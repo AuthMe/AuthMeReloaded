@@ -9,7 +9,7 @@ import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.initialization.factory.FactoryDependencyHandler;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.security.crypts.JOOMLA;
+import fr.xephi.authme.security.crypts.Joomla;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -231,7 +231,7 @@ public class PasswordSecurityTest {
         ArgumentCaptor<PasswordEncryptionEvent> captor = ArgumentCaptor.forClass(PasswordEncryptionEvent.class);
         verify(pluginManager).callEvent(captor.capture());
         PasswordEncryptionEvent event = captor.getValue();
-        assertThat(JOOMLA.class.equals(caughtClassInEvent), equalTo(true));
+        assertThat(Joomla.class.equals(caughtClassInEvent), equalTo(true));
         assertThat(event.getPlayerName(), equalTo(usernameLowerCase));
     }
 

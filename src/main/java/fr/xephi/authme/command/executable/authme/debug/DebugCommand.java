@@ -6,10 +6,10 @@ import fr.xephi.authme.initialization.factory.Factory;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Debug command main.
@@ -19,8 +19,9 @@ public class DebugCommand implements ExecutableCommand {
     @Inject
     private Factory<DebugSection> debugSectionFactory;
 
-    private Set<Class<? extends DebugSection>> sectionClasses =
-        ImmutableSet.of(PermissionGroups.class, TestEmailSender.class);
+    private Set<Class<? extends DebugSection>> sectionClasses = ImmutableSet.of(PermissionGroups.class,
+        DataStatistics.class, CountryLookup.class, PlayerAuthViewer.class, LimboPlayerViewer.class, CountryLookup.class,
+        HasPermissionChecker.class, TestEmailSender.class);
 
     private Map<String, DebugSection> sections;
 
@@ -46,7 +47,7 @@ public class DebugCommand implements ExecutableCommand {
     // Lazy getter
     private Map<String, DebugSection> getSections() {
         if (sections == null) {
-            Map<String, DebugSection> sections = new HashMap<>();
+            Map<String, DebugSection> sections = new TreeMap<>();
             for (Class<? extends DebugSection> sectionClass : sectionClasses) {
                 DebugSection section = debugSectionFactory.newInstance(sectionClass);
                 sections.put(section.getName(), section);

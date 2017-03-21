@@ -45,6 +45,12 @@ public class OnStartupTasks {
     OnStartupTasks() {
     }
 
+    /**
+     * Sends bstats metrics.
+     *
+     * @param plugin the plugin instance
+     * @param settings the settings
+     */
     public static void sendMetrics(AuthMe plugin, Settings settings) {
         final Metrics metrics = new Metrics(plugin);
 

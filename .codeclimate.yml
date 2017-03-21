@@ -25,4 +25,6 @@ exclude_paths:
 - 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClient.java'
 - 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClientFactory.java'
 - 'src/main/java/fr/xephi/authme/security/crypts/BCryptService.java'
+- 'src/main/java/fr/xephi/authme/security/crypts/PHPBB.java'
 - 'src/main/java/fr/xephi/authme/security/crypts/WHIRLPOOL.java'
+- 'src/main/java/fr/xephi/authme/security/crypts/WORDPRESS.java'

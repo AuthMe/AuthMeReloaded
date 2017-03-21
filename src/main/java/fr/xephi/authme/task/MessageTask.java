@@ -1,7 +1,5 @@
 package fr.xephi.authme.task;
 
-import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -10,20 +8,16 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class MessageTask extends BukkitRunnable {
 
-    private final String name;
+    private final Player player;
     private final String[] message;
-    private final BukkitService bukkitService;
-    private final PlayerCache playerCache;
     private boolean isMuted;
 
     /*
      * Constructor.
      */
-    public MessageTask(String name, String[] lines, BukkitService bukkitService, PlayerCache playerCache) {
-        this.name = name;
+    public MessageTask(Player player, String[] lines) {
+        this.player = player;
         this.message = lines;
-        this.bukkitService = bukkitService;
-        this.playerCache = playerCache;
         isMuted = false;
     }
 
@@ -33,21 +27,8 @@ public class MessageTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (playerCache.isAuthenticated(name)) {
-            cancel();
-        }
-
-        if (isMuted) {
-            return;
-        }
-
-        for (Player player : bukkitService.getOnlinePlayers()) {
-            if (player.getName().equalsIgnoreCase(name)) {
-                for (String ms : message) {
-                    player.sendMessage(ms);
-                }
-                break;
-            }
+        if (!isMuted) {
+            player.sendMessage(message);
         }
     }
 }

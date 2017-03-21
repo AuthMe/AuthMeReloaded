@@ -9,7 +9,7 @@ import java.util.List;
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class EmailSettings implements SettingsHolder {
+public final class EmailSettings implements SettingsHolder {
 
     @Comment("Email SMTP server host")
     public static final Property<String> SMTP_HOST =

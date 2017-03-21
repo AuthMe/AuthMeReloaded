@@ -1,8 +1,8 @@
 package fr.xephi.authme.process.login;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
@@ -31,7 +31,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private BungeeService bungeeService;
 
     @Inject
-    private LimboCache limboCache;
+    private LimboService limboService;
 
     @Inject
     private BukkitService bukkitService;
@@ -65,15 +65,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     public void processPlayerLogin(Player player) {
         final String name = player.getName().toLowerCase();
 
-        final LimboPlayer limbo = limboCache.getPlayerData(name);
+        commonService.setGroup(player, AuthGroupType.LOGGED_IN);
+        final LimboPlayer limbo = limboService.getLimboPlayer(name);
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
-            limboCache.restoreData(player);
-            limboCache.deletePlayerData(player);
-            // do we really need to use location from database for now?
-            // because LimboCache#restoreData teleport player to last location.
+            limboService.restoreData(player);
         }
-        commonService.setGroup(player, AuthGroupType.LOGGED_IN);
 
         if (commonService.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
             restoreInventory(player);

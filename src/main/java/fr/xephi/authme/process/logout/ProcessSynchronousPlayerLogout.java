@@ -2,17 +2,17 @@ package fr.xephi.authme.process.logout;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupType;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -34,7 +34,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     private ProtocolLibService protocolLibService;
 
     @Inject
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private LimboService limboService;
 
     @Inject
     private SessionManager sessionManager;
@@ -53,9 +53,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
             protocolLibService.sendBlankInventoryPacket(player);
         }
 
-        limboPlayerTaskManager.registerTimeoutTask(player);
-        limboPlayerTaskManager.registerMessageTask(name, true);
-
         applyLogoutEffect(player);
 
         // Player is now logout... Time to fire event !
@@ -71,21 +68,14 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         teleportationService.teleportOnJoin(player);
 
         // Apply Blindness effect
-        final int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+            int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
 
         // Set player's data to unauthenticated
+        limboService.createLimboPlayer(player, true);
         service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
-        player.setOp(false);
-        player.setAllowFlight(false);
-        // Remove speed
-        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
-            player.setFlySpeed(0.0f);
-            player.setWalkSpeed(0.0f);
-        }
     }
 
 }

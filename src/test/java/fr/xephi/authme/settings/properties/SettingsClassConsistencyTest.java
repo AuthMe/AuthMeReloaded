@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings.properties;
 
 import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.ReflectionTestUtils;
@@ -10,11 +11,13 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -72,6 +75,27 @@ public class SettingsClassConsistencyTest {
                 }
             }
         }
+    }
+
+    /**
+     * Checks that {@link AuthMeSettingsRetriever} returns a ConfigurationData with all
+     * available SettingsHolder classes.
+     */
+    @Test
+    public void shouldHaveAllClassesInConfigurationData() {
+        // given
+        long totalProperties = classes.stream()
+            .map(Class::getDeclaredFields)
+            .flatMap(Arrays::stream)
+            .filter(field -> Property.class.isAssignableFrom(field.getType()))
+            .count();
+
+        // when
+        ConfigurationData configData = AuthMeSettingsRetriever.buildConfigurationData();
+
+        // then
+        assertThat("ConfigurationData should have " + totalProperties + " properties (as found manually)",
+            configData.getProperties(), hasSize((int) totalProperties));
     }
 
     @Test

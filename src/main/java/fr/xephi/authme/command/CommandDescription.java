@@ -19,6 +19,7 @@ import static java.util.Arrays.asList;
  * {@code /authme} has a child whose label is {@code "register"}, then {@code /authme register} is the command that
  * the child defines.
  */
+@SuppressWarnings("checkstyle:FinalClass") // Justification: class is mocked in multiple tests
 public class CommandDescription {
 
     /**

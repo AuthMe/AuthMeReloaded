@@ -95,4 +95,14 @@ public class StringUtilsTest {
     public void shouldHaveHiddenConstructor() {
         TestHelper.validateHasOnlyPrivateEmptyConstructor(StringUtils.class);
     }
+
+    @Test
+    public void shouldCheckIfHasNeedleInWord() {
+        // given/when/then
+        assertThat(StringUtils.isInsideString('@', "@hello"), equalTo(false));
+        assertThat(StringUtils.isInsideString('?', "absent"), equalTo(false));
+        assertThat(StringUtils.isInsideString('-', "abcd-"), equalTo(false));
+        assertThat(StringUtils.isInsideString('@', "hello@example"), equalTo(true));
+        assertThat(StringUtils.isInsideString('@', "D@Z"), equalTo(true));
+    }
 }
