@@ -11,6 +11,7 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.expiring.Duration;
+import fr.xephi.authme.util.expiring.ExpiringMap;
 import fr.xephi.authme.util.expiring.ExpiringSet;
 import org.bukkit.entity.Player;
 
@@ -47,13 +48,13 @@ public class PasswordRecoveryService implements Reloadable {
     private Messages messages;
 
     private ExpiringSet<String> emailCooldown;
-    private ExpiringSet<String> successfulRecovers;
+    private ExpiringMap<String, String> successfulRecovers;
 
     @PostConstruct
     private void initEmailCooldownSet() {
         emailCooldown = new ExpiringSet<>(
             commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS), TimeUnit.SECONDS);
-        successfulRecovers = new ExpiringSet<>(
+        successfulRecovers = new ExpiringMap<>(
             commonService.getProperty(SecuritySettings.PASSWORD_CHANGE_TIMEOUT), TimeUnit.MINUTES);
     }
 
@@ -103,7 +104,7 @@ public class PasswordRecoveryService implements Reloadable {
 
             String address = PlayerUtils.getPlayerIp(player);
 
-            successfulRecovers.add(address);
+            successfulRecovers.put(name, address);
             commonService.send(player, MessageKey.RECOVERY_CHANGE_PASSWORD);
         } else {
             commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
@@ -134,12 +135,15 @@ public class PasswordRecoveryService implements Reloadable {
      * @return True if the player can change their password.
      */
     public boolean canChangePassword(Player player) {
-        String address = PlayerUtils.getPlayerIp(player);
-        Duration waitDuration = successfulRecovers.getExpiration(address);
-        if (waitDuration.getDuration() > 0) {
-            messages.send(player, MessageKey.EMAIL_COOLDOWN_ERROR);
+        String name = player.getName();
+        String playerAddress = PlayerUtils.getPlayerIp(player);
+        String storedAddress = successfulRecovers.get(name);
+
+        if (storedAddress == null || !playerAddress.equals(storedAddress)) {
+            messages.send(player, MessageKey.CHANGE_PASSWORD_EXPIRED);
             return false;
         }
+
         return true;
     }
 
@@ -147,5 +151,7 @@ public class PasswordRecoveryService implements Reloadable {
     public void reload() {
         emailCooldown.setExpiration(
             commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS), TimeUnit.SECONDS);
+        successfulRecovers.setExpiration(
+            commonService.getProperty(SecuritySettings.PASSWORD_CHANGE_TIMEOUT), TimeUnit.MINUTES);
     }
 }
