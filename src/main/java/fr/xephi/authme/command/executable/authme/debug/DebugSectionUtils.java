@@ -1,14 +1,21 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.limbo.LimboService;
 import org.bukkit.Location;
 
+import java.lang.reflect.Field;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Utilities used within the DebugSection implementations.
  */
 final class DebugSectionUtils {
+
+    private static Field limboEntriesField;
 
     private DebugSectionUtils() {
     }
@@ -51,5 +58,41 @@ final class DebugSectionUtils {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
         return df.format(number);
+    }
+
+    private static Field getLimboPlayerEntriesField() {
+        if (limboEntriesField == null) {
+            try {
+                Field field = LimboService.class.getDeclaredField("entries");
+                field.setAccessible(true);
+                limboEntriesField = field;
+            } catch (Exception e) {
+                ConsoleLogger.logException("Could not retrieve LimboService entries field:", e);
+            }
+        }
+        return limboEntriesField;
+    }
+
+    /**
+     * Applies the given function to the map in LimboService containing the LimboPlayers.
+     * As we don't want to expose this information in non-debug settings, this is done with reflection.
+     * Exceptions are generously caught and {@code null} is returned on failure.
+     *
+     * @param limboService the limbo service instance to get the map from
+     * @param function the function to apply to the map
+     * @param <U> the result type of the function
+     *
+     * @return player names for which there is a LimboPlayer (or error message upon failure)
+     */
+    static <U> U applyToLimboPlayersMap(LimboService limboService, Function<Map, U> function) {
+        Field limboPlayerEntriesField = getLimboPlayerEntriesField();
+        if (limboPlayerEntriesField != null) {
+            try {
+                return function.apply((Map) limboEntriesField.get(limboService));
+            } catch (Exception e) {
+                ConsoleLogger.logException("Could not retrieve LimboService values:", e);
+            }
+        }
+        return null;
     }
 }

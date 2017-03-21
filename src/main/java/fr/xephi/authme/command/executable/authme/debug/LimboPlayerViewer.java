@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
@@ -10,15 +9,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
-import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
 import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.formatLocation;
+import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.applyToLimboPlayersMap;
 
 /**
  * Shows the data stored in LimboPlayers and the equivalent properties on online players.
@@ -34,8 +31,6 @@ class LimboPlayerViewer implements DebugSection {
     @Inject
     private BukkitService bukkitService;
 
-    private Field limboServiceEntries;
-
     @Override
     public String getName() {
         return "limbo";
@@ -50,7 +45,7 @@ class LimboPlayerViewer implements DebugSection {
     public void execute(CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) {
             sender.sendMessage("/authme debug limbo <player>: show a player's limbo info");
-            sender.sendMessage("Available limbo records: " + getLimboKeys());
+            sender.sendMessage("Available limbo records: " + applyToLimboPlayersMap(limboService, Map::keySet));
             return;
         }
 
@@ -71,35 +66,6 @@ class LimboPlayerViewer implements DebugSection {
             .sendEntry("Location", l -> formatLocation(l.getLocation()), p -> formatLocation(p.getLocation()))
             .sendEntry("Group", LimboPlayer::getGroup, p -> "");
         sender.sendMessage("Note: group is not shown for Player. Use /authme debug groups");
-    }
-
-    /**
-     * Gets the names of the LimboPlayers in the LimboService. As we don't want to expose this
-     * information in non-debug settings, this is done over reflections. Since this is not a
-     * crucial feature, we generously catch all Exceptions
-     *
-     * @return player names for which there is a LimboPlayer (or error message upon failure)
-     */
-    @SuppressWarnings("unchecked")
-    private Set<String> getLimboKeys() {
-        // Lazy initialization
-        if (limboServiceEntries == null) {
-            try {
-                Field limboServiceEntries = LimboService.class.getDeclaredField("entries");
-                limboServiceEntries.setAccessible(true);
-                this.limboServiceEntries = limboServiceEntries;
-            } catch (Exception e) {
-                ConsoleLogger.logException("Could not retrieve LimboService entries field:", e);
-                return Collections.singleton("Error retrieving LimboPlayer collection");
-            }
-        }
-
-        try {
-            return (Set) ((Map) limboServiceEntries.get(limboService)).keySet();
-        } catch (Exception e) {
-            ConsoleLogger.logException("Could not retrieve LimboService values:", e);
-            return Collections.singleton("Error retrieving LimboPlayer values");
-        }
     }
 
     /**
