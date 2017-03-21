@@ -38,6 +38,21 @@ public class TimedCounterTest {
     }
 
     @Test
+    public void shouldDecrementCount() {
+        // given
+        TimedCounter<String> counter = new TimedCounter<>(10, TimeUnit.MINUTES);
+        counter.put("moto", 12);
+
+        // when
+        counter.decrement("hello");
+        counter.decrement("moto");
+
+        // then
+        assertThat(counter.get("hello"), equalTo(0));
+        assertThat(counter.get("moto"), equalTo(11));
+    }
+
+    @Test
     public void shouldSumUpEntries() {
         // given
         TimedCounter<String> counter = new TimedCounter<>(90, TimeUnit.SECONDS);
