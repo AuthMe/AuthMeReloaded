@@ -1,12 +1,12 @@
 package fr.xephi.authme.command.executable.authme;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.service.CommonService;
@@ -23,17 +23,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
@@ -50,9 +47,6 @@ public class ReloadCommandTest {
     private AuthMe authMe;
 
     @Mock
-    private Injector injector;
-
-    @Mock
     private Settings settings;
 
     @Mock
@@ -60,6 +54,12 @@ public class ReloadCommandTest {
 
     @Mock
     private CommonService commandService;
+
+    @Mock
+    private SingletonStore<Reloadable> reloadableStore;
+
+    @Mock
+    private SingletonStore<SettingsDependent> settingsDependentStore;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -83,11 +83,11 @@ public class ReloadCommandTest {
             mock(Reloadable.class), mock(Reloadable.class), mock(Reloadable.class));
         List<SettingsDependent> dependents = Arrays.asList(
             mock(SettingsDependent.class), mock(SettingsDependent.class));
-        given(injector.retrieveAllOfType(Reloadable.class)).willReturn(reloadables);
-        given(injector.retrieveAllOfType(SettingsDependent.class)).willReturn(dependents);
+        given(reloadableStore.retrieveAllOfType()).willReturn(reloadables);
+        given(settingsDependentStore.retrieveAllOfType()).willReturn(dependents);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(settings).reload();
@@ -99,16 +99,16 @@ public class ReloadCommandTest {
     public void shouldHandleReloadError() {
         // given
         CommandSender sender = mock(CommandSender.class);
-        doThrow(IllegalStateException.class).when(injector).retrieveAllOfType(Reloadable.class);
+        doThrow(IllegalStateException.class).when(reloadableStore).retrieveAllOfType();
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(settings).reload();
-        verify(injector).retrieveAllOfType(Reloadable.class);
+        verify(reloadableStore).retrieveAllOfType();
         verify(sender).sendMessage(argThat(containsString("Error occurred")));
         verify(authMe).stopOrUnload();
     }
@@ -120,15 +120,16 @@ public class ReloadCommandTest {
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
         given(dataSource.getType()).willReturn(DataSourceType.SQLITE);
-        given(injector.retrieveAllOfType(Reloadable.class)).willReturn(new ArrayList<Reloadable>());
-        given(injector.retrieveAllOfType(SettingsDependent.class)).willReturn(new ArrayList<SettingsDependent>());
+        given(reloadableStore.retrieveAllOfType()).willReturn(Collections.emptyList());
+        given(settingsDependentStore.retrieveAllOfType()).willReturn(Collections.emptyList());
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(settings).reload();
-        verify(injector, times(2)).retrieveAllOfType(any(Class.class));
+        verify(reloadableStore).retrieveAllOfType();
+        verify(settingsDependentStore).retrieveAllOfType();
         verify(sender).sendMessage(argThat(containsString("cannot change database type")));
     }
 

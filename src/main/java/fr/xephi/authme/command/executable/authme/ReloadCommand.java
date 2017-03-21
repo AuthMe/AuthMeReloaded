@@ -1,12 +1,12 @@
 package fr.xephi.authme.command.executable.authme;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.Settings;
@@ -26,9 +26,6 @@ public class ReloadCommand implements ExecutableCommand {
     private AuthMe plugin;
 
     @Inject
-    private Injector injector;
-
-    @Inject
     private Settings settings;
 
     @Inject
@@ -36,6 +33,12 @@ public class ReloadCommand implements ExecutableCommand {
 
     @Inject
     private CommonService commonService;
+
+    @Inject
+    private SingletonStore<Reloadable> reloadableStore;
+
+    @Inject
+    private SingletonStore<SettingsDependent> settingsDependentStore;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
@@ -56,10 +59,10 @@ public class ReloadCommand implements ExecutableCommand {
     }
 
     private void performReloadOnServices() {
-        injector.retrieveAllOfType(Reloadable.class)
+        reloadableStore.retrieveAllOfType()
             .forEach(r -> r.reload());
 
-        injector.retrieveAllOfType(SettingsDependent.class)
+        settingsDependentStore.retrieveAllOfType()
             .forEach(s -> s.reload(settings));
     }
 }
