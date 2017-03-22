@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.email;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -44,6 +45,7 @@ public class SetPasswordCommand extends PlayerCommand {
             if (!result.hasError()) {
                 HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
                 dataSource.updatePassword(name, hashedPassword);
+                ConsoleLogger.info("Player '" + name + "' has changed their password from recovery");
                 commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             } else {
                 commonService.send(player, result.getMessageKey(), result.getArgs());

@@ -1,5 +1,6 @@
 package fr.xephi.authme.service;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.mail.EmailService;
@@ -95,6 +96,8 @@ public class PasswordRecoveryService implements Reloadable {
         String name = player.getName();
         String thePass = RandomStringUtils.generate(commonService.getProperty(RECOVERY_PASSWORD_LENGTH));
         HashedPassword hashNew = passwordSecurity.computeHash(thePass, name);
+
+        ConsoleLogger.info("Generating new password for '" + name + "'");
 
         dataSource.updatePassword(name, hashNew);
         boolean couldSendMail = emailService.sendPasswordMail(name, email, thePass);
