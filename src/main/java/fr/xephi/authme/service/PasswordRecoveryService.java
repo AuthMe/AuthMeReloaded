@@ -31,9 +31,6 @@ public class PasswordRecoveryService implements Reloadable {
     private CommonService commonService;
 
     @Inject
-    private RecoveryCodeService codeService;
-
-    @Inject
     private DataSource dataSource;
 
     @Inject
@@ -129,7 +126,7 @@ public class PasswordRecoveryService implements Reloadable {
      * @param player The player to check.
      * @return True if the player is not on cooldown.
      */
-    public boolean checkEmailCooldown(Player player) {
+    private boolean checkEmailCooldown(Player player) {
         Duration waitDuration = emailCooldown.getExpiration(player.getName().toLowerCase());
         if (waitDuration.getDuration() > 0) {
             String durationText = messages.formatDuration(waitDuration);

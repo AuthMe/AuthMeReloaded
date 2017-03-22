@@ -287,8 +287,8 @@ public class CommandInitializer {
             .labels("converter", "convert", "conv")
             .description("Converter command")
             .detailedDescription("Converter command for AuthMeReloaded.")
-            .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
-                "royalauth / vauth / sqliteToSql / mysqlToSqlite", false)
+            .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / "
+                + "royalauth / vauth / sqliteToSql / mysqlToSqlite", false)
             .permission(AdminPermission.CONVERTER)
             .executableCommand(ConverterCommand.class)
             .register();
@@ -418,8 +418,8 @@ public class CommandInitializer {
             .parent(EMAIL_BASE)
             .labels("recover", "recovery", "recoveremail", "recovermail")
             .description("Recover password using email")
-            .detailedDescription("Recover your account using an Email address by sending a mail containing " +
-                "a new password.")
+            .detailedDescription("Recover your account using an Email address by sending a mail containing "
+                + "a new password.")
             .withArgument("email", "Email address", false)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(RecoverEmailCommand.class)
@@ -430,7 +430,7 @@ public class CommandInitializer {
             .parent(EMAIL_BASE)
             .labels("code")
             .description("Submit code to recover password")
-            .detailedDescription("Recover your account by submitting an emailed code to your email.")
+            .detailedDescription("Recover your account by submitting a code delivered to your email.")
             .withArgument("code", "Recovery code", false)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(ProcessCodeCommand.class)

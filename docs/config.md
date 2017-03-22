@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Mar 14 16:42:26 EDT 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Wed Mar 22 23:10:33 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -10,7 +10,7 @@ the generated config.yml file.
 
 DataSource:
     # What type of database do you want to use?
-    # Valid values: sqlite, mysql
+    # Valid values: SQLITE, MYSQL
     backend: 'SQLITE'
     # Enable database caching, should improve database performance
     caching: true
@@ -71,6 +71,12 @@ ExternalBoardOptions:
     phpbbTablePrefix: 'phpbb_'
     # phpBB activated group ID; 2 is the default registered group defined by phpBB
     phpbbActivatedGroupId: 2
+    # IP Board table prefix defined during the IP Board installation process
+    IPBTablePrefix: 'ipb_'
+    # IP Board default group ID; 3 is the default registered group defined by IP Board
+    IPBActivatedGroupId: 3
+    # XenForo default group ID; 2 is the default registered group defined by Xenforo
+    XFActivatedGroupId: 2
     # Wordpress prefix defined during WordPress installation
     wordpressTablePrefix: 'wp_'
 settings:
@@ -444,8 +450,28 @@ Security:
 # Before a user logs in, various properties are temporarily removed from the player,
 # such as OP status, ability to fly, and walk/fly speed.
 # Once the user is logged in, we add back the properties we previously saved.
-# In this section, you may define how the properties should be restored.
+# In this section, you may define how these properties should be handled.
 limbo:
+    persistence:
+        # Besides storing the data in memory, you can define if/how the data should be persisted
+        # on disk. This is useful in case of a server crash, so next time the server starts we can
+        # properly restore things like OP status, ability to fly, and walk/fly speed.
+        # DISABLED: no disk storage, INDIVIDUAL_FILES: each player data in its own file,
+        # SINGLE_FILE: all data in one single file (only if you have a small server!)
+        # SEGMENT_FILES: distributes players into different buckets based on their UUID. See below.
+        type: 'INDIVIDUAL_FILES'
+        # This setting only affects SEGMENT_FILES persistence. The segment file
+        # persistence attempts to reduce the number of files by distributing players into various
+        # buckets based on their UUID. This setting defines into how many files the players should
+        # be distributed. Possible values: ONE, FOUR, EIGHT, SIXTEEN, THIRTY_TWO, SIXTY_FOUR,
+        # ONE_TWENTY for 128, TWO_FIFTY for 256.
+        # For example, if you expect 100 non-logged in players, setting to SIXTEEN will average
+        # 6.25 players per file (100 / 16). If you set to ONE, like persistence SINGLE_FILE, only
+        # one file will be used. Contrary to SINGLE_FILE, it won't keep the entries in cache, which
+        # may deliver different results in terms of performance.
+        # Note: if you change this setting all data will be migrated. If you have a lot of data,
+        # change this setting only on server restart, not with /authme reload.
+        segmentDistribution: 'SIXTEEN'
     # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.
     # RESTORE sets back the old property from the player.
     restoreAllowFlight: 'RESTORE'
@@ -485,4 +511,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Mar 14 16:42:26 EDT 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Mar 22 23:10:33 CET 2017
