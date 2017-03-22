@@ -1,7 +1,7 @@
 package fr.xephi.authme.task;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.initialization.HasCleanup;
+import fr.xephi.authme.initialization.factory.SingletonStore;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.inject.Inject;
@@ -12,15 +12,14 @@ import javax.inject.Inject;
 public class CleanupTask extends BukkitRunnable {
 
     @Inject
-    private Injector injector;
+    private SingletonStore<HasCleanup> hasCleanupStore;
 
     CleanupTask() {
     }
 
     @Override
     public void run() {
-        for (HasCleanup service : injector.retrieveAllOfType(HasCleanup.class)) {
-            service.performCleanup();
-        }
+        hasCleanupStore.retrieveAllOfType()
+            .forEach(HasCleanup::performCleanup);
     }
 }
