@@ -1,7 +1,5 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
@@ -33,15 +31,10 @@ public class ProcessCodeCommandTest {
     private CommonService commonService;
 
     @Mock
-    private DataSource dataSource;
-
-    @Mock
     private RecoveryCodeService codeService;
 
     @Mock
     private PasswordRecoveryService recoveryService;
-
-    private static final String DEFAULT_EMAIL = "your@email.com";
 
     @Test
     public void shouldSendErrorForInvalidRecoveryCode() {
@@ -79,48 +72,21 @@ public class ProcessCodeCommandTest {
     }
 
     @Test
-    public void shouldHandleDefaultEmail() {
+    public void shouldProcessCorrectCode() {
         // given
-        String name = "Tract0r";
+        String name = "Dwight";
+        String code = "chickenDinner";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
-        given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(DEFAULT_EMAIL));
         given(codeService.hasTriesLeft(name)).willReturn(true);
-        given(codeService.isCodeValid(name, "actual")).willReturn(true);
+        given(codeService.isCodeValid(name, code)).willReturn(true);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("actual"));
+        command.runCommand(sender, Collections.singletonList(code));
 
         // then
-        verify(dataSource).getAuth(name);
-        verifyNoMoreInteractions(dataSource);
-        verify(commonService).send(sender, MessageKey.INVALID_EMAIL);
-    }
-
-    @Test
-    public void shouldGenerateAndSendPassword() {
-        // given
-        String name = "GenericName";
-        Player sender = mock(Player.class);
-        given(sender.getName()).willReturn(name);
-        String email = "ran-out@example.com";
-        PlayerAuth auth = newAuthWithEmail(email);
-        given(dataSource.getAuth(name)).willReturn(auth);
-        given(codeService.hasTriesLeft(name)).willReturn(true);
-        given(codeService.isCodeValid(name, "actual")).willReturn(true);
-
-        // when
-        command.executeCommand(sender, Collections.singletonList("actual"));
-
-        // then
-        verify(recoveryService).generateAndSendNewPassword(sender, email);
+        verify(commonService).send(sender, MessageKey.RECOVERY_CODE_CORRECT);
+        verify(recoveryService).addSuccessfulRecovery(sender);
         verify(codeService).removeCode(name);
-    }
-
-    private static PlayerAuth newAuthWithEmail(String email) {
-        return PlayerAuth.builder()
-            .name("name")
-            .email(email)
-            .build();
     }
 }

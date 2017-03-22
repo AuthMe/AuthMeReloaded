@@ -230,6 +230,9 @@ public enum MessageKey {
     /** You have exceeded the maximum number of attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one. */
     RECOVERY_TRIES_EXCEEDED("recovery_tries_exceeded"),
 
+    /** Recovery code entered correctly! */
+    RECOVERY_CODE_CORRECT("recovery_code_correct"),
+
     /** Please use the command /email setpassword to change your password immediately. */
     RECOVERY_CHANGE_PASSWORD("recovery_change_password"),
 

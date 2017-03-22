@@ -47,6 +47,7 @@ recovery_code_sent: 'Một mã khôi phục mật khẩu đã được gửi đ�
 # TODO: Missing tags %count
 recovery_code_incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
 # TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cTài khoản của bạn chưa được kích hoạt, vui lòng kiểm tra email!'
 usage_unreg: '&cSử dụng: /unregister <mật khẩu>'

@@ -1,8 +1,6 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.command.PlayerCommand;
-import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
@@ -21,9 +19,6 @@ public class ProcessCodeCommand extends PlayerCommand {
     private CommonService commonService;
 
     @Inject
-    private DataSource dataSource;
-
-    @Inject
     private RecoveryCodeService codeService;
 
     @Inject
@@ -36,14 +31,8 @@ public class ProcessCodeCommand extends PlayerCommand {
 
         if (codeService.hasTriesLeft(name)) {
             if (codeService.isCodeValid(name, code)) {
-                PlayerAuth auth = dataSource.getAuth(name);
-                String email = auth.getEmail();
-                if (email == null || "your@email.com".equalsIgnoreCase(email)) {
-                    commonService.send(player, MessageKey.INVALID_EMAIL);
-                    return;
-                }
-
-                recoveryService.generateAndSendNewPassword(player, email);
+                commonService.send(player, MessageKey.RECOVERY_CODE_CORRECT);
+                recoveryService.addSuccessfulRecovery(player);
                 codeService.removeCode(name);
             } else {
                 commonService.send(player, MessageKey.INCORRECT_RECOVERY_CODE,

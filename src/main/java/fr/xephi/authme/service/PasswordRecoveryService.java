@@ -101,14 +101,23 @@ public class PasswordRecoveryService implements Reloadable {
         if (couldSendMail) {
             commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
             emailCooldown.add(player.getName().toLowerCase());
-
-            String address = PlayerUtils.getPlayerIp(player);
-
-            successfulRecovers.put(name, address);
-            commonService.send(player, MessageKey.RECOVERY_CHANGE_PASSWORD);
         } else {
             commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
         }
+    }
+
+    /**
+     * Allows a player to change their password after
+     * correctly entering a recovery code.
+     *
+     * @param player The player recovering their password.
+     */
+    public void addSuccessfulRecovery(Player player) {
+        String name = player.getName();
+        String address = PlayerUtils.getPlayerIp(player);
+
+        successfulRecovers.put(name, address);
+        commonService.send(player, MessageKey.RECOVERY_CHANGE_PASSWORD);
     }
 
     /**

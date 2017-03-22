@@ -66,9 +66,10 @@ public class RecoverEmailCommand extends PlayerCommand {
         }
 
         if (recoveryCodeService.isRecoveryCodeNeeded()) {
-            // Process /email recovery addr@example.com
+            // Recovery code is needed; generate and send one
             recoveryService.createAndSendRecoveryCode(player, email);
         } else {
+            // Code not needed, just send them a new password
             recoveryService.generateAndSendNewPassword(player, email);
         }
     }

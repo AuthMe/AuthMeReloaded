@@ -48,6 +48,7 @@ recovery_code_sent: 'Kod odzyskiwania hasla zostal wyslany na adres email przypi
 # TODO: Missing tags %count
 recovery_code_incorrect: 'Kod odzyskiwania hasla jest bledny! Uzyj /email recovery [email] aby wygenerowac nowy.'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
 # TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&fTwoje konto nie zostalo aktywowane! Sprawdz maila.'
 usage_unreg: '&cUzycie: /unregister haslo'

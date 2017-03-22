@@ -51,6 +51,7 @@ two_factor_create: '&b【AuthMe - 兩步驗證碼】&b你的登入金鑰為&9「
 # TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
 # TODO recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
 # TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&b【AuthMe】&6你的帳號還沒有經過驗證! 檢查看看你的電子信箱 (Email) 吧!'
 usage_unreg: '&b【AuthMe】&6用法: &c"/unregister <密碼>"'

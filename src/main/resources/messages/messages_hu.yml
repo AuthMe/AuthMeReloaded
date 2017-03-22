@@ -47,6 +47,7 @@ recovery_code_sent: 'A jelszavad visszaállításához szükséges kódot sikere
 # TODO: Missing tags %count
 recovery_code_incorrect: 'A visszaállító kód helytelen volt! Használd a következő parancsot: /email recovery [email címed] egy új generálásához'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
 # TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cA felhasználód aktiválása még nem történt meg, ellenőrizd a megadott emailed!'
 usage_unreg: '&cHasználat: "/unregister <jelszó>"'

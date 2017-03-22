@@ -47,6 +47,7 @@ recovery_code_sent: 'Un cod de recuperare a parolei a fost trimis catre email-ul
 # TODO: Missing tags %count
 recovery_code_incorrect: 'Codul de recuperare nu este corect! Foloseste /email recovery [email] pentru a genera unul nou.'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
 # TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cContul tau nu este activat, te rugam verifica-ti email-ul!'
 usage_unreg: '&cFoloseste comanda: /unregister <parola>'

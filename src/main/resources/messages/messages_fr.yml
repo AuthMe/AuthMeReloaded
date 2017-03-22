@@ -52,6 +52,7 @@ recovery_code_sent: 'Un code de récupération a été envoyé à votre adresse 
 # TODO: Missing tags %count
 recovery_code_incorrect: '&cLe code de réinitialisation est incorrect!%nl%Faites "/email recovery [email]" pour en générer un nouveau.'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
 # TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&fCe compte n''est pas actif, consultez vos emails !'
 usage_unreg: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'

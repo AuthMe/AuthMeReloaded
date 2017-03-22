@@ -46,6 +46,7 @@ two_factor_create: '&2Ваш секретний код — %code %nl%&2Може�
 # TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
 # TODO recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
 # TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
 # TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cВаш акаунт ще не активовано. Будь ласка, провірте свою електронну пошту!'
 usage_unreg: '&cСинтаксис: /unregister <пароль>'
