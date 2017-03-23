@@ -48,7 +48,7 @@ public class EmailServiceTest {
     @Mock
     private Server server;
     @Mock
-    private SendMailSSL sendMailSSL;
+    private SendMailSsl sendMailSsl;
     @DataFolder
     private File dataFolder;
 
@@ -66,7 +66,7 @@ public class EmailServiceTest {
         given(server.getServerName()).willReturn("serverName");
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
-        given(sendMailSSL.hasAllInformation()).willReturn(true);
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
     }
 
     @Test
@@ -82,17 +82,17 @@ public class EmailServiceTest {
             .willReturn("Hi <playername />, your new password for <servername /> is <generatedpass />");
         given(settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)).willReturn(false);
         HtmlEmail email = mock(HtmlEmail.class);
-        given(sendMailSSL.initializeMail(anyString())).willReturn(email);
-        given(sendMailSSL.sendEmail(anyString(), eq(email))).willReturn(true);
+        given(sendMailSsl.initializeMail(anyString())).willReturn(email);
+        given(sendMailSsl.sendEmail(anyString(), eq(email))).willReturn(true);
 
         // when
         boolean result = emailService.sendPasswordMail("Player", "user@example.com", "new_password");
 
         // then
         assertThat(result, equalTo(true));
-        verify(sendMailSSL).initializeMail("user@example.com");
+        verify(sendMailSsl).initializeMail("user@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sendMailSSL).sendEmail(messageCaptor.capture(), eq(email));
+        verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(),
             equalTo("Hi Player, your new password for serverName is new_password"));
     }
@@ -100,15 +100,15 @@ public class EmailServiceTest {
     @Test
     public void shouldHandleMailCreationError() throws EmailException {
         // given
-        doThrow(EmailException.class).when(sendMailSSL).initializeMail(anyString());
+        doThrow(EmailException.class).when(sendMailSsl).initializeMail(anyString());
 
         // when
         boolean result = emailService.sendPasswordMail("Player", "user@example.com", "new_password");
 
         // then
         assertThat(result, equalTo(false));
-        verify(sendMailSSL).initializeMail("user@example.com");
-        verify(sendMailSSL, never()).sendEmail(anyString(), any(HtmlEmail.class));
+        verify(sendMailSsl).initializeMail("user@example.com");
+        verify(sendMailSsl, never()).sendEmail(anyString(), any(HtmlEmail.class));
     }
 
     @Test
@@ -117,17 +117,17 @@ public class EmailServiceTest {
         given(settings.getPasswordEmailMessage()).willReturn("Hi <playername />, your new pass is <generatedpass />");
         given(settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)).willReturn(false);
         HtmlEmail email = mock(HtmlEmail.class);
-        given(sendMailSSL.initializeMail(anyString())).willReturn(email);
-        given(sendMailSSL.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(false);
+        given(sendMailSsl.initializeMail(anyString())).willReturn(email);
+        given(sendMailSsl.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(false);
 
         // when
         boolean result = emailService.sendPasswordMail("bobby", "user@example.com", "myPassw0rd");
 
         // then
         assertThat(result, equalTo(false));
-        verify(sendMailSSL).initializeMail("user@example.com");
+        verify(sendMailSsl).initializeMail("user@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sendMailSSL).sendEmail(messageCaptor.capture(), eq(email));
+        verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(), equalTo("Hi bobby, your new pass is myPassw0rd"));
     }
 
@@ -138,32 +138,32 @@ public class EmailServiceTest {
         given(settings.getRecoveryCodeEmailMessage())
             .willReturn("Hi <playername />, your code on <servername /> is <recoverycode /> (valid <hoursvalid /> hours)");
         HtmlEmail email = mock(HtmlEmail.class);
-        given(sendMailSSL.initializeMail(anyString())).willReturn(email);
-        given(sendMailSSL.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(true);
+        given(sendMailSsl.initializeMail(anyString())).willReturn(email);
+        given(sendMailSsl.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(true);
 
         // when
         boolean result = emailService.sendRecoveryCode("Timmy", "tim@example.com", "12C56A");
 
         // then
         assertThat(result, equalTo(true));
-        verify(sendMailSSL).initializeMail("tim@example.com");
+        verify(sendMailSsl).initializeMail("tim@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sendMailSSL).sendEmail(messageCaptor.capture(), eq(email));
+        verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(), equalTo("Hi Timmy, your code on serverName is 12C56A (valid 7 hours)"));
     }
 
     @Test
     public void shouldHandleMailCreationErrorForRecoveryCode() throws EmailException {
         // given
-        given(sendMailSSL.initializeMail(anyString())).willThrow(EmailException.class);
+        given(sendMailSsl.initializeMail(anyString())).willThrow(EmailException.class);
 
         // when
         boolean result = emailService.sendRecoveryCode("Player", "player@example.org", "ABC1234");
 
         // then
         assertThat(result, equalTo(false));
-        verify(sendMailSSL).initializeMail("player@example.org");
-        verify(sendMailSSL, never()).sendEmail(anyString(), any(HtmlEmail.class));
+        verify(sendMailSsl).initializeMail("player@example.org");
+        verify(sendMailSsl, never()).sendEmail(anyString(), any(HtmlEmail.class));
     }
 
     @Test
@@ -173,17 +173,17 @@ public class EmailServiceTest {
         given(settings.getRecoveryCodeEmailMessage()).willReturn("Hi <playername />, your code is <recoverycode />");
         EmailService sendMailSpy = spy(emailService);
         HtmlEmail email = mock(HtmlEmail.class);
-        given(sendMailSSL.initializeMail(anyString())).willReturn(email);
-        given(sendMailSSL.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(false);
+        given(sendMailSsl.initializeMail(anyString())).willReturn(email);
+        given(sendMailSsl.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(false);
 
         // when
         boolean result = sendMailSpy.sendRecoveryCode("John", "user@example.com", "1DEF77");
 
         // then
         assertThat(result, equalTo(false));
-        verify(sendMailSSL).initializeMail("user@example.com");
+        verify(sendMailSsl).initializeMail("user@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sendMailSSL).sendEmail(messageCaptor.capture(), eq(email));
+        verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(), equalTo("Hi John, your code is 1DEF77"));
     }
 

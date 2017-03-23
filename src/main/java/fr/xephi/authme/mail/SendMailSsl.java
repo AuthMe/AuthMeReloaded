@@ -24,7 +24,7 @@ import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 /**
  * Sends emails to players on behalf of the server.
  */
-public class SendMailSSL {
+public class SendMailSsl {
 
     @Inject
     private Settings settings;
@@ -67,7 +67,7 @@ public class SendMailSSL {
     }
 
     public boolean sendEmail(String content, HtmlEmail email) {
-        Thread.currentThread().setContextClassLoader(SendMailSSL.class.getClassLoader());
+        Thread.currentThread().setContextClassLoader(SendMailSsl.class.getClassLoader());
         // Issue #999: Prevent UnsupportedDataTypeException: no object DCH for MIME type multipart/alternative
         // cf. http://stackoverflow.com/questions/21856211/unsupporteddatatypeexception-no-object-dch-for-mime-type
         MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();

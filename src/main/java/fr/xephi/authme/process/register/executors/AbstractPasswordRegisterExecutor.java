@@ -17,6 +17,8 @@ import javax.inject.Inject;
 /**
  * Registration executor for registration methods where the password
  * is supplied by the user.
+ *
+ * @param <P> the parameters type
  */
 abstract class AbstractPasswordRegisterExecutor<P extends AbstractPasswordRegisterParams>
     implements RegistrationExecutor<P> {

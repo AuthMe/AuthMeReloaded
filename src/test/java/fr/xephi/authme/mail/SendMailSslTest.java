@@ -28,13 +28,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Test for {@link SendMailSSL}.
+ * Test for {@link SendMailSsl}.
  */
 @RunWith(DelayedInjectionRunner.class)
-public class SendMailSSLTest {
+public class SendMailSslTest {
 
     @InjectDelayed
-    private SendMailSSL sendMailSSL;
+    private SendMailSsl sendMailSsl;
 
     @Mock
     private Settings settings;
@@ -57,7 +57,7 @@ public class SendMailSSLTest {
     @Test
     public void shouldHaveAllInformation() {
         // given / when / then
-        assertThat(sendMailSSL.hasAllInformation(), equalTo(true));
+        assertThat(sendMailSsl.hasAllInformation(), equalTo(true));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class SendMailSSLTest {
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.DEBUG);
 
         // when
-        HtmlEmail email = sendMailSSL.initializeMail("recipient@example.com");
+        HtmlEmail email = sendMailSsl.initializeMail("recipient@example.com");
 
         // then
         assertThat(email, not(nullValue()));
@@ -99,7 +99,7 @@ public class SendMailSSLTest {
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
 
         // when
-        HtmlEmail email = sendMailSSL.initializeMail("recipient@example.com");
+        HtmlEmail email = sendMailSsl.initializeMail("recipient@example.com");
 
         // then
         assertThat(email, not(nullValue()));
@@ -122,7 +122,7 @@ public class SendMailSSLTest {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderMail);
 
         // when
-        HtmlEmail email = sendMailSSL.initializeMail("recipient@example.com");
+        HtmlEmail email = sendMailSsl.initializeMail("recipient@example.com");
 
         // then
         assertThat(email, not(nullValue()));

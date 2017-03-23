@@ -31,12 +31,12 @@ public class VersionCommand implements ExecutableCommand {
         printDeveloper(sender, "games647", "games647", "Developer", onlinePlayers);
         printDeveloper(sender, "Tim Visee", "timvisee", "Developer", onlinePlayers);
         printDeveloper(sender, "Gabriele C.", "sgdc3", "Project manager, Contributor", onlinePlayers);
-        sender.sendMessage(ChatColor.GOLD + "Website: " + ChatColor.WHITE +
-            "http://dev.bukkit.org/bukkit-plugins/authme-reloaded/");
+        sender.sendMessage(ChatColor.GOLD + "Website: " + ChatColor.WHITE
+            + "http://dev.bukkit.org/bukkit-plugins/authme-reloaded/");
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0"
             + ChatColor.GRAY + ChatColor.ITALIC + " (See LICENSE file)");
         sender.sendMessage(ChatColor.GOLD + "Copyright: " + ChatColor.WHITE
-            + "Copyright (c) AuthMe-Team 2016. All rights reserved.");
+            + "Copyright (c) AuthMe-Team 2017. All rights reserved.");
     }
 
     /**

@@ -8,6 +8,8 @@ package fr.xephi.authme.process.register.executors;
  * classes which perform this registration method. This is essentially a <i>typed enum</i>
  * as passing a constant of this class along with a parameters object to a method can
  * be restricted to the correct parameters type.
+ *
+ * @param <P> the registration parameters type the method uses
  */
 public final class RegistrationMethod<P extends RegistrationParameters> {
 

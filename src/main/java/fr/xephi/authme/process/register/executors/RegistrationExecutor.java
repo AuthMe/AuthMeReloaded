@@ -4,6 +4,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 
 /**
  * Performs the registration action.
+ *
+ * @param <P> the registration parameters type
  */
 public interface RegistrationExecutor<P extends RegistrationParameters> {
 

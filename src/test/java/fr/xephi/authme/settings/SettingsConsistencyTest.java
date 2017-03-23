@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -126,7 +127,7 @@ public class SettingsConsistencyTest {
     private List<Method> getSectionCommentMethods() {
         // Find all SettingsHolder classes
         List<Class<? extends SettingsHolder>> settingsClasses =
-            new ClassCollector("src/main/java", "fr/xephi/authme/settings/properties/")
+            new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "settings/properties/")
                 .collectClasses(SettingsHolder.class);
         checkArgument(!settingsClasses.isEmpty(), "Could not find any SettingsHolder classes");
 

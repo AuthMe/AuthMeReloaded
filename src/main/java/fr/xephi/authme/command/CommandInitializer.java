@@ -66,6 +66,10 @@ public class CommandInitializer {
         return commands;
     }
 
+    /**
+     * Builds the command description objects for all available AuthMe commands.
+     */
+    @SuppressWarnings({"checkstyle:LocalVariableName", "checkstyle:AbbreviationAsWordInName"})
     private void buildCommands() {
         // Register the base AuthMe Reloaded command
         final CommandDescription AUTHME_BASE = CommandDescription.builder()

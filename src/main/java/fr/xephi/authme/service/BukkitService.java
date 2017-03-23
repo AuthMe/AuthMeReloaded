@@ -44,7 +44,7 @@ public class BukkitService implements SettingsDependent {
     @Inject
     BukkitService(AuthMe authMe, Settings settings) {
         this.authMe = authMe;
-        getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
+        getOnlinePlayersIsCollection = doesOnlinePlayersMethodReturnCollection();
         reload(settings);
     }
 
@@ -301,11 +301,12 @@ public class BukkitService implements SettingsDependent {
 
     /**
      * Method run upon initialization to verify whether or not the Bukkit implementation
-     * returns the online players as a Collection.
+     * returns the online players as a {@link Collection}.
      *
+     * @return true if a collection is returned by the bukkit implementation, false otherwise
      * @see #getOnlinePlayers()
      */
-    private static boolean initializeOnlinePlayersIsCollectionField() {
+    private static boolean doesOnlinePlayersMethodReturnCollection() {
         try {
             Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
             return method.getReturnType() == Collection.class;

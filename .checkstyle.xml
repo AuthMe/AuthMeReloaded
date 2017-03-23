@@ -55,7 +55,9 @@
         <module name="MultipleVariableDeclarations"/>
         <module name="ArrayTypeStyle"/>
         <module name="MissingSwitchDefault"/>
+        <module name="DefaultComesLast"/>
         <module name="FallThrough"/>
+        <module name="NestedTryDepth"/>
         <module name="UpperEll"/>
         <module name="ModifierOrder"/>
         <module name="RedundantModifier"/>
@@ -111,9 +113,11 @@
             <property name="ignoreFinal" value="false"/>
             <property name="allowedAbbreviationLength" value="1"/>
         </module>
+        <module name="DeclarationOrder"/>
         <module name="OverloadMethodsDeclarationOrder"/>
         <module name="VariableDeclarationUsageDistance"/>
         <module name="MethodParamPad"/>
+        <module name="StringLiteralEquality"/>
         <module name="BooleanExpressionComplexity">
             <property name="max" value="5"/>
         </module>
@@ -145,9 +149,21 @@
             <property name="scope" value="package"/>
             <property name="allowMissingThrowsTags" value="true"/>
             <property name="minLineCount" value="4"/>
-            <property name="allowedAnnotations" value="Override, Test, SectionComments"/>
-            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
+            <property name="allowedAnnotations" value="Override, Test, SectionComments, EventHandler"/>
+            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
         </module>
+        <module name="JavadocMethod">
+            <property name="scope" value="private"/>
+            <property name="allowMissingThrowsTags" value="true"/>
+            <property name="minLineCount" value="16"/>
+            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
+        </module>
+        <!-- TODO Checkstyle/#4089: need "allowedAnnotations" property to skip @Comment fields
+        <module name="JavadocVariable">
+            <property name="scope" value="package"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+        </module>
+        -->
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
             <message key="name.invalidPattern"

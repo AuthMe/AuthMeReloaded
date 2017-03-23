@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class MySQL implements DataSource {
 
-    private boolean useSSL;
+    private boolean useSsl;
     private String host;
     private String port;
     private String username;
@@ -45,10 +45,10 @@ public class MySQL implements DataSource {
     private HikariDataSource ds;
 
     private String phpBbPrefix;
-    private String IPBPrefix;
+    private String ipbPrefix;
     private int phpBbGroup;
-    private int IPBGroup;
-    private int XFGroup;
+    private int ipbGroup;
+    private int xfGroup;
     private String wordpressPrefix;
 
     public MySQL(Settings settings) throws ClassNotFoundException, SQLException {
@@ -99,15 +99,15 @@ public class MySQL implements DataSource {
         this.hashAlgorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
         this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
-        this.IPBPrefix = settings.getProperty(HooksSettings.IPB_TABLE_PREFIX);
-        this.IPBGroup = settings.getProperty(HooksSettings.IPB_ACTIVATED_GROUP_ID);
-        this.XFGroup = settings.getProperty(HooksSettings.XF_ACTIVATED_GROUP_ID);
+        this.ipbPrefix = settings.getProperty(HooksSettings.IPB_TABLE_PREFIX);
+        this.ipbGroup = settings.getProperty(HooksSettings.IPB_ACTIVATED_GROUP_ID);
+        this.xfGroup = settings.getProperty(HooksSettings.XF_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         if (poolSize == -1) {
             poolSize = Utils.getCoreCount()*3;
         }
-        this.useSSL = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
+        this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
 
     private void setConnectionArguments() {
@@ -125,7 +125,7 @@ public class MySQL implements DataSource {
         ds.setPassword(this.password);
 
         // Request mysql over SSL
-        ds.addDataSourceProperty("useSSL", useSSL);
+        ds.addDataSourceProperty("useSSL", useSsl);
 
         // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
@@ -347,23 +347,23 @@ public class MySQL implements DataSource {
                 rs = pst.executeQuery();
                 if (rs.next()){
                     // Update player group in core_members
-                    sql = "UPDATE " + IPBPrefix + tableName + " SET "+ tableName + ".member_group_id=? WHERE " + col.NAME + "=?;";
+                    sql = "UPDATE " + ipbPrefix + tableName + " SET "+ tableName + ".member_group_id=? WHERE " + col.NAME + "=?;";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setInt(1, IPBGroup);
+                    pst2.setInt(1, ipbGroup);
                     pst2.setString(2, auth.getNickname());
                     pst2.executeUpdate();
                     pst2.close();
                     // Get current time without ms
                     long time = System.currentTimeMillis() / 1000;
                     // update joined date
-                    sql = "UPDATE " + IPBPrefix + tableName + " SET "+ tableName + ".joined=? WHERE " + col.NAME + "=?;";
+                    sql = "UPDATE " + ipbPrefix + tableName + " SET "+ tableName + ".joined=? WHERE " + col.NAME + "=?;";
                     pst2 = con.prepareStatement(sql);
                     pst2.setLong(1, time);
                     pst2.setString(2, auth.getNickname());
                     pst2.executeUpdate();
                     pst2.close();
                     // Update last_visit
-                    sql = "UPDATE " + IPBPrefix + tableName + " SET " + tableName + ".last_visit=? WHERE " + col.NAME + "=?;";
+                    sql = "UPDATE " + ipbPrefix + tableName + " SET " + tableName + ".last_visit=? WHERE " + col.NAME + "=?;";
                     pst2 = con.prepareStatement(sql);
                     pst2.setLong(1, time);
                     pst2.setString(2, auth.getNickname());
@@ -531,14 +531,14 @@ public class MySQL implements DataSource {
                     // Update player group in xf_users
                     sql = "UPDATE " + tableName + " SET "+ tableName + ".user_group_id=? WHERE " + col.NAME + "=?;";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setInt(1, XFGroup);
+                    pst2.setInt(1, xfGroup);
                     pst2.setString(2, auth.getNickname());
                     pst2.executeUpdate();
                     pst2.close();
                     // Update player permission combination in xf_users
                     sql = "UPDATE " + tableName + " SET "+ tableName + ".permission_combination_id=? WHERE " + col.NAME + "=?;";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setInt(1, XFGroup);
+                    pst2.setInt(1, xfGroup);
                     pst2.setString(2, auth.getNickname());
                     pst2.executeUpdate();
                     pst2.close();
@@ -557,7 +557,7 @@ public class MySQL implements DataSource {
                     sql = "INSERT INTO xf_user_group_relation (user_id, user_group_id, is_primary) VALUES (?,?,?)";
                     pst2 = con.prepareStatement(sql);
                     pst2.setInt(1, id);
-                    pst2.setInt(2, XFGroup);
+                    pst2.setInt(2, xfGroup);
                     pst2.setString(3, "1");
                     pst2.executeUpdate();
                     pst2.close();

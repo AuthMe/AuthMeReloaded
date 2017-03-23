@@ -12,6 +12,8 @@ import static com.google.common.collect.Sets.newHashSet;
 
 /**
  * Property whose value is a set of entries of a given enum.
+ *
+ * @param <E> the enum type
  */
 public class EnumSetProperty<E extends Enum<E>> extends Property<Set<E>> {
 

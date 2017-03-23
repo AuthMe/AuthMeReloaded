@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Once the expiration of an entry has been reached, the counter resets
  * to 0. The counter returns 0 rather than {@code null} for any given key.
+ *
+ * @param <K> the type of the key
  */
 public class TimedCounter<K> extends ExpiringMap<K, Integer> {
 
@@ -47,8 +49,7 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
         if (e != null) {
             if (e.getValue() <= 0) {
                 remove(key);
-            }
-            else {
+            } else {
                 entries.put(key, new ExpiringEntry<>(e.getValue() - 1, e.getExpiration()));
             }
         }

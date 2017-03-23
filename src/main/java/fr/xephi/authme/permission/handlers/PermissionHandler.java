@@ -17,7 +17,7 @@ public interface PermissionHandler {
      * @param group The name of the group.
      *
      * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     boolean addToGroup(Player player, String group);
 
@@ -47,7 +47,7 @@ public interface PermissionHandler {
      * @param group The group name.
      *
      * @return True if the player is in the specified group, false otherwise.
-     * False is also returned if groups aren't supported by the used permissions system.
+     *         False is also returned if groups aren't supported by the used permissions system.
      */
     default boolean isInGroup(Player player, String group) {
         return getGroups(player).contains(group);
@@ -60,7 +60,7 @@ public interface PermissionHandler {
      * @param group The name of the group.
      *
      * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     boolean removeFromGroup(Player player, String group);
 
@@ -72,7 +72,7 @@ public interface PermissionHandler {
      * @param group The name of the group.
      *
      * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     boolean setGroup(Player player, String group);
 

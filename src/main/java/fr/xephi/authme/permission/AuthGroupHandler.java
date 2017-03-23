@@ -79,8 +79,8 @@ public class AuthGroupHandler implements Reloadable {
                 throw new IllegalStateException("Encountered unhandled auth group type '" + groupType + "'");
         }
 
-        ConsoleLogger.debug(
-            () -> player.getName() + " changed to " + groupType + ": has groups " + permissionsManager.getGroups(player));
+        ConsoleLogger.debug(() -> player.getName() + " changed to "
+            + groupType + ": has groups " + permissionsManager.getGroups(player));
     }
 
     /**

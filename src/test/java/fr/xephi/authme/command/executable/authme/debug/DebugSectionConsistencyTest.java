@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.ClassCollector;
+import fr.xephi.authme.TestHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,8 +23,8 @@ public class DebugSectionConsistencyTest {
 
     @BeforeClass
     public static void collectClasses() {
-        debugClasses = new ClassCollector("src/main/java", "fr/xephi/authme/command/executable/authme/debug")
-            .collectClasses();
+        debugClasses = new ClassCollector(
+            TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "command/executable/authme/debug").collectClasses();
     }
 
     @Test

@@ -46,7 +46,7 @@ public class RakamakConverter implements Converter {
         String ipFileName = settings.getProperty(ConverterSettings.RAKAMAK_IP_FILE_NAME);
         File source = new File(pluginFolder, fileName);
         File ipFiles = new File(pluginFolder, ipFileName);
-        Map<String, String> playerIP = new HashMap<>();
+        Map<String, String> playerIp = new HashMap<>();
         Map<String, HashedPassword> playerPassword = new HashMap<>();
         try {
             BufferedReader ipFile = new BufferedReader(new FileReader(ipFiles));
@@ -56,7 +56,7 @@ public class RakamakConverter implements Converter {
                 while ((tempLine = ipFile.readLine()) != null) {
                     if (tempLine.contains("=")) {
                         String[] args = tempLine.split("=");
-                        playerIP.put(args[0], args[1]);
+                        playerIp.put(args[0], args[1]);
                     }
                 }
             }
@@ -75,7 +75,7 @@ public class RakamakConverter implements Converter {
             for (Entry<String, HashedPassword> m : playerPassword.entrySet()) {
                 String playerName = m.getKey();
                 HashedPassword psw = playerPassword.get(playerName);
-                String ip = useIp ? playerIP.get(playerName) : "127.0.0.1";
+                String ip = useIp ? playerIp.get(playerName) : "127.0.0.1";
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerName)
                     .realName(playerName)

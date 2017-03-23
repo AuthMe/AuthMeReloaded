@@ -96,6 +96,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * Checks the precondition for authentication (like user known) and returns
      * the player's {@link PlayerAuth} object.
      *
+     * @param player the player to check
      * @return the PlayerAuth object, or {@code null} if the player doesn't exist or may not log in
      *         (e.g. because he is already logged in)
      */

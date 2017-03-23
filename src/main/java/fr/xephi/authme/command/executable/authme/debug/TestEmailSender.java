@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.authme.debug;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.SendMailSsl;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.ChatColor;
@@ -22,7 +22,7 @@ class TestEmailSender implements DebugSection {
     private DataSource dataSource;
 
     @Inject
-    private SendMailSSL sendMailSSL;
+    private SendMailSsl sendMailSsl;
 
     @Inject
     private Server server;
@@ -40,7 +40,7 @@ class TestEmailSender implements DebugSection {
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
-        if (!sendMailSSL.hasAllInformation()) {
+        if (!sendMailSsl.hasAllInformation()) {
             sender.sendMessage(ChatColor.RED + "You haven't set all required configurations in config.yml "
                 + "for sending emails. Please check your config.yml");
             return;
@@ -87,7 +87,7 @@ class TestEmailSender implements DebugSection {
     private boolean sendTestEmail(String email) {
         HtmlEmail htmlEmail;
         try {
-            htmlEmail = sendMailSSL.initializeMail(email);
+            htmlEmail = sendMailSsl.initializeMail(email);
         } catch (EmailException e) {
             ConsoleLogger.logException("Failed to create email for sample email:", e);
             return false;
@@ -96,6 +96,6 @@ class TestEmailSender implements DebugSection {
         htmlEmail.setSubject("AuthMe test email");
         String message = "Hello there!<br />This is a sample email sent to you from a Minecraft server ("
             + server.getName() + ") via /authme debug mail. If you're seeing this, sending emails should be fine.";
-        return sendMailSSL.sendEmail(message, htmlEmail);
+        return sendMailSsl.sendEmail(message, htmlEmail);
     }
 }

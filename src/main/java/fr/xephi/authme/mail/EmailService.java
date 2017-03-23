@@ -25,18 +25,18 @@ public class EmailService {
     private final File dataFolder;
     private final String serverName;
     private final Settings settings;
-    private final SendMailSSL sendMailSSL;
+    private final SendMailSsl sendMailSsl;
 
     @Inject
-    EmailService(@DataFolder File dataFolder, Server server, Settings settings, SendMailSSL sendMailSSL) {
+    EmailService(@DataFolder File dataFolder, Server server, Settings settings, SendMailSsl sendMailSsl) {
         this.dataFolder = dataFolder;
         this.serverName = server.getServerName();
         this.settings = settings;
-        this.sendMailSSL = sendMailSSL;
+        this.sendMailSsl = sendMailSsl;
     }
 
     public boolean hasAllInformation() {
-        return sendMailSSL.hasAllInformation();
+        return sendMailSsl.hasAllInformation();
     }
 
 
@@ -56,7 +56,7 @@ public class EmailService {
 
         HtmlEmail email;
         try {
-            email = sendMailSSL.initializeMail(mailAddress);
+            email = sendMailSsl.initializeMail(mailAddress);
         } catch (EmailException e) {
             ConsoleLogger.logException("Failed to create email with the given settings:", e);
             return false;
@@ -75,7 +75,7 @@ public class EmailService {
             }
         }
 
-        boolean couldSendEmail = sendMailSSL.sendEmail(mailText, email);
+        boolean couldSendEmail = sendMailSsl.sendEmail(mailText, email);
         FileUtils.delete(file);
         return couldSendEmail;
     }
@@ -83,7 +83,7 @@ public class EmailService {
     public boolean sendRecoveryCode(String name, String email, String code) {
         HtmlEmail htmlEmail;
         try {
-            htmlEmail = sendMailSSL.initializeMail(email);
+            htmlEmail = sendMailSsl.initializeMail(email);
         } catch (EmailException e) {
             ConsoleLogger.logException("Failed to create email for recovery code:", e);
             return false;
@@ -91,7 +91,7 @@ public class EmailService {
 
         String message = replaceTagsForRecoveryCodeMail(settings.getRecoveryCodeEmailMessage(),
             name, code, settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID));
-        return sendMailSSL.sendEmail(message, htmlEmail);
+        return sendMailSsl.sendEmail(message, htmlEmail);
     }
 
     private File generateImage(String name, String newPass) throws IOException {

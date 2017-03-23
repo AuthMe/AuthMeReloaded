@@ -74,7 +74,7 @@ public class PermissionsManager implements Reloadable {
         // Loop through all the available permissions system types
         for (PermissionsSystemType type : PermissionsSystemType.values()) {
             try {
-                PermissionHandler handler = getPermissionHandler(type);
+                PermissionHandler handler = createPermissionHandler(type);
                 if (handler != null) {
                     // Show a success message and return
                     this.handler = handler;
@@ -91,7 +91,14 @@ public class PermissionsManager implements Reloadable {
         ConsoleLogger.info("No supported permissions system found! Permissions are disabled!");
     }
 
-    private PermissionHandler getPermissionHandler(PermissionsSystemType type) throws PermissionHandlerException {
+    /**
+     * Creates a permission handler for the provided permission systems if possible.
+     *
+     * @param type the permission systems type for which to create a corresponding permission handler
+     * @return the permission handler, or {@code null} if not possible
+     * @throws PermissionHandlerException during initialization of the permission handler
+     */
+    private PermissionHandler createPermissionHandler(PermissionsSystemType type) throws PermissionHandlerException {
         // Try to find the plugin for the current permissions system
         Plugin plugin = pluginManager.getPlugin(type.getPluginName());
 
