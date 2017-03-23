@@ -3,16 +3,22 @@ package tools.dependencygraph;
 import ch.jalu.injector.handlers.instantiation.DependencyDescription;
 import ch.jalu.injector.handlers.instantiation.Instantiation;
 import ch.jalu.injector.handlers.instantiation.StandardInjectionProvider;
+import ch.jalu.injector.utils.ReflectionUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.executable.authme.debug.DebugCommand;
+import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.initialization.factory.Factory;
+import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import org.bukkit.event.Listener;
 import tools.utils.ToolTask;
@@ -20,13 +26,14 @@ import tools.utils.ToolsConstants;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -36,8 +43,7 @@ public class DrawDependency implements ToolTask {
 
     private static final String DOT_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "dependencygraph/graph.dot";
 
-    private static final List<Class<?>> SUPER_TYPES = ImmutableList.of(ExecutableCommand.class,
-        SynchronousProcess.class, AsynchronousProcess.class, EncryptionMethod.class, Converter.class, Listener.class);
+    private static final List<Class<?>> SUPER_TYPES = buildSuperTypesList();
 
     /** Annotation types by which dependencies are identified. */
     private static final List<Class<? extends Annotation>> ANNOTATION_TYPES = ImmutableList.of(DataFolder.class);
@@ -113,6 +119,24 @@ public class DrawDependency implements ToolTask {
         return clazz;
     }
 
+    /**
+     * Returns the parameter of generic container classes, otherwise the input class.
+     * This is interesting so that a dependency in a class to {@code Factory<Foo>} is
+     * rendered as a dependency to {@code Foo}, not to {@code Factory}.
+     *
+     * @param clazz class of the dependency
+     * @param genericType generic type of the dependency
+     * @return the class to use to render the dependency
+     */
+    private Class<?> unwrapGenericClass(Class<?> clazz, Type genericType) {
+        if (clazz == Factory.class || clazz == SingletonStore.class) {
+            Class<?> parameterType = ReflectionUtils.getGenericType(genericType);
+            Objects.requireNonNull(parameterType, "Parameter type for '" + clazz + "' should be a concrete class");
+            return parameterType;
+        }
+        return clazz;
+    }
+
     private List<String> getDependencies(Class<?> clazz) {
         Instantiation<?> instantiation = new StandardInjectionProvider().safeGet(clazz);
         return instantiation == null ? null : formatInjectionDependencies(instantiation);
@@ -127,21 +151,15 @@ public class DrawDependency implements ToolTask {
      * @return list of dependencies in a friendly format
      */
     private List<String> formatInjectionDependencies(Instantiation<?> injection) {
-        List<? extends DependencyDescription> descriptions = injection.getDependencies();
-        final int totalDependencies = descriptions.size();
-        Class<?>[] dependencies = new Class<?>[totalDependencies];
-        Class<?>[] annotations = new Class<?>[totalDependencies];
-        for (int i = 0; i < descriptions.size(); ++i) {
-            dependencies[i] = descriptions.get(i).getType();
-            annotations[i] = getRelevantAnnotationClass(descriptions.get(i).getAnnotations());
-        }
-
-        List<String> result = new ArrayList<>(dependencies.length);
-        for (int i = 0; i < dependencies.length; ++i) {
-            if (annotations[i] != null) {
-                result.add("@" + annotations[i].getSimpleName());
+        List<DependencyDescription> descriptions = injection.getDependencies();
+        List<String> result = new ArrayList<>(descriptions.size());
+        for (DependencyDescription dependency : descriptions) {
+            Class<?> annotation = getRelevantAnnotationClass(dependency.getAnnotations());
+            if (annotation != null) {
+                result.add("@" + annotation.getSimpleName());
             } else {
-                result.add(mapToSuper(dependencies[i]).getSimpleName());
+                Class<?> clazz = unwrapGenericClass(dependency.getType(), dependency.getGenericType());
+                result.add(mapToSuper(clazz).getSimpleName());
             }
         }
         return result;
@@ -169,12 +187,26 @@ public class DrawDependency implements ToolTask {
             dependencies.put(entry.getValue(), Boolean.TRUE);
         }
 
-        Iterator<Class<?>> it = foundDependencies.keys().iterator();
-        while (it.hasNext()) {
-            Class<?> clazz = it.next();
-            if (Boolean.FALSE.equals(dependencies.get(clazz.getSimpleName()))) {
-                it.remove();
-            }
+        foundDependencies.keys().removeIf(
+            clazz -> Boolean.FALSE.equals(dependencies.get(clazz.getSimpleName())));
+    }
+
+    /**
+     * @return list of classes in AuthMe which have multiple extensions
+     */
+    private static List<Class<?>> buildSuperTypesList() {
+        try {
+            // Get package-private classes
+            Class<?> debugSectionClass = Class.forName(
+                DebugCommand.class.getPackage().getName() + ".DebugSection");
+            Class<?> limboPersistenceClass = Class.forName(
+                LimboPersistence.class.getPackage().getName() + ".LimboPersistenceHandler");
+
+            return ImmutableList.of(ExecutableCommand.class, SynchronousProcess.class, AsynchronousProcess.class,
+                EncryptionMethod.class, Converter.class, Listener.class, RegistrationExecutor.class, debugSectionClass,
+                limboPersistenceClass);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
         }
     }
 }
