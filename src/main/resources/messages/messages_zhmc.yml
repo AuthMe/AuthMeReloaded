@@ -30,7 +30,6 @@ tempban_max_logins: '&c由於登錄失敗次數過多，您已被暫時禁止。
 max_reg: '&c您已超過註冊的最大數量(%reg_count/%max_acc %reg_names)!'
 no_perm: '&4您沒有執行此操作的權限!'
 error: '&4發生錯誤!請聯繫伺服器管理員!'
-unsafe_spawn: '&c你的登出地點並不安全，你已經被傳送到世界的重生點。'
 kick_forvip: '&3一名VIP玩家在服務器已滿時已加入伺服器!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '&2電子郵件地址已成功添加到您的帳戶!'
 email_confirm: '&c請確認你的電郵地址!'
 email_changed: '&2已正確地更改電子郵件地址!'
 email_send: '&2帳戶恢復電子郵件已成功發送！ 請檢查您的電子郵件收件箱!'
-email_exists: '&c備援電子郵件已傳送！ 您可以使用以下命令丟棄它並發送一個新的備援電子郵件:'
 # TODO email_show: '&2Your current email address is: &f%email'
 incomplete_email_settings: '缺少必要的配置來為發送電子郵件。請聯繫管理員。'
 email_already_used: '&4此電子郵件地址已被使用'

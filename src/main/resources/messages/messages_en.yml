@@ -30,7 +30,6 @@ tempban_max_logins: '&cYou have been temporarily banned for failing to log in to
 max_reg: '&cYou have exceeded the maximum number of registrations (%reg_count/%max_acc %reg_names) for your connection!'
 no_perm: '&4You don''t have the permission to perform this action!'
 error: '&4An unexpected error occurred, please contact an administrator!'
-unsafe_spawn: '&cYour quit location was unsafe, you have been teleported to the world''s spawnpoint.'
 kick_forvip: '&3A VIP player has joined the server when it was full!'
 
 # AntiBot
@@ -81,7 +80,6 @@ email_added: '&2Email address successfully added to your account!'
 email_confirm: '&cPlease confirm your email address!'
 email_changed: '&2Email address changed correctly!'
 email_send: '&2Recovery email sent successfully! Please check your email inbox!'
-email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
 email_show: '&2Your current email address is: &f%email'
 incomplete_email_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
 email_already_used: '&4The email address is already being used'

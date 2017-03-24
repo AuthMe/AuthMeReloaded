@@ -35,7 +35,6 @@ tempban_max_logins: '&cVous êtes temporairement banni suite à plusieurs échec
 max_reg: 'Vous avez atteint la limite d''inscription! &o(%reg_count/%max_acc : %reg_names)'
 no_perm: '&cVous n''êtes pas autorisé à utiliser cette commande.'
 error: '&cUne erreur est apparue, veuillez contacter un administrateur.'
-unsafe_spawn: 'Téléportation dans un endroit sûr.'
 kick_forvip: 'Un joueur VIP a rejoint le serveur à votre place (serveur plein).'
 
 # AntiBot
@@ -87,7 +86,6 @@ email_added: '&aEmail enregistré. En cas de perte de MDP, faites "/email recove
 email_confirm: '&cLa confirmation de l''email est manquante ou éronnée.'
 email_changed: '&aVotre email a été mis à jour.'
 email_send: '&aEmail de récupération envoyé !'
-email_exists: '&cUn email de récupération a déjà été envoyé ! Vous pouvez le jeter et vous en faire envoyez un nouveau en utilisant :'
 email_show: '&2Votre adresse email actuelle est: &f%email'
 incomplete_email_settings: '&cErreur : Tous les paramètres requis ne sont pas présent pour l''envoi de mail, veuillez contacter un admin.'
 email_already_used: '&cCette adresse email est déjà utilisée !'

@@ -9,6 +9,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
@@ -63,6 +64,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private LimboService limboService;
+
+    @Inject
+    private EmailService emailService;
 
     AsynchronousLogin() {
     }
@@ -189,6 +193,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 limboService.muteMessageTask(player);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
                     captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
+            } else if (emailService.hasAllInformation()) {
+                service.send(player, MessageKey.FORGOT_PASSWORD_MESSAGE);
             }
         }
     }
@@ -262,11 +268,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     }
 
     private void displayOtherAccounts(List<String> auths, Player player) {
-        if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS)) {
-            return;
-        }
-
-        if (auths.size() <= 1) {
+        if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auths.size() <= 1) {
             return;
         }
 

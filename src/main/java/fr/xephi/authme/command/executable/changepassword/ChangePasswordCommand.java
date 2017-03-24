@@ -54,4 +54,9 @@ public class ChangePasswordCommand extends PlayerCommand {
     protected String getAlternativeCommand() {
         return "/authme password <playername> <password>";
     }
+
+    @Override
+    public MessageKey getArgumentsMismatchMessage() {
+        return MessageKey.USAGE_CHANGE_PASSWORD;
+    }
 }

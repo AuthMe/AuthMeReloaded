@@ -30,7 +30,6 @@ tempban_max_logins: '&cByl jsi dočasně zabanován za příliš mnoho neúspě�
 max_reg: '&cPřekročil(a) jsi limit pro počet účtů (%reg_count/%max_acc %reg_names) z jedné IP adresy.'
 no_perm: '&cNa tento příkaz nemáš dostatečné pravomoce.'
 error: '&cVyskytla se chyba - kontaktujte prosím administrátora ...'
-unsafe_spawn: '&cTvoje pozice při posledním odpojení byla nebezpečná, teleportuji tě proto na spawn!'
 kick_forvip: '&cOmlouváme se, ale VIP hráč se připojil na plný server!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '[AuthMe] Email přidán!'
 email_confirm: '[AuthMe] Potvrď prosím svůj email!'
 email_changed: '[AuthMe] Email změněn!'
 email_send: '[AuthMe] Email pro obnovení hesla odeslán!'
-email_exists: '&cNový email byl odeslán! Můžeš ho zahodit a poslat jiný pomocí tohoto příkazu:'
 email_show: '&2Váš aktuální email je: &f%email'
 incomplete_email_settings: 'Chyba: chybí některé důležité informace pro odeslání emailu. Kontaktujte prosím admina.'
 email_already_used: '&4Tato emailová adresa je již používána'

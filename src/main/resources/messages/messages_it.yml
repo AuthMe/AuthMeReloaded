@@ -32,7 +32,6 @@ tempban_max_logins: '&cSei stato temporaneamente bandito per aver fallito l''aut
 max_reg: '&cHai raggiunto il numero massimo di registrazioni (%reg_count/%max_acc %reg_names) per questo indirizzo IP!'
 no_perm: '&4Non hai il permesso di eseguire questa operazione.'
 error: '&4Qualcosa è andato storto, riporta questo errore ad un amministratore!'
-unsafe_spawn: '&cIl tuo punto di disconnessione risulta ostruito o insicuro, sei stato teletrasportato al punto di rigenerazione!'
 kick_forvip: '&3Un utente VIP è entrato mentre il server era pieno e ha preso il tuo posto!'
 
 # AntiBot
@@ -84,7 +83,6 @@ email_added: '&2Indirizzo email aggiunto correttamente al tuo account!'
 email_confirm: '&cPer favore, conferma il tuo indirizzo email!'
 email_changed: '&2Indirizzo email cambiato correttamente!'
 email_send: '&2Una email di recupero è stata appena inviata al tuo indirizzo email!'
-email_exists: '&cUna email di recupero ti è già stata inviata! Se vuoi, puoi annullarla e richiederne un''altra con il seguente comando:'
 email_show: '&2Il tuo indirizzo email al momento è: &f%email'
 incomplete_email_settings: 'Errore: non tutte le impostazioni richieste per inviare le email sono state impostate. Per favore contatta un amministratore.'
 email_already_used: '&4L''indirizzo email inserito è già in uso'

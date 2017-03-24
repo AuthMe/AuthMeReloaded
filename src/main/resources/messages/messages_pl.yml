@@ -31,7 +31,6 @@ tempban_max_logins: '&cZostales tymczasowo zbanowany za duza liczbe nieudanych l
 max_reg: '&fPrzekroczyles limit zarejestrowanych kont na serwerze.'
 no_perm: '&4Nie masz uprawnien'
 error: '&fBlad prosimy napisac do aministracji'
-unsafe_spawn: '&fTwoje pozycja jest niebezpieczna. Zostaniesz przeniesiony na bezpieczny spawn.'
 kick_forvip: '&cA Gracz VIP dolaczyl do gry!'
 
 # AntiBot
@@ -83,7 +82,6 @@ email_added: '[AuthMe] Email dodany!'
 email_confirm: '[AuthMe] Potwierdz swoj email!'
 email_changed: '[AuthMe] Email zmieniony!'
 email_send: '[AuthMe] Email z odzyskaniem wyslany!'
-email_exists: '&cEmail z haslem zostal wyslany, aby wyslac go ponownie uzyj:'
 email_show: '&2Twoj aktualny adres email to: &f%email'
 incomplete_email_settings: 'Error: Nie wszystkie opcje odpowiedzialne za wysylanie emaili zostaly ustawione. Skontaktuj sie z administracja.'
 email_already_used: '&4Ten adres email jest aktualnie uzywany!'

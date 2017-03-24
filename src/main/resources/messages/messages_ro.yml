@@ -30,7 +30,6 @@ tempban_max_logins: '&cAi fost interzis temporar deoarece ai incercat sa te aute
 max_reg: '&cTe-ai inregistrat cu prea multe counturi (%reg_count/%max_acc %reg_names) pentru conexiunea ta!'
 no_perm: '&4Nu ai permisiunea!'
 error: '&4A aparut o eroare, te rugam contacteaza un membru din staff!'
-unsafe_spawn: '&cLocatia in care esti acum nu este sigura, ai fost teleportat la spawn.'
 kick_forvip: '&3Un V.I.P a intrat pe server cand era plin!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '&2Email-ul a fost adaugat cu succes la contul tau!'
 email_confirm: '&cTe rugam confirma adresa de email!'
 email_changed: '&2Email-ul a fost schimbat corect!'
 email_send: ' &2Recuperarea email-ul a fost trimis cu succes! Te rugam sa verificati email-ul in inbox!'
-email_exists: '&cRecuperarea email-ului a fost deja trimisa! Puteti sa-l anulati si sa trimiteti unul nou folosind comanda de mai jos:'
 email_show: '&2Adresa ta curenta de email este: &f%email'
 incomplete_email_settings: 'Eroare: nu toate setarile necesare pentru trimiterea email-ului sunt facute! Te rugam contacteaza un administrator.'
 email_already_used: '&4Email-ul a fost deja folosit'

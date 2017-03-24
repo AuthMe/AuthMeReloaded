@@ -30,7 +30,6 @@ tempban_max_logins: '&cBạn đã bị tạm thời khóa truy cập do đăng n
 max_reg: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
 no_perm: '&4Bạn không có quyền truy cập lệnh này!'
 error: '&4Lỗi! Vui lòng liên hệ quản trị viên hoặc admin'
-unsafe_spawn: '&cBạn đang ở vị trí không an toàn, bạn đã được dịch chuyển về Spawn.'
 kick_forvip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thà
 email_confirm: '&cVui lòng xác nhận địa chỉ email của bạn!'
 email_changed: '&2Địa chỉ email đã thay đổi!'
 email_send: '&2Email phục hồi đã được gửi thành công! Vui lòng kiểm tra hộp thư đến trong email của bạn.'
-email_exists: '&cEmail phục hồi đã được gửi, bạn có thể hủy bỏ và gửi thư mới bằng cách sử dụng lệnh sau:'
 email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
 incomplete_email_settings: 'Lỗi: các thiết lập để gửi thư không được cài đặt đầy đủ. Vui lòng liên hệ với quản trị viên để thông báo lỗi.'
 email_already_used: '&4Địa chỉ email đã được sử dụng'

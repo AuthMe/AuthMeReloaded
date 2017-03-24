@@ -30,7 +30,6 @@ tempban_max_logins: '&cBir cok kez yanlis giris yaptiginiz icin gecici olarak ba
 max_reg: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
 no_perm: '&4Bunu yapmak icin iznin yok!'
 error: '&4Beklenmedik bir hata olustu, yetkili ile iletisime gecin!'
-unsafe_spawn: '&cOyundan ciktigin yer guvenli degil, baslangic noktasina isinlaniyorsun.'
 kick_forvip: '&3Bir VIP oyuna giris yaptigi icin atildin!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '&2Eposta basariyla kullaniciniza eklendi!'
 email_confirm: '&cLutfen tekrar epostanizi giriniz!'
 email_changed: '&2Epostaniz basariyla degistirildi!'
 email_send: '&2Sifreniz epostaniza gonderildi! Lutfen eposta kutunuzu kontrol edin!'
-email_exists: '&cSifreniz zaten epostanize gonderildi! Bunu iptal etmek veya yeni bir sifre gondermek icin assagidaki komutu kullanabilirsin:'
 email_show: '&2Suanki eposta adresin: &f%email'
 incomplete_email_settings: 'Hata: Gonderilen epostada bazi ayarlar tamamlanmis degil. Yetkili ile iletisime gec.'
 email_already_used: '&4Eposta adresi zaten kullaniliyor.'

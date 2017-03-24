@@ -30,7 +30,6 @@ tempban_max_logins: '&cDu bist wegen zu vielen fehlgeschlagenen Login-Versuchen 
 max_reg: '&cDu hast die maximale Anzahl an Accounts erreicht (%reg_count/%max_acc %reg_names).'
 no_perm: '&4Du hast keine Rechte, um diese Aktion auszuführen!'
 error: '&4Ein Fehler ist aufgetreten. Bitte kontaktiere einen Administrator.'
-unsafe_spawn: '&cDeine Logoutposition war unsicher, du wurdest zum Spawn teleportiert'
 kick_forvip: '&3Ein VIP-Spieler hat den vollen Server betreten!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '&2E-Mail hinzugefügt!'
 email_confirm: '&cBitte bestätige deine E-Mail!'
 email_changed: '&2E-Mail aktualisiert!'
 email_send: '&2Wiederherstellungs-E-Mail wurde gesendet!'
-email_exists: '&cEine Wiederherstellungs-E-Mail wurde bereits versandt! Nutze folgenden Befehl um eine neue E-Mail zu versenden:'
 email_show: '&2Deine aktuelle E-Mail-Adresse ist: &f%email'
 incomplete_email_settings: 'Fehler: Es wurden nicht alle notwendigen Einstellungen vorgenommen, um E-Mails zu senden. Bitte kontaktiere einen Administrator.'
 email_already_used: '&4Diese E-Mail-Adresse wird bereits genutzt.'

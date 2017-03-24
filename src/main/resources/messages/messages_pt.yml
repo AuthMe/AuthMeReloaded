@@ -31,7 +31,6 @@ tempban_max_logins: '&cVocê foi temporariamente banido por falhar muitas vezes 
 max_reg: '&cAtingiu o numero máximo de %reg_count contas registas, maximo de contas %max_acc'
 no_perm: '&cSem Permissões'
 error: '&fOcorreu um erro; Por favor contacte um administrador'
-unsafe_spawn: '&fA sua localização na saída não é segura, será tele-portado para a Spawn'
 kick_forvip: '&cUm jogador VIP entrou no servidor cheio!'
 
 # AntiBot
@@ -83,7 +82,6 @@ email_added: 'Email adicionado com sucesso!'
 email_confirm: 'Confirme o seu email!'
 email_changed: 'Email alterado com sucesso!'
 email_send: 'Nova palavra-passe enviada para o seu email!'
-email_exists: '&cUm e-mail de recuperação já foi enviado! Pode descartá-lo e enviar um novo usando o comando abaixo:'
 email_show: '&2O seu endereço de email atual é &f%email'
 incomplete_email_settings: 'Erro: nem todas as definições necessarias para enviar email foram preenchidas. Por favor contate um administrador.'
 email_already_used: '&4O endereço de e-mail já está sendo usado'

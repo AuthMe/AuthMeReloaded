@@ -33,7 +33,6 @@ tempban_max_logins: '&cHas sido expulsado temporalmente por intentar iniciar ses
 max_reg: '&fHas excedido la cantidad máxima de registros para tu cuenta'
 no_perm: '&cNo tienes permiso'
 error: '&fHa ocurrido un error. Por favor contacta al administrador.'
-unsafe_spawn: '&fTu lugar de desconexión es inseguro, teletransportándote al punto inicial del mundo'
 kick_forvip: '&c¡Un jugador VIP ha ingresado al servidor lleno!'
 
 # AntiBot
@@ -85,7 +84,6 @@ email_added: '[AuthMe] Email agregado !'
 email_confirm: '[AuthMe] Confirma tu Email !'
 email_changed: '[AuthMe] Email cambiado !'
 email_send: '[AuthMe] Correo de recuperación enviado !'
-email_exists: '&c¡El correo de recuperación ya ha sido enviado! Puedes descartarlo y enviar uno nuevo utilizando el siguiente comando:'
 email_show: '&2Tu dirección de E-Mail actual es: &f%email'
 incomplete_email_settings: 'Error: no todos los ajustes necesarios se han configurado para enviar correos. Por favor, contacta con un administrador.'
 email_already_used: '&4La dirección Email ya está siendo usada'

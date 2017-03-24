@@ -53,7 +53,7 @@ public class RecoverEmailCommand extends PlayerCommand {
             return;
         }
 
-        PlayerAuth auth = dataSource.getAuth(playerName); // TODO: Create method to get email only
+        PlayerAuth auth = dataSource.getAuth(playerName); // TODO #1127: Create method to get email only
         if (auth == null) {
             commonService.send(player, MessageKey.USAGE_REGISTER);
             return;
@@ -72,5 +72,10 @@ public class RecoverEmailCommand extends PlayerCommand {
             // Code not needed, just send them a new password
             recoveryService.generateAndSendNewPassword(player, email);
         }
+    }
+
+    @Override
+    public MessageKey getArgumentsMismatchMessage() {
+        return MessageKey.USAGE_RECOVER_EMAIL;
     }
 }

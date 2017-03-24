@@ -20,9 +20,6 @@ public enum MessageKey {
     /** This user isn't registered! */
     UNKNOWN_USER("unknown_user"),
 
-    /** Your quit location was unsafe, you have been teleported to the world's spawnpoint. */
-    UNSAFE_QUIT_LOCATION("unsafe_spawn"),
-
     /** You're not logged in! */
     NOT_LOGGED_IN("not_logged_in"),
 
@@ -179,9 +176,6 @@ public enum MessageKey {
     /** Recovery email sent successfully! Please check your email inbox! */
     RECOVERY_EMAIL_SENT_MESSAGE("email_send"),
 
-    /** A recovery email was already sent! You can discard it and send a new one using the command below: */
-    RECOVERY_EMAIL_ALREADY_SENT_MESSAGE("email_exists"),
-
     /** Your country is banned from this server! */
     COUNTRY_BANNED_ERROR("country_banned"),
 
@@ -227,7 +221,10 @@ public enum MessageKey {
     /** The recovery code is not correct! You have %count tries remaining. */
     INCORRECT_RECOVERY_CODE("recovery_code_incorrect", "%count"),
 
-    /** You have exceeded the maximum number of attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one. */
+    /**
+     * You have exceeded the maximum number of attempts to enter the recovery code.
+     * Use "/email recovery [email]" to generate a new one.
+     */
     RECOVERY_TRIES_EXCEEDED("recovery_tries_exceeded"),
 
     /** Recovery code entered correctly! */

@@ -30,7 +30,6 @@ tempban_max_logins: '&cJe bent tijdelijk gebanned omdat het inloggen te vaak mis
 max_reg: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
 no_perm: '&cJe hebt geen rechten om deze actie uit te voeren!'
 error: 'Er is een onverwachte fout opgetreden, neem contact op met een administrator!'
-unsafe_spawn: '&cDe locatie waar je de vorige keer het spel verliet was gevaarlijk, je bent geteleporteerd naar de spawn.'
 kick_forvip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '&2Het E-mailadres is succesvol toegevoegd aan je account!'
 email_confirm: '&cVerifiëer je E-mailadres alsjeblieft!'
 email_changed: '&2Het E-mailadres is succesvol veranderd!'
 email_send: '&2Een herstel E-mail is verzonden! Check alsjeblieft je mailbox!'
-email_exists: '&cEen herstel E-mail voor je wachtwoord is al verzonden! Je kunt een nieuwe laten sturen met het volgende commando:'
 email_show: '&2Jouw huidige E-mailadres is: %email'
 incomplete_email_settings: 'Fout; er moeten nog enkele opties ingevuld worden om mails te kunnen sturen. Neem contact op met een administrator.'
 email_already_used: '&4Dit E-mailadres wordt al gebruikt'

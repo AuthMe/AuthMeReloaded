@@ -89,7 +89,7 @@ public class MessagesIntegrationTest {
     @Test
     public void shouldFormatColorCodes() {
         // given
-        MessageKey key = MessageKey.UNSAFE_QUIT_LOCATION;
+        MessageKey key = MessageKey.LOGIN_SUCCESS;
 
         // when
         String[] message = messages.retrieve(key);
@@ -115,7 +115,7 @@ public class MessagesIntegrationTest {
     @Test
     public void shouldSendMessageToPlayer() {
         // given
-        MessageKey key = MessageKey.UNSAFE_QUIT_LOCATION;
+        MessageKey key = MessageKey.LOGIN_SUCCESS;
         Player player = Mockito.mock(Player.class);
 
         // when

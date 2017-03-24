@@ -30,7 +30,6 @@ tempban_max_logins: '&cIdeiglenesen ki lettél tiltva mert túl sok alkalommal r
 max_reg: '&cElérted a maximálisan beregisztrálható karakterek számát. (%reg_count/%max_acc %reg_names)!'
 no_perm: '&cNincs jogod ehhez!'
 error: 'Hiba lépett fel! Lépj kapcsolatba a szerver tulajával sürgősen!'
-unsafe_spawn: 'A kilépési helyzeted nem biztonságos, ezért elteleportálunk a kezdő pozícióra.'
 kick_forvip: '&3VIP játékos csatlakozott a szerverhez!'
 
 # AntiBot
@@ -82,7 +81,6 @@ email_added: '&2Az email címed rögzítése sikeresen megtörtént!'
 email_confirm: '&cKérlek ellenőrízd az email címedet!'
 email_changed: '&2Az email cím cseréje sikeresen megtörtént!'
 email_send: '&2A jelszó visszaállításhoz szükséges emailt elküldtük! Ellenőrízd a leveleidet!'
-email_exists: '&cA visszaállító emailt elküldtük! Hiba esetén újra kérheted az alábbi parancs segítségével:'
 email_show: '&2A jelenlegi email-ed a következő: &f%email'
 incomplete_email_settings: 'Hiba: nem lett beállítva az össze szükséges beállítás az email küldéshez. Vedd fel a kapcsolatot egy adminnal.'
 email_already_used: '&4Ez az email cím már használatban van!'

@@ -34,7 +34,6 @@ tempban_max_logins: '&cVocê foi temporariamente banido por tentar logar muitas 
 max_reg: '&cVocê excedeu o número máximo de inscrições (%reg_count/%max_acc %reg_names) do seu IP!'
 no_perm: '&4Você não tem permissão para executar esta ação!'
 error: '&4Ocorreu um erro inesperado, por favor contacte um administrador!'
-unsafe_spawn: '&cVocê deslogou em um local inseguro e foi teleportado parao Spawn do servidor!'
 kick_forvip: '&3Um jogador VIP juntou-se ao servidor enquanto ele estava cheio!'
 
 # AntiBot
@@ -86,7 +85,6 @@ email_added: '&2Email adicionado com sucesso à sua conta!'
 email_confirm: '&cPor favor confirme seu endereço de email!'
 email_changed: '&2Troca de email com sucesso.!'
 email_send: '&2Recuperação de email enviada com sucesso! Por favor, verifique sua caixa de entrada de e-mail!'
-email_exists: '&cUm e-mail de recuperação já foi enviado! Você pode descartá-lo e enviar um novo usando o comando abaixo:'
 email_show: '&2O seu endereço de e-mail atual é: &f%email'
 incomplete_email_settings: 'Erro: Nem todas as configurações necessárias estão definidas para o envio de e-mails. Entre em contato com um administrador.'
 email_already_used: '&4O endereço de e-mail já está sendo usado'
