@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Nov 25 15:48:35 CET 2016. See docs/hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Sat Mar 25 00:15:27 CET 2017. See docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -10,11 +10,11 @@ Algorithm | Recommendation | Hash length | ASCII |     | Salt type | Length | Se
 BCRYPT | Recommended | 60 |  | | Text |  | 
 BCRYPT2Y | Recommended | 60 |  | | Text | 22 | 
 CRAZYCRYPT1 | Do not use | 128 |  | | Username |  | 
-DOUBLEMD5 | Do not use | 32 |  | | None |  | 
+DOUBLEMD5 | Deprecated | 32 |  | | None |  | 
 IPB3 | Acceptable | 32 |  | | Text | 5 | Y
 IPB4 | Does not work | 60 |  | | Text | 22 | Y
 JOOMLA | Acceptable | 65 |  | | Text | 32 | 
-MD5 | Do not use | 32 |  | | None |  | 
+MD5 | Deprecated | 32 |  | | None |  | 
 MD5VB | Acceptable | 56 |  | | Text | 16 | 
 MYBB | Acceptable | 32 |  | | Text | 8 | Y
 PBKDF2 | Recommended | 165 |  | | Text | 16 | 
@@ -24,14 +24,14 @@ PHPFUSION | Do not use | 64 | Y | |  |  | Y
 ROYALAUTH | Do not use | 128 |  | | None |  | 
 SALTED2MD5 | Acceptable | 32 |  | | Text |  | Y
 SALTEDSHA512 | Recommended | 128 |  | |  |  | Y
-SHA1 | Do not use | 40 |  | | None |  | 
+SHA1 | Deprecated | 40 |  | | None |  | 
 SHA256 | Recommended | 86 |  | | Text | 16 | 
-SHA512 | Do not use | 128 |  | | None |  | 
+SHA512 | Deprecated | 128 |  | | None |  | 
 SMF | Do not use | 40 |  | | Username |  | 
 TWO_FACTOR | Does not work | 16 |  | | None |  | 
 WBB3 | Acceptable | 40 |  | | Text | 40 | Y
 WBB4 | Recommended | 60 |  | | Text | 8 | 
-WHIRLPOOL | Do not use | 128 |  | | None |  | 
+WHIRLPOOL | Deprecated | 128 |  | | None |  | 
 WORDPRESS | Acceptable | 34 |  | | Text | 9 | 
 XAUTH | Recommended | 140 |  | | Text | 12 | 
 XFBCRYPT |  | 60 |  | |  |  | 
@@ -82,4 +82,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Nov 25 15:48:35 CET 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Mar 25 00:15:27 CET 2017

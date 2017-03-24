@@ -26,6 +26,7 @@ import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionsSystemType;
+import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -148,7 +149,8 @@ public class AuthMe extends JavaPlugin {
 
         // If server is using PermissionsBukkit, print a warning that some features may not be supported
         if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
-            ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions features may not be supported!");
+            ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions "
+                + "features may not be supported!");
         }
 
         // Do a backup on start
@@ -159,10 +161,12 @@ public class AuthMe extends JavaPlugin {
 
         // Sponsor messages
         ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
-        ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
+        ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader "
+            + "in Italy as Game Server Provider!");
 
         // Successful message
-        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber() + " correctly enabled!");
+        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber()
+            + " correctly enabled!");
 
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);
@@ -248,7 +252,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @param injector the injector
      */
-    protected void instantiateServices(Injector injector) {
+    void instantiateServices(Injector injector) {
         // PlayerCache is still injected statically sometimes
         PlayerCache playerCache = PlayerCache.getInstance();
         injector.register(PlayerCache.class, playerCache);
@@ -283,6 +287,14 @@ public class AuthMe extends JavaPlugin {
             && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
             ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
         }
+
+        // Unsalted hashes will be deprecated in 5.4 (see Github issue #1016). Exclude RoyalAuth from this check because
+        // it is needed to hook into an existing system.
+        HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        if (OnStartupTasks.isHashDeprecatedIn54(hash)) {
+            ConsoleLogger.warning("You are using an unsalted hash (" + hash + "). Support for this will be removed "
+                + "in 5.4 -- do you still need it? Comment on https://github.com/Xephi/AuthMeReloaded/issues/1016");
+        }
     }
 
     /**
@@ -290,7 +302,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @param injector the injector
      */
-    protected void registerEventListeners(Injector injector) {
+    void registerEventListeners(Injector injector) {
         // Get the plugin manager instance
         PluginManager pluginManager = getServer().getPluginManager();
 

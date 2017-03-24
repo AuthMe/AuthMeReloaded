@@ -7,6 +7,9 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.Usage;
 import org.bstats.Metrics;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
@@ -137,5 +140,24 @@ public class OnStartupTasks {
                 ConsoleLogger.warning("Get authme-legacy.jar from http://ci.xephi.fr/job/AuthMeReloaded/");
             }
         }
+    }
+
+    /**
+     * Returns whether the hash algorithm is deprecated and won't be able
+     * to be actively used anymore in 5.4.
+     *
+     * @param hash the hash algorithm to check
+     * @return true if the hash will be deprecated, false otherwise
+     * @see <a href="https://github.com/Xephi/AuthMeReloaded/issues/1016">#1016</a>
+     */
+    public static boolean isHashDeprecatedIn54(HashAlgorithm hash) {
+        if (hash.getClazz() == null || hash == HashAlgorithm.PLAINTEXT) {
+            // Exclude PLAINTEXT from this check because it already has a mandatory migration, which takes care of
+            // sending all the necessary messages and warnings.
+            return false;
+        }
+
+        Recommendation recommendation = hash.getClazz().getAnnotation(Recommendation.class);
+        return recommendation != null && recommendation.value() == Usage.DEPRECATED;
     }
 }

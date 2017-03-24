@@ -59,8 +59,12 @@ package fr.xephi.authme.security.crypts;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.Usage;
+
 import java.util.Arrays;
 
+@Recommendation(Usage.DEPRECATED)
 public class Whirlpool extends UnsaltedMethod {
 
     /**
