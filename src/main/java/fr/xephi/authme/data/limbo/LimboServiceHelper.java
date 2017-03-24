@@ -57,8 +57,7 @@ class LimboServiceHelper {
         player.setOp(false);
         player.setAllowFlight(false);
 
-        if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
-            && settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+        if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             player.setFlySpeed(0.0f);
             player.setWalkSpeed(0.0f);
         }

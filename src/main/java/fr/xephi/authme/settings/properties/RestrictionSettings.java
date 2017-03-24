@@ -108,12 +108,6 @@ public final class RestrictionSettings implements SettingsHolder {
         newProperty("settings.restrictions.allowMovement", false);
 
     @Comment({
-        "Should not authenticated players have speed = 0?",
-        "This will reset the fly/walk speed to default value after the login."})
-    public static final Property<Boolean> REMOVE_SPEED =
-        newProperty("settings.restrictions.removeSpeed", true);
-
-    @Comment({
         "After how many seconds should players who fail to login or register",
         "be kicked? Set to 0 to disable."})
     public static final Property<Integer> TIMEOUT =

@@ -69,7 +69,6 @@ public class LimboServiceTest {
     @Before
     public void mockSettings() {
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.REMOVE_SPEED)).willReturn(true);
     }
 
     @Test
