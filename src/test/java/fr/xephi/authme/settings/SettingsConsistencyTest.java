@@ -5,14 +5,11 @@ import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.properties.EnumProperty;
 import ch.jalu.configme.properties.Property;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,15 +39,10 @@ public class SettingsConsistencyTest {
     private static final int MAX_COMMENT_LENGTH = 90;
 
     /**
-     * Exclusions for the enum in comments check. Use {@link Exclude#ALL}
-     * to skip an entire property from being checked.
+     * Properties to exclude from the enum check.
      */
-    private static final Multimap<Property<?>, Enum<?>> EXCLUDED_ENUMS =
-        ImmutableSetMultimap.<Property<?>, Enum<?>>builder()
-            .put(DatabaseSettings.BACKEND, DataSourceType.FILE)
-            .put(SecuritySettings.PASSWORD_HASH, Exclude.ALL)
-            .put(SecuritySettings.LEGACY_HASHES, Exclude.ALL)
-            .build();
+    private static final Set<Property<?>> EXCLUDED_ENUM_PROPERTIES =
+        ImmutableSet.of(SecuritySettings.PASSWORD_HASH, SecuritySettings.LEGACY_HASHES);
 
     private static ConfigurationData configurationData;
 
@@ -165,10 +157,10 @@ public class SettingsConsistencyTest {
         for (Property<?> property : configurationData.getProperties()) {
             // when
             Class<? extends Enum<?>> enumClass = getEnumClass(property);
-            if (enumClass != null) {
+            if (enumClass != null && !EXCLUDED_ENUM_PROPERTIES.contains(property)) {
                 String comments = String.join("\n", configurationData.getCommentsForSection(property.getPath()));
                 Arrays.stream(enumClass.getEnumConstants())
-                    .filter(e -> !comments.contains(e.name()) && !isExcluded(property, e))
+                    .filter(e -> !comments.contains(e.name()) && !isDeprecated(e))
                     .findFirst()
                     .ifPresent(e -> invalidEnumProperties.put(property, e));
             }
@@ -199,16 +191,12 @@ public class SettingsConsistencyTest {
         return null;
     }
 
-    private static boolean isExcluded(Property<?> property, Enum<?> enumValue) {
-        return EXCLUDED_ENUMS.get(property).contains(Exclude.ALL)
-            || EXCLUDED_ENUMS.get(property).contains(enumValue);
-    }
-
-    /**
-     * Dummy enum to specify in the exclusion that all enum values
-     * should be skipped. See its usages.
-     */
-    private enum Exclude {
-        ALL
+    private static boolean isDeprecated(Enum<?> enumValue) {
+        try {
+            return enumValue.getDeclaringClass().getField(enumValue.name()).isAnnotationPresent(Deprecated.class);
+        } catch (NoSuchFieldException e) {
+            throw new IllegalStateException("Could not fetch field for enum '" + enumValue
+                + "' in " + enumValue.getDeclaringClass());
+        }
     }
 }
