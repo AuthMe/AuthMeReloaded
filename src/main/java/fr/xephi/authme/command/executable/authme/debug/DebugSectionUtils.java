@@ -7,6 +7,8 @@ import org.bukkit.Location;
 import java.lang.reflect.Field;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -56,6 +58,7 @@ final class DebugSectionUtils {
      */
     private static String round(double number) {
         DecimalFormat df = new DecimalFormat("#.##");
+        df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
         df.setRoundingMode(RoundingMode.HALF_UP);
         return df.format(number);
     }
