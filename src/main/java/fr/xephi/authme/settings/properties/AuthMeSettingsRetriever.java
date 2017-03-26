@@ -20,9 +20,9 @@ public final class AuthMeSettingsRetriever {
      */
     public static ConfigurationData buildConfigurationData() {
         return ConfigurationDataBuilder.collectData(
-            DatabaseSettings.class,      ConverterSettings.class,  PluginSettings.class,
-            RestrictionSettings.class,   EmailSettings.class,      HooksSettings.class,
-            ProtectionSettings.class,    PurgeSettings.class,      SecuritySettings.class,
-            RegistrationSettings.class,  BackupSettings.class);
+            DatabaseSettings.class,  PluginSettings.class,    RestrictionSettings.class,
+            EmailSettings.class,     HooksSettings.class,     ProtectionSettings.class,
+            PurgeSettings.class,     SecuritySettings.class,  RegistrationSettings.class,
+            LimboSettings.class,     BackupSettings.class,    ConverterSettings.class);
     }
 }

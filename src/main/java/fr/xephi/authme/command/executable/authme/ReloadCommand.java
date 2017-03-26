@@ -1,20 +1,20 @@
 package fr.xephi.authme.command.executable.authme;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,9 +26,6 @@ public class ReloadCommand implements ExecutableCommand {
     private AuthMe plugin;
 
     @Inject
-    private Injector injector;
-
-    @Inject
     private Settings settings;
 
     @Inject
@@ -37,6 +34,12 @@ public class ReloadCommand implements ExecutableCommand {
     @Inject
     private CommonService commonService;
 
+    @Inject
+    private SingletonStore<Reloadable> reloadableStore;
+
+    @Inject
+    private SingletonStore<SettingsDependent> settingsDependentStore;
+
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
         try {
@@ -44,8 +47,7 @@ public class ReloadCommand implements ExecutableCommand {
             ConsoleLogger.setLoggingOptions(settings);
             // We do not change database type for consistency issues, but we'll output a note in the logs
             if (!settings.getProperty(DatabaseSettings.BACKEND).equals(dataSource.getType())) {
-                ConsoleLogger.info("Note: cannot change database type during /authme reload");
-                sender.sendMessage("Note: cannot change database type during /authme reload");
+                Utils.logAndSendMessage(sender, "Note: cannot change database type during /authme reload");
             }
             performReloadOnServices();
             commonService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
@@ -57,14 +59,10 @@ public class ReloadCommand implements ExecutableCommand {
     }
 
     private void performReloadOnServices() {
-        Collection<Reloadable> reloadables = injector.retrieveAllOfType(Reloadable.class);
-        for (Reloadable reloadable : reloadables) {
-            reloadable.reload();
-        }
+        reloadableStore.retrieveAllOfType()
+            .forEach(r -> r.reload());
 
-        Collection<SettingsDependent> settingsDependents = injector.retrieveAllOfType(SettingsDependent.class);
-        for (SettingsDependent dependent : settingsDependents) {
-            dependent.reload(settings);
-        }
+        settingsDependentStore.retrieveAllOfType()
+            .forEach(s -> s.reload(settings));
     }
 }

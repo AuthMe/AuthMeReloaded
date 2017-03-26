@@ -18,7 +18,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
+import static fr.xephi.authme.settings.properties.PluginSettings.ENABLE_PERMISSION_CHECK;
 import static fr.xephi.authme.settings.properties.PluginSettings.LOG_LEVEL;
+import static fr.xephi.authme.settings.properties.PluginSettings.REGISTERED_GROUP;
+import static fr.xephi.authme.settings.properties.PluginSettings.UNREGISTERED_GROUP;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.DELAY_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REGISTER_SECOND_ARGUMENT;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REGISTRATION_TYPE;
@@ -65,6 +68,9 @@ public class SettingsMigrationServiceTest {
         assertThat(settings.getProperty(LOG_LEVEL), equalTo(LogLevel.INFO));
         assertThat(settings.getProperty(REGISTRATION_TYPE), equalTo(RegistrationType.EMAIL));
         assertThat(settings.getProperty(REGISTER_SECOND_ARGUMENT), equalTo(RegisterSecondaryArgument.CONFIRMATION));
+        assertThat(settings.getProperty(ENABLE_PERMISSION_CHECK), equalTo(true));
+        assertThat(settings.getProperty(REGISTERED_GROUP), equalTo("unLoggedinGroup"));
+        assertThat(settings.getProperty(UNREGISTERED_GROUP), equalTo(""));
 
         // Check migration of old setting to email.html
         assertThat(Files.readLines(new File(dataFolder, "email.html"), StandardCharsets.UTF_8),

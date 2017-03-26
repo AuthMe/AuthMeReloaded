@@ -10,7 +10,7 @@ import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class RestrictionSettings implements SettingsHolder {
+public final class RestrictionSettings implements SettingsHolder {
 
     @Comment({
         "Can not authenticated players chat?",
@@ -81,8 +81,12 @@ public class RestrictionSettings implements SettingsHolder {
         "Example:",
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1"})
-    public static final Property<List<String>> ALLOWED_RESTRICTED_USERS =
+    public static final Property<List<String>> RESTRICTED_USERS =
         newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
+
+    @Comment("Ban unknown IPs trying to log in with a restricted username?")
+    public static final Property<Boolean> BAN_UNKNOWN_IP =
+        newProperty("settings.restrictions.banUnsafedIP", false);
 
     @Comment("Should unregistered players be kicked immediately?")
     public static final Property<Boolean> KICK_NON_REGISTERED =
@@ -104,18 +108,12 @@ public class RestrictionSettings implements SettingsHolder {
         newProperty("settings.restrictions.allowMovement", false);
 
     @Comment({
-        "Should not authenticated players have speed = 0?",
-        "This will reset the fly/walk speed to default value after the login."})
-    public static final Property<Boolean> REMOVE_SPEED =
-        newProperty("settings.restrictions.removeSpeed", true);
-
-    @Comment({
         "After how many seconds should players who fail to login or register",
         "be kicked? Set to 0 to disable."})
     public static final Property<Integer> TIMEOUT =
         newProperty("settings.restrictions.timeout", 30);
 
-    @Comment("Regex syntax of allowed characters in the player name.")
+    @Comment("Regex pattern of allowed characters in the player name.")
     public static final Property<String> ALLOWED_NICKNAME_CHARACTERS =
         newProperty("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
 
@@ -139,10 +137,6 @@ public class RestrictionSettings implements SettingsHolder {
         "permission: /authme.admin.accounts"})
     public static final Property<Boolean> DISPLAY_OTHER_ACCOUNTS =
         newProperty("settings.restrictions.displayOtherAccounts", true);
-
-    @Comment("Ban ip when the ip is not the ip registered in database")
-    public static final Property<Boolean> BAN_UNKNOWN_IP =
-        newProperty("settings.restrictions.banUnsafedIP", false);
 
     @Comment("Spawn priority; values: authme, essentials, multiverse, default")
     public static final Property<String> SPAWN_PRIORITY =

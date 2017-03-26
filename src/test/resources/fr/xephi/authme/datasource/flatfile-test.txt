@@ -1,7 +1,7 @@
-Bobby:$SHA$11aa0706173d7272$dbba966:123.45.67.89:1449136800:1.05:2.1:4.2:world:your@email.com
+bobby:$SHA$11aa0706173d7272$dbba966:123.45.67.89:1449136800:1.05:2.1:4.2:world:your@email.com
 user:b28c32f624a4eb161d6adc9acb5bfc5b:34.56.78.90:1453242857:124.1:76.3:-127.8:nether:user@example.org
-twoFields:hash1234
-threeFields:hash369:33.33.33.33
-fourFields:$hash$4444:4.4.4.4:404040404
-sevenFields:hash7749:5.5.5.55:1414141414:7.7:14.14:21.21
-eightFields:hash8168:6.6.6.66:1234567888:8.8:17.6:26.4:eightworld
+twofields:hash1234
+threefields:hash369:33.33.33.33
+fourfields:$hash$4444:4.4.4.4:404040404
+sevenfields:hash7749:5.5.5.55:1414141414:7.7:14.14:21.21
+eightfields:hash8168:6.6.6.66:1234567888:8.8:17.6:26.4:eightworld

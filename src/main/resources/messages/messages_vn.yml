@@ -30,7 +30,6 @@ tempban_max_logins: '&cBạn đã bị tạm thời khóa truy cập do đăng n
 max_reg: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
 no_perm: '&4Bạn không có quyền truy cập lệnh này!'
 error: '&4Lỗi! Vui lòng liên hệ quản trị viên hoặc admin'
-unsafe_spawn: '&cBạn đang ở vị trí không an toàn, bạn đã được dịch chuyển về Spawn.'
 kick_forvip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
 
 # AntiBot
@@ -44,7 +43,11 @@ accounts_owned_self: 'Bạn sở hữu %count tài khoản:'
 accounts_owned_other: 'Người chơi %name có %count tài khoản:'
 two_factor_create: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
 recovery_code_sent: 'Một mã khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn.'
+# TODO: Missing tags %count
 recovery_code_incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
+# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cTài khoản của bạn chưa được kích hoạt, vui lòng kiểm tra email!'
 usage_unreg: '&cSử dụng: /unregister <mật khẩu>'
 pwd_changed: '&2Thay đổi mật khẩu thành công!'
@@ -78,7 +81,6 @@ email_added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thà
 email_confirm: '&cVui lòng xác nhận địa chỉ email của bạn!'
 email_changed: '&2Địa chỉ email đã thay đổi!'
 email_send: '&2Email phục hồi đã được gửi thành công! Vui lòng kiểm tra hộp thư đến trong email của bạn.'
-email_exists: '&cEmail phục hồi đã được gửi, bạn có thể hủy bỏ và gửi thư mới bằng cách sử dụng lệnh sau:'
 email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
 incomplete_email_settings: 'Lỗi: các thiết lập để gửi thư không được cài đặt đầy đủ. Vui lòng liên hệ với quản trị viên để thông báo lỗi.'
 email_already_used: '&4Địa chỉ email đã được sử dụng'
@@ -86,8 +88,20 @@ email_send_failure: 'Không thể gửi thư. Vui lòng liên hệ với ban qu�
 show_no_email: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
 add_email: '&eVui lòng thêm email của bạn với lệnh "/email add <email> <nhập lại email>"'
 recovery_email: '&aBạn quên mật khẩu? Vui lòng gõ lệnh "/email recovery <email>"'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&eĐể đăng nhập vui lòng hãy gõ mã Captcha, gõ lệnh "/captcha <theCaptcha>"'
 wrong_captcha: '&cSai mã captcha, Vui lòng nhấn "/captcha THE_CAPTCHA" trong kênh chát!'
 valid_captcha: '&2Mã captcha đã được xác nhận!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

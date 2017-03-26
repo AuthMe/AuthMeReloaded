@@ -1,21 +1,21 @@
 package fr.xephi.authme.data;
 
-import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.PlayerUtils;
+import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static fr.xephi.authme.settings.properties.SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET;
 import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
@@ -25,7 +25,7 @@ import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
  */
 public class TempbanManager implements SettingsDependent, HasCleanup {
 
-    private final Map<String, Map<String, TimedCounter>> ipLoginFailureCounts;
+    private final Map<String, TimedCounter<String>> ipLoginFailureCounts;
     private final BukkitService bukkitService;
     private final Messages messages;
 
@@ -50,18 +50,9 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
      */
     public void increaseCount(String address, String name) {
         if (isEnabled) {
-            Map<String, TimedCounter> countsByName = ipLoginFailureCounts.get(address);
-            if (countsByName == null) {
-                countsByName = new ConcurrentHashMap<>();
-                ipLoginFailureCounts.put(address, countsByName);
-            }
-
-            TimedCounter counter = countsByName.get(name);
-            if (counter == null) {
-                countsByName.put(name, new TimedCounter(1));
-            } else {
-                counter.increment(resetThreshold);
-            }
+            TimedCounter<String> countsByName = ipLoginFailureCounts.computeIfAbsent(
+                address, k -> new TimedCounter<>(resetThreshold, TimeUnit.MINUTES));
+            countsByName.increment(name);
         }
     }
 
@@ -73,9 +64,9 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
      */
     public void resetCount(String address, String name) {
         if (isEnabled) {
-            Map<String, TimedCounter> map = ipLoginFailureCounts.get(address);
-            if (map != null) {
-                map.remove(name);
+            TimedCounter<String> counter = ipLoginFailureCounts.get(address);
+            if (counter != null) {
+                counter.remove(name);
             }
         }
     }
@@ -88,13 +79,9 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
      */
     public boolean shouldTempban(String address) {
         if (isEnabled) {
-            Map<String, TimedCounter> countsByName = ipLoginFailureCounts.get(address);
+            TimedCounter<String> countsByName = ipLoginFailureCounts.get(address);
             if (countsByName != null) {
-                int total = 0;
-                for (TimedCounter counter : countsByName.values()) {
-                    total += counter.getCount(resetThreshold);
-                }
-                return total >= threshold;
+                return countsByName.total() >= threshold;
             }
         }
         return false;
@@ -137,56 +124,9 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
 
     @Override
     public void performCleanup() {
-        for (Map<String, TimedCounter> countsByIp : ipLoginFailureCounts.values()) {
-            Iterator<TimedCounter> it = countsByIp.values().iterator();
-            while (it.hasNext()) {
-                TimedCounter counter = it.next();
-                if (counter.getCount(resetThreshold) == 0) {
-                    it.remove();
-                }
-            }
+        for (TimedCounter<String> countsByIp : ipLoginFailureCounts.values()) {
+            countsByIp.removeExpiredEntries();
         }
-    }
-
-    /**
-     * Counter with an associated timestamp, keeping track of when the last entry has been added.
-     */
-    @VisibleForTesting
-    static final class TimedCounter {
-
-        private int counter;
-        private long lastIncrementTimestamp = System.currentTimeMillis();
-
-        /**
-         * Constructor.
-         *
-         * @param start the initial value to set the counter to
-         */
-        TimedCounter(int start) {
-            this.counter = start;
-        }
-
-        /**
-         * Returns the count, taking into account the last entry timestamp.
-         *
-         * @param threshold the threshold in milliseconds until when to consider a counter
-         * @return the counter's value, or {@code 0} if it was last incremented longer ago than the threshold
-         */
-        int getCount(long threshold) {
-            if (System.currentTimeMillis() - lastIncrementTimestamp > threshold) {
-                return 0;
-            }
-            return counter;
-        }
-
-        /**
-         * Increments the counter, taking into account the last entry timestamp.
-         *
-         * @param threshold in milliseconds, the time span until which to consider the existing number
-         */
-        void increment(long threshold) {
-            counter = getCount(threshold) + 1;
-            lastIncrementTimestamp = System.currentTimeMillis();
-        }
+        ipLoginFailureCounts.entrySet().removeIf(e -> e.getValue().isEmpty());
     }
 }

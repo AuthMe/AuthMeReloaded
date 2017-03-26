@@ -13,7 +13,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -45,7 +44,7 @@ public class BukkitService implements SettingsDependent {
     @Inject
     BukkitService(AuthMe authMe, Settings settings) {
         this.authMe = authMe;
-        getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
+        getOnlinePlayersIsCollection = doesOnlinePlayersMethodReturnCollection();
         reload(settings);
     }
 
@@ -172,7 +171,7 @@ public class BukkitService implements SettingsDependent {
      * @return a BukkitTask that contains the id number
      * @throws IllegalArgumentException if plugin is null
      * @throws IllegalStateException if this was already scheduled
-     * @see BukkitScheduler#runTaskTimer(Plugin, Runnable, long, long)
+     * @see BukkitScheduler#runTaskTimer(org.bukkit.plugin.Plugin, Runnable, long, long)
      */
     public BukkitTask runTaskTimer(BukkitRunnable task, long delay, long period) {
         return task.runTaskTimer(authMe, delay, period);
@@ -302,11 +301,12 @@ public class BukkitService implements SettingsDependent {
 
     /**
      * Method run upon initialization to verify whether or not the Bukkit implementation
-     * returns the online players as a Collection.
+     * returns the online players as a {@link Collection}.
      *
+     * @return true if a collection is returned by the bukkit implementation, false otherwise
      * @see #getOnlinePlayers()
      */
-    private static boolean initializeOnlinePlayersIsCollectionField() {
+    private static boolean doesOnlinePlayersMethodReturnCollection() {
         try {
             Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
             return method.getReturnType() == Collection.class;

@@ -6,6 +6,8 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 /**
  * Database column names.
  */
+// Justification: String is immutable and this class is used to easily access the configurable column names
+@SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:MemberName", "checkstyle:AbbreviationAsWordInName"})
 public final class Columns {
 
     public final String NAME;

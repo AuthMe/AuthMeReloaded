@@ -9,6 +9,12 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Handler for bPermissions.
+ *
+ * @see <a href="https://dev.bukkit.org/projects/bpermissions">bPermissions Bukkit page</a>
+ * @see <a href="https://github.com/rymate1234/bPermissions/">bPermissions on Github</a>
+ */
 public class BPermissionsHandler implements PermissionHandler {
 
     @Override
@@ -47,19 +53,6 @@ public class BPermissionsHandler implements PermissionHandler {
     @Override
     public List<String> getGroups(Player player) {
         return Arrays.asList(ApiLayer.getGroups(player.getWorld().getName(), CalculableType.USER, player.getName()));
-    }
-
-    @Override
-    public String getPrimaryGroup(Player player) {
-        // Get the groups of the player
-        List<String> groups = getGroups(player);
-
-        // Make sure there is any group available, or return null
-        if (groups.isEmpty())
-            return null;
-
-        // Return the first group
-        return groups.get(0);
     }
 
     @Override

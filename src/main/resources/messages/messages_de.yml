@@ -30,7 +30,6 @@ tempban_max_logins: '&cDu bist wegen zu vielen fehlgeschlagenen Login-Versuchen 
 max_reg: '&cDu hast die maximale Anzahl an Accounts erreicht (%reg_count/%max_acc %reg_names).'
 no_perm: '&4Du hast keine Rechte, um diese Aktion auszuführen!'
 error: '&4Ein Fehler ist aufgetreten. Bitte kontaktiere einen Administrator.'
-unsafe_spawn: '&cDeine Logoutposition war unsicher, du wurdest zum Spawn teleportiert'
 kick_forvip: '&3Ein VIP-Spieler hat den vollen Server betreten!'
 
 # AntiBot
@@ -44,7 +43,11 @@ accounts_owned_self: 'Du besitzt %count Accounts:'
 accounts_owned_other: 'Der Spieler %name hat %count Accounts:'
 two_factor_create: '&2Dein geheimer Code ist %code. Du kannst ihn hier abfragen: %url'
 recovery_code_sent: 'Ein Wiederherstellungscode zum Zurücksetzen deines Passworts wurde an deine E-Mail-Adresse geschickt.'
+# TODO: Missing tags %count
 recovery_code_incorrect: 'Der Wiederherstellungscode stimmt nicht! Nutze /email recovery [email] um einen neuen zu generieren.'
+# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cDein Account wurde noch nicht aktiviert. Bitte prüfe deine E-Mails!'
 usage_unreg: '&cBenutze: /unregister <passwort>'
 pwd_changed: '&2Passwort geändert!'
@@ -78,7 +81,6 @@ email_added: '&2E-Mail hinzugefügt!'
 email_confirm: '&cBitte bestätige deine E-Mail!'
 email_changed: '&2E-Mail aktualisiert!'
 email_send: '&2Wiederherstellungs-E-Mail wurde gesendet!'
-email_exists: '&cEine Wiederherstellungs-E-Mail wurde bereits versandt! Nutze folgenden Befehl um eine neue E-Mail zu versenden:'
 email_show: '&2Deine aktuelle E-Mail-Adresse ist: &f%email'
 incomplete_email_settings: 'Fehler: Es wurden nicht alle notwendigen Einstellungen vorgenommen, um E-Mails zu senden. Bitte kontaktiere einen Administrator.'
 email_already_used: '&4Diese E-Mail-Adresse wird bereits genutzt.'
@@ -86,8 +88,20 @@ email_send_failure: 'Die E-Mail konnte nicht gesendet werden. Bitte kontaktiere 
 show_no_email: '&2Du hast zur Zeit keine E-Mail-Adresse für deinen Account hinterlegt.'
 add_email: '&3Bitte hinterlege deine E-Mail-Adresse: /email add <deineEmail> <emailBestätigen>'
 recovery_email: '&3Passwort vergessen? Nutze "/email recovery <deineEmail>" für ein neues Passwort'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Um dich einzuloggen, tippe dieses Captcha so ein: /captcha <theCaptcha>'
 wrong_captcha: '&cFalsches Captcha, bitte nutze: /captcha THE_CAPTCHA'
 valid_captcha: '&2Das Captcha ist korrekt!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

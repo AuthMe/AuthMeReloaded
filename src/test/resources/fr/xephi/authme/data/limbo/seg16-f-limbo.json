@@ -1,0 +1,17 @@
+{
+  "fab69c88-2cd0-1fed-f00d-dead14ca067d": {
+    "location": {
+      "world": "world",
+      "x": -196.69999998807907,
+      "y": 67.0,
+      "z": 5.699999988079071,
+      "yaw": 222.14977,
+      "pitch": 10.649977
+    },
+    "group": "",
+    "operator": false,
+    "can-fly": false,
+    "walk-speed": 0.2,
+    "fly-speed": 0.1
+  }
+}

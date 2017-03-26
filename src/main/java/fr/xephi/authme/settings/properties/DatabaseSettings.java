@@ -7,10 +7,10 @@ import fr.xephi.authme.datasource.DataSourceType;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class DatabaseSettings implements SettingsHolder {
+public final class DatabaseSettings implements SettingsHolder {
 
     @Comment({"What type of database do you want to use?",
-            "Valid values: sqlite, mysql"})
+            "Valid values: SQLITE, MYSQL"})
     public static final Property<DataSourceType> BACKEND =
         newProperty(DataSourceType.class, "DataSource.backend", DataSourceType.SQLITE);
 
@@ -26,11 +26,15 @@ public class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_PORT =
         newProperty("DataSource.mySQLPort", "3306");
 
-    @Comment("Username about Database Connection Infos")
+    @Comment("Connect to MySQL database over SSL")
+    public static final Property<Boolean> MYSQL_USE_SSL =
+        newProperty("DataSource.mySQLUseSSL", true);
+
+    @Comment("Username to connect to the MySQL database")
     public static final Property<String> MYSQL_USERNAME =
         newProperty("DataSource.mySQLUsername", "authme");
 
-    @Comment("Password about Database Connection Infos")
+    @Comment("Password to connect to the MySQL database")
     public static final Property<String> MYSQL_PASSWORD =
         newProperty("DataSource.mySQLPassword", "12345");
 
@@ -57,10 +61,6 @@ public class DatabaseSettings implements SettingsHolder {
     @Comment("Column for storing players passwords")
     public static final Property<String> MYSQL_COL_PASSWORD =
         newProperty("DataSource.mySQLColumnPassword", "password");
-
-    @Comment("Request mysql over SSL")
-    public static final Property<Boolean> MYSQL_USE_SSL =
-        newProperty("DataSource.mySQLUseSSL", true);
 
     @Comment("Column for storing players passwords salts")
     public static final Property<String> MYSQL_COL_SALT =

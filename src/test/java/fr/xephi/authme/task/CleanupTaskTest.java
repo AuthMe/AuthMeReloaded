@@ -1,7 +1,7 @@
 package fr.xephi.authme.task;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.initialization.HasCleanup;
+import fr.xephi.authme.initialization.factory.SingletonStore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,7 +13,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -26,13 +25,13 @@ public class CleanupTaskTest {
     private CleanupTask cleanupTask;
 
     @Mock
-    private Injector injector;
+    private SingletonStore<HasCleanup> hasCleanupStore;
 
     @Test
     public void shouldPerformCleanup() {
         // given
         List<HasCleanup> services = asList(mock(HasCleanup.class), mock(HasCleanup.class), mock(HasCleanup.class));
-        given(injector.retrieveAllOfType(HasCleanup.class)).willReturn(services);
+        given(hasCleanupStore.retrieveAllOfType()).willReturn(services);
 
         // when
         cleanupTask.run();
@@ -41,6 +40,5 @@ public class CleanupTaskTest {
         verify(services.get(0)).performCleanup();
         verify(services.get(1)).performCleanup();
         verify(services.get(2)).performCleanup();
-        verify(injector, only()).retrieveAllOfType(HasCleanup.class);
     }
 }

@@ -24,12 +24,15 @@ import fr.xephi.authme.command.executable.authme.SpawnCommand;
 import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
 import fr.xephi.authme.command.executable.authme.UnregisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.VersionCommand;
+import fr.xephi.authme.command.executable.authme.debug.DebugCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
+import fr.xephi.authme.command.executable.email.ProcessCodeCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
+import fr.xephi.authme.command.executable.email.SetPasswordCommand;
 import fr.xephi.authme.command.executable.email.ShowEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
@@ -37,6 +40,7 @@ import fr.xephi.authme.command.executable.register.RegisterCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.permission.PlayerStatePermission;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,6 +66,10 @@ public class CommandInitializer {
         return commands;
     }
 
+    /**
+     * Builds the command description objects for all available AuthMe commands.
+     */
+    @SuppressWarnings({"checkstyle:LocalVariableName", "checkstyle:AbbreviationAsWordInName"})
     private void buildCommands() {
         // Register the base AuthMe Reloaded command
         final CommandDescription AUTHME_BASE = CommandDescription.builder()
@@ -283,8 +291,8 @@ public class CommandInitializer {
             .labels("converter", "convert", "conv")
             .description("Converter command")
             .detailedDescription("Converter command for AuthMeReloaded.")
-            .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
-                "royalauth / vauth / sqliteToSql / mysqlToSqlite", false)
+            .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / "
+                + "royalauth / vauth / sqliteToSql / mysqlToSqlite", false)
             .permission(AdminPermission.CONVERTER)
             .executableCommand(ConverterCommand.class)
             .register();
@@ -296,6 +304,19 @@ public class CommandInitializer {
             .detailedDescription("Adds missing messages to the current messages file.")
             .permission(AdminPermission.UPDATE_MESSAGES)
             .executableCommand(MessagesCommand.class)
+            .register();
+
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
+            .labels("debug", "dbg")
+            .description("Debug features")
+            .detailedDescription("Allows various operations for debugging.")
+            .withArgument("child", "The child to execute", true)
+            .withArgument(".", "meaning varies", true)
+            .withArgument(".", "meaning varies", true)
+            .withArgument(".", "meaning varies", true)
+            .permission(PlayerStatePermission.DEBUG_COMMAND)
+            .executableCommand(DebugCommand.class)
             .register();
 
         // Register the base login command
@@ -401,12 +422,33 @@ public class CommandInitializer {
             .parent(EMAIL_BASE)
             .labels("recover", "recovery", "recoveremail", "recovermail")
             .description("Recover password using email")
-            .detailedDescription("Recover your account using an Email address by sending a mail containing " +
-                "a new password.")
+            .detailedDescription("Recover your account using an Email address by sending a mail containing "
+                + "a new password.")
             .withArgument("email", "Email address", false)
-            .withArgument("code", "Recovery code", true)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(RecoverEmailCommand.class)
+            .register();
+
+        // Register the process recovery code command
+        CommandDescription.builder()
+            .parent(EMAIL_BASE)
+            .labels("code")
+            .description("Submit code to recover password")
+            .detailedDescription("Recover your account by submitting a code delivered to your email.")
+            .withArgument("code", "Recovery code", false)
+            .permission(PlayerPermission.RECOVER_EMAIL)
+            .executableCommand(ProcessCodeCommand.class)
+            .register();
+
+        // Register the change password after recovery command
+        CommandDescription.builder()
+            .parent(EMAIL_BASE)
+            .labels("setpassword")
+            .description("Set new password after recovery")
+            .detailedDescription("Set a new password after successfully recovering your account.")
+            .withArgument("password", "New password", false)
+            .permission(PlayerPermission.RECOVER_EMAIL)
+            .executableCommand(SetPasswordCommand.class)
             .register();
 
         // Register the base captcha command

@@ -1,6 +1,6 @@
 # Sample messages file
 
 unknown_user: 'Message from test2'
-unsafe_spawn: 'test2 - unsafe spawn'
+login: 'test2 - login'
 not_logged_in: 'test2 - not logged in'
 wrong_pwd: 'test2 - wrong password'

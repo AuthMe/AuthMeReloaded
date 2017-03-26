@@ -81,8 +81,8 @@ public class HelpMessagesService implements Reloadable {
 
     public String getMessage(DefaultPermission defaultPermission) {
         // e.g. {default_permissions_path}.opOnly for DefaultPermission.OP_ONLY
-        String path = DEFAULT_PERMISSIONS_PATH +
-            CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, defaultPermission.name());
+        String path = DEFAULT_PERMISSIONS_PATH
+            + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, defaultPermission.name());
         return messageFileHandler.getMessage(path);
     }
 

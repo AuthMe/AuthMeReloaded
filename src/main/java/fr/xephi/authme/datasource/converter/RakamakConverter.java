@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -40,43 +41,41 @@ public class RakamakConverter implements Converter {
     @Override
     // TODO ljacqu 20151229: Restructure this into smaller portions
     public void execute(CommandSender sender) {
-        boolean useIP = settings.getProperty(ConverterSettings.RAKAMAK_USE_IP);
+        boolean useIp = settings.getProperty(ConverterSettings.RAKAMAK_USE_IP);
         String fileName = settings.getProperty(ConverterSettings.RAKAMAK_FILE_NAME);
         String ipFileName = settings.getProperty(ConverterSettings.RAKAMAK_IP_FILE_NAME);
         File source = new File(pluginFolder, fileName);
-        File ipfiles = new File(pluginFolder, ipFileName);
-        HashMap<String, String> playerIP = new HashMap<>();
-        HashMap<String, HashedPassword> playerPSW = new HashMap<>();
+        File ipFiles = new File(pluginFolder, ipFileName);
+        Map<String, String> playerIp = new HashMap<>();
+        Map<String, HashedPassword> playerPassword = new HashMap<>();
         try {
-            BufferedReader users;
-            BufferedReader ipFile;
-            ipFile = new BufferedReader(new FileReader(ipfiles));
+            BufferedReader ipFile = new BufferedReader(new FileReader(ipFiles));
             String line;
-            if (useIP) {
+            if (useIp) {
                 String tempLine;
                 while ((tempLine = ipFile.readLine()) != null) {
                     if (tempLine.contains("=")) {
                         String[] args = tempLine.split("=");
-                        playerIP.put(args[0], args[1]);
+                        playerIp.put(args[0], args[1]);
                     }
                 }
             }
             ipFile.close();
 
-            users = new BufferedReader(new FileReader(source));
+            BufferedReader users = new BufferedReader(new FileReader(source));
             while ((line = users.readLine()) != null) {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");
                     HashedPassword hashedPassword = passwordSecurity.computeHash(arguments[1], arguments[0]);
-                    playerPSW.put(arguments[0], hashedPassword);
+                    playerPassword.put(arguments[0], hashedPassword);
 
                 }
             }
             users.close();
-            for (Entry<String, HashedPassword> m : playerPSW.entrySet()) {
+            for (Entry<String, HashedPassword> m : playerPassword.entrySet()) {
                 String playerName = m.getKey();
-                HashedPassword psw = playerPSW.get(playerName);
-                String ip = useIP ? playerIP.get(playerName) : "127.0.0.1";
+                HashedPassword psw = playerPassword.get(playerName);
+                String ip = useIp ? playerIp.get(playerName) : "127.0.0.1";
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerName)
                     .realName(playerName)

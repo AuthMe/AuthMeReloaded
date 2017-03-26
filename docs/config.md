@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Jan 14 22:12:16 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Wed Mar 22 23:10:33 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -10,7 +10,7 @@ the generated config.yml file.
 
 DataSource:
     # What type of database do you want to use?
-    # Valid values: sqlite, mysql
+    # Valid values: SQLITE, MYSQL
     backend: 'SQLITE'
     # Enable database caching, should improve database performance
     caching: true
@@ -18,9 +18,11 @@ DataSource:
     mySQLHost: '127.0.0.1'
     # Database port
     mySQLPort: '3306'
-    # Username about Database Connection Infos
+    # Connect to MySQL database over SSL
+    mySQLUseSSL: true
+    # Username to connect to the MySQL database
     mySQLUsername: 'authme'
-    # Password about Database Connection Infos
+    # Password to connect to the MySQL database
     mySQLPassword: '12345'
     # Database Name, use with converters or as SQLITE database name
     mySQLDatabase: 'authme'
@@ -34,8 +36,6 @@ DataSource:
     mySQLRealName: 'realname'
     # Column for storing players passwords
     mySQLColumnPassword: 'password'
-    # Request mysql over SSL
-    mySQLUseSSL: true
     # Column for storing players emails
     mySQLColumnEmail: 'email'
     # Column for storing if a player is logged in or not
@@ -71,19 +71,14 @@ ExternalBoardOptions:
     phpbbTablePrefix: 'phpbb_'
     # phpBB activated group ID; 2 is the default registered group defined by phpBB
     phpbbActivatedGroupId: 2
+    # IP Board table prefix defined during the IP Board installation process
+    IPBTablePrefix: 'ipb_'
+    # IP Board default group ID; 3 is the default registered group defined by IP Board
+    IPBActivatedGroupId: 3
+    # XenForo default group ID; 2 is the default registered group defined by Xenforo
+    XFActivatedGroupId: 2
     # Wordpress prefix defined during WordPress installation
     wordpressTablePrefix: 'wp_'
-Converter:
-    Rakamak:
-        # Rakamak file name
-        fileName: 'users.rak'
-        # Rakamak use IP?
-        useIP: false
-        # Rakamak IP file name
-        ipFileName: 'UsersIp.rak'
-    CrazyLogin:
-        # CrazyLogin database file name
-        fileName: 'accounts.db'
 settings:
     sessions:
         # Do you want to enable the session feature?
@@ -94,13 +89,8 @@ settings:
         # expired, he will not need to authenticate.
         enabled: false
         # After how many minutes should a session expire?
-        # Remember that sessions will end only after the timeout, and
-        # if the player's IP has changed but the timeout hasn't expired,
-        # the player will be kicked from the server due to invalid session
+        # A player's session ends after the timeout or if his IP has changed
         timeout: 10
-        # Should the session expire if the player tries to log in with
-        # another IP address?
-        sessionExpireOnIpChange: true
     # Message language, available languages:
     # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md
     messagesLanguage: 'en'
@@ -161,6 +151,8 @@ settings:
         #     AllowedRestrictedUser:
         #     - playername;127.0.0.1
         AllowedRestrictedUser: []
+        # Ban unknown IPs trying to log in with a restricted username?
+        banUnsafedIP: false
         # Should unregistered players be kicked immediately?
         kickNonRegistered: false
         # Should players be kicked on wrong password?
@@ -177,7 +169,7 @@ settings:
         # After how many seconds should players who fail to login or register
         # be kicked? Set to 0 to disable.
         timeout: 30
-        # Regex syntax of allowed characters in the player name.
+        # Regex pattern of allowed characters in the player name.
         allowedNicknameCharacters: '[a-zA-Z0-9_]*'
         # How far can unregistered players walk?
         # Set to 0 for unlimited radius
@@ -189,8 +181,6 @@ settings:
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
-        # Ban ip when the ip is not the ip registered in database
-        banUnsafedIP: false
         # Spawn priority; values: authme, essentials, multiverse, default
         spawnPriority: 'authme,essentials,multiverse,default'
         # Maximum Login authorized by IP
@@ -223,18 +213,6 @@ settings:
         minPasswordLength: 5
         # Maximum length of password
         passwordMaxLength: 30
-        # This is a very important option: every time a player joins the server,
-        # if they are registered, AuthMe will switch him to unLoggedInGroup.
-        # This should prevent all major exploits.
-        # You can set up your permission plugin with this special group to have no permissions,
-        # or only permission to chat (or permission to send private messages etc.).
-        # The better way is to set up this group with few permissions, so if a player
-        # tries to exploit an account they can do only what you've defined for the group.
-        # After, a logged in player will be moved to his correct permissions group!
-        # Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'
-        # Otherwise your group will be wiped and the player will join in the default group []!
-        # Example unLoggedinGroup: NotLogged
-        unLoggedinGroup: 'unLoggedinGroup'
         # Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,
         # MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,
         # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at
@@ -317,17 +295,31 @@ settings:
     # Do we need to prevent people to login with another case?
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
     preventOtherCase: true
-permission:
-    # Take care with this option; if you want
-    # to use group switching of AuthMe
-    # for unloggedIn players, set this setting to true.
-    # Default is false.
-    EnablePermissionCheck: false
+GroupOptions:
+    # Enables switching a player to defined permission groups before they log in.
+    # See below for a detailed explanation.
+    enablePermissionCheck: false
+    # This is a very important option: if a registered player joins the server
+    # AuthMe will switch him to unLoggedInGroup. This should prevent all major exploits.
+    # You can set up your permission plugin with this special group to have no permissions,
+    # or only permission to chat (or permission to send private messages etc.).
+    # The better way is to set up this group with few permissions, so if a player
+    # tries to exploit an account they can do only what you've defined for the group.
+    # After login, the player will be moved to his correct permissions group!
+    # Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'
+    # Otherwise your group will be wiped and the player will join in the default group []!
+    # Example: registeredPlayerGroup: 'NotLogged'
+    registeredPlayerGroup: ''
+    # Similar to above, unregistered players can be set to the following
+    # permissions group
+    unregisteredPlayerGroup: ''
 Email:
     # Email SMTP server host
     mailSMTP: 'smtp.gmail.com'
     # Email SMTP server port
     mailPort: 465
+    # Only affects port 25: enable TLS/STARTTLS?
+    useTls: true
     # Email account which sends the mails
     mailAccount: ''
     # Email account password
@@ -366,18 +358,13 @@ Hooks:
     disableSocialSpy: false
     # Do we need to force /motd Essentials command on join?
     useEssentialsMotd: false
-GroupOptions:
-    # Unregistered permission group
-    UnregisteredPlayerGroup: ''
-    # Registered permission group
-    RegisteredPlayerGroup: ''
 Protection:
     # Enable some servers protection (country based login, antibot)
     enableProtection: false
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
     # Countries allowed to join the server and register. For country codes, see
-    # http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/
+    # https://dev.bukkit.org/projects/authme-reloaded/pages/countries-codes
     # PLEASE USE QUOTES!
     countries: 
     - 'US'
@@ -432,6 +419,8 @@ Security:
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5
+        # Minutes after which login attempts count is reset for a player
+        captchaCountReset: 60
     tempban:
         # Tempban a user's IP address if they enter the wrong password too many times
         enableTempban: false
@@ -448,6 +437,53 @@ Security:
         length: 8
         # How many hours is a recovery code valid for?
         validForHours: 4
+        # Max number of tries to enter recovery code
+        maxTries: 3
+        # How long a player has after password recovery to change their password
+        # without logging in. This is in minutes.
+        # Default: 2 minutes
+        passwordChangeTimeout: 2
+    emailRecovery:
+        # Seconds a user has to wait for before a password recovery mail may be sent again
+        # This prevents an attacker from abusing AuthMe's email feature.
+        cooldown: 60
+# Before a user logs in, various properties are temporarily removed from the player,
+# such as OP status, ability to fly, and walk/fly speed.
+# Once the user is logged in, we add back the properties we previously saved.
+# In this section, you may define how these properties should be handled.
+limbo:
+    persistence:
+        # Besides storing the data in memory, you can define if/how the data should be persisted
+        # on disk. This is useful in case of a server crash, so next time the server starts we can
+        # properly restore things like OP status, ability to fly, and walk/fly speed.
+        # DISABLED: no disk storage, INDIVIDUAL_FILES: each player data in its own file,
+        # SINGLE_FILE: all data in one single file (only if you have a small server!)
+        # SEGMENT_FILES: distributes players into different buckets based on their UUID. See below.
+        type: 'INDIVIDUAL_FILES'
+        # This setting only affects SEGMENT_FILES persistence. The segment file
+        # persistence attempts to reduce the number of files by distributing players into various
+        # buckets based on their UUID. This setting defines into how many files the players should
+        # be distributed. Possible values: ONE, FOUR, EIGHT, SIXTEEN, THIRTY_TWO, SIXTY_FOUR,
+        # ONE_TWENTY for 128, TWO_FIFTY for 256.
+        # For example, if you expect 100 non-logged in players, setting to SIXTEEN will average
+        # 6.25 players per file (100 / 16). If you set to ONE, like persistence SINGLE_FILE, only
+        # one file will be used. Contrary to SINGLE_FILE, it won't keep the entries in cache, which
+        # may deliver different results in terms of performance.
+        # Note: if you change this setting all data will be migrated. If you have a lot of data,
+        # change this setting only on server restart, not with /authme reload.
+        segmentDistribution: 'SIXTEEN'
+    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.
+    # RESTORE sets back the old property from the player.
+    restoreAllowFlight: 'RESTORE'
+    # Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
+    # RESTORE: restore the speed the player had;
+    # DEFAULT: always set to default speed;
+    # MAX_RESTORE: take the maximum of the player's current speed and the previous one
+    # RESTORE_NO_ZERO: Like 'restore' but sets speed to default if the player's speed was 0
+    restoreFlySpeed: 'MAX_RESTORE'
+    # Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
+    # See above for a description of the values.
+    restoreWalkSpeed: 'MAX_RESTORE'
 BackupSystem:
     # Enable or disable automatic backup
     ActivateBackup: false
@@ -457,6 +493,17 @@ BackupSystem:
     OnServerStop: true
     # Windows only mysql installation Path
     MysqlWindowsPath: 'C:\Program Files\MySQL\MySQL Server 5.1\'
+Converter:
+    Rakamak:
+        # Rakamak file name
+        fileName: 'users.rak'
+        # Rakamak use IP?
+        useIP: false
+        # Rakamak IP file name
+        ipFileName: 'UsersIp.rak'
+    CrazyLogin:
+        # CrazyLogin database file name
+        fileName: 'accounts.db'
 ```
 
 To change settings on a running server, save your changes to config.yml and use 
@@ -464,4 +511,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Jan 14 22:12:16 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Mar 22 23:10:33 CET 2017

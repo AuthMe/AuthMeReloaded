@@ -10,6 +10,9 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class LimboPlayer {
 
+    public static final float DEFAULT_WALK_SPEED = 0.2f;
+    public static final float DEFAULT_FLY_SPEED = 0.1f;
+
     private final boolean canFly;
     private final boolean operator;
     private final String group;
@@ -115,13 +118,7 @@ public class LimboPlayer {
      * Clears all tasks associated to the player.
      */
     public void clearTasks() {
-        if (messageTask != null) {
-            messageTask.cancel();
-        }
-        messageTask = null;
-        if (timeoutTask != null) {
-            timeoutTask.cancel();
-        }
-        timeoutTask = null;
+        setMessageTask(null);
+        setTimeoutTask(null);
     }
 }

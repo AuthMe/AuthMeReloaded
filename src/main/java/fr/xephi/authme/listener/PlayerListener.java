@@ -7,6 +7,7 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
@@ -54,8 +55,6 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
  */
 public class PlayerListener implements Listener {
 
-    public static final Map<String, String> joinMessage = new ConcurrentHashMap<>();
-
     @Inject
     private Settings settings;
     @Inject
@@ -78,6 +77,8 @@ public class PlayerListener implements Listener {
     private TeleportationService teleportationService;
     @Inject
     private ValidationService validationService;
+    @Inject
+    private JoinMessageService joinMessageService;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -175,7 +176,7 @@ public class PlayerListener implements Listener {
         String customJoinMessage = settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE);
         if (!customJoinMessage.isEmpty()) {
             event.setJoinMessage(customJoinMessage.replace("{PLAYERNAME}", player.getName())
-                .replace("{DISPLAYNAME]", player.getDisplayName()));
+                .replace("{DISPLAYNAME}", player.getDisplayName()));
         }
 
         if (!settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)) {
@@ -188,7 +189,7 @@ public class PlayerListener implements Listener {
         // Remove the join message while the player isn't logging in
         if (joinMsg != null) {
             event.setJoinMessage(null);
-            joinMessage.put(name, joinMsg);
+            joinMessageService.putMessage(name, joinMsg);
         }
     }
 

@@ -6,7 +6,7 @@ import ch.jalu.configme.properties.Property;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class PurgeSettings implements SettingsHolder {
+public final class PurgeSettings implements SettingsHolder {
 
     @Comment("If enabled, AuthMe automatically purges old, unused accounts")
     public static final Property<Boolean> USE_AUTO_PURGE =

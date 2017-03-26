@@ -9,7 +9,7 @@ import java.util.List;
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class EmailSettings implements SettingsHolder {
+public final class EmailSettings implements SettingsHolder {
 
     @Comment("Email SMTP server host")
     public static final Property<String> SMTP_HOST =
@@ -18,6 +18,10 @@ public class EmailSettings implements SettingsHolder {
     @Comment("Email SMTP server port")
     public static final Property<Integer> SMTP_PORT =
         newProperty("Email.mailPort", 465);
+
+    @Comment("Only affects port 25: enable TLS/STARTTLS?")
+    public static final Property<Boolean> PORT25_USE_TLS =
+        newProperty("Email.useTls", true);
 
     @Comment("Email account which sends the mails")
     public static final Property<String> MAIL_ACCOUNT =

@@ -2,12 +2,15 @@ package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
-import fr.xephi.authme.process.register.executors.RegistrationExecutorProvider;
+import fr.xephi.authme.process.register.executors.EmailRegisterParams;
+import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
+import fr.xephi.authme.process.register.executors.RegistrationMethod;
+import fr.xephi.authme.process.register.executors.TwoFactorRegisterParams;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -37,20 +40,17 @@ public class RegisterCommand extends PlayerCommand {
     private CommonService commonService;
 
     @Inject
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
 
     @Inject
     private ValidationService validationService;
-
-    @Inject
-    private RegistrationExecutorProvider registrationExecutorProvider;
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
         if (commonService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
-            management.performRegister(player,
-                registrationExecutorProvider.getTwoFactorRegisterExecutor(player));
+            management.performRegister(RegistrationMethod.TWO_FACTOR_REGISTRATION,
+                TwoFactorRegisterParams.of(player));
             return;
         } else if (arguments.size() < 1) {
             commonService.send(player, MessageKey.USAGE_REGISTER);
@@ -82,8 +82,8 @@ public class RegisterCommand extends PlayerCommand {
             final String password = arguments.get(0);
             final String email = getEmailIfAvailable(arguments);
 
-            management.performRegister(
-                player, registrationExecutorProvider.getPasswordRegisterExecutor(player, password, email));
+            management.performRegister(RegistrationMethod.PASSWORD_REGISTRATION,
+                PasswordRegisterParams.of(player, password, email));
         }
     }
 
@@ -127,7 +127,7 @@ public class RegisterCommand extends PlayerCommand {
     }
 
     private void handleEmailRegistration(Player player, List<String> arguments) {
-        if (!sendMailSsl.hasAllInformation()) {
+        if (!emailService.hasAllInformation()) {
             commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             ConsoleLogger.warning("Cannot register player '" + player.getName() + "': no email or password is set "
                 + "to send emails from. Please adjust your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
@@ -138,7 +138,8 @@ public class RegisterCommand extends PlayerCommand {
         if (!validationService.validateEmail(email)) {
             commonService.send(player, MessageKey.INVALID_EMAIL);
         } else if (isSecondArgValidForEmailRegistration(player, arguments)) {
-            management.performRegister(player, registrationExecutorProvider.getEmailRegisterExecutor(player, email));
+            management.performRegister(RegistrationMethod.EMAIL_REGISTRATION,
+                EmailRegisterParams.of(player, email));
         }
     }
 

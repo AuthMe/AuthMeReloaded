@@ -3,20 +3,19 @@ package fr.xephi.authme.task.purge;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 
 import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
-// TODO: move into services. -sgdc3
+import static fr.xephi.authme.util.Utils.logAndSendMessage;
 
 /**
  * Initiates purge tasks.
@@ -75,7 +74,7 @@ public class PurgeService {
     public void runPurge(CommandSender sender, long until, boolean includeEntriesWithLastLoginZero) {
         //todo: note this should may run async because it may executes a SQL-Query
         Set<String> toPurge = dataSource.getRecordsToPurge(until, includeEntriesWithLastLoginZero);
-        if (CollectionUtils.isEmpty(toPurge)) {
+        if (Utils.isCollectionEmpty(toPurge)) {
             logAndSendMessage(sender, "No players to purge");
             return;
         }
@@ -118,13 +117,5 @@ public class PurgeService {
      */
     void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
         purgeExecutor.executePurge(players, names);
-    }
-
-    private static void logAndSendMessage(CommandSender sender, String message) {
-        ConsoleLogger.info(message);
-        // Make sure sender is not console user, which will see the message from ConsoleLogger already
-        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(message);
-        }
     }
 }

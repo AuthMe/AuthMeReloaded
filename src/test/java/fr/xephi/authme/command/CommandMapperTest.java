@@ -290,6 +290,21 @@ public class CommandMapperTest {
         assertThat(result.getArguments(), contains(parts.get(2)));
     }
 
+    @Test
+    public void shouldSupportAuthMePrefix() {
+        // given
+        List<String> parts = asList("authme:unregister", "Betty");
+        CommandSender sender = mock(CommandSender.class);
+        given(permissionsManager.hasPermission(eq(sender), any(PermissionNode.class))).willReturn(true);
+
+        // when
+        FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
+
+        // then
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.SUCCESS));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "unregister")));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void shouldReturnExecutableCommandClasses() {

@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource.converter;
 
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.FlatFile;
 
@@ -24,5 +25,12 @@ public class ForceFlatToSqlite extends AbstractDataSourceConverter<FlatFile> {
     @Override
     public FlatFile getSource() {
         return source;
+    }
+
+    @Override
+    protected void adaptPlayerAuth(PlayerAuth auth) {
+        // Issue #1120: FlatFile returns PlayerAuth objects with realname = lower-case name all the time.
+        // We don't want to take this over into the new data source.
+        auth.setRealName("Player");
     }
 }

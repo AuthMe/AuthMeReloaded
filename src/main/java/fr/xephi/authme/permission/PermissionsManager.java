@@ -19,8 +19,8 @@ import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * <p>
@@ -74,7 +74,7 @@ public class PermissionsManager implements Reloadable {
         // Loop through all the available permissions system types
         for (PermissionsSystemType type : PermissionsSystemType.values()) {
             try {
-                PermissionHandler handler = getPermissionHandler(type);
+                PermissionHandler handler = createPermissionHandler(type);
                 if (handler != null) {
                     // Show a success message and return
                     this.handler = handler;
@@ -91,7 +91,14 @@ public class PermissionsManager implements Reloadable {
         ConsoleLogger.info("No supported permissions system found! Permissions are disabled!");
     }
 
-    private PermissionHandler getPermissionHandler(PermissionsSystemType type) throws PermissionHandlerException {
+    /**
+     * Creates a permission handler for the provided permission systems if possible.
+     *
+     * @param type the permission systems type for which to create a corresponding permission handler
+     * @return the permission handler, or {@code null} if not possible
+     * @throws PermissionHandlerException during initialization of the permission handler
+     */
+    private PermissionHandler createPermissionHandler(PermissionsSystemType type) throws PermissionHandlerException {
         // Try to find the plugin for the current permissions system
         Plugin plugin = pluginManager.getPlugin(type.getPluginName());
 
@@ -255,12 +262,12 @@ public class PermissionsManager implements Reloadable {
      *
      * @param player The player.
      *
-     * @return Permission groups, or an empty list if this feature is not supported.
+     * @return Permission groups, or an empty collection if this feature is not supported.
      */
-    public List<String> getGroups(Player player) {
+    public Collection<String> getGroups(Player player) {
         // If no permissions system is used, return an empty list
         if (!isEnabled())
-            return new ArrayList<>();
+            return Collections.emptyList();
 
         return handler.getGroups(player);
     }
@@ -289,7 +296,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if the player is in the specified group, false otherwise.
      * False is also returned if groups aren't supported by the used permissions system.
      */
-    public boolean inGroup(Player player, String groupName) {
+    public boolean isInGroup(Player player, String groupName) {
         // If no permissions system is used, return false
         if (!isEnabled())
             return false;
@@ -307,40 +314,10 @@ public class PermissionsManager implements Reloadable {
      * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroup(Player player, String groupName) {
-        if (StringUtils.isEmpty(groupName)) {
+        if (!isEnabled() || StringUtils.isEmpty(groupName)) {
             return false;
         }
-
-        // If no permissions system is used, return false
-        if (!isEnabled()) {
-            return false;
-        }
-
         return handler.addToGroup(player, groupName);
-    }
-
-    /**
-     * Add the permission groups of a player, if supported.
-     *
-     * @param player     The player
-     * @param groupNames The name of the groups to add.
-     *
-     * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
-     */
-    public boolean addGroups(Player player, List<String> groupNames) {
-        // If no permissions system is used, return false
-        if (!isEnabled())
-            return false;
-
-        // Add each group to the user
-        boolean result = true;
-        for (String groupName : groupNames)
-            if (!addGroup(player, groupName))
-                result = false;
-
-        // Return the result
-        return result;
     }
 
     /**
@@ -352,8 +329,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroup(Player player, String groupName) {
-        // If no permissions system is used, return false
+    public boolean removeGroups(Player player, String groupName) {
         if (!isEnabled())
             return false;
 
@@ -369,16 +345,18 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroups(Player player, List<String> groupNames) {
+    public boolean removeGroups(Player player, String... groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled())
             return false;
 
         // Add each group to the user
         boolean result = true;
-        for (String groupName : groupNames)
-            if (!removeGroup(player, groupName))
+        for (String groupName : groupNames) {
+            if (!handler.removeFromGroup(player, groupName)) {
                 result = false;
+            }
+        }
 
         // Return the result
         return result;
@@ -403,41 +381,6 @@ public class PermissionsManager implements Reloadable {
     }
 
     /**
-     * Set the permission groups of a player, if supported.
-     * This clears the current groups of the player.
-     *
-     * @param player     The player
-     * @param groupNames The name of the groups to set.
-     *
-     * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
-     */
-    public boolean setGroups(Player player, List<String> groupNames) {
-        // If no permissions system is used or if there's no group supplied, return false
-        if (!isEnabled() || groupNames.isEmpty())
-            return false;
-
-        // Set the main group
-        if (!setGroup(player, groupNames.get(0)))
-            return false;
-
-        // Add the rest of the groups
-        boolean result = true;
-        for (int i = 1; i < groupNames.size(); i++) {
-            // Get the group name
-            String groupName = groupNames.get(i);
-
-            // Add this group
-            if (!addGroup(player, groupName)) {
-                result = false;
-            }
-        }
-
-        // Return the result
-        return result;
-    }
-
-    /**
      * Remove all groups of the specified player, if supported.
      * Systems like Essentials GroupManager don't allow all groups to be removed from a player, thus the user will stay
      * in its primary group. All the subgroups are removed just fine.
@@ -453,9 +396,9 @@ public class PermissionsManager implements Reloadable {
             return false;
 
         // Get a list of current groups
-        List<String> groupNames = getGroups(player);
+        Collection<String> groupNames = getGroups(player);
 
         // Remove each group
-        return removeGroups(player, groupNames);
+        return removeGroups(player, groupNames.toArray(new String[groupNames.size()]));
     }
 }

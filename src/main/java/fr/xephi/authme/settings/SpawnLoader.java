@@ -1,10 +1,9 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.FileUtils;
@@ -43,11 +42,9 @@ public class SpawnLoader implements Reloadable {
      * @param pluginFolder The AuthMe data folder
      * @param settings     The setting instance
      * @param pluginHookService  The plugin hooks instance
-     * @param dataSource   The plugin auth database instance
      */
     @Inject
-    SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService,
-                DataSource dataSource) {
+    SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService) {
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         File spawnFile = new File(pluginFolder, "spawn.yml");
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");

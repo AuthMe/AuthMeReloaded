@@ -99,19 +99,19 @@ public class TeleportationService implements Reloadable {
      *
      * @param player the player
      * @param auth corresponding PlayerAuth object
-     * @param limbo corresponding PlayerData object
+     * @param limbo corresponding LimboPlayer object
      */
     public void teleportOnLogin(final Player player, PlayerAuth auth, LimboPlayer limbo) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }
 
-        // #856: If PlayerData comes from a persisted file, the Location might be null
+        // #856: If LimboPlayer comes from a persisted file, the Location might be null
         String worldName = (limbo != null && limbo.getLocation() != null)
             ? limbo.getLocation().getWorld().getName()
             : null;
 
-        // The world in PlayerData is from where the player comes, before any teleportation by AuthMe
+        // The world in LimboPlayer is from where the player comes, before any teleportation by AuthMe
         if (mustForceSpawnAfterLogin(worldName)) {
             teleportToSpawn(player, true);
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
@@ -148,7 +148,7 @@ public class TeleportationService implements Reloadable {
 
     /**
      * Emits the teleportation event and performs teleportation according to it (potentially modified
-     * by external listeners). Note that not teleportation is performed if the event's location is empty.
+     * by external listeners). Note that no teleportation is performed if the event's location is empty.
      *
      * @param player the player to teleport
      * @param event  the event to emit and according to which to teleport

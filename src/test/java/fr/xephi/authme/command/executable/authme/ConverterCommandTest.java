@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
-import ch.jalu.injector.Injector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.converter.Converter;
+import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
@@ -48,7 +48,7 @@ public class ConverterCommandTest {
     private BukkitService bukkitService;
 
     @Mock
-    private Injector injector;
+    private Factory<Converter> converterFactory;
 
     @BeforeClass
     public static void initLogger() {
@@ -66,7 +66,7 @@ public class ConverterCommandTest {
         // then
         verify(sender).sendMessage(argThat(containsString("Converter does not exist")));
         verifyNoMoreInteractions(commandService);
-        verifyZeroInteractions(injector);
+        verifyZeroInteractions(converterFactory);
         verifyZeroInteractions(bukkitService);
     }
 
@@ -100,8 +100,8 @@ public class ConverterCommandTest {
         // then
         verify(converter).execute(sender);
         verifyNoMoreInteractions(converter);
-        verify(injector).newInstance(converterClass);
-        verifyNoMoreInteractions(injector);
+        verify(converterFactory).newInstance(converterClass);
+        verifyNoMoreInteractions(converterFactory);
     }
 
     @Test
@@ -120,14 +120,14 @@ public class ConverterCommandTest {
         // then
         verify(converter).execute(sender);
         verifyNoMoreInteractions(converter);
-        verify(injector).newInstance(converterClass);
-        verifyNoMoreInteractions(injector);
+        verify(converterFactory).newInstance(converterClass);
+        verifyNoMoreInteractions(converterFactory);
         verify(commandService).send(sender, MessageKey.ERROR);
     }
 
     private <T extends Converter> T createMockReturnedByInjector(Class<T> clazz) {
         T converter = mock(clazz);
-        given(injector.newInstance(clazz)).willReturn(converter);
+        given(converterFactory.newInstance(clazz)).willReturn(converter);
         return converter;
     }
 

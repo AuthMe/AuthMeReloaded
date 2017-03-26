@@ -32,4 +32,9 @@ public class AddEmailCommand extends PlayerCommand {
             commonService.send(player, MessageKey.CONFIRM_EMAIL_MESSAGE);
         }
     }
+
+    @Override
+    public MessageKey getArgumentsMismatchMessage() {
+        return MessageKey.USAGE_ADD_EMAIL;
+    }
 }

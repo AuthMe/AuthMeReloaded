@@ -2,12 +2,11 @@ package fr.xephi.authme.process.logout;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.data.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 
@@ -23,9 +22,6 @@ public class AsynchronousLogout implements AsynchronousProcess {
 
     @Inject
     private PlayerCache playerCache;
-
-    @Inject
-    private LimboCache limboCache;
 
     @Inject
     private SyncProcessManager syncProcessManager;
@@ -47,7 +43,6 @@ public class AsynchronousLogout implements AsynchronousProcess {
             database.updateQuitLoc(auth);
         }
 
-        limboCache.addPlayerData(player);
         playerCache.removePlayer(name);
         database.setUnlogged(name);
         syncProcessManager.processSyncPlayerLogout(player);

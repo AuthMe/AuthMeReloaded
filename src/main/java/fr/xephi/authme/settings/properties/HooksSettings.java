@@ -9,7 +9,7 @@ import java.util.List;
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class HooksSettings implements SettingsHolder {
+public final class HooksSettings implements SettingsHolder {
 
     @Comment("Do we need to hook with multiverse for spawn checking?")
     public static final Property<Boolean> MULTIVERSE =
@@ -54,17 +54,22 @@ public class HooksSettings implements SettingsHolder {
     public static final Property<Integer> PHPBB_ACTIVATED_GROUP_ID =
         newProperty("ExternalBoardOptions.phpbbActivatedGroupId", 2);
 
+    @Comment("IP Board table prefix defined during the IP Board installation process")
+    public static final Property<String> IPB_TABLE_PREFIX =
+        newProperty("ExternalBoardOptions.IPBTablePrefix", "ipb_");
+    
+    @Comment("IP Board default group ID; 3 is the default registered group defined by IP Board")
+    public static final Property<Integer> IPB_ACTIVATED_GROUP_ID =
+        newProperty("ExternalBoardOptions.IPBActivatedGroupId", 3);
+    
+    @Comment("XenForo default group ID; 2 is the default registered group defined by Xenforo")
+    public static final Property<Integer> XF_ACTIVATED_GROUP_ID =
+        newProperty("ExternalBoardOptions.XFActivatedGroupId", 2);
+
     @Comment("Wordpress prefix defined during WordPress installation")
     public static final Property<String> WORDPRESS_TABLE_PREFIX =
         newProperty("ExternalBoardOptions.wordpressTablePrefix", "wp_");
 
-    @Comment("Unregistered permission group")
-    public static final Property<String> UNREGISTERED_GROUP =
-        newProperty("GroupOptions.UnregisteredPlayerGroup", "");
-
-    @Comment("Registered permission group")
-    public static final Property<String> REGISTERED_GROUP =
-        newProperty("GroupOptions.RegisteredPlayerGroup", "");
 
     private HooksSettings() {
     }

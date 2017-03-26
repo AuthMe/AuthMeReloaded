@@ -2,7 +2,7 @@
 <p align="center"><strong>The most used authentication plugin for Spigot and CraftBukkit!</strong></p>
 <hr>
 
-#####Links and Contacts:
+##### Links and Contacts:
 
 - GitHub pages:
   - [Main](https://github.com/Xephi/AuthMeReloaded) (**release sources, issue tracker!**)
@@ -19,41 +19,35 @@
 - Project status:
   - Dependencies: [![Dependencies status](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d/badge.svg)](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d)
   - Test coverage: [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
+  - Code climate: [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
 
 - Development resources:
   - <a href="http://ci.xephi.fr/job/AuthMeReloaded/javadoc/">JavaDocs</a>
   - <a href="http://ci.xephi.fr/plugin/repository/everything/">Maven Repository</a>
 
-#####Statistics:
-
-McStats: http://mcstats.org/plugin/AuthMe
-
-<img src="http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png">
-
-<img src="http://i.mcstats.org/AuthMe/Rank.borderless.png">
-
-<img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
+- Statistics:
+  - bStats: [AuthMe on bstats.org](https://bstats.org/plugin/bukkit/AuthMe)
 
 <hr>
 
-#####Compiling requirements:
+##### Compiling requirements:
 >- JDK 1.8
 >- Maven
 >- Git/Github (Optional)
 
-#####How to compile the project:
+##### How to compile the project:
 >- Clone the project with Git/Github
 >- Execute command "mvn clean package"
 
-#####Running requirements:
+##### Running requirements:
 >- Java 1.8
 >- TacoSpigot, PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X)
 >- ProtocolLib (optional, required by some features)
 
 <hr>
-###Plugin Description:
+### Plugin Description:
 
-#####"The best authentication plugin for the Bukkit/Spigot API!"
+##### "The best authentication plugin for the Bukkit/Spigot API!"
 
 Prevent username stealing on your server!<br>
 Use it to secure your Offline mode server or to increase your Online mode server's protection!
@@ -66,7 +60,7 @@ Each command and every feature can be enabled or disabled from our well structur
 
 You can also create your own translation file and, if you want, you can share it with us! :)
 
-####Features:
+#### Features:
 <ul>
   <li><strong>E-Mail Recovery System !!!</strong></li>
   <li>Username spoofing protection.</li>
@@ -92,7 +86,7 @@ You can also create your own translation file and, if you want, you can share it
     <li>DoubleSaltedMD5: SALTED2MD5</li>
     <li>WordPress: WORDPRESS</li>
   </ul></li>
-  <li>Custom MySQL tables/columns names (useful with forums databases)</li>
+  <li>Custom MySQL tables/columns names (useful with forum databases)</li>
   <li><strong>Cached database queries!</strong></li>
   <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus!</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
@@ -105,18 +99,18 @@ You can also create your own translation file and, if you want, you can share it
   <li><strong>Import your old database from other plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
 </ul>
 
-####Configuration
+#### Configuration
 <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/config.md">How to configure Authme</a>
-####Email Recovery Dependency
+#### Email Recovery Dependency
 <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-configure-email-recovery-system/">How to configure email recovery system?</a>
-####Commands
+#### Commands
 [Command list and usage](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/commands.md)
-####Permissions
+#### Permissions
 - authme.player.* - for all user commands
 - authme.admin.* - for all admin commands
 - [List of all permission nodes](http://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/permission_nodes.md)
 
-####How To
+#### How To
 - [How to import database from xAuth](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-xauth/)
 - [Website integration](http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/)
 - [How to convert from Rakamak](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/)
@@ -124,14 +118,14 @@ You can also create your own translation file and, if you want, you can share it
 
 <hr>
 
-#####Sponsor
+##### Sponsor
 GameHosting.it is leader in Italy as Game Server Provider. With its own DataCenter offers Anti-DDoS solutions at affordable prices. Game Server of Minecraft based on Multicraft are equipped with the latest technology in hardware.
 [![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
 
-#####Credits
+##### Credits
 <p>Team members: look at the <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/team.txt">member list</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
 
-#####GeoIP License
+##### GeoIP License
 This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com

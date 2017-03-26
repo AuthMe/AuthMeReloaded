@@ -1,13 +1,17 @@
 package fr.xephi.authme.command.executable.register;
 
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
-import fr.xephi.authme.process.register.executors.RegistrationExecutor;
-import fr.xephi.authme.process.register.executors.RegistrationExecutorProvider;
+import fr.xephi.authme.process.register.executors.EmailRegisterParams;
+import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
+import fr.xephi.authme.process.register.executors.RegistrationMethod;
+import fr.xephi.authme.process.register.executors.RegistrationParameters;
+import fr.xephi.authme.process.register.executors.TwoFactorRegisterParams;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -16,6 +20,9 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,10 +31,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -52,13 +65,10 @@ public class RegisterCommandTest {
     private Management management;
 
     @Mock
-    private SendMailSSL sendMailSsl;
+    private EmailService emailService;
 
     @Mock
     private ValidationService validationService;
-
-    @Mock
-    private RegistrationExecutorProvider registrationExecutorProvider;
 
     @BeforeClass
     public static void setup() {
@@ -82,7 +92,7 @@ public class RegisterCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("Player only!")));
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test
@@ -90,15 +100,14 @@ public class RegisterCommandTest {
         // given
         given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.TWO_FACTOR);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        given(registrationExecutorProvider.getTwoFactorRegisterExecutor(player)).willReturn(executor);
 
         // when
         command.executeCommand(player, Collections.emptyList());
 
         // then
-        verify(management).performRegister(player, executor);
-        verifyZeroInteractions(sendMailSsl);
+        verify(management).performRegister(eq(RegistrationMethod.TWO_FACTOR_REGISTRATION),
+            argThat(isEqualTo(TwoFactorRegisterParams.of(player))));
+        verifyZeroInteractions(emailService);
     }
 
     @Test
@@ -111,7 +120,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test
@@ -126,13 +135,13 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test
     public void shouldReturnErrorForMissingEmailConfirmation() {
         // given
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_MANDATORY);
         given(validationService.validateEmail(anyString())).willReturn(true);
@@ -150,7 +159,7 @@ public class RegisterCommandTest {
     public void shouldThrowErrorForMissingEmailConfiguration() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(sendMailSsl.hasAllInformation()).willReturn(false);
+        given(emailService.hasAllInformation()).willReturn(false);
         Player player = mock(Player.class);
 
         // when
@@ -158,7 +167,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verifyZeroInteractions(management);
     }
 
@@ -168,7 +177,7 @@ public class RegisterCommandTest {
         String playerMail = "player@example.org";
         given(validationService.validateEmail(playerMail)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
         // when
@@ -187,7 +196,7 @@ public class RegisterCommandTest {
         given(validationService.validateEmail(playerMail)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
 
         // when
@@ -195,7 +204,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verify(sendMailSsl).hasAllInformation();
+        verify(emailService).hasAllInformation();
         verifyZeroInteractions(management);
     }
 
@@ -206,18 +215,17 @@ public class RegisterCommandTest {
         given(validationService.validateEmail(playerMail)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        given(registrationExecutorProvider.getEmailRegisterExecutor(player, playerMail)).willReturn(executor);
 
         // when
         command.executeCommand(player, Arrays.asList(playerMail, playerMail));
 
         // then
         verify(validationService).validateEmail(playerMail);
-        verify(sendMailSsl).hasAllInformation();
-        verify(management).performRegister(player, executor);
+        verify(emailService).hasAllInformation();
+        verify(management).performRegister(eq(RegistrationMethod.EMAIL_REGISTRATION),
+            argThat(isEqualTo(EmailRegisterParams.of(player, playerMail))));
     }
 
     @Test
@@ -232,21 +240,20 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.PASSWORD_MATCH_ERROR);
-        verifyZeroInteractions(management, sendMailSsl);
+        verifyZeroInteractions(management, emailService);
     }
 
     @Test
     public void shouldPerformPasswordRegistration() {
         // given
         Player player = mock(Player.class);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        given(registrationExecutorProvider.getPasswordRegisterExecutor(player, "myPass", null)).willReturn(executor);
 
         // when
         command.executeCommand(player, Collections.singletonList("myPass"));
 
         // then
-        verify(management).performRegister(player, executor);
+        verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
+            argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", null))));
     }
 
     @Test
@@ -257,15 +264,14 @@ public class RegisterCommandTest {
         String email = "email@example.org";
         given(validationService.validateEmail(email)).willReturn(true);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        given(registrationExecutorProvider.getPasswordRegisterExecutor(player, "myPass", email)).willReturn(executor);
 
         // when
         command.executeCommand(player, Arrays.asList("myPass", email));
 
         // then
         verify(validationService).validateEmail(email);
-        verify(management).performRegister(player, executor);
+        verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
+            argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", email))));
     }
 
     @Test
@@ -292,14 +298,64 @@ public class RegisterCommandTest {
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_OPTIONAL);
         Player player = mock(Player.class);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        given(registrationExecutorProvider.getPasswordRegisterExecutor(eq(player), anyString(), eq(null))).willReturn(executor);
 
         // when
         command.executeCommand(player, Collections.singletonList("myPass"));
 
         // then
-        verify(registrationExecutorProvider).getPasswordRegisterExecutor(player, "myPass", null);
-        verify(management).performRegister(player, executor);
+        verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
+            argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", null))));
+    }
+
+
+    // TODO ljacqu 20170317: Document and extract as util
+
+    private static <P extends RegistrationParameters> Matcher<P> isEqualTo(P expected) {
+        return new TypeSafeMatcher<P>() {
+            @Override
+            protected boolean matchesSafely(RegistrationParameters item) {
+                assertAreParamsEqual(expected, item);
+                return true;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("parameters " + expected);
+            }
+        };
+    }
+
+    private static void assertAreParamsEqual(RegistrationParameters lhs, RegistrationParameters rhs) {
+        if (lhs.getClass() != rhs.getClass()) {
+            fail("Params classes don't match, got " + lhs.getClass().getSimpleName()
+                + " and " + rhs.getClass().getSimpleName());
+        }
+
+        List<Field> fieldsToCheck = getFields(lhs);
+        for (Field field : fieldsToCheck) {
+            Object lhsValue = ReflectionTestUtils.getFieldValue(field, lhs);
+            Object rhsValue = ReflectionTestUtils.getFieldValue(field, rhs);
+            if (!Objects.equals(lhsValue, rhsValue)) {
+                fail("Field '" + field.getName() + "' does not have same value: '"
+                    + lhsValue + "' vs. '" + rhsValue + "'");
+            }
+        }
+    }
+
+    private static List<Field> getFields(RegistrationParameters params) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> currentClass = params.getClass();
+        while (currentClass != null) {
+            for (Field f : currentClass.getDeclaredFields()) {
+                if (!Modifier.isStatic(f.getModifiers())) {
+                    fields.add(f);
+                }
+            }
+            if (currentClass == RegistrationParameters.class) {
+                break;
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        return fields;
     }
 }

@@ -57,7 +57,7 @@ public class EncryptionMethodInfoGatherer {
 
     private static MethodDescription createDescription(HashAlgorithm algorithm) {
         Class<? extends EncryptionMethod> clazz = algorithm.getClazz();
-        EncryptionMethod method = injector.newInstance(clazz);
+        EncryptionMethod method = injector.createIfHasDependencies(clazz);
         if (method == null) {
             throw new NullPointerException("Method for '" + algorithm + "' is null");
         }

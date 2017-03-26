@@ -30,7 +30,6 @@ public class AntiBotService implements SettingsDependent {
     // Settings
     private int duration;
     private int sensibility;
-    private int delay;
     private int interval;
     // Service status
     private AntiBotStatus antiBotStatus;
@@ -60,7 +59,6 @@ public class AntiBotService implements SettingsDependent {
         // Load settings
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
-        delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
         interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
 
         // Stop existing protection
@@ -77,6 +75,7 @@ public class AntiBotService implements SettingsDependent {
 
         // Delay the schedule on first start
         if (startup) {
+            int delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
             bukkitService.scheduleSyncDelayedTask(enableTask, delay * TICKS_PER_SECOND);
             startup = false;
         } else {

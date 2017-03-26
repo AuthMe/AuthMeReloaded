@@ -5,7 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.security.crypts.SHA256;
+import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
@@ -20,14 +20,14 @@ public final class MigrationService {
     }
 
     /**
-     * Hash all passwords to SHA256 and updated the setting if the password hash is set to the deprecated PLAINTEXT.
+     * Hash all passwords to Sha256 and updated the setting if the password hash is set to the deprecated PLAINTEXT.
      *
      * @param settings The settings instance
      * @param dataSource The data source
-     * @param authmeSha256 Instance to the AuthMe SHA256 encryption method implementation
+     * @param authmeSha256 Instance to the AuthMe Sha256 encryption method implementation
      */
     public static void changePlainTextToSha256(Settings settings, DataSource dataSource,
-                                               SHA256 authmeSha256) {
+                                               Sha256 authmeSha256) {
         if (HashAlgorithm.PLAINTEXT == settings.getProperty(SecuritySettings.PASSWORD_HASH)) {
             ConsoleLogger.warning("Your HashAlgorithm has been detected as plaintext and is now deprecated;"
                 + " it will be changed and hashed now to the AuthMe default hashing method");

@@ -30,7 +30,6 @@ tempban_max_logins: '&cJe bent tijdelijk gebanned omdat het inloggen te vaak mis
 max_reg: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
 no_perm: '&cJe hebt geen rechten om deze actie uit te voeren!'
 error: 'Er is een onverwachte fout opgetreden, neem contact op met een administrator!'
-unsafe_spawn: '&cDe locatie waar je de vorige keer het spel verliet was gevaarlijk, je bent geteleporteerd naar de spawn.'
 kick_forvip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
 
 # AntiBot
@@ -44,7 +43,11 @@ accounts_owned_self: 'Je bezit %count accounts:'
 accounts_owned_other: 'De speler %name heeft %count accounts:'
 two_factor_create: '&2Je geheime code is %code. Je kunt hem scannen op %url'
 recovery_code_sent: 'Een herstelcode voor je wachtwoord is naar je mailbox gestuurd.'
+# TODO: Missing tags %count
 recovery_code_incorrect: 'De herstelcode is niet correct! Gebruik "/email recovery [email]" om een nieuwe te krijgen'
+# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: 'Je account is nog niet geactiveerd, controleer je mailbox!'
 usage_unreg: '&cGebruik: /unregister password'
 pwd_changed: '&cWachtwoord succesvol aangepast!'
@@ -78,7 +81,6 @@ email_added: '&2Het E-mailadres is succesvol toegevoegd aan je account!'
 email_confirm: '&cVerifiëer je E-mailadres alsjeblieft!'
 email_changed: '&2Het E-mailadres is succesvol veranderd!'
 email_send: '&2Een herstel E-mail is verzonden! Check alsjeblieft je mailbox!'
-email_exists: '&cEen herstel E-mail voor je wachtwoord is al verzonden! Je kunt een nieuwe laten sturen met het volgende commando:'
 email_show: '&2Jouw huidige E-mailadres is: %email'
 incomplete_email_settings: 'Fout; er moeten nog enkele opties ingevuld worden om mails te kunnen sturen. Neem contact op met een administrator.'
 email_already_used: '&4Dit E-mailadres wordt al gebruikt'
@@ -86,8 +88,20 @@ email_send_failure: 'De E-mail kon niet verzonden worden. Neem contact op met ee
 show_no_email: '&2Je hebt nog geen E-mailadres toegevoegd aan dit account.'
 add_email: '&3Voeg jouw E-mailadres alsjeblieft toe met: /email add <E-mail> <wachtwoord> <herhaalWachtwoord>'
 recovery_email: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando: /email recovery <E-mail>'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <theCaptcha>'
 wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha THE_CAPTCHA" in de chat!'
 valid_captcha: '&2De captcha-code is geldig!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

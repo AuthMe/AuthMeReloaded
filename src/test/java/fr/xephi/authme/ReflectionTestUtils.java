@@ -25,7 +25,7 @@ public final class ReflectionTestUtils {
      */
     public static <T> void setField(Class<T> clazz, T instance, String fieldName, Object value) {
         try {
-            Field field = getField(clazz, instance, fieldName);
+            Field field = getField(clazz, fieldName);
             field.set(instance, value);
         } catch (IllegalAccessException e) {
             throw new UnsupportedOperationException(
@@ -34,24 +34,30 @@ public final class ReflectionTestUtils {
         }
     }
 
-    private static <T> Field getField(Class<T> clazz, T instance, String fieldName) {
+    private static <T> Field getField(Class<T> clazz, String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
             return field;
         } catch (NoSuchFieldException e) {
-            throw new UnsupportedOperationException(format("Could not get field '%s' for instance '%s' of class '%s'",
-                fieldName, instance, clazz.getName()), e);
+            throw new UnsupportedOperationException(format("Could not get field '%s' from class '%s'",
+                fieldName, clazz.getName()), e);
         }
     }
 
     @SuppressWarnings("unchecked")
     public static <T, V> V getFieldValue(Class<T> clazz, T instance, String fieldName) {
-        Field field = getField(clazz, instance, fieldName);
+        Field field = getField(clazz, fieldName);
+        return getFieldValue(field, instance);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <V> V getFieldValue(Field field, Object instance) {
+        field.setAccessible(true);
         try {
             return (V) field.get(instance);
         } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("Could not get value of field '" + fieldName + "'", e);
+            throw new UnsupportedOperationException("Could not get value of field '" + field.getName() + "'", e);
         }
     }
 
@@ -75,10 +81,11 @@ public final class ReflectionTestUtils {
         }
     }
 
-    public static Object invokeMethod(Method method, Object instance, Object... parameters) {
+    @SuppressWarnings("unchecked")
+    public static <V> V invokeMethod(Method method, Object instance, Object... parameters) {
         method.setAccessible(true);
         try {
-            return method.invoke(instance, parameters);
+            return (V) method.invoke(instance, parameters);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new UnsupportedOperationException("Could not invoke method '" + method + "'", e);
         }

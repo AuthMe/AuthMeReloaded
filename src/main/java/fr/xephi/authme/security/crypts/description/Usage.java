@@ -20,6 +20,9 @@ public enum Usage {
     /** Hash algorithm is not recommended to be used. Use only if required by another system. */
     DO_NOT_USE,
 
+    /** Algorithm that is or will be no longer supported actively. */
+    DEPRECATED,
+
     /** The algorithm does not work properly; do not use. */
     DOES_NOT_WORK
 

@@ -1,12 +1,10 @@
 package tools.utils;
 
-import ch.jalu.injector.InjectorBuilder;
 import ch.jalu.injector.handlers.instantiation.DependencyDescription;
 import ch.jalu.injector.handlers.instantiation.Instantiation;
-import ch.jalu.injector.handlers.instantiation.InstantiationProvider;
+import ch.jalu.injector.handlers.instantiation.StandardInjectionProvider;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,7 +22,7 @@ public final class InjectorUtils {
      * @return the class' dependencies, or null if no instantiation method found
      */
     public static Set<Class<?>> getDependencies(Class<?> clazz) {
-        Instantiation<?> instantiation = getInstantiationMethod(clazz);
+        Instantiation<?> instantiation = new StandardInjectionProvider().safeGet(clazz);
         if (instantiation == null) {
             return null;
         }
@@ -33,23 +31,6 @@ public final class InjectorUtils {
             dependencies.add(description.getType());
         }
         return dependencies;
-    }
-
-    /**
-     * Returns the instantiation method for the given class.
-     *
-     * @param clazz the class to process
-     * @return the instantiation method for the class, or null if none applicable
-     */
-    public static Instantiation<?> getInstantiationMethod(Class<?> clazz) {
-        List<InstantiationProvider> providers = InjectorBuilder.createInstantiationProviders();
-        for (InstantiationProvider provider : providers) {
-            Instantiation<?> instantiation = provider.get(clazz);
-            if (instantiation != null) {
-                return instantiation;
-            }
-        }
-        return null;
     }
 
 }

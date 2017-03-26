@@ -17,16 +17,13 @@ public enum MessageKey {
     /** AntiBot protection mode is enabled! You have to wait some minutes before joining the server. */
     KICK_ANTIBOT("kick_antibot"),
 
-    /** Can't find the requested user in the database! */
+    /** This user isn't registered! */
     UNKNOWN_USER("unknown_user"),
-
-    /** Your quit location was unsafe, you have been teleported to the world's spawnpoint. */
-    UNSAFE_QUIT_LOCATION("unsafe_spawn"),
 
     /** You're not logged in! */
     NOT_LOGGED_IN("not_logged_in"),
 
-    /** Usage: /login &lt;password> */
+    /** Usage: /login &lt;password&gt; */
     USAGE_LOGIN("usage_log"),
 
     /** Wrong password! */
@@ -56,19 +53,19 @@ public enum MessageKey {
     /** An unexpected error occurred, please contact an administrator! */
     ERROR("error"),
 
-    /** Please, login with the command "/login &lt;password>" */
+    /** Please, login with the command: /login &lt;password&gt; */
     LOGIN_MESSAGE("login_msg"),
 
-    /** Please, register to the server with the command "/register &lt;password> &lt;ConfirmPassword>" */
+    /** Please, register to the server with the command: /register &lt;password&gt; &lt;ConfirmPassword&gt; */
     REGISTER_MESSAGE("reg_msg"),
 
     /** You have exceeded the maximum number of registrations (%reg_count/%max_acc %reg_names) for your connection! */
     MAX_REGISTER_EXCEEDED("max_reg", "%max_acc", "%reg_count", "%reg_names"),
 
-    /** Usage: /register &lt;password> &lt;ConfirmPassword> */
+    /** Usage: /register &lt;password&gt; &lt;ConfirmPassword&gt; */
     USAGE_REGISTER("usage_reg"),
 
-    /** Usage: /unregister &lt;password> */
+    /** Usage: /unregister &lt;password&gt; */
     USAGE_UNREGISTER("usage_unreg"),
 
     /** Password changed successfully! */
@@ -95,7 +92,7 @@ public enum MessageKey {
     /** You're already logged in! */
     ALREADY_LOGGED_IN_ERROR("logged_in"),
 
-    /** Logged-out successfully! */
+    /** Logged out successfully! */
     LOGOUT_SUCCESS("logout"),
 
     /** The same username is already playing on the server! */
@@ -113,7 +110,7 @@ public enum MessageKey {
     /** Login timeout exceeded, you have been kicked from the server, please try again! */
     LOGIN_TIMEOUT_ERROR("timeout"),
 
-    /** Usage: /changepassword &lt;oldPassword> &lt;newPassword> */
+    /** Usage: /changepassword &lt;oldPassword&gt; &lt;newPassword&gt; */
     USAGE_CHANGE_PASSWORD("usage_changepassword"),
 
     /** Your username is either too short or too long! */
@@ -122,13 +119,13 @@ public enum MessageKey {
     /** Your username contains illegal characters. Allowed chars: REG_EX */
     INVALID_NAME_CHARACTERS("regex", "REG_EX"),
 
-    /** Please add your email to your account with the command "/email add &lt;yourEmail> &lt;confirmEmail>" */
+    /** Please add your email to your account with the command: /email add &lt;yourEmail&gt; &lt;confirmEmail&gt; */
     ADD_EMAIL_MESSAGE("add_email"),
 
-    /** Forgot your password? Please use the command "/email recovery &lt;yourEmail>" */
+    /** Forgot your password? Please use the command: /email recovery &lt;yourEmail&gt; */
     FORGOT_PASSWORD_MESSAGE("recovery_email"),
 
-    /** To login you have to solve a captcha code, please use the command "/captcha &lt;theCaptcha>" */
+    /** To login you have to solve a captcha code, please use the command: /captcha &lt;theCaptcha&gt; */
     USAGE_CAPTCHA("usage_captcha", "<theCaptcha>"),
 
     /** Wrong captcha, please type "/captcha THE_CAPTCHA" into the chat! */
@@ -143,13 +140,13 @@ public enum MessageKey {
     /** The server is full, try again later! */
     KICK_FULL_SERVER("kick_fullserver"),
 
-    /** Usage: /email add &lt;email> &lt;confirmEmail> */
+    /** Usage: /email add &lt;email&gt; &lt;confirmEmail&gt; */
     USAGE_ADD_EMAIL("usage_email_add"),
 
-    /** Usage: /email change &lt;oldEmail> &lt;newEmail> */
+    /** Usage: /email change &lt;oldEmail&gt; &lt;newEmail&gt; */
     USAGE_CHANGE_EMAIL("usage_email_change"),
 
-    /** Usage: /email recovery &lt;Email> */
+    /** Usage: /email recovery &lt;Email&gt; */
     USAGE_RECOVER_EMAIL("usage_email_recovery"),
 
     /** Invalid new email, try again! */
@@ -178,9 +175,6 @@ public enum MessageKey {
 
     /** Recovery email sent successfully! Please check your email inbox! */
     RECOVERY_EMAIL_SENT_MESSAGE("email_send"),
-
-    /** A recovery email was already sent! You can discard it and send a new one using the command below: */
-    RECOVERY_EMAIL_ALREADY_SENT_MESSAGE("email_exists"),
 
     /** Your country is banned from this server! */
     COUNTRY_BANNED_ERROR("country_banned"),
@@ -224,8 +218,51 @@ public enum MessageKey {
     /** A recovery code to reset your password has been sent to your email. */
     RECOVERY_CODE_SENT("recovery_code_sent"),
 
-    /** The recovery code is not correct! Use /email recovery [email] to generate a new one */
-    INCORRECT_RECOVERY_CODE("recovery_code_incorrect");
+    /** The recovery code is not correct! You have %count tries remaining. */
+    INCORRECT_RECOVERY_CODE("recovery_code_incorrect", "%count"),
+
+    /**
+     * You have exceeded the maximum number of attempts to enter the recovery code.
+     * Use "/email recovery [email]" to generate a new one.
+     */
+    RECOVERY_TRIES_EXCEEDED("recovery_tries_exceeded"),
+
+    /** Recovery code entered correctly! */
+    RECOVERY_CODE_CORRECT("recovery_code_correct"),
+
+    /** Please use the command /email setpassword to change your password immediately. */
+    RECOVERY_CHANGE_PASSWORD("recovery_change_password"),
+
+    /** You cannot change your password using this command anymore. */
+    CHANGE_PASSWORD_EXPIRED("change_password_expired"),
+
+    /** An email was already sent recently. You must wait %time before you can send a new one. */
+    EMAIL_COOLDOWN_ERROR("email_cooldown_error", "%time"),
+
+    /** second */
+    SECOND("second"),
+
+    /** seconds */
+    SECONDS("seconds"),
+
+    /** minute */
+    MINUTE("minute"),
+
+    /** minutes */
+    MINUTES("minutes"),
+
+    /** hour */
+    HOUR("hour"),
+
+    /** hours */
+    HOURS("hours"),
+
+    /** day */
+    DAY("day"),
+
+    /** days */
+    DAYS("days");
+
 
     private String key;
     private String[] tags;

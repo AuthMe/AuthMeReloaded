@@ -1,7 +1,10 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 /**
@@ -48,6 +51,32 @@ public final class Utils {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    /**
+     * Sends a message to the given sender (null safe), and logs the message to the console.
+     * This method is aware that the command sender might be the console sender and avoids
+     * displaying the message twice in this case.
+     *
+     * @param sender the sender to inform
+     * @param message the message to log and send
+     */
+    public static void logAndSendMessage(CommandSender sender, String message) {
+        ConsoleLogger.info(message);
+        // Make sure sender is not console user, which will see the message from ConsoleLogger already
+        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
+            sender.sendMessage(message);
+        }
+    }
+
+    /**
+     * Null-safe way to check whether a collection is empty or not.
+     *
+     * @param coll The collection to verify
+     * @return True if the collection is null or empty, false otherwise
+     */
+    public static boolean isCollectionEmpty(Collection<?> coll) {
+        return coll == null || coll.isEmpty();
     }
 
     /**

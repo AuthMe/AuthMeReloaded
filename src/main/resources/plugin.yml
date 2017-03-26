@@ -17,7 +17,7 @@ softdepend:
 commands:
   authme:
     description: AuthMe op commands
-    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages
+    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
   login:
     description: Login command
     usage: /login <password>
@@ -153,6 +153,9 @@ permissions:
   authme.bypasspurge:
     description: Permission to bypass the purging process.
     default: false
+  authme.debug:
+    description: Permission to use the /authme debug command.
+    default: op
   authme.player.*:
     description: Gives access to all player commands
     children:
@@ -207,5 +210,5 @@ permissions:
     description: Command permission to unregister.
     default: true
   authme.vip:
-    description: Permission node to identify VIP users.
+    description: When the server is full and someone with this permission joins the server, someone will be kicked.
     default: op

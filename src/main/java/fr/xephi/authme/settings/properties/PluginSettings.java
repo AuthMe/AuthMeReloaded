@@ -7,7 +7,7 @@ import fr.xephi.authme.output.LogLevel;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
-public class PluginSettings implements SettingsHolder {
+public final class PluginSettings implements SettingsHolder {
 
     @Comment({
         "Do you want to enable the session feature?",
@@ -22,19 +22,10 @@ public class PluginSettings implements SettingsHolder {
 
     @Comment({
         "After how many minutes should a session expire?",
-        "Remember that sessions will end only after the timeout, and",
-        "if the player's IP has changed but the timeout hasn't expired,",
-        "the player will be kicked from the server due to invalid session"
+        "A player's session ends after the timeout or if his IP has changed"
     })
     public static final Property<Integer> SESSIONS_TIMEOUT =
         newProperty("settings.sessions.timeout", 10);
-
-    @Comment({
-        "Should the session expire if the player tries to log in with",
-        "another IP address?"
-    })
-    public static final Property<Boolean> SESSIONS_EXPIRE_ON_IP_CHANGE =
-        newProperty("settings.sessions.sessionExpireOnIpChange", true);
 
     @Comment({
         "Message language, available languages:",
@@ -44,13 +35,33 @@ public class PluginSettings implements SettingsHolder {
         newProperty("settings.messagesLanguage", "en");
 
     @Comment({
-        "Take care with this option; if you want",
-        "to use group switching of AuthMe",
-        "for unloggedIn players, set this setting to true.",
-        "Default is false."
+        "Enables switching a player to defined permission groups before they log in.",
+        "See below for a detailed explanation."
     })
     public static final Property<Boolean> ENABLE_PERMISSION_CHECK =
-        newProperty("permission.EnablePermissionCheck", false);
+        newProperty("GroupOptions.enablePermissionCheck", false);
+
+    @Comment({
+        "This is a very important option: if a registered player joins the server",
+        "AuthMe will switch him to unLoggedInGroup. This should prevent all major exploits.",
+        "You can set up your permission plugin with this special group to have no permissions,",
+        "or only permission to chat (or permission to send private messages etc.).",
+        "The better way is to set up this group with few permissions, so if a player",
+        "tries to exploit an account they can do only what you've defined for the group.",
+        "After login, the player will be moved to his correct permissions group!",
+        "Please note that the group name is case-sensitive, so 'admin' is different from 'Admin'",
+        "Otherwise your group will be wiped and the player will join in the default group []!",
+        "Example: registeredPlayerGroup: 'NotLogged'"
+    })
+    public static final Property<String> REGISTERED_GROUP =
+        newProperty("GroupOptions.registeredPlayerGroup", "");
+
+    @Comment({
+        "Similar to above, unregistered players can be set to the following",
+        "permissions group"
+    })
+    public static final Property<String> UNREGISTERED_GROUP =
+        newProperty("GroupOptions.unregisteredPlayerGroup", "");
 
     @Comment({
         "Log level: INFO, FINE, DEBUG. Use INFO for general messages,",

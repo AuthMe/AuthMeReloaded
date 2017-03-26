@@ -1,17 +1,24 @@
 package fr.xephi.authme.output;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Service class for the log filters.
  */
-public final class LogFilterHelper {
+final class LogFilterHelper {
 
     private static final String ISSUED_COMMAND_TEXT = "issued server command:";
 
-    private static final String[] COMMANDS_TO_SKIP = {"/login ", "/l ", "/reg ", "/changepassword ",
-        "/unregister ", "/authme register ", "/authme changepassword ", "/authme reg ", "/authme cp ",
-        "/register "};
+    @VisibleForTesting
+    static final List<String> COMMANDS_TO_SKIP = withAndWithoutAuthMePrefix(
+        "/login ", "/l ", "/log ", "/register ", "/reg ", "/unregister ", "/unreg ",
+        "/changepassword ", "/cp ", "/changepass ", "/authme register ",  "/authme reg ", "/authme r ",
+        "/authme changepassword ", "/authme password ", "/authme changepass ", "/authme cp ");
 
     private LogFilterHelper() {
         // Util class
@@ -24,11 +31,20 @@ public final class LogFilterHelper {
      *
      * @return True if it is a sensitive AuthMe command, false otherwise
      */
-    public static boolean isSensitiveAuthMeCommand(String message) {
+    static boolean isSensitiveAuthMeCommand(String message) {
         if (message == null) {
             return false;
         }
         String lowerMessage = message.toLowerCase();
         return lowerMessage.contains(ISSUED_COMMAND_TEXT) && StringUtils.containsAny(lowerMessage, COMMANDS_TO_SKIP);
+    }
+
+    private static List<String> withAndWithoutAuthMePrefix(String... commands) {
+        List<String> commandList = new ArrayList<>(commands.length * 2);
+        for (String command : commands) {
+            commandList.add(command);
+            commandList.add(command.substring(0, 1) + "authme:" + command.substring(1));
+        }
+        return Collections.unmodifiableList(commandList);
     }
 }

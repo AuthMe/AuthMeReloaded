@@ -34,7 +34,6 @@ tempban_max_logins: '&cVocê foi temporariamente banido por tentar logar muitas 
 max_reg: '&cVocê excedeu o número máximo de inscrições (%reg_count/%max_acc %reg_names) do seu IP!'
 no_perm: '&4Você não tem permissão para executar esta ação!'
 error: '&4Ocorreu um erro inesperado, por favor contacte um administrador!'
-unsafe_spawn: '&cVocê deslogou em um local inseguro e foi teleportado parao Spawn do servidor!'
 kick_forvip: '&3Um jogador VIP juntou-se ao servidor enquanto ele estava cheio!'
 
 # AntiBot
@@ -48,7 +47,11 @@ accounts_owned_self: 'Você tem %count contas:'
 accounts_owned_other: 'O jogador %name tem %count contas:'
 two_factor_create: '&2O seu código secreto é %code. Você pode verificá-lo a partir daqui %url'
 recovery_code_sent: 'Um código de recuperação para redefinir sua senha foi enviada para o seu e-mail.'
+# TODO: Missing tags %count
 recovery_code_incorrect: 'O código de recuperação esta incorreto! Use /email recovery [email] para gerar um novo!'
+# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&cA sua conta ainda não está ativada, por favor, verifique seus e-mails!'
 usage_unreg: '&cUse: /unregister <senha>'
 pwd_changed: '&2Senha alterada com sucesso!'
@@ -82,7 +85,6 @@ email_added: '&2Email adicionado com sucesso à sua conta!'
 email_confirm: '&cPor favor confirme seu endereço de email!'
 email_changed: '&2Troca de email com sucesso.!'
 email_send: '&2Recuperação de email enviada com sucesso! Por favor, verifique sua caixa de entrada de e-mail!'
-email_exists: '&cUm e-mail de recuperação já foi enviado! Você pode descartá-lo e enviar um novo usando o comando abaixo:'
 email_show: '&2O seu endereço de e-mail atual é: &f%email'
 incomplete_email_settings: 'Erro: Nem todas as configurações necessárias estão definidas para o envio de e-mails. Entre em contato com um administrador.'
 email_already_used: '&4O endereço de e-mail já está sendo usado'
@@ -90,8 +92,20 @@ email_send_failure: '&cO e-mail não pôde ser enviado, reporte isso a um admini
 show_no_email: '&2Você atualmente não têm endereço de e-mail associado a esta conta.'
 add_email: '&3Por favor, adicione seu e-mail para a sua conta com o comando "/email add <seuEmail> <seuEmail>"'
 recovery_email: '&3Esqueceu sua senha? Por favor, use o comando "/email recovery <seuEmail>"'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3Para iniciar sessão você tem que resolver um código captcha, utilize o comando "/captcha <theCaptcha>"'
 wrong_captcha: '&cCaptcha errado, por favor, escreva "/captcha THE_CAPTCHA" no chat!'
 valid_captcha: '&2Código Captcha resolvido corretamente!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

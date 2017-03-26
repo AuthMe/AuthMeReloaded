@@ -38,4 +38,14 @@ public class UnregisterCommand extends PlayerCommand {
         // Unregister the player
         management.performUnregister(player, playerPass);
     }
+
+    @Override
+    public MessageKey getArgumentsMismatchMessage() {
+        return MessageKey.USAGE_UNREGISTER;
+    }
+
+    @Override
+    protected String getAlternativeCommand() {
+        return "/authme unregister <player>";
+    }
 }

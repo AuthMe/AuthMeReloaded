@@ -1,5 +1,6 @@
 ### Java files ###
 *.class
+MANIFEST.MF
 
 # Package Files
 #*.jar
@@ -9,7 +10,8 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-
+# Mac OS
+.DS_Store
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

@@ -3,18 +3,17 @@ package fr.xephi.authme.process.login;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.task.LimboPlayerTaskManager;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -58,11 +57,9 @@ public class AsynchronousLoginTest {
     @Mock
     private CommonService commonService;
     @Mock
-    private LimboPlayerTaskManager limboPlayerTaskManager;
+    private LimboService limboService;
     @Mock
     private BukkitService bukkitService;
-    @Mock
-    private PermissionsManager permissionsManager;
 
     @BeforeClass
     public static void initLogger() {
@@ -182,7 +179,7 @@ public class AsynchronousLoginTest {
         // given
         Player player = mockPlayer("Carl");
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
+        given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
         mockOnlinePlayersInBukkitService();
 
         // when
@@ -190,7 +187,7 @@ public class AsynchronousLoginTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
         verify(bukkitService).getOnlinePlayers();
     }
 
@@ -213,14 +210,14 @@ public class AsynchronousLoginTest {
         // given
         Player player = mockPlayer("Frank");
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(1);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
+        given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
 
         // when
         boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "127.0.0.4");
 
         // then
         assertThat(result, equalTo(false));
-        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
         verifyZeroInteractions(bukkitService);
     }
 
@@ -229,7 +226,7 @@ public class AsynchronousLoginTest {
         // given
         Player player = mockPlayer("Ian");
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
+        given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
         mockOnlinePlayersInBukkitService();
 
         // when
@@ -237,7 +234,7 @@ public class AsynchronousLoginTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
         verify(bukkitService).getOnlinePlayers();
     }
 
