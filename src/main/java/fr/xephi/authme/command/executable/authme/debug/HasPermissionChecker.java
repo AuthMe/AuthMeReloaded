@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
@@ -25,7 +26,7 @@ import java.util.function.BiFunction;
 class HasPermissionChecker implements DebugSection {
 
     static final List<Class<? extends PermissionNode>> PERMISSION_NODE_CLASSES =
-        Arrays.asList(AdminPermission.class, PlayerPermission.class, PlayerStatePermission.class);
+        ImmutableList.of(AdminPermission.class, PlayerPermission.class, PlayerStatePermission.class);
 
     @Inject
     private PermissionsManager permissionsManager;

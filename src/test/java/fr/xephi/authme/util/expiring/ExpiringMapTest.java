@@ -76,7 +76,7 @@ public class ExpiringMapTest {
         map.removeExpiredEntries();
 
         // then
-        Map<Integer, ?> internalMap = map.entries;
+        Map<Integer, ?> internalMap = map.getEntries();
         assertThat(internalMap.keySet(), containsInAnyOrder(64, 25));
     }
 

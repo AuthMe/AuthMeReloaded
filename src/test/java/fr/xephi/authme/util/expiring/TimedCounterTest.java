@@ -56,8 +56,8 @@ public class TimedCounterTest {
     public void shouldSumUpEntries() {
         // given
         TimedCounter<String> counter = new TimedCounter<>(90, TimeUnit.SECONDS);
-        counter.entries.put("expired", new ExpiringMap.ExpiringEntry<>(800, 0));
-        counter.entries.put("expired2", new ExpiringMap.ExpiringEntry<>(24, System.currentTimeMillis() - 100));
+        counter.getEntries().put("expired", new ExpiringMap.ExpiringEntry<>(800, 0));
+        counter.getEntries().put("expired2", new ExpiringMap.ExpiringEntry<>(24, System.currentTimeMillis() - 100));
         counter.put("other", 10);
         counter.put("Another", 4);
 

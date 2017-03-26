@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpiringMap<K, V> {
 
-    protected final Map<K, ExpiringEntry<V>> entries = new ConcurrentHashMap<>();
+    private final Map<K, ExpiringEntry<V>> entries = new ConcurrentHashMap<>();
     private long expirationMillis;
 
     /**
@@ -103,6 +103,13 @@ public class ExpiringMap<K, V> {
      */
     public boolean isEmpty() {
         return entries.isEmpty();
+    }
+
+    /**
+     * @return the internal map
+     */
+    protected Map<K, ExpiringEntry<V>> getEntries() {
+        return entries;
     }
 
     /**

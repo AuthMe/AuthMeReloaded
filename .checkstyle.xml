@@ -28,7 +28,8 @@
             <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
         </module>
         <module name="TodoComment">
-            <property name="format" value="TODO|FIXME"/>
+            <!-- Allow comments which have an issue number as they are accounted for in the issue tracker -->
+            <property name="format" value="TODO(?! #\d+:)|FIXME"/>
         </module>
         <module name="GenericWhitespace"/>
         <module name="AvoidStarImport"/>
@@ -156,6 +157,7 @@
             <property name="scope" value="private"/>
             <property name="allowMissingThrowsTags" value="true"/>
             <property name="minLineCount" value="16"/>
+            <property name="allowedAnnotations" value="Override, Test, SectionComments, EventHandler"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
         </module>
         <!-- TODO Checkstyle/#4089: need "allowedAnnotations" property to skip @Comment fields

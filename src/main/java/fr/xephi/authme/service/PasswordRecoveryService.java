@@ -2,6 +2,7 @@ package fr.xephi.authme.service;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
@@ -25,7 +26,7 @@ import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWOR
 /**
  * Manager for password recovery.
  */
-public class PasswordRecoveryService implements Reloadable {
+public class PasswordRecoveryService implements Reloadable, HasCleanup {
 
     @Inject
     private CommonService commonService;
@@ -162,5 +163,11 @@ public class PasswordRecoveryService implements Reloadable {
             commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS), TimeUnit.SECONDS);
         successfulRecovers.setExpiration(
             commonService.getProperty(SecuritySettings.PASSWORD_CHANGE_TIMEOUT), TimeUnit.MINUTES);
+    }
+
+    @Override
+    public void performCleanup() {
+        emailCooldown.removeExpiredEntries();
+        successfulRecovers.removeExpiredEntries();
     }
 }
