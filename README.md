@@ -45,6 +45,7 @@
 >- ProtocolLib (optional, required by some features)
 
 <hr>
+
 ### Plugin Description:
 
 ##### "The best authentication plugin for the Bukkit/Spigot API!"
