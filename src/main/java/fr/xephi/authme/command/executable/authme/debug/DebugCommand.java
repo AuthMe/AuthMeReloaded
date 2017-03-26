@@ -16,12 +16,13 @@ import java.util.TreeMap;
  */
 public class DebugCommand implements ExecutableCommand {
 
+    private static final Set<Class<? extends DebugSection>> SECTION_CLASSES = ImmutableSet.of(
+        PermissionGroups.class, DataStatistics.class, CountryLookup.class, PlayerAuthViewer.class, InputValidator.class,
+        LimboPlayerViewer.class, CountryLookup.class, HasPermissionChecker.class, TestEmailSender.class,
+        SpawnLocationViewer.class);
+
     @Inject
     private Factory<DebugSection> debugSectionFactory;
-
-    private Set<Class<? extends DebugSection>> sectionClasses = ImmutableSet.of(PermissionGroups.class,
-        DataStatistics.class, CountryLookup.class, PlayerAuthViewer.class, LimboPlayerViewer.class, CountryLookup.class,
-        HasPermissionChecker.class, TestEmailSender.class);
 
     private Map<String, DebugSection> sections;
 
@@ -48,7 +49,7 @@ public class DebugCommand implements ExecutableCommand {
     private Map<String, DebugSection> getSections() {
         if (sections == null) {
             Map<String, DebugSection> sections = new TreeMap<>();
-            for (Class<? extends DebugSection> sectionClass : sectionClasses) {
+            for (Class<? extends DebugSection> sectionClass : SECTION_CLASSES) {
                 DebugSection section = debugSectionFactory.newInstance(sectionClass);
                 sections.put(section.getName(), section);
             }

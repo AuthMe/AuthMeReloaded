@@ -288,8 +288,7 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
         }
 
-        // Unsalted hashes will be deprecated in 5.4 (see Github issue #1016). Exclude RoyalAuth from this check because
-        // it is needed to hook into an existing system.
+        // Unsalted hashes will be deprecated in 5.4 (see Github issue #1016)
         HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
         if (OnStartupTasks.isHashDeprecatedIn54(hash)) {
             ConsoleLogger.warning("You are using an unsalted hash (" + hash + "). Support for this will be removed "

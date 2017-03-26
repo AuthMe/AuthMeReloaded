@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 /**
  * Service for performing various verifications when a player joins.
  */
-class OnJoinVerifier implements Reloadable {
+public class OnJoinVerifier implements Reloadable {
 
     @Inject
     private Settings settings;

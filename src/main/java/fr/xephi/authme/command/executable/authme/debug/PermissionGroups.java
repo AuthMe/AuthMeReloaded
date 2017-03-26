@@ -35,6 +35,7 @@ class PermissionGroups implements DebugSection {
         } else {
             sender.sendMessage("Player " + name + " has permission groups: "
                 + String.join(", ", permissionsManager.getGroups(player)));
+            sender.sendMessage("Primary group is: " + permissionsManager.getGroups(player));
         }
     }
 }

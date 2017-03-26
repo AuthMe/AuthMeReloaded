@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme.debug;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -30,6 +31,9 @@ class LimboPlayerViewer implements DebugSection {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private PermissionsManager permissionsManager;
 
     @Override
     public String getName() {
@@ -64,8 +68,7 @@ class LimboPlayerViewer implements DebugSection {
             .sendEntry("Can fly", LimboPlayer::isCanFly, Player::getAllowFlight)
             .sendEntry("Fly speed", LimboPlayer::getFlySpeed, Player::getFlySpeed)
             .sendEntry("Location", l -> formatLocation(l.getLocation()), p -> formatLocation(p.getLocation()))
-            .sendEntry("Group", LimboPlayer::getGroup, p -> "");
-        sender.sendMessage("Note: group is not shown for Player. Use /authme debug groups");
+            .sendEntry("Group", LimboPlayer::getGroup, permissionsManager::getPrimaryGroup);
     }
 
     /**

@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.SendMailSsl;
+import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.ChatColor;
@@ -76,7 +77,7 @@ class TestEmailSender implements DebugSection {
             return email;
         } else {
             String email = arguments.get(0);
-            if (email.contains("@")) {
+            if (StringUtils.isInsideString('@', email)) {
                 return email;
             }
             sender.sendMessage(ChatColor.RED + "Invalid email! Usage: /authme debug mail test@example.com");

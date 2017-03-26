@@ -177,6 +177,7 @@
         </module>
         <module name="MissingOverride"/>
         <module name="EqualsHashCode"/>
+        <module name="EqualsAvoidNull"/>
     </module>
     <module name="FileTabCharacter"/>
 </module>
