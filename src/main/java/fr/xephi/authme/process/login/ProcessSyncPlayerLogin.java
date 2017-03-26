@@ -12,6 +12,7 @@ import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
@@ -51,6 +52,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private WelcomeMessageConfiguration welcomeMessageConfiguration;
 
+    @Inject
+    private JoinMessageService joinMessageService;
+
     ProcessSyncPlayerLogin() {
     }
 
@@ -80,14 +84,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // We can now display the join message (if delayed)
-        String joinMessage = PlayerListener.joinMessage.remove(name);
-        if (!StringUtils.isEmpty(joinMessage)) {
-            for (Player p : bukkitService.getOnlinePlayers()) {
-                if (p.isOnline()) {
-                    p.sendMessage(joinMessage);
-                }
-            }
-        }
+        joinMessageService.sendMessage(name);
 
         if (commonService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
