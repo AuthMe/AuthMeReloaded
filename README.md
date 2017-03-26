@@ -4,11 +4,8 @@
 
 ##### Links and Contacts:
 
-- GitHub pages:
-  - [Main](https://github.com/Xephi/AuthMeReloaded) (**release sources, issue tracker!**)
-  - [Development](https://github.com/AuthMe/AuthMeReloaded) (**latest sources, please send PRs here!**):
-
 - Contacts:
+  - [Discord](https://discord.gg/Vn9eCyE)
   - [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 - CI Services:
