@@ -86,6 +86,7 @@ public class ClassesConsistencyTest {
             .filter(clz -> !CLASSES_EXCLUDED_FROM_VISIBILITY_TEST.contains(clz))
             .map(Class::getDeclaredFields)
             .flatMap(Arrays::stream)
+            .filter(f -> f.getName().contains("$"))
             .filter(f -> hasIllegalFieldVisibility(f))
             .map(f -> formatField(f))
             .collect(Collectors.toSet());
