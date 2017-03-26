@@ -56,8 +56,7 @@ public class ClassesConsistencyTest {
     /** Classes excluded from the field visibility test. */
     private static final Set<Class<?>> CLASSES_EXCLUDED_FROM_VISIBILITY_TEST = ImmutableSet.of(
         Whirlpool.class, // not our implementation, so we don't touch it
-        Columns.class, // uses non-final String constants, which is safe
-        PlayerListener.class // TODO #1145: Remove public field in favor of dedicated methods
+        Columns.class // uses non-final String constants, which is safe
     );
 
     /**
