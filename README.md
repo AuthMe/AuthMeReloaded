@@ -38,7 +38,7 @@
 
 ##### Running requirements:
 >- Java 1.8
->- TacoSpigot, PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X)
+>- TacoSpigot, PaperSpigot or Spigot (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X)
 >- ProtocolLib (optional, required by some features)
 
 <hr>
