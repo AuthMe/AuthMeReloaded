@@ -99,8 +99,6 @@ You can also create your own translation file and, if you want, you can share it
 
 #### Configuration
 <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/config.md">How to configure Authme</a>
-#### Email Recovery Dependency
-<a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-configure-email-recovery-system/">How to configure email recovery system?</a>
 #### Commands
 [Command list and usage](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/commands.md)
 #### Permissions
@@ -109,9 +107,9 @@ You can also create your own translation file and, if you want, you can share it
 - [List of all permission nodes](http://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/permission_nodes.md)
 
 #### How To
-- [How to import database from xAuth](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-xauth/)
-- [Website integration](http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/)
-- [How to convert from Rakamak](http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/)
+- [How to import database from xAuth](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-xauth)
+- [Website integration](https://github.com/AuthMe/AuthMeReloaded/tree/master/samples/website_integration)
+- [How to convert from Rakamak](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-rakamak)
 - Convert between database types (e.g. SQLite to MySQL): /authme converter
 
 <hr>
