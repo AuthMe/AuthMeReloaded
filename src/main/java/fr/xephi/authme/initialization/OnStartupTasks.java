@@ -127,11 +127,11 @@ public class OnStartupTasks {
      * Displays a hint to use the legacy AuthMe JAR if AuthMe could not be started
      * because Gson was not found.
      *
-     * @param e the exception to process
+     * @param th the Throwable to process
      */
-    public static void displayLegacyJarHint(Exception e) {
-        if (e instanceof InjectorReflectionException) {
-            Throwable causeOfCause = Optional.of(e)
+    public static void displayLegacyJarHint(Throwable th) {
+        if (th instanceof InjectorReflectionException) {
+            Throwable causeOfCause = Optional.of(th)
                 .map(Throwable::getCause)
                 .map(Throwable::getCause).orElse(null);
             if (causeOfCause instanceof NoClassDefFoundError

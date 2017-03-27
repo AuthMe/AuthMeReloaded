@@ -137,9 +137,9 @@ public class AuthMe extends JavaPlugin {
         // Initialize the plugin
         try {
             initialize();
-        } catch (Exception e) {
-            ConsoleLogger.logException("Aborting initialization of AuthMe:", e);
-            OnStartupTasks.displayLegacyJarHint(e);
+        } catch (Throwable th) {
+            ConsoleLogger.logException("Aborting initialization of AuthMe:", th);
+            OnStartupTasks.displayLegacyJarHint(th);
             stopOrUnload();
             return;
         }
