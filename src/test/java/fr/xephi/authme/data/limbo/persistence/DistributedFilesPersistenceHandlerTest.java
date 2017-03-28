@@ -37,10 +37,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test for {@link SegmentFilesPersistenceHolder}.
+ * Test for {@link DistributedFilesPersistenceHandler}.
  */
 @RunWith(DelayedInjectionRunner.class)
-public class SegmentFilesPersistenceHolderTest {
+public class DistributedFilesPersistenceHandlerTest {
 
     /** Player is in seg32-10110 and should be migrated into seg16-f. */
     private static final UUID MIGRATED_UUID = fromString("f6a97c88-7c8f-c12e-4931-6206d4ca067d");
@@ -70,7 +70,7 @@ public class SegmentFilesPersistenceHolderTest {
 
 
     @InjectDelayed
-    private SegmentFilesPersistenceHolder persistenceHandler;
+    private DistributedFilesPersistenceHandler persistenceHandler;
 
     @Mock
     private Settings settings;

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Mar 22 23:10:33 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Mar 28 21:38:52 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -163,9 +163,6 @@ settings:
         teleportUnAuthedToSpawn: false
         # Can unregistered players walk around?
         allowMovement: false
-        # Should not authenticated players have speed = 0?
-        # This will reset the fly/walk speed to default value after the login.
-        removeSpeed: true
         # After how many seconds should players who fail to login or register
         # be kicked? Set to 0 to disable.
         timeout: 30
@@ -451,24 +448,25 @@ Security:
 # such as OP status, ability to fly, and walk/fly speed.
 # Once the user is logged in, we add back the properties we previously saved.
 # In this section, you may define how these properties should be handled.
+# Read more at https://github.com/AuthMe/AuthMeReloaded/wiki/Limbo-players
 limbo:
     persistence:
         # Besides storing the data in memory, you can define if/how the data should be persisted
         # on disk. This is useful in case of a server crash, so next time the server starts we can
         # properly restore things like OP status, ability to fly, and walk/fly speed.
-        # DISABLED: no disk storage, INDIVIDUAL_FILES: each player data in its own file,
-        # SINGLE_FILE: all data in one single file (only if you have a small server!)
-        # SEGMENT_FILES: distributes players into different buckets based on their UUID. See below.
+        # DISABLED: no disk storage,
+        # INDIVIDUAL_FILES: each player data in its own file,
+        # DISTRIBUTED_FILES: distributes players into different files based on their UUID, see below
         type: 'INDIVIDUAL_FILES'
-        # This setting only affects SEGMENT_FILES persistence. The segment file
+        # This setting only affects DISTRIBUTED_FILES persistence. The segment file
         # persistence attempts to reduce the number of files by distributing players into various
         # buckets based on their UUID. This setting defines into how many files the players should
         # be distributed. Possible values: ONE, FOUR, EIGHT, SIXTEEN, THIRTY_TWO, SIXTY_FOUR,
         # ONE_TWENTY for 128, TWO_FIFTY for 256.
         # For example, if you expect 100 non-logged in players, setting to SIXTEEN will average
-        # 6.25 players per file (100 / 16). If you set to ONE, like persistence SINGLE_FILE, only
-        # one file will be used. Contrary to SINGLE_FILE, it won't keep the entries in cache, which
-        # may deliver different results in terms of performance.
+        # 6.25 players per file (100 / 16). If you set to ONE, only one file will be used and the
+        # entries will be kept in memory, reducing the number of times we read from the file.
+        # This may deliver different results in terms of performance.
         # Note: if you change this setting all data will be migrated. If you have a lot of data,
         # change this setting only on server restart, not with /authme reload.
         segmentDistribution: 'SIXTEEN'
@@ -511,4 +509,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Mar 22 23:10:33 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Mar 28 21:38:52 CEST 2017

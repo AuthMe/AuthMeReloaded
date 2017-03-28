@@ -6,13 +6,10 @@ package fr.xephi.authme.data.limbo.persistence;
 public enum LimboPersistenceType {
 
     /** Store each LimboPlayer in a separate file. */
-    INDIVIDUAL_FILES(SeparateFilePersistenceHandler.class),
+    INDIVIDUAL_FILES(IndividualFilesPersistenceHandler.class),
 
-    /** Store all LimboPlayers in the same file. */
-    SINGLE_FILE(SingleFilePersistenceHandler.class),
-
-    /** Distribute LimboPlayers by segments into a set number of files. */
-    SEGMENT_FILES(SegmentFilesPersistenceHolder.class),
+    /** Store LimboPlayers distributed in a configured number of files. */
+    DISTRIBUTED_FILES(DistributedFilesPersistenceHandler.class),
 
     /** No persistence to disk. */
     DISABLED(NoOpPersistenceHandler.class);

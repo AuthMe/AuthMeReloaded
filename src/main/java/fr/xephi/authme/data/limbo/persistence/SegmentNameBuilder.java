@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Creates segment names for {@link SegmentFilesPersistenceHolder}.
+ * Creates segment names for {@link DistributedFilesPersistenceHandler}.
  */
 class SegmentNameBuilder {
 
