@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Mar 28 21:38:52 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Mar 28 21:48:52 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -458,18 +458,16 @@ limbo:
         # INDIVIDUAL_FILES: each player data in its own file,
         # DISTRIBUTED_FILES: distributes players into different files based on their UUID, see below
         type: 'INDIVIDUAL_FILES'
-        # This setting only affects DISTRIBUTED_FILES persistence. The segment file
+        # This setting only affects DISTRIBUTED_FILES persistence. The distributed file
         # persistence attempts to reduce the number of files by distributing players into various
         # buckets based on their UUID. This setting defines into how many files the players should
         # be distributed. Possible values: ONE, FOUR, EIGHT, SIXTEEN, THIRTY_TWO, SIXTY_FOUR,
         # ONE_TWENTY for 128, TWO_FIFTY for 256.
         # For example, if you expect 100 non-logged in players, setting to SIXTEEN will average
-        # 6.25 players per file (100 / 16). If you set to ONE, only one file will be used and the
-        # entries will be kept in memory, reducing the number of times we read from the file.
-        # This may deliver different results in terms of performance.
+        # 6.25 players per file (100 / 16).
         # Note: if you change this setting all data will be migrated. If you have a lot of data,
         # change this setting only on server restart, not with /authme reload.
-        segmentDistribution: 'SIXTEEN'
+        distributionSize: 'SIXTEEN'
     # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.
     # RESTORE sets back the old property from the player.
     restoreAllowFlight: 'RESTORE'
@@ -509,4 +507,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Mar 28 21:38:52 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Mar 28 21:48:52 CEST 2017

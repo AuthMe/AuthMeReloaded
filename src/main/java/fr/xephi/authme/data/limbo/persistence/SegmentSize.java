@@ -33,7 +33,7 @@ package fr.xephi.authme.data.limbo.persistence;
  * Where possible, prefer a length of 1 (no string concatenation required) or a distribution of
  * 16 (no remapping of the characters required).
  */
-public enum SegmentConfiguration {
+public enum SegmentSize {
 
     /** 1. */
     ONE(1, 1),
@@ -65,7 +65,7 @@ public enum SegmentConfiguration {
     private final int distribution;
     private final int length;
 
-    SegmentConfiguration(int distribution, int length) {
+    SegmentSize(int distribution, int length) {
         this.distribution = distribution;
         this.length = length;
     }

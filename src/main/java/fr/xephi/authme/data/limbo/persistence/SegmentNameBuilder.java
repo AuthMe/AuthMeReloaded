@@ -18,7 +18,7 @@ class SegmentNameBuilder {
      *
      * @param partition the segment configuration
      */
-    SegmentNameBuilder(SegmentConfiguration partition) {
+    SegmentNameBuilder(SegmentSize partition) {
         this.length = partition.getLength();
         this.distribution = partition.getDistribution();
         this.prefix = "seg" + partition.getTotalSegments() + "-";

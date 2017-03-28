@@ -12,9 +12,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link SegmentConfiguration}.
+ * Test for {@link SegmentSize}.
  */
-public class SegmentConfigurationTest {
+public class SegmentSizeTest {
 
     @Test
     public void shouldHaveDistributionThatIsPowerOf2() {
@@ -22,7 +22,7 @@ public class SegmentConfigurationTest {
         Set<Integer> allowedDistributions = ImmutableSet.of(1, 2, 4, 8, 16);
 
         // when / then
-        for (SegmentConfiguration entry : SegmentConfiguration.values()) {
+        for (SegmentSize entry : SegmentSize.values()) {
             if (!allowedDistributions.contains(entry.getDistribution())) {
                 fail("Distribution must be a power of 2 and within [1, 16]. Offending item: " + entry);
             }
@@ -35,7 +35,7 @@ public class SegmentConfigurationTest {
         Set<Integer> segmentTotals = new HashSet<>();
 
         // when / then
-        for (SegmentConfiguration entry : SegmentConfiguration.values()) {
+        for (SegmentSize entry : SegmentSize.values()) {
             int totalSegments = entry.getTotalSegments();
             assertThat(entry + " must have a positive segment size",
                 totalSegments, greaterThan(0));

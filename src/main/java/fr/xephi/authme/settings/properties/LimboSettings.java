@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.data.limbo.AllowFlightRestoreType;
 import fr.xephi.authme.data.limbo.WalkFlySpeedRestoreType;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistenceType;
-import fr.xephi.authme.data.limbo.persistence.SegmentConfiguration;
+import fr.xephi.authme.data.limbo.persistence.SegmentSize;
 
 import java.util.Map;
 
@@ -31,21 +31,18 @@ public final class LimboSettings implements SettingsHolder {
         newProperty(LimboPersistenceType.class, "limbo.persistence.type", LimboPersistenceType.INDIVIDUAL_FILES);
 
     @Comment({
-        "This setting only affects DISTRIBUTED_FILES persistence. The segment file",
+        "This setting only affects DISTRIBUTED_FILES persistence. The distributed file",
         "persistence attempts to reduce the number of files by distributing players into various",
         "buckets based on their UUID. This setting defines into how many files the players should",
         "be distributed. Possible values: ONE, FOUR, EIGHT, SIXTEEN, THIRTY_TWO, SIXTY_FOUR,",
         "ONE_TWENTY for 128, TWO_FIFTY for 256.",
         "For example, if you expect 100 non-logged in players, setting to SIXTEEN will average",
-        "6.25 players per file (100 / 16). If you set to ONE, only one file will be used and the",
-        "entries will be kept in memory, reducing the number of times we read from the file.",
-        "This may deliver different results in terms of performance.",
+        "6.25 players per file (100 / 16).",
         "Note: if you change this setting all data will be migrated. If you have a lot of data,",
         "change this setting only on server restart, not with /authme reload."
     })
-    public static final Property<SegmentConfiguration> SEGMENT_DISTRIBUTION =
-        newProperty(SegmentConfiguration.class, "limbo.persistence.segmentDistribution",
-            SegmentConfiguration.SIXTEEN);
+    public static final Property<SegmentSize> DISTRIBUTION_SIZE =
+        newProperty(SegmentSize.class, "limbo.persistence.distributionSize", SegmentSize.SIXTEEN);
 
     @Comment({
         "Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.",

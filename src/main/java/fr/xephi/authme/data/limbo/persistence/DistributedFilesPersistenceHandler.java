@@ -52,7 +52,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
             .setPrettyPrinting()
             .create();
 
-        segmentNameBuilder = new SegmentNameBuilder(settings.getProperty(LimboSettings.SEGMENT_DISTRIBUTION));
+        segmentNameBuilder = new SegmentNameBuilder(settings.getProperty(LimboSettings.DISTRIBUTION_SIZE));
 
         convertOldDataToCurrentSegmentScheme();
         deleteEmptyFiles();

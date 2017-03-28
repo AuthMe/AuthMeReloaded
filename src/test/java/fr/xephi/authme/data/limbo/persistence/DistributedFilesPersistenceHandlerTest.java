@@ -90,7 +90,7 @@ public class DistributedFilesPersistenceHandlerTest {
 
     @BeforeInjecting
     public void setUpClasses() throws IOException {
-        given(settings.getProperty(LimboSettings.SEGMENT_DISTRIBUTION)).willReturn(SegmentConfiguration.SIXTEEN);
+        given(settings.getProperty(LimboSettings.DISTRIBUTION_SIZE)).willReturn(SegmentSize.SIXTEEN);
         dataFolder = temporaryFolder.newFolder();
         playerDataFolder = new File(dataFolder, "playerdata");
         playerDataFolder.mkdir();

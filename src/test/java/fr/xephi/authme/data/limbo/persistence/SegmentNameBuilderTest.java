@@ -5,13 +5,13 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.EIGHT;
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.FOUR;
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.ONE;
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.SIXTEEN;
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.SIXTY_FOUR;
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.THIRTY_TWO;
-import static fr.xephi.authme.data.limbo.persistence.SegmentConfiguration.TWO_FIFTY;
+import static fr.xephi.authme.data.limbo.persistence.SegmentSize.EIGHT;
+import static fr.xephi.authme.data.limbo.persistence.SegmentSize.FOUR;
+import static fr.xephi.authme.data.limbo.persistence.SegmentSize.ONE;
+import static fr.xephi.authme.data.limbo.persistence.SegmentSize.SIXTEEN;
+import static fr.xephi.authme.data.limbo.persistence.SegmentSize.SIXTY_FOUR;
+import static fr.xephi.authme.data.limbo.persistence.SegmentSize.THIRTY_TWO;
+import static fr.xephi.authme.data.limbo.persistence.SegmentSize.TWO_FIFTY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -23,11 +23,11 @@ public class SegmentNameBuilderTest {
 
     /**
      * Checks that using a given segment size really produces as many segments as defined.
-     * E.g. if we partition with {@link SegmentConfiguration#EIGHT} we expect eight different buckets.
+     * E.g. if we partition with {@link SegmentSize#EIGHT} we expect eight different buckets.
      */
     @Test
     public void shouldCreatePromisedSizeOfSegments() {
-        for (SegmentConfiguration part : SegmentConfiguration.values()) {
+        for (SegmentSize part : SegmentSize.values()) {
             // Perform this check only for `length` <= 5 because the test creates all hex numbers with `length` digits.
             if (part.getLength() <= 5) {
                 checkTotalSegmentsProduced(part);
@@ -35,7 +35,7 @@ public class SegmentNameBuilderTest {
         }
     }
 
-    private void checkTotalSegmentsProduced(SegmentConfiguration part) {
+    private void checkTotalSegmentsProduced(SegmentSize part) {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(part);
         Set<String> encounteredSegments = new HashSet<>();
