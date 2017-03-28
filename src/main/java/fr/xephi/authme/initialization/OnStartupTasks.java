@@ -148,7 +148,7 @@ public class OnStartupTasks {
      *
      * @param hash the hash algorithm to check
      * @return true if the hash will be deprecated, false otherwise
-     * @see <a href="https://github.com/Xephi/AuthMeReloaded/issues/1016">#1016</a>
+     * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/1016">#1016</a>
      */
     public static boolean isHashDeprecatedIn54(HashAlgorithm hash) {
         if (hash.getClazz() == null || hash == HashAlgorithm.PLAINTEXT) {

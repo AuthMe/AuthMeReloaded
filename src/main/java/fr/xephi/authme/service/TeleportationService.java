@@ -61,7 +61,7 @@ public class TeleportationService implements Reloadable {
      * Note: this is triggered by Bukkit's PlayerLoginEvent, during which you cannot use
      * {@link Player#hasPlayedBefore()}: it always returns {@code false}. We trigger teleportation
      * from the PlayerLoginEvent and not the PlayerJoinEvent to ensure that the location is overridden
-     * as fast as possible (cf. <a href="https://github.com/Xephi/AuthMeReloaded/issues/682">AuthMe #682</a>).
+     * as fast as possible (cf. <a href="https://github.com/AuthMe/AuthMeReloaded/issues/682">AuthMe #682</a>).
      *
      * @param player the player to process
      * @see <a href="https://bukkit.atlassian.net/browse/BUKKIT-3521">BUKKIT-3521: Player.hasPlayedBefore()

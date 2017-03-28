@@ -292,7 +292,7 @@ public class AuthMe extends JavaPlugin {
         HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
         if (OnStartupTasks.isHashDeprecatedIn54(hash)) {
             ConsoleLogger.warning("You are using an unsalted hash (" + hash + "). Support for this will be removed "
-                + "in 5.4 -- do you still need it? Comment on https://github.com/Xephi/AuthMeReloaded/issues/1016");
+                + "in 5.4 -- do you still need it? Comment on https://github.com/AuthMe/AuthMeReloaded/issues/1016");
         }
     }
 

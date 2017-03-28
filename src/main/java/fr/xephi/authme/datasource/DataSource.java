@@ -75,7 +75,7 @@ public interface DataSource extends Reloadable {
      *
      * @param until The minimum last login
      * @param includeEntriesWithLastLoginZero Whether entries with lastlogin = 0 should be included or not,
-     *        see <a href="https://github.com/Xephi/AuthMeReloaded/issues/886">issue #886</a>
+     *        see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/886">issue #886</a>
      * @return The account names selected to purge
      */
     Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero);
