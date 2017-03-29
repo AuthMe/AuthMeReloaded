@@ -74,17 +74,17 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Schedules a synchronous task if async tasks are enabled; if not, it runs the task immediately.
+     * Schedules a synchronous task if we are currently on a async thread; if not, it runs the task immediately.
      * Use this when {@link #runTaskOptionallyAsync(Runnable) optionally asynchronous tasks} have to
      * run something synchronously.
      *
      * @param task the task to be run
      */
     public void scheduleSyncTaskFromOptionallyAsyncTask(Runnable task) {
-        if (useAsyncTasks) {
-            scheduleSyncDelayedTask(task);
-        } else {
+        if (Bukkit.isPrimaryThread()) {
             task.run();
+        } else {
+            scheduleSyncDelayedTask(task);
         }
     }
 
