@@ -3,7 +3,7 @@ package fr.xephi.authme.data.limbo.persistence;
 /**
  * Configuration for the total number of segments to use.
  * <p>
- * The {@link SegmentFilesPersistenceHolder} reduces the number of files by assigning each UUID
+ * The {@link DistributedFilesPersistenceHandler} reduces the number of files by assigning each UUID
  * to a segment. This enum allows to define how many segments the UUIDs should be distributed in.
  * <p>
  * Segments are defined by a <b>distribution</b> and a <b>length.</b> The distribution defines
@@ -33,13 +33,13 @@ package fr.xephi.authme.data.limbo.persistence;
  * Where possible, prefer a length of 1 (no string concatenation required) or a distribution of
  * 16 (no remapping of the characters required).
  */
-public enum SegmentConfiguration {
+public enum SegmentSize {
 
     /** 1. */
     ONE(1, 1),
 
-    ///** 2. */
-    //TWO(2, 1),
+    // /** 2. */
+    // TWO(2, 1),
 
     /** 4. */
     FOUR(4, 1),
@@ -65,7 +65,7 @@ public enum SegmentConfiguration {
     private final int distribution;
     private final int length;
 
-    SegmentConfiguration(int distribution, int length) {
+    SegmentSize(int distribution, int length) {
         this.distribution = distribution;
         this.length = length;
     }
@@ -86,7 +86,7 @@ public enum SegmentConfiguration {
     }
 
     /**
-     * @return number of segments to which this configuration will distribute UUIDs
+     * @return number of segments to which this configuration will distribute all UUIDs
      */
     public int getTotalSegments() {
         return (int) Math.pow(distribution, length);

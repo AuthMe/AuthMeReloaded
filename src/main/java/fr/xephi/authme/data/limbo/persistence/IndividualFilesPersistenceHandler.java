@@ -19,13 +19,13 @@ import java.nio.charset.StandardCharsets;
 /**
  * Saves LimboPlayer objects as JSON into individual files.
  */
-class SeparateFilePersistenceHandler implements LimboPersistenceHandler {
+class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
 
     private final Gson gson;
     private final File cacheDir;
 
     @Inject
-    SeparateFilePersistenceHandler(@DataFolder File dataFolder, BukkitService bukkitService) {
+    IndividualFilesPersistenceHandler(@DataFolder File dataFolder, BukkitService bukkitService) {
         cacheDir = new File(dataFolder, "playerdata");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
             ConsoleLogger.warning("Failed to create playerdata directory '" + cacheDir + "'");

@@ -30,16 +30,16 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test for {@link SeparateFilePersistenceHandler}.
+ * Test for {@link IndividualFilesPersistenceHandler}.
  */
 @RunWith(DelayedInjectionRunner.class)
-public class SeparateFilePersistenceHandlerTest {
+public class IndividualFilesPersistenceHandlerTest {
 
     private static final UUID SAMPLE_UUID = UUID.nameUUIDFromBytes("PersistenceTest".getBytes());
     private static final String SOURCE_FOLDER = TestHelper.PROJECT_ROOT + "data/backup/";
 
     @InjectDelayed
-    private SeparateFilePersistenceHandler handler;
+    private IndividualFilesPersistenceHandler handler;
 
     @Mock
     private BukkitService bukkitService;

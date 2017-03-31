@@ -30,7 +30,7 @@ import java.util.Optional;
  * Persistence handler for LimboPlayer objects by distributing the objects to store
  * in various segments (buckets) based on the start of the player's UUID.
  */
-class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
+class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
 
     private static final Type LIMBO_MAP_TYPE = new TypeToken<Map<String, LimboPlayer>>(){}.getType();
 
@@ -39,7 +39,7 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
     private final SegmentNameBuilder segmentNameBuilder;
 
     @Inject
-    SegmentFilesPersistenceHolder(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings) {
+    DistributedFilesPersistenceHandler(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings) {
         cacheFolder = new File(dataFolder, "playerdata");
         if (!cacheFolder.exists()) {
             // TODO ljacqu 20170313: Create FileUtils#mkdirs
@@ -52,7 +52,7 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
             .setPrettyPrinting()
             .create();
 
-        segmentNameBuilder = new SegmentNameBuilder(settings.getProperty(LimboSettings.SEGMENT_DISTRIBUTION));
+        segmentNameBuilder = new SegmentNameBuilder(settings.getProperty(LimboSettings.DISTRIBUTION_SIZE));
 
         convertOldDataToCurrentSegmentScheme();
         deleteEmptyFiles();
@@ -100,7 +100,7 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
 
     @Override
     public LimboPersistenceType getType() {
-        return LimboPersistenceType.SEGMENT_FILES;
+        return LimboPersistenceType.DISTRIBUTED_FILES;
     }
 
     private void saveEntries(Map<String, LimboPlayer> entries, File file) {
@@ -126,7 +126,11 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
 
     private File getPlayerSegmentFile(String uuid) {
         String segment = segmentNameBuilder.createSegmentName(uuid);
-        return new File(cacheFolder, segment + "-limbo.json");
+        return getSegmentFile(segment);
+    }
+
+    private File getSegmentFile(String segmentId) {
+        return new File(cacheFolder, segmentId + "-limbo.json");
     }
 
     /**
@@ -167,7 +171,7 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
         ConsoleLogger.info("Saving " + limbosFromOldSegments.size() + " LimboPlayers from old segments into "
             + limboBySegment.size() + " current segments");
         for (Map.Entry<String, Map<String, LimboPlayer>> entry : limboBySegment.entrySet()) {
-            File file = new File(cacheFolder, entry.getKey() + "-limbo.json");
+            File file = getSegmentFile(entry.getKey());
             Map<String, LimboPlayer> limbosToSave = Optional.ofNullable(readLimboPlayers(file))
                 .orElseGet(HashMap::new);
             limbosToSave.putAll(entry.getValue());
@@ -193,7 +197,7 @@ class SegmentFilesPersistenceHolder implements LimboPersistenceHandler {
     }
 
     /**
-     * Deletes files from the current segmenting scheme that are empty.
+     * Deletes segment files that are empty.
      */
     private void deleteEmptyFiles() {
         File[] files = listFiles(cacheFolder);

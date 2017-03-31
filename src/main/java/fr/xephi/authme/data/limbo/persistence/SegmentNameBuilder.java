@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Creates segment names for {@link SegmentFilesPersistenceHolder}.
+ * Creates segment names for {@link DistributedFilesPersistenceHandler}.
  */
 class SegmentNameBuilder {
 
@@ -18,7 +18,7 @@ class SegmentNameBuilder {
      *
      * @param partition the segment configuration
      */
-    SegmentNameBuilder(SegmentConfiguration partition) {
+    SegmentNameBuilder(SegmentSize partition) {
         this.length = partition.getLength();
         this.distribution = partition.getDistribution();
         this.prefix = "seg" + partition.getTotalSegments() + "-";
