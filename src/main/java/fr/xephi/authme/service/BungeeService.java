@@ -17,6 +17,7 @@ import javax.inject.Inject;
 public class BungeeService implements SettingsDependent {
 
     private AuthMe plugin;
+    private BukkitService service;
 
     private boolean isEnabled;
     private String bungeeServer;
@@ -25,8 +26,9 @@ public class BungeeService implements SettingsDependent {
      * Constructor.
      */
     @Inject
-    BungeeService(AuthMe plugin, Settings settings) {
+    BungeeService(AuthMe plugin, BukkitService service, Settings settings) {
         this.plugin = plugin;
+        this.service = service;
         reload(settings);
     }
 
@@ -41,10 +43,15 @@ public class BungeeService implements SettingsDependent {
             return;
         }
 
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Connect");
-        out.writeUTF(bungeeServer);
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        service.scheduleSyncDelayedTask(new Runnable() {
+            @Override
+            public void run() {
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("Connect");
+                out.writeUTF(bungeeServer);
+                player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+            }
+        }, 5L);
     }
 
     @Override
