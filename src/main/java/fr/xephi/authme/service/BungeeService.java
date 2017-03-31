@@ -51,7 +51,7 @@ public class BungeeService implements SettingsDependent {
                 out.writeUTF(bungeeServer);
                 player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
             }
-        }, 5L);
+        }, 20L);
     }
 
     @Override
