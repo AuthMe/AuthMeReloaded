@@ -159,7 +159,7 @@ public class BukkitServiceTest {
     @Test
     public void shouldRunTaskDirectly() {
         // given
-        given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
+        given(server.isPrimaryThread()).willReturn(true);
         bukkitService.reload(settings);
         BukkitService spy = Mockito.spy(bukkitService);
         Runnable task = mock(Runnable.class);
