@@ -6,7 +6,6 @@
 
 - Contacts:
   - [Discord](https://discord.gg/Vn9eCyE)
-  - [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 - CI Services:
   - [Official Jenkins](http://ci.xephi.fr/job/AuthMeReloaded) (**DEVELOPMENT BUILDS**)
@@ -14,7 +13,7 @@
   - CircleCI: [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 
 - Project status:
-  - Dependencies: [![Dependencies status](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d/badge.svg)](https://www.versioneye.com/user/projects/57b182e8d6ffcd0032d7cf2d)
+  - Dependencies: [![Dependencies status](https://www.versioneye.com/user/projects/58e052a224ef3e003b526d78/badge.svg)](https://www.versioneye.com/user/projects/58e052a224ef3e003b526d78)
   - Test coverage: [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
   - Code climate: [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
 
