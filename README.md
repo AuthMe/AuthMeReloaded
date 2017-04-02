@@ -103,7 +103,7 @@ You can also create your own translation file and, if you want, you can share it
 #### Permissions
 - authme.player.* - for all user commands
 - authme.admin.* - for all admin commands
-- [List of all permission nodes](http://github.com/AuthMe-Team/AuthMeReloaded/blob/master/docs/permission_nodes.md)
+- [List of all permission nodes](http://github.com/AuthMe/AuthMeReloaded/blob/master/docs/permission_nodes.md)
 
 #### How To
 - [How to import database from xAuth](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-xauth)
