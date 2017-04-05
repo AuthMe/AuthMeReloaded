@@ -48,7 +48,7 @@ recovery_code_sent: 'Una email contenente il codice di recupero per reimpostare 
 recovery_code_incorrect: 'Il codice di recupero inserito non è corretto! Hai altri %count tentativi rimanenti.'
 recovery_tries_exceeded: 'Hai superato il numero massimo di tentativi per inserire il codice di recupero. Scrivi "/email recovery [email]" per generarne uno nuovo.'
 recovery_code_correct: 'Codice di recupero inserito correttamente!'
-recovery_change_password: 'Per favore usa il comando /email setpassword <nuovaPassword> per cambiare immediatamente la tua password.'
+recovery_change_password: 'Per favore usa il comando "/email setpassword <nuovaPassword>" per cambiare immediatamente la tua password.'
 vb_nonActiv: '&cIl tuo account non è stato ancora verificato, controlla fra le tue email per scoprire come attivarlo!'
 usage_unreg: '&cUtilizzo: /unregister <password>'
 pwd_changed: '&2Password cambiata correttamente!'
