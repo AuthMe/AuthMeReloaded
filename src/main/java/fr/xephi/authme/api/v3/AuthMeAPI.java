@@ -1,4 +1,4 @@
-package fr.xephi.authme.api;
+package fr.xephi.authme.api.v3;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -20,19 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The v2 API of AuthMe.
- * @deprecated Will be removed in 5.3!
+ * The current AuthMeAPI of AuthMe.
  *
- * Recommended method of retrieving the API object:
+ * Recommended method of retrieving the AuthMeAPI object:
  * <code>
- * NewAPI authmeApi = NewAPI.getInstance();
+ * AuthMeAPI authmeApi = AuthMeAPI.getInstance();
  * </code>
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
-@Deprecated
-public class NewAPI {
+public class AuthMeAPI {
 
-    private static NewAPI singleton;
+    private static AuthMeAPI singleton;
     private final AuthMe plugin;
     private final PluginHookService pluginHookService;
     private final DataSource dataSource;
@@ -45,8 +43,8 @@ public class NewAPI {
      * Constructor for NewAPI.
      */
     @Inject
-    NewAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
-           Management management, ValidationService validationService, PlayerCache playerCache) {
+    AuthMeAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
+              Management management, ValidationService validationService, PlayerCache playerCache) {
         this.plugin = plugin;
         this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
@@ -54,15 +52,15 @@ public class NewAPI {
         this.management = management;
         this.validationService = validationService;
         this.playerCache = playerCache;
-        NewAPI.singleton = this;
+        AuthMeAPI.singleton = this;
     }
 
     /**
-     * Get the API object for AuthMe.
+     * Get the AuthMeAPI object for AuthMe.
      *
-     * @return The API object, or null if the AuthMe plugin is not enabled or not fully initialized yet
+     * @return The AuthMeAPI object, or null if the AuthMe plugin is not enabled or not fully initialized yet
      */
-    public static NewAPI getInstance() {
+    public static AuthMeAPI getInstance() {
         if (singleton != null) {
             return singleton;
         }
@@ -82,7 +80,7 @@ public class NewAPI {
 
     /**
      * Gather the version number of the plugin.
-     * This can be used to determine whether certain API features are available or not.
+     * This can be used to determine whether certain AuthMeAPI features are available or not.
      *
      * @return Plugin version identifier as a string.
      */
@@ -164,7 +162,7 @@ public class NewAPI {
      *
      * @param playerName The player to register
      * @param password   The password to register the player with
-     * 
+     *
      * @return true if the player was registered successfully
      */
     public boolean registerPlayer(String playerName, String password) {

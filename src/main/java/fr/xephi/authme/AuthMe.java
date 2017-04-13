@@ -3,7 +3,6 @@ package fr.xephi.authme;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import com.google.common.annotations.VisibleForTesting;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -118,10 +117,12 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Method used to obtain the plugin's api instance
+     * Method used to obtain the v2 plugin's api instance
+     * @deprecated Will be removed in 5.3!
      *
      * @return The plugin's api instance
      */
+    @Deprecated
     public static NewAPI getApi() {
         return NewAPI.getInstance();
     }
@@ -263,8 +264,8 @@ public class AuthMe extends JavaPlugin {
         commandHandler = injector.getSingleton(CommandHandler.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
+        injector.getSingleton(fr.xephi.authme.api.v3.AuthMeAPI.class);
         injector.getSingleton(NewAPI.class);
-        injector.getSingleton(API.class);
     }
 
     /**

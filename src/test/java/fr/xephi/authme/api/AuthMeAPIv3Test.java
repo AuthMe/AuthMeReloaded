@@ -2,6 +2,7 @@ package fr.xephi.authme.api;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.api.v3.AuthMeAPI;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -35,13 +36,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for {@link NewAPI}.
+ * Test for {@link fr.xephi.authme.api.v3.AuthMeAPI}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class NewAPITest {
+public class AuthMeAPIv3Test {
 
     @InjectMocks
-    private NewAPI api;
+    private AuthMeAPI api;
 
     @Mock
     private AuthMe authMe;
@@ -60,11 +61,11 @@ public class NewAPITest {
 
     @Test
     public void shouldReturnInstanceOrNull() {
-        NewAPI result = NewAPI.getInstance();
+        AuthMeAPI result = AuthMeAPI.getInstance();
         assertThat(result, sameInstance(api));
 
-        ReflectionTestUtils.setField(NewAPI.class, null, "singleton", null);
-        assertThat(NewAPI.getInstance(), nullValue());
+        ReflectionTestUtils.setField(AuthMeAPI.class, null, "singleton", null);
+        assertThat(AuthMeAPI.getInstance(), nullValue());
     }
 
     @Test
