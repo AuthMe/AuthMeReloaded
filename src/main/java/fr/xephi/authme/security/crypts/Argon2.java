@@ -1,10 +1,16 @@
 package fr.xephi.authme.security.crypts;
 
+import de.mkammerer.argon2.Argon2Constants;
 import de.mkammerer.argon2.Argon2Factory;
+import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 @Recommendation(Usage.RECOMMENDED)
+@HasSalt(value = SaltType.TEXT, length = Argon2Constants.DEFAULT_SALT_LENGTH)
+// Note: Argon2 is actually a salted algorithm but salt generation is handled internally
+// and isn't exposed to the outside, so we treat it as an unsalted implementation
 public class Argon2 extends UnsaltedMethod {
 
     private de.mkammerer.argon2.Argon2 argon2;

@@ -13,4 +13,9 @@ public class Argon2Test extends AbstractEncryptionMethodTest {
             "$argon2i$v=19$m=65536,t=2,p=1$93OSU71DgBOzpmhti7+6rQ$sSSI6QQQdoG9DlGwLjYz576kTek89nwr9CyNpy6bsL0"); // âË_3(íù*
     }
 
+    @Override
+    protected boolean testHashEqualityForSameSalt() {
+        // Argon2 has a salt but it is handled internally
+        return false;
+    }
 }
