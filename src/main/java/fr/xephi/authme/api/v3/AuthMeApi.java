@@ -20,17 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The current AuthMeAPI of AuthMe.
+ * The current AuthMeApi of AuthMe.
  *
- * Recommended method of retrieving the AuthMeAPI object:
+ * Recommended method of retrieving the AuthMeApi object:
  * <code>
- * AuthMeAPI authmeApi = AuthMeAPI.getInstance();
+ * AuthMeApi authmeApi = AuthMeApi.getInstance();
  * </code>
  */
-@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
-public class AuthMeAPI {
+public class AuthMeApi {
 
-    private static AuthMeAPI singleton;
+    private static AuthMeApi singleton;
     private final AuthMe plugin;
     private final PluginHookService pluginHookService;
     private final DataSource dataSource;
@@ -40,10 +39,10 @@ public class AuthMeAPI {
     private final PlayerCache playerCache;
 
     /*
-     * Constructor for NewAPI.
+     * Constructor for AuthMeApi.
      */
     @Inject
-    AuthMeAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
+    AuthMeApi(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
               Management management, ValidationService validationService, PlayerCache playerCache) {
         this.plugin = plugin;
         this.pluginHookService = pluginHookService;
@@ -52,19 +51,19 @@ public class AuthMeAPI {
         this.management = management;
         this.validationService = validationService;
         this.playerCache = playerCache;
-        AuthMeAPI.singleton = this;
+        AuthMeApi.singleton = this;
     }
 
     /**
-     * Get the AuthMeAPI object for AuthMe.
+     * Get the AuthMeApi object for AuthMe.
      *
-     * @return The AuthMeAPI object, or null if the AuthMe plugin is not enabled or not fully initialized yet
+     * @return The AuthMeApi object, or null if the AuthMe plugin is not enabled or not fully initialized yet
      */
-    public static AuthMeAPI getInstance() {
+    public static AuthMeApi getInstance() {
         if (singleton != null) {
             return singleton;
         }
-        // NewAPI is initialized in AuthMe#onEnable -> if singleton is null,
+        // AuthMeApi is initialized in AuthMe#onEnable -> if singleton is null,
         // it means AuthMe isn't initialized (yet)
         return null;
     }
@@ -80,7 +79,7 @@ public class AuthMeAPI {
 
     /**
      * Gather the version number of the plugin.
-     * This can be used to determine whether certain AuthMeAPI features are available or not.
+     * This can be used to determine whether certain AuthMeApi features are available or not.
      *
      * @return Plugin version identifier as a string.
      */
@@ -104,7 +103,7 @@ public class AuthMeAPI {
      * @param player The player to verify
      * @return true if the player is an npc
      */
-    public boolean isNPC(Player player) {
+    public boolean isNpc(Player player) {
         return pluginHookService.isNpc(player);
     }
 

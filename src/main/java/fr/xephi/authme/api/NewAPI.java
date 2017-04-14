@@ -21,12 +21,13 @@ import java.util.List;
 
 /**
  * The v2 API of AuthMe.
- * @deprecated Will be removed in 5.4!
  *
  * Recommended method of retrieving the API object:
  * <code>
  * NewAPI authmeApi = NewAPI.getInstance();
  * </code>
+ *
+ * @deprecated Will be removed in 5.4! Use {@link fr.xephi.authme.api.v3.AuthMeApi} instead.
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 @Deprecated

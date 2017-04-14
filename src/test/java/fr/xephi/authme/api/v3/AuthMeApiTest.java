@@ -2,7 +2,6 @@ package fr.xephi.authme.api.v3;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.api.v3.AuthMeAPI;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -36,13 +35,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for {@link fr.xephi.authme.api.v3.AuthMeAPI}.
+ * Test for {@link AuthMeApi}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AuthMeAPITest {
+public class AuthMeApiTest {
 
     @InjectMocks
-    private AuthMeAPI api;
+    private AuthMeApi api;
 
     @Mock
     private AuthMe authMe;
@@ -61,11 +60,11 @@ public class AuthMeAPITest {
 
     @Test
     public void shouldReturnInstanceOrNull() {
-        AuthMeAPI result = AuthMeAPI.getInstance();
+        AuthMeApi result = AuthMeApi.getInstance();
         assertThat(result, sameInstance(api));
 
-        ReflectionTestUtils.setField(AuthMeAPI.class, null, "singleton", null);
-        assertThat(AuthMeAPI.getInstance(), nullValue());
+        ReflectionTestUtils.setField(AuthMeApi.class, null, "singleton", null);
+        assertThat(AuthMeApi.getInstance(), nullValue());
     }
 
     @Test
@@ -90,7 +89,7 @@ public class AuthMeAPITest {
         given(pluginHookService.isNpc(player)).willReturn(true);
 
         // when
-        boolean result = api.isNPC(player);
+        boolean result = api.isNpc(player);
 
         // then
         assertThat(result, equalTo(true));
