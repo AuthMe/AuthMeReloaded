@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * The v2 API of AuthMe.
- * @deprecated Will be removed in 5.3!
+ * @deprecated Will be removed in 5.4!
  *
  * Recommended method of retrieving the API object:
  * <code>

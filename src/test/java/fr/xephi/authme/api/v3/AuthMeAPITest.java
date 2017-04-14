@@ -1,4 +1,4 @@
-package fr.xephi.authme.api;
+package fr.xephi.authme.api.v3;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link fr.xephi.authme.api.v3.AuthMeAPI}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AuthMeAPIv3Test {
+public class AuthMeAPITest {
 
     @InjectMocks
     private AuthMeAPI api;

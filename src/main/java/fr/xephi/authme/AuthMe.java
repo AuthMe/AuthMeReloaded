@@ -118,7 +118,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Method used to obtain the v2 plugin's api instance
-     * @deprecated Will be removed in 5.3!
+     * @deprecated Will be removed in 5.4!
      *
      * @return The plugin's api instance
      */
