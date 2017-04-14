@@ -1,5 +1,5 @@
 <p align="center"><img src="http://i61.tinypic.com/291dm49.png"></p>
-<p align="center"><strong>The most used authentication plugin for Spigot and CraftBukkit!</strong></p>
+<p align="center"><strong>The most used authentication plugin for the Spigot and derivates!</strong></p>
 <hr>
 
 ##### Links and Contacts:
