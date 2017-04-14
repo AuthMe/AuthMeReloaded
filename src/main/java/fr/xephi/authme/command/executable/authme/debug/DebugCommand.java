@@ -3,6 +3,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.initialization.factory.Factory;
+import fr.xephi.authme.permission.PermissionsManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -24,25 +26,46 @@ public class DebugCommand implements ExecutableCommand {
     @Inject
     private Factory<DebugSection> debugSectionFactory;
 
+    @Inject
+    private PermissionsManager permissionsManager;
+
     private Map<String, DebugSection> sections;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
-        DebugSection debugSection = getDebugSection(arguments);
+        DebugSection debugSection = findDebugSection(arguments);
         if (debugSection == null) {
-            sender.sendMessage("Available sections:");
-            getSections().values()
-                .forEach(e -> sender.sendMessage("- " + e.getName() + ": " + e.getDescription()));
+            sendAvailableSections(sender);
         } else {
-            debugSection.execute(sender, arguments.subList(1, arguments.size()));
+            executeSection(debugSection, sender, arguments);
         }
     }
 
-    private DebugSection getDebugSection(List<String> arguments) {
+    private DebugSection findDebugSection(List<String> arguments) {
         if (arguments.isEmpty()) {
             return null;
         }
         return getSections().get(arguments.get(0).toLowerCase());
+    }
+
+    private void sendAvailableSections(CommandSender sender) {
+        sender.sendMessage("Sections available to you:");
+        long availableSections = getSections().values().stream()
+            .filter(section -> permissionsManager.hasPermission(sender, section.getRequiredPermission()))
+            .peek(e -> sender.sendMessage("- " + e.getName() + ": " + e.getDescription()))
+            .count();
+
+        if (availableSections == 0) {
+            sender.sendMessage(ChatColor.RED + "You don't have permission to view any debug section");
+        }
+    }
+
+    private void executeSection(DebugSection section, CommandSender sender, List<String> arguments) {
+        if (permissionsManager.hasPermission(sender, section.getRequiredPermission())) {
+            section.execute(sender, arguments.subList(1, arguments.size()));
+        } else {
+            sender.sendMessage(ChatColor.RED + "You don't have permission for this section. See /authme debug");
+        }
     }
 
     // Lazy getter

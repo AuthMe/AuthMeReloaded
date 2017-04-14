@@ -8,6 +8,8 @@ import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.initialization.factory.SingletonStore;
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -50,6 +52,11 @@ class DataStatistics implements DebugSection {
 
         outputDatabaseStats(sender);
         outputInjectorStats(sender);
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.DATA_STATISTICS;
     }
 
     private void outputDatabaseStats(CommandSender sender) {

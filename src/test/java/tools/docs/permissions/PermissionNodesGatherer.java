@@ -25,7 +25,7 @@ public class PermissionNodesGatherer {
      * the second group should contain the enum value.
      */
     private static final Pattern JAVADOC_WITH_ENUM_PATTERN = Pattern.compile(
-        "/\\*\\*\\s+\\*"       // Match starting '/**' and the '*' on the next line
+        "/\\*\\*(\\s+\\*)?"    // Match starting '/**' and optional whitespace with a '*'
         + "(.*?)\\s+\\*/"      // Capture everything until we encounter '*/'
         + "\\s+([A-Z_]+)\\("); // Match the enum name (e.g. 'LOGIN'), until before the first '('
 
@@ -87,8 +87,8 @@ public class PermissionNodesGatherer {
         Map<String, String> allMatches = new HashMap<>();
         Matcher matcher = JAVADOC_WITH_ENUM_PATTERN.matcher(source);
         while (matcher.find()) {
-            String description = matcher.group(1);
-            String enumValue = matcher.group(2);
+            String description = matcher.group(2);
+            String enumValue = matcher.group(3);
             allMatches.put(enumValue, description);
         }
         return allMatches;

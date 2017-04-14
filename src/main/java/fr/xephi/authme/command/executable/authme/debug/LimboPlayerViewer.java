@@ -3,6 +3,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.ChatColor;
@@ -69,6 +71,11 @@ class LimboPlayerViewer implements DebugSection {
             .sendEntry("Fly speed", LimboPlayer::getFlySpeed, Player::getFlySpeed)
             .sendEntry("Location", l -> formatLocation(l.getLocation()), p -> formatLocation(p.getLocation()))
             .sendEntry("Group", LimboPlayer::getGroup, permissionsManager::getPrimaryGroup);
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.LIMBO_PLAYER_VIEWER;
     }
 
     /**

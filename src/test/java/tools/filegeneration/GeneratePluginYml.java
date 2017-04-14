@@ -32,8 +32,9 @@ public class GeneratePluginYml implements AutoToolTask {
 
     private static final Map<String, String> WILDCARD_PERMISSIONS = ImmutableMap.of(
         "authme.player.*", "Gives access to all player commands",
+        "authme.player.email", "Gives access to all email commands",
         "authme.admin.*", "Gives access to all admin commands",
-        "authme.player.email", "Gives access to all email commands");
+        "authme.debug", "Gives access to /authme debug and all its sections");
 
     private List<PermissionNode> permissionNodes;
 

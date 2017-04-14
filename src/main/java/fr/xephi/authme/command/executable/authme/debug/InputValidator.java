@@ -3,6 +3,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 import fr.xephi.authme.listener.FailedVerificationException;
 import fr.xephi.authme.listener.OnJoinVerifier;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.ChatColor;
@@ -58,6 +60,11 @@ class InputValidator implements DebugSection {
         } else {
             throw new IllegalStateException("Unexpected validation object with arg[0] = '" + arguments.get(0) + "'");
         }
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.INPUT_VALIDATOR;
     }
 
     private void displayUsageHint(CommandSender sender) {

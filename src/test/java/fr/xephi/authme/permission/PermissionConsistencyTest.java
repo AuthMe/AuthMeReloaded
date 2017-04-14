@@ -31,7 +31,7 @@ public class PermissionConsistencyTest {
 
     /** Wildcard permissions (present in plugin.yml but not in the codebase). */
     private static final Set<String> PLUGIN_YML_PERMISSIONS_WILDCARDS =
-        ImmutableSet.of("authme.admin.*", "authme.player.*", "authme.player.email");
+        ImmutableSet.of("authme.admin.*", "authme.player.*", "authme.player.email", "authme.debug");
 
     /** Name of the fields that make up a permission entry in plugin.yml. */
     private static final Set<String> PERMISSION_FIELDS = ImmutableSet.of("description", "default", "children");

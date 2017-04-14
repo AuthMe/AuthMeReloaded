@@ -39,8 +39,8 @@ import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.command.executable.register.RegisterCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.permission.PlayerStatePermission;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -312,10 +312,9 @@ public class CommandInitializer {
             .description("Debug features")
             .detailedDescription("Allows various operations for debugging.")
             .withArgument("child", "The child to execute", true)
-            .withArgument(".", "meaning varies", true)
-            .withArgument(".", "meaning varies", true)
-            .withArgument(".", "meaning varies", true)
-            .permission(PlayerStatePermission.DEBUG_COMMAND)
+            .withArgument("arg", "argument (depends on debug section)", true)
+            .withArgument("arg", "argument (depends on debug section)", true)
+            .permission(DebugSectionPermissions.DEBUG_COMMAND)
             .executableCommand(DebugCommand.class)
             .register();
 

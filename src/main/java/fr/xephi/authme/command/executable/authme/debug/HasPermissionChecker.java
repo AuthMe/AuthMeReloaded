@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.authme.debug;
 
 import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -25,8 +26,8 @@ import java.util.function.BiFunction;
  */
 class HasPermissionChecker implements DebugSection {
 
-    static final List<Class<? extends PermissionNode>> PERMISSION_NODE_CLASSES =
-        ImmutableList.of(AdminPermission.class, PlayerPermission.class, PlayerStatePermission.class);
+    static final List<Class<? extends PermissionNode>> PERMISSION_NODE_CLASSES = ImmutableList.of(
+        AdminPermission.class, PlayerPermission.class, PlayerStatePermission.class, DebugSectionPermissions.class);
 
     @Inject
     private PermissionsManager permissionsManager;
@@ -69,6 +70,11 @@ class HasPermissionChecker implements DebugSection {
         }
     }
 
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.HAS_PERMISSION_CHECK;
+    }
+
     /**
      * Performs a permission check and informs the given sender of the result. {@code permissionChecker} is the
      * permission check to perform with the given {@code node} and the {@code player}.
@@ -90,7 +96,6 @@ class HasPermissionChecker implements DebugSection {
             sender.sendMessage(ChatColor.DARK_RED + "Check failed: player '" + player.getName()
                 + "' does NOT have permission '" + node + "'");
         }
-
     }
 
     /**
