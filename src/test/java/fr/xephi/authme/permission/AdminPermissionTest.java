@@ -1,42 +1,18 @@
 package fr.xephi.authme.permission;
 
-import org.junit.Test;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.fail;
-
 /**
  * Test for {@link AdminPermission}.
  */
-public class AdminPermissionTest {
+public class AdminPermissionTest extends AbstractPermissionsEnumTest {
 
-    @Test
-    public void shouldStartWithAuthMeAdminPrefix() {
-        // given
-        String requiredPrefix = "authme.admin.";
-
-        // when/then
-        for (AdminPermission permission : AdminPermission.values()) {
-            if (!permission.getNode().startsWith(requiredPrefix)) {
-                fail("The permission '" + permission + "' does not start with the required prefix '"
-                    + requiredPrefix + "'");
-            }
-        }
+    @Override
+    protected PermissionNode[] getPermissionNodes() {
+        return AdminPermission.values();
     }
 
-    @Test
-    public void shouldHaveUniqueNodes() {
-        // given
-        Set<String> nodes = new HashSet<>();
-
-        // when/then
-        for (AdminPermission permission : AdminPermission.values()) {
-            if (!nodes.add(permission.getNode())) {
-                fail("More than one enum value defines the node '" + permission.getNode() + "'");
-            }
-        }
+    @Override
+    protected String getRequiredPrefix() {
+        return "authme.admin.";
     }
 
 }

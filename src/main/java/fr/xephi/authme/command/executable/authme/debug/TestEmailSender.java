@@ -4,6 +4,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.SendMailSsl;
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -58,6 +60,11 @@ class TestEmailSender implements DebugSection {
                 sender.sendMessage(ChatColor.RED + "Failed to send test mail to " + email + "; please check your logs");
             }
         }
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.TEST_EMAIL;
     }
 
     private String getEmail(CommandSender sender, List<String> arguments) {

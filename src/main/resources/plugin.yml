@@ -45,7 +45,7 @@ commands:
     - cp
   email:
     description: Add email or recover password
-    usage: /email show|add|change|recover
+    usage: /email show|add|change|recover|code|setpassword
   captcha:
     description: Captcha Command
     usage: /captcha <captcha>
@@ -154,7 +154,47 @@ permissions:
     description: Permission to bypass the purging process.
     default: false
   authme.debug:
-    description: Permission to use the /authme debug command.
+    description: Gives access to /authme debug and all its sections
+    children:
+      authme.debug.command: true
+      authme.debug.country: true
+      authme.debug.db: true
+      authme.debug.group: true
+      authme.debug.limbo: true
+      authme.debug.mail: true
+      authme.debug.perm: true
+      authme.debug.spawn: true
+      authme.debug.stats: true
+      authme.debug.valid: true
+  authme.debug.command:
+    description: General permission to use the /authme debug command.
+    default: op
+  authme.debug.country:
+    description: Permission to use the country lookup section.
+    default: op
+  authme.debug.db:
+    description: Permission to view data from the database.
+    default: op
+  authme.debug.group:
+    description: Permission to view permission groups.
+    default: op
+  authme.debug.limbo:
+    description: Permission to use the limbo data viewer.
+    default: op
+  authme.debug.mail:
+    description: Permission to use the test email sender.
+    default: op
+  authme.debug.perm:
+    description: Permission to use the permission checker.
+    default: op
+  authme.debug.spawn:
+    description: Permission to view spawn information.
+    default: op
+  authme.debug.stats:
+    description: Permission to use the stats section.
+    default: op
+  authme.debug.valid:
+    description: Permission to use sample validation.
     default: op
   authme.player.*:
     description: Gives access to all player commands

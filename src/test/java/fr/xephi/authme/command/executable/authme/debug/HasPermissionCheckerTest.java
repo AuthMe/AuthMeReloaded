@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
@@ -55,8 +55,7 @@ public class HasPermissionCheckerTest {
                 .collect(Collectors.toList());
 
         // when / then
-        assertThat(HasPermissionChecker.PERMISSION_NODE_CLASSES.containsAll(permissionClasses), equalTo(true));
-        assertThat(HasPermissionChecker.PERMISSION_NODE_CLASSES, hasSize(permissionClasses.size()));
+        assertThat(HasPermissionChecker.PERMISSION_NODE_CLASSES, containsInAnyOrder(permissionClasses.toArray()));
     }
 
     @Test

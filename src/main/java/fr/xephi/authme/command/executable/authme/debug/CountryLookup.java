@@ -2,6 +2,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -52,6 +54,11 @@ class CountryLookup implements DebugSection {
         } else {
             outputInfoForPlayer(sender, argument);
         }
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.COUNTRY_LOOKUP;
     }
 
     private void outputInfoForIpAddr(CommandSender sender, String ipAddr) {
