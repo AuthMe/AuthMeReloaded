@@ -25,7 +25,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -228,8 +228,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             displayOtherAccounts(auths, player);
 
             final String email = auth.getEmail();
-            if (service.getProperty(EmailSettings.RECALL_PLAYERS)
-                && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
+            if (service.getProperty(EmailSettings.RECALL_PLAYERS) && Utils.isEmailEmpty(email)) {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 

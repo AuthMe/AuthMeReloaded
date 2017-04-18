@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class UtilsTest {
 
     @BeforeClass
-    public static void setAuthmeInstance() {
+    public static void initLogger() {
         TestHelper.setupLogger();
     }
 
@@ -104,5 +104,17 @@ public class UtilsTest {
         // given / when / then
         assertThat(Utils.isClassLoaded("org.bukkit.event.player.PlayerFishEvent"), equalTo(true));
         assertThat(Utils.isClassLoaded("com.someclass.doesnot.exist"), equalTo(false));
+    }
+
+    @Test
+    public void shouldDetectIfEmailIsEmpty() {
+        // given / when / then
+        assertThat(Utils.isEmailEmpty(""), equalTo(true));
+        assertThat(Utils.isEmailEmpty(null), equalTo(true));
+        assertThat(Utils.isEmailEmpty("your@email.com"), equalTo(true));
+        assertThat(Utils.isEmailEmpty("Your@Email.com"), equalTo(true));
+
+        assertThat(Utils.isEmailEmpty("my@example.org"), equalTo(false));
+        assertThat(Utils.isEmailEmpty("hey"), equalTo(false));
     }
 }

@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -24,7 +25,7 @@ public class ShowEmailCommand extends PlayerCommand {
     @Override
     public void runCommand(Player player, List<String> arguments) {
         PlayerAuth auth = playerCache.getAuth(player.getName());
-        if (auth != null && auth.getEmail() != null && !"your@email.com".equalsIgnoreCase(auth.getEmail())) {
+        if (auth != null && !Utils.isEmailEmpty(auth.getEmail())) {
             commonService.send(player, MessageKey.EMAIL_SHOW, auth.getEmail());
         } else {
             commonService.send(player, MessageKey.SHOW_NO_EMAIL);

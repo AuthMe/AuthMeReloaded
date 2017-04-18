@@ -5,6 +5,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.SendMailSsl;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.ChatColor;
@@ -69,7 +70,7 @@ class TestEmailSender implements DebugSection {
                 return null;
             }
             final String email = emailResult.getValue();
-            if (email == null || "your@email.com".equals(email)) {
+            if (Utils.isEmailEmpty(email)) {
                 sender.sendMessage(ChatColor.RED + "No email set for your account!"
                     + " Please use /authme debug mail <email>");
                 return null;

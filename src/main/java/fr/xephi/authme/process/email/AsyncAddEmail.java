@@ -8,6 +8,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -38,7 +39,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
             PlayerAuth auth = playerCache.getAuth(playerName);
             final String currentEmail = auth.getEmail();
 
-            if (currentEmail != null && !"your@email.com".equals(currentEmail)) {
+            if (!Utils.isEmailEmpty(currentEmail)) {
                 service.send(player, MessageKey.USAGE_CHANGE_EMAIL);
             } else if (!validationService.validateEmail(email)) {
                 service.send(player, MessageKey.INVALID_EMAIL);

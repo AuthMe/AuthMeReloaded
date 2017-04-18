@@ -7,20 +7,20 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.output.ConsoleFilter;
+import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
-import org.bstats.Metrics;
-import fr.xephi.authme.output.ConsoleFilter;
-import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import org.apache.logging.log4j.LogManager;
+import org.bstats.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -112,7 +112,7 @@ public class OnStartupTasks {
             public void run() {
                 for (PlayerAuth auth : dataSource.getLoggedPlayers()) {
                     String email = auth.getEmail();
-                    if (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email)) {
+                    if (Utils.isEmailEmpty(email)) {
                         Player player = bukkitService.getPlayerExact(auth.getRealName());
                         if (player != null) {
                             messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);

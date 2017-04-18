@@ -15,6 +15,7 @@ import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.PlayerUtils;
+import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -90,7 +91,7 @@ public class ValidationService implements Reloadable {
      * @return true if the email is valid, false otherwise
      */
     public boolean validateEmail(String email) {
-        if (!email.contains("@") || email.endsWith("@") || "your@email.com".equalsIgnoreCase(email)) {
+        if (Utils.isEmailEmpty(email) || !StringUtils.isInsideString('@', email)) {
             return false;
         }
         final String emailDomain = email.split("@")[1];

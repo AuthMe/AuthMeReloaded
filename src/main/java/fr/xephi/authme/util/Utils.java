@@ -88,4 +88,14 @@ public final class Utils {
         return Runtime.getRuntime().availableProcessors();
     }
 
+    /**
+     * Returns whether the given email is empty or equal to the standard "undefined" email address.
+     *
+     * @param email the email to check
+     *
+     * @return true if the email is empty
+     */
+    public static boolean isEmailEmpty(String email) {
+        return StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email);
+    }
 }

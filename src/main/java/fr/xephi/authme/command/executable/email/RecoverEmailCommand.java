@@ -10,6 +10,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -60,7 +61,7 @@ public class RecoverEmailCommand extends PlayerCommand {
         }
 
         final String email = emailResult.getValue();
-        if (email == null || !email.equalsIgnoreCase(playerMail) || "your@email.com".equalsIgnoreCase(email)) {
+        if (Utils.isEmailEmpty(email) || !email.equalsIgnoreCase(playerMail)) {
             commonService.send(player, MessageKey.INVALID_EMAIL);
             return;
         }
