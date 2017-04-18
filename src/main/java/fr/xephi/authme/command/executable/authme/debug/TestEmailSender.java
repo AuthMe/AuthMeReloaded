@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.SendMailSsl;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.EmailException;
@@ -62,13 +62,13 @@ class TestEmailSender implements DebugSection {
 
     private String getEmail(CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) {
-            PlayerAuth auth = dataSource.getAuth(sender.getName());
-            if (auth == null) {
+            DataSourceResult<String> emailResult = dataSource.getEmail(sender.getName());
+            if (!emailResult.playerExists()) {
                 sender.sendMessage(ChatColor.RED + "Please provide an email address, "
                     + "e.g. /authme debug mail test@example.com");
                 return null;
             }
-            String email = auth.getEmail();
+            final String email = emailResult.getValue();
             if (email == null || "your@email.com".equals(email)) {
                 sender.sendMessage(ChatColor.RED + "No email set for your account!"
                     + " Please use /authme debug mail <email>");

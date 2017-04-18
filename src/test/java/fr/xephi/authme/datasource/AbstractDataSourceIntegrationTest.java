@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
@@ -382,5 +383,21 @@ public abstract class AbstractDataSourceIntegrationTest {
 
         // then
         assertThat(dataSource.getAllAuths(), empty());
+    }
+
+    @Test
+    public void shouldFetchEmail() {
+        // given
+        String user1 = "user";
+        String user2 = "Bogus";
+        DataSource dataSource = getDataSource();
+
+        // when
+        DataSourceResult<String> email1 = dataSource.getEmail(user1);
+        DataSourceResult<String> email2 = dataSource.getEmail(user2);
+
+        // then
+        assertThat(email1.getValue(), equalTo("user@example.org"));
+        assertThat(email2, is(DataSourceResult.unknownPlayer()));
     }
 }

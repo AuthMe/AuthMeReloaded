@@ -23,16 +23,20 @@ import java.util.concurrent.TimeUnit;
 public class CacheDataSource implements DataSource {
 
     private final DataSource source;
+    private final PlayerCache playerCache;
     private final LoadingCache<String, Optional<PlayerAuth>> cachedAuths;
     private final ListeningExecutorService executorService;
 
     /**
      * Constructor for CacheDataSource.
      *
-     * @param src DataSource
+     * @param source the source
+     * @param playerCache the player cache
      */
-    public CacheDataSource(DataSource src) {
-        source = src;
+    public CacheDataSource(DataSource source, PlayerCache playerCache) {
+        this.source = source;
+        this.playerCache = playerCache;
+
         executorService = MoreExecutors.listeningDecorator(
             Executors.newCachedThreadPool(new ThreadFactoryBuilder()
                 .setDaemon(true)
@@ -168,17 +172,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByIp(final String ip) {
+    public List<String> getAllAuthsByIp(String ip) {
         return source.getAllAuthsByIp(ip);
     }
 
     @Override
-    public int countAuthsByEmail(final String email) {
+    public int countAuthsByEmail(String email) {
         return source.countAuthsByEmail(email);
     }
 
     @Override
-    public void purgeRecords(final Collection<String> banned) {
+    public void purgeRecords(Collection<String> banned) {
         source.purgeRecords(banned);
         cachedAuths.invalidateAll(banned);
     }
@@ -190,7 +194,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        return PlayerCache.getInstance().isAuthenticated(user);
+        return playerCache.isAuthenticated(user);
     }
 
     @Override
@@ -224,12 +228,19 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public DataSourceResult<String> getEmail(String user) {
+        return cachedAuths.getUnchecked(user)
+            .map(auth -> DataSourceResult.of(auth.getEmail()))
+            .orElse(DataSourceResult.unknownPlayer());
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         return source.getAllAuths();
     }
 
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
-        return new ArrayList<>(PlayerCache.getInstance().getCache().values());
+        return new ArrayList<>(playerCache.getCache().values());
     }
 }

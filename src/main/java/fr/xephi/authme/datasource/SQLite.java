@@ -560,6 +560,22 @@ public class SQLite implements DataSource {
     }
 
     @Override
+    public DataSourceResult<String> getEmail(String user) {
+        String sql = "SELECT " + col.EMAIL + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, user);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return DataSourceResult.of(rs.getString(1));
+                }
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return DataSourceResult.unknownPlayer();
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
         String sql = "SELECT * FROM " + tableName + ";";

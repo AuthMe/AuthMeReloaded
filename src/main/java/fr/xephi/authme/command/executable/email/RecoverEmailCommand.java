@@ -2,9 +2,9 @@ package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
-import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
@@ -53,13 +53,13 @@ public class RecoverEmailCommand extends PlayerCommand {
             return;
         }
 
-        PlayerAuth auth = dataSource.getAuth(playerName); // TODO #1127: Create method to get email only
-        if (auth == null) {
+        DataSourceResult<String> emailResult = dataSource.getEmail(playerName);
+        if (!emailResult.playerExists()) {
             commonService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
 
-        final String email = auth.getEmail();
+        final String email = emailResult.getValue();
         if (email == null || !email.equalsIgnoreCase(playerMail) || "your@email.com".equalsIgnoreCase(email)) {
             commonService.send(player, MessageKey.INVALID_EMAIL);
             return;

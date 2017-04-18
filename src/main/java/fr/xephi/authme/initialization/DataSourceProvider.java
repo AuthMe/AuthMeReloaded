@@ -1,6 +1,7 @@
 package fr.xephi.authme.initialization;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
@@ -33,6 +34,8 @@ public class DataSourceProvider implements Provider<DataSource> {
     private Settings settings;
     @Inject
     private BukkitService bukkitService;
+    @Inject
+    private PlayerCache playerCache;
 
     DataSourceProvider() {
     }
@@ -76,7 +79,7 @@ public class DataSourceProvider implements Provider<DataSource> {
         dataSource = convertFlatfileToSqlite(dataSource);
 
         if (settings.getProperty(DatabaseSettings.USE_CACHING)) {
-            dataSource = new CacheDataSource(dataSource);
+            dataSource = new CacheDataSource(dataSource, playerCache);
         }
         if (DataSourceType.SQLITE.equals(dataSourceType)) {
             checkDataSourceSize(dataSource, bukkitService);

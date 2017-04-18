@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
@@ -38,7 +38,7 @@ public class GetEmailCommandTest {
     public void shouldReportUnknownUser() {
         // given
         String user = "myTestUser";
-        given(dataSource.getAuth(user)).willReturn(null);
+        given(dataSource.getEmail(user)).willReturn(DataSourceResult.unknownPlayer());
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -53,9 +53,7 @@ public class GetEmailCommandTest {
         // given
         String user = "userToView";
         String email = "user.email@example.org";
-        PlayerAuth auth = mock(PlayerAuth.class);
-        given(auth.getEmail()).willReturn(email);
-        given(dataSource.getAuth(user)).willReturn(auth);
+        given(dataSource.getEmail(user)).willReturn(DataSourceResult.of(email));
         CommandSender sender = mock(CommandSender.class);
 
         // when

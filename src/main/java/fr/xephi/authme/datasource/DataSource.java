@@ -190,6 +190,14 @@ public interface DataSource extends Reloadable {
     boolean updateRealName(String user, String realName);
 
     /**
+     * Returns the email of the user.
+     *
+     * @param user the user to retrieve an email for
+     * @return the email saved for the user, or null if user or email is not present
+     */
+    DataSourceResult<String> getEmail(String user);
+
+    /**
      * Return all players of the database.
      *
      * @return List of all players

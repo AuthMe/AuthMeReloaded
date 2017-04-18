@@ -397,6 +397,11 @@ public class FlatFile implements DataSource {
     }
 
     @Override
+    public DataSourceResult<String> getEmail(String user) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         BufferedReader br = null;
         List<PlayerAuth> auths = new ArrayList<>();

@@ -4,9 +4,9 @@ import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -111,14 +111,14 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getAuth(name)).willReturn(null);
+        given(dataSource.getEmail(name)).willReturn(DataSourceResult.unknownPlayer());
 
         // when
         command.executeCommand(sender, Collections.singletonList("someone@example.com"));
 
         // then
         verify(emailService).hasAllInformation();
-        verify(dataSource).getAuth(name);
+        verify(dataSource).getEmail(name);
         verifyNoMoreInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.USAGE_REGISTER);
     }
@@ -131,14 +131,14 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(DEFAULT_EMAIL));
+        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of(DEFAULT_EMAIL));
 
         // when
         command.executeCommand(sender, Collections.singletonList(DEFAULT_EMAIL));
 
         // then
         verify(emailService).hasAllInformation();
-        verify(dataSource).getAuth(name);
+        verify(dataSource).getEmail(name);
         verifyNoMoreInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.INVALID_EMAIL);
     }
@@ -151,14 +151,14 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getAuth(name)).willReturn(newAuthWithEmail("raptor@example.org"));
+        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of("raptor@example.org"));
 
         // when
         command.executeCommand(sender, Collections.singletonList("wrong-email@example.com"));
 
         // then
         verify(emailService).hasAllInformation();
-        verify(dataSource).getAuth(name);
+        verify(dataSource).getEmail(name);
         verifyNoMoreInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.INVALID_EMAIL);
     }
@@ -173,7 +173,7 @@ public class RecoverEmailCommandTest {
         given(emailService.sendRecoveryCode(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
-        given(dataSource.getAuth(name)).willReturn(newAuthWithEmail(email));
+        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of(email));
         String code = "a94f37";
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(true);
         given(recoveryCodeService.generateCode(name)).willReturn(code);
@@ -183,7 +183,7 @@ public class RecoverEmailCommandTest {
 
         // then
         verify(emailService).hasAllInformation();
-        verify(dataSource).getAuth(name);
+        verify(dataSource).getEmail(name);
         verify(recoveryService).createAndSendRecoveryCode(sender, email);
     }
 
@@ -197,8 +197,7 @@ public class RecoverEmailCommandTest {
         given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
-        PlayerAuth auth = newAuthWithEmail(email);
-        given(dataSource.getAuth(name)).willReturn(auth);
+        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of(email));
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(false);
 
         // when
@@ -206,14 +205,7 @@ public class RecoverEmailCommandTest {
 
         // then
         verify(emailService).hasAllInformation();
-        verify(dataSource).getAuth(name);
+        verify(dataSource).getEmail(name);
         verify(recoveryService).generateAndSendNewPassword(sender, email);
-    }
-
-    private static PlayerAuth newAuthWithEmail(String email) {
-        return PlayerAuth.builder()
-            .name("name")
-            .email(email)
-            .build();
     }
 }
