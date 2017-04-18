@@ -29,6 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.close;
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
+
 public class MySQL implements DataSource {
 
     private boolean useSsl;
@@ -74,7 +77,7 @@ public class MySQL implements DataSource {
         try {
             checkTablesAndColumns();
         } catch (SQLException e) {
-            close();
+            closeConnection();
             ConsoleLogger.logException("Can't initialize the MySQL database:", e);
             ConsoleLogger.warning("Please check your database settings in the config.yml file!");
             throw e;
@@ -742,7 +745,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void close() {
+    public void closeConnection() {
         if (ds != null && !ds.isClosed()) {
             ds.close();
         }
@@ -1039,29 +1042,4 @@ public class MySQL implements DataSource {
         ConsoleLogger.warning("You may have entries with invalid timestamps. Please check your data "
             + "before purging. " + changedRows + " rows were migrated from seconds to milliseconds.");
     }
-
-    private static void logSqlException(SQLException e) {
-        ConsoleLogger.logException("Error during SQL operation:", e);
-    }
-
-    private static void close(ResultSet rs) {
-        try {
-            if (rs != null && !rs.isClosed()) {
-                rs.close();
-            }
-        } catch (SQLException e) {
-            ConsoleLogger.logException("Could not close ResultSet", e);
-        }
-    }
-
-    private static void close(PreparedStatement pst) {
-        try {
-            if (pst != null && !pst.isClosed()) {
-                pst.close();
-            }
-        } catch (SQLException e) {
-            ConsoleLogger.logException("Could not close PreparedStatement", e);
-        }
-    }
-
 }

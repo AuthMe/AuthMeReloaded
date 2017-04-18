@@ -130,7 +130,7 @@ public interface DataSource extends Reloadable {
     /**
      * Close the underlying connections to the data source.
      */
-    void close();
+    void closeConnection();
 
     /**
      * Return the data source type.

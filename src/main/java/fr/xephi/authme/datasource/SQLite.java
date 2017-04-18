@@ -21,6 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.close;
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
+
 /**
  */
 public class SQLite implements DataSource {
@@ -58,10 +61,6 @@ public class SQLite implements DataSource {
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
         this.con = connection;
-    }
-
-    private static void logSqlException(SQLException e) {
-        ConsoleLogger.logException("Error while executing SQL statement:", e);
     }
 
     private void connect() throws ClassNotFoundException, SQLException {
@@ -384,43 +383,13 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void close() {
+    public void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {
                 con.close();
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        }
-    }
-
-    private static void close(Statement st) {
-        if (st != null) {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
-        }
-    }
-
-    private static void close(Connection con) {
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
-        }
-    }
-
-    private static void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
         }
     }
 

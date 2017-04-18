@@ -70,7 +70,7 @@ public class TaskCloser implements Runnable {
         }
 
         if (dataSource != null) {
-            dataSource.close();
+            dataSource.closeConnection();
         }
     }
 

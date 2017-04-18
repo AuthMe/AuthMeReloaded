@@ -152,7 +152,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void close() {
+    public void closeConnection() {
         executorService.shutdown();
         try {
             executorService.awaitTermination(5, TimeUnit.SECONDS);
@@ -160,7 +160,7 @@ public class CacheDataSource implements DataSource {
             ConsoleLogger.logException("Could not close executor service:", e);
         }
         cachedAuths.invalidateAll();
-        source.close();
+        source.closeConnection();
     }
 
     @Override

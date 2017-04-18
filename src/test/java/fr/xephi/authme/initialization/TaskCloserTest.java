@@ -78,7 +78,7 @@ public class TaskCloserTest {
         verify(bukkitScheduler, times(3)).isCurrentlyRunning(taskIds.capture());
         assertThat(taskIds.getAllValues(), contains(ACTIVE_WORKERS_ID[0], ACTIVE_WORKERS_ID[1], ACTIVE_WORKERS_ID[1]));
         verify(taskCloser, times(2)).sleep();
-        verify(dataSource).close();
+        verify(dataSource).closeConnection();
     }
 
     @Test
@@ -97,7 +97,7 @@ public class TaskCloserTest {
         verify(bukkitScheduler, times(3)).isQueued(anyInt());
         verify(bukkitScheduler, times(61)).isCurrentlyRunning(anyInt());
         verify(taskCloser, times(60)).sleep();
-        verify(dataSource).close();
+        verify(dataSource).closeConnection();
     }
 
     @Test

@@ -270,7 +270,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public synchronized void close() {
+    public void closeConnection() {
     }
 
     @Override
