@@ -348,7 +348,8 @@ public abstract class AbstractDataSourceIntegrationTest {
     public void shouldPerformOperationsOnIsLoggedColumnSuccessfully() {
         DataSource dataSource = getDataSource();
         // on startup no one should be marked as logged
-        assertThat(dataSource.getLoggedPlayers(), empty());
+        assertThat(dataSource.isLogged("user"), equalTo(false));
+        assertThat(dataSource.isLogged("bobby"), equalTo(false));
 
         // Mark user as logged
         dataSource.setLogged("user");
@@ -361,15 +362,16 @@ public abstract class AbstractDataSourceIntegrationTest {
         // Set bobby logged and unlog user
         dataSource.setLogged("bobby");
         dataSource.setUnlogged("user");
-        assertThat(dataSource.getLoggedPlayers(),
-            contains(hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89")));
+
+        assertThat(dataSource.isLogged("user"), equalTo(false));
+        assertThat(dataSource.isLogged("bobby"), equalTo(true));
 
         // Set both as logged (even if Bobby already is logged)
         dataSource.setLogged("user");
         dataSource.setLogged("bobby");
         dataSource.purgeLogged();
         assertThat(dataSource.isLogged("user"), equalTo(false));
-        assertThat(dataSource.getLoggedPlayers(), empty());
+        assertThat(dataSource.isLogged("bobby"), equalTo(false));
     }
 
     @Test
@@ -399,5 +401,19 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(email1.getValue(), equalTo("user@example.org"));
         assertThat(email2, is(DataSourceResult.unknownPlayer()));
+    }
+
+    @Test
+    public void shouldGetLoggedPlayersWithoutEmail() {
+        // given
+        DataSource dataSource = getDataSource();
+        dataSource.setLogged("bobby");
+        dataSource.setLogged("user");
+
+        // when
+        List<String> loggedPlayersWithEmptyMail = dataSource.getLoggedPlayersWithEmptyMail();
+
+        // then
+        assertThat(loggedPlayersWithEmptyMail, contains("Bobby"));
     }
 }

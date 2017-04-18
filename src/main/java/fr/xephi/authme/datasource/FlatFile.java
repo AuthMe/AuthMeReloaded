@@ -423,7 +423,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public List<PlayerAuth> getLoggedPlayers() {
+    public List<String> getLoggedPlayersWithEmptyMail() {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 

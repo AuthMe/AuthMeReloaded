@@ -11,14 +11,15 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.util.Utils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class CacheDataSource implements DataSource {
 
@@ -240,7 +241,10 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public List<PlayerAuth> getLoggedPlayers() {
-        return new ArrayList<>(playerCache.getCache().values());
+    public List<String> getLoggedPlayersWithEmptyMail() {
+        return playerCache.getCache().values().stream()
+            .filter(auth -> Utils.isEmailEmpty(auth.getEmail()))
+            .map(PlayerAuth::getRealName)
+            .collect(Collectors.toList());
     }
 }

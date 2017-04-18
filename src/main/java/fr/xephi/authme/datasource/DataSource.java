@@ -167,11 +167,11 @@ public interface DataSource extends Reloadable {
     void purgeLogged();
 
     /**
-     * Return all players which are logged in.
+     * Return all players which are logged in and whose email is not set.
      *
-     * @return All logged in players
+     * @return logged in players with no email
      */
-    List<PlayerAuth> getLoggedPlayers();
+    List<String> getLoggedPlayersWithEmptyMail();
 
     /**
      * Return the number of registered accounts.

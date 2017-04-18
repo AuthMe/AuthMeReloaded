@@ -591,18 +591,18 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public List<PlayerAuth> getLoggedPlayers() {
-        List<PlayerAuth> auths = new ArrayList<>();
-        String sql = "SELECT * FROM " + tableName + " WHERE " + col.IS_LOGGED + "=1;";
-        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
+    public List<String> getLoggedPlayersWithEmptyMail() {
+        List<String> players = new ArrayList<>();
+        String sql = "SELECT " + col.REAL_NAME + " FROM " + tableName + " WHERE " + col.IS_LOGGED + " = 1"
+            + " AND (" + col.EMAIL + " = 'your@email.com' OR " + col.EMAIL + " IS NULL);";
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
-                PlayerAuth auth = buildAuthFromResultSet(rs);
-                auths.add(auth);
+                players.add(rs.getString(1));
             }
         } catch (SQLException ex) {
             logSqlException(ex);
         }
-        return auths;
+        return players;
     }
 
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {

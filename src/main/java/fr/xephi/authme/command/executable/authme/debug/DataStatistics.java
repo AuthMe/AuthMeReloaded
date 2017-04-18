@@ -54,7 +54,6 @@ class DataStatistics implements DebugSection {
 
     private void outputDatabaseStats(CommandSender sender) {
         sender.sendMessage("Total players in DB: " + dataSource.getAccountsRegistered());
-        sender.sendMessage("Total marked as logged in in DB: " + dataSource.getLoggedPlayers().size());
         if (dataSource instanceof CacheDataSource) {
             CacheDataSource cacheDataSource = (CacheDataSource) this.dataSource;
             sender.sendMessage("Cached PlayerAuth objects: " + cacheDataSource.getCachedAuths().size());

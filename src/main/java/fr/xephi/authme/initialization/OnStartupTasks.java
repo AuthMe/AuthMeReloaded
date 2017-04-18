@@ -3,7 +3,6 @@ package fr.xephi.authme.initialization;
 import ch.jalu.injector.exceptions.InjectorReflectionException;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -18,7 +17,6 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.Metrics;
 import org.bukkit.Bukkit;
@@ -110,13 +108,10 @@ public class OnStartupTasks {
         bukkitService.runTaskTimerAsynchronously(new Runnable() {
             @Override
             public void run() {
-                for (PlayerAuth auth : dataSource.getLoggedPlayers()) {
-                    String email = auth.getEmail();
-                    if (Utils.isEmailEmpty(email)) {
-                        Player player = bukkitService.getPlayerExact(auth.getRealName());
-                        if (player != null) {
-                            messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
-                        }
+                for (String playerWithoutMail : dataSource.getLoggedPlayersWithEmptyMail()) {
+                    Player player = bukkitService.getPlayerExact(playerWithoutMail);
+                    if (player != null) {
+                        messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
                     }
                 }
             }

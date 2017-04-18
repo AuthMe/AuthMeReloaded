@@ -101,14 +101,11 @@ public class ChangePasswordAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
         String password = "passPass";
-        PlayerAuth auth = mock(PlayerAuth.class);
-
         given(playerCache.isAuthenticated(player)).willReturn(true);
-        given(playerCache.getAuth(player)).willReturn(auth);
 
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
-        given(dataSource.updatePassword(auth)).willReturn(true);
+        given(dataSource.updatePassword(player, hashedPassword)).willReturn(true);
         given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         // when
@@ -119,8 +116,7 @@ public class ChangePasswordAdminCommandTest {
         verify(validationService).validatePassword(password, player);
         verify(service).send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
         verify(passwordSecurity).computeHash(password, player);
-        verify(auth).setPassword(hashedPassword);
-        verify(dataSource).updatePassword(auth);
+        verify(dataSource).updatePassword(player, hashedPassword);
     }
 
     @Test
@@ -129,15 +125,13 @@ public class ChangePasswordAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
         String password = "passPass";
-        PlayerAuth auth = mock(PlayerAuth.class);
         given(playerCache.isAuthenticated(player)).willReturn(false);
         given(dataSource.isAuthAvailable(player)).willReturn(true);
-        given(dataSource.getAuth(player)).willReturn(auth);
-        given(dataSource.updatePassword(auth)).willReturn(true);
         given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
+        given(dataSource.updatePassword(player, hashedPassword)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password));
@@ -147,8 +141,7 @@ public class ChangePasswordAdminCommandTest {
         verify(validationService).validatePassword(password, player);
         verify(service).send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
         verify(passwordSecurity).computeHash(password, player);
-        verify(auth).setPassword(hashedPassword);
-        verify(dataSource).updatePassword(auth);
+        verify(dataSource).updatePassword(player, hashedPassword);
     }
 
     @Test
@@ -157,14 +150,12 @@ public class ChangePasswordAdminCommandTest {
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
         String password = "passPass";
-        PlayerAuth auth = mock(PlayerAuth.class);
         given(playerCache.isAuthenticated(player)).willReturn(true);
-        given(playerCache.getAuth(player)).willReturn(auth);
         given(validationService.validatePassword(password, player)).willReturn(new ValidationResult());
 
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
-        given(dataSource.updatePassword(auth)).willReturn(false);
+        given(dataSource.updatePassword(player, hashedPassword)).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password));
@@ -174,8 +165,7 @@ public class ChangePasswordAdminCommandTest {
         verify(validationService).validatePassword(password, player);
         verify(service).send(sender, MessageKey.ERROR);
         verify(passwordSecurity).computeHash(password, player);
-        verify(auth).setPassword(hashedPassword);
-        verify(dataSource).updatePassword(auth);
+        verify(dataSource).updatePassword(player, hashedPassword);
     }
 
 }

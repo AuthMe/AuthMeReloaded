@@ -2,7 +2,6 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -65,16 +64,13 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
      * @param sender the sender initiating the password change
      */
     private void changePassword(String nameLowercase, String password, CommandSender sender) {
-        PlayerAuth auth = getAuth(nameLowercase);
-        if (auth == null) {
+        if (!isNameRegistered(nameLowercase)) {
             commonService.send(sender, MessageKey.UNKNOWN_USER);
             return;
         }
 
         HashedPassword hashedPassword = passwordSecurity.computeHash(password, nameLowercase);
-        auth.setPassword(hashedPassword);
-
-        if (dataSource.updatePassword(auth)) {
+        if (dataSource.updatePassword(nameLowercase, hashedPassword)) {
             commonService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
             ConsoleLogger.info(sender.getName() + " changed password of " + nameLowercase);
         } else {
@@ -82,12 +78,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
         }
     }
 
-    private PlayerAuth getAuth(String nameLowercase) {
-        if (playerCache.isAuthenticated(nameLowercase)) {
-            return playerCache.getAuth(nameLowercase);
-        } else if (dataSource.isAuthAvailable(nameLowercase)) {
-            return dataSource.getAuth(nameLowercase);
-        }
-        return null;
+    private boolean isNameRegistered(String nameLowercase) {
+        return playerCache.isAuthenticated(nameLowercase) || dataSource.isAuthAvailable(nameLowercase);
     }
 }
