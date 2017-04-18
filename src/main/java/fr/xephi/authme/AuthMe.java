@@ -5,7 +5,6 @@ import ch.jalu.injector.InjectorBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
-import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.DataSourceProvider;
@@ -254,10 +253,6 @@ public class AuthMe extends JavaPlugin {
      * @param injector the injector
      */
     void instantiateServices(Injector injector) {
-        // PlayerCache is still injected statically sometimes
-        PlayerCache playerCache = PlayerCache.getInstance();
-        injector.register(PlayerCache.class, playerCache);
-
         database = injector.getSingleton(DataSource.class);
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);

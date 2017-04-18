@@ -57,14 +57,14 @@ public class ProtocolLibService implements SettingsDependent {
 
         // Set up packet adapters
         if (protectInvBeforeLogin && inventoryPacketAdapter == null) {
-            inventoryPacketAdapter = new InventoryPacketAdapter(plugin);
+            inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache);
             inventoryPacketAdapter.register();
         } else if (inventoryPacketAdapter != null) {
             inventoryPacketAdapter.unregister();
             inventoryPacketAdapter = null;
         }
         if (denyTabCompleteBeforeLogin && tabCompletePacketAdapter == null) {
-            tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin);
+            tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, playerCache);
             tabCompletePacketAdapter.register();
         } else if (tabCompletePacketAdapter != null) {
             tabCompletePacketAdapter.unregister();

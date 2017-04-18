@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.auth;
 
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -8,55 +9,31 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PlayerCache {
 
-    private volatile static PlayerCache singleton;
-    private final ConcurrentHashMap<String, PlayerAuth> cache;
+    private final Map<String, PlayerAuth> cache = new ConcurrentHashMap<>();
 
-    private PlayerCache() {
-        cache = new ConcurrentHashMap<>();
+    PlayerCache() {
     }
 
     /**
-     * Method getInstance.
+     * Adds the given auth object to the player cache (for the name defined in the PlayerAuth).
      *
-     * @return PlayerCache
+     * @param auth the player auth object to save
      */
-    public static PlayerCache getInstance() {
-        if (singleton == null) {
-            singleton = new PlayerCache();
-        }
-
-        return singleton;
-    }
-
-    /**
-     * Method addPlayer.
-     *
-     * @param auth PlayerAuth
-     */
-    public void addPlayer(PlayerAuth auth) {
+    public void updatePlayer(PlayerAuth auth) {
         cache.put(auth.getNickname().toLowerCase(), auth);
     }
 
     /**
-     * Method updatePlayer.
+     * Removes a player from the player cache.
      *
-     * @param auth PlayerAuth
-     */
-    public void updatePlayer(PlayerAuth auth) {
-        cache.put(auth.getNickname(), auth);
-    }
-
-    /**
-     * Method removePlayer.
-     *
-     * @param user String
+     * @param user name of the player to remove
      */
     public void removePlayer(String user) {
         cache.remove(user.toLowerCase());
     }
 
     /**
-     * get player's authenticated status.
+     * Get whether a player is authenticated (i.e. whether he is present in the player cache).
      *
      * @param user player's name
      *
@@ -67,31 +44,29 @@ public class PlayerCache {
     }
 
     /**
-     * Method getAuth.
+     * Returns the PlayerAuth associated with the given user, if available.
      *
-     * @param user String
+     * @param user name of the player
      *
-     * @return PlayerAuth
+     * @return the associated auth object, or null if not available
      */
     public PlayerAuth getAuth(String user) {
         return cache.get(user.toLowerCase());
     }
 
     /**
-     * Method getLogged.
-     *
-     * @return int
+     * @return number of logged in players
      */
     public int getLogged() {
         return cache.size();
     }
 
     /**
-     * Method getCache.
+     * Returns the player cache data.
      *
-     * @return ConcurrentHashMap
+     * @return all player auths inside the player cache
      */
-    public ConcurrentHashMap<String, PlayerAuth> getCache() {
+    public Map<String, PlayerAuth> getCache() {
         return this.cache;
     }
 

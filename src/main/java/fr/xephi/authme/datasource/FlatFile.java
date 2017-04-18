@@ -2,7 +2,6 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.io.BufferedReader;
@@ -358,7 +357,7 @@ public class FlatFile implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        return PlayerCache.getInstance().isAuthenticated(user);
+        throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
     @Override

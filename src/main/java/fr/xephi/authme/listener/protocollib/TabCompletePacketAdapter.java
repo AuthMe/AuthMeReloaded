@@ -12,19 +12,22 @@ import fr.xephi.authme.data.auth.PlayerCache;
 
 class TabCompletePacketAdapter extends PacketAdapter {
 
-    TabCompletePacketAdapter(AuthMe plugin) {
+    private final PlayerCache playerCache;
+
+    TabCompletePacketAdapter(AuthMe plugin, PlayerCache playerCache) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.TAB_COMPLETE);
+        this.playerCache = playerCache;
     }
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
             try {
-                if (!PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase())) {
+                if (!playerCache.isAuthenticated(event.getPlayer().getName())) {
                     event.setCancelled(true);
                 }
             } catch (FieldAccessException e) {
-                ConsoleLogger.warning("Couldn't access field.");
+                ConsoleLogger.logException("Couldn't access field:", e);
             }
         }
     }

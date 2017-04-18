@@ -24,10 +24,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
-
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,7 +34,6 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 class InventoryPacketAdapter extends PacketAdapter {
 
@@ -47,8 +45,11 @@ class InventoryPacketAdapter extends PacketAdapter {
     private static final int MAIN_SIZE = 27;
     private static final int HOTBAR_SIZE = 9;
 
-    InventoryPacketAdapter(AuthMe plugin) {
+    private final PlayerCache playerCache;
+
+    InventoryPacketAdapter(AuthMe plugin, PlayerCache playerCache) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
+        this.playerCache = playerCache;
     }
 
     @Override
@@ -57,7 +58,7 @@ class InventoryPacketAdapter extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         byte windowId = packet.getIntegers().read(0).byteValue();
-        if (windowId == PLAYER_INVENTORY && !PlayerCache.getInstance().isAuthenticated(player.getName())) {
+        if (windowId == PLAYER_INVENTORY && !playerCache.isAuthenticated(player.getName())) {
             packetEvent.setCancelled(true);
         }
     }
@@ -92,7 +93,7 @@ class InventoryPacketAdapter extends PacketAdapter {
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);
         } catch (InvocationTargetException invocationExc) {
-            plugin.getLogger().log(Level.WARNING, "Error during sending blank inventory", invocationExc);
+            ConsoleLogger.logException("Error during sending blank inventory", invocationExc);
         }
     }
 }
