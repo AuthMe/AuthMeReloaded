@@ -92,7 +92,6 @@ public class EntityListener implements Listener {
         }
     }
 
-    // TODO #733: Player can't throw snowball but the item is taken.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() == null) {
