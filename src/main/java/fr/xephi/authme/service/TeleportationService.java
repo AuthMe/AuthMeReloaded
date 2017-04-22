@@ -134,7 +134,8 @@ public class TeleportationService implements Reloadable {
         if (world == null) {
             world = player.getWorld();
         }
-        return new Location(world, auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
+        return new Location(world, auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(),
+            auth.getYaw(), auth.getPitch());
     }
 
     private void teleportBackFromSpawn(final Player player, final Location location) {

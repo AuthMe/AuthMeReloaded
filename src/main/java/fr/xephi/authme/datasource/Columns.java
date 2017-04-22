@@ -21,6 +21,8 @@ public final class Columns {
     public final String LASTLOC_Y;
     public final String LASTLOC_Z;
     public final String LASTLOC_WORLD;
+    public final String LASTLOC_YAW;
+    public final String LASTLOC_PITCH;
     public final String EMAIL;
     public final String ID;
     public final String IS_LOGGED;
@@ -37,6 +39,8 @@ public final class Columns {
         LASTLOC_Y     = settings.getProperty(DatabaseSettings.MYSQL_COL_LASTLOC_Y);
         LASTLOC_Z     = settings.getProperty(DatabaseSettings.MYSQL_COL_LASTLOC_Z);
         LASTLOC_WORLD = settings.getProperty(DatabaseSettings.MYSQL_COL_LASTLOC_WORLD);
+        LASTLOC_YAW   = settings.getProperty(DatabaseSettings.MYSQL_COL_LASTLOC_YAW);
+        LASTLOC_PITCH = settings.getProperty(DatabaseSettings.MYSQL_COL_LASTLOC_PITCH);
         EMAIL         = settings.getProperty(DatabaseSettings.MYSQL_COL_EMAIL);
         ID            = settings.getProperty(DatabaseSettings.MYSQL_COL_ID);
         IS_LOGGED     = settings.getProperty(DatabaseSettings.MYSQL_COL_ISLOGGED);

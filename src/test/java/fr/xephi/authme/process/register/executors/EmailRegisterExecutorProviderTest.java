@@ -126,7 +126,7 @@ public class EmailRegisterExecutorProviderTest {
 
         // then
         assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", "123.45.67.89"));
-        assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld"));
+        assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld", 0, 0));
         assertThat(auth.getPassword().getHash(), stringWithLength(12));
     }
 

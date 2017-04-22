@@ -98,6 +98,14 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_LASTLOC_WORLD =
         newProperty("DataSource.mySQLlastlocWorld", "world");
 
+    @Comment("Column for storing player LastLocation - Yaw")
+    public static final Property<String> MYSQL_COL_LASTLOC_YAW =
+        newProperty("DataSource.mySQLlastlocYaw", "yaw");
+
+    @Comment("Column for storing player LastLocation - Pitch")
+    public static final Property<String> MYSQL_COL_LASTLOC_PITCH =
+        newProperty("DataSource.mySQLlastlocPitch", "pitch");
+
     @Comment("Column for storing players groups")
     public static final Property<String> MYSQL_COL_GROUP =
         newProperty("ExternalBoardOptions.mySQLColumnGroup", "");

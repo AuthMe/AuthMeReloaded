@@ -1,13 +1,12 @@
 package fr.xephi.authme.api.v3;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,8 +42,6 @@ public class AuthMeApiTest {
     @InjectMocks
     private AuthMeApi api;
 
-    @Mock
-    private AuthMe authMe;
     @Mock
     private PluginHookService pluginHookService;
     @Mock
@@ -120,6 +117,8 @@ public class AuthMeApiTest {
             .locX(12.4)
             .locY(24.6)
             .locZ(-438.2)
+            .locYaw(3.41f)
+            .locPitch(0.29f)
             .build();
         given(playerCache.getAuth(name)).willReturn(auth);
         Server server = mock(Server.class);
@@ -136,6 +135,8 @@ public class AuthMeApiTest {
         assertThat(result.getY(), equalTo(auth.getQuitLocY()));
         assertThat(result.getZ(), equalTo(auth.getQuitLocZ()));
         assertThat(result.getWorld(), equalTo(world));
+        assertThat(result.getYaw(), equalTo(auth.getYaw()));
+        assertThat(result.getPitch(), equalTo(auth.getPitch()));
     }
 
     @Test

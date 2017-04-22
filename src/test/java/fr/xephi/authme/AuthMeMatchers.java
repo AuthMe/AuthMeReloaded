@@ -16,15 +16,15 @@ public final class AuthMeMatchers {
     private AuthMeMatchers() {
     }
 
-    public static Matcher<? super HashedPassword> equalToHash(final String hash) {
+    public static Matcher<? super HashedPassword> equalToHash(String hash) {
         return equalToHash(new HashedPassword(hash));
     }
 
-    public static Matcher<? super HashedPassword> equalToHash(final String hash, final String salt) {
+    public static Matcher<? super HashedPassword> equalToHash(String hash, String salt) {
         return equalToHash(new HashedPassword(hash, salt));
     }
 
-    public static Matcher<? super HashedPassword> equalToHash(final HashedPassword hash) {
+    public static Matcher<? super HashedPassword> equalToHash(HashedPassword hash) {
         return new TypeSafeMatcher<HashedPassword>() {
             @Override
             public boolean matchesSafely(HashedPassword item) {
@@ -43,8 +43,8 @@ public final class AuthMeMatchers {
         };
     }
 
-    public static Matcher<? super PlayerAuth> hasAuthBasicData(final String name, final String realName,
-                                                               final String email, final String ip) {
+    public static Matcher<? super PlayerAuth> hasAuthBasicData(String name, String realName,
+                                                               String email, String ip) {
         return new TypeSafeMatcher<PlayerAuth>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {
@@ -59,29 +59,43 @@ public final class AuthMeMatchers {
                 description.appendValue(String.format("PlayerAuth with name %s, realname %s, email %s, ip %s",
                     name, realName, email, ip));
             }
+
+            @Override
+            public void describeMismatchSafely(PlayerAuth item, Description description) {
+                description.appendValue(String.format("PlayerAuth with name %s, realname %s, email %s, ip %s",
+                    item.getNickname(), item.getRealName(), item.getEmail(), item.getIp()));
+            }
         };
     }
 
-    public static Matcher<? super PlayerAuth> hasAuthLocation(final double x, final double y, final double z,
-                                                              final String world) {
+    public static Matcher<? super PlayerAuth> hasAuthLocation(PlayerAuth auth) {
+        return hasAuthLocation(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(),
+            auth.getYaw(), auth.getPitch());
+    }
+
+    public static Matcher<? super PlayerAuth> hasAuthLocation(double x, double y, double z,
+                                                              String world, float yaw, float pitch) {
         return new TypeSafeMatcher<PlayerAuth>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {
                 return Objects.equals(x, item.getQuitLocX())
                     && Objects.equals(y, item.getQuitLocY())
                     && Objects.equals(z, item.getQuitLocZ())
-                    && Objects.equals(world, item.getWorld());
+                    && Objects.equals(world, item.getWorld())
+                    && Objects.equals(yaw, item.getYaw())
+                    && Objects.equals(pitch, item.getPitch());
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendValue(String.format("PlayerAuth with quit location (x: %f, y: %f, z: %f, world: %s)",
-                    x, y, z, world));
+                description.appendValue(
+                    String.format("PlayerAuth with quit location (x: %f, y: %f, z: %f, world: %s, yaw: %f, pitch: %f)",
+                        x, y, z, world, yaw, pitch));
             }
         };
     }
 
-    public static Matcher<String> stringWithLength(final int length) {
+    public static Matcher<String> stringWithLength(int length) {
         return new TypeSafeMatcher<String>() {
             @Override
             protected boolean matchesSafely(String item) {

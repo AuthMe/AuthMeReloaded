@@ -96,12 +96,12 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(invalidAuth, nullValue());
 
         assertThat(bobbyAuth, hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89"));
-        assertThat(bobbyAuth, hasAuthLocation(1.05, 2.1, 4.2, "world"));
+        assertThat(bobbyAuth, hasAuthLocation(1.05, 2.1, 4.2, "world", -0.44f, 2.77f));
         assertThat(bobbyAuth.getLastLogin(), equalTo(1449136800L));
         assertThat(bobbyAuth.getPassword(), equalToHash("$SHA$11aa0706173d7272$dbba966"));
 
         assertThat(userAuth, hasAuthBasicData("user", "user", "user@example.org", "34.56.78.90"));
-        assertThat(userAuth, hasAuthLocation(124.1, 76.3, -127.8, "nether"));
+        assertThat(userAuth, hasAuthLocation(124.1, 76.3, -127.8, "nether", 0.23f, 4.88f));
         assertThat(userAuth.getLastLogin(), equalTo(1453242857L));
         assertThat(userAuth.getPassword(), equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
     }
@@ -229,14 +229,14 @@ public abstract class AbstractDataSourceIntegrationTest {
         DataSource dataSource = getDataSource();
         PlayerAuth user = PlayerAuth.builder()
             .name("user").locX(143).locY(-42.12).locZ(29.47)
-            .locWorld("the_end").build();
+            .locWorld("the_end").locYaw(2.2f).locPitch(0.45f).build();
 
         // when
         boolean response = dataSource.updateQuitLoc(user);
 
         // then
         assertThat(response, equalTo(true));
-        assertThat(dataSource.getAuth("user"), hasAuthLocation(143, -42.12, 29.47, "the_end"));
+        assertThat(dataSource.getAuth("user"), hasAuthLocation(user));
     }
 
     @Test

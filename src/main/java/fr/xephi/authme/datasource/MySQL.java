@@ -218,6 +218,16 @@ public class MySQL implements DataSource {
                     + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + col.LASTLOC_Z);
             }
 
+            if (isColumnMissing(md, col.LASTLOC_YAW)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_YAW + " FLOAT;");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_PITCH)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_PITCH + " FLOAT;");
+            }
+
             if (isColumnMissing(md, col.EMAIL)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com' AFTER " + col.LASTLOC_WORLD);
@@ -714,14 +724,17 @@ public class MySQL implements DataSource {
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         String sql = "UPDATE " + tableName
-            + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=?"
+            + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=?, "
+            + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=?"
             + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
             pst.setString(4, auth.getWorld());
-            pst.setString(5, auth.getNickname());
+            pst.setFloat(5, auth.getYaw());
+            pst.setFloat(6, auth.getPitch());
+            pst.setString(7, auth.getNickname());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -959,6 +972,8 @@ public class MySQL implements DataSource {
             .locX(row.getDouble(col.LASTLOC_X))
             .locY(row.getDouble(col.LASTLOC_Y))
             .locZ(row.getDouble(col.LASTLOC_Z))
+            .locYaw(row.getFloat(col.LASTLOC_YAW))
+            .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .email(row.getString(col.EMAIL))
             .groupId(group)
             .build();

@@ -21,10 +21,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static fr.xephi.authme.datasource.SqlDataSourceUtils.close;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
 /**
+ * SQLite data source.
  */
 public class SQLite implements DataSource {
 
@@ -116,6 +116,16 @@ public class SQLite implements DataSource {
             if (isColumnMissing(md, col.LASTLOC_WORLD)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_YAW)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_YAW + " FLOAT;");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_PITCH)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_PITCH + " FLOAT;");
             }
 
             if (isColumnMissing(md, col.EMAIL)) {
@@ -352,12 +362,17 @@ public class SQLite implements DataSource {
     public boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=? WHERE " + col.NAME + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET "
+                + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, "
+                + col.LASTLOC_WORLD + "=?, " + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=? "
+                + "WHERE " + col.NAME + "=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
             pst.setString(4, auth.getWorld());
-            pst.setString(5, auth.getNickname());
+            pst.setFloat(5, auth.getYaw());
+            pst.setFloat(6, auth.getPitch());
+            pst.setString(7, auth.getNickname());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -586,12 +601,45 @@ public class SQLite implements DataSource {
             .locX(row.getDouble(col.LASTLOC_X))
             .locY(row.getDouble(col.LASTLOC_Y))
             .locZ(row.getDouble(col.LASTLOC_Z))
-            .locWorld(row.getString(col.LASTLOC_WORLD));
+            .locWorld(row.getString(col.LASTLOC_WORLD))
+            .locYaw(row.getFloat(col.LASTLOC_YAW))
+            .locPitch(row.getFloat(col.LASTLOC_PITCH));
 
         String ip = row.getString(col.IP);
         if (!ip.isEmpty()) {
             authBuilder.ip(ip);
         }
         return authBuilder.build();
+    }
+
+
+    private static void close(Statement st) {
+        if (st != null) {
+            try {
+                st.close();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            }
+        }
+    }
+
+    private static void close(Connection con) {
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            }
+        }
+    }
+
+    private static void close(ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            }
+        }
     }
 }

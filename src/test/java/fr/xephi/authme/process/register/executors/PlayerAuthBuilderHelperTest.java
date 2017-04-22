@@ -28,7 +28,7 @@ public class PlayerAuthBuilderHelperTest {
         TestHelper.mockPlayerIp(player, ip);
         World world = mock(World.class);
         given(world.getName()).willReturn("worldName");
-        Location location = new Location(world, 123, 80, -99);
+        Location location = new Location(world, 123, 80, -99, 2.45f, 7.61f);
         given(player.getLocation()).willReturn(location);
         HashedPassword hashedPassword = new HashedPassword("myHash0001");
         String email = "test@example.org";
@@ -38,7 +38,7 @@ public class PlayerAuthBuilderHelperTest {
 
         // then
         assertThat(auth, hasAuthBasicData("noah", "Noah", email, ip));
-        assertThat(auth, hasAuthLocation(123, 80, -99, "worldName"));
+        assertThat(auth, hasAuthLocation(123, 80, -99, "worldName", 2.45f, 7.61f));
     }
 
     @Test

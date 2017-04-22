@@ -100,7 +100,7 @@ public class PasswordRegisterExecutorTest {
         TestHelper.mockPlayerIp(player, "123.45.67.89");
         World world = mock(World.class);
         given(world.getName()).willReturn("someWorld");
-        given(player.getLocation()).willReturn(new Location(world, 48, 96, 144));
+        given(player.getLocation()).willReturn(new Location(world, 48, 96, 144, 1.1f, 0.28f));
         PasswordRegisterParams params = PasswordRegisterParams.of(player, "pass", "mail@example.org");
 
         // when
@@ -108,7 +108,7 @@ public class PasswordRegisterExecutorTest {
 
         // then
         assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", "123.45.67.89"));
-        assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld"));
+        assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld", 1.1f, 0.28f));
         assertThat(auth.getPassword(), equalToHash("pass"));
     }
 

@@ -26,6 +26,8 @@ public class PlayerAuth {
     private double y;
     private double z;
     private String world;
+    private float yaw;
+    private float pitch;
 
     /**
      * @param serialized String
@@ -35,33 +37,11 @@ public class PlayerAuth {
     }
 
     /**
-     * Constructor. Instantiate objects with the {@link #builder() builder}.
+     * Hidden constructor.
      *
-     * @param nickname  all lowercase name of the player
-     * @param password  password
-     * @param groupId   the group id
-     * @param ip        the associated ip address
-     * @param lastLogin player's last login (timestamp)
-     * @param x         quit location: x coordinate
-     * @param y         quit location: y coordinate
-     * @param z         quit location: z coordinate
-     * @param world     quit location: world name
-     * @param email     the associated email
-     * @param realName  the player's name with proper casing
+     * @see #builder()
      */
-    private PlayerAuth(String nickname, HashedPassword password, int groupId, String ip, long lastLogin,
-                       double x, double y, double z, String world, String email, String realName) {
-        this.nickname = nickname.toLowerCase();
-        this.password = password;
-        this.ip = ip;
-        this.lastLogin = lastLogin;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.world = world;
-        this.groupId = groupId;
-        this.email = email;
-        this.realName = realName;
+    private PlayerAuth() {
     }
 
 
@@ -122,6 +102,14 @@ public class PlayerAuth {
 
     public void setWorld(String world) {
         this.world = world;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
     }
 
     public String getIp() {
@@ -235,26 +223,34 @@ public class PlayerAuth {
         private String realName;
         private HashedPassword password;
         private String ip;
-        private String world;
         private String email;
         private int groupId = -1;
-        private double x = 0.0f;
-        private double y = 0.0f;
-        private double z = 0.0f;
         private long lastLogin = System.currentTimeMillis();
 
+        private double x;
+        private double y;
+        private double z;
+        private String world;
+        private float yaw;
+        private float pitch;
+
         public PlayerAuth build() {
-            return new PlayerAuth(
-                checkNotNull(name),
-                firstNonNull(password, new HashedPassword("")),
-                groupId,
-                firstNonNull(ip, "127.0.0.1"),
-                lastLogin,
-                x, y, z,
-                firstNonNull(world, "world"),
-                firstNonNull(email, "your@email.com"),
-                firstNonNull(realName, "Player")
-            );
+            PlayerAuth auth = new PlayerAuth();
+            auth.nickname = checkNotNull(name).toLowerCase();
+            auth.realName = firstNonNull(realName, "Player");
+            auth.password = firstNonNull(password, new HashedPassword(""));
+            auth.email = firstNonNull(email, "your@email.com");
+            auth.ip = firstNonNull(ip, "127.0.0.1");
+            auth.groupId = groupId;
+            auth.lastLogin = lastLogin;
+
+            auth.x = x;
+            auth.y = y;
+            auth.z = z;
+            auth.world = firstNonNull(world, "world");
+            auth.yaw = yaw;
+            auth.pitch = pitch;
+            return auth;
         }
 
         public Builder name(String name) {
@@ -286,11 +282,8 @@ public class PlayerAuth {
             this.y = location.getY();
             this.z = location.getZ();
             this.world = location.getWorld().getName();
-            return this;
-        }
-
-        public Builder locWorld(String world) {
-            this.world = world;
+            this.yaw = location.getYaw();
+            this.pitch = location.getPitch();
             return this;
         }
 
@@ -306,6 +299,21 @@ public class PlayerAuth {
 
         public Builder locZ(double z) {
             this.z = z;
+            return this;
+        }
+
+        public Builder locWorld(String world) {
+            this.world = world;
+            return this;
+        }
+
+        public Builder locYaw(float yaw) {
+            this.yaw = yaw;
+            return this;
+        }
+
+        public Builder locPitch(float pitch) {
+            this.pitch = pitch;
             return this;
         }
 

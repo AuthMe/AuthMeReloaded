@@ -1,9 +1,6 @@
 package fr.xephi.authme.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.xephi.authme.datasource.AbstractResourceClosingTest;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
