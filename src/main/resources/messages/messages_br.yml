@@ -49,9 +49,9 @@ two_factor_create: '&2O seu código secreto é %code. Você pode verificá-lo a 
 recovery_code_sent: 'Um código de recuperação para redefinir sua senha foi enviada para o seu e-mail.'
 # TODO: Missing tags %count
 recovery_code_incorrect: 'O código de recuperação esta incorreto! Use /email recovery [email] para gerar um novo!'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
+recovery_tries_exceeded: 'Você excedeu o limite de tentativas de usar o código de recuperação! Use "/email recovery [email]" para gerar um novo.'
+recovery_code_correct: 'Código de recuperação aceito!'
+recovery_change_password: 'Por favor, use o comando /email setpassword <nova senha> para alterar sua senha imediatamente!'
 vb_nonActiv: '&cA sua conta ainda não está ativada, por favor, verifique seus e-mails!'
 usage_unreg: '&cUse: /unregister <senha>'
 pwd_changed: '&2Senha alterada com sucesso!'
@@ -92,8 +92,8 @@ email_send_failure: '&cO e-mail não pôde ser enviado, reporte isso a um admini
 show_no_email: '&2Você atualmente não têm endereço de e-mail associado a esta conta.'
 add_email: '&3Por favor, adicione seu e-mail para a sua conta com o comando "/email add <seuEmail> <seuEmail>"'
 recovery_email: '&3Esqueceu sua senha? Por favor, use o comando "/email recovery <seuEmail>"'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+change_password_expired: 'Você não pode mais usar esse comando de recuperação de senha!'
+email_cooldown_error: '&cUm e-mail já foi enviado, espere mais %time antes de enviar novamente!'
 
 # Captcha
 usage_captcha: '&3Para iniciar sessão você tem que resolver um código captcha, utilize o comando "/captcha <theCaptcha>"'
@@ -101,11 +101,11 @@ wrong_captcha: '&cCaptcha errado, por favor, escreva "/captcha THE_CAPTCHA" no c
 valid_captcha: '&2Código Captcha resolvido corretamente!'
 
 # Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+second: 'segundo'
+seconds: 'segundos'
+minute: 'minuto'
+minutes: 'minutos'
+hour: 'hora'
+hours: 'horas'
+day: 'dia'
+days: 'dias'
