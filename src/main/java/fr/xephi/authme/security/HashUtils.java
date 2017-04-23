@@ -85,12 +85,22 @@ public final class HashUtils {
      * @param algorithm The algorithm to hash the message with
      * @return The digest in its hexadecimal representation
      */
-    private static String hash(String message, MessageDigestAlgorithm algorithm) {
-        MessageDigest md = getDigest(algorithm);
-        md.reset();
-        md.update(message.getBytes());
-        byte[] digest = md.digest();
+    public static String hash(String message, MessageDigest algorithm) {
+        algorithm.reset();
+        algorithm.update(message.getBytes());
+        byte[] digest = algorithm.digest();
         return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
+    }
+
+    /**
+     * Hash the message with the given algorithm and return the hash in its hexadecimal notation.
+     *
+     * @param message The message to hash
+     * @param algorithm The algorithm to hash the message with
+     * @return The digest in its hexadecimal representation
+     */
+    private static String hash(String message, MessageDigestAlgorithm algorithm) {
+        return hash(message, getDigest(algorithm));
     }
 
 }

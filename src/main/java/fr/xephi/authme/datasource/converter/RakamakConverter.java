@@ -8,6 +8,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -85,8 +86,7 @@ public class RakamakConverter implements Converter {
                     .build();
                 database.saveAuth(auth);
             }
-            ConsoleLogger.info("Rakamak database has been imported correctly");
-            sender.sendMessage("Rakamak database has been imported correctly");
+            Utils.logAndSendMessage(sender, "Rakamak database has been imported correctly");
         } catch (IOException ex) {
             ConsoleLogger.logException("Can't open the rakamak database file! Does it exist?", ex);
         }

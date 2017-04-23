@@ -30,7 +30,7 @@ public final class FileUtils {
     public static boolean copyFileFromResource(File destinationFile, String resourcePath) {
         if (destinationFile.exists()) {
             return true;
-        } else if (!destinationFile.getParentFile().exists() && !destinationFile.getParentFile().mkdirs()) {
+        } else if (!createDirectory(destinationFile.getParentFile())) {
             ConsoleLogger.warning("Cannot create parent directories for '" + destinationFile + "'");
             return false;
         }
@@ -48,6 +48,20 @@ public final class FileUtils {
                 resourcePath, destinationFile.getPath()), e);
         }
         return false;
+    }
+
+    /**
+     * Creates the given directory.
+     *
+     * @param dir the directory to create
+     * @return true upon success, false otherwise
+     */
+    public static boolean createDirectory(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            ConsoleLogger.warning("Could not create directory '" + dir + "'");
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -41,10 +41,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
     @Inject
     DistributedFilesPersistenceHandler(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings) {
         cacheFolder = new File(dataFolder, "playerdata");
-        if (!cacheFolder.exists()) {
-            // TODO ljacqu 20170313: Create FileUtils#mkdirs
-            cacheFolder.mkdirs();
-        }
+        FileUtils.createDirectory(cacheFolder);
 
         gson = new GsonBuilder()
             .registerTypeAdapter(LimboPlayer.class, new LimboPlayerSerializer())

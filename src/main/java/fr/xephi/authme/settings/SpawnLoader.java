@@ -45,7 +45,6 @@ public class SpawnLoader implements Reloadable {
      */
     @Inject
     SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService) {
-        // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         File spawnFile = new File(pluginFolder, "spawn.yml");
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = spawnFile;
