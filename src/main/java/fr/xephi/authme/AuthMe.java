@@ -73,6 +73,7 @@ public class AuthMe extends JavaPlugin {
     private DataSource database;
     private BukkitService bukkitService;
     private Injector injector;
+    private BackupService backupService;
 
     /**
      * Constructor.
@@ -155,7 +156,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Do a backup on start
-        new BackupService(this, settings).doBackup(BackupService.BackupCause.START);
+        backupService.doBackup(BackupService.BackupCause.START);
 
         // Set up Metrics
         OnStartupTasks.sendMetrics(this, settings);
@@ -262,6 +263,7 @@ public class AuthMe extends JavaPlugin {
         permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
+        backupService = injector.getSingleton(BackupService.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(fr.xephi.authme.api.v3.AuthMeApi.class);
@@ -357,8 +359,8 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Do backup on stop if enabled
-        if (settings != null) {
-            new BackupService(this, settings).doBackup(BackupService.BackupCause.STOP);
+        if (backupService != null) {
+            backupService.doBackup(BackupService.BackupCause.STOP);
         }
 
         // Wait for tasks and close data source

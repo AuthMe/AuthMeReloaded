@@ -113,7 +113,12 @@ public enum AdminPermission implements PermissionNode {
     /**
      * Permission to see the other accounts of the players that log in.
      */
-    SEE_OTHER_ACCOUNTS("authme.admin.seeotheraccounts");
+    SEE_OTHER_ACCOUNTS("authme.admin.seeotheraccounts"),
+
+    /**
+     * Allows to use the backup command.
+     */
+    BACKUP("authme.admin.backup");
 
     /**
      * The permission node.

@@ -1,6 +1,7 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
@@ -66,6 +67,22 @@ public final class Utils {
         // Make sure sender is not console user, which will see the message from ConsoleLogger already
         if (sender != null && !(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(message);
+        }
+    }
+
+    /**
+     * Sends a warning to the given sender (null safe), and logs the warning to the console.
+     * This method is aware that the command sender might be the console sender and avoids
+     * displaying the message twice in this case.
+     *
+     * @param sender the sender to inform
+     * @param message the warning to log and send
+     */
+    public static void logAndSendWarning(CommandSender sender, String message) {
+        ConsoleLogger.warning(message);
+        // Make sure sender is not console user, which will see the message from ConsoleLogger already
+        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
+            sender.sendMessage(ChatColor.RED + message);
         }
     }
 

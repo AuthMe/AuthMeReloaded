@@ -1,12 +1,15 @@
 package fr.xephi.authme.service;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSourceType;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.BackupSettings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.FileUtils;
+import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,80 +19,80 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static fr.xephi.authme.util.Utils.logAndSendMessage;
+import static fr.xephi.authme.util.Utils.logAndSendWarning;
+
 /**
- * The backup management class
- *
- * @author stefano
+ * Performs a backup of the data source.
  */
 public class BackupService {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-
-    private final String dbName;
-    private final String dbUserName;
-    private final String dbPassword;
-    private final String tblname;
-    private final String path;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
     private final File dataFolder;
+    private final File backupFolder;
     private final Settings settings;
 
     /**
-     * Constructor for PerformBackup.
+     * Constructor.
      *
-     * @param instance AuthMe
-     * @param settings The plugin settings
+     * @param dataFolder the data folder
+     * @param settings the plugin settings
      */
-    public BackupService(AuthMe instance, Settings settings) {
-        this.dataFolder = instance.getDataFolder();
-        this.settings   = settings;
-        this.dbName     = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
-        this.dbUserName = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
-        this.dbPassword = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
-        this.tblname    = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
-
-        String dateString = DATE_FORMAT.format(new Date());
-        this.path = String.join(File.separator,
-            instance.getDataFolder().getPath(), "backups", "backup" + dateString);
+    @Inject
+    public BackupService(@DataFolder File dataFolder, Settings settings) {
+        this.dataFolder = dataFolder;
+        this.backupFolder = new File(dataFolder, "backups");
+        this.settings = settings;
     }
 
     /**
-     * Perform a backup with the given reason.
+     * Performs a backup for the given reason.
      *
-     * @param cause The cause of the backup.
+     * @param cause backup reason
      */
     public void doBackup(BackupCause cause) {
+        doBackup(cause, null);
+    }
+
+    /**
+     * Performs a backup for the given reason.
+     *
+     * @param cause backup reason
+     * @param sender the command sender (nullable)
+     */
+    public void doBackup(BackupCause cause, CommandSender sender) {
         if (!settings.getProperty(BackupSettings.ENABLED)) {
             // Print a warning if the backup was requested via command or by another plugin
             if (cause == BackupCause.COMMAND || cause == BackupCause.OTHER) {
-                ConsoleLogger.warning("Can't perform a Backup: disabled in configuration. Cause of the Backup: "
-                    + cause.name());
+                logAndSendWarning(sender,
+                    "Can't perform a backup: disabled in configuration. Cause of the backup: " + cause.name());
             }
             return;
-        }
-
-        // Check whether a backup should be made at the specified point in time
-        if (BackupCause.START.equals(cause) && !settings.getProperty(BackupSettings.ON_SERVER_START)
-            || BackupCause.STOP.equals(cause) && !settings.getProperty(BackupSettings.ON_SERVER_STOP)) {
+        } else if (BackupCause.START == cause && !settings.getProperty(BackupSettings.ON_SERVER_START)
+                || BackupCause.STOP == cause && !settings.getProperty(BackupSettings.ON_SERVER_STOP)) {
+            // Don't perform backup on start or stop if so configured
             return;
         }
 
         // Do backup and check return value!
         if (doBackup()) {
-            ConsoleLogger.info("A backup has been performed successfully. Cause of the Backup: " + cause.name());
+            logAndSendMessage(sender,
+                "A backup has been performed successfully. Cause of the backup: " + cause.name());
         } else {
-            ConsoleLogger.warning("Error while performing a backup! Cause of the Backup: " + cause.name());
+            logAndSendWarning(sender, "Error while performing a backup! Cause of the backup: " + cause.name());
         }
     }
 
-    public boolean doBackup() {
+    private boolean doBackup() {
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
         switch (dataSourceType) {
             case FILE:
-                return fileBackup("auths.db");
+                return performFileBackup("auths.db");
             case MYSQL:
-                return mySqlBackup();
+                return performMySqlBackup();
             case SQLITE:
-                return fileBackup(dbName + ".db");
+                String dbName = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
+                return performFileBackup(dbName + ".db");
             default:
                 ConsoleLogger.warning("Unknown data source type '" + dataSourceType + "' for backup");
         }
@@ -97,17 +100,15 @@ public class BackupService {
         return false;
     }
 
-    private boolean mySqlBackup() {
-        File dirBackup = new File(dataFolder + File.separator + "backups");
+    private boolean performMySqlBackup() {
+        FileUtils.createDirectory(backupFolder);
+        File sqlBackupFile = constructBackupFile("sql");
 
-        if (!dirBackup.exists()) {
-            dirBackup.mkdir();
-        }
         String backupWindowsPath = settings.getProperty(BackupSettings.MYSQL_WINDOWS_PATH);
-        boolean isUsingWindows = checkWindows(backupWindowsPath);
+        boolean isUsingWindows = useWindowsCommand(backupWindowsPath);
         String backupCommand = isUsingWindows
-            ? backupWindowsPath + "\\bin\\mysqldump.exe" + buildMysqlDumpArguments()
-            : "mysqldump" + buildMysqlDumpArguments();
+            ? backupWindowsPath + "\\bin\\mysqldump.exe" + buildMysqlDumpArguments(sqlBackupFile)
+            : "mysqldump" + buildMysqlDumpArguments(sqlBackupFile);
 
         try {
             Process runtimeProcess = Runtime.getRuntime().exec(backupCommand);
@@ -124,14 +125,12 @@ public class BackupService {
         return false;
     }
 
-    private boolean fileBackup(String backend) {
-        File dirBackup = new File(dataFolder + File.separator + "backups");
-
-        if (!dirBackup.exists())
-            dirBackup.mkdir();
+    private boolean performFileBackup(String filename) {
+        FileUtils.createDirectory(backupFolder);
+        File backupFile = constructBackupFile("db");
 
         try {
-            copy("plugins" + File.separator + "AuthMe" + File.separator + backend, path + ".db");
+            copy(new File(dataFolder, filename), backupFile);
             return true;
         } catch (IOException ex) {
             ConsoleLogger.logException("Encountered an error during file backup:", ex);
@@ -146,7 +145,7 @@ public class BackupService {
      * @param windowsPath The path to check
      * @return True if the path is correct, false if it is incorrect or the OS is not Windows
      */
-    private static boolean checkWindows(String windowsPath) {
+    private static boolean useWindowsCommand(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
         if (isWin.contains("win")) {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
@@ -162,27 +161,41 @@ public class BackupService {
     /**
      * Builds the command line arguments to pass along when running the {@code mysqldump} command.
      *
+     * @param sqlBackupFile the file to back up to
      * @return the mysqldump command line arguments
      */
-    private String buildMysqlDumpArguments() {
-        return " -u " + dbUserName + " -p" + dbPassword + " " + dbName
-            + " --tables " + tblname + " -r " + path + ".sql";
+    private String buildMysqlDumpArguments(File sqlBackupFile) {
+        String dbUsername = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
+        String dbPassword = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
+        String dbName     = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
+        String tableName  = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+
+        return " -u " + dbUsername + " -p" + dbPassword + " " + dbName
+            + " --tables " + tableName + " -r " + sqlBackupFile.getPath() + ".sql";
     }
 
-    private static void copy(String src, String dst) throws IOException {
-        InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dst);
+    /**
+     * Constructs the file name to back up the data source to.
+     *
+     * @param fileExtension the file extension to use (e.g. sql)
+     * @return the file to back up the data to
+     */
+    private File constructBackupFile(String fileExtension) {
+        String dateString = dateFormat.format(new Date());
+        return new File(backupFolder, "backup" + dateString + "." + fileExtension);
+    }
 
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
+    private static void copy(File src, File dst) throws IOException {
+        try (InputStream in = new FileInputStream(src);
+             OutputStream out = new FileOutputStream(dst)) {
+            // Transfer bytes from in to out
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
         }
-        in.close();
-        out.close();
     }
-
 
     /**
      * Possible backup causes.

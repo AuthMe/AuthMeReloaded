@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Mar 28 21:48:52 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Apr 23 19:30:08 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -481,13 +481,13 @@ limbo:
     # See above for a description of the values.
     restoreWalkSpeed: 'MAX_RESTORE'
 BackupSystem:
-    # Enable or disable automatic backup
+    # General configuration for backups: if false, no backups are possible
     ActivateBackup: false
-    # Set backup at every start of server
+    # Create backup at every start of server
     OnServerStart: false
-    # Set backup at every stop of server
+    # Create backup at every stop of server
     OnServerStop: true
-    # Windows only mysql installation Path
+    # Windows only: MySQL installation path
     MysqlWindowsPath: 'C:\Program Files\MySQL\MySQL Server 5.1\'
 Converter:
     Rakamak:
@@ -507,4 +507,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Mar 28 21:48:52 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 23 19:30:08 CEST 2017

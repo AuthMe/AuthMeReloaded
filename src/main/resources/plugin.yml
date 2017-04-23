@@ -17,7 +17,7 @@ softdepend:
 commands:
   authme:
     description: AuthMe op commands
-    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
+    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
   login:
     description: Login command
     usage: /login <password>
@@ -55,6 +55,7 @@ permissions:
     children:
       authme.admin.accounts: true
       authme.admin.antibotmessages: true
+      authme.admin.backup: true
       authme.admin.changemail: true
       authme.admin.changepassword: true
       authme.admin.converter: true
@@ -80,6 +81,9 @@ permissions:
     default: op
   authme.admin.antibotmessages:
     description: Permission to see Antibot messages.
+    default: op
+  authme.admin.backup:
+    description: Allows to use the backup command.
     default: op
   authme.admin.changemail:
     description: Administrator command to set or change the email address of a user.
