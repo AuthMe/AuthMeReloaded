@@ -416,7 +416,7 @@
         <!-- ProtocolLib Repo -->
         <repository>
             <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
+            <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
         </repository>
 
         <!-- Multiverse Repo -->
@@ -568,7 +568,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
-            <version>4.2.0</version>
+            <version>4.2.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
