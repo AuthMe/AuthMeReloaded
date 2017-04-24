@@ -416,7 +416,7 @@
         <!-- ProtocolLib Repo -->
         <repository>
             <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
+            <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
 
         <!-- Multiverse Repo -->
