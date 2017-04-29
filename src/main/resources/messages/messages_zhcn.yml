@@ -89,7 +89,7 @@ email_send_failure: '邮件发送失败，请联系管理员'
 show_no_email: '&2您当前并没有任何邮箱与该账号绑定'
 add_email: '&8[&6玩家系统&8] &c请输入“/email add <你的邮箱> <再输入一次以确认>”以把你的邮箱添加到此帐号'
 recovery_email: '&8[&6玩家系统&8] &c忘了你的密码？请输入：“/email recovery <你的邮箱>”'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+change_password_expired: '您不能使用此命令更改密码'
 email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
 
 # Captcha
