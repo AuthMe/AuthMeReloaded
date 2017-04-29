@@ -5,6 +5,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.UnregisterByAdminEvent;
+import fr.xephi.authme.events.UnregisterByPlayerEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AuthGroupHandler;
 import fr.xephi.authme.permission.AuthGroupType;
@@ -66,6 +68,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             if (dataSource.removeAuth(name)) {
                 performUnregister(name, player);
                 ConsoleLogger.info(name + " unregistered himself");
+                bukkitService.createAndCallEvent(isAsync -> new UnregisterByPlayerEvent(player, isAsync));
             } else {
                 service.send(player, MessageKey.ERROR);
             }
@@ -86,6 +89,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     public void adminUnregister(CommandSender initiator, String name, Player player) {
         if (dataSource.removeAuth(name)) {
             performUnregister(name, player);
+            bukkitService.createAndCallEvent(isAsync -> new UnregisterByAdminEvent(player, name, isAsync, initiator));
+
             if (initiator == null) {
                 ConsoleLogger.info(name + " was unregistered");
             } else {
