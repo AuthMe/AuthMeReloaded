@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static fr.xephi.authme.datasource.SqlDataSourceUtils.close;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
 public class MySQL implements DataSource {
@@ -980,11 +979,41 @@ public class MySQL implements DataSource {
     }
 
     /**
+     * Closes a {@link ResultSet} safely.
+     *
+     * @param rs the result set to close
+     */
+    private static void close(ResultSet rs) {
+        try {
+            if (rs != null && !rs.isClosed()) {
+                rs.close();
+            }
+        } catch (SQLException e) {
+            ConsoleLogger.logException("Could not close ResultSet", e);
+        }
+    }
+
+    /**
+     * Closes a {@link Statement} safely.
+     *
+     * @param st the statement set to close
+     */
+    private static void close(Statement st) {
+        try {
+            if (st != null && !st.isClosed()) {
+                st.close();
+            }
+        } catch (SQLException e) {
+            ConsoleLogger.logException("Could not close Statement", e);
+        }
+    }
+
+    /**
      * Checks if the last login column has a type that needs to be migrated.
      *
      * @param con connection to the database
      * @param metaData lastlogin column meta data
-     * @throws SQLException
+     * @throws SQLException .
      */
     private void migrateLastLoginColumn(Connection con, DatabaseMetaData metaData) throws SQLException {
         final int columnType;
