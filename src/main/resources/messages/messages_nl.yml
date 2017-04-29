@@ -91,7 +91,7 @@ change_password_expired: 'Je kunt je wachtwoord niet meer veranderen met dit com
 email_cooldown_error: '&cEr is recent al een e-mail verzonden. Je moet %time wachten voordat je een nieuw bericht kunt versturen.'
 
 # Captcha
-usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <de captcha>'
+usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <theCaptcha>'
 wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha THE_CAPTCHA" in de chat!'
 valid_captcha: '&2De captcha-code is geldig!'
 
