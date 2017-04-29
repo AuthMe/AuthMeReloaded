@@ -9,7 +9,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.login.AsynchronousLogin;
@@ -111,8 +110,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
-            service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
-
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 ProtectInventoryEvent ev = bukkitService.createAndCallEvent(
@@ -129,14 +126,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
-        } else {
-            // Groups logic
-            service.setGroup(player, AuthGroupType.UNREGISTERED);
-
+        } else if (!service.getProperty(RegistrationSettings.FORCE)) {
             // Skip if registration is optional
-            if (!service.getProperty(RegistrationSettings.FORCE)) {
-                return;
-            }
+            return;
         }
 
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;

@@ -61,6 +61,9 @@ public class LimboServiceTest {
     @Mock
     private LimboPersistence limboPersistence;
 
+    @Mock
+    private AuthGroupHandler authGroupHandler;
+
     @BeforeClass
     public static void initLogger() {
         TestHelper.setupLogger();
@@ -92,6 +95,7 @@ public class LimboServiceTest {
 
         assertThat(limboService.hasLimboPlayer("Bobby"), equalTo(true));
         LimboPlayer limbo = limboService.getLimboPlayer("Bobby");
+        verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.REGISTERED_UNAUTHENTICATED);
         assertThat(limbo, not(nullValue()));
         assertThat(limbo.isOperator(), equalTo(true));
         assertThat(limbo.getWalkSpeed(), equalTo(0.3f));
@@ -121,6 +125,7 @@ public class LimboServiceTest {
         verify(player).setWalkSpeed(0.0f);
 
         LimboPlayer limbo = limboService.getLimboPlayer("charles");
+        verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.UNREGISTERED);
         assertThat(limbo, not(nullValue()));
         assertThat(limbo.isOperator(), equalTo(false));
         assertThat(limbo.getWalkSpeed(), equalTo(0.1f));
@@ -143,6 +148,7 @@ public class LimboServiceTest {
         // then
         verify(existingLimbo).clearTasks();
         LimboPlayer newLimbo = limboService.getLimboPlayer("Carlos");
+        verify(authGroupHandler).setGroup(player, newLimbo, AuthGroupType.UNREGISTERED);
         assertThat(newLimbo, not(nullValue()));
         assertThat(newLimbo, not(sameInstance(existingLimbo)));
     }
@@ -168,6 +174,7 @@ public class LimboServiceTest {
         verify(player).setAllowFlight(true);
         verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
         verify(limbo).clearTasks();
+        verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.LOGGED_IN);
         assertThat(limboService.hasLimboPlayer("John"), equalTo(false));
     }
 
@@ -181,6 +188,7 @@ public class LimboServiceTest {
 
         // then
         verify(player, only()).getName();
+        verify(authGroupHandler).setGroup(player, null, AuthGroupType.LOGGED_IN);
     }
 
     @Test
@@ -197,6 +205,7 @@ public class LimboServiceTest {
         // then
         verify(taskManager).registerTimeoutTask(player, limbo);
         verify(taskManager).registerMessageTask(player, limbo, true);
+        verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
 
     @Test
@@ -209,6 +218,7 @@ public class LimboServiceTest {
 
         // then
         verifyZeroInteractions(taskManager);
+        verify(authGroupHandler).setGroup(player, null, AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
 
     private static Player newPlayer(String name) {

@@ -3,8 +3,6 @@ package fr.xephi.authme.service;
 import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
-import fr.xephi.authme.permission.AuthGroupHandler;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
@@ -26,9 +24,6 @@ public class CommonService {
 
     @Inject
     private PermissionsManager permissionsManager;
-
-    @Inject
-    private AuthGroupHandler authGroupHandler;
 
     CommonService() {
     }
@@ -85,16 +80,4 @@ public class CommonService {
     public boolean hasPermission(Player player, PermissionNode node) {
         return permissionsManager.hasPermission(player, node);
     }
-
-    /**
-     * Sets the permission group of the given player.
-     *
-     * @param player the player to process
-     * @param group the group to add the player to
-     */
-    // TODO ljacqu 20170304: Move this out of CommonService
-    public void setGroup(Player player, AuthGroupType group) {
-        authGroupHandler.setGroup(player, group);
-    }
-
 }

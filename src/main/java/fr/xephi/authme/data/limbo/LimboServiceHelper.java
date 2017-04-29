@@ -49,7 +49,7 @@ class LimboServiceHelper {
      * Removes the data that is saved in a LimboPlayer from the player.
      * <p>
      * Note that teleportation on the player is performed by {@link fr.xephi.authme.service.TeleportationService} and
-     * changing the permission group is handled by {@link fr.xephi.authme.permission.AuthGroupHandler}.
+     * changing the permission group is handled by {@link fr.xephi.authme.data.limbo.AuthGroupHandler}.
      *
      * @param player the player to set defaults to
      */

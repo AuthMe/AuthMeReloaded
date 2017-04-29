@@ -2,8 +2,6 @@ package fr.xephi.authme.service;
 
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
-import fr.xephi.authme.permission.AuthGroupHandler;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
@@ -40,9 +38,6 @@ public class CommonServiceTest {
 
     @Mock
     private PermissionsManager permissionsManager;
-
-    @Mock
-    private AuthGroupHandler authGroupHandler;
 
     @Test
     public void shouldGetProperty() {
@@ -112,18 +107,5 @@ public class CommonServiceTest {
         // then
         verify(permissionsManager).hasPermission(player, permission);
         assertThat(result, equalTo(true));
-    }
-
-    @Test
-    public void shouldSetPermissionGroup() {
-        // given
-        Player player = mock(Player.class);
-        AuthGroupType type = AuthGroupType.LOGGED_IN;
-
-        // when
-        commonService.setGroup(player, type);
-
-        // then
-        verify(authGroupHandler).setGroup(player, type);
     }
 }

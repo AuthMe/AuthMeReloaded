@@ -1,9 +1,9 @@
-package fr.xephi.authme.permission;
+package fr.xephi.authme.data.limbo;
 
 /**
  * Represents the group type based on the user's auth status.
  */
-public enum AuthGroupType {
+enum AuthGroupType {
 
     /** Player does not have an account. */
     UNREGISTERED,

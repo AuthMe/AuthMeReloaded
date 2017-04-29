@@ -6,7 +6,6 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
@@ -75,7 +74,6 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
 
         // Set player's data to unauthenticated
         limboService.createLimboPlayer(player, true);
-        service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
 
 }

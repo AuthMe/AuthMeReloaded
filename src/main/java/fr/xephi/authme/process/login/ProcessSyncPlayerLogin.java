@@ -6,8 +6,6 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
-import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.BungeeService;
@@ -17,7 +15,6 @@ import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -68,9 +65,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     public void processPlayerLogin(Player player) {
         final String name = player.getName().toLowerCase();
-
-        commonService.setGroup(player, AuthGroupType.LOGGED_IN);
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
+
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
             limboService.restoreData(player);

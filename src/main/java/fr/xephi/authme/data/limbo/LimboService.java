@@ -34,6 +34,9 @@ public class LimboService {
     @Inject
     private LimboPersistence persistence;
 
+    @Inject
+    private AuthGroupHandler authGroupHandler;
+
     LimboService() {
     }
 
@@ -63,6 +66,8 @@ public class LimboService {
         taskManager.registerMessageTask(player, limboPlayer, isRegistered);
         taskManager.registerTimeoutTask(player, limboPlayer);
         helper.revokeLimboStates(player);
+        authGroupHandler.setGroup(player, limboPlayer,
+            isRegistered ? AuthGroupType.REGISTERED_UNAUTHENTICATED : AuthGroupType.UNREGISTERED);
         entries.put(name, limboPlayer);
         persistence.saveLimboPlayer(player, limboPlayer);
     }
@@ -91,7 +96,7 @@ public class LimboService {
      * Restores the limbo data and subsequently deletes the entry.
      * <p>
      * Note that teleportation on the player is performed by {@link fr.xephi.authme.service.TeleportationService} and
-     * changing the permission group is handled by {@link fr.xephi.authme.permission.AuthGroupHandler}.
+     * changing the permission group is handled by {@link fr.xephi.authme.data.limbo.AuthGroupHandler}.
      *
      * @param player the player whose data should be restored
      */
@@ -110,6 +115,7 @@ public class LimboService {
             ConsoleLogger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
             persistence.removeLimboPlayer(player);
         }
+        authGroupHandler.setGroup(player, limbo, AuthGroupType.LOGGED_IN);
     }
 
     /**
@@ -119,11 +125,12 @@ public class LimboService {
      * @param player the player to reset the tasks for
      */
     public void replaceTasksAfterRegistration(Player player) {
-        getLimboOrLogError(player, "reset tasks")
-            .ifPresent(limbo -> {
-                taskManager.registerTimeoutTask(player, limbo);
-                taskManager.registerMessageTask(player, limbo, true);
-            });
+        Optional<LimboPlayer> limboPlayer = getLimboOrLogError(player, "reset tasks");
+        limboPlayer.ifPresent(limbo -> {
+            taskManager.registerTimeoutTask(player, limbo);
+            taskManager.registerMessageTask(player, limbo, true);
+        });
+        authGroupHandler.setGroup(player, limboPlayer.orElse(null), AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
 
     /**

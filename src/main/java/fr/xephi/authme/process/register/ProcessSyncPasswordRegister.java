@@ -3,7 +3,6 @@ package fr.xephi.authme.process.register;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
@@ -48,7 +47,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     }
 
     public void processPasswordRegister(Player player) {
-        service.setGroup(player, AuthGroupType.REGISTERED_UNAUTHENTICATED);
         service.send(player, MessageKey.REGISTER_SUCCESS);
 
         if (!service.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {

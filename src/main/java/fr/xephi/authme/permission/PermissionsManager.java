@@ -342,19 +342,20 @@ public class PermissionsManager implements Reloadable {
      * @param player     The player
      * @param groupNames The name of the groups to add.
      *
-     * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     * @return True if at least one group was removed, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean removeGroups(Player player, String... groupNames) {
         // If no permissions system is used, return false
-        if (!isEnabled())
+        if (!isEnabled()) {
             return false;
+        }
 
         // Add each group to the user
-        boolean result = true;
+        boolean result = false;
         for (String groupName : groupNames) {
-            if (!handler.removeFromGroup(player, groupName)) {
-                result = false;
+            if (!groupName.isEmpty()) {
+                result |= handler.removeFromGroup(player, groupName);
             }
         }
 

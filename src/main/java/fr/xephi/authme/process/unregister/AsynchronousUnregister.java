@@ -8,8 +8,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.UnregisterByAdminEvent;
 import fr.xephi.authme.events.UnregisterByPlayerEvent;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.AuthGroupHandler;
-import fr.xephi.authme.permission.AuthGroupType;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
@@ -49,9 +47,6 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
     @Inject
     private TeleportationService teleportationService;
-
-    @Inject
-    private AuthGroupHandler authGroupHandler;
 
     @Inject
     private CommandManager commandManager;
@@ -123,7 +118,6 @@ public class AsynchronousUnregister implements AsynchronousProcess {
                 applyBlindEffect(player);
             });
         }
-        authGroupHandler.setGroup(player, AuthGroupType.UNREGISTERED);
         service.send(player, MessageKey.UNREGISTERED_SUCCESS);
     }
 
