@@ -2,6 +2,7 @@ package fr.xephi.authme.service;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.events.FailedLoginEvent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.Bukkit;
@@ -9,6 +10,7 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -48,11 +50,14 @@ public class BukkitServiceTest {
     private Server server;
     @Mock
     private BukkitScheduler scheduler;
+    @Mock
+    private PluginManager pluginManager;
 
     @Before
     public void constructBukkitService() {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         given(server.getScheduler()).willReturn(scheduler);
+        given(server.getPluginManager()).willReturn(pluginManager);
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         bukkitService = new BukkitService(authMe, settings);
     }
@@ -295,6 +300,36 @@ public class BukkitServiceTest {
         // then
         assertThat(result, equalTo(24));
         verify(server).broadcastMessage(message);
+    }
+
+    @Test
+    public void shouldCreateAndEmitSyncEvent() {
+        // given
+        given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
+        bukkitService.reload(settings);
+        Player player = mock(Player.class);
+
+        // when
+        FailedLoginEvent event = bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
+
+        // then
+        verify(pluginManager).callEvent(event);
+        assertThat(event.isAsynchronous(), equalTo(false));
+        assertThat(event.getPlayer(), equalTo(player));
+    }
+
+    @Test
+    public void shouldCreateAndEmitAsyncEvent() {
+        // given
+        Player player = mock(Player.class);
+
+        // when
+        FailedLoginEvent event = bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
+
+        // then
+        verify(pluginManager).callEvent(event);
+        assertThat(event.isAsynchronous(), equalTo(true));
+        assertThat(event.getPlayer(), equalTo(player));
     }
 
     // Note: This method is used through reflections

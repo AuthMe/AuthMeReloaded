@@ -18,7 +18,6 @@ import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -115,9 +114,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                final boolean isAsync = service.getProperty(PluginSettings.USE_ASYNC_TASKS);
-                ProtectInventoryEvent ev = new ProtectInventoryEvent(player, isAsync);
-                bukkitService.callEvent(ev);
+                ProtectInventoryEvent ev = bukkitService.createAndCallEvent(
+                    isAsync -> new ProtectInventoryEvent(player, isAsync));
                 if (ev.isCancelled()) {
                     player.updateInventory();
                     ConsoleLogger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");

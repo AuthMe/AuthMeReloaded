@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Service for operations requiring the Bukkit API, such as for scheduling.
@@ -261,6 +262,20 @@ public class BukkitService implements SettingsDependent {
      */
     public void callEvent(Event event) {
         Bukkit.getPluginManager().callEvent(event);
+    }
+
+    /**
+     * Creates an event with the provided function and emits it.
+     *
+     * @param eventSupplier the event supplier: function taking a boolean specifying whether AuthMe is configured
+     *                      in async mode or not
+     * @param <E> the event type
+     * @return the event that was created and emitted
+     */
+    public <E extends Event> E createAndCallEvent(Function<Boolean, E> eventSupplier) {
+        E event = eventSupplier.apply(useAsyncTasks);
+        callEvent(event);
+        return event;
     }
 
     /**
