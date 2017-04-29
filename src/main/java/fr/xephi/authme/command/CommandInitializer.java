@@ -16,6 +16,7 @@ import fr.xephi.authme.command.executable.authme.MessagesCommand;
 import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
 import fr.xephi.authme.command.executable.authme.PurgeCommand;
 import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
+import fr.xephi.authme.command.executable.authme.PurgePlayerCommand;
 import fr.xephi.authme.command.executable.authme.RegisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.ReloadCommand;
 import fr.xephi.authme.command.executable.authme.SetEmailCommand;
@@ -232,6 +233,18 @@ public class CommandInitializer {
             .withArgument("all", "Add 'all' at the end to also purge players with lastlogin = 0", true)
             .permission(AdminPermission.PURGE)
             .executableCommand(PurgeCommand.class)
+            .register();
+
+        // Purge player command
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
+            .labels("purgeplayer")
+            .description("Purges the data of one player")
+            .detailedDescription("Purges data of the given player.")
+            .withArgument("player", "The player to purge", false)
+            .withArgument("options", "'force' to run without checking if player is registered", true)
+            .permission(AdminPermission.PURGE_PLAYER)
+            .executableCommand(PurgePlayerCommand.class)
             .register();
 
         // Backup command

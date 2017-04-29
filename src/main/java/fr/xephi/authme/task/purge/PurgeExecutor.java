@@ -21,7 +21,7 @@ import static fr.xephi.authme.util.FileUtils.makePath;
 /**
  * Executes the purge operations.
  */
-class PurgeExecutor {
+public class PurgeExecutor {
 
     @Inject
     private Settings settings;

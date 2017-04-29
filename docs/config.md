@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 23 19:30:08 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Apr 29 18:27:38 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -52,6 +52,10 @@ DataSource:
     mySQLlastlocZ: 'z'
     # Column for storing player LastLocation - World Name
     mySQLlastlocWorld: 'world'
+    # Column for storing player LastLocation - Yaw
+    mySQLlastlocYaw: 'yaw'
+    # Column for storing player LastLocation - Pitch
+    mySQLlastlocPitch: 'pitch'
     # Overrides the size of the DB Connection Pool, -1 = Auto
     poolSize: -1
 ExternalBoardOptions:
@@ -390,7 +394,7 @@ Purge:
     removePlayerDat: false
     # Do we need to remove the Essentials/userdata/player.yml file during purge process?
     removeEssentialsFile: false
-    # World where are players.dat stores
+    # World in which the players.dat are stored
     defaultWorld: 'world'
     # Remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge?
     removeLimitedCreativesInventories: false
@@ -507,4 +511,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 23 19:30:08 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Apr 29 18:27:38 CEST 2017

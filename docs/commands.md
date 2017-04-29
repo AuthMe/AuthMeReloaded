@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 23 19:29:43 CEST 2017. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Sat Apr 29 18:27:38 CEST 2017. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -34,6 +34,8 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.admin.setfirstspawn`
 - **/authme purge** &lt;days> [all]: Purge old AuthMeReloaded data longer than the specified number of days ago.
   <br />Requires `authme.admin.purge`
+- **/authme purgeplayer** &lt;player> [options]: Purges data of the given player.
+  <br />Requires `authme.admin.purgeplayer`
 - **/authme backup**: Creates a backup of the registered users.
   <br />Requires `authme.admin.backup`
 - **/authme resetpos** &lt;player/*>: Purge the last know position of the specified player or all of them.
@@ -87,4 +89,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 23 19:29:43 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Apr 29 18:27:38 CEST 2017

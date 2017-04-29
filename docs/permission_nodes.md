@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 23 19:32:06 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sat Apr 29 18:27:41 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -19,6 +19,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.admin.purge** – Administrator command to purge old user data.
 - **authme.admin.purgebannedplayers** – Administrator command to purge all data associated with banned players.
 - **authme.admin.purgelastpos** – Administrator command to purge the last position of a user.
+- **authme.admin.purgeplayer** – Administrator command to purge a given player.
 - **authme.admin.register** – Administrator command to register a new user.
 - **authme.admin.reload** – Administrator command to reload the plugin configuration.
 - **authme.admin.seeotheraccounts** – Permission to see the other accounts of the players that log in.
@@ -60,4 +61,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 23 19:32:06 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Apr 29 18:27:41 CEST 2017

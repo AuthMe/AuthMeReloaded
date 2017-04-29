@@ -199,6 +199,23 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
+     * Gets the player by the given name, regardless if they are offline or
+     * online.
+     * <p>
+     * This method may involve a blocking web request to get the UUID for the
+     * given name.
+     * <p>
+     * This will return an object even if the player does not exist. To this
+     * method, all players will exist.
+     *
+     * @param name the name the player to retrieve
+     * @return an offline player
+     */
+    public OfflinePlayer getOfflinePlayer(String name) {
+        return authMe.getServer().getOfflinePlayer(name);
+    }
+
+    /**
      * Gets a set containing all banned players.
      *
      * @return a set containing banned players

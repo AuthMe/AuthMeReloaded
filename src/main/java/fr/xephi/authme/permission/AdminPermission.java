@@ -86,6 +86,11 @@ public enum AdminPermission implements PermissionNode {
     PURGE_BANNED_PLAYERS("authme.admin.purgebannedplayers"),
 
     /**
+     * Administrator command to purge a given player.
+     */
+    PURGE_PLAYER("authme.admin.purgeplayer"),
+
+    /**
      * Administrator command to toggle the AntiBot protection status.
      */
     SWITCH_ANTIBOT("authme.admin.switchantibot"),

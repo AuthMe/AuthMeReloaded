@@ -17,7 +17,7 @@ softdepend:
 commands:
   authme:
     description: AuthMe op commands
-    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
+    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
   login:
     description: Login command
     usage: /login <password>
@@ -67,6 +67,7 @@ permissions:
       authme.admin.purge: true
       authme.admin.purgebannedplayers: true
       authme.admin.purgelastpos: true
+      authme.admin.purgeplayer: true
       authme.admin.register: true
       authme.admin.reload: true
       authme.admin.seeotheraccounts: true
@@ -117,6 +118,9 @@ permissions:
     default: op
   authme.admin.purgelastpos:
     description: Administrator command to purge the last position of a user.
+    default: op
+  authme.admin.purgeplayer:
+    description: Administrator command to purge a given player.
     default: op
   authme.admin.register:
     description: Administrator command to register a new user.

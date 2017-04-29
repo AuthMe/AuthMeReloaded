@@ -24,7 +24,7 @@ public final class PurgeSettings implements SettingsHolder {
     public static final Property<Boolean> REMOVE_ESSENTIALS_FILES =
         newProperty("Purge.removeEssentialsFile", false);
 
-    @Comment("World where are players.dat stores")
+    @Comment("World in which the players.dat are stored")
     public static final Property<String> DEFAULT_WORLD =
         newProperty("Purge.defaultWorld", "world");
 
