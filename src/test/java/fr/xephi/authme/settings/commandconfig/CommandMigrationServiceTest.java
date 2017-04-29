@@ -6,7 +6,6 @@ import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -115,7 +114,6 @@ public class CommandMigrationServiceTest {
     }
 
     @Test
-    @Ignore // TODO ConfigMe/#29: Create PropertyResource#getKeys
     public void shouldRewriteForEmptyFile() {
         // given
         File commandFile = TestHelper.getJarFile("/fr/xephi/authme/settings/commandconfig/commands.empty.yml");

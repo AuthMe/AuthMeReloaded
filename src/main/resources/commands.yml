@@ -11,7 +11,7 @@
 #   welcome:
 #     command: 'msg %p Welcome to the server!'
 #     executor: CONSOLE
-#
+# 
 # This will make the console execute the msg command to the player.
 # Each command under an event has a name you can choose freely (e.g. 'welcome' as above),
 # after which a mandatory 'command' field defines the command to run,
@@ -23,8 +23,10 @@
 #   broadcast:
 #     command: 'broadcast %p has joined, welcome back!'
 #     executor: CONSOLE
-#
-# Supported command events: onLogin, onJoin, onRegister
+# 
+# Supported command events: onLogin, onJoin, onRegister, onUnregister
 onJoin: {}
 onLogin: {}
 onRegister: {}
+# Commands to run whenever a player is unregistered (by himself, or by an admin)
+onUnregister: {}

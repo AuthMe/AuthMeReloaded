@@ -14,6 +14,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -62,6 +63,8 @@ public class AsynchronousUnregisterTest {
     private TeleportationService teleportationService;
     @Mock
     private AuthGroupHandler authGroupHandler;
+    @Mock
+    private CommandManager commandManager;
 
     @BeforeClass
     public static void initLogger() {
@@ -119,6 +122,7 @@ public class AsynchronousUnregisterTest {
         verify(authGroupHandler).setGroup(player, AuthGroupType.UNREGISTERED);
         verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
+        verify(commandManager).runCommandsOnUnregister(player);
     }
 
     @Test
@@ -149,6 +153,7 @@ public class AsynchronousUnregisterTest {
         verify(authGroupHandler).setGroup(player, AuthGroupType.UNREGISTERED);
         verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
+        verify(commandManager).runCommandsOnUnregister(player);
     }
 
     @Test
@@ -178,6 +183,7 @@ public class AsynchronousUnregisterTest {
         verifyZeroInteractions(teleportationService, limboService);
         verify(bukkitService, never()).runTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
+        verify(commandManager).runCommandsOnUnregister(player);
     }
 
     @Test
@@ -253,6 +259,7 @@ public class AsynchronousUnregisterTest {
         verify(authGroupHandler).setGroup(player, AuthGroupType.UNREGISTERED);
         verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
+        verify(commandManager).runCommandsOnUnregister(player);
     }
 
     @Test

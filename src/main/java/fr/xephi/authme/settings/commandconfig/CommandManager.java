@@ -34,6 +34,7 @@ public class CommandManager implements Reloadable {
     private WrappedTagReplacer<Command, Player> onJoinCommands;
     private WrappedTagReplacer<Command, Player> onLoginCommands;
     private WrappedTagReplacer<Command, Player> onRegisterCommands;
+    private WrappedTagReplacer<Command, Player> onUnregisterCommands;
 
     @Inject
     CommandManager(@DataFolder File dataFolder, BukkitService bukkitService, GeoIpService geoIpService,
@@ -72,6 +73,15 @@ public class CommandManager implements Reloadable {
         executeCommands(player, onLoginCommands.getAdaptedItems(player));
     }
 
+    /**
+     * Runs the configured commands for when a player has been unregistered.
+     *
+     * @param player the player that has been unregistered
+     */
+    public void runCommandsOnUnregister(Player player) {
+        executeCommands(player, onUnregisterCommands.getAdaptedItems(player));
+    }
+
     private void executeCommands(Player player, List<Command> commands) {
         for (Command command : commands) {
             final String execution = command.getCommand();
@@ -94,6 +104,7 @@ public class CommandManager implements Reloadable {
         onJoinCommands = newReplacer(commandConfig.getOnJoin());
         onLoginCommands = newReplacer(commandConfig.getOnLogin());
         onRegisterCommands = newReplacer(commandConfig.getOnRegister());
+        onUnregisterCommands = newReplacer(commandConfig.getOnUnregister());
     }
 
     private WrappedTagReplacer<Command, Player> newReplacer(Map<String, Command> commands) {

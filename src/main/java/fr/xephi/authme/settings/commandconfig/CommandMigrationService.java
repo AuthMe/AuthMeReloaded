@@ -30,11 +30,16 @@ class CommandMigrationService implements MigrationService {
         final CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.getValue(resource);
         final boolean didMoveCommands = transformOldCommands(commandConfig);
 
-        if (didMoveCommands) { // TODO ConfigMe/#29: Check that loaded file isn't completely empty
+        if (didMoveCommands || isFileEmpty(resource)) {
             resource.setValue("", commandConfig);
             return true;
         }
         return false;
+    }
+
+    private boolean isFileEmpty(PropertyResource resource) {
+        Object root = resource.getObject("");
+        return (root instanceof Map) && ((Map) root).isEmpty();
     }
 
     /**

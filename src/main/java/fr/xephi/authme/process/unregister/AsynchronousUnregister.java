@@ -15,6 +15,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.command.CommandSender;
@@ -52,7 +53,11 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     @Inject
     private AuthGroupHandler authGroupHandler;
 
-    AsynchronousUnregister() { }
+    @Inject
+    private CommandManager commandManager;
+
+    AsynchronousUnregister() {
+    }
 
     /**
      * Processes a player's request to unregister himself. Unregisters the player after
@@ -107,6 +112,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         if (player == null || !player.isOnline()) {
             return;
         }
+        commandManager.runCommandsOnUnregister(player);
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
             teleportationService.teleportOnJoin(player);

@@ -48,10 +48,13 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "    command: 'broadcast %p has joined, welcome back!'",
             "    executor: CONSOLE",
             "",
-            "Supported command events: onLogin, onJoin, onRegister"
+            "Supported command events: onLogin, onJoin, onRegister, onUnregister"
         };
         Map<String, String[]> commentMap = new HashMap<>();
         commentMap.put("", comments);
+        commentMap.put("onUnregister", new String[]{
+            "Commands to run whenever a player is unregistered (by himself, or by an admin)"
+        });
         return commentMap;
     }
 
