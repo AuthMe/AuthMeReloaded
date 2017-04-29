@@ -194,7 +194,6 @@ class PurgeExecutor {
     }
 
     // TODO: What is this method for? Is it correct?
-    // TODO: Make it work with OfflinePlayers group data.
     synchronized void purgePermissions(Collection<OfflinePlayer> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_PERMISSIONS)) {
             return;

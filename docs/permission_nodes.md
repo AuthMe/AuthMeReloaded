@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Oct 23 15:38:58 CEST 2016. See permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sun Apr 23 19:32:06 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -7,6 +7,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.admin.*** – Give access to all admin commands.
 - **authme.admin.accounts** – Administrator command to see all accounts associated with a user.
 - **authme.admin.antibotmessages** – Permission to see Antibot messages.
+- **authme.admin.backup** – Allows to use the backup command.
 - **authme.admin.changemail** – Administrator command to set or change the email address of a user.
 - **authme.admin.changepassword** – Administrator command to change the password of a user.
 - **authme.admin.converter** – Administrator command to convert old or other data to AuthMe data.
@@ -31,6 +32,16 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.bypassantibot** – Permission node to bypass AntiBot protection.
 - **authme.bypassforcesurvival** – Permission for users to bypass force-survival mode.
 - **authme.bypasspurge** – Permission to bypass the purging process.
+- **authme.debug.command** – General permission to use the /authme debug command.
+- **authme.debug.country** – Permission to use the country lookup section.
+- **authme.debug.db** – Permission to view data from the database.
+- **authme.debug.group** – Permission to view permission groups.
+- **authme.debug.limbo** – Permission to use the limbo data viewer.
+- **authme.debug.mail** – Permission to use the test email sender.
+- **authme.debug.perm** – Permission to use the permission checker.
+- **authme.debug.spawn** – Permission to view spawn information.
+- **authme.debug.stats** – Permission to use the stats section.
+- **authme.debug.valid** – Permission to use sample validation.
 - **authme.player.*** – Permission to use all player (non-admin) commands.
 - **authme.player.canbeforced** – Permission for users a login can be forced to.
 - **authme.player.captcha** – Command permission to use captcha.
@@ -49,4 +60,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 23 15:38:58 CEST 2016
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 23 19:32:06 CEST 2017

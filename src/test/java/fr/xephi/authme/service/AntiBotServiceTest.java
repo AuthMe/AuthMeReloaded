@@ -11,7 +11,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -82,7 +81,6 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    @Ignore // TODO ljacqu 20161030: Fix test
     public void shouldActivateAntibot() {
         // given - listening antibot
         runSyncDelayedTaskWithDelay(bukkitService);

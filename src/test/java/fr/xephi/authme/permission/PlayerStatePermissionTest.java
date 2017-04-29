@@ -2,7 +2,7 @@ package fr.xephi.authme.permission;
 
 import org.junit.Test;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -11,39 +11,32 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link PlayerStatePermission}.
  */
-public class PlayerStatePermissionTest {
+public class PlayerStatePermissionTest extends AbstractPermissionsEnumTest {
 
     @Test
-    public void shouldStartWithAuthMeAdminPrefix() {
+    public void shouldNotStartWithOtherPrefixes() {
         // given
-        String requiredPrefix = "authme.";
-        Set<String> forbiddenPrefixes = newHashSet("authme.player", "authme.admin");
+        Set<String> forbiddenPrefixes = newHashSet("authme.player", "authme.admin", "authme.debug");
 
         // when/then
         for (PlayerStatePermission permission : PlayerStatePermission.values()) {
-            if (!permission.getNode().startsWith(requiredPrefix)) {
-                fail("The permission '" + permission + "' does not start with the required prefix '"
-                    + requiredPrefix + "'");
-            } else if (hasAnyPrefix(permission.getNode(), forbiddenPrefixes)) {
+            if (startsWithAny(permission.getNode(), forbiddenPrefixes)) {
                 fail("The permission '" + permission + "' should not start with any of " + forbiddenPrefixes);
             }
         }
     }
 
-    @Test
-    public void shouldHaveUniqueNodes() {
-        // given
-        Set<String> nodes = new HashSet<>();
-
-        // when/then
-        for (PlayerStatePermission permission : PlayerStatePermission.values()) {
-            if (!nodes.add(permission.getNode())) {
-                fail("More than one enum value defines the node '" + permission.getNode() + "'");
-            }
-        }
+    @Override
+    protected PermissionNode[] getPermissionNodes() {
+        return PlayerStatePermission.values();
     }
 
-    private static boolean hasAnyPrefix(String node, Set<String> prefixes) {
+    @Override
+    protected String getRequiredPrefix() {
+        return "authme.";
+    }
+
+    private static boolean startsWithAny(String node, Collection<String> prefixes) {
         for (String prefix : prefixes) {
             if (node.startsWith(prefix)) {
                 return true;
@@ -51,5 +44,4 @@ public class PlayerStatePermissionTest {
         }
         return false;
     }
-
 }

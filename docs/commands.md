@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Mar 22 23:10:32 CET 2017. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Sun Apr 23 19:29:43 CEST 2017. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -32,8 +32,10 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.admin.firstspawn`
 - **/authme setfirstspawn**: Change the first player's spawn to your current position.
   <br />Requires `authme.admin.setfirstspawn`
-- **/authme purge** &lt;days> [all]: Purge old AuthMeReloaded data longer than the specified amount of days ago.
+- **/authme purge** &lt;days> [all]: Purge old AuthMeReloaded data longer than the specified number of days ago.
   <br />Requires `authme.admin.purge`
+- **/authme backup**: Creates a backup of the registered users.
+  <br />Requires `authme.admin.backup`
 - **/authme resetpos** &lt;player/*>: Purge the last know position of the specified player or all of them.
   <br />Requires `authme.admin.purgelastpos`
 - **/authme purgebannedplayers**: Purge all AuthMeReloaded data for banned players.
@@ -47,8 +49,8 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.admin.converter`
 - **/authme messages**: Adds missing messages to the current messages file.
   <br />Requires `authme.admin.updatemessages`
-- **/authme debug** [child] [params]: Allows various operations for debugging.
-  <br />Requires `authme.debug`
+- **/authme debug** [child] [arg] [arg]: Allows various operations for debugging.
+  <br />Requires `authme.debug.command`
 - **/authme help** [query]: View detailed help for /authme commands.
 - **/login** &lt;password>: Command to log in using AuthMeReloaded.
   <br />Requires `authme.player.login`
@@ -82,6 +84,7 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help for /captcha commands.
 
+
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Mar 22 23:10:32 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 23 19:29:43 CEST 2017

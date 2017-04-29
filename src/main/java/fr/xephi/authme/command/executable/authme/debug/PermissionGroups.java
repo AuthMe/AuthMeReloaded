@@ -1,5 +1,7 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -37,5 +39,10 @@ class PermissionGroups implements DebugSection {
                 + String.join(", ", permissionsManager.getGroups(player)));
             sender.sendMessage("Primary group is: " + permissionsManager.getGroups(player));
         }
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.PERM_GROUPS;
     }
 }

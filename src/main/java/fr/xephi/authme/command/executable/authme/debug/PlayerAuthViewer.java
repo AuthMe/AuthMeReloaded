@@ -2,6 +2,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
@@ -48,6 +50,11 @@ class PlayerAuthViewer implements DebugSection {
         } else {
             displayAuthToSender(auth, sender);
         }
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.PLAYER_AUTH_VIEWER;
     }
 
     /**

@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import fr.xephi.authme.permission.PermissionNode;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -26,5 +27,10 @@ interface DebugSection {
      * @param arguments the arguments, without the label of the child command
      */
     void execute(CommandSender sender, List<String> arguments);
+
+    /**
+     * @return permission required to run this section
+     */
+    PermissionNode getRequiredPermission();
 
 }

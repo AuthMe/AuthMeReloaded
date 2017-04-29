@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
+import fr.xephi.authme.command.executable.authme.BackupCommand;
 import fr.xephi.authme.command.executable.authme.ChangePasswordAdminCommand;
 import fr.xephi.authme.command.executable.authme.ConverterCommand;
 import fr.xephi.authme.command.executable.authme.FirstSpawnCommand;
@@ -39,8 +40,8 @@ import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.command.executable.register.RegisterCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.permission.PlayerStatePermission;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -226,11 +227,21 @@ public class CommandInitializer {
             .parent(AUTHME_BASE)
             .labels("purge", "delete")
             .description("Purge old data")
-            .detailedDescription("Purge old AuthMeReloaded data longer than the specified amount of days ago.")
+            .detailedDescription("Purge old AuthMeReloaded data longer than the specified number of days ago.")
             .withArgument("days", "Number of days", false)
             .withArgument("all", "Add 'all' at the end to also purge players with lastlogin = 0", true)
             .permission(AdminPermission.PURGE)
             .executableCommand(PurgeCommand.class)
+            .register();
+
+        // Backup command
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
+            .labels("backup")
+            .description("Perform a backup")
+            .detailedDescription("Creates a backup of the registered users.")
+            .permission(AdminPermission.BACKUP)
+            .executableCommand(BackupCommand.class)
             .register();
 
         // Register the purgelastposition command
@@ -312,10 +323,9 @@ public class CommandInitializer {
             .description("Debug features")
             .detailedDescription("Allows various operations for debugging.")
             .withArgument("child", "The child to execute", true)
-            .withArgument(".", "meaning varies", true)
-            .withArgument(".", "meaning varies", true)
-            .withArgument(".", "meaning varies", true)
-            .permission(PlayerStatePermission.DEBUG_COMMAND)
+            .withArgument("arg", "argument (depends on debug section)", true)
+            .withArgument("arg", "argument (depends on debug section)", true)
+            .permission(DebugSectionPermissions.DEBUG_COMMAND)
             .executableCommand(DebugCommand.class)
             .register();
 

@@ -1,5 +1,7 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import fr.xephi.authme.permission.DebugSectionPermissions;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -47,6 +49,11 @@ class SpawnLocationViewer implements DebugSection {
         } else {
             showPlayerSpawn(sender, arguments.get(0));
         }
+    }
+
+    @Override
+    public PermissionNode getRequiredPermission() {
+        return DebugSectionPermissions.SPAWN_LOCATION;
     }
 
     private void showGeneralInfo(CommandSender sender) {
