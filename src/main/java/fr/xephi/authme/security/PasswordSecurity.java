@@ -29,9 +29,9 @@ public class PasswordSecurity implements Reloadable {
     private PluginManager pluginManager;
 
     @Inject
-    private Factory<EncryptionMethod> hashAlgorithmFactory;
+    private Factory<EncryptionMethod> encryptionMethodFactory;
 
-    private HashAlgorithm algorithm;
+    private EncryptionMethod encryptionMethod;
     private Collection<HashAlgorithm> legacyAlgorithms;
 
     /**
@@ -40,7 +40,8 @@ public class PasswordSecurity implements Reloadable {
     @PostConstruct
     @Override
     public void reload() {
-        this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        HashAlgorithm algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        this.encryptionMethod = initializeEncryptionMethodWithEvent(algorithm);
         this.legacyAlgorithms = settings.getProperty(SecuritySettings.LEGACY_HASHES);
     }
 
@@ -54,8 +55,7 @@ public class PasswordSecurity implements Reloadable {
      */
     public HashedPassword computeHash(String password, String playerName) {
         String playerLowerCase = playerName.toLowerCase();
-        EncryptionMethod method = initializeEncryptionMethodWithEvent(algorithm, playerLowerCase);
-        return method.computeHash(password, playerLowerCase);
+        return encryptionMethod.computeHash(password, playerLowerCase);
     }
 
     /**
@@ -81,14 +81,13 @@ public class PasswordSecurity implements Reloadable {
      * @return True if the password matches, false otherwise
      */
     public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
-        EncryptionMethod method = initializeEncryptionMethodWithEvent(algorithm, playerName);
         String playerLowerCase = playerName.toLowerCase();
-        return methodMatches(method, password, hashedPassword, playerLowerCase)
+        return methodMatches(encryptionMethod, password, hashedPassword, playerLowerCase)
             || compareWithLegacyHashes(password, hashedPassword, playerLowerCase);
     }
 
     /**
-     * Compare the given hash with all available encryption methods to support
+     * Compare the given hash with the configured legacy encryption methods to support
      * the migration to a new encryption method. Upon a successful match, the password
      * will be hashed with the new encryption method and persisted.
      *
@@ -96,13 +95,13 @@ public class PasswordSecurity implements Reloadable {
      * @param hashedPassword The encrypted password to test the clear-text password against
      * @param playerName     The name of the player
      *
-     * @return True if there was a password match with another encryption method, false otherwise
+     * @return True if there was a password match with a configured legacy encryption method, false otherwise
      */
     private boolean compareWithLegacyHashes(String password, HashedPassword hashedPassword, String playerName) {
         for (HashAlgorithm algorithm : legacyAlgorithms) {
             EncryptionMethod method = initializeEncryptionMethod(algorithm);
             if (methodMatches(method, password, hashedPassword, playerName)) {
-                hashPasswordForNewAlgorithm(password, playerName);
+                hashAndSavePasswordWithNewAlgorithm(password, playerName);
                 return true;
             }
         }
@@ -132,13 +131,12 @@ public class PasswordSecurity implements Reloadable {
      * which may have been changed by an external listener.
      *
      * @param algorithm  The algorithm to retrieve the encryption method for
-     * @param playerName The name of the player a password will be hashed for
      *
      * @return The encryption method
      */
-    private EncryptionMethod initializeEncryptionMethodWithEvent(HashAlgorithm algorithm, String playerName) {
+    private EncryptionMethod initializeEncryptionMethodWithEvent(HashAlgorithm algorithm) {
         EncryptionMethod method = initializeEncryptionMethod(algorithm);
-        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
+        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method);
         pluginManager.callEvent(event);
         return event.getMethod();
     }
@@ -154,12 +152,11 @@ public class PasswordSecurity implements Reloadable {
         if (HashAlgorithm.CUSTOM.equals(algorithm) || HashAlgorithm.PLAINTEXT.equals(algorithm)) {
             return null;
         }
-        return hashAlgorithmFactory.newInstance(algorithm.getClazz());
+        return encryptionMethodFactory.newInstance(algorithm.getClazz());
     }
 
-    private void hashPasswordForNewAlgorithm(String password, String playerName) {
-        HashedPassword hashedPassword = initializeEncryptionMethodWithEvent(algorithm, playerName)
-            .computeHash(password, playerName);
+    private void hashAndSavePasswordWithNewAlgorithm(String password, String playerName) {
+        HashedPassword hashedPassword = encryptionMethod.computeHash(password, playerName);
         dataSource.updatePassword(playerName, hashedPassword);
     }
 

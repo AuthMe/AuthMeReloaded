@@ -57,7 +57,10 @@ public class HashAlgorithmIntegrationTest {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
-                EncryptionMethod method = injector.newInstance(algorithm.getClazz());
+                EncryptionMethod method = injector.createIfHasDependencies(algorithm.getClazz());
+                if (method == null) {
+                    fail("Could not create '" + algorithm.getClazz() + "' - forgot to provide some class?");
+                }
                 HashedPassword hashedPassword = method.computeHash("pwd", "name");
                 assertThat("Salt should not be null if method.hasSeparateSalt(), and vice versa. Method: '"
                     + method + "'", StringUtils.isEmpty(hashedPassword.getSalt()), equalTo(!method.hasSeparateSalt()));

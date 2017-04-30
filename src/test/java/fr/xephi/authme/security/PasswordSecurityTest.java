@@ -13,6 +13,7 @@ import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.Joomla;
+import fr.xephi.authme.security.crypts.Md5;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -21,7 +22,6 @@ import org.bukkit.plugin.PluginManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -32,12 +32,14 @@ import java.util.Set;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -166,7 +168,6 @@ public class PasswordSecurityTest {
         // then
         assertThat(result, equalTo(false));
         verify(dataSource).getPassword(playerName);
-        verify(pluginManager, never()).callEvent(any(Event.class));
         verify(method, never()).comparePassword(anyString(), any(HashedPassword.class), anyString());
     }
 
@@ -204,7 +205,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldTryAllMethodsAndFail() {
+    public void shouldTryLegacyMethodsAndFail() {
         // given
         HashedPassword password = new HashedPassword("hashNotMatchingAnyMethod", "someBogusSalt");
         String playerName = "asfd";
@@ -240,11 +241,9 @@ public class PasswordSecurityTest {
 
         // then
         assertThat(result, equalTo(hashedPassword));
-        ArgumentCaptor<PasswordEncryptionEvent> captor = ArgumentCaptor.forClass(PasswordEncryptionEvent.class);
-        verify(pluginManager).callEvent(captor.capture());
-        PasswordEncryptionEvent event = captor.getValue();
+        // Check that an event was fired twice: once on test setup, and once because we called reload()
+        verify(pluginManager, times(2)).callEvent(any(PasswordEncryptionEvent.class));
         assertThat(Joomla.class.equals(caughtClassInEvent), equalTo(true));
-        assertThat(event.getPlayerName(), equalTo(usernameLowerCase));
     }
 
     @Test
@@ -263,7 +262,8 @@ public class PasswordSecurityTest {
         // then
         assertThat(result, equalTo(false));
         verify(dataSource, never()).getAuth(anyString());
-        verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
+        // Check that an event was fired twice: once on test setup, and once because we called reload()
+        verify(pluginManager, times(2)).callEvent(any(PasswordEncryptionEvent.class));
         verify(method, never()).comparePassword(anyString(), any(HashedPassword.class), anyString());
     }
 
@@ -273,13 +273,14 @@ public class PasswordSecurityTest {
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
         given(settings.getProperty(SecuritySettings.LEGACY_HASHES))
             .willReturn(newHashSet(HashAlgorithm.CUSTOM, HashAlgorithm.BCRYPT));
+        reset(pluginManager); // reset behavior when the event is emitted to check that we create an instance of Md5.java
 
         // when
         passwordSecurity.reload();
 
         // then
-        assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "algorithm"),
-            equalTo(HashAlgorithm.MD5));
+        assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "encryptionMethod"),
+            instanceOf(Md5.class));
         Set<HashAlgorithm> legacyHashesSet = newHashSet(HashAlgorithm.CUSTOM, HashAlgorithm.BCRYPT);
         assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "legacyAlgorithms"),
             equalTo(legacyHashesSet));

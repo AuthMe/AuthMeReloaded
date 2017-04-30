@@ -61,10 +61,6 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<HashAlgorithm> PASSWORD_HASH =
         newProperty(HashAlgorithm.class, "settings.security.passwordHash", HashAlgorithm.SHA256);
 
-    @Comment("Salt length for the SALTED2MD5 MD5(MD5(password)+salt)")
-    public static final Property<Integer> DOUBLE_MD5_SALT_LENGTH =
-        newProperty("settings.security.doubleMD5SaltLength", 8);
-
     @Comment({
         "If a password check fails, AuthMe will also try to check with the following hash methods.",
         "Use this setting when you change from one hash method to another.",
@@ -74,6 +70,10 @@ public final class SecuritySettings implements SettingsHolder {
     })
     public static final Property<Set<HashAlgorithm>> LEGACY_HASHES =
         new EnumSetProperty<>(HashAlgorithm.class, "settings.security.legacyHashes");
+
+    @Comment("Salt length for the SALTED2MD5 MD5(MD5(password)+salt)")
+    public static final Property<Integer> DOUBLE_MD5_SALT_LENGTH =
+        newProperty("settings.security.doubleMD5SaltLength", 8);
 
     @Comment("Number of rounds to use if passwordHash is set to PBKDF2. Default is 10000")
     public static final Property<Integer> PBKDF2_NUMBER_OF_ROUNDS =
