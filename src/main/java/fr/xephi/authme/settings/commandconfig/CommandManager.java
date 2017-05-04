@@ -33,6 +33,7 @@ public class CommandManager implements Reloadable {
 
     private WrappedTagReplacer<Command, Player> onJoinCommands;
     private WrappedTagReplacer<Command, Player> onLoginCommands;
+    private WrappedTagReplacer<Command, Player> onSessionLoginCommands;
     private WrappedTagReplacer<Command, Player> onRegisterCommands;
     private WrappedTagReplacer<Command, Player> onUnregisterCommands;
 
@@ -73,6 +74,16 @@ public class CommandManager implements Reloadable {
         executeCommands(player, onLoginCommands.getAdaptedItems(player));
     }
 
+
+    /**
+     * Runs the configured commands for when a player has logged in successfully due to session.
+     *
+     * @param player the player that logged in
+     */
+    public void runCommandsOnSessionLogin(Player player) {
+        executeCommands(player, onSessionLoginCommands.getAdaptedItems(player));
+    }
+
     /**
      * Runs the configured commands for when a player has been unregistered.
      *
@@ -103,6 +114,7 @@ public class CommandManager implements Reloadable {
         CommandConfig commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
         onJoinCommands = newReplacer(commandConfig.getOnJoin());
         onLoginCommands = newReplacer(commandConfig.getOnLogin());
+        onSessionLoginCommands = newReplacer(commandConfig.getOnSessionLogin());
         onRegisterCommands = newReplacer(commandConfig.getOnRegister());
         onUnregisterCommands = newReplacer(commandConfig.getOnUnregister());
     }
