@@ -9,6 +9,7 @@ import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
@@ -37,13 +38,14 @@ public class AuthMeApi {
     private final Management management;
     private final ValidationService validationService;
     private final PlayerCache playerCache;
+    private final GeoIpService geoIpService;
 
     /*
      * Constructor for AuthMeApi.
      */
     @Inject
     AuthMeApi(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
-              Management management, ValidationService validationService, PlayerCache playerCache) {
+              Management management, ValidationService validationService, PlayerCache playerCache, GeoIpService geoIpService) {
         this.plugin = plugin;
         this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
@@ -51,6 +53,7 @@ public class AuthMeApi {
         this.management = management;
         this.validationService = validationService;
         this.playerCache = playerCache;
+        this.geoIpService = geoIpService;
         AuthMeApi.singleton = this;
     }
 
@@ -256,5 +259,27 @@ public class AuthMeApi {
         List<String> registeredNames = new ArrayList<>();
         dataSource.getAllAuths().forEach(auth -> registeredNames.add(auth.getRealName()));
         return registeredNames;
+    }
+
+    /**
+     * Get the country code of the given IP address.
+     *
+     * @param ip textual IP address to lookup.
+     *
+     * @return two-character ISO 3166-1 alpha code for the country.
+     */
+    public String getCountryCode(String ip) {
+        return geoIpService.getCountryCode(ip);
+    }
+
+    /**
+     * Get the country name of the given IP address.
+     *
+     * @param ip textual IP address to lookup.
+     *
+     * @return The name of the country.
+     */
+    public String getCountryName(String ip) {
+        return geoIpService.getCountryName(ip);
     }
 }
