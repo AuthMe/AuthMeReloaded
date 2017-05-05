@@ -1,0 +1,93 @@
+# Registration
+reg_msg: '&3Palun registreeri käsklusega /register <Parool> <KinnitaParool>'
+usage_reg: '&cKasutus: /register <KinnitaParool> <KinnitaParool>'
+reg_only: '&4Ainult registreeritud mängijad saavad liituda! Külasta veebilehte http://example.com, et ennast regsitreerida.'
+kicked_admin_registered: 'Administraator registreeris sind, palun lahku korra serverist ja liitu tagasi.'
+registered: '&2Edukalt registreeritud!'
+reg_disabled: '&cMängusisene registreerimine välja lülitatud!'
+user_regged: '&cKasutajanimi juba registreeritud!'
+
+# Password errors on registration
+password_error: '&cParoolid ei klapi, kontrolli neid!'
+password_error_nick: '&cSa ei saa kasutada oma kasutajanime paroolina, vali teine parool.'
+password_error_unsafe: '&cSee parool ei ole turvaline, vali teistsugune.'
+password_error_chars: '&44Su parool sisaldab keelatud karaktereid. Lubatud karakterid: REG_EX'
+pass_len: '&cSu parool on liiga pikk või lühike, vali teine!'
+
+# Login
+usage_log: '&cKasutus: /login <Parool>'
+wrong_pwd: '&cVale salasõna!'
+login: '&2Edukalt sisselogitud!'
+login_msg: '&cPalun logi sisse kasutades käsklust: /login <Parool>'
+timeout: '&4Sisselogimise taimer täis, palun logi sisse ja proovi uuesti!'
+
+# Errors
+unknown_user: '&cSee kasutaja ei ole registreeritud.'
+denied_command: '&cSelle käskluse kasutamiseks pead sa olema audenditud!'
+denied_chat: '&cChati kasutamiseks pead sa olema audenditud!'
+not_logged_in: '&cSa ei ole sisse loginud!'
+tempban_max_logins: '&cSind on ajutiselt pagendatud serverist, sest sul ebaõnnestus sisse logida liiga palju kordi.'
+max_reg: '&cSu IP peal (%reg_count/%max_acc %reg_names) on liiga palju kontosid!'
+no_perm: '&4Sul ei ole selle käskluse kasutamiseks õigust.'
+error: '&4Süsteemi viga, teata sellest serveri meeskonda.'
+unsafe_spawn: '&cSa logisid välja ohtlikus kohas, viime su turvalisse kohta.'
+kick_forvip: '&3VIP kasutaja liitus serveriga, kui see oli täis. Sind visati välja, et talle ruumi teha.'
+
+# AntiBot
+kick_antibot: 'AntiBot on sisse lülitatud! Sa pead ootama mõned minutid enne kui uuesti sisse logid.'
+antibot_auto_enabled: '&4[AntiBot] AntiBot sisse lülitatud suure liikluse tõttu!'
+antibot_auto_disabled: '&2[AntiBot] AntiBot välja lülitatud peale %m minutit!'
+
+# Other messages
+unregistered: '&cKonto edukalt kustutatud!'
+accounts_owned_self: 'Sa omad %count kontot:'
+accounts_owned_other: 'Mängijal %name on %count kontot:'
+two_factor_create: '&2Su salajane kood on %code. Skänni see siin: %url'
+recovery_code_sent: 'Taastuskood saadeti su meilile.'
+recovery_code_incorrect: 'Taastuskood ei ole õige! Kasuta "/email recovery [email]" uue genereerimiseks.'
+vb_nonActiv: '&cSu konto pole veel aktiveeritud, vaata oma postkasti.'
+usage_unreg: '&cKasutus: /unregister <Parool>'
+pwd_changed: '&2Parool edukalt vahetatud!'
+logged_in: '&cJuba sisselogitud!'
+logout: '&2Edukalt välja logitud!!'
+reload: '&2Andmebaas uuendatud!'
+usage_changepassword: '&cKasutus: /changepassword <vanaParool> <UusParool>'
+
+# Session messages
+invalid_session: '&cSu IP on vahetunud ja sessiooni info on aegunud!'
+valid_session: '&2Sisselogitud eelneva sessiooni tõttu.'
+
+# Error messages when joining
+name_len: '&4Su kasutajanimi on liiga pikk või lühike!'
+regex: '&4Su kasutajanimes on keelatud karaktereid. Lubatud karakterid: REG_EX'
+country_banned: '&4Su riik on siin serveris keelatud!'
+not_owner_error: 'Sa ei ole selle konto omanik. Vali teine nimi.'
+kick_fullserver: '&4Server on täis, proovi hiljem uuesti.'
+same_nick: '&4Sama kasutajanimi mängib juba serveris.'
+invalid_name_case: 'Logi sisse kasutajanimega %valid, mitte kasutajanimega %invalid.'
+same_ip_online: 'Sama IP-ga mängija on juba sees!'
+
+# Email
+usage_email_add: '&cKasutus: /email add <email> <KinnitaEmail>'
+usage_email_change: '&cKasutus: /email change <VanaEmail> <UusEmail>'
+usage_email_recovery: '&cKasutus: /email recovery <Email>'
+new_email_invalid: '&cVale meiliaadress, proovi uuesti.'
+old_email_invalid: '&cVale vana meiliaadress, proovi uuesti.'
+email_invalid: '&cVale meiliaadress, proovi uuesti.'
+email_added: '&2Meiliaadress edukalt vahetatud!'
+email_confirm: '&cPalun kinnita oma meiliaadress.'
+email_changed: '&2Meiliaadress edukalt vahetatud.'
+email_send: '&2Taastuskood edukalt saadetud su meiliaadressile. Kontrolli oma postkasti.'
+email_exists: '&cTaastuskood juba saadetud! Eelmise tühistamiseks ja uue saatmiseks kasuta käsklust:'
+email_show: '&2Su meiliaadress on: &f%email'
+incomplete_email_settings: 'Viga: Meiliaadressi kinnitamiseks vajalikud seaded pole serveri poolt paigas. Kontakteeru meeskonnaga.'
+email_already_used: '&4Meiliaadress juba kasutuses.'
+email_send_failure: 'Meili ei õnnestunud saata. Kontakteeru meeskonnaga.'
+show_no_email: '&2Selle kasutajaga pole seotud ühtegi meiliaadressi.'
+add_email: '&3Lisa oma meiliaadress kasutades käsklust: /email add <Email> <KinnitaEmail>'
+recovery_email: '&3Unustasid salasõna? Kasuta käsklust: /email recovery <Email>'
+
+# Captcha
+usage_captcha: '&3Sisselogimiseks pead lahendama captcha. Tee seda kasutades käsklust: /captcha <Captcha>'
+wrong_captcha: '&cVale captcha, kirjuta "/captcha THE_CAPTCHA" chatti!'
+valid_captcha: '&2Captcha lahendatud!'
