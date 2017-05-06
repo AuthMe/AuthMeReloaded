@@ -1,6 +1,6 @@
 # Registration
 reg_msg: '&2Proszę się zarejestrować przy użyciu &6/register <hasło> <powtórz_hasło>'
-usage_reg: '&4Uzycie: /register <hasło> <powtórz_hasło>'
+usage_reg: '&4Użycie: /register <hasło> <powtórz_hasło>'
 reg_only: '&fTylko zarejestrowani użytkownicy maja do tego dostęp!'
 kicked_admin_registered: 'Administrator zarejestrował Ciebie, możesz się zalogować.'
 registered: '&aPomyślnie zarejestrowany!'
