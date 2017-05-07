@@ -39,7 +39,7 @@ public class SetFirstSpawnCommandTest {
         given(spawnLoader.setFirstSpawn(location)).willReturn(true);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(spawnLoader).setFirstSpawn(location);
@@ -55,7 +55,7 @@ public class SetFirstSpawnCommandTest {
         given(spawnLoader.setFirstSpawn(location)).willReturn(false);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(spawnLoader).setFirstSpawn(location);

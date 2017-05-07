@@ -5,7 +5,7 @@
  * ------------------------------------------------------- *
  * See AuthMeController for details.                       *
  *                                                         *
- * Source: https://github.com/AuthMe-Team/AuthMeReloaded/  *
+ * Source: https://github.com/AuthMe/AuthMeReloaded/       *
  ***********************************************************/
 class Pbkdf2 extends AuthMeController {
 

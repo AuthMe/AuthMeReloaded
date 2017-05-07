@@ -269,6 +269,12 @@ public class AsynchronousLogin implements AsynchronousProcess {
         );
     }
 
+    /**
+     * Sends info about the other accounts owned by the given player to the configured users.
+     *
+     * @param auths the names of the accounts also owned by the player
+     * @param player the player
+     */
     private void displayOtherAccounts(List<String> auths, Player player) {
         if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auths.size() <= 1) {
             return;

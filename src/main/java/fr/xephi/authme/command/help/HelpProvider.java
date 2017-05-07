@@ -58,7 +58,15 @@ public class HelpProvider implements Reloadable {
         this.helpMessagesService = helpMessagesService;
     }
 
-    private List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
+    /**
+     * Builds the help messages based on the provided arguments.
+     *
+     * @param sender the sender to evaluate permissions with
+     * @param result the command result to create help for
+     * @param options output options
+     * @return the generated help messages
+     */
+    private List<String> buildHelpOutput(CommandSender sender, FoundCommandResult result, int options) {
         if (result.getCommandDescription() == null) {
             return singletonList(ChatColor.DARK_RED + "Failed to retrieve any help information!");
         }
@@ -75,8 +83,7 @@ public class HelpProvider implements Reloadable {
         }
 
         CommandDescription command = helpMessagesService.buildLocalizedDescription(result.getCommandDescription());
-        List<String> labels = ImmutableList.copyOf(result.getLabels());
-        List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, labels));
+        List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, result.getLabels()));
 
         if (hasFlag(SHOW_COMMAND, options)) {
             lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMAND) + ": "
@@ -91,30 +98,30 @@ public class HelpProvider implements Reloadable {
             lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
         }
         if (hasFlag(SHOW_ARGUMENTS, options)) {
-            printArguments(command, lines);
+            addArgumentsInfo(command, lines);
         }
         if (hasFlag(SHOW_PERMISSIONS, options) && sender != null) {
-            printPermissions(command, sender, lines);
+            addPermissionsInfo(command, sender, lines);
         }
         if (hasFlag(SHOW_ALTERNATIVES, options)) {
-            printAlternatives(command, correctLabels, lines);
+            addAlternativesInfo(command, correctLabels, lines);
         }
         if (hasFlag(SHOW_CHILDREN, options)) {
-            printChildren(command, labels, lines);
+            addChildrenInfo(command, correctLabels, lines);
         }
 
         return lines;
     }
 
     /**
-     * Output the help for a given command.
+     * Outputs the help for a given command.
      *
-     * @param sender The sender to output the help to
-     * @param result The result to output information about
-     * @param options Output options, see {@link HelpProvider}
+     * @param sender the sender to output the help to
+     * @param result the result to output information about
+     * @param options output options
      */
     public void outputHelp(CommandSender sender, FoundCommandResult result, int options) {
-        List<String> lines = printHelp(sender, result, options);
+        List<String> lines = buildHelpOutput(sender, result, options);
         for (String line : lines) {
             sender.sendMessage(line);
         }
@@ -134,6 +141,7 @@ public class HelpProvider implements Reloadable {
      * @param options the options to process
      * @return the options without any disabled sections
      */
+    @SuppressWarnings("checkstyle:BooleanExpressionComplexity")
     private int filterDisabledSections(int options) {
         if (enabledSections == null) {
             enabledSections = flagFor(HelpSection.COMMAND, SHOW_COMMAND)
@@ -151,7 +159,13 @@ public class HelpProvider implements Reloadable {
         return helpMessagesService.getMessage(section).isEmpty() ? 0 : flag;
     }
 
-    private void printArguments(CommandDescription command, List<String> lines) {
+    /**
+     * Adds help info about the given command's arguments into the provided list.
+     *
+     * @param command the command to generate arguments info for
+     * @param lines the output collection to add the info to
+     */
+    private void addArgumentsInfo(CommandDescription command, List<String> lines) {
         if (command.getArguments().isEmpty()) {
             return;
         }
@@ -171,7 +185,14 @@ public class HelpProvider implements Reloadable {
         }
     }
 
-    private void printAlternatives(CommandDescription command, List<String> correctLabels, List<String> lines) {
+    /**
+     * Adds help info about the given command's alternative labels into the provided list.
+     *
+     * @param command the command for which to generate info about its labels
+     * @param correctLabels labels used to access the command (sanitized)
+     * @param lines the output collection to add the info to
+     */
+    private void addAlternativesInfo(CommandDescription command, List<String> correctLabels, List<String> lines) {
         if (command.getLabels().size() <= 1) {
             return;
         }
@@ -199,7 +220,14 @@ public class HelpProvider implements Reloadable {
         }
     }
 
-    private void printPermissions(CommandDescription command, CommandSender sender, List<String> lines) {
+    /**
+     * Adds help info about the given command's permissions into the provided list.
+     *
+     * @param command the command to generate permissions info for
+     * @param sender the command sender, used to evaluate permissions
+     * @param lines the output collection to add the info to
+     */
+    private void addPermissionsInfo(CommandDescription command, CommandSender sender, List<String> lines) {
         PermissionNode permission = command.getPermission();
         if (permission == null) {
             return;
@@ -240,13 +268,20 @@ public class HelpProvider implements Reloadable {
         return helpMessagesService.getMessage(HelpMessage.NO_PERMISSION);
     }
 
-    private void printChildren(CommandDescription command, List<String> parentLabels, List<String> lines) {
+    /**
+     * Adds help info about the given command's child command into the provided list.
+     *
+     * @param command the command for which to generate info about its child commands
+     * @param correctLabels the labels used to access the given command (sanitized)
+     * @param lines the output collection to add the info to
+     */
+    private void addChildrenInfo(CommandDescription command, List<String> correctLabels, List<String> lines) {
         if (command.getChildren().isEmpty()) {
             return;
         }
 
         lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.CHILDREN) + ":");
-        String parentCommandPath = String.join(" ", parentLabels);
+        String parentCommandPath = String.join(" ", correctLabels);
         for (CommandDescription child : command.getChildren()) {
             lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
                 + ChatColor.GRAY + ChatColor.ITALIC + ": " + helpMessagesService.getDescription(child));
@@ -257,6 +292,23 @@ public class HelpProvider implements Reloadable {
         return (flag & options) != 0;
     }
 
+    /**
+     * Returns a list of labels for the given command, using the labels from the provided labels list
+     * as long as they are correct.
+     * <p>
+     * Background: commands may have multiple labels (e.g. /authme register vs. /authme reg). It is interesting
+     * for us to keep with which label the user requested the command. At the same time, when a user inputs a
+     * non-existent label, we try to find the most similar one. This method keeps all labels that exists and will
+     * default to the command's first label when an invalid label is encountered.
+     * <p>
+     * Examples:
+     *   command = "authme register", labels = {authme, egister}. Output: {authme, register}
+     *   command = "authme register", labels = {authme, reg}.     Output: {authme, reg}
+     *
+     * @param command the command to compare the labels against
+     * @param labels the labels as input by the user
+     * @return list of correct labels, keeping the user's input where possible
+     */
     @VisibleForTesting
     static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
         List<CommandDescription> commands = CommandUtils.constructParentList(command);

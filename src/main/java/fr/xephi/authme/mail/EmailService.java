@@ -80,6 +80,14 @@ public class EmailService {
         return couldSendEmail;
     }
 
+    /**
+     * Sends an email to the user with a recovery code for the password recovery process.
+     *
+     * @param name the name of the player
+     * @param email the player's email address
+     * @param code the recovery code
+     * @return true if email could be sent, false otherwise
+     */
     public boolean sendRecoveryCode(String name, String email, String code) {
         HtmlEmail htmlEmail;
         try {

@@ -90,15 +90,15 @@ public class LastLoginCommandTest {
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn(name);
 
-        long lastLogin = System.currentTimeMillis() -
-            (412 * DAY_IN_MSEC + 10 * HOUR_IN_MSEC - 9000);
+        long lastLogin = System.currentTimeMillis()
+            - (412 * DAY_IN_MSEC + 10 * HOUR_IN_MSEC - 9000);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getLastLogin()).willReturn(lastLogin);
         given(auth.getIp()).willReturn("123.45.66.77");
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(dataSource).getAuth(name);

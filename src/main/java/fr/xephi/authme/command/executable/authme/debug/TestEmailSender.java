@@ -68,6 +68,17 @@ class TestEmailSender implements DebugSection {
         return DebugSectionPermissions.TEST_EMAIL;
     }
 
+    /**
+     * Gets the email address to use based on the sender and the arguments. If the arguments are empty,
+     * we attempt to retrieve the email from the sender. If there is an argument, we verify that it is
+     * an email address.
+     * {@code null} is returned if no email address could be found. This method informs the sender of
+     * the specific error in such cases.
+     *
+     * @param sender the command sender
+     * @param arguments the provided arguments
+     * @return the email to use, or null if none found
+     */
     private String getEmail(CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) {
             DataSourceResult<String> emailResult = dataSource.getEmail(sender.getName());

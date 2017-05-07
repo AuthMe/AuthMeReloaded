@@ -3,7 +3,7 @@ package fr.xephi.authme.datasource;
 /**
  * Wraps a value and allows to specify whether a value is missing or the player is not registered.
  */
-public class DataSourceResult<T> {
+public final class DataSourceResult<T> {
 
     /** Instance used when a player does not exist. */
     private static final DataSourceResult UNKNOWN_PLAYER = new DataSourceResult<>(null);

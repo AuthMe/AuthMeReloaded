@@ -63,7 +63,7 @@ public class PurgeLastPositionCommandTest {
         given(dataSource.getAuth(player)).willReturn(auth);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(dataSource).getAuth(player);

@@ -165,6 +165,8 @@ public class SpawnLoader implements Reloadable {
                 case "authme":
                     spawnLoc = getSpawn();
                     break;
+                default:
+                    // ignore
             }
             if (spawnLoc != null) {
                 return spawnLoc;

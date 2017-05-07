@@ -52,6 +52,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:BooleanExpressionComplexity")
     protected boolean performMigrations(PropertyResource resource, List<Property<?>> properties) {
         boolean changes = false;
         if ("[a-zA-Z0-9_?]*".equals(resource.getString(ALLOWED_NICKNAME_CHARACTERS.getPath()))) {
@@ -229,13 +230,19 @@ public class SettingsMigrationService extends PlainMigrationService {
         return false;
     }
 
+    /**
+     * Converts old boolean configurations for registration to the new enum properties, if applicable.
+     *
+     * @param resource The property resource
+     * @return True if the configuration has changed, false otherwise
+     */
     private static boolean convertToRegistrationType(PropertyResource resource) {
-        String oldEmailRegistrationPath = "settings.registration.enableEmailRegistrationSystem";
-        if (RegistrationSettings.REGISTRATION_TYPE.isPresent(resource) || !resource.contains(oldEmailRegistrationPath)) {
+        String oldEmailRegisterPath = "settings.registration.enableEmailRegistrationSystem";
+        if (RegistrationSettings.REGISTRATION_TYPE.isPresent(resource) || !resource.contains(oldEmailRegisterPath)) {
             return false;
         }
 
-        boolean useEmail = newProperty(oldEmailRegistrationPath, false).getValue(resource);
+        boolean useEmail = newProperty(oldEmailRegisterPath, false).getValue(resource);
         RegistrationType registrationType = useEmail ? RegistrationType.EMAIL : RegistrationType.PASSWORD;
 
         String useConfirmationPath = useEmail
@@ -253,6 +260,12 @@ public class SettingsMigrationService extends PlainMigrationService {
         return true;
     }
 
+    /**
+     * Migrates old permission group settings to the new configurations.
+     *
+     * @param resource The property resource
+     * @return True if the configuration has changed, false otherwise
+     */
     private static boolean mergeAndMovePermissionGroupSettings(PropertyResource resource) {
         boolean performedChanges;
 
@@ -274,7 +287,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     }
 
     /**
-     * Checks for an old property path and moves it to a new path if present.
+     * Checks for an old property path and moves it to a new path if it is present and the new path is not yet set.
      *
      * @param oldProperty The old property (create a temporary {@link Property} object with the path)
      * @param newProperty The new property to move the value to

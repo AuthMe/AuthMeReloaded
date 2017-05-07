@@ -40,7 +40,7 @@ public class FirstSpawnCommandTest {
         Player player = mock(Player.class);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(player).teleport(firstSpawn);
@@ -54,7 +54,7 @@ public class FirstSpawnCommandTest {
         Player player = mock(Player.class);
 
         // when
-        command.executeCommand(player, Collections.<String>emptyList());
+        command.executeCommand(player, Collections.emptyList());
 
         // then
         verify(player).sendMessage(argThat(containsString("spawn has failed")));

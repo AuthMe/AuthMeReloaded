@@ -118,7 +118,7 @@ public class AccountsCommandTest {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("123.45.67.89");
-        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String>emptyList());
+        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.emptyList());
 
         // when
         command.executeCommand(sender, arguments);

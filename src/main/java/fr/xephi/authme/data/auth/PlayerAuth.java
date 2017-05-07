@@ -234,6 +234,11 @@ public class PlayerAuth {
         private float yaw;
         private float pitch;
 
+        /**
+         * Creates a PlayerAuth object.
+         *
+         * @return the generated PlayerAuth
+         */
         public PlayerAuth build() {
             PlayerAuth auth = new PlayerAuth();
             auth.nickname = checkNotNull(name).toLowerCase();
@@ -277,6 +282,12 @@ public class PlayerAuth {
             return this;
         }
 
+        /**
+         * Sets the location info based on the argument.
+         *
+         * @param location the location info to set
+         * @return this builder instance
+         */
         public Builder location(Location location) {
             this.x = location.getX();
             this.y = location.getY();

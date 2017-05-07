@@ -20,6 +20,9 @@ import static fr.xephi.authme.command.help.HelpProvider.SHOW_CHILDREN;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_COMMAND;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_DESCRIPTION;
 
+/**
+ * Displays help information to a user.
+ */
 public class HelpCommand implements ExecutableCommand {
 
     @Inject
@@ -51,7 +54,8 @@ public class HelpCommand implements ExecutableCommand {
 
         int mappedCommandLevel = result.getCommandDescription().getLabelCount();
         if (mappedCommandLevel == 1) {
-            helpProvider.outputHelp(sender, result, SHOW_COMMAND | SHOW_DESCRIPTION | SHOW_CHILDREN | SHOW_ALTERNATIVES);
+            helpProvider.outputHelp(sender, result,
+                SHOW_COMMAND | SHOW_DESCRIPTION | SHOW_CHILDREN | SHOW_ALTERNATIVES);
         } else {
             helpProvider.outputHelp(sender, result, ALL_OPTIONS);
         }

@@ -47,7 +47,7 @@ public class SwitchAntiBotCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(sender).sendMessage(argThat(containsString("status: ACTIVE")));

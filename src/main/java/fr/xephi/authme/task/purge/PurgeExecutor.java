@@ -2,11 +2,11 @@ package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -67,8 +67,7 @@ public class PurgeExecutor {
         }
 
         int i = 0;
-        File dataFolder = new File("." + File.separator + "plugins" + File.separator + "AntiXRayData"
-            + File.separator + "PlayerData");
+        File dataFolder = new File(makePath(".", "plugins", "AntiXRayData", "PlayerData"));
         if (!dataFolder.exists() || !dataFolder.isDirectory()) {
             return;
         }
@@ -102,8 +101,7 @@ public class PurgeExecutor {
         }
 
         int i = 0;
-        File dataFolder = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative"
-            + File.separator + "inventories");
+        File dataFolder = new File(makePath(".", "plugins", "LimitedCreative", "inventories"));
         if (!dataFolder.exists() || !dataFolder.isDirectory()) {
             return;
         }
@@ -148,11 +146,11 @@ public class PurgeExecutor {
         }
 
         int i = 0;
-        File dataFolder = new File(server.getWorldContainer()
-            , makePath(settings.getProperty(PurgeSettings.DEFAULT_WORLD), "players"));
+        File dataFolder = new File(server.getWorldContainer(),
+            makePath(settings.getProperty(PurgeSettings.DEFAULT_WORLD), "players"));
 
         for (OfflinePlayer offlinePlayer : cleared) {
-            File playerFile = new File(dataFolder, PlayerUtils.getUUIDorName(offlinePlayer) + ".dat");
+            File playerFile = new File(dataFolder, PlayerUtils.getUuidOrName(offlinePlayer) + ".dat");
             if (playerFile.delete()) {
                 i++;
             }
@@ -184,7 +182,7 @@ public class PurgeExecutor {
         }
 
         for (OfflinePlayer offlinePlayer : cleared) {
-            File playerFile = new File(userDataFolder, PlayerUtils.getUUIDorName(offlinePlayer) + ".yml");
+            File playerFile = new File(userDataFolder, PlayerUtils.getUuidOrName(offlinePlayer) + ".yml");
             if (playerFile.exists() && playerFile.delete()) {
                 i++;
             }
@@ -193,7 +191,7 @@ public class PurgeExecutor {
         ConsoleLogger.info("AutoPurge: Removed " + i + " EssentialsFiles");
     }
 
-    // TODO: What is this method for? Is it correct?
+    // TODO #676: What is this method for? Is it correct?
     synchronized void purgePermissions(Collection<OfflinePlayer> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_PERMISSIONS)) {
             return;

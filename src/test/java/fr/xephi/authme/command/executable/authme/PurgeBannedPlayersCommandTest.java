@@ -46,7 +46,7 @@ public class PurgeBannedPlayersCommandTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        command.executeCommand(sender, Collections.<String>emptyList());
+        command.executeCommand(sender, Collections.emptyList());
 
         // then
         verify(bukkitService).getBannedPlayers();

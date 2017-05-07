@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.initialization.HasCleanup;
-import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.crypts.Whirlpool;
 import fr.xephi.authme.util.expiring.ExpiringMap;

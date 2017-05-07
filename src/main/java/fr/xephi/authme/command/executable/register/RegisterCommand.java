@@ -97,6 +97,15 @@ public class RegisterCommand extends PlayerCommand {
         return null;
     }
 
+    /**
+     * Verifies that the second argument is valid (based on the configuration)
+     * to perform a password registration. The player is informed if the check
+     * is unsuccessful.
+     *
+     * @param player the player to register
+     * @param arguments the provided arguments
+     * @return true if valid, false otherwise
+     */
     private boolean isSecondArgValidForPasswordRegistration(Player player, List<String> arguments) {
         RegisterSecondaryArgument secondArgType = commonService.getProperty(REGISTER_SECOND_ARGUMENT);
         // cases where args.size < 2
@@ -143,6 +152,15 @@ public class RegisterCommand extends PlayerCommand {
         }
     }
 
+    /**
+     * Verifies that the second argument is valid (based on the configuration)
+     * to perform an email registration. The player is informed if the check
+     * is unsuccessful.
+     *
+     * @param player the player to register
+     * @param arguments the provided arguments
+     * @return true if valid, false otherwise
+     */
     private boolean isSecondArgValidForEmailRegistration(Player player, List<String> arguments) {
         RegisterSecondaryArgument secondArgType = commonService.getProperty(REGISTER_SECOND_ARGUMENT);
         // cases where args.size < 2

@@ -57,7 +57,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
 
     @Override
     public LimboPlayer getLimboPlayer(Player player) {
-        String uuid = PlayerUtils.getUUIDorName(player);
+        String uuid = PlayerUtils.getUuidOrName(player);
         File file = getPlayerSegmentFile(uuid);
         Map<String, LimboPlayer> entries = readLimboPlayers(file);
         return entries == null ? null : entries.get(uuid);
@@ -65,7 +65,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
 
     @Override
     public void saveLimboPlayer(Player player, LimboPlayer limbo) {
-        String uuid = PlayerUtils.getUUIDorName(player);
+        String uuid = PlayerUtils.getUuidOrName(player);
         File file = getPlayerSegmentFile(uuid);
 
         Map<String, LimboPlayer> entries = null;
@@ -79,17 +79,17 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
             entries = new HashMap<>();
         }
 
-        entries.put(PlayerUtils.getUUIDorName(player), limbo);
+        entries.put(PlayerUtils.getUuidOrName(player), limbo);
         saveEntries(entries, file);
     }
 
     @Override
     public void removeLimboPlayer(Player player) {
-        String uuid = PlayerUtils.getUUIDorName(player);
+        String uuid = PlayerUtils.getUuidOrName(player);
         File file = getPlayerSegmentFile(uuid);
         if (file.exists()) {
             Map<String, LimboPlayer> entries = readLimboPlayers(file);
-            if (entries != null && entries.remove(PlayerUtils.getUUIDorName(player)) != null) {
+            if (entries != null && entries.remove(PlayerUtils.getUuidOrName(player)) != null) {
                 saveEntries(entries, file);
             }
         }

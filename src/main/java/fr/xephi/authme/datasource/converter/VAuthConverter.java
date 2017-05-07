@@ -42,8 +42,9 @@ public class VAuthConverter implements Converter {
                     } catch (Exception | NoSuchMethodError e) {
                         pname = getName(UUID.fromString(name));
                     }
-                    if (pname == null)
+                    if (pname == null) {
                         continue;
+                    }
                     auth = PlayerAuth.builder()
                         .name(pname.toLowerCase())
                         .realName(pname)

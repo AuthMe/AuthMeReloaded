@@ -82,7 +82,7 @@ public final class TestCommandsUtil {
         throw new IllegalStateException("Could not find command with label '" + label + "'");
     }
 
-    /** Shortcut command to initialize a new test command. */
+    /* Shortcut command to initialize a new test command. */
     private static CommandDescription createCommand(PermissionNode permission, CommandDescription parent,
                                                     List<String> labels, Class<? extends ExecutableCommand> commandClass,
                                                     CommandArgumentDescription... arguments) {
@@ -103,7 +103,7 @@ public final class TestCommandsUtil {
         return command.register();
     }
 
-    /** Shortcut command to initialize a new argument description. */
+    /* Shortcut command to initialize a new argument description. */
     private static CommandArgumentDescription newArgument(String label, boolean isOptional) {
         return new CommandArgumentDescription(label, "'" + label + "' argument description", isOptional);
     }

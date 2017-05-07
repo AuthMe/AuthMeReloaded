@@ -19,7 +19,7 @@ public final class PlayerUtils {
      *
      * @return player's UUID or Name in String.
      */
-    public static String getUUIDorName(OfflinePlayer player) {
+    public static String getUuidOrName(OfflinePlayer player) {
         // We may made this configurable in future
         // so we can have uuid support.
         try {

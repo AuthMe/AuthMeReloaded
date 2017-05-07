@@ -89,6 +89,11 @@ public class MySQL implements DataSource {
         setParameters(settings);
     }
 
+    /**
+     * Retrieves various settings.
+     *
+     * @param settings the settings to read properties from
+     */
     private void setParameters(Settings settings) {
         this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
@@ -112,6 +117,9 @@ public class MySQL implements DataSource {
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
 
+    /**
+     * Sets up the connection arguments to the database.
+     */
     private void setConnectionArguments() {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
@@ -159,6 +167,9 @@ public class MySQL implements DataSource {
         return ds.getConnection();
     }
 
+    /**
+     * Creates the table or any of its required columns if they don't exist.
+     */
     private void checkTablesAndColumns() throws SQLException {
         try (Connection con = getConnection(); Statement st = con.createStatement()) {
             // Create table with ID column if it doesn't exist

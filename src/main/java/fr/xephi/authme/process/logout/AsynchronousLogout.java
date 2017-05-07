@@ -12,6 +12,9 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
+/**
+ * Async task when a player wants to log out.
+ */
 public class AsynchronousLogout implements AsynchronousProcess {
 
     @Inject
@@ -29,7 +32,12 @@ public class AsynchronousLogout implements AsynchronousProcess {
     AsynchronousLogout() {
     }
 
-    public void logout(final Player player) {
+    /**
+     * Handles a player's request to log out.
+     *
+     * @param player the player wanting to log out
+     */
+    public void logout(Player player) {
         final String name = player.getName().toLowerCase();
         if (!playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.NOT_LOGGED_IN);

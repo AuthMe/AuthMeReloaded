@@ -39,6 +39,13 @@ public class SendMailSsl {
             && !settings.getProperty(MAIL_PASSWORD).isEmpty();
     }
 
+    /**
+     * Creates a {@link HtmlEmail} object configured as per the AuthMe config
+     * with the given email address as recipient.
+     *
+     * @param emailAddress the email address the email is destined for
+     * @return the created HtmlEmail object
+     */
     public HtmlEmail initializeMail(String emailAddress) throws EmailException {
         String senderMail = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_ADDRESS))
             ? settings.getProperty(EmailSettings.MAIL_ACCOUNT)
@@ -66,6 +73,13 @@ public class SendMailSsl {
         return email;
     }
 
+    /**
+     * Sets the given content to the HtmlEmail object and sends it.
+     *
+     * @param content the content to set
+     * @param email the email object to send
+     * @return true upon success, false otherwise
+     */
     public boolean sendEmail(String content, HtmlEmail email) {
         Thread.currentThread().setContextClassLoader(SendMailSsl.class.getClassLoader());
         // Issue #999: Prevent UnsupportedDataTypeException: no object DCH for MIME type multipart/alternative
@@ -93,6 +107,12 @@ public class SendMailSsl {
         }
     }
 
+    /**
+     * Sets properties to the given HtmlEmail object based on the port from which it will be sent.
+     *
+     * @param email the email object to configure
+     * @param port the configured outgoing port
+     */
     private void setPropertiesForPort(HtmlEmail email, int port) throws EmailException {
         switch (port) {
             case 587:

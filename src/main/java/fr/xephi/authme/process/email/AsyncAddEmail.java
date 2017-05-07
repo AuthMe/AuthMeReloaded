@@ -32,6 +32,12 @@ public class AsyncAddEmail implements AsynchronousProcess {
 
     AsyncAddEmail() { }
 
+    /**
+     * Handles the request to add the given email to the player's account.
+     *
+     * @param player the player to add the email to
+     * @param email the email to add
+     */
     public void addEmail(Player player, String email) {
         String playerName = player.getName().toLowerCase();
 

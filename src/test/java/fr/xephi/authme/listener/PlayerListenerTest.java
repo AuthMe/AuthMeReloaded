@@ -212,7 +212,7 @@ public class PlayerListenerTest {
     public void shouldNotCancelEventForAuthenticatedPlayer() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Collections.<String>emptyList());
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Collections.emptyList());
         Player player = playerWithMockedServer();
         // PlayerCommandPreprocessEvent#getPlayer is final, so create a spy instead of a mock
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));

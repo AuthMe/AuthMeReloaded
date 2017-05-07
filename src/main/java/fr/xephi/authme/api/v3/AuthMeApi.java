@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The current AuthMeApi of AuthMe.
+ * The current API of AuthMe.
  *
  * Recommended method of retrieving the AuthMeApi object:
  * <code>
@@ -44,8 +44,9 @@ public class AuthMeApi {
      * Constructor for AuthMeApi.
      */
     @Inject
-    AuthMeApi(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
-              Management management, ValidationService validationService, PlayerCache playerCache, GeoIpService geoIpService) {
+    AuthMeApi(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PlayerCache playerCache,
+              PasswordSecurity passwordSecurity, Management management, ValidationService validationService,
+              GeoIpService geoIpService) {
         this.plugin = plugin;
         this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;

@@ -90,7 +90,7 @@ public class PluginHookService {
     }
 
     /**
-     * Query the CombatTagPlus plugin whether the given player is an NPC.
+     * Queries the CombatTagPlus plugin whether the given player is an NPC.
      *
      * @param player The player to verify
      * @return True if the player is an NPC according to CombatTagPlus, false if not or if the plugin is unavailable
@@ -103,14 +103,23 @@ public class PluginHookService {
     // ------
     // "Is plugin available" methods
     // ------
+    /**
+     * @return true if we have a hook to Essentials, false otherwise
+     */
     public boolean isEssentialsAvailable() {
         return essentials != null;
     }
 
+    /**
+     * @return true if we have a hook to Multiverse, false otherwise
+     */
     public boolean isMultiverseAvailable() {
         return multiverse != null;
     }
 
+    /**
+     * @return true if we have a hook to CombatTagPlus, false otherwise
+     */
     public boolean isCombatTagPlusAvailable() {
         return combatTagPlus != null;
     }
@@ -118,6 +127,10 @@ public class PluginHookService {
     // ------
     // Hook methods
     // ------
+
+    /**
+     * Attempts to create a hook into Essentials.
+     */
     public void tryHookToEssentials() {
         try {
             essentials = getPlugin(pluginManager, "Essentials", Essentials.class);
@@ -126,6 +139,9 @@ public class PluginHookService {
         }
     }
 
+    /**
+     * Attempts to create a hook into CombatTagPlus.
+     */
     public void tryHookToCombatPlus() {
         try {
             combatTagPlus = getPlugin(pluginManager, "CombatTagPlus", CombatTagPlus.class);
@@ -134,6 +150,9 @@ public class PluginHookService {
         }
     }
 
+    /**
+     * Attempts to create a hook into Multiverse.
+     */
     public void tryHookToMultiverse() {
         try {
             multiverse = getPlugin(pluginManager, "Multiverse-Core", MultiverseCore.class);
@@ -145,12 +164,23 @@ public class PluginHookService {
     // ------
     // Unhook methods
     // ------
+    /**
+     * Unhooks from Essentials.
+     */
     public void unhookEssentials() {
         essentials = null;
     }
+
+    /**
+     * Unhooks from CombatTagPlus.
+     */
     public void unhookCombatPlus() {
         combatTagPlus = null;
     }
+
+    /**
+     * Unhooks from Multiverse.
+     */
     public void unhookMultiverse() {
         multiverse = null;
     }

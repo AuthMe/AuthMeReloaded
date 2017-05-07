@@ -212,6 +212,7 @@ public class CommandInitializerTest {
                 testCollectionForCommand(command, CommandUtils.getMinNumberOfArguments(command), mandatoryArguments);
                 testCollectionForCommand(command, CommandUtils.getMaxNumberOfArguments(command), totalArguments);
             }
+
             private void testCollectionForCommand(CommandDescription command, int argCount,
                                                   Map<Class<? extends ExecutableCommand>, Integer> collection) {
                 final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand();

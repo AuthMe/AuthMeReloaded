@@ -44,7 +44,7 @@ public class PlayerUtilsTest {
         given(player.getUniqueId()).willReturn(uuid);
 
         // when
-        String result = PlayerUtils.getUUIDorName(player);
+        String result = PlayerUtils.getUuidOrName(player);
 
         // then
         assertThat(result, equalTo(uuid.toString()));
@@ -59,7 +59,7 @@ public class PlayerUtilsTest {
         given(player.getName()).willReturn(name);
 
         // when
-        String result = PlayerUtils.getUUIDorName(player);
+        String result = PlayerUtils.getUuidOrName(player);
 
         // then
         assertThat(result, equalTo(name));

@@ -44,7 +44,7 @@ public class CommandMapper {
      * @param parts The parts to map to commands and arguments
      * @return The generated {@link FoundCommandResult}
      */
-    public FoundCommandResult mapPartsToCommand(CommandSender sender, final List<String> parts) {
+    public FoundCommandResult mapPartsToCommand(CommandSender sender, List<String> parts) {
         if (Utils.isCollectionEmpty(parts)) {
             return new FoundCommandResult(null, parts, null, 0.0, MISSING_BASE_COMMAND);
         }
@@ -87,6 +87,14 @@ public class CommandMapper {
         return classes;
     }
 
+    /**
+     * Return the command whose label matches the given parts the best. This method is called when
+     * a successful mapping could not be performed.
+     *
+     * @param base the base command
+     * @param parts the command parts
+     * @return the closest result
+     */
     private static FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
         // Return the base command with incorrect arg count error if we only have one part
         if (parts.size() <= 1) {
@@ -189,14 +197,10 @@ public class CommandMapper {
     }
 
     private static double getLabelDifference(CommandDescription command, String givenLabel) {
-        double minDifference = Double.POSITIVE_INFINITY;
-        for (String commandLabel : command.getLabels()) {
-            double difference = StringUtils.getDifference(commandLabel, givenLabel);
-            if (difference < minDifference) {
-                minDifference = difference;
-            }
-        }
-        return minDifference;
+        return command.getLabels().stream()
+            .map(label -> StringUtils.getDifference(label, givenLabel))
+            .min(Double::compareTo)
+            .orElseThrow(() -> new IllegalStateException("Command does not have any labels set"));
     }
 
 }

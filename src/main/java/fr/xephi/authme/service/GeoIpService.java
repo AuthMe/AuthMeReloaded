@@ -76,6 +76,11 @@ public class GeoIpService {
         return false;
     }
 
+    /**
+     * Create a thread which will attempt to download new data from the GeoLite website.
+     *
+     * @return the generated download thread
+     */
     private Thread createDownloadTask() {
         return new Thread(new Runnable() {
             @Override
