@@ -16,6 +16,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -42,10 +43,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
@@ -107,15 +104,8 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             m.send(player, MessageKey.DENIED_CHAT);
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
-            Set<Player> recipients = event.getRecipients();
-            Iterator<Player> iter = recipients.iterator();
-            while (iter.hasNext()) {
-                Player p = iter.next();
-                if (listenerService.shouldCancelEvent(p)) {
-                    iter.remove();
-                }
-            }
-            if (recipients.isEmpty()) {
+            event.getRecipients().removeIf(listenerService::shouldCancelEvent);
+            if (event.getRecipients().isEmpty()) {
                 event.setCancelled(true);
             }
         }
@@ -300,18 +290,17 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
-        final Player player = (Player) event.getPlayer();
+        final HumanEntity player = event.getPlayer();
 
-        if (!listenerService.shouldCancelEvent(player)) {
-            return;
+        if (listenerService.shouldCancelEvent(player)) {
+            event.setCancelled(true);
+
+            /*
+             * @note little hack cause InventoryOpenEvent cannot be cancelled for
+             * real, cause no packet is sent to server by client for the main inv
+             */
+            bukkitService.scheduleSyncDelayedTask(player::closeInventory, 1);
         }
-        event.setCancelled(true);
-
-        /*
-         * @note little hack cause InventoryOpenEvent cannot be cancelled for
-         * real, cause no packet is send to server by client for the main inv
-         */
-        bukkitService.scheduleSyncDelayedTask(player::closeInventory, 1);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)

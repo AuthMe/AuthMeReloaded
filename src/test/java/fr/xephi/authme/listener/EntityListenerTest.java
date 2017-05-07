@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.ReflectionTestUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -19,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -193,5 +196,24 @@ public class EntityListenerTest {
         // then
         verify(listenerService).shouldCancelEvent(player);
         verify(event).setCancelled(true);
+    }
+
+    @Test
+    public void shouldHandleOldShooterMethod() {
+        // given
+        ReflectionTestUtils.setField(listener, "shooterIsLivingEntity", true);
+        ReflectionTestUtils.setField(listener, "getShooter", null);
+        Projectile projectile = mock(Projectile.class);
+        Player shooter = mock(Player.class);
+        given(projectile.getShooter()).willReturn(shooter);
+        ProjectileLaunchEvent event = new ProjectileLaunchEvent(projectile);
+        given(listenerService.shouldCancelEvent(shooter)).willReturn(true);
+
+        // when
+        listener.onProjectileLaunch(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(shooter);
+        assertThat(event.isCancelled(), equalTo(true));
     }
 }

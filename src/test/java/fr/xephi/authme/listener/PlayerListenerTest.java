@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -7,17 +8,23 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -31,7 +38,9 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.inventory.InventoryView;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -49,9 +58,11 @@ import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
@@ -95,6 +106,8 @@ public class PlayerListenerTest {
     private TeleportationService teleportationService;
     @Mock
     private ValidationService validationService;
+    @Mock
+    private JoinMessageService joinMessageService;
 
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
@@ -594,6 +607,236 @@ public class PlayerListenerTest {
         verifyZeroInteractions(dataSource);
         verify(event).setKickMessage(message);
         verify(event).setResult(PlayerLoginEvent.Result.KICK_OTHER);
+    }
+
+    @Test
+    public void shouldRemoveMessageOnQuit() {
+        // given
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(true);
+        given(antiBotService.wasPlayerKicked(anyString())).willReturn(false);
+        Player player = mockPlayerWithName("Billy");
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "Player has quit the server");
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        assertThat(event.getQuitMessage(), nullValue());
+        verify(antiBotService).wasPlayerKicked("Billy");
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    public void shouldRemoveMessageForUnloggedUser() {
+        // given
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(true);
+        String name = "Joel";
+        given(antiBotService.wasPlayerKicked(name)).willReturn(true);
+        Player player = mockPlayerWithName(name);
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "Joel exits the party");
+        given(listenerService.shouldCancelEvent(event)).willReturn(true);
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        assertThat(event.getQuitMessage(), nullValue());
+        verify(antiBotService).wasPlayerKicked(name);
+        verifyZeroInteractions(management);
+    }
+
+    @Test
+    public void shouldProcessPlayerAndKeepQuitMessage() {
+        // given
+        String name = "Louis";
+        Player player = mockPlayerWithName(name);
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
+        String quitMessage = "The player has left the server.";
+        PlayerQuitEvent event = new PlayerQuitEvent(player, quitMessage);
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        assertThat(event.getQuitMessage(), equalTo(quitMessage));
+        verify(antiBotService).wasPlayerKicked(name);
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    public void shouldCancelInventoryClickEvent() {
+        // given
+        InventoryClickEvent event = mock(InventoryClickEvent.class);
+        HumanEntity player = mock(Player.class);
+        given(event.getWhoClicked()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+
+        // when
+        listener.onPlayerInventoryClick(event);
+
+        // then
+        verify(event).setCancelled(true);
+    }
+
+    @Test
+    public void shouldAllowInventoryClickEvent() {
+        // given
+        InventoryClickEvent event = mock(InventoryClickEvent.class);
+        HumanEntity player = mock(Player.class);
+        given(event.getWhoClicked()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+
+        // when
+        listener.onPlayerInventoryClick(event);
+
+        // then
+        verify(event, only()).getWhoClicked();
+    }
+
+    @Test
+    public void shouldAllowSignChangeEvent() {
+        // given
+        SignChangeEvent event = mock(SignChangeEvent.class);
+        Player player = mock(Player.class);
+        given(event.getPlayer()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+
+        // when
+        listener.onSignChange(event);
+
+        // then
+        verify(event, only()).getPlayer();
+    }
+
+    @Test
+    public void shouldCancelSignChangeEvent() {
+        // given
+        SignChangeEvent event = mock(SignChangeEvent.class);
+        Player player = mock(Player.class);
+        given(event.getPlayer()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+
+        // when
+        listener.onSignChange(event);
+
+        // then
+        verify(event).setCancelled(true);
+    }
+
+    @Test
+    public void shouldAllowInventoryOpen() {
+        // given
+        HumanEntity player = mock(Player.class);
+        InventoryView transaction = mock(InventoryView.class);
+        given(transaction.getPlayer()).willReturn(player);
+        InventoryOpenEvent event = new InventoryOpenEvent(transaction);
+        given(event.getPlayer()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+
+        // when
+        listener.onPlayerInventoryOpen(event);
+
+        // then
+        assertThat(event.isCancelled(), equalTo(false));
+        verifyZeroInteractions(bukkitService);
+    }
+
+    @Test
+    public void shouldCancelInventoryOpen() {
+        // given
+        HumanEntity player = mock(Player.class);
+        InventoryView transaction = mock(InventoryView.class);
+        given(transaction.getPlayer()).willReturn(player);
+        InventoryOpenEvent event = new InventoryOpenEvent(transaction);
+        given(event.getPlayer()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+
+        // when
+        listener.onPlayerInventoryOpen(event);
+
+        // then
+        assertThat(event.isCancelled(), equalTo(true));
+        TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
+        verify(player).closeInventory();
+    }
+
+    @Test
+    public void shouldNotModifyJoinMessage() {
+        // given
+        Player player = mock(Player.class);
+        String joinMsg = "The player joined";
+        PlayerJoinEvent event = new PlayerJoinEvent(player, joinMsg);
+        given(settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE)).willReturn("");
+        given(settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)).willReturn(false);
+
+        // when
+        listener.onJoinMessage(event);
+
+        // then
+        assertThat(event.getJoinMessage(), equalTo(joinMsg));
+        verifyZeroInteractions(joinMessageService);
+    }
+
+    @Test
+    public void shouldRemoveJoinMessage() {
+        // given
+        Player player = mock(Player.class);
+        String joinMsg = "The player joined";
+        PlayerJoinEvent event = new PlayerJoinEvent(player, joinMsg);
+        given(settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)).willReturn(true);
+
+        // when
+        listener.onJoinMessage(event);
+
+        // then
+        assertThat(event.getJoinMessage(), nullValue());
+        verifyZeroInteractions(joinMessageService);
+    }
+
+    @Test
+    public void shouldUseCustomMessage() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("doooew");
+        given(player.getDisplayName()).willReturn("Displ");
+        String joinMsg = "The player joined";
+        PlayerJoinEvent event = new PlayerJoinEvent(player, joinMsg);
+        given(settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE))
+            .willReturn("Hello {PLAYERNAME} (aka {DISPLAYNAME})");
+        given(settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)).willReturn(false);
+
+        // when
+        listener.onJoinMessage(event);
+
+        // then
+        assertThat(event.getJoinMessage(), equalTo("Hello doooew (aka Displ)"));
+        verifyZeroInteractions(joinMessageService);
+    }
+
+    @Test
+    public void shouldDelayJoinMessage() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("thename0");
+        given(player.getDisplayName()).willReturn("(not used)");
+        String joinMsg = "The player joined";
+        PlayerJoinEvent event = new PlayerJoinEvent(player, joinMsg);
+        given(settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE))
+            .willReturn("{PLAYERNAME} is joining us");
+        given(settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)).willReturn(true);
+
+        // when
+        listener.onJoinMessage(event);
+
+        // then
+        assertThat(event.getJoinMessage(), nullValue());
+        verify(joinMessageService).putMessage("thename0", "thename0 is joining us");
     }
 
     private static Player mockPlayerWithName(String name) {

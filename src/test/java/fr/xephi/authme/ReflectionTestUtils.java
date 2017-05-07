@@ -16,14 +16,14 @@ public final class ReflectionTestUtils {
     }
 
     /**
-     * Set the field of a given object to a new value with reflection.
+     * Sets the field of a given object to a new value with reflection.
      *
-     * @param clazz The class of the object
-     * @param instance The instance to modify (pass null for static fields)
-     * @param fieldName The field name
-     * @param value The value to set the field to
+     * @param clazz the class declaring the field
+     * @param instance the instance to modify (pass null for static fields)
+     * @param fieldName the field name
+     * @param value the value to set the field to
      */
-    public static <T> void setField(Class<T> clazz, T instance, String fieldName, Object value) {
+    public static <T> void setField(Class<? super T> clazz, T instance, String fieldName, Object value) {
         try {
             Field field = getField(clazz, fieldName);
             field.set(instance, value);
@@ -32,6 +32,18 @@ public final class ReflectionTestUtils {
                 format("Could not set value to field '%s' for instance '%s' of class '%s'",
                     fieldName, instance, clazz.getName()), e);
         }
+    }
+
+    /**
+     * Sets the field on the given instance to the new value.
+     *
+     * @param instance the instance to modify
+     * @param fieldName the field name
+     * @param value the value to set the field to
+     */
+    @SuppressWarnings("unchecked")
+    public static void setField(Object instance, String fieldName, Object value) {
+        setField((Class) instance.getClass(), instance, fieldName, value);
     }
 
     private static <T> Field getField(Class<T> clazz, String fieldName) {
@@ -62,13 +74,13 @@ public final class ReflectionTestUtils {
     }
 
     /**
-     * Return the method on the given class with the supplied parameter types.
+     * Returns the method on the given class with the supplied parameter types.
      *
-     * @param clazz The class to retrieve a method from
-     * @param methodName The name of the method
-     * @param parameterTypes The parameter types the method to retrieve has
+     * @param clazz the class to retrieve a method from
+     * @param methodName the name of the method
+     * @param parameterTypes the parameter types the method to retrieve has
      *
-     * @return The method of the class, set to be accessible
+     * @return the method of the class, set to be accessible
      */
     public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
         try {
