@@ -10,7 +10,7 @@ user_regged: '&8[&6玩家系统&8] &c此用户已经在此服务器注册过'
 # Password errors on registration
 password_error: '&8[&6玩家系统&8] &f密码不相同'
 password_error_nick: '&8[&6玩家系统&8] &f你不能使用你的名字作为密码。 '
-password_error_unsafe: '&8[&6玩家系统&8] &f你不能使用安全性过低的码。 '
+password_error_unsafe: '&8[&6玩家系统&8] &f你不能使用安全性过低的密码。 '
 password_error_chars: '&4您的密码包含了非法字符。可使用的字符: REG_EX'
 pass_len: '&8[&6玩家系统&8] &你的密码没有达到要求！'
 
@@ -34,7 +34,7 @@ error: '&8[&6玩家系统&8] &f发现错误，请联系管理员'
 kick_forvip: '&8[&6玩家系统&8] &cA VIP玩家加入了已满的服务器!'
 
 # AntiBot
-kick_antibot: '&8[&6玩家系统&8] &f防机器人程序已启用 !请稍等几分钟後才再次进入服务器'
+kick_antibot: '&8[&6玩家系统&8] &f防机器人程序已启用 !请稍等几分钟后再次进入服务器'
 antibot_auto_enabled: '&8[&6玩家系统&8] &f防机器人程序由于大量异常连接而启用'
 antibot_auto_disabled: '&8[&6玩家系统&8] &f防机器人程序由于异常连接减少而在 %m 分钟后停止'
 
@@ -58,7 +58,7 @@ reload: '&8[&6玩家系统&8] &f配置以及数据已经重新加载完毕'
 usage_changepassword: '&8[&6玩家系统&8] &f正确用法：“/changepassword 旧密码 新密码”'
 
 # Session messages
-invalid_session: '&8[&6玩家系统&8] &f登陆数据异常，请等待登陆结束'
+invalid_session: '&8[&6玩家系统&8] &f登录数据异常，请等待登录结束'
 valid_session: '&8[&6玩家系统&8] &c欢迎回来，已帮你自动登录到此服务器'
 
 # Error messages when joining
