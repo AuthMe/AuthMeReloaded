@@ -30,6 +30,7 @@ public final class TestHelper {
 
     public static final String SOURCES_FOLDER = "src/main/java/";
     public static final String TEST_SOURCES_FOLDER = "src/test/java/";
+    public static final String TEST_RESOURCES_FOLDER = "src/test/resources/";
     public static final String PROJECT_ROOT = "/fr/xephi/authme/";
 
     private TestHelper() {

@@ -6,6 +6,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.datasource.converter.CrazyLoginConverter;
+import fr.xephi.authme.datasource.converter.LoginSecurityConverter;
 import fr.xephi.authme.datasource.converter.MySqlToSqlite;
 import fr.xephi.authme.datasource.converter.RakamakConverter;
 import fr.xephi.authme.datasource.converter.RoyalAuthConverter;
@@ -85,6 +86,7 @@ public class ConverterCommand implements ExecutableCommand {
             .put("vauth", VAuthConverter.class)
             .put("sqlitetosql", SqliteToSql.class)
             .put("mysqltosqlite", MySqlToSqlite.class)
+            .put("loginsecurity", LoginSecurityConverter.class)
             .build();
     }
 
