@@ -1,4 +1,4 @@
-# Registration
+# 注册
 reg_msg: '&8[&6玩家系统&8] &c请输入“/register <密码> <再输入一次以确定密码>”以注册'
 usage_reg: '&8[&6玩家系统&8] &c正确用法：“/register <密码> <再输入一次以确定密码>”'
 reg_only: '&8[&6玩家系统&8] &f只允许注册过的玩家进服！请到 https://example.cn 注册'
@@ -7,21 +7,21 @@ registered: '&8[&6玩家系统&8] &c已成功注册！'
 reg_disabled: '&8[&6玩家系统&8] &c目前服务器暂时禁止注册，请到服务器论坛以得到更多资讯'
 user_regged: '&8[&6玩家系统&8] &c此用户已经在此服务器注册过'
 
-# Password errors on registration
+# 注册时密码错误
 password_error: '&8[&6玩家系统&8] &f密码不相同'
 password_error_nick: '&8[&6玩家系统&8] &f你不能使用你的名字作为密码。 '
 password_error_unsafe: '&8[&6玩家系统&8] &f你不能使用安全性过低的密码。 '
 password_error_chars: '&4您的密码包含了非法字符。可使用的字符: REG_EX'
 pass_len: '&8[&6玩家系统&8] &你的密码没有达到要求！'
 
-# Login
+# 登录
 usage_log: '&8[&6玩家系统&8] &c正确用法：“/login <密码>”'
 wrong_pwd: '&8[&6玩家系统&8] &c错误的密码'
 login: '&8[&6玩家系统&8] &c已成功登录！'
 login_msg: '&8[&6玩家系统&8] &c请输入“/login <密码>”以登录'
 timeout: '&8[&6玩家系统&8] &f给你登录的时间已经过了'
 
-# Errors
+# 出错
 unknown_user: '&8[&6玩家系统&8] &c此用户名还未注册过'
 denied_command: '&c您需要先通过验证才能使用该命令！'
 denied_chat: '&c您需要先通过验证才能聊天！'
@@ -33,12 +33,12 @@ no_perm: '&8[&6玩家系统&8] &c没有权限'
 error: '&8[&6玩家系统&8] &f发现错误，请联系管理员'
 kick_forvip: '&8[&6玩家系统&8] &cA VIP玩家加入了已满的服务器!'
 
-# AntiBot
+# 防机器人
 kick_antibot: '&8[&6玩家系统&8] &f防机器人程序已启用 !请稍等几分钟后再次进入服务器'
 antibot_auto_enabled: '&8[&6玩家系统&8] &f防机器人程序由于大量异常连接而启用'
 antibot_auto_disabled: '&8[&6玩家系统&8] &f防机器人程序由于异常连接减少而在 %m 分钟后停止'
 
-# Other messages
+# 其他消息
 unregistered: '&8[&6玩家系统&8] &c成功删除此用户！'
 accounts_owned_self: '您拥有 %count 个账户：'
 accounts_owned_other: '玩家 %name 拥有 %count 个账户：'
@@ -57,11 +57,11 @@ logout: '&8[&6玩家系统&8] &c已成功登出！'
 reload: '&8[&6玩家系统&8] &f配置以及数据已经重新加载完毕'
 usage_changepassword: '&8[&6玩家系统&8] &f正确用法：“/changepassword 旧密码 新密码”'
 
-# Session messages
+# 会话消息
 invalid_session: '&8[&6玩家系统&8] &f登录数据异常，请等待登录结束'
 valid_session: '&8[&6玩家系统&8] &c欢迎回来，已帮你自动登录到此服务器'
 
-# Error messages when joining
+# 加入时出错
 name_len: '&8[&6玩家系统&8] &c你的用户名太短或者太长了'
 regex: '&8[&6玩家系统&8] &c你的用户名包含非法字母，用户名里允许的字母: REG_EX'
 country_banned: '这个服务器禁止该国家登陆'
@@ -71,7 +71,7 @@ same_nick: '&8[&6玩家系统&8] &f同样的用户名现在在线且已经登录
 invalid_name_case: '&8[&6玩家系统&8] &c你应该使用「%valid」而并非「%invalid」登入游戏。 '
 same_ip_online: '已有一个同IP玩家在游戏中了！'
 
-# Email
+# 电子邮件
 usage_email_add: '&8[&6玩家系统&8] &f用法: /email add <邮箱> <确认电子邮件> '
 usage_email_change: '&8[&6玩家系统&8] &f用法: /email change <旧邮箱> <新邮箱> '
 usage_email_recovery: '&8[&6玩家系统&8] &f用法: /email recovery <邮箱>'
@@ -92,12 +92,12 @@ recovery_email: '&8[&6玩家系统&8] &c忘了你的密码？请输入：“/ema
 change_password_expired: '您不能使用此命令更改密码'
 email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
 
-# Captcha
+# 验证码
 usage_captcha: '&8[&6玩家系统&8] &c正确用法：/captcha <theCaptcha>'
 wrong_captcha: '&8[&6玩家系统&8] &c错误的验证码，请输入：“/captcha THE_CAPTCHA”'
 valid_captcha: '&8[&6玩家系统&8] &c你的验证码是有效的！'
 
-# Time units
+# 时间单位
 second: '秒'
 seconds: '秒'
 minute: '分钟'
