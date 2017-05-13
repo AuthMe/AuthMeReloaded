@@ -16,8 +16,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static fr.xephi.authme.util.Utils.logAndSendMessage;
 
@@ -59,6 +61,12 @@ public class LoginSecurityConverter implements Converter {
         }
     }
 
+    /**
+     * Performs the conversion from LoginSecurity to AuthMe.
+     *
+     * @param sender the command sender who launched the conversion
+     * @param connection connection to the LoginSecurity data source
+     */
     @VisibleForTesting
     void performConversion(CommandSender sender, Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
@@ -70,6 +78,12 @@ public class LoginSecurityConverter implements Converter {
         }
     }
 
+    /**
+     * Migrates the accounts.
+     *
+     * @param sender the command sender
+     * @param resultSet result set with the account data to migrate
+     */
     private void migrateData(CommandSender sender, ResultSet resultSet) throws SQLException {
         List<String> skippedPlayers = new ArrayList<>();
         long successfulSaves = 0;
@@ -91,13 +105,23 @@ public class LoginSecurityConverter implements Converter {
         }
     }
 
+    /**
+     * Creates a PlayerAuth based on data extracted from the given result set.
+     *
+     * @param name the name of the player to build
+     * @param resultSet the result set to extract data from
+     * @return the created player auth object
+     */
     private static PlayerAuth buildAuthFromLoginSecurity(String name, ResultSet resultSet) throws SQLException {
+        // TODO #792: Last login should be null if not present
+        long lastLoginMillis = Optional.ofNullable(resultSet.getTimestamp("last_login"))
+            .map(Timestamp::getTime).orElse(System.currentTimeMillis());
         return PlayerAuth.builder()
             .name(name)
             .realName(name)
             .password(resultSet.getString("password"), null)
             .ip(resultSet.getString("ip_address"))
-            .lastLogin(resultSet.getLong("last_login"))
+            .lastLogin(lastLoginMillis)
             // TODO #792: Register date
             .locX(resultSet.getDouble("x"))
             .locY(resultSet.getDouble("y"))
@@ -108,6 +132,13 @@ public class LoginSecurityConverter implements Converter {
             .build();
     }
 
+    /**
+     * Creates a {@link Connection} to the LoginSecurity data source based on the settings,
+     * or informs the sender of the error that occurred.
+     *
+     * @param sender the command sender who launched the conversion
+     * @return the created connection object, or null if it failed
+     */
     private Connection createConnectionOrInformSender(CommandSender sender) {
         Connection connection;
         if (useSqlite) {
@@ -133,6 +164,12 @@ public class LoginSecurityConverter implements Converter {
         return connection;
     }
 
+    /**
+     * Creates a connection to SQLite.
+     *
+     * @param path the path to the SQLite database
+     * @return the created connection
+     */
     @VisibleForTesting
     Connection createSqliteConnection(String path) {
         try {
