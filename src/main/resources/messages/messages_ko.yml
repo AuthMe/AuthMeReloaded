@@ -59,7 +59,7 @@ usage_changepassword: '&c사용법: /changepassword <예전 비밀번호> <새 �
 
 # Session messages
 invalid_session: '&cIP가 변경되어 세션이 만료되었습니다!'
-valid_session: '&2Logged-in due to Session Reconnection.'
+valid_session: '&2세션 재 연결로 인해 로그인 되었습니다.'
 
 # Error messages when joining
 name_len: '&4닉네임이 너무 짧거나 깁니다!'
