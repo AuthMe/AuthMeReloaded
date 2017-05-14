@@ -2,7 +2,7 @@
 #           kds123321@naver.com             #
 #        14.05.2017 Thanks for use          #
 
-# Registration
+# 회원가입
 reg_msg: '&3다음 명령어로 서버에 가입해주세요: /register <비밀번호> <비밀번호 확인>'
 usage_reg: '&c사용법: /register <비밀번호> <비밀번호 확인>'
 reg_only: '&4등록된 유저만 서버에 접속할 수 있습니다! http://example.com 에 방문하여 가입해 주세요!'
@@ -11,21 +11,21 @@ registered: '&2회원가입이 완료되었습니다!'
 reg_disabled: '&c게임 안에서의 회원가입은 비활성화 되어 있습니다!'
 user_regged: '&c이미 이 닉네임으로 회원가입이 되어 있습니다!'
 
-# Password errors on registration
+# 회원가입중 비밀번호 오류
 password_error: '&c비밀번호가 일치하지 않습니다, 다시 확인해주세요!'
 password_error_nick: '&c자신의 닉네임을 비밀번호로 사용할 수 없습니다, 다른 비밀번호를 사용하세요...'
 password_error_unsafe: '&c이 비밀번호는 안전하지 않습니다, 다른 비밀번호를 사용하세요...'
 password_error_chars: '&4비밀번호에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
 pass_len: '&c너의 비번은 좆같이 길거나 좆같이 작아! 제발 다른걸 써줘!'
 
-# Login
+# 로그인
 usage_log: '&c사용법: /login <비밀번호>'
 wrong_pwd: '&c비밀번호가 잘못되었습니다!'
 login: '&2로그인 되었습니다!'
 login_msg: '&c다음 명령어로 로그인 해주세요: /login <비밀번호>'
 timeout: '&4로그인 시간이 초과 되었습니다, 서버에서 추방 당했습니다, 다시 시도 하세요!'
 
-# Errors
+# 오류
 unknown_user: '&c이 유저는 등록되지 않았습니다!'
 denied_command: '&c이 명령어를 사용하려면 회원가입/로그인을 해야합니다!'
 denied_chat: '&c채팅을 하려면 회원가입/로그인을 해야합니다!'
@@ -42,7 +42,7 @@ kick_antibot: 'AntiBot 보호 모드가 활성화 되었습니다! 서버에 접
 antibot_auto_enabled: '&4[AntiBotService] 엄청나게 많은 연결이 감지 되어 AntiBot이 활성화 되었습니다!'
 antibot_auto_disabled: '&2[AntiBotService] %m 분 후에 AntiBot이 비활성화 됩니다!'
 
-# Other messages
+# 기타 메세지
 unregistered: '&c회원 탈퇴가 완료되었습니다!'
 accounts_owned_self: '%count 개의 계정을 소유하고 있습니다:'
 accounts_owned_other: '플레이어 %name 는 %count 개의 계정을 소유하고 있습니다:'
@@ -57,11 +57,11 @@ logout: '&2로그아웃 되었습니다!'
 reload: '&2설정과 데이터 베이스가 새로 고침 되었습니다!'
 usage_changepassword: '&c사용법: /changepassword <예전 비밀번호> <새 비밀번호>'
 
-# Session messages
+# 세션 메세지
 invalid_session: '&cIP가 변경되어 세션이 만료되었습니다!'
 valid_session: '&2세션 재 연결로 인해 로그인 되었습니다.'
 
-# Error messages when joining
+# 접속 오류 메세지
 name_len: '&4닉네임이 너무 짧거나 깁니다!'
 regex: '&4닉네임에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
 country_banned: '&4당신의 국가에서는 이 서버를 이용하실 수 없습니다!'
@@ -71,7 +71,7 @@ same_nick: '&4똑같은 닉네임이 이미 이 서버에 접속해 있습니다
 invalid_name_case: '%invalid가 아닌, %valid 사용하여 접속해야 합니다.'
 same_ip_online: '똑같은 IP가 이미 이 서버에 접속해 있습니다!'
 
-# Email
+# 이메일
 usage_email_add: '&c사용법: /email add <이메일 주소> <이메일 주소 확인>'
 usage_email_change: '&c사용법: /email change <예전 이메일 주소> <새 이메일 주소>'
 usage_email_recovery: '&c사용법: /email recovery <이메일 주소>'
