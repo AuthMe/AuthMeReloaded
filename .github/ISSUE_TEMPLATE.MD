@@ -1,4 +1,4 @@
-####Before reporting an issue make sure you are running the latest build of the plugin and checked for duplicate issues!
+#### Before reporting an issue make sure you are running the latest build of the plugin and checked for duplicate issues!
 
 ### What behaviour is observed:
 What happened?
