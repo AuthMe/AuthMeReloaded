@@ -21,3 +21,7 @@ onLogin:
     display_list:
         command: 'list'
         executor: PLAYER
+onSessionLogin:
+    welcome:
+        command: 'msg %p Session login!'
+        executor: CONSOLE
