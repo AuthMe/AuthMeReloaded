@@ -48,7 +48,7 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "    command: 'broadcast %p has joined, welcome back!'",
             "    executor: CONSOLE",
             "",
-            "Supported command events: onLogin, onJoin, onRegister, onUnregister"
+            "Supported command events: onLogin, onSessionLogin, onJoin, onRegister, onUnregister"
         };
         Map<String, String[]> commentMap = new HashMap<>();
         commentMap.put("", comments);

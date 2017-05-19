@@ -93,6 +93,21 @@ public class CommandManagerTest {
     }
 
     @Test
+    public void shouldExecuteCommandsOnSessionLogin() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnSessionLogin(player);
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("msg Bobby Session login!");
+        verifyNoMoreInteractions(bukkitService);
+        verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
     public void shouldExecuteCommandsOnJoin() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");

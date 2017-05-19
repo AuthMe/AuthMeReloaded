@@ -123,6 +123,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
             // Session logic
             if (canResumeSession(player)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
+                // Run commands
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> commandManager.runCommandsOnSessionLogin(player));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
