@@ -108,6 +108,7 @@ You can also create your own translation file and, if you want, you can share it
 - [List of all permission nodes](http://github.com/AuthMe/AuthMeReloaded/blob/master/docs/permission_nodes.md)
 
 #### How To
+- [How to use the converter](https://github.com/AuthMe/AuthMeReloaded/wiki/Converters)
 - [How to import database from xAuth](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-xauth)
 - [Website integration](https://github.com/AuthMe/AuthMeReloaded/tree/master/samples/website_integration)
 - [How to convert from Rakamak](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-rakamak)
