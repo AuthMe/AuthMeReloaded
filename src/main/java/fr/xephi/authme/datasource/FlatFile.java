@@ -50,9 +50,7 @@ public class FlatFile implements DataSource {
 
     @Override
     public synchronized boolean isAuthAvailable(String user) {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -63,8 +61,6 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            silentClose(br);
         }
         return false;
     }
@@ -83,15 +79,11 @@ public class FlatFile implements DataSource {
         if (isAuthAvailable(auth.getNickname())) {
             return false;
         }
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new FileWriter(source, true));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(source, true))) {
             bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            silentClose(bw);
         }
         return true;
     }
@@ -109,9 +101,7 @@ public class FlatFile implements DataSource {
             return false;
         }
         PlayerAuth newAuth = null;
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -126,8 +116,6 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(user);
@@ -142,9 +130,7 @@ public class FlatFile implements DataSource {
             return false;
         }
         PlayerAuth newAuth = null;
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -160,8 +146,6 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(auth.getNickname());
@@ -176,9 +160,7 @@ public class FlatFile implements DataSource {
             return false;
         }
         PlayerAuth newAuth = null;
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -197,8 +179,6 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(auth.getNickname());
@@ -222,11 +202,9 @@ public class FlatFile implements DataSource {
         if (!isAuthAvailable(user)) {
             return false;
         }
-        BufferedReader br = null;
-        BufferedWriter bw = null;
         ArrayList<String> lines = new ArrayList<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source));) {
+
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -234,25 +212,21 @@ public class FlatFile implements DataSource {
                     lines.add(line);
                 }
             }
-            bw = new BufferedWriter(new FileWriter(source));
-            for (String l : lines) {
-                bw.write(l + "\n");
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(source))) {
+                for (String l : lines) {
+                    bw.write(l + "\n");
+                }
             }
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            silentClose(br);
-            silentClose(bw);
         }
         return true;
     }
 
     @Override
     public synchronized PlayerAuth getAuth(String user) {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -263,8 +237,6 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return null;
-        } finally {
-            silentClose(br);
         }
         return null;
     }
@@ -279,9 +251,7 @@ public class FlatFile implements DataSource {
             return false;
         }
         PlayerAuth newAuth = null;
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -296,8 +266,6 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(auth.getNickname());
@@ -308,10 +276,8 @@ public class FlatFile implements DataSource {
 
     @Override
     public List<String> getAllAuthsByIp(String ip) {
-        BufferedReader br = null;
         List<String> countIp = new ArrayList<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -323,17 +289,13 @@ public class FlatFile implements DataSource {
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return new ArrayList<>();
-        } finally {
-            silentClose(br);
         }
     }
 
     @Override
     public int countAuthsByEmail(String email) {
-        BufferedReader br = null;
         int countEmail = 0;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -344,8 +306,6 @@ public class FlatFile implements DataSource {
             return countEmail;
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
-        } finally {
-            silentClose(br);
         }
         return 0;
     }
@@ -374,18 +334,14 @@ public class FlatFile implements DataSource {
 
     @Override
     public int getAccountsRegistered() {
-        BufferedReader br = null;
         int result = 0;
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             while ((br.readLine()) != null) {
                 result++;
             }
         } catch (Exception ex) {
             ConsoleLogger.warning(ex.getMessage());
             return result;
-        } finally {
-            silentClose(br);
         }
         return result;
     }
@@ -402,10 +358,8 @@ public class FlatFile implements DataSource {
 
     @Override
     public List<PlayerAuth> getAllAuths() {
-        BufferedReader br = null;
         List<PlayerAuth> auths = new ArrayList<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
@@ -416,8 +370,6 @@ public class FlatFile implements DataSource {
             }
         } catch (IOException ex) {
             ConsoleLogger.logException("Error while getting auths from flatfile:", ex);
-        } finally {
-            silentClose(br);
         }
         return auths;
     }
@@ -445,15 +397,5 @@ public class FlatFile implements DataSource {
             return builder.build();
         }
         return null;
-    }
-
-    private static void silentClose(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (IOException ignored) {
-                // silent close
-            }
-        }
     }
 }

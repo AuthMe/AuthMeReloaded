@@ -159,19 +159,15 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean isAuthAvailable(String user) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        try {
-            pst = con.prepareStatement("SELECT 1 FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);");
+        String sql = "SELECT 1 FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
-            rs = pst.executeQuery();
-            return rs.next();
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
-        } finally {
-            close(rs);
-            close(pst);
         }
     }
 
@@ -197,27 +193,22 @@ public class SQLite implements DataSource {
 
     @Override
     public PlayerAuth getAuth(String user) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);");
+        String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                return buildAuthFromResultSet(rs);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return buildAuthFromResultSet(rs);
+                }
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(rs);
-            close(pst);
         }
         return null;
     }
 
     @Override
     public boolean saveAuth(PlayerAuth auth) {
-        PreparedStatement pst = null;
         try {
             HashedPassword password = auth.getPassword();
             if (col.SALT.isEmpty()) {
@@ -225,33 +216,33 @@ public class SQLite implements DataSource {
                     ConsoleLogger.warning("Warning! Detected hashed password with separate salt but the salt column "
                         + "is not set in the config!");
                 }
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD +
-                    "," + col.IP + "," + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL +
-                    ") VALUES (?,?,?,?,?,?);");
-                pst.setString(1, auth.getNickname());
-                pst.setString(2, password.getHash());
-                pst.setString(3, auth.getIp());
-                pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, auth.getRealName());
-                pst.setString(6, auth.getEmail());
-                pst.executeUpdate();
+                try (PreparedStatement pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD +
+                        "," + col.IP + "," + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL +
+                        ") VALUES (?,?,?,?,?,?);")) {
+                    pst.setString(1, auth.getNickname());
+                    pst.setString(2, password.getHash());
+                    pst.setString(3, auth.getIp());
+                    pst.setLong(4, auth.getLastLogin());
+                    pst.setString(5, auth.getRealName());
+                    pst.setString(6, auth.getEmail());
+                    pst.executeUpdate();
+                }
             } else {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD + ","
+                try (PreparedStatement pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD + ","
                     + col.IP + "," + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL + "," + col.SALT
-                    + ") VALUES (?,?,?,?,?,?,?);");
-                pst.setString(1, auth.getNickname());
-                pst.setString(2, password.getHash());
-                pst.setString(3, auth.getIp());
-                pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, auth.getRealName());
-                pst.setString(6, auth.getEmail());
-                pst.setString(7, password.getSalt());
-                pst.executeUpdate();
+                    + ") VALUES (?,?,?,?,?,?,?);")) {
+                    pst.setString(1, auth.getNickname());
+                    pst.setString(2, password.getHash());
+                    pst.setString(3, auth.getIp());
+                    pst.setLong(4, auth.getLastLogin());
+                    pst.setString(5, auth.getRealName());
+                    pst.setString(6, auth.getEmail());
+                    pst.setString(7, password.getSalt());
+                    pst.executeUpdate();
+                }
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return true;
     }
@@ -264,13 +255,11 @@ public class SQLite implements DataSource {
     @Override
     public boolean updatePassword(String user, HashedPassword password) {
         user = user.toLowerCase();
-        PreparedStatement pst = null;
-        try {
-            boolean useSalt = !col.SALT.isEmpty();
-            String sql = "UPDATE " + tableName + " SET " + col.PASSWORD + " = ?"
-                + (useSalt ? ", " + col.SALT + " = ?" : "")
-                + " WHERE " + col.NAME + " = ?";
-            pst = con.prepareStatement(sql);
+        boolean useSalt = !col.SALT.isEmpty();
+        String sql = "UPDATE " + tableName + " SET " + col.PASSWORD + " = ?"
+            + (useSalt ? ", " + col.SALT + " = ?" : "")
+            + " WHERE " + col.NAME + " = ?";
+        try (PreparedStatement pst = con.prepareStatement(sql)){
             pst.setString(1, password.getHash());
             if (useSalt) {
                 pst.setString(2, password.getSalt());
@@ -282,17 +271,14 @@ public class SQLite implements DataSource {
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return false;
     }
 
     @Override
     public boolean updateSession(PlayerAuth auth) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;");
+        String sql = "UPDATE " + tableName + " SET " + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)){
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
             pst.setString(3, auth.getRealName());
@@ -301,8 +287,6 @@ public class SQLite implements DataSource {
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return false;
     }
@@ -310,7 +294,6 @@ public class SQLite implements DataSource {
     @Override
     public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
         Set<String> list = new HashSet<>();
-
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + " < ?";
         if (!includeEntriesWithLastLoginZero) {
             select += " AND " + col.LAST_LOGIN + " <> 0";
@@ -344,28 +327,24 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean removeAuth(String user) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
+        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return false;
     }
 
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, "
-                + col.LASTLOC_WORLD + "=?, " + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=? "
-                + "WHERE " + col.NAME + "=?;");
+        String sql = "UPDATE " + tableName + " SET "
+            + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, "
+            + col.LASTLOC_WORLD + "=?, " + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=? "
+            + "WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
@@ -377,8 +356,6 @@ public class SQLite implements DataSource {
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return false;
     }
@@ -410,22 +387,18 @@ public class SQLite implements DataSource {
 
     @Override
     public List<String> getAllAuthsByIp(String ip) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
         List<String> countIp = new ArrayList<>();
-        try {
-            pst = con.prepareStatement("SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;");
+        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                countIp.add(rs.getString(col.NAME));
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    countIp.add(rs.getString(col.NAME));
+                }
+                return countIp;
             }
-            return countIp;
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(rs);
-            close(pst);
         }
         return new ArrayList<>();
     }
@@ -453,66 +426,53 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;");
+        String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
-            rs = pst.executeQuery();
-            if (rs.next())
-                return rs.getInt(col.IS_LOGGED) == 1;
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next())
+                    return rs.getInt(col.IS_LOGGED) == 1;
+            }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(rs);
-            close(pst);
         }
         return false;
     }
 
     @Override
     public void setLogged(String user) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;");
+        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 1);
             pst.setString(2, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
     }
 
     @Override
     public void setUnlogged(String user) {
-        PreparedStatement pst = null;
+        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;";
         if (user != null)
-            try {
-                pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;");
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setInt(1, 0);
                 pst.setString(2, user);
                 pst.executeUpdate();
             } catch (SQLException ex) {
                 logSqlException(ex);
-            } finally {
-                close(pst);
             }
     }
 
     @Override
     public void purgeLogged() {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;");
+        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 0);
             pst.setInt(2, 1);
             pst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
     }
 
