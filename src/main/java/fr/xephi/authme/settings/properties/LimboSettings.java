@@ -59,7 +59,7 @@ public final class LimboSettings implements SettingsHolder {
         "RESTORE_NO_ZERO: Like 'restore' but sets speed to default if the player's speed was 0"
     })
     public static final Property<WalkFlySpeedRestoreType> RESTORE_FLY_SPEED =
-        newProperty(WalkFlySpeedRestoreType.class, "limbo.restoreFlySpeed", WalkFlySpeedRestoreType.MAX_RESTORE);
+        newProperty(WalkFlySpeedRestoreType.class, "limbo.restoreFlySpeed", WalkFlySpeedRestoreType.RESTORE_NO_ZERO);
 
     @Comment({
         "Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.",
