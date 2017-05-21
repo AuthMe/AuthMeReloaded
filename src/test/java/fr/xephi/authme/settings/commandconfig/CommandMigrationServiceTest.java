@@ -1,5 +1,7 @@
 package fr.xephi.authme.settings.commandconfig;
 
+import ch.jalu.configme.beanmapper.BeanDescriptionFactory;
+import ch.jalu.configme.beanmapper.BeanPropertyDescription;
 import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
@@ -24,6 +26,7 @@ import static fr.xephi.authme.settings.commandconfig.CommandConfigTestHelper.isC
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
@@ -116,7 +119,7 @@ public class CommandMigrationServiceTest {
     @Test
     public void shouldRewriteForEmptyFile() {
         // given
-        File commandFile = TestHelper.getJarFile("/fr/xephi/authme/settings/commandconfig/commands.empty.yml");
+        File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.empty.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
 
         // when
@@ -125,5 +128,50 @@ public class CommandMigrationServiceTest {
 
         // then
         assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldRewriteIncompleteFile() {
+        // given
+        File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.incomplete.yml");
+        PropertyResource resource = new YamlFileResource(commandFile);
+
+        // when
+        boolean result = commandMigrationService.checkAndMigrate(
+            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldNotChangeCompleteFile() {
+        // given
+        File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.complete.yml");
+        PropertyResource resource = new YamlFileResource(commandFile);
+
+        // when
+        boolean result = commandMigrationService.checkAndMigrate(
+            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    /**
+     * Checks that {@link CommandMigrationService#COMMAND_CONFIG_PROPERTIES} contains all properties defined in the
+     * {@link CommandConfig} class. It is used to ensure that the commands.yml file is complete.
+     */
+    @Test
+    public void shouldHaveAllPropertiesFromCommandConfig() {
+        // given
+        String[] properties = new BeanDescriptionFactory()
+            .collectWritableFields(CommandConfig.class)
+            .stream()
+            .map(BeanPropertyDescription::getName)
+            .toArray(String[]::new);
+
+        // when / then
+        assertThat(CommandMigrationService.COMMAND_CONFIG_PROPERTIES, containsInAnyOrder(properties));
     }
 }

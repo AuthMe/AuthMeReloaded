@@ -25,6 +25,7 @@ onSessionLogin:
     welcome:
         command: 'msg %p Session login!'
         executor: CONSOLE
+onUnregister: {}
 onLogout:
     announce:
         command: 'broadcast %p (%ip) logged out'
