@@ -15,6 +15,7 @@ public class CommandConfig {
     private Map<String, Command> onSessionLogin = new LinkedHashMap<>();
     private Map<String, Command> onRegister = new LinkedHashMap<>();
     private Map<String, Command> onUnregister = new LinkedHashMap<>();
+    private Map<String, Command> onLogout = new LinkedHashMap<>();
 
     public Map<String, Command> getOnJoin() {
         return onJoin;
@@ -54,5 +55,13 @@ public class CommandConfig {
 
     public void setOnUnregister(Map<String, Command> onUnregister) {
         this.onUnregister = onUnregister;
+    }
+
+    public Map<String, Command> getOnLogout() {
+        return onLogout;
+    }
+
+    public void setOnLogout(Map<String, Command> onLogout) {
+        this.onLogout = onLogout;
     }
 }

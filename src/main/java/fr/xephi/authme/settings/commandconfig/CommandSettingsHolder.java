@@ -48,12 +48,18 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "    command: 'broadcast %p has joined, welcome back!'",
             "    executor: CONSOLE",
             "",
-            "Supported command events: onLogin, onSessionLogin, onJoin, onRegister, onUnregister"
+            "Supported command events: onLogin, onSessionLogin, onJoin, onLogout, onRegister, onUnregister"
         };
         Map<String, String[]> commentMap = new HashMap<>();
         commentMap.put("", comments);
         commentMap.put("onUnregister", new String[]{
             "Commands to run whenever a player is unregistered (by himself, or by an admin)"
+        });
+        commentMap.put("onLogout", new String[]{
+            "These commands are called whenever a logged in player uses /logout or quits.",
+            "The commands are not run if a player that was not logged in quits the server.",
+            "Note: if your server crashes, these commands won't be run, so don't rely on them to undo",
+            "'onLogin' commands that would be dangerous for non-logged in players to have!"
         });
         return commentMap;
     }

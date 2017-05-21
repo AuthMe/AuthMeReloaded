@@ -151,6 +151,21 @@ public class CommandManagerTest {
     }
 
     @Test
+    public void shouldExecuteCommandOnLogout() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnLogout(player);
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("broadcast Bobby (127.0.0.3) logged out");
+        verifyNoMoreInteractions(bukkitService);
+        verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
     public void shouldExecuteCommandsOnRegisterWithIncompleteConfig() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");

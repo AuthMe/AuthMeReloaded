@@ -10,6 +10,7 @@ import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ import javax.inject.Inject;
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 
-public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
+public class ProcessSyncPlayerLogout implements SynchronousProcess {
 
     @Inject
     private CommonService service;
@@ -41,9 +42,17 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
     @Inject
     private TeleportationService teleportationService;
 
-    ProcessSynchronousPlayerLogout() {
+    @Inject
+    private CommandManager commandManager;
+
+    ProcessSyncPlayerLogout() {
     }
 
+    /**
+     * Processes a player which has been logged out.
+     *
+     * @param player the player logging out
+     */
     public void processSyncLogout(Player player) {
         final String name = player.getName().toLowerCase();
 
@@ -53,6 +62,7 @@ public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
         }
 
         applyLogoutEffect(player);
+        commandManager.runCommandsOnLogout(player);
 
         // Player is now logout... Time to fire event !
         bukkitService.callEvent(new LogoutEvent(player));

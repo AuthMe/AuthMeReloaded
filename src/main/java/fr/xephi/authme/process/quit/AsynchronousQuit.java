@@ -18,6 +18,9 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
+/**
+ * Async process called when a player quits the server.
+ */
 public class AsynchronousQuit implements AsynchronousProcess {
 
     @Inject
@@ -47,14 +50,19 @@ public class AsynchronousQuit implements AsynchronousProcess {
     AsynchronousQuit() {
     }
 
-
+    /**
+     * Processes that the given player has quit the server.
+     *
+     * @param player the player who left
+     */
     public void processQuit(Player player) {
         if (player == null || validationService.isUnrestricted(player.getName())) {
             return;
         }
         final String name = player.getName().toLowerCase();
+        final boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
-        if (playerCache.isAuthenticated(name)) {
+        if (wasLoggedIn) {
             if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
                 Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
                 PlayerAuth auth = PlayerAuth.builder()
@@ -82,7 +90,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         database.setUnlogged(name);
 
         if (plugin.isEnabled()) {
-            syncProcessManager.processSyncPlayerQuit(player);
+            syncProcessManager.processSyncPlayerQuit(player, wasLoggedIn);
         }
         // remove player from cache
         if (database instanceof CacheDataSource) {

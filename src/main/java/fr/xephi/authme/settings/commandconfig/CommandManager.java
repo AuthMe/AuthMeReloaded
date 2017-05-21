@@ -36,6 +36,7 @@ public class CommandManager implements Reloadable {
     private WrappedTagReplacer<Command, Player> onSessionLoginCommands;
     private WrappedTagReplacer<Command, Player> onRegisterCommands;
     private WrappedTagReplacer<Command, Player> onUnregisterCommands;
+    private WrappedTagReplacer<Command, Player> onLogoutCommands;
 
     @Inject
     CommandManager(@DataFolder File dataFolder, BukkitService bukkitService, GeoIpService geoIpService,
@@ -93,6 +94,15 @@ public class CommandManager implements Reloadable {
         executeCommands(player, onUnregisterCommands.getAdaptedItems(player));
     }
 
+    /**
+     * Runs the configured commands for when a player logs out (by command or by quitting the server).
+     *
+     * @param player the player that is no longer logged in
+     */
+    public void runCommandsOnLogout(Player player) {
+        executeCommands(player, onLogoutCommands.getAdaptedItems(player));
+    }
+
     private void executeCommands(Player player, List<Command> commands) {
         for (Command command : commands) {
             final String execution = command.getCommand();
@@ -117,6 +127,7 @@ public class CommandManager implements Reloadable {
         onSessionLoginCommands = newReplacer(commandConfig.getOnSessionLogin());
         onRegisterCommands = newReplacer(commandConfig.getOnRegister());
         onUnregisterCommands = newReplacer(commandConfig.getOnUnregister());
+        onLogoutCommands = newReplacer(commandConfig.getOnLogout());
     }
 
     private WrappedTagReplacer<Command, Player> newReplacer(Map<String, Command> commands) {

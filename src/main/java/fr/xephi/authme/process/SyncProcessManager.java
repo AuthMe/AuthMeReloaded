@@ -1,8 +1,8 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
-import fr.xephi.authme.process.logout.ProcessSynchronousPlayerLogout;
-import fr.xephi.authme.process.quit.ProcessSyncronousPlayerQuit;
+import fr.xephi.authme.process.logout.ProcessSyncPlayerLogout;
+import fr.xephi.authme.process.quit.ProcessSyncPlayerQuit;
 import fr.xephi.authme.process.register.ProcessSyncEmailRegister;
 import fr.xephi.authme.process.register.ProcessSyncPasswordRegister;
 import fr.xephi.authme.service.BukkitService;
@@ -30,29 +30,29 @@ public class SyncProcessManager {
     @Inject
     private ProcessSyncPlayerLogin processSyncPlayerLogin;
     @Inject
-    private ProcessSynchronousPlayerLogout processSynchronousPlayerLogout;
+    private ProcessSyncPlayerLogout processSyncPlayerLogout;
     @Inject
-    private ProcessSyncronousPlayerQuit processSyncronousPlayerQuit;
+    private ProcessSyncPlayerQuit processSyncPlayerQuit;
 
 
-    public void processSyncEmailRegister(final Player player) {
+    public void processSyncEmailRegister(Player player) {
         runTask(() -> processSyncEmailRegister.processEmailRegister(player));
     }
 
-    public void processSyncPasswordRegister(final Player player) {
+    public void processSyncPasswordRegister(Player player) {
         runTask(() -> processSyncPasswordRegister.processPasswordRegister(player));
     }
 
-    public void processSyncPlayerLogout(final Player player) {
-        runTask(() -> processSynchronousPlayerLogout.processSyncLogout(player));
+    public void processSyncPlayerLogout(Player player) {
+        runTask(() -> processSyncPlayerLogout.processSyncLogout(player));
     }
 
-    public void processSyncPlayerLogin(final Player player) {
+    public void processSyncPlayerLogin(Player player) {
         runTask(() -> processSyncPlayerLogin.processPlayerLogin(player));
     }
 
-    public void processSyncPlayerQuit(final Player player) {
-        runTask(() -> processSyncronousPlayerQuit.processSyncQuit(player));
+    public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {
+        runTask(() -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
     }
 
     private void runTask(Runnable runnable) {
