@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Apr 29 18:27:38 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun May 21 12:23:19 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -219,14 +219,14 @@ settings:
         # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at
         # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md
         passwordHash: 'SHA256'
-        # Salt length for the SALTED2MD5 MD5(MD5(password)+salt)
-        doubleMD5SaltLength: 8
         # If a password check fails, AuthMe will also try to check with the following hash methods.
         # Use this setting when you change from one hash method to another.
         # AuthMe will update the password to the new hash. Example:
         # legacyHashes:
         # - 'SHA1'
         legacyHashes: []
+        # Salt length for the SALTED2MD5 MD5(MD5(password)+salt)
+        doubleMD5SaltLength: 8
         # Number of rounds to use if passwordHash is set to PBKDF2. Default is 10000
         pbkdf2Rounds: 10000
         # Prevent unsafe passwords from being used; put them in lowercase!
@@ -493,6 +493,7 @@ BackupSystem:
     OnServerStop: true
     # Windows only: MySQL installation path
     MysqlWindowsPath: 'C:\Program Files\MySQL\MySQL Server 5.1\'
+# Converter settings: see https://github.com/AuthMe/AuthMeReloaded/wiki/Converters
 Converter:
     Rakamak:
         # Rakamak file name
@@ -504,6 +505,18 @@ Converter:
     CrazyLogin:
         # CrazyLogin database file name
         fileName: 'accounts.db'
+    loginSecurity:
+        # LoginSecurity: convert from SQLite; if false we use MySQL
+        useSqlite: true
+        mySql:
+            # LoginSecurity MySQL: database host
+            host: ''
+            # LoginSecurity MySQL: database name
+            database: ''
+            # LoginSecurity MySQL: database user
+            user: ''
+            # LoginSecurity MySQL: password for database user
+            password: ''
 ```
 
 To change settings on a running server, save your changes to config.yml and use 
@@ -511,4 +524,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Apr 29 18:27:38 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun May 21 12:23:19 CEST 2017

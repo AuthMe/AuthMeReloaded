@@ -42,7 +42,7 @@ public class ConverterCommandTest {
     private ConverterCommand command;
 
     @Mock
-    private CommonService commandService;
+    private CommonService commonService;
 
     @Mock
     private BukkitService bukkitService;
@@ -64,10 +64,23 @@ public class ConverterCommandTest {
         command.executeCommand(sender, Collections.singletonList("invalid"));
 
         // then
-        verify(sender).sendMessage(argThat(containsString("Converter does not exist")));
-        verifyNoMoreInteractions(commandService);
-        verifyZeroInteractions(converterFactory);
-        verifyZeroInteractions(bukkitService);
+        String converters = String.join(", ", ConverterCommand.CONVERTERS.keySet());
+        verify(sender).sendMessage(argThat(containsString(converters)));
+        verifyZeroInteractions(commonService, converterFactory, bukkitService);
+    }
+
+    @Test
+    public void shouldHandleCommandWithNoArgs() {
+        // given
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.emptyList());
+
+        // then
+        String converters = String.join(", ", ConverterCommand.CONVERTERS.keySet());
+        verify(sender).sendMessage(argThat(containsString(converters)));
+        verifyZeroInteractions(commonService, converterFactory, bukkitService);
     }
 
     @Test
@@ -122,7 +135,7 @@ public class ConverterCommandTest {
         verifyNoMoreInteractions(converter);
         verify(converterFactory).newInstance(converterClass);
         verifyNoMoreInteractions(converterFactory);
-        verify(commandService).send(sender, MessageKey.ERROR);
+        verify(commonService).send(sender, MessageKey.ERROR);
     }
 
     private <T extends Converter> T createMockReturnedByInjector(Class<T> clazz) {
