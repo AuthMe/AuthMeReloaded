@@ -1,0 +1,45 @@
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ AuthMeReloaded 도움말 ]=========='
+    optional: '선택'
+    hasPermission: '권한이 있습니다'
+    noPermission: '권한이 없습니다'
+    default: 'Default'
+    result: 'Result'
+    defaultPermissions:
+        notAllowed: '권한이 없습니다'
+        opOnly: 'OP만 가능'
+        allowed: '모두에게 허용됨'
+
+# -------------------------------------------------------
+# Titles of the individual help sections
+# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+#   alternatives: ''
+section:
+    command: '명령어'
+    description: '짧은 설명'
+    detailedDescription: '상세 설명'
+    arguments: '인수'
+    permissions: '권한'
+    alternatives: '대안'
+    children: '명령어'
+
+# -------------------------------------------------------
+# You can translate the data for all commands using the below pattern.
+# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
+# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
+# Translations don't need to be complete; any missing section will be taken from the default silently
+# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+commands:
+    authme.register:
+        description: '플레이어 회원 가입'
+        detailedDescription: '지정한 플레이어를 지정한 비밀번호로 등록합니다.'
+        arg1:
+            label: '플레이어'
+            description: '플레이어 닉네임'
+        arg2:
+            label: '비밀번호'
+            description: '비밀번호'
