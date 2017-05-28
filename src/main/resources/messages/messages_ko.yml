@@ -92,6 +92,6 @@ add_email: '&3다음 명령어로 계정에 이메일 주소를 추가하세요:
 recovery_email: '&3비밀번호를 잊으셨나요? 이 명령어를 사용해보세요: /email recovery <이메일 주소>'
 
 # Captcha
-usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다, 이 명령어를 사용하세요: /captcha <CAPTCHA 코드>'
-wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다, "/captcha CAPTCHA코드"을 입력해주세요!'
+usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다, 이 명령어를 사용하세요: /captcha <theCaptcha>'
+wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다, "/captcha THE_CAPTCHA"을 입력해주세요!'
 valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
