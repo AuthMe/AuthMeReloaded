@@ -3,7 +3,7 @@ package fr.xephi.authme.data.auth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
-import static com.google.common.base.Objects.firstNonNull;
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 

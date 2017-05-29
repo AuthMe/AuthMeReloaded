@@ -220,7 +220,7 @@
                 than already loaded libs (i.e. by Mojang -> gson)
                 -->
                 <executions>
-                    <!-- Spigot 1.8+ -->
+                    <!-- Spigot 1.12+ -->
                     <execution>
                         <id>spigot-shade</id>
                         <phase>package</phase>
@@ -281,7 +281,7 @@
                             <outputFile>target/${project.finalName}-spigot.jar</outputFile>
                         </configuration>
                     </execution>
-                    <!-- 1.7.10 and lower -->
+                    <!-- 1.11.2 and lower -->
                     <execution>
                         <id>legacy-shade</id>
                         <phase>package</phase>
@@ -290,7 +290,7 @@
                         </goals>
                         <configuration>
                             <relocations>
-                                <!-- Include all google libraries, because they are not available before 1.8 -->
+                                <!-- Include all google libraries, because they are not available before 1.12 -->
                                 <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
@@ -469,7 +469,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>17.0</version>
+            <version>21.0</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>

@@ -1,7 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import ch.jalu.configme.properties.Property;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -143,7 +143,7 @@ public abstract class AbstractResourceClosingTest {
         // Use XFBCRYPT if nothing else specified as there is a lot of specific behavior to this hash algorithm in MySQL
         final HashAlgorithm[] defaultAlgorithm = new HashAlgorithm[]{HashAlgorithm.XFBCRYPT};
         for (Method method : methods) {
-            HashAlgorithm[] algorithms = Objects.firstNonNull(CUSTOM_ALGORITHMS.get(method.getName()), defaultAlgorithm);
+            HashAlgorithm[] algorithms = MoreObjects.firstNonNull(CUSTOM_ALGORITHMS.get(method.getName()), defaultAlgorithm);
             for (HashAlgorithm algorithm : algorithms) {
                 data.add(new Object[]{method, method.getName(), algorithm});
             }

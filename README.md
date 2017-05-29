@@ -37,7 +37,7 @@
 
 ##### Running requirements:
 >- Java 1.8
->- TacoSpigot, PaperSpigot or Spigot (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X)<br>
+>- TacoSpigot, PaperSpigot or Spigot (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X, 1.12.X)<br>
    (In case you use Thermos, Cauldron or similar, you have to update the SpecialSource library to support Java 8 plugins.
    HowTo: https://github.com/games647/FastLogin/issues/111#issuecomment-272331347)
 >- ProtocolLib (optional, required by some features)
