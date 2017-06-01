@@ -80,6 +80,21 @@ public class OnStartupTasks {
         }
     }
 
+    /**
+     * Check if argon2 library is available into java.library.path
+     *
+     * @return true if the library exist in library path, false otherwise
+     */
+    public static boolean checkArgon2Presence() {
+        try {
+            System.loadLibrary("argon2");
+            return true;
+        } catch (UnsatisfiedLinkError e) {
+            ConsoleLogger.logException("Cannot find libargon2", e);
+        }
+        return false;
+    }
+
     // Set the console filter to remove the passwords
     private static void setLog4JFilter() {
         org.apache.logging.log4j.core.Logger logger;

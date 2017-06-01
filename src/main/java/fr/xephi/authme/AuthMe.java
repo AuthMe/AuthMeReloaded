@@ -23,6 +23,7 @@ import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
+import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -266,6 +267,13 @@ public class AuthMe extends JavaPlugin {
         if (!settings.getProperty(EmailSettings.PORT25_USE_TLS)
             && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
             ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
+        }
+        // Check if argon2 library is present and can be loaded
+        if (settings.getProperty(SecuritySettings.PASSWORD_HASH).equals(HashAlgorithm.ARGON2)
+            && !OnStartupTasks.checkArgon2Presence()) {
+            ConsoleLogger.warning("WARNING!!! You use Argon2 Hash Algorithm method but we can't found any "
+                + "Argon2 library on your system !");
+            stopOrUnload();
         }
     }
 

@@ -61,6 +61,14 @@ public class HashAlgorithmIntegrationTest {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
+                if (HashAlgorithm.ARGON2.equals(algorithm)) {
+                    try {
+                        System.loadLibrary("argon2");
+                    } catch (UnsatisfiedLinkError e) {
+                        System.out.println("[WARNING] Cannot find argon2 library, skipping test suite");
+                        continue;
+                    }
+                }
                 EncryptionMethod method = injector.createIfHasDependencies(algorithm.getClazz());
                 if (method == null) {
                     fail("Could not create '" + algorithm.getClazz() + "' - forgot to provide some class?");
@@ -99,4 +107,5 @@ public class HashAlgorithmIntegrationTest {
             fail("Found inconsistencies:\n" + String.join("\n", failedEntries));
         }
     }
+
 }

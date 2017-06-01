@@ -1,11 +1,16 @@
-sudo: false
+sudo: required
 addons:
   apt:
     packages:
       - oracle-java8-installer
+      - git
 
 language: java
 jdk: oraclejdk8
+
+before_script:
+    - "sudo git clone https://www.github.com/P-H-C/phc-winner-argon2.git argon2-src"
+    - "cd argon2-src && sudo make && sudo make install && cd .."
 
 script: mvn clean verify -B
 
