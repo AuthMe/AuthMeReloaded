@@ -50,9 +50,9 @@ two_factor_create: '&aVotre code secret est &2%code&a. Vous pouvez le scanner de
 recovery_code_sent: 'Un code de récupération a été envoyé à votre adresse email afin de réinitialiser votre mot de passe.'
 # TODO: Missing tags %count
 recovery_code_incorrect: '&cLe code de réinitialisation est incorrect!%nl%Faites "/email recovery [email]" pour en générer un nouveau.'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
+recovery_tries_exceeded: 'Vous avez atteint le nombre maximum d''essai pour rentrer le code. Refaites "/email recovery [email]" pour en régénérer à nouveau.'
+recovery_code_correct: 'Code de réinitialisation correct !'
+recovery_change_password: 'Veuillez faire "/email setpassword <new password>" pour changer votre mot de passe directement.'
 vb_nonActiv: '&fCe compte n''est pas actif, consultez vos emails !'
 usage_unreg: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'
 pwd_changed: '&aMot de passe changé avec succès !'
@@ -93,7 +93,7 @@ email_send_failure: '&cL''email n''a pas pu être envoyé. Veuillez contacter un
 show_no_email: '&c&oVous n''avez aucune adresse mail enregistré sur votre compte.'
 add_email: '&cRajoutez un email de récupération: /email add <Email> <ConfirmerEmail>'
 recovery_email: '&cVous avez oublié votre Mot de Passe? Utilisez "/email recovery <votreEmail>"'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cette commande.'
 email_cooldown_error: '&cUn email de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
 
 # Captcha
