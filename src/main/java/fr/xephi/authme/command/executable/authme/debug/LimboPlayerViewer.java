@@ -63,14 +63,16 @@ class LimboPlayerViewer implements DebugSection {
             return;
         }
 
-        sender.sendMessage(ChatColor.GOLD + "Showing disk limbo / limbo / player info for '" + arguments.get(0) + "'");
-        new InfoDisplayer(sender, diskLimbo, memoryLimbo, player)
-            .sendEntry("Is op", LimboPlayer::isOperator, Player::isOp)
-            .sendEntry("Walk speed", LimboPlayer::getWalkSpeed, Player::getWalkSpeed)
-            .sendEntry("Can fly", LimboPlayer::isCanFly, Player::getAllowFlight)
-            .sendEntry("Fly speed", LimboPlayer::getFlySpeed, Player::getFlySpeed)
-            .sendEntry("Location", l -> formatLocation(l.getLocation()), p -> formatLocation(p.getLocation()))
-            .sendEntry("Group", LimboPlayer::getGroup, permissionsManager::getPrimaryGroup);
+        sender.sendMessage(ChatColor.GOLD + "Showing player / limbo / disk limbo info for '" + arguments.get(0) + "'");
+        new InfoDisplayer(sender, player, memoryLimbo, diskLimbo)
+            .sendEntry("Is op", Player::isOp, LimboPlayer::isOperator)
+            .sendEntry("Walk speed", Player::getWalkSpeed, LimboPlayer::getWalkSpeed)
+            .sendEntry("Can fly", Player::getAllowFlight, LimboPlayer::isCanFly)
+            .sendEntry("Fly speed", Player::getFlySpeed, LimboPlayer::getFlySpeed)
+            .sendEntry("Location", p -> formatLocation(p.getLocation()), l -> formatLocation(l.getLocation()))
+            .sendEntry("Prim. group",
+                p -> permissionsManager.hasGroupSupport() ? permissionsManager.getPrimaryGroup(p) : "N/A",
+                LimboPlayer::getGroup);
     }
 
     @Override
@@ -83,22 +85,22 @@ class LimboPlayerViewer implements DebugSection {
      */
     private static final class InfoDisplayer {
         private final CommandSender sender;
-        private final Optional<LimboPlayer> diskLimbo;
-        private final Optional<LimboPlayer> memoryLimbo;
         private final Optional<Player> player;
+        private final Optional<LimboPlayer> memoryLimbo;
+        private final Optional<LimboPlayer> diskLimbo;
 
         /**
          * Constructor.
          *
          * @param sender command sender to send the information to
-         * @param memoryLimbo the limbo player to get data from
          * @param player the player to get data from
+         * @param memoryLimbo the limbo player to get data from
          */
-        InfoDisplayer(CommandSender sender, LimboPlayer diskLimbo, LimboPlayer memoryLimbo, Player player) {
+        InfoDisplayer(CommandSender sender, Player player, LimboPlayer memoryLimbo, LimboPlayer diskLimbo) {
             this.sender = sender;
-            this.diskLimbo = Optional.ofNullable(diskLimbo);
-            this.memoryLimbo = Optional.ofNullable(memoryLimbo);
             this.player = Optional.ofNullable(player);
+            this.memoryLimbo = Optional.ofNullable(memoryLimbo);
+            this.diskLimbo = Optional.ofNullable(diskLimbo);
 
             if (memoryLimbo == null) {
                 sender.sendMessage("Note: no Limbo information available");
@@ -114,21 +116,21 @@ class LimboPlayerViewer implements DebugSection {
          * Displays a piece of information to the command sender.
          *
          * @param title the designation of the piece of information
-         * @param limboGetter getter for data retrieval on the LimboPlayer
          * @param playerGetter getter for data retrieval on Player
+         * @param limboGetter getter for data retrieval on the LimboPlayer
          * @param <T> the data type
          * @return this instance (for chaining)
          */
         <T> InfoDisplayer sendEntry(String title,
-                                    Function<LimboPlayer, T> limboGetter,
-                                    Function<Player, T> playerGetter) {
+                                    Function<Player, T> playerGetter,
+                                    Function<LimboPlayer, T> limboGetter) {
             sender.sendMessage(
                 title + ": "
-                + getData(diskLimbo, limboGetter)
+                + getData(player, playerGetter)
                 + " / "
                 + getData(memoryLimbo, limboGetter)
                 + " / "
-                + getData(player, playerGetter));
+                + getData(diskLimbo, limboGetter));
             return this;
         }
 
