@@ -19,7 +19,7 @@ pass_len: '&cLa password che hai inserito è troppo corta o troppo lunga, per fa
 # Autenticazione
 usage_log: '&cUtilizzo: /login <password>'
 wrong_pwd: '&cPassword non corretta!'
-login: '&2Autenticazone eseguita correttamente!'
+login: '&2Autenticazione eseguita correttamente!'
 login_msg: '&cPer favore, esegui l''autenticazione con il comando: /login <password>'
 timeout: '&4Tempo scaduto per eseguire l''autenticazione, sei stato espulso dal server, per favore riprova!'
 
