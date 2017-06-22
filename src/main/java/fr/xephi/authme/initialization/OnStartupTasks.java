@@ -117,24 +117,6 @@ public class OnStartupTasks {
     }
 
     /**
-     * Displays a hint to use the legacy AuthMe JAR if AuthMe could not be started
-     * because Gson or newer Guava classes were not found.
-     */
-    public static void verifyIfLegacyJarIsNeeded() {
-        try {
-            Class<?>[] classes = {
-                com.google.common.base.MoreObjects.class, // < 1.12 Minecraft
-                com.google.gson.Gson.class // < 1.7 Minecraft
-            };
-        } catch (NoClassDefFoundError e) {
-            ConsoleLogger.warning("YOU MUST DOWNLOAD THE LEGACY JAR TO USE AUTHME ON YOUR SERVER");
-            ConsoleLogger.warning("Get authme-legacy.jar from http://ci.xephi.fr/job/AuthMeReloaded/");
-            ConsoleLogger.warning("Reason: could not load class '" + e.getMessage() + "'");
-            throw e;
-        }
-    }
-
-    /**
      * Returns whether the hash algorithm is deprecated and won't be able
      * to be actively used anymore in 5.4.
      *

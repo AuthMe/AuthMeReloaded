@@ -205,7 +205,6 @@ public class AuthMe extends JavaPlugin {
         if(!SystemUtils.isJavaVersionAtLeast(1.8f)) {
             throw new IllegalStateException("You need Java 1.8 or above to run this plugin!");
         }
-        OnStartupTasks.verifyIfLegacyJarIsNeeded();
 
         // Create plugin folder
         getDataFolder().mkdir();
