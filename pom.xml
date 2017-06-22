@@ -53,7 +53,6 @@
         <project.buildNumber>CUSTOM</project.buildNumber>
         <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
         <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
-        <project.finalName>${project.outputName}-${project.version}</project.finalName>
 
         <!-- BukkitPlugin properties -->
         <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
@@ -62,7 +61,7 @@
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkit.version>1.11-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.12-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
     <!-- Jenkins profile -->
@@ -161,8 +160,7 @@
     </profiles>
 
     <build>
-        <!-- Name of the unshaded jar (no shaded/relocated libraries) -->
-        <finalName>${project.finalName}-noshade</finalName>
+        <finalName>${project.outputName}-${project.version}</finalName>
 
         <resources>
             <resource>
@@ -211,128 +209,58 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>3.0.0</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <!--
+                    Relocate all lib we use in order to fix class loading errors if we use different versions
+                    than already loaded libs (i.e. by Mojang -> gson)
+                    -->
+                    <relocations>
+                        <!-- Include all google libraries, because they are not available before 1.12 -->
+                        <relocation>
+                            <pattern>com.google</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>ch.jalu.injector</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>ch.jalu.configme</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.jalu.configme</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.maxmind.geoip</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.ricecode.similarity</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.rtner</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.de.rtner</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>javax.inject</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
+                        </relocation>
+                        <!-- bStats metrics class -->
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
-                <!--
-                Relocate all lib we use in order to fix class loading errors if we use different versions
-                than already loaded libs (i.e. by Mojang -> gson)
-                -->
-                <executions>
-                    <!-- Spigot 1.12+ -->
-                    <execution>
-                        <id>spigot-shade</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Exclude guava (already included into spigot) -->
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>com.google.guava:guava</exclude>
-                                    <exclude>com.google.code.gson:gson</exclude>
-                                </excludes>
-                            </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>ch.jalu.injector</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>ch.jalu.configme</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.jalu.configme</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.maxmind.geoip</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>net.ricecode.similarity</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>de.rtner</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.de.rtner</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.inject</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
-                                </relocation>
-                                <!-- bStats metrics class -->
-                                <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
-                                </relocation>
-                            </relocations>
-                            <outputFile>target/${project.finalName}-spigot.jar</outputFile>
-                        </configuration>
-                    </execution>
-                    <!-- 1.11.2 and lower -->
-                    <execution>
-                        <id>legacy-shade</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <relocations>
-                                <!-- Include all google libraries, because they are not available before 1.12 -->
-                                <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>ch.jalu.injector</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>ch.jalu.configme</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.jalu.configme</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.maxmind.geoip</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>net.ricecode.similarity</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>de.rtner</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.de.rtner</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.inject</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
-                                </relocation>
-                                <!-- bStats metrics class -->
-                                <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
-                                </relocation>
-                            </relocations>
-                            <outputFile>target/${project.finalName}-legacy.jar</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <!-- Coverage report generator -->
             <plugin>
