@@ -345,12 +345,6 @@
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
 
-        <!-- XAuth Repo -->
-        <repository>
-            <id>luricos-repo</id>
-            <url>http://repo.luricos.de/content/repositories/releases</url>
-        </repository>
-
         <!-- Our Repo (Many libs) -->
         <repository>
             <id>xephi-repo</id>
