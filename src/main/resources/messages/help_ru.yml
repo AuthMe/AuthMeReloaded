@@ -3,16 +3,16 @@
 # -------------------------------------------------------
 # List of texts used in the help section
 common:
-    header: '==========[ AuthMeReloaded Справка ]=========='
-    optional: 'Опционально'
-    hasPermission: 'У вас есть такие права'
-    noPermission: 'Нет прав'
-    default: 'По-умолчанию'
-    result: 'Результат'
+    header: '==========[ Помощь по AuthMeReloaded ]=========='
+    optional: 'необязательно'
+    hasPermission: 'есть'
+    noPermission: 'нет'
+    default: 'По умолчанию'
+    result: 'Право на использование'
     defaultPermissions:
-        notAllowed: 'Нет прав'
-        opOnly: 'Только Операторы'
-        allowed: 'Разрешено всем'
+        notAllowed: 'нет прав'
+        opOnly: 'только для операторов'
+        allowed: 'разрешено всем'
 
 # -------------------------------------------------------
 # Titles of the individual help sections
@@ -21,9 +21,9 @@ common:
 section:
     command: 'Команда'
     description: 'Краткое описание'
-    detailedDescription: 'Детальное описание'
+    detailedDescription: 'Описание'
     arguments: 'Аргументы'
-    permissions: 'Разрешения'
+    permissions: 'Права'
     alternatives: 'Альтернативы'
     children: 'Команды'
 
@@ -35,11 +35,122 @@ section:
 # Important: Put main commands like "authme" before their children (e.g. "authme.reload")
 commands:
     authme.register:
-        description: 'Регистрация новго игрока'
-        detailedDescription: 'Регистрация игрока с указанным именем и паролем.'
+        description: 'Регистрация игрока'
+        detailedDescription: 'Регистрирует игрока с указанным именем и паролем.'
         arg1:
-            label: 'player'
-            description: 'Имя игрока'
+            label: 'игрок'
+            description: 'имя игрока'
         arg2:
-            label: 'password'
-            description: 'Пароль'
+            label: 'пароль'
+            description: 'пароль'
+    authme.unregister:
+        description: 'Удаление регистрации игрока'
+        detailedDescription: 'Убирает регистрацию указанного игрока из базы данных.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока'
+    authme.forcelogin:
+        description: 'Авторизация игрока'
+        detailedDescription: 'Авторизация указанного игрока.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока в сети'
+    authme.password:
+        description: 'Изменение пароля игрока'
+        detailedDescription: 'Изменяет пароль указанного игрока.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока'
+        arg2:
+            label: 'пароль'
+            description: 'новый пароль'
+    authme.lastlogin:
+        description: 'Последний вход игрока'
+        detailedDescription: 'Показывает дату и время последнего входа указанного игрока.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока'
+    authme.accounts:
+        description: 'Учётные записи игрока'
+        detailedDescription: 'Отображает все учётные записи указанного игрока по его имени и IP-адресу.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока или IP-адрес'
+    authme.email:
+        description: 'Электронная почта игрока'
+        detailedDescription: 'Отображает адрес электронной почты указанного игрока.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока'
+    authme.setemail:
+        description: 'Смена эл. почты игрока'
+        detailedDescription: 'Изменяет адрес электронной почты указанного игрока.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока'
+        arg2:
+            label: 'эл. почта'
+            description: 'электронная почта игрока'
+    authme.getip:
+        description: 'IP-адрес игрока'
+        detailedDescription: 'Показывает IP-адрес указанного игрока в сети.'
+        arg1:
+            label: 'игрок'
+            description: 'имя игрока'
+    authme.spawn:
+        description: 'Перемещение на точку возрождения'
+        detailedDescription: 'Перемещает на точку возрождения.'
+    authme.setspawn:
+        description: 'Перемещение точки возрождения'
+        detailedDescription: 'Перемещает точку возрождения игроков на ваше текущее местоположение.'
+    authme.firstspawn:
+        description: 'Перемещение на начальную точку появления'
+        detailedDescription: 'Перемещает на начальную точку появления.'
+    authme.setfirstspawn:
+        description: 'Перемещение начальной точки появления'
+        detailedDescription: 'Перемещает начальную точку появления игроков на ваше текущее местоположение.'
+    authme.purge:
+        description: 'Удаление старых данных'
+        detailedDescription: 'Удаляет старые данные старше указанного количества дней.'
+        arg1:
+            label: 'дни'
+            description: 'количество дней'
+        arg2:
+            label: 'all'
+            description: 'удаляет игроков, у которых время последнего захода равно нулю'
+    authme.resetpos:
+        description: 'Удаление последнего местоположения игрока'
+        detailedDescription: 'Удаляет последнее известное местоположение указанного игрока или всех игроков.'
+        arg1:
+            label: 'игрок|*'
+            description: 'имя игрока/все игроки'
+    authme.purgebannedplayers:
+        description: 'Удаление данных о заблокированных'
+        detailedDescription: 'Удаляет все данные о заблокированных игроках.'
+    authme.switchantibot:
+        description: 'Изменение AntiBot-режима'
+        detailedDescription: 'Изменяет AntiBot-режим на указанный.'
+        arg1:
+            label: 'ON|OFF'
+            description: 'включить/выключить'
+    authme.reload:
+        description: 'Перезагрузка плагина'
+        detailedDescription: 'Перезагружает плагин AuthMeReloaded.'
+    authme.version:
+        description: 'Информация о версии'
+        detailedDescription: 'Показывает подробную информацию об установленной версии AuthMeReloaded, его разработчиках, помощниках, а также о лицензии плагина.'
+    authme.converter:
+        description: 'Преобразователь'
+        detailedDescription: 'Преобразовывает базу данных.'
+        arg1:
+            label: 'тип'
+            description: 'тип преобразовывания: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite'
+    authme.help:
+        description: 'Просмотр помощи'
+        detailedDescription: 'Показывает помощь по командам /authme.'
+        arg1:
+            label: 'команда'
+            description: 'команда, для которой нужна помощь'
+    authme.backup:
+        description: 'Создание резервной копии'
+        detailedDescription: 'Создаёт резервную копию зарегистрированных пользователей.'
