@@ -91,8 +91,8 @@ change_password_expired: 'Больше нельзя сменить свой па
 email_cooldown_error: '&cПисьмо было отправлено недавно. Подождите %time, прежде чем отправить новое.'
 
 # Каптча
-usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha <текст>»'
-wrong_captcha: '&cНеверно! Используйте «/captcha <текст с каптчи>».'
+usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha <theCaptcha>»'
+wrong_captcha: '&cНеверно! Используйте «/captcha THE_CAPTCHA».'
 valid_captcha: '&2Вы успешно решили каптчу!'
 
 # Единицы времени
