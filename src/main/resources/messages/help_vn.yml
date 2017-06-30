@@ -1,0 +1,45 @@
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ AuthMeReloaded Trợ giúp ]=========='
+    optional: 'Tùy chọn'
+    hasPermission: 'Bạn có quyền'
+    noPermission: 'Không có quyền'
+    default: 'Mặc định'
+    result: 'Kết quả'
+    defaultPermissions:
+        notAllowed: 'Không cho phép'
+        opOnly: 'Chỉ dành cho Op'
+        allowed: 'Dành cho mọi người'
+
+# -------------------------------------------------------
+# Titles of the individual help sections
+# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+#   alternatives: ''
+section:
+    command: 'Lệnh'
+    description: 'Miêu tả ngắn'
+    detailedDescription: 'Miêu tả cụ thể'
+    arguments: 'Arguments'
+    permissions: 'Quyền hạn'
+    alternatives: 'Các lựa chọn khác'
+    children: 'Lệnh'
+
+# -------------------------------------------------------
+# You can translate the data for all commands using the below pattern.
+# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
+# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
+# Translations don't need to be complete; any missing section will be taken from the default silently
+# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+commands:
+    authme.register:
+        description: 'Đăng ký người chơi'
+        detailedDescription: 'Đăng ký người chơi chỉ định với mật khẩu'
+        arg1:
+            label: 'player'
+            description: 'Tên của người chơi'
+        arg2:
+            label: 'password'
+            description: 'Mật khẩu'
