@@ -6,6 +6,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.util.Collection;
+
 import static java.lang.String.format;
 
 /**
@@ -17,29 +19,29 @@ public final class LimboPlayerMatchers {
     }
 
     public static Matcher<LimboPlayer> isLimbo(LimboPlayer limbo) {
-        return isLimbo(limbo.isOperator(), limbo.getGroup(), limbo.isCanFly(),
+        return isLimbo(limbo.isOperator(), limbo.getGroups(), limbo.isCanFly(),
             limbo.getWalkSpeed(), limbo.getFlySpeed());
     }
 
-    public static Matcher<LimboPlayer> isLimbo(boolean isOp, String group, boolean canFly,
+    public static Matcher<LimboPlayer> isLimbo(boolean isOp, Collection<String> groups, boolean canFly,
                                                float walkSpeed, float flySpeed) {
         return new TypeSafeMatcher<LimboPlayer>() {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
-                return item.isOperator() == isOp && item.getGroup().equals(group) && item.isCanFly() == canFly
+                return item.isOperator() == isOp && item.getGroups().equals(groups) && item.isCanFly() == canFly
                     && walkSpeed == item.getWalkSpeed() && flySpeed == item.getFlySpeed();
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText(format("Limbo with isOp=%s, group=%s, canFly=%s, walkSpeed=%f, flySpeed=%f",
-                    isOp, group, canFly, walkSpeed, flySpeed));
+                description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s, walkSpeed=%f, flySpeed=%f",
+                    isOp, String.join(" ,", groups), canFly, walkSpeed, flySpeed));
             }
 
             @Override
             public void describeMismatchSafely(LimboPlayer item, Description description) {
-                description.appendText(format("Limbo with isOp=%s, group=%s, canFly=%s, walkSpeed=%f, flySpeed=%f",
-                    item.isOperator(), item.getGroup(), item.isCanFly(), item.getWalkSpeed(), item.getFlySpeed()));
+                description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s, walkSpeed=%f, flySpeed=%f",
+                    item.isOperator(), String.join(" ,", item.getGroups()), item.isCanFly(), item.getWalkSpeed(), item.getFlySpeed()));
             }
         };
     }

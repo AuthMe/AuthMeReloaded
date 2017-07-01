@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Changes the permission group according to the auth status of the player and the configuration.
@@ -48,24 +50,28 @@ class AuthGroupHandler implements Reloadable {
             return;
         }
 
-        String primaryGroup = limbo == null ? "" : limbo.getGroup();
+        Collection<String> previousGroups = limbo == null ? Collections.emptyList() : limbo.getGroups();
 
         switch (groupType) {
             // Implementation note: some permission systems don't support players not being in any group,
             // so add the new group before removing the old ones
             case UNREGISTERED:
                 permissionsManager.addGroup(player, unregisteredGroup);
-                permissionsManager.removeGroups(player, registeredGroup, primaryGroup);
+                permissionsManager.removeGroup(player, registeredGroup);
+                permissionsManager.removeGroups(player, previousGroups);
                 break;
 
             case REGISTERED_UNAUTHENTICATED:
                 permissionsManager.addGroup(player, registeredGroup);
-                permissionsManager.removeGroups(player, unregisteredGroup, primaryGroup);
+                permissionsManager.removeGroup(player, unregisteredGroup);
+                permissionsManager.removeGroups(player, previousGroups);
+
                 break;
 
             case LOGGED_IN:
-                permissionsManager.addGroup(player, primaryGroup);
-                permissionsManager.removeGroups(player, unregisteredGroup, registeredGroup);
+                permissionsManager.addGroups(player, previousGroups);
+                permissionsManager.removeGroup(player, unregisteredGroup);
+                permissionsManager.removeGroup(player, registeredGroup);
                 break;
 
             default:

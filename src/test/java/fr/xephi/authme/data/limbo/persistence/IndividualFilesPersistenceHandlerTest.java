@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -78,7 +79,7 @@ public class IndividualFilesPersistenceHandlerTest {
         assertThat(data.isCanFly(), equalTo(true));
         assertThat(data.getWalkSpeed(), equalTo(0.2f));
         assertThat(data.getFlySpeed(), equalTo(0.1f));
-        assertThat(data.getGroup(), equalTo("players"));
+        assertThat(data.getGroups(), equalTo(Collections.singletonList("players")));
         Location location = data.getLocation();
         assertThat(location.getX(), equalTo(-113.219));
         assertThat(location.getY(), equalTo(72.0));
@@ -112,8 +113,7 @@ public class IndividualFilesPersistenceHandlerTest {
         World world = mock(World.class);
         given(world.getName()).willReturn("player-world");
         Location location = new Location(world, 0.2, 102.25, -89.28, 3.02f, 90.13f);
-        String group = "primary-grp";
-        LimboPlayer limbo = new LimboPlayer(location, true, group, true, 1.2f, 0.8f);
+        LimboPlayer limbo = new LimboPlayer(location, true, Collections.singletonList("primary-grp"), true, 1.2f, 0.8f);
 
         // when
         handler.saveLimboPlayer(player, limbo);

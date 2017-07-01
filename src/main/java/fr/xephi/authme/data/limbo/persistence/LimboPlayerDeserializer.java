@@ -1,5 +1,6 @@
 package fr.xephi.authme.data.limbo.persistence;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -10,11 +11,15 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.CAN_FLY;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.FLY_SPEED;
-import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.GROUP;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.GROUPS;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.IS_OP;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOCATION;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_PITCH;
@@ -45,12 +50,13 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
 
         Location loc = deserializeLocation(jsonObject);
         boolean operator = getBoolean(jsonObject, IS_OP);
-        String group = getString(jsonObject, GROUP);
+
+        Collection<String> groups = getStringList(jsonObject, GROUPS);
         boolean canFly = getBoolean(jsonObject, CAN_FLY);
         float walkSpeed = getFloat(jsonObject, WALK_SPEED, LimboPlayer.DEFAULT_WALK_SPEED);
         float flySpeed = getFloat(jsonObject, FLY_SPEED, LimboPlayer.DEFAULT_FLY_SPEED);
 
-        return new LimboPlayer(loc, operator, group, canFly, walkSpeed, flySpeed);
+        return new LimboPlayer(loc, operator, groups, canFly, walkSpeed, flySpeed);
     }
 
     private Location deserializeLocation(JsonObject jsonObject) {
@@ -75,6 +81,19 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         return element != null ? element.getAsString() : "";
     }
 
+    private static List<String> getStringList(JsonObject jsonObject, String memberName) {
+        JsonElement element = jsonObject.get(memberName);
+        if (element == null) {
+            return Collections.emptyList();
+        }
+        List<String> result = new ArrayList<>();
+        JsonArray jsonArray = element.getAsJsonArray();
+        for (JsonElement arrayElement : jsonArray) {
+            result.add(arrayElement.getAsString());
+        }
+        return result;
+    }
+
     private static boolean getBoolean(JsonObject jsonObject, String memberName) {
         JsonElement element = jsonObject.get(memberName);
         return element != null && element.getAsBoolean();
@@ -95,10 +114,11 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
     /**
      * Gets a number from the given JsonElement safely.
      *
-     * @param jsonElement the element to retrieve the number from
+     * @param jsonElement    the element to retrieve the number from
      * @param numberFunction the function to get the number from the element
-     * @param defaultValue the value to return if the element is null or the number cannot be retrieved
-     * @param <N> the number type
+     * @param defaultValue   the value to return if the element is null or the number cannot be retrieved
+     * @param <N>            the number type
+     *
      * @return the number from the given JSON element, or the default value
      */
     private static <N extends Number> N getNumberFromElement(JsonElement jsonElement,

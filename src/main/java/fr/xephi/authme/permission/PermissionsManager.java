@@ -19,8 +19,10 @@ import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * PermissionsManager.
@@ -304,6 +306,33 @@ public class PermissionsManager implements Reloadable {
     }
 
     /**
+     * Add the permission groups of a player, if supported.
+     *
+     * @param player     The player
+     * @param groupNames The name of the groups to add.
+     *
+     * @return True if at least one group was added, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permissions system.
+     */
+    public boolean addGroups(Player player, Collection<String> groupNames) {
+        // If no permissions system is used, return false
+        if (!isEnabled()) {
+            return false;
+        }
+
+        // Add each group to the user
+        boolean result = false;
+        for (String groupName : groupNames) {
+            if (!groupName.isEmpty()) {
+                result |= handler.addToGroup(player, groupName);
+            }
+        }
+
+        // Return the result
+        return result;
+    }
+
+    /**
      * Remove the permission group of a player, if supported.
      *
      * @param player    The player
@@ -312,7 +341,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroups(Player player, String groupName) {
+    public boolean removeGroup(Player player, String groupName) {
         return isEnabled() && handler.removeFromGroup(player, groupName);
     }
 
@@ -320,12 +349,12 @@ public class PermissionsManager implements Reloadable {
      * Remove the permission groups of a player, if supported.
      *
      * @param player     The player
-     * @param groupNames The name of the groups to add.
+     * @param groupNames The name of the groups to remove.
      *
      * @return True if at least one group was removed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroups(Player player, String... groupNames) {
+    public boolean removeGroups(Player player, Collection<String> groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
             return false;
@@ -377,6 +406,6 @@ public class PermissionsManager implements Reloadable {
         Collection<String> groupNames = getGroups(player);
 
         // Remove each group
-        return removeGroups(player, groupNames.toArray(new String[groupNames.size()]));
+        return removeGroups(player, groupNames);
     }
 }
