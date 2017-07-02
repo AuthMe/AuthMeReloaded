@@ -136,7 +136,7 @@ public class MySQL implements DataSource {
         ds.setPassword(this.password);
 
         // Request mysql over SSL
-        ds.addDataSourceProperty("useSSL", useSsl);
+        ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
 
         // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
