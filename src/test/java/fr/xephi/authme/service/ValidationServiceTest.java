@@ -350,21 +350,27 @@ public class ValidationServiceTest {
         // given
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
-            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;32.24.16.8"));
+            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;32.24.16.8", "Gabriel;regex:93\\.23\\.44\\..*"));
         validationService.reload();
 
         Player bobby = mockPlayer("bobby", "127.0.0.4");
         Player tamara = mockPlayer("taMARA", "8.8.8.8");
+        Player gabriel = mockPlayer("Gabriel", "93.23.44.65");
+        Player gabriel2 = mockPlayer("Gabriel", "93.23.33.34");
         Player notRestricted = mockPlayer("notRestricted", "0.0.0.0");
 
         // when
         boolean isBobbyAdmitted = validationService.fulfillsNameRestrictions(bobby);
         boolean isTamaraAdmitted = validationService.fulfillsNameRestrictions(tamara);
+        boolean isGabrielAdmitted = validationService.fulfillsNameRestrictions(gabriel);
+        boolean isGabriel2Admitted = validationService.fulfillsNameRestrictions(gabriel2);
         boolean isNotRestrictedAdmitted = validationService.fulfillsNameRestrictions(notRestricted);
 
         // then
         assertThat(isBobbyAdmitted, equalTo(true));
         assertThat(isTamaraAdmitted, equalTo(false));
+        assertThat(isGabrielAdmitted, equalTo(true));
+        assertThat(isGabriel2Admitted, equalTo(false));
         assertThat(isNotRestrictedAdmitted, equalTo(true));
     }
 

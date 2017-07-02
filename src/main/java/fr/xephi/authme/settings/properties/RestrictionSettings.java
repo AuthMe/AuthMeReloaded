@@ -78,9 +78,11 @@ public final class RestrictionSettings implements SettingsHolder {
     @Comment({
         "The restricted user feature will kick players listed below",
         "if they don't match the defined IP address. Names are case-insensitive.",
+        "Ip addresses support regex expressions (regex:127\\.0\\.0\\..*)",
         "Example:",
         "    AllowedRestrictedUser:",
-        "    - playername;127.0.0.1"})
+        "    - playername;127.0.0.1",
+        "    - playername;regex:127\\.0\\.0\\..*"})
     public static final Property<List<String>> RESTRICTED_USERS =
         newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
 
