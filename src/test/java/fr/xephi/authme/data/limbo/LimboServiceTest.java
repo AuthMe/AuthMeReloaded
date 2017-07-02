@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -81,7 +83,7 @@ public class LimboServiceTest {
         Location playerLoc = mock(Location.class);
         given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(playerLoc);
         given(permissionsManager.hasGroupSupport()).willReturn(true);
-        given(permissionsManager.getPrimaryGroup(player)).willReturn("permgrwp");
+        given(permissionsManager.getGroups(player)).willReturn(Collections.singletonList("permgrwp"));
 
         // when
         limboService.createLimboPlayer(player, true);
@@ -102,7 +104,7 @@ public class LimboServiceTest {
         assertThat(limbo.isCanFly(), equalTo(false));
         assertThat(limbo.getFlySpeed(), equalTo(0.2f));
         assertThat(limbo.getLocation(), equalTo(playerLoc));
-        assertThat(limbo.getGroup(), equalTo("permgrwp"));
+        assertThat(limbo.getGroups(), equalTo(Collections.singletonList("permgrwp")));
     }
 
     @Test
@@ -132,7 +134,7 @@ public class LimboServiceTest {
         assertThat(limbo.isCanFly(), equalTo(true));
         assertThat(limbo.getFlySpeed(), equalTo(0.4f));
         assertThat(limbo.getLocation(), equalTo(playerLoc));
-        assertThat(limbo.getGroup(), equalTo(""));
+        assertThat(limbo.getGroups(), equalTo(Collections.emptyList()));
     }
 
     @Test
@@ -157,7 +159,7 @@ public class LimboServiceTest {
     public void shouldRestoreData() {
         // given
         LimboPlayer limbo = Mockito.spy(convertToLimboPlayer(
-            newPlayer("John", true, 0.4f, false, 0.0f), null, ""));
+            newPlayer("John", true, 0.4f, false, 0.0f), null, Collections.emptyList()));
         getLimboMap().put("john", limbo);
         Player player = newPlayer("John", false, 0.2f, false, 0.7f);
 
@@ -236,8 +238,8 @@ public class LimboServiceTest {
         return player;
     }
 
-    private static LimboPlayer convertToLimboPlayer(Player player, Location location, String group) {
-        return new LimboPlayer(location, player.isOp(), group, player.getAllowFlight(),
+    private static LimboPlayer convertToLimboPlayer(Player player, Location location, Collection<String> groups) {
+        return new LimboPlayer(location, player.isOp(), groups, player.getAllowFlight(),
             player.getWalkSpeed(), player.getFlySpeed());
     }
 

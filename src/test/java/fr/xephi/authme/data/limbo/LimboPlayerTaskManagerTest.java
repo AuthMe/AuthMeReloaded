@@ -19,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -98,7 +100,7 @@ public class LimboPlayerTaskManagerTest {
     public void shouldCancelExistingMessageTask() {
         // given
         Player player = mock(Player.class);
-        LimboPlayer limboPlayer = new LimboPlayer(null, true, "grp", false, 0.1f, 0.0f);
+        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList("grp"), false, 0.1f, 0.0f);
         MessageTask existingMessageTask = mock(MessageTask.class);
         limboPlayer.setMessageTask(existingMessageTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
@@ -149,7 +151,7 @@ public class LimboPlayerTaskManagerTest {
     public void shouldCancelExistingTimeoutTask() {
         // given
         Player player = mock(Player.class);
-        LimboPlayer limboPlayer = new LimboPlayer(null, false, "", true, 0.3f, 0.1f);
+        LimboPlayer limboPlayer = new LimboPlayer(null, false, Collections.emptyList(), true, 0.3f, 0.1f);
         BukkitTask existingTask = mock(BukkitTask.class);
         limboPlayer.setTimeoutTask(existingTask);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(18);

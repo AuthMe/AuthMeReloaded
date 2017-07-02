@@ -72,7 +72,7 @@ class LimboPlayerViewer implements DebugSection {
             .sendEntry("Location", p -> formatLocation(p.getLocation()), l -> formatLocation(l.getLocation()))
             .sendEntry("Prim. group",
                 p -> permissionsManager.hasGroupSupport() ? permissionsManager.getPrimaryGroup(p) : "N/A",
-                LimboPlayer::getGroup);
+                LimboPlayer::getGroups);
     }
 
     @Override
