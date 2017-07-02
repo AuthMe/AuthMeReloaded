@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
@@ -18,14 +17,15 @@ public class LimboPlayer {
 
     private final boolean canFly;
     private final boolean operator;
-    private Collection<String> groups;
+    private final Collection<String> groups;
     private final Location loc;
     private final float walkSpeed;
     private final float flySpeed;
     private BukkitTask timeoutTask = null;
     private MessageTask messageTask = null;
 
-    public LimboPlayer(Location loc, boolean operator, Collection<String> groups, boolean fly, float walkSpeed, float flySpeed) {
+    public LimboPlayer(Location loc, boolean operator, Collection<String> groups, boolean fly, float walkSpeed,
+                       float flySpeed) {
         this.loc = loc;
         this.operator = operator;
         this.groups = groups;

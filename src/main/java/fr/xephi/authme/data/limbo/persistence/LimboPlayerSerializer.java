@@ -1,7 +1,6 @@
 package fr.xephi.authme.data.limbo.persistence;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -10,7 +9,6 @@ import fr.xephi.authme.data.limbo.LimboPlayer;
 import org.bukkit.Location;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
 
 /**
  * Converts a LimboPlayer to a JsonElement.
@@ -31,6 +29,8 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
     static final String WALK_SPEED = "walk-speed";
     static final String FLY_SPEED = "fly-speed";
 
+    private static final Gson GSON = new Gson();
+
 
     @Override
     public JsonElement serialize(LimboPlayer limboPlayer, Type type, JsonSerializationContext context) {
@@ -45,7 +45,7 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
 
         JsonObject obj = new JsonObject();
         obj.add(LOCATION, locationObject);
-        obj.add(GROUPS, new Gson().toJsonTree(limboPlayer.getGroups()).getAsJsonArray()); //TODO: maybe we should store the GSON instance somewhere. -sg
+        obj.add(GROUPS, GSON.toJsonTree(limboPlayer.getGroups()).getAsJsonArray());
 
         obj.addProperty(IS_OP, limboPlayer.isOperator());
         obj.addProperty(CAN_FLY, limboPlayer.isCanFly());

@@ -9,6 +9,7 @@ import org.hamcrest.TypeSafeMatcher;
 import java.util.Collection;
 
 import static java.lang.String.format;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 /**
  * Contains matchers for LimboPlayer.
@@ -19,17 +20,20 @@ public final class LimboPlayerMatchers {
     }
 
     public static Matcher<LimboPlayer> isLimbo(LimboPlayer limbo) {
-        return isLimbo(limbo.isOperator(), limbo.getGroups(), limbo.isCanFly(),
-            limbo.getWalkSpeed(), limbo.getFlySpeed());
+        String[] groups = limbo.getGroups().toArray(new String[limbo.getGroups().size()]);
+        return isLimbo(limbo.isOperator(), limbo.isCanFly(), limbo.getWalkSpeed(), limbo.getFlySpeed(), groups);
     }
 
-    public static Matcher<LimboPlayer> isLimbo(boolean isOp, Collection<String> groups, boolean canFly,
-                                               float walkSpeed, float flySpeed) {
+    public static Matcher<LimboPlayer> isLimbo(boolean isOp, boolean canFly, float walkSpeed, float flySpeed,
+                                               String... groups) {
         return new TypeSafeMatcher<LimboPlayer>() {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
-                return item.isOperator() == isOp && item.getGroups().equals(groups) && item.isCanFly() == canFly
-                    && walkSpeed == item.getWalkSpeed() && flySpeed == item.getFlySpeed();
+                return item.isOperator() == isOp
+                    && collectionContains(item.getGroups(), groups)
+                    && item.isCanFly() == canFly
+                    && walkSpeed == item.getWalkSpeed()
+                    && flySpeed == item.getFlySpeed();
             }
 
             @Override
@@ -110,5 +114,13 @@ public final class LimboPlayerMatchers {
     public static Matcher<LimboPlayer> hasLocation(Location location) {
         return hasLocation(location.getWorld().getName(), location.getX(), location.getY(), location.getZ(),
             location.getYaw(), location.getPitch());
+    }
+
+    // Hamcrest's contains() doesn't like it when there are no items, so we need to check for the empty case explicitly
+    private static boolean collectionContains(Collection<String> givenItems, String... expectedItems) {
+        if (expectedItems.length == 0) {
+            return givenItems.isEmpty();
+        }
+        return contains(expectedItems).matches(givenItems);
     }
 }

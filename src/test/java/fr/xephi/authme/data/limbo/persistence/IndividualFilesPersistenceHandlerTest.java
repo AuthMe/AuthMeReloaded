@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -79,7 +80,7 @@ public class IndividualFilesPersistenceHandlerTest {
         assertThat(data.isCanFly(), equalTo(true));
         assertThat(data.getWalkSpeed(), equalTo(0.2f));
         assertThat(data.getFlySpeed(), equalTo(0.1f));
-        assertThat(data.getGroups(), equalTo(Collections.singletonList("players")));
+        assertThat(data.getGroups(), contains("players"));
         Location location = data.getLocation();
         assertThat(location.getX(), equalTo(-113.219));
         assertThat(location.getY(), equalTo(72.0));

@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 
+import static fr.xephi.authme.util.Utils.isCollectionEmpty;
+
 /**
  * Helper class for the LimboService.
  */
@@ -70,7 +72,7 @@ class LimboServiceHelper {
      * <ul>
      *  <li><code>isOperator, allowFlight</code>: true if either limbo has true</li>
      *  <li><code>flySpeed, walkSpeed</code>: maximum value of either limbo player</li>
-     *  <li><code>group, location</code>: from old limbo if not empty/null, otherwise from new limbo</li>
+     *  <li><code>groups, location</code>: from old limbo if not empty/null, otherwise from new limbo</li>
      * </ul>
      *
      * @param newLimbo the new limbo player
@@ -88,7 +90,7 @@ class LimboServiceHelper {
         boolean canFly = newLimbo.isCanFly() || oldLimbo.isCanFly();
         float flySpeed = Math.max(newLimbo.getFlySpeed(), oldLimbo.getFlySpeed());
         float walkSpeed = Math.max(newLimbo.getWalkSpeed(), oldLimbo.getWalkSpeed());
-        Collection<String> groups = newLimbo.getGroups();
+        Collection<String> groups = getLimboGroups(oldLimbo.getGroups(), newLimbo.getGroups());
         Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 
         return new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed);
@@ -96,5 +98,11 @@ class LimboServiceHelper {
 
     private static Location firstNotNull(Location first, Location second) {
         return first == null ? second : first;
+    }
+
+    private static Collection<String> getLimboGroups(Collection<String> oldLimboGroups,
+                                                     Collection<String> newLimboGroups) {
+        ConsoleLogger.debug("Limbo merge: new and old groups are `{0}` and `{1}`", newLimboGroups, oldLimboGroups);
+        return isCollectionEmpty(oldLimboGroups) ? newLimboGroups : oldLimboGroups;
     }
 }

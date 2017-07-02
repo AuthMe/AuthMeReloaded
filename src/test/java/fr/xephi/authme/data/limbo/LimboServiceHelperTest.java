@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -39,7 +40,7 @@ public class LimboServiceHelperTest {
         // then
         assertThat(result.getLocation(), equalTo(oldLocation));
         assertThat(result.isOperator(), equalTo(true));
-        assertThat(result.getGroups(), equalTo(Collections.singletonList("grp-new")));
+        assertThat(result.getGroups(), contains("grp-old"));
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getWalkSpeed(), equalTo(0.1f));
         assertThat(result.getFlySpeed(), equalTo(0.8f));
@@ -58,7 +59,7 @@ public class LimboServiceHelperTest {
         // then
         assertThat(result.getLocation(), equalTo(newLocation));
         assertThat(result.isOperator(), equalTo(false));
-        assertThat(result.getGroups(), equalTo(Collections.singletonList("grp-new")));
+        assertThat(result.getGroups(), contains("grp-new"));
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getWalkSpeed(), equalTo(0.3f));
         assertThat(result.getFlySpeed(), equalTo(0.1f));

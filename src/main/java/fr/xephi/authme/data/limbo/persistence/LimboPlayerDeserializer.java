@@ -29,11 +29,14 @@ import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Y
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_YAW;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Z;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.WALK_SPEED;
+import static java.util.Optional.ofNullable;
 
 /**
  * Converts a JsonElement to a LimboPlayer.
  */
 class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
+
+    private static final String GROUP_LEGACY = "group";
 
     private BukkitService bukkitService;
 
@@ -51,7 +54,7 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         Location loc = deserializeLocation(jsonObject);
         boolean operator = getBoolean(jsonObject, IS_OP);
 
-        Collection<String> groups = getStringList(jsonObject, GROUPS);
+        Collection<String> groups = getLimboGroups(jsonObject);
         boolean canFly = getBoolean(jsonObject, CAN_FLY);
         float walkSpeed = getFloat(jsonObject, WALK_SPEED, LimboPlayer.DEFAULT_WALK_SPEED);
         float flySpeed = getFloat(jsonObject, FLY_SPEED, LimboPlayer.DEFAULT_FLY_SPEED);
@@ -81,10 +84,11 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         return element != null ? element.getAsString() : "";
     }
 
-    private static List<String> getStringList(JsonObject jsonObject, String memberName) {
-        JsonElement element = jsonObject.get(memberName);
+    private static List<String> getLimboGroups(JsonObject jsonObject) {
+        JsonElement element = jsonObject.get(GROUPS);
         if (element == null) {
-            return Collections.emptyList();
+            String legacyGroup = ofNullable(jsonObject.get(GROUP_LEGACY)).map(JsonElement::getAsString).orElse(null);
+            return legacyGroup == null ? Collections.emptyList() : Collections.singletonList(legacyGroup);
         }
         List<String> result = new ArrayList<>();
         JsonArray jsonArray = element.getAsJsonArray();
