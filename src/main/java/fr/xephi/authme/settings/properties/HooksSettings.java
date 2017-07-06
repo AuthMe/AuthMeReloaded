@@ -57,11 +57,15 @@ public final class HooksSettings implements SettingsHolder {
     @Comment("IP Board table prefix defined during the IP Board installation process")
     public static final Property<String> IPB_TABLE_PREFIX =
         newProperty("ExternalBoardOptions.IPBTablePrefix", "ipb_");
-    
+
     @Comment("IP Board default group ID; 3 is the default registered group defined by IP Board")
     public static final Property<Integer> IPB_ACTIVATED_GROUP_ID =
         newProperty("ExternalBoardOptions.IPBActivatedGroupId", 3);
-    
+
+    @Comment("Xenforo table prefix defined during the Xenforo installation process")
+    public static final Property<String> XF_TABLE_PREFIX =
+        newProperty("ExternalBoardOptions.XFTablePrefix", "xf_");
+
     @Comment("XenForo default group ID; 2 is the default registered group defined by Xenforo")
     public static final Property<Integer> XF_ACTIVATED_GROUP_ID =
         newProperty("ExternalBoardOptions.XFActivatedGroupId", 2);

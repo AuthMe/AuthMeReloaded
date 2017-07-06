@@ -15,7 +15,6 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 
-import javax.xml.transform.Result;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -49,10 +48,11 @@ public class MySQL implements DataSource {
 
     private String phpBbPrefix;
     private String ipbPrefix;
+    private String xfPrefix;
+    private String wordpressPrefix;
     private int phpBbGroup;
     private int ipbGroup;
     private int xfGroup;
-    private String wordpressPrefix;
 
     public MySQL(Settings settings) throws ClassNotFoundException, SQLException {
         setParameters(settings);
@@ -109,11 +109,12 @@ public class MySQL implements DataSource {
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
         this.ipbPrefix = settings.getProperty(HooksSettings.IPB_TABLE_PREFIX);
         this.ipbGroup = settings.getProperty(HooksSettings.IPB_ACTIVATED_GROUP_ID);
+        this.xfPrefix = settings.getProperty(HooksSettings.XF_TABLE_PREFIX);
         this.xfGroup = settings.getProperty(HooksSettings.XF_ACTIVATED_GROUP_ID);
         this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         if (poolSize == -1) {
-            poolSize = Utils.getCoreCount()*3;
+            poolSize = Utils.getCoreCount() * 3;
         }
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
@@ -140,7 +141,7 @@ public class MySQL implements DataSource {
 
         // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
-        ds.addDataSourceProperty("encoding","UTF-8");
+        ds.addDataSourceProperty("encoding", "UTF-8");
         ds.addDataSourceProperty("useUnicode", "true");
 
         // Random stuff
@@ -308,7 +309,7 @@ public class MySQL implements DataSource {
             }
             if (hashAlgorithm == HashAlgorithm.XFBCRYPT) {
                 try (PreparedStatement pst2 = con.prepareStatement(
-                    "SELECT data FROM xf_user_authenticate WHERE " + col.ID + "=?;")) {
+                    "SELECT data FROM " + xfPrefix + "user_authenticate WHERE " + col.ID + "=?;")) {
                     pst2.setInt(1, id);
                     try (ResultSet rs = pst2.executeQuery()) {
                         if (rs.next()) {
@@ -337,7 +338,7 @@ public class MySQL implements DataSource {
                 + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL
                 + (useSalt ? "," + col.SALT : "")
                 + ") VALUES (?,?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
-            try ( PreparedStatement pst = con.prepareStatement(sql)) {
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getPassword().getHash());
                 pst.setString(3, auth.getIp());
@@ -359,16 +360,15 @@ public class MySQL implements DataSource {
                     }
                 }
             }
-            if (hashAlgorithm == HashAlgorithm.IPB4){
+            if (hashAlgorithm == HashAlgorithm.IPB4) {
                 sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
                 try (PreparedStatement pst = con.prepareStatement(sql)) {
                     pst.setString(1, auth.getNickname());
                     try (ResultSet rs = pst.executeQuery()) {
-                        if (rs.next()){
+                        if (rs.next()) {
                             // Update player group in core_members
-                            sql = "UPDATE " + ipbPrefix + tableName + " SET "+ tableName + ".member_group_id=? WHERE " + col.NAME + "=?;";
-                            try (PreparedStatement pst2 = con.prepareStatement(sql))
-                            {
+                            sql = "UPDATE " + ipbPrefix + tableName + " SET " + tableName + ".member_group_id=? WHERE " + col.NAME + "=?;";
+                            try (PreparedStatement pst2 = con.prepareStatement(sql)) {
                                 pst2.setInt(1, ipbGroup);
                                 pst2.setString(2, auth.getNickname());
                                 pst2.executeUpdate();
@@ -376,7 +376,7 @@ public class MySQL implements DataSource {
                             // Get current time without ms
                             long time = System.currentTimeMillis() / 1000;
                             // update joined date
-                            sql = "UPDATE " + ipbPrefix + tableName + " SET "+ tableName + ".joined=? WHERE " + col.NAME + "=?;";
+                            sql = "UPDATE " + ipbPrefix + tableName + " SET " + tableName + ".joined=? WHERE " + col.NAME + "=?;";
                             try (PreparedStatement pst2 = con.prepareStatement(sql)) {
                                 pst2.setLong(1, time);
                                 pst2.setString(2, auth.getNickname());
@@ -392,7 +392,7 @@ public class MySQL implements DataSource {
                         }
                     }
                 }
-            } else if  (hashAlgorithm == HashAlgorithm.PHPBB) {
+            } else if (hashAlgorithm == HashAlgorithm.PHPBB) {
                 sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
                 try (PreparedStatement pst = con.prepareStatement(sql)) {
                     pst.setString(1, auth.getNickname());
@@ -537,7 +537,7 @@ public class MySQL implements DataSource {
                         if (rs.next()) {
                             int id = rs.getInt(col.ID);
                             // Insert player password, salt in xf_user_authenticate
-                            sql = "INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";
+                            sql = "INSERT INTO " + xfPrefix + "user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";
                             try (PreparedStatement pst2 = con.prepareStatement(sql)) {
                                 pst2.setInt(1, id);
                                 pst2.setString(2, XfBCrypt.SCHEME_CLASS);
@@ -549,21 +549,21 @@ public class MySQL implements DataSource {
                                 pst2.executeUpdate();
                             }
                             // Update player group in xf_users
-                            sql = "UPDATE " + tableName + " SET "+ tableName + ".user_group_id=? WHERE " + col.NAME + "=?;";
+                            sql = "UPDATE " + tableName + " SET " + tableName + ".user_group_id=? WHERE " + col.NAME + "=?;";
                             try (PreparedStatement pst2 = con.prepareStatement(sql)) {
                                 pst2.setInt(1, xfGroup);
                                 pst2.setString(2, auth.getNickname());
                                 pst2.executeUpdate();
                             }
                             // Update player permission combination in xf_users
-                            sql = "UPDATE " + tableName + " SET "+ tableName + ".permission_combination_id=? WHERE " + col.NAME + "=?;";
+                            sql = "UPDATE " + tableName + " SET " + tableName + ".permission_combination_id=? WHERE " + col.NAME + "=?;";
                             try (PreparedStatement pst2 = con.prepareStatement(sql)) {
                                 pst2.setInt(1, xfGroup);
                                 pst2.setString(2, auth.getNickname());
                                 pst2.executeUpdate();
                             }
                             // Insert player privacy combination in xf_user_privacy
-                            sql = "INSERT INTO xf_user_privacy (user_id, allow_view_profile, allow_post_profile, allow_send_personal_conversation, allow_view_identities, allow_receive_news_feed) VALUES (?,?,?,?,?,?)";
+                            sql = "INSERT INTO " + xfPrefix + "user_privacy (user_id, allow_view_profile, allow_post_profile, allow_send_personal_conversation, allow_view_identities, allow_receive_news_feed) VALUES (?,?,?,?,?,?)";
                             try (PreparedStatement pst2 = con.prepareStatement(sql)) {
                                 pst2.setInt(1, id);
                                 pst2.setString(2, "everyone");
@@ -574,7 +574,7 @@ public class MySQL implements DataSource {
                                 pst2.executeUpdate();
                             }
                             // Insert player group relation in xf_user_group_relation
-                            sql = "INSERT INTO xf_user_group_relation (user_id, user_group_id, is_primary) VALUES (?,?,?)";
+                            sql = "INSERT INTO " + xfPrefix + "user_group_relation (user_id, user_group_id, is_primary) VALUES (?,?,?)";
                             try (PreparedStatement pst2 = con.prepareStatement(sql)) {
                                 pst2.setInt(1, id);
                                 pst2.setInt(2, xfGroup);
@@ -628,7 +628,7 @@ public class MySQL implements DataSource {
                         if (rs.next()) {
                             int id = rs.getInt(col.ID);
                             // Insert password in the correct table
-                            sql = "UPDATE xf_user_authenticate SET data=? WHERE " + col.ID + "=?;";
+                            sql = "UPDATE " + xfPrefix + "user_authenticate SET data=? WHERE " + col.ID + "=?;";
                             PreparedStatement pst2 = con.prepareStatement(sql);
                             String serializedHash = XfBCrypt.serializeHash(password.getHash());
                             byte[] bytes = serializedHash.getBytes();
@@ -639,7 +639,7 @@ public class MySQL implements DataSource {
                             pst2.executeUpdate();
                             pst2.close();
                             // ...
-                            sql = "UPDATE xf_user_authenticate SET scheme_class=? WHERE " + col.ID + "=?;";
+                            sql = "UPDATE " + xfPrefix + "user_authenticate SET scheme_class=? WHERE " + col.ID + "=?;";
                             pst2 = con.prepareStatement(sql);
                             pst2.setString(1, XfBCrypt.SCHEME_CLASS);
                             pst2.setInt(2, id);
@@ -707,7 +707,7 @@ public class MySQL implements DataSource {
                     try (ResultSet rs = xfSelect.executeQuery()) {
                         if (rs.next()) {
                             int id = rs.getInt(col.ID);
-                            sql = "DELETE FROM xf_user_authenticate WHERE " + col.ID + "=?;";
+                            sql = "DELETE FROM " + xfPrefix + "user_authenticate WHERE " + col.ID + "=?;";
                             try (PreparedStatement xfDelete = con.prepareStatement(sql)) {
                                 xfDelete.setInt(1, id);
                                 xfDelete.executeUpdate();
@@ -924,7 +924,7 @@ public class MySQL implements DataSource {
                     while (rs.next()) {
                         PlayerAuth pAuth = buildAuthFromResultSet(rs);
                         if (hashAlgorithm == HashAlgorithm.XFBCRYPT) {
-                            try (PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + col.ID + "=?;")) {
+                            try (PreparedStatement pst = con.prepareStatement("SELECT data FROM " + xfPrefix + "user_authenticate WHERE " + col.ID + "=?;")) {
                                 int id = rs.getInt(col.ID);
                                 pst.setInt(1, id);
                                 ResultSet rs2 = pst.executeQuery();
@@ -1016,8 +1016,9 @@ public class MySQL implements DataSource {
     /**
      * Checks if the last login column has a type that needs to be migrated.
      *
-     * @param con connection to the database
+     * @param con      connection to the database
      * @param metaData lastlogin column meta data
+     *
      * @throws SQLException .
      */
     private void migrateLastLoginColumn(Connection con, DatabaseMetaData metaData) throws SQLException {
