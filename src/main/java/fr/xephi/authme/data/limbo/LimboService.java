@@ -2,6 +2,7 @@ package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
@@ -37,6 +38,9 @@ public class LimboService {
     @Inject
     private AuthGroupHandler authGroupHandler;
 
+    @Inject
+    private BukkitService bukkitService;
+
     LimboService() {
     }
 
@@ -62,13 +66,14 @@ public class LimboService {
 
         LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
         limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered), limboPlayer);
+        entries.put(name, limboPlayer);
+        bukkitService.runTask(() -> helper.revokeLimboStates(player));
 
         taskManager.registerMessageTask(player, limboPlayer, isRegistered);
         taskManager.registerTimeoutTask(player, limboPlayer);
-        helper.revokeLimboStates(player);
+
         authGroupHandler.setGroup(player, limboPlayer,
             isRegistered ? AuthGroupType.REGISTERED_UNAUTHENTICATED : AuthGroupType.UNREGISTERED);
-        entries.put(name, limboPlayer);
         persistence.saveLimboPlayer(player, limboPlayer);
     }
 
