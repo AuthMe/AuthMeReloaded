@@ -6,6 +6,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.LimboSettings;
@@ -65,6 +66,9 @@ public class LimboServiceTest {
 
     @Mock
     private AuthGroupHandler authGroupHandler;
+
+    @Mock
+    private BukkitService bukkitService;
 
     @BeforeClass
     public static void initLogger() {
