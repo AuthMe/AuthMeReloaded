@@ -5,6 +5,7 @@ import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.util.FileUtils;
+import fr.xephi.authme.util.InternetProtocolUtils;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -118,7 +119,7 @@ public class GeoIpService {
      * @return two-character ISO 3166-1 alpha code for the country.
      */
     public String getCountryCode(String ip) {
-        if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
+        if (!InternetProtocolUtils.isLocalAddress(ip) && isDataAvailable()) {
             return lookupService.getCountry(ip).getCode();
         }
         return "--";
@@ -132,7 +133,7 @@ public class GeoIpService {
      * @return The name of the country.
      */
     public String getCountryName(String ip) {
-        if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
+        if (!InternetProtocolUtils.isLocalAddress(ip) && isDataAvailable()) {
             return lookupService.getCountry(ip).getName();
         }
         return "N/A";
