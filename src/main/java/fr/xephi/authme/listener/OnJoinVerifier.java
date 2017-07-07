@@ -66,6 +66,7 @@ public class OnJoinVerifier implements Reloadable {
      *
      * @param player          the player
      * @param isAuthAvailable whether or not the player is registered
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkAntibot(Player player, boolean isAuthAvailable) throws FailedVerificationException {
         if (isAuthAvailable || permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)) {
@@ -81,6 +82,7 @@ public class OnJoinVerifier implements Reloadable {
      * Checks whether non-registered players should be kicked, and if so, whether the player should be kicked.
      *
      * @param isAuthAvailable whether or not the player is registered
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkKickNonRegistered(boolean isAuthAvailable) throws FailedVerificationException {
         if (!isAuthAvailable && settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)) {
@@ -92,6 +94,7 @@ public class OnJoinVerifier implements Reloadable {
      * Checks that the name adheres to the configured username restrictions.
      *
      * @param name the name to verify
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkIsValidName(String name) throws FailedVerificationException {
         if (name.length() > settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)
@@ -147,6 +150,7 @@ public class OnJoinVerifier implements Reloadable {
      *
      * @param player the player to verify
      * @param auth   the auth object associated with the player
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkNameCasing(Player player, PlayerAuth auth) throws FailedVerificationException {
         if (auth != null && settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)) {
@@ -166,6 +170,7 @@ public class OnJoinVerifier implements Reloadable {
      *
      * @param isAuthAvailable whether or not the user is registered
      * @param playerIp        the ip address of the player
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkPlayerCountry(boolean isAuthAvailable,
                                    String playerIp) throws FailedVerificationException {
@@ -181,6 +186,7 @@ public class OnJoinVerifier implements Reloadable {
      * connection if so configured.
      *
      * @param name the player name to check
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkSingleSession(String name) throws FailedVerificationException {
         if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
