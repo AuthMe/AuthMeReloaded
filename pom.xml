@@ -6,7 +6,7 @@
 
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
-    <version>5.3.3-SNAPSHOT</version>
+    <version>5.4-SNAPSHOT</version>
 
     <name>AuthMeReloaded</name>
     <description>The first authentication plugin for the Bukkit API!</description>
