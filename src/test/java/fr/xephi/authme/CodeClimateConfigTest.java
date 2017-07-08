@@ -1,6 +1,5 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.util.Utils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
@@ -9,9 +8,9 @@ import java.io.File;
 import java.util.List;
 
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Consistency test for the CodeClimate configuration file.
@@ -22,30 +21,28 @@ public class CodeClimateConfigTest {
 
     @Test
     public void shouldHaveExistingClassesInExclusions() {
-        // given
+        // given / when
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(new File(CONFIG_FILE));
         List<String> excludePaths = configuration.getStringList("exclude_paths");
 
-        // when / then
+        // then
         assertThat(excludePaths, not(empty()));
         for (String path : excludePaths) {
-            String className = convertPathToQualifiedClassName(path);
-            assertThat("No class corresponds to excluded path '" + path + "'",
-                Utils.isClassLoaded(className), equalTo(true));
+            verifySourceFileExists(path);
         }
     }
 
-    private static String convertPathToQualifiedClassName(String path) {
+    private static void verifySourceFileExists(String path) {
         // Note ljacqu 20170323: In the future, we could have legitimate exclusions that don't fulfill these checks,
         // in which case this test needs to be adapted accordingly.
         if (!path.startsWith(TestHelper.SOURCES_FOLDER)) {
-            throw new IllegalArgumentException("Unexpected path '" + path + "': expected to start with sources folder");
+            fail("Unexpected path '" + path + "': expected to start with sources folder");
         } else if (!path.endsWith(".java")) {
-            throw new IllegalArgumentException("Expected path '" + path + "' to end with '.java'");
+            fail("Expected path '" + path + "' to end with '.java'");
         }
 
-        return path.substring(0, path.length() - ".java".length()) // strip ending .java
-            .substring(TestHelper.SOURCES_FOLDER.length())         // strip starting src/main/java
-            .replace('/', '.');                                    // replace '/' to '.'
+        if (new File("/" + path).exists()) {
+            fail("Path '" + path + "' does not exist!");
+        }
     }
 }
