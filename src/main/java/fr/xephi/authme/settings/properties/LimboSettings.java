@@ -66,7 +66,7 @@ public final class LimboSettings implements SettingsHolder {
         "See above for a description of the values."
     })
     public static final Property<WalkFlySpeedRestoreType> RESTORE_WALK_SPEED =
-        newProperty(WalkFlySpeedRestoreType.class, "limbo.restoreWalkSpeed", WalkFlySpeedRestoreType.MAX_RESTORE);
+        newProperty(WalkFlySpeedRestoreType.class, "limbo.restoreWalkSpeed", WalkFlySpeedRestoreType.RESTORE_NO_ZERO);
 
     private LimboSettings() {
     }
