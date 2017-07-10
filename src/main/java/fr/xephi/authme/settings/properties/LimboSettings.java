@@ -45,8 +45,9 @@ public final class LimboSettings implements SettingsHolder {
         newProperty(SegmentSize.class, "limbo.persistence.distributionSize", SegmentSize.SIXTEEN);
 
     @Comment({
-        "Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.",
-        "RESTORE sets back the old property from the player."
+        "Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE, NOTHING.",
+        "RESTORE sets back the old property from the player. NOTHING will prevent AuthMe",
+        "from modifying the 'allow flight' property on the player."
     })
     public static final Property<AllowFlightRestoreType> RESTORE_ALLOW_FLIGHT =
         newProperty(AllowFlightRestoreType.class, "limbo.restoreAllowFlight", AllowFlightRestoreType.RESTORE);

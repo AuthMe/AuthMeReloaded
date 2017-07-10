@@ -84,6 +84,7 @@ public class LimboServiceTest {
         given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(playerLoc);
         given(permissionsManager.hasGroupSupport()).willReturn(true);
         given(permissionsManager.getGroups(player)).willReturn(Collections.singletonList("permgrwp"));
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
 
         // when
         limboService.createLimboPlayer(player, true);
@@ -114,6 +115,7 @@ public class LimboServiceTest {
         Location playerLoc = mock(Location.class);
         given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(playerLoc);
         given(permissionsManager.hasGroupSupport()).willReturn(false);
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.RESTORE);
 
         // when
         limboService.createLimboPlayer(player, false);
@@ -143,6 +145,7 @@ public class LimboServiceTest {
         LimboPlayer existingLimbo = mock(LimboPlayer.class);
         getLimboMap().put("carlos", existingLimbo);
         Player player = newPlayer("Carlos");
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
 
         // when
         limboService.createLimboPlayer(player, false);

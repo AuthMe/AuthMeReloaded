@@ -6,6 +6,7 @@ import org.junit.Test;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link AllowFlightRestoreType}.
@@ -62,6 +63,42 @@ public class AllowFlightRestoreTypeTest {
         // then
         verify(player1).setAllowFlight(false);
         verify(player2).setAllowFlight(false);
+    }
+
+    @Test
+    public void shouldNotInteractWithPlayer() {
+        // given
+        LimboPlayer limboWithFly = newLimboWithAllowFlight(true);
+        LimboPlayer limboWithoutFly = newLimboWithAllowFlight(false);
+        Player player1 = mock(Player.class);
+        Player player2 = mock(Player.class);
+
+        // when
+        AllowFlightRestoreType.NOTHING.restoreAllowFlight(player1, limboWithFly);
+        AllowFlightRestoreType.NOTHING.restoreAllowFlight(player2, limboWithoutFly);
+
+        // then
+        verifyZeroInteractions(player1, player2);
+    }
+
+    @Test
+    public void shouldRemoveFlightExceptForNothingType() {
+        // given
+        AllowFlightRestoreType noInteractionType = AllowFlightRestoreType.NOTHING;
+
+        for (AllowFlightRestoreType type : AllowFlightRestoreType.values()) {
+            Player player = mock(Player.class);
+
+            // when
+            type.processPlayer(player);
+
+            // then
+            if (type == noInteractionType) {
+                verifyZeroInteractions(player);
+            } else {
+                verify(player).setAllowFlight(false);
+            }
+        }
     }
 
     private static LimboPlayer newLimboWithAllowFlight(boolean allowFlight) {

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Jul 06 18:45:51 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Mon Jul 10 21:39:00 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -476,8 +476,9 @@ limbo:
         # Note: if you change this setting all data will be migrated. If you have a lot of data,
         # change this setting only on server restart, not with /authme reload.
         distributionSize: 'SIXTEEN'
-    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.
-    # RESTORE sets back the old property from the player.
+    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE, NOTHING.
+    # RESTORE sets back the old property from the player. NOTHING will prevent AuthMe
+    # from modifying the 'allow flight' property on the player.
     restoreAllowFlight: 'RESTORE'
     # Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # RESTORE: restore the speed the player had;
@@ -487,7 +488,7 @@ limbo:
     restoreFlySpeed: 'RESTORE_NO_ZERO'
     # Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # See above for a description of the values.
-    restoreWalkSpeed: 'MAX_RESTORE'
+    restoreWalkSpeed: 'RESTORE_NO_ZERO'
 BackupSystem:
     # General configuration for backups: if false, no backups are possible
     ActivateBackup: false
@@ -528,4 +529,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Jul 06 18:45:51 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Jul 10 21:39:00 CEST 2017

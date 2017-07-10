@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -59,7 +60,8 @@ class LimboServiceHelper {
      */
     void revokeLimboStates(Player player) {
         player.setOp(false);
-        player.setAllowFlight(false);
+        settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)
+            .processPlayer(player);
 
         if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             player.setFlySpeed(0.0f);
