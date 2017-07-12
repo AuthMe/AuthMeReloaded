@@ -41,6 +41,7 @@ public class MySQL implements DataSource {
     private String database;
     private String tableName;
     private int poolSize;
+    private int maxLifetime;
     private List<String> columnOthers;
     private Columns col;
     private HashAlgorithm hashAlgorithm;
@@ -116,6 +117,7 @@ public class MySQL implements DataSource {
         if (poolSize == -1) {
             poolSize = Utils.getCoreCount() * 3;
         }
+        this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
 
@@ -126,8 +128,10 @@ public class MySQL implements DataSource {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
 
-        // Pool size
+        // Pool Settings
         ds.setMaximumPoolSize(poolSize);
+        ds.setMaxLifetime(maxLifetime * 1000);
+
 
         // Database URL
         ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);

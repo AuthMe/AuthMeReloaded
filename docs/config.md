@@ -58,6 +58,9 @@ DataSource:
     mySQLlastlocPitch: 'pitch'
     # Overrides the size of the DB Connection Pool, -1 = Auto
     poolSize: -1
+    # The maximum lifetime of a connection in the pool, default = 1800 seconds
+    # You should set this at least 30 seconds less than mysql server wait_timeout
+    maxLifetime: 1800
 ExternalBoardOptions:
     # Column for storing players passwords salts
     mySQLColumnSalt: ''
