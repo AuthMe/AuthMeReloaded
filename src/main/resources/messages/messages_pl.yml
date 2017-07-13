@@ -1,11 +1,11 @@
 # Registration
 reg_msg: '&2Proszę się zarejestrować przy użyciu &6/register <hasło> <powtórz_hasło>'
 usage_reg: '&4Użycie: /register <hasło> <powtórz_hasło>'
-reg_only: '&fTylko zarejestrowani użytkownicy maja do tego dostęp!'
+reg_only: '&fTylko zarejestrowani użytkownicy mają do tego dostęp!'
 kicked_admin_registered: 'Administrator zarejestrował Ciebie, możesz się zalogować.'
 registered: '&aPomyślnie zarejestrowany!'
-reg_disabled: '&4Rejestracja jest wyłączona'
-user_regged: '&4Gracz już jest zarejestrowany'
+reg_disabled: '&4Rejestracja jest wyłączona.'
+user_regged: '&4Gracz już jest zarejestrowany.'
 
 # Password errors on registration
 password_error: '&fHasło niepoprawne!'
@@ -18,29 +18,29 @@ pass_len: '&fTwoje hasło jest za krótkie lub za długie! Spróbuj ponownie...'
 usage_log: '&cUżycie: /login hasło'
 wrong_pwd: '&cNiepoprawne hasło.'
 login: '&aHasło zaakceptowane!'
-login_msg: '&2Prosze się zalogować przy użyciu &6/login <hasło>'
+login_msg: '&2Proszę się zalogować przy użyciu &6/login <hasło>'
 timeout: '&cUpłynął limit czasu zalogowania'
 
 # Errors
-unknown_user: '&fGracz nie jest zarejestrowany'
+unknown_user: '&fGracz nie jest zarejestrowany.'
 denied_command: '&cAby użyć tej komendy musisz się zalogować!'
 denied_chat: '&cAby pisać na chacie musisz się zalogować!'
 not_logged_in: '&4Nie jesteś zalogowany!'
 tempban_max_logins: '&cZostałeś tymczasowo zbanowany za dużą liczbę nieudanych logowań!'
 max_reg: '&cPrzekroczyłeś limit zarejestrowanych kont na serwerze &8(&e%reg_count/%max_acc %reg_names&8) &cdla twojego połączenia.'
 no_perm: '&4Nie posiadasz wymaganych uprawnień.'
-error: '&fWystąpił błąd, prosimy napisać do administracji'
+error: '&fWystąpił błąd, prosimy skontaktować się z administracją serwera.'
 kick_forvip: '&cGracz VIP dołączył do gry!'
 
 # AntiBot
-kick_antibot: 'AntyBot został włączony, musisz poczekać minute przed dołączeniem do serwera'
+kick_antibot: '&cAntyBot został włączony, musisz poczekać minutę przed dołączeniem do serwera.'
 antibot_auto_enabled: '&4[AntiBot] &aAntyBot włączony z powodu dużej liczby połączeń!'
 antibot_auto_disabled: '&2[AntiBot] &aAntyBot zostanie wyłączony za &7%m &aminut!'
 
 # Other messages
-unregistered: '&4Pomyslnie wyrejestrowany!'
-accounts_owned_self: 'Posiadasz %count kont:'
-accounts_owned_other: 'Gracz %name posiada %count kont:'
+unregistered: '&4Pomyślnie wyrejestrowany!'
+accounts_owned_self: '&7Posiadasz %count kont:'
+accounts_owned_other: '&7Gracz %name posiada %count kont:'
 two_factor_create: '&2Twój sekretny kod to %code. Możesz zeskanować go tutaj: %url'
 recovery_code_sent: 'Kod odzyskiwania hasła został wysłany na adres email przypisany do konta.'
 recovery_code_incorrect: '&cKod odzyskiwania hasła jest błędny! &4Pozostałe próby: %count.'
@@ -66,8 +66,8 @@ country_banned: '&4Ten kraj jest zbanowany na tym serwerze'
 not_owner_error: '&cNie jesteś właścicielem tego konta, wybierz inny nick!'
 kick_fullserver: '&cSerwer jest teraz zapełniony, przepraszamy!'
 same_nick: '&fTen nick już gra na serwerze!'
-invalid_name_case: 'Powinieneś dołączyć do serwera z nicku %valid, a nie %invalid.'
-same_ip_online: 'Gracz z takim samym adresem ip jest aktualnie w grze!'
+invalid_name_case: '&cPowinieneś dołączyć do serwera z nicku %valid, a nie %invalid.'
+same_ip_online: '&cGracz z takim samym adresem ip jest aktualnie w grze!'
 
 # Email
 usage_email_add: '&fWpisz: /email add <email> <powtórz_email> '
