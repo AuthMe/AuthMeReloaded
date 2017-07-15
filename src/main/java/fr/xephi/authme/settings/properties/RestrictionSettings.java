@@ -156,9 +156,13 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Boolean> NO_TELEPORT =
         newProperty("settings.restrictions.noTeleport", false);
 
-    @Comment("Regex syntax for allowed chars in passwords")
+    @Comment({
+        "Regex syntax for allowed chars in passwords. The default [!-~] allows all visible ASCII",
+        "characters, which is what we recommend. See also http://asciitable.com",
+        "You can test your regex with https://regex101.com"
+    })
     public static final Property<String> ALLOWED_PASSWORD_REGEX =
-        newProperty("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
+        newProperty("settings.restrictions.allowedPasswordCharacters", "[!-~]*");
 
     @Comment("Force survival gamemode when player joins?")
     public static final Property<Boolean> FORCE_SURVIVAL_MODE =
