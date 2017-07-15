@@ -158,7 +158,7 @@ public final class RestrictionSettings implements SettingsHolder {
 
     @Comment("Regex syntax for allowed chars in passwords")
     public static final Property<String> ALLOWED_PASSWORD_REGEX =
-        newProperty("settings.restrictions.allowedPasswordCharacters", "[0-z]*");
+        newProperty("settings.restrictions.allowedPasswordCharacters", "[0-~]*");
 
     @Comment("Force survival gamemode when player joins?")
     public static final Property<Boolean> FORCE_SURVIVAL_MODE =
