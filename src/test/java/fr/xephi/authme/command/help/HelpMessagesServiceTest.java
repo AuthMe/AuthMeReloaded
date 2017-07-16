@@ -10,6 +10,7 @@ import fr.xephi.authme.message.MessageFileHandlerProvider;
 import fr.xephi.authme.permission.DefaultPermission;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.util.Collection;
@@ -19,10 +20,13 @@ import static fr.xephi.authme.TestHelper.getJarFile;
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link HelpMessagesService}.
@@ -44,6 +48,17 @@ public class HelpMessagesServiceTest {
     public void initializeHandler() {
         MessageFileHandler handler = new MessageFileHandler(getJarFile(TEST_FILE), "messages/messages_en.yml", null);
         given(messageFileHandlerProvider.initializeHandler(any(Function.class))).willReturn(handler);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldUseExistingFileAsTextFile() {
+        // given / when / then
+        ArgumentCaptor<Function<String, String>> functionCaptor = ArgumentCaptor.forClass(Function.class);
+        verify(messageFileHandlerProvider).initializeHandler(functionCaptor.capture());
+        Function<String, String> helpFilePathBuilder = functionCaptor.getValue();
+        String defaultFilePath = helpFilePathBuilder.apply("en");
+        assertThat(getClass().getClassLoader().getResource(defaultFilePath), not(nullValue()));
     }
 
     @Test

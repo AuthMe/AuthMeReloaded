@@ -53,7 +53,7 @@ public class RandomStringUtilsTest {
 
         // when / then
         for (int length : lengths) {
-            String result = RandomStringUtils.generateHex(length);
+            String result = RandomStringUtils.generateLowerUpper(length);
             assertThat("Result '" + result + "' should have length " + length,
                 result.length(), equalTo(length));
             assertThat("Result '" + result + "' should only have characters a-z, A-Z, 0-9",

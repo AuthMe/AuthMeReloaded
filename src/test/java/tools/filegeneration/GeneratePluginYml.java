@@ -140,10 +140,15 @@ public class GeneratePluginYml implements AutoToolTask {
     }
 
     private static String buildUsage(CommandDescription command) {
-        if (!command.getArguments().isEmpty()) {
-            return CommandUtils.buildSyntax(command);
-        }
         final String commandStart = "/" + command.getLabels().get(0);
+        if (!command.getArguments().isEmpty()) {
+            // Command has arguments, so generate something like /authme register <password> <confirmPass>
+            final String arguments = command.getArguments().stream()
+                .map(CommandUtils::formatArgument)
+                .collect(Collectors.joining(" "));
+            return commandStart + " " + arguments;
+        }
+        // Argument-less command, list all children: /authme register|login|firstspawn|spawn|...
         String usage = commandStart + " " + command.getChildren()
             .stream()
             .filter(cmd -> !cmd.getLabels().contains("help"))

@@ -169,7 +169,6 @@ public class PurgeExecutor {
             return;
         }
 
-        int i = 0;
         File essentialsDataFolder = pluginHookService.getEssentialsDataFolder();
         if (essentialsDataFolder == null) {
             ConsoleLogger.info("Cannot purge Essentials: plugin is not loaded");
@@ -181,14 +180,15 @@ public class PurgeExecutor {
             return;
         }
 
+        int deletedFiles = 0;
         for (OfflinePlayer offlinePlayer : cleared) {
             File playerFile = new File(userDataFolder, PlayerUtils.getUuidOrName(offlinePlayer) + ".yml");
             if (playerFile.exists() && playerFile.delete()) {
-                i++;
+                deletedFiles++;
             }
         }
 
-        ConsoleLogger.info("AutoPurge: Removed " + i + " EssentialsFiles");
+        ConsoleLogger.info("AutoPurge: Removed " + deletedFiles + " EssentialsFiles");
     }
 
     // TODO #676: What is this method for? Is it correct?
