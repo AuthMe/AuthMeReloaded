@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  */
 public class EncryptionMethodInfoGatherer {
 
-    private final static Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
+    private static final Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
         ImmutableSet.of(HasSalt.class, Recommendation.class, AsciiRestricted.class);
 
     private static Injector injector = createInitializer();
@@ -104,6 +104,9 @@ public class EncryptionMethodInfoGatherer {
     /**
      * Returns the super class of the given encryption method if it is also of EncryptionMethod type.
      * (Anything beyond EncryptionMethod is not of interest.)
+     *
+     * @param methodClass the class to process
+     * @return the super class of the given class if it is also an EncryptionMethod type, otherwise null
      */
     private static Class<?> getSuperClass(Class<?> methodClass) {
         Class<?> zuper = methodClass.getSuperclass();

@@ -73,6 +73,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
     AsynchronousJoin() {
     }
 
+    /**
+     * Processes the given player that has just joined.
+     *
+     * @param player the player to process
+     */
     public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
@@ -91,15 +96,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         if (!validationService.fulfillsNameRestrictions(player)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
-                @Override
-                public void run() {
-                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
-                    if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
-                        server.banIP(ip);
-                    }
-                }
-            });
+            handlePlayerWithUnmetNameRestriction(player, ip);
             return;
         }
 
@@ -124,7 +121,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (canResumeSession(player)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> commandManager.runCommandsOnSessionLogin(player));
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                    () -> commandManager.runCommandsOnSessionLogin(player));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
@@ -133,6 +131,26 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
+        processJoinSync(player, isAuthAvailable);
+    }
+
+    private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
+            if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
+                server.banIP(ip);
+            }
+        });
+    }
+
+    /**
+     * Performs various operations in sync mode for an unauthenticated player (such as blindness effect and
+     * limbo player creation).
+     *
+     * @param player the player to process
+     * @param isAuthAvailable true if the player is registered, false otherwise
+     */
+    private void processJoinSync(Player player, boolean isAuthAvailable) {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {

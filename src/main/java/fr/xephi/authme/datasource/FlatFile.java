@@ -6,7 +6,6 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -80,7 +79,9 @@ public class FlatFile implements DataSource {
             return false;
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(source, true))) {
-            bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
+            bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp()
+                + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY()
+                + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
@@ -203,7 +204,7 @@ public class FlatFile implements DataSource {
             return false;
         }
         ArrayList<String> lines = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(source));) {
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -379,6 +380,13 @@ public class FlatFile implements DataSource {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
+    /**
+     * Creates a PlayerAuth object from the read data.
+     *
+     * @param args the data read from the line
+     * @return the player auth object with the data
+     */
+    @SuppressWarnings("checkstyle:NeedBraces")
     private static PlayerAuth buildAuthFromArray(String[] args) {
         // Format allows 2, 3, 4, 7, 8, 9 fields. Anything else is unknown
         if (args.length >= 2 && args.length <= 9 && args.length != 5 && args.length != 6) {

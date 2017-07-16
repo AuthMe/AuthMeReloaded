@@ -37,7 +37,7 @@ class TwoFactorRegisterExecutor extends AbstractPasswordRegisterExecutor<TwoFact
         // to two-factor authentication. Therefore, the hashed password is the result of the TwoFactor EncryptionMethod
         // implementation (contains the TOTP secret).
         String hash = params.getHashedPassword().getHash();
-        String qrCodeUrl = TwoFactor.getQRBarcodeURL(params.getPlayerName(), Bukkit.getIp(), hash);
+        String qrCodeUrl = TwoFactor.getQrBarcodeUrl(params.getPlayerName(), Bukkit.getIp(), hash);
         commonService.send(params.getPlayer(), MessageKey.TWO_FACTOR_CREATE, hash, qrCodeUrl);
     }
 }

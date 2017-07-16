@@ -76,7 +76,7 @@ public class Settings extends SettingsManager {
         final File file = new File(pluginFolder, filename);
         if (copyFileFromResource(file, filename)) {
             try {
-                return Files.toString(file, StandardCharsets.UTF_8);
+                return Files.asCharSource(file, StandardCharsets.UTF_8).read();
             } catch (IOException e) {
                 ConsoleLogger.logException("Failed to read file '" + filename + "':", e);
             }

@@ -179,6 +179,19 @@ public class CommandManagerTest {
     }
 
     @Test
+    public void shouldExecuteCommandOnUnregister() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnUnregister(player);
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("msg Bobby sad to see you go!");
+    }
+
+    @Test
     public void shouldHaveHiddenConstructorInSettingsHolderClass() {
         // given / when / then
         TestHelper.validateHasOnlyPrivateEmptyConstructor(CommandSettingsHolder.class);

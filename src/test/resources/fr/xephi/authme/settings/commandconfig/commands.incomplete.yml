@@ -18,3 +18,7 @@ doesNotExist:
     wrongEntry:
         command: 'should be ignored'
         executor: PLAYER
+onUnregister:
+    farewell:
+        command: 'msg %p sad to see you go!'
+        executor: CONSOLE

@@ -46,7 +46,7 @@ class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
         }
 
         try {
-            String str = Files.toString(file, StandardCharsets.UTF_8);
+            String str = Files.asCharSource(file, StandardCharsets.UTF_8).read();
             return gson.fromJson(str, LimboPlayer.class);
         } catch (IOException e) {
             ConsoleLogger.logException("Could not read player data on disk for '" + player.getName() + "'", e);

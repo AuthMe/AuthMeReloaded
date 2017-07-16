@@ -25,7 +25,7 @@ public class TwoFactorTest {
         String secret = "3AK6Y4KWGRLJMEQW";
 
         // when
-        String url = TwoFactor.getQRBarcodeURL(user, host, secret);
+        String url = TwoFactor.getQrBarcodeUrl(user, host, secret);
 
         // then
         String expected = "https://www.google.com/chart?chs=130x130&chld=M%7C0&cht=qr"
