@@ -15,7 +15,7 @@ user_regged: '&c이미 이 닉네임으로 회원가입이 되어 있습니다!'
 password_error: '&c비밀번호가 일치하지 않습니다, 다시 확인해주세요!'
 password_error_nick: '&c자신의 닉네임을 비밀번호로 사용할 수 없습니다, 다른 비밀번호를 사용하세요...'
 password_error_unsafe: '&c이 비밀번호는 안전하지 않습니다, 다른 비밀번호를 사용하세요...'
-password_error_chars!: '&4비밀번호에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
+password_error_chars: '&4비밀번호에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
 pass_len: '&c비밀번호가 너무 짧거나 작습니다!'
 
 # 로그인
