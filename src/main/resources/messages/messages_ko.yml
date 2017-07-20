@@ -16,7 +16,7 @@ password_error: '&c비밀번호가 일치하지 않습니다, 다시 확인해�
 password_error_nick: '&c자신의 닉네임을 비밀번호로 사용할 수 없습니다, 다른 비밀번호를 사용하세요...'
 password_error_unsafe: '&c이 비밀번호는 안전하지 않습니다, 다른 비밀번호를 사용하세요...'
 password_error_chars: '&4비밀번호에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
-pass_len: '&c너의 비번은 좆같이 길거나 좆같이 작아! 제발 다른걸 써줘!'
+pass_len: '&c비밀번호가 너무 짧거나 작습니다!'
 
 # 로그인
 usage_log: '&c사용법: /login <비밀번호>'
@@ -76,7 +76,7 @@ usage_email_add: '&c사용법: /email add <이메일 주소> <이메일 주소 �
 usage_email_change: '&c사용법: /email change <예전 이메일 주소> <새 이메일 주소>'
 usage_email_recovery: '&c사용법: /email recovery <이메일 주소>'
 new_email_invalid: '&c새 이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
-old_email_invalid: '&c에전 이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
+old_email_invalid: '&c예전 이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
 email_invalid: '&c이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
 email_added: '&2계정에 이메일 주소를 추가했습니다!'
 email_confirm: '&c이메일 주소를 확인해주세요!'
