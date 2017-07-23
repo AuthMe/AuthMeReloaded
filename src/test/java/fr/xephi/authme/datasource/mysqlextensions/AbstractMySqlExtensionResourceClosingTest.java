@@ -1,13 +1,11 @@
 package fr.xephi.authme.datasource.mysqlextensions;
 
-import ch.jalu.configme.properties.Property;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.AbstractResourceClosingTest;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.settings.Settings;
 import org.junit.BeforeClass;
 import org.junit.runners.Parameterized;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -15,8 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -34,12 +30,7 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
     @BeforeClass
     public static void initSettings() {
         settings = mock(Settings.class);
-        given(settings.getProperty(any(Property.class))).willAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                return ((Property<?>) invocation.getArguments()[0]).getDefaultValue();
-            }
-        });
+        TestHelper.returnDefaultsForAllProperties(settings);
         columns = new Columns(settings);
     }
 

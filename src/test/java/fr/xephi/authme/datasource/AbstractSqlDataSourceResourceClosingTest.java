@@ -1,13 +1,10 @@
 package fr.xephi.authme.datasource;
 
-import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
 import org.junit.BeforeClass;
 import org.junit.runners.Parameterized;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -16,8 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -37,12 +32,7 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
     @BeforeClass
     public static void initializeSettings() {
         settings = mock(Settings.class);
-        given(settings.getProperty(any(Property.class))).willAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                return ((Property<?>) invocation.getArguments()[0]).getDefaultValue();
-            }
-        });
+        TestHelper.returnDefaultsForAllProperties(settings);
         TestHelper.setupLogger();
     }
 

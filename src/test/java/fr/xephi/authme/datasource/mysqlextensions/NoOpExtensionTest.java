@@ -1,6 +1,6 @@
 package fr.xephi.authme.datasource.mysqlextensions;
 
-import ch.jalu.configme.properties.Property;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -13,8 +13,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -27,11 +25,9 @@ public class NoOpExtensionTest {
     private NoOpExtension extension;
 
     @Before
-    @SuppressWarnings("unchecked")
     public void createExtension() {
         Settings settings = mock(Settings.class);
-        given(settings.getProperty(any(Property.class))).willAnswer(
-            invocation -> ((Property<?>) invocation.getArgument(0)).getDefaultValue());
+        TestHelper.returnDefaultsForAllProperties(settings);
         Columns columns = new Columns(settings);
         extension = new NoOpExtension(settings, columns);
     }

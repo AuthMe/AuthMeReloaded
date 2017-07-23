@@ -9,8 +9,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +20,6 @@ import java.sql.Statement;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,19 +38,13 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     /**
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BeforeClass
     public static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an implementation for SQLite
         Class.forName("org.sqlite.JDBC");
 
         settings = mock(Settings.class);
-        when(settings.getProperty(any(Property.class))).thenAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return ((Property) invocation.getArguments()[0]).getDefaultValue();
-            }
-        });
+        TestHelper.returnDefaultsForAllProperties(settings);
         set(DatabaseSettings.MYSQL_DATABASE, "sqlite-test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
         TestHelper.setRealLogger();
