@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Jul 06 18:45:51 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Jul 15 19:32:28 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -58,6 +58,9 @@ DataSource:
     mySQLlastlocPitch: 'pitch'
     # Overrides the size of the DB Connection Pool, -1 = Auto
     poolSize: -1
+    # The maximum lifetime of a connection in the pool, default = 1800 seconds
+    # You should set this at least 30 seconds less than mysql server wait_timeout
+    maxLifetime: 1800
 ExternalBoardOptions:
     # Column for storing players passwords salts
     mySQLColumnSalt: ''
@@ -194,8 +197,10 @@ settings:
         maxJoinPerIp: 0
         # AuthMe will NEVER teleport players if set to true!
         noTeleport: false
-        # Regex syntax for allowed chars in passwords
-        allowedPasswordCharacters: '[\x21-\x7E]*'
+        # Regex syntax for allowed chars in passwords. The default [!-~] allows all visible ASCII
+        # characters, which is what we recommend. See also http://asciitable.com
+        # You can test your regex with https://regex101.com
+        allowedPasswordCharacters: '[!-~]*'
         # Threshold of the other accounts command, a value less than 2 means disabled.
         otherAccountsCmdThreshold: 0
         # Command to run when a user has more accounts than the configured threshold.
@@ -476,8 +481,9 @@ limbo:
         # Note: if you change this setting all data will be migrated. If you have a lot of data,
         # change this setting only on server restart, not with /authme reload.
         distributionSize: 'SIXTEEN'
-    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.
-    # RESTORE sets back the old property from the player.
+    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE, NOTHING.
+    # RESTORE sets back the old property from the player. NOTHING will prevent AuthMe
+    # from modifying the 'allow flight' property on the player.
     restoreAllowFlight: 'RESTORE'
     # Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # RESTORE: restore the speed the player had;
@@ -487,7 +493,7 @@ limbo:
     restoreFlySpeed: 'RESTORE_NO_ZERO'
     # Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # See above for a description of the values.
-    restoreWalkSpeed: 'MAX_RESTORE'
+    restoreWalkSpeed: 'RESTORE_NO_ZERO'
 BackupSystem:
     # General configuration for backups: if false, no backups are possible
     ActivateBackup: false
@@ -528,4 +534,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Jul 06 18:45:51 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Jul 15 19:32:28 CEST 2017

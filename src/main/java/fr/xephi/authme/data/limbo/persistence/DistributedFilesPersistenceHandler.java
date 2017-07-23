@@ -114,7 +114,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
         }
 
         try {
-            return gson.fromJson(Files.toString(file, StandardCharsets.UTF_8), LIMBO_MAP_TYPE);
+            return gson.fromJson(Files.asCharSource(file, StandardCharsets.UTF_8).read(), LIMBO_MAP_TYPE);
         } catch (Exception e) {
             ConsoleLogger.logException("Failed reading '" + file + "':", e);
         }

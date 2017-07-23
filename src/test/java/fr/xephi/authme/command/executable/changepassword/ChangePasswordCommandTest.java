@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -106,11 +108,16 @@ public class ChangePasswordCommandTest {
         verify(management).performPasswordChange(player, oldPass, newPass);
     }
 
+    @Test
+    public void shouldDefineArgumentMismatchMessage() {
+        // given / when / then
+        assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_CHANGE_PASSWORD));
+    }
+
     private Player initPlayerWithName(String name, boolean loggedIn) {
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(name);
         when(playerCache.isAuthenticated(name)).thenReturn(loggedIn);
         return player;
     }
-
 }

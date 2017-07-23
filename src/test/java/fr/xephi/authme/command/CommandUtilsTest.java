@@ -22,7 +22,7 @@ public class CommandUtilsTest {
 
     @BeforeClass
     public static void setUpTestCommands() {
-        commands = TestCommandsUtil.generateCommands();
+        commands = Collections.unmodifiableCollection(TestCommandsUtil.generateCommands());
     }
 
     @Test
@@ -49,10 +49,6 @@ public class CommandUtilsTest {
         assertThat(commandPath, equalTo("/authme help"));
     }
 
-
-    // ------
-    // min / max arguments
-    // ------
     @Test
     public void shouldComputeMinAndMaxOnEmptyCommand() {
         // given

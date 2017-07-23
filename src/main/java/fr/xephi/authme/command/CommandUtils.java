@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Utility functions for {@link CommandDescription} objects.
@@ -76,19 +75,14 @@ public final class CommandUtils {
     }
 
     /**
-     * Returns a textual representation of the command, including its arguments.
-     * For example: {@code /authme purge <days> [includeZero]}.
+     * Constructs a command path with color formatting, based on the supplied labels. This includes
+     * the command's arguments, as defined in the provided command description. The list of labels
+     * must contain all labels to be used.
      *
-     * @param command the command to create a usage string for
-     * @return the command's path and arguments
+     * @param command the command to read arguments from
+     * @param correctLabels the labels to use (must be complete)
+     * @return formatted command syntax incl. arguments
      */
-    public static String buildSyntax(CommandDescription command) {
-        String arguments = command.getArguments().stream()
-            .map(arg -> formatArgument(arg))
-            .collect(Collectors.joining(" "));
-        return (constructCommandPath(command) + " " + arguments).trim();
-    }
-
     public static String buildSyntax(CommandDescription command, List<String> correctLabels) {
         String commandSyntax = ChatColor.WHITE + "/" + correctLabels.get(0) + ChatColor.YELLOW;
         for (int i = 1; i < correctLabels.size(); ++i) {
@@ -106,7 +100,7 @@ public final class CommandUtils {
      * @param argument the argument to format
      * @return the formatted argument
      */
-    private static String formatArgument(CommandArgumentDescription argument) {
+    public static String formatArgument(CommandArgumentDescription argument) {
         if (argument.isOptional()) {
             return "[" + argument.getName() + "]";
         }

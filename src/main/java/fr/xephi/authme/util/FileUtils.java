@@ -61,7 +61,7 @@ public final class FileUtils {
             ConsoleLogger.warning("Could not create directory '" + dir + "'");
             return false;
         }
-        return true;
+        return dir.isDirectory();
     }
 
     /**

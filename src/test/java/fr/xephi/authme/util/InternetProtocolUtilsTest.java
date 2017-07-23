@@ -1,5 +1,6 @@
 package fr.xephi.authme.util;
 
+import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
@@ -18,5 +19,11 @@ public class InternetProtocolUtilsTest {
         assertThat(InternetProtocolUtils.isLocalAddress("172.16.0.1"), equalTo(true));
         assertThat(InternetProtocolUtils.isLocalAddress("192.168.0.1"), equalTo(true));
         assertThat(InternetProtocolUtils.isLocalAddress("94.32.34.5"), equalTo(false));
+    }
+
+    @Test
+    public void shouldHavePrivateConstructor() {
+        // given / when / then
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(InternetProtocolUtils.class);
     }
 }

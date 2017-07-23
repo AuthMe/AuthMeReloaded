@@ -15,6 +15,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -87,4 +89,9 @@ public class UnregisterCommandTest {
         verify(sender).sendMessage(argThat(containsString("/authme unregister <player>")));
     }
 
+    @Test
+    public void shouldDefineArgumentMismatchMessage() {
+        // given / when / then
+        assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_UNREGISTER));
+    }
 }

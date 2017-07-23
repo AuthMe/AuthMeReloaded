@@ -119,7 +119,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         this.isEnabled = settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN);
         this.length = settings.getProperty(SecuritySettings.TEMPBAN_LENGTH);
-        this.resetThreshold = settings.getProperty(TEMPBAN_MINUTES_BEFORE_RESET) * MILLIS_PER_MINUTE;
+        this.resetThreshold = settings.getProperty(TEMPBAN_MINUTES_BEFORE_RESET);
     }
 
     @Override

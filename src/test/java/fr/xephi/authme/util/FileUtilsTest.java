@@ -76,6 +76,20 @@ public class FileUtilsTest {
     }
 
     @Test
+    public void shouldReturnFalseForParentInvalidParentFolders() throws IOException {
+        // given
+        File folder = temporaryFolder.newFolder();
+        new File(folder, "hello").createNewFile();
+        File fileToCreate = new File(folder, "hello/test");
+
+        // when
+        boolean result = FileUtils.copyFileFromResource(fileToCreate, "welcome.txt");
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
     public void shouldPurgeDirectory() throws IOException {
         // given
         File root = temporaryFolder.newFolder();
@@ -135,6 +149,36 @@ public class FileUtilsTest {
 
         // then
         assertThat(result, equalTo("path" + File.separator + "to" + File.separator + "test-file.txt"));
+    }
+
+    @Test
+    public void shouldCreateDirectory() throws IOException {
+        // given
+        File root = temporaryFolder.newFolder();
+        File dir = new File(root, "folder/folder2/myFolder");
+
+        // when
+        boolean result = FileUtils.createDirectory(dir);
+
+        // then
+        assertThat(result, equalTo(true));
+        assertThat(dir.exists(), equalTo(true));
+        assertThat(dir.isDirectory(), equalTo(true));
+    }
+
+    @Test
+    public void shouldReturnFalseOnDirectoryCreateFail() throws IOException {
+        // given
+        File root = temporaryFolder.newFolder();
+        File dirAsFile = new File(root, "file");
+        dirAsFile.createNewFile();
+
+        // when
+        boolean result = FileUtils.createDirectory(dirAsFile);
+
+        // then
+        assertThat(result, equalTo(false));
+        assertThat(dirAsFile.isFile(), equalTo(true));
     }
 
     @Test

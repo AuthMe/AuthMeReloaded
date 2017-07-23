@@ -5,6 +5,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.LimboService;
 import org.bukkit.Location;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -20,6 +22,11 @@ import static org.mockito.Mockito.mock;
  * Test for {@link DebugSectionUtils}.
  */
 public class DebugSectionUtilsTest {
+
+    @Before
+    public void initMockLogger() {
+        TestHelper.setupLogger();
+    }
 
     @Test
     public void shouldFormatLocation() {
@@ -65,5 +72,21 @@ public class DebugSectionUtilsTest {
 
         // then
         assertThat(map, sameInstance(limboMap));
+    }
+
+    @Test
+    public void shouldHandleErrorGracefully() {
+        // given
+        LimboService limboService = mock(LimboService.class);
+        Map<String, LimboPlayer> limboMap = new HashMap<>();
+        ReflectionTestUtils.setField(LimboService.class, limboService, "entries", limboMap);
+
+        // when
+        Object result = DebugSectionUtils.applyToLimboPlayersMap(limboService, map -> {
+           throw new IllegalStateException();
+        });
+
+        // then
+        assertThat(result, nullValue());
     }
 }

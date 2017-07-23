@@ -2,8 +2,6 @@ package fr.xephi.authme.data.limbo;
 
 import org.bukkit.entity.Player;
 
-import java.util.function.Function;
-
 /**
  * Possible types to restore the "allow flight" property
  * from LimboPlayer to Bukkit Player.
@@ -11,24 +9,41 @@ import java.util.function.Function;
 public enum AllowFlightRestoreType {
 
     /** Set value from LimboPlayer to Player. */
-    RESTORE(LimboPlayer::isCanFly),
+    RESTORE {
+        @Override
+        public void restoreAllowFlight(Player player, LimboPlayer limbo) {
+            player.setAllowFlight(limbo.isCanFly());
+        }
+    },
 
     /** Always set flight enabled to true. */
-    ENABLE(l -> true),
+    ENABLE {
+        @Override
+        public void restoreAllowFlight(Player player, LimboPlayer limbo) {
+            player.setAllowFlight(true);
+        }
+    },
 
     /** Always set flight enabled to false. */
-    DISABLE(l -> false);
+    DISABLE {
+        @Override
+        public void restoreAllowFlight(Player player, LimboPlayer limbo) {
+            player.setAllowFlight(false);
+        }
+    },
 
-    private final Function<LimboPlayer, Boolean> valueGetter;
+    /** Always set flight enabled to false. */
+    NOTHING {
+        @Override
+        public void restoreAllowFlight(Player player, LimboPlayer limbo) {
+            // noop
+        }
 
-    /**
-     * Constructor.
-     *
-     * @param valueGetter function with which the value to set on the player can be retrieved
-     */
-    AllowFlightRestoreType(Function<LimboPlayer, Boolean> valueGetter) {
-        this.valueGetter = valueGetter;
-    }
+        @Override
+        public void processPlayer(Player player) {
+            // noop
+        }
+    };
 
     /**
      * Restores the "allow flight" property from the LimboPlayer to the Player.
@@ -37,7 +52,15 @@ public enum AllowFlightRestoreType {
      * @param player the player to modify
      * @param limbo the limbo player to read from
      */
-    public void restoreAllowFlight(Player player, LimboPlayer limbo) {
-        player.setAllowFlight(valueGetter.apply(limbo));
+    public abstract void restoreAllowFlight(Player player, LimboPlayer limbo);
+
+    /**
+     * Processes the player when a LimboPlayer instance is created based on him. Typically this
+     * method revokes the {@code allowFlight} property to be restored again later.
+     *
+     * @param player the player to process
+     */
+    public void processPlayer(Player player) {
+        player.setAllowFlight(false);
     }
 }
