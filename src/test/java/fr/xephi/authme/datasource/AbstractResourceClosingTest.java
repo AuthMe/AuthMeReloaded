@@ -1,14 +1,10 @@
 package fr.xephi.authme.datasource;
 
-import ch.jalu.configme.properties.Property;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,35 +37,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test class which runs through a datasource implementation and verifies that all
+ * Test class which runs through objects interacting with a database and verifies that all
  * instances of {@link AutoCloseable} that are created in the calls are closed again.
  * <p>
  * Instead of an actual connection to a datasource, we pass a mock Connection object
  * which is set to create additional mocks on demand for Statement and ResultSet objects.
  * This test ensures that all such objects that are created will be closed again by
  * keeping a list of mocks ({@link #closeables}) and then verifying that all have been
- * closed {@link #verifyHaveMocksBeenClosed()}.
+ * closed ({@link #verifyHaveMocksBeenClosed()}).
  */
 @RunWith(Parameterized.class)
 public abstract class AbstractResourceClosingTest {
 
-    /** List of DataSource method names not to test. */
-    private static final Set<String> IGNORED_METHODS = ImmutableSet.of("reload", "close", "getType");
-
     /** Collection of values to use to call methods with the parameters they expect. */
     private static final Map<Class<?>, Object> PARAM_VALUES = getDefaultParameters();
-
-    /** Mock of a settings instance. */
-    private static Settings settings;
-
-    /** The datasource to test. */
-    private DataSource dataSource;
 
     /** The DataSource method to test. */
     private Method method;
 
     /** Keeps track of the closeables which are created during the tested call. */
     private List<AutoCloseable> closeables = new ArrayList<>();
+
+    private boolean hasCreatedConnection = false;
 
     /**
      * Constructor for the test instance verifying the given method.
@@ -84,25 +72,9 @@ public abstract class AbstractResourceClosingTest {
         this.method = method;
     }
 
-    /** Initialize the settings mock and makes it return the default of any given property by default. */
-    @SuppressWarnings("unchecked")
     @BeforeClass
-    public static void initializeSettings() {
-        settings = mock(Settings.class);
-        given(settings.getProperty(any(Property.class))).willAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                return ((Property<?>) invocation.getArguments()[0]).getDefaultValue();
-            }
-        });
+    public static void initializeLogger() {
         TestHelper.setupLogger();
-    }
-
-    /** Initialize the dataSource implementation to test based on a mock connection. */
-    @Before
-    public void setUpMockConnection() throws Exception {
-        Connection connection = initConnection();
-        dataSource = createDataSource(settings, connection);
     }
 
     /**
@@ -111,38 +83,11 @@ public abstract class AbstractResourceClosingTest {
      */
     @Test
     public void shouldCloseResources() throws IllegalAccessException, InvocationTargetException {
-        method.invoke(dataSource, buildParamListForMethod(method));
+        method.invoke(getObjectUnderTest(), buildParamListForMethod(method));
         verifyHaveMocksBeenClosed();
     }
 
-    /**
-     * Initialization method -- provides the parameters to run the test with by scanning all DataSource methods.
-     *
-     * @return Test parameters
-     */
-    @Parameterized.Parameters(name = "{1}")
-    public static Collection<Object[]> data() {
-        List<Method> methods = getDataSourceMethods();
-        List<Object[]> data = new ArrayList<>();
-        for (Method method : methods) {
-            data.add(new Object[]{method, method.getName()});
-        }
-        return data;
-    }
-
-    /* Create a DataSource instance with the given mock settings and mock connection. */
-    protected abstract DataSource createDataSource(Settings settings, Connection connection) throws Exception;
-
-    /* Get all methods of the DataSource interface, minus the ones in the ignored list. */
-    private static List<Method> getDataSourceMethods() {
-        List<Method> publicMethods = new ArrayList<>();
-        for (Method method : DataSource.class.getDeclaredMethods()) {
-            if (!IGNORED_METHODS.contains(method.getName())) {
-                publicMethods.add(method);
-            }
-        }
-        return publicMethods;
-    }
+    protected abstract Object getObjectUnderTest();
 
     /**
      * Verify that all AutoCloseables that have been created during the method execution have been closed.
@@ -166,7 +111,7 @@ public abstract class AbstractResourceClosingTest {
      * @param method The method to create a valid parameter list for
      * @return Parameter list to invoke the given method with
      */
-    private static Object[] buildParamListForMethod(Method method) {
+    private Object[] buildParamListForMethod(Method method) {
         List<Object> params = new ArrayList<>();
         int index = 0;
         for (Class<?> paramType : method.getParameterTypes()) {
@@ -174,12 +119,21 @@ public abstract class AbstractResourceClosingTest {
             // but that is a sensible assumption and makes our life much easier later on when juggling with Type
             Object param = Collection.class.isAssignableFrom(paramType)
                 ? getTypedCollection(method.getGenericParameterTypes()[index])
-                : PARAM_VALUES.get(paramType);
+                : getMethodParameter(paramType);
             Preconditions.checkNotNull(param, "No param type for " + paramType);
             params.add(param);
             ++index;
         }
         return params.toArray();
+    }
+
+    private Object getMethodParameter(Class<?> paramType) {
+        if (paramType.equals(Connection.class)) {
+            Preconditions.checkArgument(!hasCreatedConnection, "A Connection object was already created in this test run");
+            hasCreatedConnection = true;
+            return initConnection();
+        }
+        return PARAM_VALUES.get(paramType);
     }
 
     /**
@@ -230,11 +184,11 @@ public abstract class AbstractResourceClosingTest {
     // Mock initialization
     // ---------------------
     /**
-     * Initialize the connection mock which produces additional AutoCloseable mocks and records them.
+     * Initializes the connection mock which produces additional AutoCloseable mocks and records them.
      *
      * @return Connection mock
      */
-    private Connection initConnection() {
+    protected Connection initConnection() {
         Connection connection = mock(Connection.class);
         try {
             given(connection.prepareStatement(anyString())).willAnswer(preparedStatementAnswer());

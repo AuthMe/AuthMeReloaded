@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Resource closing test for {@link MySQL}.
  */
-public class MySqlResourceClosingTest extends AbstractResourceClosingTest {
+public class MySqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     public MySqlResourceClosingTest(Method method, String name) {
         super(method, name);

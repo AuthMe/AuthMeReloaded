@@ -8,7 +8,7 @@ import java.sql.Connection;
 /**
  * Resource closing test for {@link SQLite}.
  */
-public class SQLiteResourceClosingTest extends AbstractResourceClosingTest {
+public class SQLiteResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     public SQLiteResourceClosingTest(Method method, String name) {
         super(method, name);
