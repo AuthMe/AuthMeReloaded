@@ -5,7 +5,6 @@ import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.XfBCrypt;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 
 import java.sql.Blob;
@@ -13,35 +12,27 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.OptionalInt;
 
 /**
  * Extension for XFBCRYPT.
  */
 class XfBcryptExtension extends MySqlExtension {
     
-    private final Columns col;
-    private final String tableName;
     private final String xfPrefix;
     private final int xfGroup;
     
     XfBcryptExtension(Settings settings, Columns col) {
-        this.col = col;
-        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        super(settings, col);
         this.xfPrefix = settings.getProperty(HooksSettings.XF_TABLE_PREFIX);
         this.xfGroup = settings.getProperty(HooksSettings.XF_ACTIVATED_GROUP_ID);
     }
 
     @Override
     public void saveAuth(PlayerAuth auth, Connection con) throws SQLException {
-        String sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, auth.getNickname());
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    int id = rs.getInt(col.ID);
-                    updateXenforoTablesOnSave(auth, id, con);
-                }
-            }
+        OptionalInt authId = retrieveIdFromTable(auth.getNickname(), con);
+        if (authId.isPresent()) {
+            updateXenforoTablesOnSave(auth, authId.getAsInt(), con);
         }
     }
     
@@ -110,50 +101,39 @@ class XfBcryptExtension extends MySqlExtension {
 
     @Override
     public void changePassword(String user, HashedPassword password, Connection con) throws SQLException {
-        String sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    int id = rs.getInt(col.ID);
-                    // Insert password in the correct table
-                    // TODO #1255: Close these statements with try-catch
-                    sql = "UPDATE " + xfPrefix + "user_authenticate SET data=? WHERE " + col.ID + "=?;";
-                    PreparedStatement pst2 = con.prepareStatement(sql);
-                    String serializedHash = XfBCrypt.serializeHash(password.getHash());
-                    byte[] bytes = serializedHash.getBytes();
-                    Blob blob = con.createBlob();
-                    blob.setBytes(1, bytes);
-                    pst2.setBlob(1, blob);
-                    pst2.setInt(2, id);
-                    pst2.executeUpdate();
-                    pst2.close();
-                    // ...
-                    sql = "UPDATE " + xfPrefix + "user_authenticate SET scheme_class=? WHERE " + col.ID + "=?;";
-                    pst2 = con.prepareStatement(sql);
-                    pst2.setString(1, XfBCrypt.SCHEME_CLASS);
-                    pst2.setInt(2, id);
-                    pst2.executeUpdate();
-                    pst2.close();
-                }
+        OptionalInt authId = retrieveIdFromTable(user, con);
+        if (authId.isPresent()) {
+            final int id = authId.getAsInt();
+            // Insert password in the correct table
+            String sql = "UPDATE " + xfPrefix + "user_authenticate SET data=? WHERE " + col.ID + "=?;";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                String serializedHash = XfBCrypt.serializeHash(password.getHash());
+                byte[] bytes = serializedHash.getBytes();
+                Blob blob = con.createBlob();
+                blob.setBytes(1, bytes);
+                pst.setBlob(1, blob);
+                pst.setInt(2, id);
+                pst.executeUpdate();
+            }
+
+            // ...
+            sql = "UPDATE " + xfPrefix + "user_authenticate SET scheme_class=? WHERE " + col.ID + "=?;";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setString(1, XfBCrypt.SCHEME_CLASS);
+                pst.setInt(2, id);
+                pst.executeUpdate();
             }
         }
     }
 
     @Override
     public void removeAuth(String user, Connection con) throws SQLException {
-        String sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement xfSelect = con.prepareStatement(sql)) {
-            xfSelect.setString(1, user);
-            try (ResultSet rs = xfSelect.executeQuery()) {
-                if (rs.next()) {
-                    int id = rs.getInt(col.ID);
-                    sql = "DELETE FROM " + xfPrefix + "user_authenticate WHERE " + col.ID + "=?;";
-                    try (PreparedStatement xfDelete = con.prepareStatement(sql)) {
-                        xfDelete.setInt(1, id);
-                        xfDelete.executeUpdate();
-                    }
-                }
+        OptionalInt authId = retrieveIdFromTable(user, con);
+        if (authId.isPresent()) {
+            String sql = "DELETE FROM " + xfPrefix + "user_authenticate WHERE " + col.ID + "=?;";
+            try (PreparedStatement xfDelete = con.prepareStatement(sql)) {
+                xfDelete.setInt(1, authId.getAsInt());
+                xfDelete.executeUpdate();
             }
         }
     }

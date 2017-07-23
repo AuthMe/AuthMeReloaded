@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.datasource.Columns;
+import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.crypts.Whirlpool;
@@ -55,6 +56,7 @@ public class ClassesConsistencyTest {
     /** Classes excluded from the field visibility test. */
     private static final Set<Class<?>> CLASSES_EXCLUDED_FROM_VISIBILITY_TEST = ImmutableSet.of(
         Whirlpool.class, // not our implementation, so we don't touch it
+        MySqlExtension.class, // has immutable protected fields used by all children
         Columns.class // uses non-static String constants, which is safe
     );
 

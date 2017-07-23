@@ -3,42 +3,32 @@ package fr.xephi.authme.datasource.mysqlextensions;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.OptionalInt;
 
 /**
  * Extensions for phpBB when MySQL is used as data source.
  */
 class PhpBbExtension extends MySqlExtension {
 
-    private final Columns col;
-    private final String tableName;
     private final String phpBbPrefix;
     private final int phpBbGroup;
 
     PhpBbExtension(Settings settings, Columns col) {
-        this.col = col;
-        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        super(settings, col);
         this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
         this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
     }
 
     @Override
     public void saveAuth(PlayerAuth auth, Connection con) throws SQLException {
-        String sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, auth.getNickname());
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    int id = rs.getInt(col.ID);
-                    updateSpecificsOnSave(id, auth.getNickname(), con);
-                }
-            }
+        OptionalInt authId = retrieveIdFromTable(auth.getNickname(), con);
+        if (authId.isPresent()) {
+            updateSpecificsOnSave(authId.getAsInt(), auth.getNickname(), con);
         }
     }
 

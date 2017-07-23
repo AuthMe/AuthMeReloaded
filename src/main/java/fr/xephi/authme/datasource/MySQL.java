@@ -85,6 +85,7 @@ public class MySQL implements DataSource {
      * Retrieves various settings.
      *
      * @param settings the settings to read properties from
+     * @param extensionsFactory factory to create the MySQL extension
      */
     private void setParameters(Settings settings, MySqlExtensionsFactory extensionsFactory) {
         this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
@@ -435,8 +436,8 @@ public class MySQL implements DataSource {
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         String sql = "UPDATE " + tableName
-            + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=?, "
-            + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=?"
+            + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, "
+            + col.LASTLOC_WORLD + "=?, " + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=?"
             + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setDouble(1, auth.getQuitLocX());

@@ -15,6 +15,12 @@ public class MySqlExtensionsFactory {
     @Inject
     private Settings settings;
 
+    /**
+     * Creates a new {@link MySqlExtension} object according to the configured hash algorithm.
+     *
+     * @param columnsConfig the columns configuration
+     * @return the extension the MySQL data source should use
+     */
     public MySqlExtension buildExtension(Columns columnsConfig) {
         HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
         switch (hash) {
@@ -27,7 +33,7 @@ public class MySqlExtensionsFactory {
             case XFBCRYPT:
                 return new XfBcryptExtension(settings, columnsConfig);
             default:
-                return new NoOpExtension();
+                return new NoOpExtension(settings, columnsConfig);
         }
     }
 }
