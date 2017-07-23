@@ -4,6 +4,8 @@ import ch.jalu.configme.properties.Property;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
+import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
@@ -30,6 +32,8 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
     private static Settings settings;
+    /** Mock of extensions factory. */
+    private static MySqlExtensionsFactory extensionsFactory;
     /** SQL statement to execute before running a test. */
     private static String sqlInitialize;
     /** Connection to the H2 test database. */
@@ -51,6 +55,8 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
                 return ((Property) invocation.getArguments()[0]).getDefaultValue();
             }
         });
+        extensionsFactory = mock(MySqlExtensionsFactory.class);
+        when(extensionsFactory.buildExtension(any(Columns.class))).thenReturn(mock(MySqlExtension.class));
         set(DatabaseSettings.MYSQL_DATABASE, "h2_test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
         TestHelper.setRealLogger();
@@ -85,7 +91,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Override
     protected DataSource getDataSource(String saltColumn) {
         when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
-        return new MySQL(settings, hikariSource);
+        return new MySQL(settings, hikariSource, extensionsFactory);
     }
 
     private static <T> void set(Property<T> property, T value) {

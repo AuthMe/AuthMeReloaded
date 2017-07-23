@@ -1,6 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
 import java.lang.reflect.Method;
@@ -11,8 +10,8 @@ import java.sql.Connection;
  */
 public class SQLiteResourceClosingTest extends AbstractResourceClosingTest {
 
-    public SQLiteResourceClosingTest(Method method, String name, HashAlgorithm algorithm) {
-        super(method, name, algorithm);
+    public SQLiteResourceClosingTest(Method method, String name) {
+        super(method, name);
     }
 
     @Override
