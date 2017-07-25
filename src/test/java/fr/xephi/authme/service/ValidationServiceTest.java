@@ -350,13 +350,16 @@ public class ValidationServiceTest {
         // given
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
-            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;32.24.16.8", "Gabriel;regex:93\\.23\\.44\\..*"));
+            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;32.24.16.8", "Gabriel;regex:93\\.23\\.44\\..*", "emanuel;94.65.24.*", "imyourisp;*.yourisp.net"));
         validationService.reload();
 
         Player bobby = mockPlayer("bobby", "127.0.0.4");
         Player tamara = mockPlayer("taMARA", "8.8.8.8");
         Player gabriel = mockPlayer("Gabriel", "93.23.44.65");
         Player gabriel2 = mockPlayer("Gabriel", "93.23.33.34");
+        Player emanuel = mockPlayer("emanuel", "94.65.24.10");
+        Player emanuel2 = mockPlayer("emanuel", "94.65.60.10");
+        Player imyourisp = mockPlayer("imyourisp", "bazinga.yourisp.net");
         Player notRestricted = mockPlayer("notRestricted", "0.0.0.0");
 
         // when
@@ -364,6 +367,9 @@ public class ValidationServiceTest {
         boolean isTamaraAdmitted = validationService.fulfillsNameRestrictions(tamara);
         boolean isGabrielAdmitted = validationService.fulfillsNameRestrictions(gabriel);
         boolean isGabriel2Admitted = validationService.fulfillsNameRestrictions(gabriel2);
+        boolean isEmanuelAdmitted = validationService.fulfillsNameRestrictions(emanuel);
+        boolean isEmanuel2Admitted = validationService.fulfillsNameRestrictions(emanuel2);
+        boolean isImyourispAdmitted = validationService.fulfillsNameRestrictions(imyourisp);
         boolean isNotRestrictedAdmitted = validationService.fulfillsNameRestrictions(notRestricted);
 
         // then
@@ -371,6 +377,9 @@ public class ValidationServiceTest {
         assertThat(isTamaraAdmitted, equalTo(false));
         assertThat(isGabrielAdmitted, equalTo(true));
         assertThat(isGabriel2Admitted, equalTo(false));
+        assertThat(isEmanuelAdmitted, equalTo(true));
+        assertThat(isEmanuel2Admitted, equalTo(false));
+        assertThat(isImyourispAdmitted, equalTo(true));
         assertThat(isNotRestrictedAdmitted, equalTo(true));
     }
 

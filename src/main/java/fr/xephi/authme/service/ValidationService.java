@@ -160,19 +160,14 @@ public class ValidationService implements Reloadable {
         for(String restriction : restrictions) {
             if(restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");
-                if(ip.matches(restriction)) {
-                    return true;
-                }
-                if(domain.matches(restriction)) {
-                    return true;
-                }
             } else {
-                if(ip.equals(restriction)) {
-                    return true;
-                }
-                if(domain.equalsIgnoreCase(restriction)) {
-                    return true;
-                }
+                restriction = restriction.replaceAll("\\*","(.*)");
+            }
+            if(ip.matches(restriction)) {
+                return true;
+            }
+            if(domain.matches(restriction)) {
+                return true;
             }
         }
         return false;
