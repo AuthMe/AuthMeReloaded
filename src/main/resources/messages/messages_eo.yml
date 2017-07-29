@@ -91,9 +91,9 @@ change_password_expired: 'You cannot change your password using this command any
 email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
-usage_captcha: '&3To login you have to solve a captcha code, please use the command: /captcha <theCaptcha>'
-wrong_captcha: '&cWrong captcha, please type "/captcha THE_CAPTCHA" into the chat!'
-valid_captcha: '&2Captcha code solved correctly!'
+usage_captcha: '&3Ensaluti vi devas solvi captcha kodo, bonvolu uzi la komando: /captcha <captcha>'
+wrong_captcha: '&cMalĝustan captcha, bonvolu tajpi "/captcha CAPTCHA" en la babilejo!'
+valid_captcha: '&2Captcha kodo solvita ĝuste!'
 
 # Time units
 second: 'sekundo'
