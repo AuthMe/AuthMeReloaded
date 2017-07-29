@@ -88,7 +88,7 @@ show_no_email: '&2You currently don''t have email address associated with this a
 add_email: '&3Please add your email to your account with the command: /email add <yourEmail> <confirmEmail>'
 recovery_email: '&3Forgot your password? Please use the command: /email recovery <yourEmail>'
 change_password_expired: 'You cannot change your password using this command anymore.'
-email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email_cooldown_error: '&cRetmesaĝon jam sendita lastatempe. Vi devas atendi %time antaŭ vi povas sendi novan.'
 
 # Captcha
 usage_captcha: '&3Ensaluti vi devas solvi captcha kodo, bonvolu uzi la komando: /captcha <captcha>'
