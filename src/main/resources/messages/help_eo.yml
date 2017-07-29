@@ -1,0 +1,31 @@
+common:
+    header: '==========[ AuthMeReloaded Helpo ]=========='
+    optional: 'Laŭvola'
+    hasPermission: 'Vi havas permeson'
+    noPermission: 'Neniun permeson'
+    default: 'Apriora'
+    result: 'Rezulto'
+    defaultPermissions:
+        notAllowed: 'Neniun permeson'
+        opOnly: 'Nur el OP'
+        allowed: 'Ĉiu rajtas'
+
+section:
+    command: 'Komando'
+    description: 'Mallonga priskribo'
+    detailedDescription: 'Detala priskribo'
+    arguments: 'Argumentoj'
+    permissions: 'Permesoj'
+    alternatives: 'Alternativoj'
+    children: 'Komandoj'
+
+commands:
+    authme.register:
+        description: 'Registri ludanto'
+        detailedDescription: 'Registri la specifita ludanto kun la specifita pasvorton.'
+        arg1:
+            label: 'ludanto'
+            description: 'Ludanta nomo'
+        arg2:
+            label: 'pasvorto'
+            description: 'Pasvorto'
