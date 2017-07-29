@@ -1,6 +1,8 @@
 package fr.xephi.authme;
 
+import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -206,4 +209,14 @@ public final class TestHelper {
         given(player.getAddress()).willReturn(inetSocketAddress);
     }
 
+    /**
+     * Configures the Settings mock to return the property's default value for any given property.
+     *
+     * @param settings the settings mock
+     */
+    @SuppressWarnings("unchecked")
+    public static void returnDefaultsForAllProperties(Settings settings) {
+        given(settings.getProperty(any(Property.class)))
+            .willAnswer(invocation -> ((Property<?>) invocation.getArgument(0)).getDefaultValue());
+    }
 }

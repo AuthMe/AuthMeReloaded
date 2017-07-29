@@ -1,9 +1,9 @@
 package tools.docs.hashmethods;
 
-import ch.jalu.configme.properties.Property;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import com.google.common.collect.ImmutableSet;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
@@ -11,8 +11,6 @@ import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.settings.Settings;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -20,9 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Gathers information on {@link EncryptionMethod} implementations based on
@@ -140,17 +136,9 @@ public class EncryptionMethodInfoGatherer {
         return key.cast(map.get(key));
     }
 
-    @SuppressWarnings("unchecked")
     private static Injector createInitializer() {
         Settings settings = mock(Settings.class);
-        // Return the default value for any property
-        when(settings.getProperty(any(Property.class))).thenAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Property<?> property = (Property<?>) invocation.getArguments()[0];
-                return property.getDefaultValue();
-            }
-        });
+        TestHelper.returnDefaultsForAllProperties(settings);
 
         // By passing some bogus "package" to the constructor, the injector will throw if it needs to
         // instantiate any dependency other than what we provide.
