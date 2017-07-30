@@ -39,10 +39,10 @@ public class MsSQL extends SqlDataSource {
     protected void checkTables() throws SQLException {
         try (Connection con = getConnection(); Statement st = con.createStatement()) {
             // Create table with ID column if it doesn't exist
-            String sql = "IF object_id('" + tableName + "') IS NOT NULL\n" +
-                "    CREATE TABLE " + tableName
-                + " (" + col.ID + " INT CHECK (" + col.ID + " > 0) IDENTITY" +
-                ", PRIMARY KEY (" + col.ID + ")) CHARACTER SET = utf8;";
+            String sql = "IF object_id('" + tableName + "') IS NOT NULL\n"
+                + "    CREATE TABLE " + tableName
+                + " (" + col.ID + " INT CHECK (" + col.ID + " > 0) IDENTITY"
+                + ", PRIMARY KEY (" + col.ID + ")) CHARACTER SET = utf8;";
             st.executeUpdate(sql);
         }
     }

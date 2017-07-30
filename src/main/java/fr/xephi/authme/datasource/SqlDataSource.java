@@ -297,7 +297,8 @@ public abstract class SqlDataSource implements DataSource {
 
             if (!columnOthers.isEmpty()) {
                 for (String column : columnOthers) {
-                    try (PreparedStatement pst = con.prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + col.NAME + "=?;")) {
+                    try (PreparedStatement pst = con.prepareStatement(
+                        "UPDATE " + tableName + " SET " + column + "=? WHERE " + col.NAME + "=?;")) {
                         pst.setString(1, auth.getRealName());
                         pst.setString(2, auth.getNickname());
                         pst.executeUpdate();
@@ -625,6 +626,14 @@ public abstract class SqlDataSource implements DataSource {
         return players;
     }
 
+    /**
+     * Builds a PlayerAuth object from a result set
+     *
+     * @param row the result set
+     * @return the generated PlayerAuth object
+     *
+     * @throws SQLException .
+     */
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);
