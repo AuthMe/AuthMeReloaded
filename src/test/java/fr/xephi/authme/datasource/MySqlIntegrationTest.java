@@ -4,8 +4,8 @@ import ch.jalu.configme.properties.Property;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
-import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.datasource.sqlextensions.SqlExtension;
+import fr.xephi.authme.datasource.sqlextensions.SqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
@@ -31,7 +31,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     /** Mock of a settings instance. */
     private static Settings settings;
     /** Mock of extensions factory. */
-    private static MySqlExtensionsFactory extensionsFactory;
+    private static SqlExtensionsFactory extensionsFactory;
     /** SQL statement to execute before running a test. */
     private static String sqlInitialize;
     /** Connection to the H2 test database. */
@@ -47,8 +47,8 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
-        extensionsFactory = mock(MySqlExtensionsFactory.class);
-        when(extensionsFactory.buildExtension(any(Columns.class))).thenReturn(mock(MySqlExtension.class));
+        extensionsFactory = mock(SqlExtensionsFactory.class);
+        when(extensionsFactory.buildExtension(any(Columns.class))).thenReturn(mock(SqlExtension.class));
         set(DatabaseSettings.MYSQL_DATABASE, "h2_test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
         TestHelper.setRealLogger();

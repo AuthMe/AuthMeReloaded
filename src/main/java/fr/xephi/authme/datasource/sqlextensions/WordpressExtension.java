@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.mysqlextensions;
+package fr.xephi.authme.datasource.sqlextensions;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
@@ -13,7 +13,7 @@ import java.util.OptionalInt;
 /**
  * MySQL extensions for Wordpress.
  */
-class WordpressExtension extends MySqlExtension {
+class WordpressExtension extends SqlExtension {
 
     private final String wordpressPrefix;
 

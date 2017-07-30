@@ -90,6 +90,8 @@ public class BackupService {
                 return performFileBackup("auths.db");
             case MYSQL:
                 return performMySqlBackup();
+            case MSSQL:
+                ConsoleLogger.warning("You have to do an SQL Server backup manually!");
             case SQLITE:
                 String dbName = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
                 return performFileBackup(dbName + ".db");

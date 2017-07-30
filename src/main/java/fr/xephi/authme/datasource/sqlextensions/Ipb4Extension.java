@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.mysqlextensions;
+package fr.xephi.authme.datasource.sqlextensions;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 /**
  * Extension for IPB4.
  */
-class Ipb4Extension extends MySqlExtension {
+class Ipb4Extension extends SqlExtension {
 
     private final String ipbPrefix;
     private final int ipbGroup;
