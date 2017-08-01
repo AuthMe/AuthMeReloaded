@@ -26,13 +26,7 @@ public class MsSQL extends SqlDataSource {
 
         // Database URL
         ds.setDataSourceClassName("com.microsoft.sqlserver.jdbc.SQLServerDataSource");
-        ds.addDataSourceProperty("serverName", host);
-        ds.addDataSourceProperty("port", port);
-        ds.addDataSourceProperty("databaseName", database);
-
-        // Auth
-        ds.addDataSourceProperty("user", username);
-        ds.addDataSourceProperty("password", password);
+        ds.setJdbcUrl("jdbc:sqlserver://" + host + ":" + port + ";databaseName="+ database + ";user=" + username + ";password=" + password);
     }
 
     @Override
