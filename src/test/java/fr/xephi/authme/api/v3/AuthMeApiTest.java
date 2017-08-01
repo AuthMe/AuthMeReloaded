@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,6 +138,42 @@ public class AuthMeApiTest {
         assertThat(result.getWorld(), equalTo(world));
         assertThat(result.getYaw(), equalTo(auth.getYaw()));
         assertThat(result.getPitch(), equalTo(auth.getPitch()));
+    }
+
+    @Test
+    public void shouldGetLastIp() {
+        // given
+        String name = "Gabriel";
+        Player player = mockPlayerWithName(name);
+        PlayerAuth auth = PlayerAuth.builder().name(name)
+            .ip("93.23.44.55")
+            .build();
+        given(playerCache.getAuth(name)).willReturn(auth);
+
+        // when
+        String result = api.getLastIp(player.getName());
+
+        // then
+        assertThat(result, not(nullValue()));
+        assertThat(result, equalTo("93.23.44.55"));
+    }
+
+    @Test
+    public void shouldGetLastLogin() {
+        // given
+        String name = "David";
+        Player player = mockPlayerWithName(name);
+        PlayerAuth auth = PlayerAuth.builder().name(name)
+            .lastLogin(1501597979)
+            .build();
+        given(playerCache.getAuth(name)).willReturn(auth);
+
+        // when
+        Date result = api.getLastLogin(player.getName());
+
+        // then
+        assertThat(result, not(nullValue()));
+        assertThat(result, equalTo(new Date(1501597979)));
     }
 
     @Test

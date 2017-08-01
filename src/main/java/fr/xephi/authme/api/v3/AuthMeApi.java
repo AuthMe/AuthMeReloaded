@@ -18,6 +18,8 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -134,6 +136,50 @@ public class AuthMeApi {
         if (auth != null) {
             return new Location(Bukkit.getWorld(auth.getWorld()),
                 auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getYaw(), auth.getPitch());
+        }
+        return null;
+    }
+
+    /**
+     * Get the last ip address of a player.
+     *
+     * @param playerName The name of the player to process
+     * @return String The last ip address of the player
+     */
+    public String getLastIp(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if(auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return auth.getIp();
+        }
+        return null;
+    }
+
+    /**
+     * Get user names by ip.
+     *
+     * @param address The ip address to process
+     * @return List The list of user names related to the ip address
+     */
+    public List<String> getNamesByIp(String address) {
+        return dataSource.getAllAuthsByIp(address);
+    }
+
+    /**
+     * Get the last login date of a player.
+     *
+     * @param playerName The name of the player to process
+     * @return Date The date of the last login
+     */
+    public Date getLastLogin(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if(auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return new Date(auth.getLastLogin());
         }
         return null;
     }
