@@ -17,7 +17,7 @@ pass_len: '&cVia pasvorto estas tro mallonga aŭ tro longa! Bonvolu provi per al
 # Login
 usage_log: '&cUzado: /login <pasvorto>'
 wrong_pwd: '&cErara pasvorto!'
-login: '&2Sukcesaj login!'
+login: '&2Sukcesaj ensaluto!'
 login_msg: '&cBonvolu ensaluti per la komando: /login <pasvorto>'
 timeout: '&4Salutnomo timeout superis, vi estis piedbatita el la servilo, bonvolu provi denove!'
 
