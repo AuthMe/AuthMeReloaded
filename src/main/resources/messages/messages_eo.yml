@@ -35,7 +35,7 @@ kick_forvip: '&3A VIP ludanto aliĝis al la servilo kiam ĝi pleniĝis!'
 # AntiBot
 kick_antibot: 'KontraŭRoboto protekto modon estas ŝaltita! Vi devas atendi kelkajn minutojn antaŭ kunigi al la servilo.'
 antibot_auto_enabled: '&4[KontraŭRobotoServo] KontraŭRoboto ŝaltita pro la grandega nombro de konektoj!'
-antibot_auto_disabled: '&2[KontraŭRobotoServo] KontraŭRoboto malebligita post %3 minutoj!'
+antibot_auto_disabled: '&2[KontraŭRobotoServo] KontraŭRoboto malebligita post %m minutoj!'
 
 # Other messages
 unregistered: '&cSukcese neregistritajn!'
@@ -91,8 +91,8 @@ change_password_expired: 'Vi ne povas ŝanĝi vian pasvorton per tiu ĉi komando
 email_cooldown_error: '&cRetmesaĝon jam sendita lastatempe. Vi devas atendi %time antaŭ vi povas sendi novan.'
 
 # Captcha
-usage_captcha: '&3Ensaluti vi devas solvi captcha kodo, bonvolu uzi la komando: /captcha <captcha>'
-wrong_captcha: '&cMalĝustan captcha, bonvolu tajpi "/captcha CAPTCHA" en la babilejo!'
+usage_captcha: '&3Ensaluti vi devas solvi captcha kodo, bonvolu uzi la komando: /captcha <theCaptcha>'
+wrong_captcha: '&cMalĝustan captcha, bonvolu tajpi "/captcha THE_CAPTCHA" en la babilejo!'
 valid_captcha: '&2Captcha kodo solvita ĝuste!'
 
 # Time units
