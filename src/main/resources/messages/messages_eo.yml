@@ -30,7 +30,7 @@ tempban_max_logins: '&cVi estis portempe malpermesita por ne ensaluti tro multaj
 max_reg: 'Vi superis la maksimuman nombron de enregistroj (%reg_count/%max_acc %reg_names) pro via ligo!'
 no_perm: '&4Vi ne havas la permeson por fari ĉi tiun funkcion!'
 error: '&4Neatendita eraro, bonvolu kontakti administranto!
-# TODO kick_forvip: '&3A VIP player has joined the server when it was full!'
+kick_forvip: '&3A VIP ludanto aliĝis al la servilo kiam ĝi pleniĝis!'
 
 # AntiBot
 kick_antibot: 'KontraŭRoboto protekto modon estas ŝaltita! Vi devas atendi kelkajn minutojn antaŭ kunigi al la servilo.'
