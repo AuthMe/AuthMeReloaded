@@ -22,15 +22,15 @@ login_msg: '&cPlease, login with the command: /login <password>'
 timeout: '&4Login timeout exceeded, you have been kicked from the server, please try again!'
 
 # Errors
-unknown_user: '&cThis user isn''t registered!'
-denied_command: '&cIn order to use this command you must be authenticated!'
-denied_chat: '&cIn order to chat you must be authenticated!'
-not_logged_in: '&cYou''re not logged in!'
-tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
-max_reg: '&cYou have exceeded the maximum number of registrations (%reg_count/%max_acc %reg_names) for your connection!'
-no_perm: '&4You don''t have the permission to perform this action!'
-error: '&4An unexpected error occurred, please contact an administrator!'
-kick_forvip: '&3A VIP player has joined the server when it was full!'
+unknown_user: '&cTiu uzanto ne estas registrita!'
+denied_command: '&cPor uzi ĉi komando vi devas esti legalizita!'
+denied_chat: '&cPor babili vi devas esti legalizita!'
+not_logged_in: '&cVi ne estas ensalutita!'
+tempban_max_logins: '&cVi estis portempe malpermesita por ne ensaluti tro multajn fojojn.'
+max_reg: 'Vi superis la maksimuman nombron de enregistroj (%reg_count/%max_acc %reg_names) pro via ligo!'
+no_perm: '&4Vi ne havas la permeson por fari ĉi tiun funkcion!'
+error: '&4Neatendita eraro, bonvolu kontakti administranto!
+# TODO kick_forvip: '&3A VIP player has joined the server when it was full!'
 
 # AntiBot
 kick_antibot: 'KontraŭRoboto protekto modon estas ŝaltita! Vi devas atendi kelkajn minutojn antaŭ kunigi al la servilo.'
