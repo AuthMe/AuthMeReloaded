@@ -1,25 +1,25 @@
 # Registration
-reg_msg: '&3Please, register to the server with the command: /register <password> <ConfirmPassword>'
-usage_reg: '&cUsage: /register <password> <ConfirmPassword>'
-reg_only: '&4Only registered users can join the server! Please visit http://example.com to register yourself!'
-kicked_admin_registered: 'An admin just registered you; please log in again'
-registered: '&2Successfully registered!'
-reg_disabled: '&cIn-game registration is disabled!'
-user_regged: '&cYou already have registered this username!'
+reg_msg: '&3Bonvolu registri al la servilo per la komando: /register <pasvorto> <konfirmiRetpoŝto>'
+usage_reg: '&cUzado: /register <pasvorto> <konfirmiRetpoŝto>'
+reg_only: '&4Nur registritaj uzantoj povas aliĝi la servilo! Bonvolu viziti http://example.com registri vin mem!'
+kicked_admin_registered: 'Administranto nur registrita vin; bonvolu ensaluti denove'
+registered: '&2Sukcese registris!'
+reg_disabled: '&cEn-ludo registriĝo estas malebligita!'
+user_regged: '&cVi jam registris tiun uzantnomon!'
 
 # Password errors on registration
-password_error: '&cPasswords didn''t match, check them again!'
-password_error_nick: '&cYou can''t use your name as password, please choose another one...'
-password_error_unsafe: '&cThe chosen password isn''t safe, please choose another one...'
-password_error_chars: '&4Your password contains illegal characters. Allowed chars: REG_EX'
-pass_len: '&cYour password is too short or too long! Please try with another one!'
+password_error: '&cLa pasvortoj ne kongruas, kontrolu ilin!'
+password_error_nick: '&cVi ne povas uzi vian nomon kiel pasvorto, bonvolu elekti alian...'
+password_error_unsafe: '&cLa elektita pasvorto estas danĝere, bonvolu elekti alian...'
+password_error_chars: '&4Via pasvorto enhavas kontraŭleĝan karakteroj. Permesita signoj: REG_EX'
+pass_len: '&cVia pasvorto estas tro mallonga aŭ tro longa! Bonvolu provi per alia!'
 
 # Login
-usage_log: '&cUsage: /login <password>'
-wrong_pwd: '&cWrong password!'
-login: '&2Successful login!'
-login_msg: '&cPlease, login with the command: /login <password>'
-timeout: '&4Login timeout exceeded, you have been kicked from the server, please try again!'
+usage_log: '&cUzado: /login <pasvorto>'
+wrong_pwd: '&cErara pasvorto!'
+login: '&2Sukcesaj login!'
+login_msg: '&cBonvolu ensaluti per la komando: /login <pasvorto>'
+timeout: '&4Salutnomo timeout superis, vi estis piedbatita el la servilo, bonvolu provi denove!'
 
 # Errors
 unknown_user: '&cTiu uzanto ne estas registrita!'
