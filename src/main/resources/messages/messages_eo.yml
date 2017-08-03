@@ -1,7 +1,7 @@
 # Registration
 reg_msg: '&3Bonvolu registri al la servilo per la komando: /register <pasvorto> <konfirmiRetpoŝto>'
 usage_reg: '&cUzado: /register <pasvorto> <konfirmiRetpoŝto>'
-reg_only: '&4Nur registritaj uzantoj povas aliĝi la servilo! Bonvolu viziti http://example.com registri vin mem!'
+reg_only: '&4Nur registritaj uzantoj povas aliĝi la servilon! Bonvolu viziti http://example.com registri vin mem!'
 kicked_admin_registered: 'Administranto ĵus registrita vin; bonvolu ensaluti denove'
 registered: '&2Sukcese registris!'
 reg_disabled: '&cEn-ludo registriĝo estas malebligita!'
@@ -12,12 +12,12 @@ password_error: '&cLa pasvortoj ne kongruas, kontrolu ilin!'
 password_error_nick: '&cVi ne povas uzi vian nomon kiel pasvorto, bonvolu elekti alian...'
 password_error_unsafe: '&cLa elektita pasvorto estas danĝere, bonvolu elekti alian...'
 password_error_chars: '&4Via pasvorto enhavas kontraŭleĝan karakteroj. Permesita signoj: REG_EX'
-pass_len: '&cVia pasvorto estas tro mallonga aŭ tro longa! Bonvolu provi per alia!'
+pass_len: '&cVia pasvorto estas tro mallonga aŭ tro longa! Bonvolu provi alian pasvorton!'
 
 # Login
 usage_log: '&cUzado: /login <pasvorto>'
 wrong_pwd: '&cErara pasvorto!'
-login: '&2Sukcesaj ensaluto!'
+login: '&2Sukcesa ensaluto!'
 login_msg: '&cBonvolu ensaluti per la komando: /login <pasvorto>'
 timeout: '&4Salutnomo tempolimo superis, vi estis piedbatita el la servilo, bonvolu provi denove!'
 
