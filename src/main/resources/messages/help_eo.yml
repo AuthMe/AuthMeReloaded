@@ -2,12 +2,12 @@ common:
     header: '==========[ AuthMeReloaded Helpo ]=========='
     optional: 'Laŭvola'
     hasPermission: 'Vi havas permeson'
-    noPermission: 'Neniu permeson'
+    noPermission: 'Neniun permeson'
     default: 'Defaŭlta'
     result: 'Rezulto'
     defaultPermissions:
-        notAllowed: 'Neniu permeson'
-        opOnly: 'Nur OP''s'
+        notAllowed: 'Neniun permeson'
+        opOnly: 'Nur el OP'
         allowed: 'Ĉiu rajtas'
 
 section:
@@ -25,7 +25,7 @@ commands:
         detailedDescription: 'Registri la specifita ludanto kun la specifita pasvorton.'
         arg1:
             label: 'ludanto'
-            description: 'Ludanto nomo'
+            description: 'Ludanta nomo'
         arg2:
             label: 'pasvorto'
             description: 'Pasvorto'
