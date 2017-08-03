@@ -92,7 +92,7 @@ email_cooldown_error: '&cRetmesaĝon jam sendita lastatempe. Vi devas atendi %ti
 
 # Captcha
 usage_captcha: '&3Ensaluti vi devas solvi captcha kodo, bonvolu uzi la komando: /captcha <theCaptcha>'
-wrong_captcha: '&cMalĝustan captcha, bonvolu tajpi "/captcha THE_CAPTCHA" en la babilejo!'
+wrong_captcha: '&cMalĝusta captcha, bonvolu tajpi "/captcha THE_CAPTCHA" en la babilejo!'
 valid_captcha: '&2Captcha kodo solvita ĝuste!'
 
 # Time units
