@@ -3,7 +3,7 @@ common:
     optional: 'Laŭvola'
     hasPermission: 'Vi havas permeson'
     noPermission: 'Neniun permeson'
-    default: 'Defaŭlta'
+    default: 'Apriora'
     result: 'Rezulto'
     defaultPermissions:
         notAllowed: 'Neniun permeson'
