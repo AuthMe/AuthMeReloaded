@@ -98,8 +98,8 @@ change_password_expired: 'Už nemôžeš zmeniť svoje heslo týmto príkazom.'
 email_cooldown_error: '&cEmail bol nedávno poslaný. Musíš počkať %time predtým ako ti pošleme nový.'
 
 # Captcha
-usage_captcha: '&3Pre prihlásenie musíš vyriešiť captcha kód, prosím použi príkaz: /captcha <kód>'
-wrong_captcha: '&cNesprávny kód captcha, prosím napíš "/captcha CAPTCHA_KÓD" do chatu!'
+usage_captcha: '&3Pre prihlásenie musíš vyriešiť captcha kód, prosím použi príkaz: /captcha <theCaptcha>'
+wrong_captcha: '&cNesprávny kód captcha, prosím napíš "/captcha THE_CAPTCHA" do chatu!'
 valid_captcha: '&2Správne si vyriešil captcha kód!'
 
 # Time units
