@@ -96,7 +96,7 @@ wrong_captcha: '&cVale captcha, kirjuta "/captcha THE_CAPTCHA" chatti!'
 valid_captcha: '&2Captcha lahendatud!'
 
 # Time units
-second: 'sekund
+second: 'sekund'
 seconds: 'sekundit'
 minute: 'minut'
 minutes: 'minutit'
