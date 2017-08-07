@@ -1,13 +1,14 @@
-#         Slovak translate by Judzi         #
-#     www.judzi.eu | judzi@cs-gaming.eu     #
-#   02.02.2013 - 4:35 AM - Thanks for use   #
-#
-# and also contributed by Thymue 5.8.2017
+#     Slovak translate by Judzi 2.2.2013      #
+#          Translated & Corrected by          #
+#               Thymue 7.8.2017               #
+#   in future there can be more translators   #
+#         if they are not listed here         #
+#      check Translators on GitHub Wiki.      #
 
 # Registration
 reg_msg: '&cZaregistruj sa príkazom "/register heslo zopakujHeslo".'
-usage_reg: '&cPríkaz: /register heslo zopakujHeslo'
-reg_only: '&fVstup iba pre registrovaných! Navštív http://example.com pre registráciu.'
+usage_reg: '&cPoužitie: /register heslo zopakujHeslo'
+reg_only: '&fIba zaregistrovaný hráči sa môžu pripojiť na tento server! Navštív http://example.com pre registráciu.'
 kicked_admin_registered: 'Admin ťa zaregistroval; prosím prihlás sa znovu.'
 registered: '&cBol si úspešne zaregistrovaný.'
 reg_disabled: '&cRegistrácia nie je povolená.'
@@ -21,11 +22,11 @@ password_error_chars: '&4Tvoje heslo obsahuje zakázané znaky. Povolené znaky:
 pass_len: '&fHeslo je veľmi krátke alebo dlhé.'
 
 # Login
-usage_log: '&cPríkaz: /login heslo'
+usage_log: '&cPoužitie: /login heslo'
 wrong_pwd: '&cZadal si zlé heslo.'
 login: '&cBol si úspešne prihlásený!'
 login_msg: '&cPrihlás sa príkazom "/login heslo".'
-timeout: '&fVypršal čas na prihlásenie.'
+timeout: '&fVypršal čas na prihlásenie, pripoj sa a skús to znovu.'
 
 # Errors
 unknown_user: '&cZadané meno nie je zaregistrované!'
@@ -33,8 +34,7 @@ denied_command: '&cPre použitie tohto príkazu sa musíš prihlásiť!'
 denied_chat: '&cMusíš byť prihlásený ak chceš použiť chat!'
 not_logged_in: '&cNie si ešte prihlásený!'
 tempban_max_logins: '&cBol si dočasne zabanovaný za opakované zadanie zlého hesla.'
-# TODO: Missing tags %reg_count, %max_acc, %reg_names
-max_reg: '&fDosiahol si maximum registrovaných účtov.'
+max_reg: '&fPrekročil si maximum registrovaných účtov(%reg_count/%max_acc|%reg_names).'
 no_perm: '&cNemáš dostatočné práva na vykonanie tejto činnosti.'
 error: '&fNastala chyba, prosím kontaktuj Administrátora.'
 kick_forvip: '&3Uvoľnil si miesto pre VIP hráča!'
@@ -54,20 +54,20 @@ recovery_code_incorrect: 'Nesprávny kód! Zostávajúce pokusy: %count.'
 recovery_tries_exceeded: 'Prekročil si maximálny počet pokusov o zadanie kódu pre obnovenie účtu. Použi "/email recovery [email]" pre vygenerovanie nového kódu.'
 recovery_code_correct: 'Správny kód!'
 recovery_change_password: 'Prosím hneď použi príkaz /email setpassword <nové heslo> pre zmenenie tvojeho hesla.'
-vb_nonActiv: '&fÚčet nie je aktivny. Prezri si svoj e-mail!'
-usage_unreg: '&cPríkaz: /unregister heslo'
+vb_nonActiv: '&fTvoj účet nie je aktivovaný. Prezri si svoj e-mail!'
+usage_unreg: '&cPoužitie: /unregister heslo'
 pwd_changed: '&cHeslo zmenené!'
 logged_in: '&cAktuálne si už prihlásený!'
 logout: '&cBol si úspešne odhlásený.'
-reload: '&fKonfigurácia a databáza bola obnovená.'
-usage_changepassword: '&fPríkaz: /changepassword stareHeslo noveHeslo'
+reload: '&fZnovu načítanie konfigurácie a databázy bolo úspešné.'
+usage_changepassword: '&fPoužitie: /changepassword stareHeslo noveHeslo'
 
 # Session messages
-invalid_session: '&fZapamätane časové dáta nie sú doveryhodné. Čakaj na ukončenie spojenia.'
-valid_session: '&cZapamätané prihlásenie.'
+invalid_session: '&fTvoja IP sa zmenila a tvoje prihlásenie(relácia) vypršalo(/a).'
+valid_session: '&cAutomatické prihlásenie z dôvodu pokračovania relácie.'
 
 # Error messages when joining
-name_len: '&cTvoje meno je veľmi krátke alebo dlhé.'
+name_len: '&cTvoje meno je veľmi krátke alebo veľmi dlhé.'
 regex: '&cTvoje meno obsahuje zakázané znaky. Povolené znaky: REG_EX'
 country_banned: '&4Tvoja krajina je zabanovaná na tomto serveri!'
 not_owner_error: 'Niesi majiteľ tohto účtu. Prosím zvoľ si iné meno!'
