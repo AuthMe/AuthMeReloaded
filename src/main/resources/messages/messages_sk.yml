@@ -1,13 +1,13 @@
-#     Slovak translate by Judzi 2.2.2013      #
-#          Translated & Corrected by          #
+#     Slovak translate by: Judzi 2.2.2013     #
+#      Next Translation & Correction by:      #
 #               Thymue 7.8.2017               #
 #   in future there can be more translators   #
 #         if they are not listed here         #
 #      check Translators on GitHub Wiki.      #
 
 # Registration
-reg_msg: '&cZaregistruj sa príkazom "/register heslo zopakujHeslo".'
-usage_reg: '&cPoužitie: /register heslo zopakujHeslo'
+reg_msg: '&cZaregistruj sa príkazom "/register <heslo> <zopakujHeslo>".'
+usage_reg: '&cPoužitie: /register <heslo> <zopakujHeslo>'
 reg_only: '&fIba zaregistrovaný hráči sa môžu pripojiť na tento server! Navštív http://example.com pre registráciu.'
 kicked_admin_registered: 'Admin ťa zaregistroval; prosím prihlás sa znovu.'
 registered: '&cBol si úspešne zaregistrovaný.'
@@ -19,13 +19,13 @@ password_error: '&fHeslá sa nezhodujú.'
 password_error_nick: '&cNemôžeš použiť tvoje meno ako heslo, prosím zvoľ si iné...'
 password_error_unsafe: '&cTvoje heslo nieje bezpečné, prosím zvoľ si iné...'
 password_error_chars: '&4Tvoje heslo obsahuje zakázané znaky. Povolené znaky: REG_EX'
-pass_len: '&fHeslo je veľmi krátke alebo dlhé.'
+pass_len: '&fHeslo je veľmi krátke alebo veľmi dlhé.'
 
 # Login
-usage_log: '&cPoužitie: /login heslo'
+usage_log: '&cPoužitie: /login <heslo>'
 wrong_pwd: '&cZadal si zlé heslo.'
 login: '&cBol si úspešne prihlásený!'
-login_msg: '&cPrihlás sa príkazom "/login heslo".'
+login_msg: '&cPrihlás sa príkazom "/login <heslo>".'
 timeout: '&fVypršal čas na prihlásenie, pripoj sa a skús to znovu.'
 
 # Errors
@@ -46,8 +46,8 @@ antibot_auto_disabled: '&2[AntiBotService] AntiBot bol vypnutý po %m minútach!
 
 # Other messages
 unregistered: '&cÚčet bol vymazaný!'
-accounts_owned_self: 'Vlastníš tieto účty (%count): '
-accounts_owned_other: 'Hráč %name vlastní tieto účty (%count): '
+accounts_owned_self: 'Vlastníš tieto účty(%count): '
+accounts_owned_other: 'Hráč %name vlastní tieto účty(%count): '
 two_factor_create: '&2Tvoj tajný kód je %code. Môžeš ho oskenovať tu: %url'
 recovery_code_sent: 'Kód na obnovenie účtu bol poslaný na tvoj e-mail.'
 recovery_code_incorrect: 'Nesprávny kód! Zostávajúce pokusy: %count.'
@@ -60,7 +60,7 @@ pwd_changed: '&cHeslo zmenené!'
 logged_in: '&cAktuálne si už prihlásený!'
 logout: '&cBol si úspešne odhlásený.'
 reload: '&fZnovu načítanie konfigurácie a databázy bolo úspešné.'
-usage_changepassword: '&fPoužitie: /changepassword stareHeslo noveHeslo'
+usage_changepassword: '&fPoužitie: /changepassword <staréHeslo> <novéHeslo>'
 
 # Session messages
 invalid_session: '&fTvoja IP sa zmenila a tvoje prihlásenie(relácia) vypršalo(/a).'
@@ -80,9 +80,9 @@ same_ip_online: 'Hráč s tvojou IP už hrá na tomto serveri!'
 usage_email_add: '&cPoužitie: /email add <email> <znovuEmail>'
 usage_email_change: '&cPoužitie: /email change <starýEmail> <novýEmail>'
 usage_email_recovery: '&cPoužitie: /email recovery <Email>'
-new_email_invalid: '&cNeplatný nový email, skús znovu!'
-old_email_invalid: '&cNeplatný starý email, skús znovu!'
-email_invalid: '&cNeplatná emailová adresa, skús znovu!'
+new_email_invalid: '&cNeplatný nový email, skús to znovu!'
+old_email_invalid: '&cNeplatný starý email, skús to znovu!'
+email_invalid: '&cNeplatná emailová adresa, skús to znovu!'
 email_added: '&2Emailová adresa bola úspešne pridaná k tvojmu účtu!'
 email_confirm: '&cProsím potvrď svoju emailovú adresu!'
 email_changed: '&2Emailová adresa bola úspešne zmenená!'
