@@ -1,7 +1,7 @@
 # Registration
-reg_msg: '&cProsím zaregistruj se pomocí "/register <heslo> <ZnovuHeslo>"'
+reg_msg: '&cProsím, zaregistruj se pomocí "/register <heslo> <ZnovuHeslo>"'
 usage_reg: '&cPoužij: "/register heslo ZnovuHeslo".'
-reg_only: '&cServer je pouze pro registrované! Navštiv náší webovou stránku http://example.com.'
+reg_only: '&cServer je pouze pro registrované! Navštiv naší webovou stránku http://priklad.cz.'
 kicked_admin_registered: 'Admin vás právě zaregistroval; Přihlašte se prosím znovu.'
 registered: '&cÚspěšně zaregistrován!'
 reg_disabled: '&cRegistrace je zakázána!'
@@ -9,8 +9,8 @@ user_regged: '&cUživatelské jméno je již zaregistrováno.'
 
 # Password errors on registration
 password_error: '&cHesla se neshodují!'
-password_error_nick: '&cNemůžeš použít tvoje jméno jako heslo, prosím zvol si jiné heslo...'
-password_error_unsafe: '&cToto heslo není bezpečné, prosím zvol si jiné heslo...'
+password_error_nick: '&cNemůžeš použít tvoje jméno jako heslo, prosím, zvol si jiné heslo...'
+password_error_unsafe: '&cToto heslo není bezpečné, prosím, zvol si jiné heslo...'
 password_error_chars: '&4Tvoje heslo obsahuje nepovolené znaky. Přípustné znaky jsou: REG_EX'
 pass_len: '&cTvoje heslo nedosahuje minimální délky (4).'
 
@@ -43,8 +43,7 @@ accounts_owned_self: 'Vlastníš tyto účty (%count):'
 accounts_owned_other: 'Hráč %name vlastní tyto účty (%count):'
 two_factor_create: '&2Tvůj tajný kód je %code. Můžeš ho oskenovat zde %url'
 recovery_code_sent: 'Kód pro obnovení hesla byl odeslán na váš email.'
-# TODO: Missing tags %count
-recovery_code_incorrect: 'Kód pro není správný! Použijte příkaz /email recovery [email] pro vygenerování nového.'
+recovery_code_incorrect: 'Obnovovací kód není správný! Počet zbývajících pokusů: %count.'
 recovery_tries_exceeded: 'Překročil(a) jsi počet pokusů pro vložení kódu. Použij "/email recovery [email]" pro vygenerování nového.'
 recovery_code_correct: 'Obnovovací kód zadán správně!!'
 recovery_change_password: 'Prosíme, použijte příkaz /email setpassword <nové heslo> pro změnu hesla okamžitě.'
