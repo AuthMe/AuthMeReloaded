@@ -46,7 +46,7 @@ public class ShowEmailCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(commandService).send(sender, MessageKey.EMAIL_SHOW, CURRENT_EMAIL);
+        verify(commandService).send(sender, MessageKey.EMAIL_SHOW, "my.*****@***ple.com");
     }
 
     @Test

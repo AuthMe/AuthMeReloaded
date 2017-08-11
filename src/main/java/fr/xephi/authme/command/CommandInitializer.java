@@ -456,6 +456,7 @@ public class CommandInitializer {
             .labels("show", "myemail")
             .description("Show Email")
             .detailedDescription("Show your current email address.")
+            .permission(PlayerPermission.SEE_EMAIL)
             .executableCommand(ShowEmailCommand.class)
             .register();
 

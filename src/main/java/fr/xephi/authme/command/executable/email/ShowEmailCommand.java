@@ -26,9 +26,18 @@ public class ShowEmailCommand extends PlayerCommand {
     public void runCommand(Player player, List<String> arguments) {
         PlayerAuth auth = playerCache.getAuth(player.getName());
         if (auth != null && !Utils.isEmailEmpty(auth.getEmail())) {
-            commonService.send(player, MessageKey.EMAIL_SHOW, auth.getEmail());
+            commonService.send(player, MessageKey.EMAIL_SHOW, emailMask(auth.getEmail()));
         } else {
             commonService.send(player, MessageKey.SHOW_NO_EMAIL);
         }
+    }
+
+    private String emailMask(String email){
+        String[] frag = email.split("@");   //Split id and domain
+        int sid = frag[0].length() / 3 + 1;     //Define the id view
+        int sdomain = frag[1].length() / 3 + 1;   //Define the domain view
+        String id = frag[0].substring(0, sid) + "*****";  //Build the id
+        String domain = "***" + frag[1].substring(sdomain, frag[1].length());  //Build the domain
+        return id + "@" + domain;
     }
 }
