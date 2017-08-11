@@ -132,6 +132,15 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> EMAIL_RECOVERY_COOLDOWN_SECONDS =
         newProperty("Security.emailRecovery.cooldown", 60);
 
+    @Comment({
+        "The maill showed using /email show will be partially hidden",
+        "E.g. (if enabled)",
+        " original email: myemail@domain.com",
+        " hidden email: mye***@***in.com"
+    })
+    public static final Property<Boolean> EMAIL_PRIVACY =
+        newProperty("Security.privacy.email", false);
+
     private SecuritySettings() {
     }
 

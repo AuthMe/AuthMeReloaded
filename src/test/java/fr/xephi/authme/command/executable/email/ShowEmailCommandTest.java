@@ -4,6 +4,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,9 @@ public class ShowEmailCommandTest {
     private ShowEmailCommand command;
 
     @Mock
+    private Settings settings;
+
+    @Mock
     private CommonService commandService;
 
     @Mock
@@ -41,12 +46,28 @@ public class ShowEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
         given(playerCache.getAuth(USERNAME)).willReturn(newAuthWithEmail(CURRENT_EMAIL));
+        given(settings.getProperty(SecuritySettings.EMAIL_PRIVACY)).willReturn(false);
 
         // when
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(commandService).send(sender, MessageKey.EMAIL_SHOW, "my.*****@***ple.com");
+        verify(commandService).send(sender, MessageKey.EMAIL_SHOW, CURRENT_EMAIL);
+    }
+
+    @Test
+    public void shouldShowHiddenEmailMessage() {
+        // given
+        Player sender = mock(Player.class);
+        given(sender.getName()).willReturn(USERNAME);
+        given(playerCache.getAuth(USERNAME)).willReturn(newAuthWithEmail(CURRENT_EMAIL));
+        given(settings.getProperty(SecuritySettings.EMAIL_PRIVACY)).willReturn(true);
+
+        // when
+        command.executeCommand(sender, Collections.emptyList());
+
+        // then
+        verify(commandService).send(sender, MessageKey.EMAIL_SHOW, "my.***@***mple.com");
     }
 
     @Test
