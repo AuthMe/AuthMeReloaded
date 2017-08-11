@@ -1,8 +1,8 @@
 package fr.xephi.authme.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
-import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.datasource.sqlextensions.SqlExtension;
+import fr.xephi.authme.datasource.sqlextensions.SqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 
 import java.lang.reflect.Method;
@@ -25,8 +25,8 @@ public class MySqlResourceClosingTest extends AbstractSqlDataSourceResourceClosi
     protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {
         HikariDataSource hikariDataSource = mock(HikariDataSource.class);
         given(hikariDataSource.getConnection()).willReturn(connection);
-        MySqlExtensionsFactory extensionsFactory = mock(MySqlExtensionsFactory.class);
-        given(extensionsFactory.buildExtension(any(Columns.class))).willReturn(mock(MySqlExtension.class));
+        SqlExtensionsFactory extensionsFactory = mock(SqlExtensionsFactory.class);
+        given(extensionsFactory.buildExtension(any(Columns.class))).willReturn(mock(SqlExtension.class));
         return new MySQL(settings, hikariDataSource, extensionsFactory);
     }
 

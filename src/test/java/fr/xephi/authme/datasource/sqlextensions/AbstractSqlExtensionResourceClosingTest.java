@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.mysqlextensions;
+package fr.xephi.authme.datasource.sqlextensions;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.AbstractResourceClosingTest;
@@ -16,14 +16,14 @@ import java.util.stream.Collectors;
 import static org.mockito.Mockito.mock;
 
 /**
- * Checks that SQL resources are closed properly in {@link MySqlExtension} implementations.
+ * Checks that SQL resources are closed properly in {@link SqlExtension} implementations.
  */
-public abstract class AbstractMySqlExtensionResourceClosingTest extends AbstractResourceClosingTest {
+public abstract class AbstractSqlExtensionResourceClosingTest extends AbstractResourceClosingTest {
 
     private static Settings settings;
     private static Columns columns;
 
-    public AbstractMySqlExtensionResourceClosingTest(Method method, String name) {
+    public AbstractSqlExtensionResourceClosingTest(Method method, String name) {
         super(method, name);
     }
 
@@ -35,15 +35,15 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
     }
 
     @Override
-    protected MySqlExtension getObjectUnderTest() {
+    protected SqlExtension getObjectUnderTest() {
         return createExtension(settings, columns);
     }
 
-    protected abstract MySqlExtension createExtension(Settings settings, Columns columns);
+    protected abstract SqlExtension createExtension(Settings settings, Columns columns);
 
     @Parameterized.Parameters(name = "{1}")
     public static List<Object[]> createParameters() {
-        return Arrays.stream(MySqlExtension.class.getDeclaredMethods())
+        return Arrays.stream(SqlExtension.class.getDeclaredMethods())
             .filter(m -> Modifier.isPublic(m.getModifiers()))
             .map(m -> new Object[]{m, m.getName()})
             .collect(Collectors.toList());

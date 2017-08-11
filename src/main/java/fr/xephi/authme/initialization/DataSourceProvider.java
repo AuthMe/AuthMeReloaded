@@ -6,10 +6,11 @@ import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.MsSQL;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.datasource.converter.ForceFlatToSqlite;
-import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.datasource.sqlextensions.SqlExtensionsFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -38,7 +39,7 @@ public class DataSourceProvider implements Provider<DataSource> {
     @Inject
     private PlayerCache playerCache;
     @Inject
-    private MySqlExtensionsFactory mySqlExtensionsFactory;
+    private SqlExtensionsFactory mySqlExtensionsFactory;
 
     DataSourceProvider() {
     }
@@ -71,6 +72,9 @@ public class DataSourceProvider implements Provider<DataSource> {
                 break;
             case MYSQL:
                 dataSource = new MySQL(settings, mySqlExtensionsFactory);
+                break;
+            case MSSQL:
+                dataSource = new MsSQL(settings, mySqlExtensionsFactory);
                 break;
             case SQLITE:
                 dataSource = new SQLite(settings);

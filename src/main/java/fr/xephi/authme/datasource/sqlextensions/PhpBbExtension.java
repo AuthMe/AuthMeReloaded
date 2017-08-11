@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.mysqlextensions;
+package fr.xephi.authme.datasource.sqlextensions;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
@@ -13,7 +13,7 @@ import java.util.OptionalInt;
 /**
  * Extensions for phpBB when MySQL is used as data source.
  */
-class PhpBbExtension extends MySqlExtension {
+class PhpBbExtension extends SqlExtension {
 
     private final String phpBbPrefix;
     private final int phpBbGroup;

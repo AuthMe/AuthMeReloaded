@@ -177,6 +177,18 @@
                             <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>mssql</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.mssql</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.microsoft.sqlserver</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.microsoft.sqlserver</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>microsoft.sql</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.microsoft.sql</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>org.slf4j</pattern>
                             <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
                         </relocation>
@@ -379,11 +391,22 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- MsSQL driver -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>6.3.0.jre8-preview</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!-- PBKDF2 implementation -->
         <dependency>
             <groupId>de.rtner</groupId>
             <artifactId>PBKDF2</artifactId>
             <version>1.1.2</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- Spigot API, http://www.spigotmc.org/ -->
@@ -423,6 +446,8 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.0</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- ProtocolLib -->
