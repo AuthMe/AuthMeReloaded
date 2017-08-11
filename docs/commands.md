@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Apr 29 18:27:38 CEST 2017. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Fri Aug 11 04:37:25 CEST 2017. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -47,13 +47,27 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/authme reload**: Reload the AuthMeReloaded plugin.
   <br />Requires `authme.admin.reload`
 - **/authme version**: Show detailed information about the installed AuthMeReloaded version, the developers, contributors, and license.
-- **/authme converter** &lt;job>: Converter command for AuthMeReloaded.
+- **/authme converter** [job]: Converter command for AuthMeReloaded.
   <br />Requires `authme.admin.converter`
 - **/authme messages**: Adds missing messages to the current messages file.
   <br />Requires `authme.admin.updatemessages`
 - **/authme debug** [child] [arg] [arg]: Allows various operations for debugging.
   <br />Requires `authme.debug.command`
 - **/authme help** [query]: View detailed help for /authme commands.
+- **/email**: The AuthMeReloaded email command base.
+- **/email show**: Show your current email address.
+  <br />Requires `authme.player.email.see`
+- **/email add** &lt;email> &lt;verifyEmail>: Add a new email address to your account.
+  <br />Requires `authme.player.email.add`
+- **/email change** &lt;oldEmail> &lt;newEmail>: Change an email address of your account.
+  <br />Requires `authme.player.email.change`
+- **/email recover** &lt;email>: Recover your account using an Email address by sending a mail containing a new password.
+  <br />Requires `authme.player.email.recover`
+- **/email code** &lt;code>: Recover your account by submitting a code delivered to your email.
+  <br />Requires `authme.player.email.recover`
+- **/email setpassword** &lt;password>: Set a new password after successfully recovering your account.
+  <br />Requires `authme.player.email.recover`
+- **/email help** [query]: View detailed help for /email commands.
 - **/login** &lt;password>: Command to log in using AuthMeReloaded.
   <br />Requires `authme.player.login`
 - **/login help** [query]: View detailed help for /login commands.
@@ -69,19 +83,6 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/changepassword** &lt;oldPassword> &lt;newPassword>: Command to change your password using AuthMeReloaded.
   <br />Requires `authme.player.changepassword`
 - **/changepassword help** [query]: View detailed help for /changepassword commands.
-- **/email**: The AuthMeReloaded email command base.
-- **/email show**: Show your current email address.
-- **/email add** &lt;email> &lt;verifyEmail>: Add a new email address to your account.
-  <br />Requires `authme.player.email.add`
-- **/email change** &lt;oldEmail> &lt;newEmail>: Change an email address of your account.
-  <br />Requires `authme.player.email.change`
-- **/email recover** &lt;email>: Recover your account using an Email address by sending a mail containing a new password.
-  <br />Requires `authme.player.email.recover`
-- **/email code** &lt;code>: Recover your account by submitting a code delivered to your email.
-  <br />Requires `authme.player.email.recover`
-- **/email setpassword** &lt;password>: Set a new password after successfully recovering your account.
-  <br />Requires `authme.player.email.recover`
-- **/email help** [query]: View detailed help for /email commands.
 - **/captcha** &lt;captcha>: Captcha command for AuthMeReloaded.
   <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help for /captcha commands.
@@ -89,4 +90,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Apr 29 18:27:38 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Aug 11 04:37:25 CEST 2017

@@ -37,7 +37,7 @@ public class ShowEmailCommand extends PlayerCommand {
         int sid = frag[0].length() / 3 + 1;     //Define the id view
         int sdomain = frag[1].length() / 3 + 1;   //Define the domain view
         String id = frag[0].substring(0, sid) + "*****";  //Build the id
-        String domain = "***" + frag[1].substring(sdomain, frag[1].length());  //Build the domain
+        String domain = "***" + frag[1].substring(sdomain);  //Build the domain
         return id + "@" + domain;
     }
 }
