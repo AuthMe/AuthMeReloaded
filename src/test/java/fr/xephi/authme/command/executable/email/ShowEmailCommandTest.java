@@ -32,10 +32,7 @@ public class ShowEmailCommandTest {
     private ShowEmailCommand command;
 
     @Mock
-    private Settings settings;
-
-    @Mock
-    private CommonService commandService;
+    private CommonService commonService;
 
     @Mock
     private PlayerCache playerCache;
@@ -46,13 +43,13 @@ public class ShowEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
         given(playerCache.getAuth(USERNAME)).willReturn(newAuthWithEmail(CURRENT_EMAIL));
-        given(settings.getProperty(SecuritySettings.EMAIL_PRIVACY)).willReturn(false);
+        given(commonService.getProperty(SecuritySettings.USE_EMAIL_MASKING)).willReturn(false);
 
         // when
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(commandService).send(sender, MessageKey.EMAIL_SHOW, CURRENT_EMAIL);
+        verify(commonService).send(sender, MessageKey.EMAIL_SHOW, CURRENT_EMAIL);
     }
 
     @Test
@@ -61,13 +58,13 @@ public class ShowEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
         given(playerCache.getAuth(USERNAME)).willReturn(newAuthWithEmail(CURRENT_EMAIL));
-        given(settings.getProperty(SecuritySettings.EMAIL_PRIVACY)).willReturn(true);
+        given(commonService.getProperty(SecuritySettings.USE_EMAIL_MASKING)).willReturn(true);
 
         // when
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(commandService).send(sender, MessageKey.EMAIL_SHOW, "my.***@***mple.com");
+        verify(commonService).send(sender, MessageKey.EMAIL_SHOW, "my.***@***mple.com");
     }
 
     @Test
@@ -81,7 +78,7 @@ public class ShowEmailCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(commandService).send(sender, MessageKey.SHOW_NO_EMAIL);
+        verify(commonService).send(sender, MessageKey.SHOW_NO_EMAIL);
     }
 
     private static PlayerAuth newAuthWithEmail(String email) {

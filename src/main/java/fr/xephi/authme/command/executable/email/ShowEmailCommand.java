@@ -19,9 +19,6 @@ import java.util.List;
 public class ShowEmailCommand extends PlayerCommand {
 
     @Inject
-    private Settings settings;
-
-    @Inject
     private CommonService commonService;
 
     @Inject
@@ -31,7 +28,7 @@ public class ShowEmailCommand extends PlayerCommand {
     public void runCommand(Player player, List<String> arguments) {
         PlayerAuth auth = playerCache.getAuth(player.getName());
         if (auth != null && !Utils.isEmailEmpty(auth.getEmail())) {
-            if(settings.getProperty(SecuritySettings.EMAIL_PRIVACY)){
+            if(commonService.getProperty(SecuritySettings.USE_EMAIL_MASKING)){
                 commonService.send(player, MessageKey.EMAIL_SHOW, emailMask(auth.getEmail()));
             } else {
                 commonService.send(player, MessageKey.EMAIL_SHOW, auth.getEmail());
