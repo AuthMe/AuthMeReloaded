@@ -18,6 +18,9 @@ commands:
   authme:
     description: AuthMe op commands
     usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
+  email:
+    description: Add email or recover password
+    usage: /email show|add|change|recover|code|setpassword
   login:
     description: Login command
     usage: /login <password>
@@ -43,9 +46,6 @@ commands:
     aliases:
     - changepass
     - cp
-  email:
-    description: Add email or recover password
-    usage: /email show|add|change|recover|code|setpassword
   captcha:
     description: Captcha Command
     usage: /captcha <captcha>
@@ -213,6 +213,7 @@ permissions:
       authme.player.email.add: true
       authme.player.email.change: true
       authme.player.email.recover: true
+      authme.player.email.see: true
       authme.player.login: true
       authme.player.logout: true
       authme.player.register: true
@@ -233,6 +234,7 @@ permissions:
       authme.player.email.add: true
       authme.player.email.change: true
       authme.player.email.recover: true
+      authme.player.email.see: true
   authme.player.email.add:
     description: Command permission to add an email address.
     default: true
@@ -241,6 +243,9 @@ permissions:
     default: true
   authme.player.email.recover:
     description: Command permission to recover an account using its email address.
+    default: true
+  authme.player.email.see:
+    description: Command permission to see the own email address.
     default: true
   authme.player.login:
     description: Command permission to login.
@@ -258,5 +263,6 @@ permissions:
     description: Command permission to unregister.
     default: true
   authme.vip:
-    description: When the server is full and someone with this permission joins the server, someone will be kicked.
+    description: When the server is full and someone with this permission joins the
+      server, someone will be kicked.
     default: op

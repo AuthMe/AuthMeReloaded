@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Apr 29 18:27:41 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sat Aug 12 13:42:15 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -51,6 +51,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.player.email.add** – Command permission to add an email address.
 - **authme.player.email.change** – Command permission to change the email address.
 - **authme.player.email.recover** – Command permission to recover an account using its email address.
+- **authme.player.email.see** – Command permission to see the own email address.
 - **authme.player.login** – Command permission to login.
 - **authme.player.logout** – Command permission to logout.
 - **authme.player.register** – Command permission to register.
@@ -61,4 +62,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Apr 29 18:27:41 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Aug 12 13:42:15 CEST 2017

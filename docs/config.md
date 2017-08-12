@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Jul 15 19:32:28 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Aug 12 13:49:42 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -457,6 +457,12 @@ Security:
         # Seconds a user has to wait for before a password recovery mail may be sent again
         # This prevents an attacker from abusing AuthMe's email feature.
         cooldown: 60
+    privacy:
+        # The maill shown using /email show will be partially hidden
+        # E.g. (if enabled)
+        #  original email: my.email@example.com
+        #  hidden email: my.***@***mple.com
+        enableEmailMasking: false
 # Before a user logs in, various properties are temporarily removed from the player,
 # such as OP status, ability to fly, and walk/fly speed.
 # Once the user is logged in, we add back the properties we previously saved.
@@ -534,4 +540,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Jul 15 19:32:28 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Aug 12 13:49:42 CEST 2017
