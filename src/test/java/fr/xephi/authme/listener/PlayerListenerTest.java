@@ -47,7 +47,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -554,12 +554,12 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldPerformAllJoinVerificationsSuccessfully() throws FailedVerificationException {
+    public void shouldPerformAllJoinVerificationsSuccessfully() throws FailedVerificationException, UnknownHostException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
-        String ip = "12.34.56.78";
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", mockAddrWithIp(ip)));
+
+        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
@@ -576,7 +576,7 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).checkAntibot(player, true);
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkNameCasing(player, auth);
-        verify(onJoinVerifier).checkPlayerCountry(true, ip);
+        verify(onJoinVerifier).checkPlayerCountry(player, true);
         verify(teleportationService).teleportOnJoin(player);
         verifyNoModifyingCalls(event);
     }
@@ -883,11 +883,4 @@ public class PlayerListenerTest {
         verify(event, atLeast(0)).getAddress();
         verifyNoMoreInteractions(event);
     }
-
-    private static InetAddress mockAddrWithIp(String ip) {
-        InetAddress addr = mock(InetAddress.class);
-        given(addr.getHostAddress()).willReturn(ip);
-        return addr;
-    }
-
 }

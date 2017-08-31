@@ -154,6 +154,9 @@ permissions:
   authme.bypassantibot:
     description: Permission node to bypass AntiBot protection.
     default: op
+  authme.bypasscountrycheck:
+    description: Permission to use to see own other accounts.
+    default: false
   authme.bypassforcesurvival:
     description: Permission for users to bypass force-survival mode.
     default: op
