@@ -47,9 +47,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -556,13 +554,11 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldPerformAllJoinVerificationsSuccessfully() throws FailedVerificationException {
+    public void shouldPerformAllJoinVerificationsSuccessfully() throws FailedVerificationException, UnknownHostException {
         // given
         String name = "someone";
-        String ip = "12.34.56.78";
         Player player = mockPlayerWithName(name);
-        InetSocketAddress address = mockAddrWithIp(ip);
-        given(player.getAddress()).willReturn(address);
+
         PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
@@ -887,13 +883,4 @@ public class PlayerListenerTest {
         verify(event, atLeast(0)).getAddress();
         verifyNoMoreInteractions(event);
     }
-
-    private static InetSocketAddress mockAddrWithIp(String ip) {
-        InetAddress addr = mock(InetAddress.class);
-        given(addr.getHostAddress()).willReturn(ip);
-        InetSocketAddress socketAddress = mock(InetSocketAddress.class);
-        given(socketAddress.getAddress()).willReturn(addr);
-        return socketAddress;
-    }
-
 }
