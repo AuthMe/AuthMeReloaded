@@ -39,7 +39,7 @@ public class PermissionsSystemTypeTest {
     @Test
     public void shouldRecognizePermissionSystemType() {
         assertThat(PermissionsSystemType.isPermissionSystem("bogus"), equalTo(false));
-        assertThat(PermissionsSystemType.isPermissionSystem("PermissionsBukkit"), equalTo(true));
+        assertThat(PermissionsSystemType.isPermissionSystem("PermissionsEx"), equalTo(true));
     }
 
 }

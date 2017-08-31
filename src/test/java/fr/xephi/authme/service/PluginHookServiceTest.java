@@ -178,7 +178,6 @@ public class PluginHookServiceTest {
         // then
         assertThat(pluginHookService.isEssentialsAvailable(), equalTo(false));
         assertThat(pluginHookService.isMultiverseAvailable(), equalTo(false));
-        assertThat(pluginHookService.isCombatTagPlusAvailable(), equalTo(false));
     }
 
     @Test

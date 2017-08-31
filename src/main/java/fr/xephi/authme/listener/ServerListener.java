@@ -43,9 +43,6 @@ public class ServerListener implements Listener {
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookMultiverse();
             ConsoleLogger.info("Multiverse-Core has been disabled: unhooking");
-        } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
-            pluginHookService.unhookCombatPlus();
-            ConsoleLogger.info("CombatTagPlus has been disabled: unhooking");
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.unloadEssentialsSpawn();
             ConsoleLogger.info("EssentialsSpawn has been disabled: unhooking");
@@ -71,8 +68,6 @@ public class ServerListener implements Listener {
             pluginHookService.tryHookToEssentials();
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
             pluginHookService.tryHookToMultiverse();
-        } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
-            pluginHookService.tryHookToCombatPlus();
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.loadEssentialsSpawn();
         } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {

@@ -5,6 +5,7 @@ import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import com.google.common.io.Files;
 import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -115,7 +116,7 @@ public class AuthMeInitializationTest {
         assertThat(injector.getIfAvailable(BlockListener.class), not(nullValue()));
         assertThat(injector.getIfAvailable(CommandHandler.class), not(nullValue()));
         assertThat(injector.getIfAvailable(Management.class), not(nullValue()));
-        assertThat(injector.getIfAvailable(NewAPI.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(AuthMeApi.class), not(nullValue()));
         assertThat(injector.getIfAvailable(PasswordSecurity.class), not(nullValue()));
         assertThat(injector.getIfAvailable(PermissionsManager.class), not(nullValue()));
         assertThat(injector.getIfAvailable(ProcessSyncPlayerLogin.class), not(nullValue()));

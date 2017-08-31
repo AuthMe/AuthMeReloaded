@@ -32,7 +32,6 @@ public class ServerListenerTest {
     private static final String ESSENTIALS = "Essentials";
     private static final String ESSENTIALS_SPAWN = "EssentialsSpawn";
     private static final String MULTIVERSE = "Multiverse-Core";
-    private static final String COMBAT_TAG = "CombatTagPlus";
     private static final String PROTOCOL_LIB = "ProtocolLib";
 
     @InjectMocks
@@ -60,7 +59,6 @@ public class ServerListenerTest {
         checkEnableHandling(ESSENTIALS,       () -> verify(pluginHookService).tryHookToEssentials());
         checkEnableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).loadEssentialsSpawn());
         checkEnableHandling(MULTIVERSE,       () -> verify(pluginHookService).tryHookToMultiverse());
-        checkEnableHandling(COMBAT_TAG,       () -> verify(pluginHookService).tryHookToCombatPlus());
         checkEnableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).setup());
         checkEnableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
     }
@@ -70,7 +68,6 @@ public class ServerListenerTest {
         checkDisableHandling(ESSENTIALS,       () -> verify(pluginHookService).unhookEssentials());
         checkDisableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).unloadEssentialsSpawn());
         checkDisableHandling(MULTIVERSE,       () -> verify(pluginHookService).unhookMultiverse());
-        checkDisableHandling(COMBAT_TAG,       () -> verify(pluginHookService).unhookCombatPlus());
         checkDisableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).disable());
         checkDisableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
     }

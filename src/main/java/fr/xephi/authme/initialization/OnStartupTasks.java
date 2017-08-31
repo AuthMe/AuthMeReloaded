@@ -17,7 +17,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.logging.log4j.LogManager;
-import org.bstats.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -53,19 +53,8 @@ public class OnStartupTasks {
     public static void sendMetrics(AuthMe plugin, Settings settings) {
         final Metrics metrics = new Metrics(plugin);
 
-        metrics.addCustomChart(new Metrics.SimplePie("messages_language") {
-            @Override
-            public String getValue() {
-                return settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
-            }
-        });
-
-        metrics.addCustomChart(new Metrics.SimplePie("database_backend") {
-            @Override
-            public String getValue() {
-                return settings.getProperty(DatabaseSettings.BACKEND).toString();
-            }
-        });
+        metrics.addCustomChart(new Metrics.SimplePie("messages_language", () -> settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)));
+        metrics.addCustomChart(new Metrics.SimplePie("database_backend", () -> settings.getProperty(DatabaseSettings.BACKEND).toString()));
     }
 
     /**
@@ -103,14 +92,11 @@ public class OnStartupTasks {
         if (!settings.getProperty(RECALL_PLAYERS)) {
             return;
         }
-        bukkitService.runTaskTimerAsynchronously(new Runnable() {
-            @Override
-            public void run() {
-                for (String playerWithoutMail : dataSource.getLoggedPlayersWithEmptyMail()) {
-                    Player player = bukkitService.getPlayerExact(playerWithoutMail);
-                    if (player != null) {
-                        messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
-                    }
+        bukkitService.runTaskTimerAsynchronously(() -> {
+            for (String playerWithoutMail : dataSource.getLoggedPlayersWithEmptyMail()) {
+                Player player = bukkitService.getPlayerExact(playerWithoutMail);
+                if (player != null) {
+                    messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
                 }
             }
         }, 1, TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));

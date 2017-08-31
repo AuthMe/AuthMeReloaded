@@ -5,7 +5,6 @@ import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import fr.xephi.authme.ConsoleLogger;
-import net.minelink.ctplus.CombatTagPlus;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -24,7 +23,6 @@ public class PluginHookService {
     private final PluginManager pluginManager;
     private Essentials essentials;
     private MultiverseCore multiverse;
-    private CombatTagPlus combatTagPlus;
 
     /**
      * Constructor.
@@ -34,7 +32,6 @@ public class PluginHookService {
     @Inject
     public PluginHookService(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
-        tryHookToCombatPlus();
         tryHookToEssentials();
         tryHookToMultiverse();
     }
@@ -86,17 +83,7 @@ public class PluginHookService {
      * @return True if player is NPC, false otherwise
      */
     public boolean isNpc(Player player) {
-        return player.hasMetadata("NPC") || isNpcInCombatTagPlus(player);
-    }
-
-    /**
-     * Queries the CombatTagPlus plugin whether the given player is an NPC.
-     *
-     * @param player The player to verify
-     * @return True if the player is an NPC according to CombatTagPlus, false if not or if the plugin is unavailable
-     */
-    private boolean isNpcInCombatTagPlus(Player player) {
-        return combatTagPlus != null && combatTagPlus.getNpcPlayerHelper().isNpc(player);
+        return player.hasMetadata("NPC");
     }
 
 
@@ -117,13 +104,6 @@ public class PluginHookService {
         return multiverse != null;
     }
 
-    /**
-     * @return true if we have a hook to CombatTagPlus, false otherwise
-     */
-    public boolean isCombatTagPlusAvailable() {
-        return combatTagPlus != null;
-    }
-
     // ------
     // Hook methods
     // ------
@@ -136,17 +116,6 @@ public class PluginHookService {
             essentials = getPlugin(pluginManager, "Essentials", Essentials.class);
         } catch (Exception | NoClassDefFoundError ignored) {
             essentials = null;
-        }
-    }
-
-    /**
-     * Attempts to create a hook into CombatTagPlus.
-     */
-    public void tryHookToCombatPlus() {
-        try {
-            combatTagPlus = getPlugin(pluginManager, "CombatTagPlus", CombatTagPlus.class);
-        } catch (Exception | NoClassDefFoundError ignored) {
-            combatTagPlus = null;
         }
     }
 
@@ -169,13 +138,6 @@ public class PluginHookService {
      */
     public void unhookEssentials() {
         essentials = null;
-    }
-
-    /**
-     * Unhooks from CombatTagPlus.
-     */
-    public void unhookCombatPlus() {
-        combatTagPlus = null;
     }
 
     /**

@@ -11,11 +11,6 @@ public enum PermissionsSystemType {
     PERMISSIONS_EX("PermissionsEx", "PermissionsEx"),
 
     /**
-     * Permissions Bukkit.
-     */
-    PERMISSIONS_BUKKIT("Permissions Bukkit", "PermissionsBukkit"),
-
-    /**
      * bPermissions.
      */
     B_PERMISSIONS("bPermissions", "bPermissions"),

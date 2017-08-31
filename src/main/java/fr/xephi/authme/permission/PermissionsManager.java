@@ -5,7 +5,6 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandlerException;
-import fr.xephi.authme.permission.handlers.PermissionsBukkitHandler;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
@@ -120,8 +119,6 @@ public class PermissionsManager implements Reloadable {
                 return new VaultHandler(server);
             case B_PERMISSIONS:
                 return new BPermissionsHandler();
-            case PERMISSIONS_BUKKIT:
-                return new PermissionsBukkitHandler(pluginManager);
             default:
                 throw new IllegalStateException("Unhandled permission type '" + type + "'");
         }
