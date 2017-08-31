@@ -47,7 +47,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -557,9 +559,11 @@ public class PlayerListenerTest {
     public void shouldPerformAllJoinVerificationsSuccessfully() throws FailedVerificationException {
         // given
         String name = "someone";
-        Player player = mockPlayerWithName(name);
         String ip = "12.34.56.78";
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", mockAddrWithIp(ip)));
+        Player player = mockPlayerWithName(name);
+        InetSocketAddress address = mockAddrWithIp(ip);
+        given(player.getAddress()).willReturn(address);
+        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
@@ -576,7 +580,7 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).checkAntibot(player, true);
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkNameCasing(player, auth);
-        verify(onJoinVerifier).checkPlayerCountry(true, ip);
+        verify(onJoinVerifier).checkPlayerCountry(player, true);
         verify(teleportationService).teleportOnJoin(player);
         verifyNoModifyingCalls(event);
     }
@@ -884,10 +888,12 @@ public class PlayerListenerTest {
         verifyNoMoreInteractions(event);
     }
 
-    private static InetAddress mockAddrWithIp(String ip) {
+    private static InetSocketAddress mockAddrWithIp(String ip) {
         InetAddress addr = mock(InetAddress.class);
         given(addr.getHostAddress()).willReturn(ip);
-        return addr;
+        InetSocketAddress socketAddress = mock(InetSocketAddress.class);
+        given(socketAddress.getAddress()).willReturn(addr);
+        return socketAddress;
     }
 
 }

@@ -29,7 +29,12 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * Permission to bypass the purging process.
      */
-    BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED);
+    BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED),
+
+    /**
+     * Permission to use to see own other accounts.
+     */
+    BYPASS_COUNTRY_CHECK("authme.bypasscountrycheck", DefaultPermission.NOT_ALLOWED);
 
     /**
      * The permission node.
