@@ -12,6 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -154,7 +155,10 @@ public class PurgeTaskTest {
         given(sender.getUniqueId()).willReturn(uuid);
         PurgeTask task = new PurgeTask(purgeService, permissionsManager, sender, names, new OfflinePlayer[0]);
 
-        ReflectionTestUtils.setField(BukkitRunnable.class, task, "taskId", 10049);
+        BukkitTask bukkitTask = mock(BukkitTask.class);
+        given(bukkitTask.getTaskId()).willReturn(10049);
+        ReflectionTestUtils.setField(BukkitRunnable.class, task, "task", bukkitTask);
+
         Server server = mock(Server.class);
         BukkitScheduler scheduler = mock(BukkitScheduler.class);
         given(server.getScheduler()).willReturn(scheduler);
@@ -177,7 +181,10 @@ public class PurgeTaskTest {
         Set<String> names = newHashSet("name1", "name2");
         PurgeTask task = new PurgeTask(purgeService, permissionsManager, null, names, new OfflinePlayer[0]);
 
-        ReflectionTestUtils.setField(BukkitRunnable.class, task, "taskId", 10049);
+        BukkitTask bukkitTask = mock(BukkitTask.class);
+        given(bukkitTask.getTaskId()).willReturn(10049);
+        ReflectionTestUtils.setField(BukkitRunnable.class, task, "task", bukkitTask);
+
         Server server = mock(Server.class);
         BukkitScheduler scheduler = mock(BukkitScheduler.class);
         given(server.getScheduler()).willReturn(scheduler);
