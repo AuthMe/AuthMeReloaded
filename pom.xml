@@ -378,6 +378,8 @@
             <groupId>de.rtner</groupId>
             <artifactId>PBKDF2</artifactId>
             <version>1.1.2</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- Spigot API, http://www.spigotmc.org/ -->
@@ -417,6 +419,8 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.2</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- ProtocolLib -->
