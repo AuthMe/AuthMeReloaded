@@ -42,7 +42,7 @@ public class VaultHandler implements PermissionHandler {
 
     @Override
     public boolean addToGroup(Player player, String group) {
-        return vaultProvider.playerAddGroup(player, group);
+        return vaultProvider.playerAddGroup(null, player, group);
     }
 
     @Override
@@ -52,17 +52,17 @@ public class VaultHandler implements PermissionHandler {
 
     @Override
     public boolean hasPermissionOffline(String name, PermissionNode node) {
-        return vaultProvider.has("", name, node.getNode());
+        return vaultProvider.has((String) null, name, node.getNode());
     }
 
     @Override
     public boolean isInGroup(Player player, String group) {
-        return vaultProvider.playerInGroup(player, group);
+        return vaultProvider.playerInGroup(null, player, group);
     }
 
     @Override
     public boolean removeFromGroup(Player player, String group) {
-        return vaultProvider.playerRemoveGroup(player, group);
+        return vaultProvider.playerRemoveGroup(null, player, group);
     }
 
     @Override
@@ -71,17 +71,17 @@ public class VaultHandler implements PermissionHandler {
             removeFromGroup(player, groupName);
         }
 
-        return vaultProvider.playerAddGroup(player, group);
+        return vaultProvider.playerAddGroup(null, player, group);
     }
 
     @Override
     public List<String> getGroups(Player player) {
-        return Arrays.asList(vaultProvider.getPlayerGroups(player));
+        return Arrays.asList(vaultProvider.getPlayerGroups(null, player));
     }
 
     @Override
     public String getPrimaryGroup(Player player) {
-        return vaultProvider.getPrimaryGroup(player);
+        return vaultProvider.getPrimaryGroup(null, player);
     }
 
     @Override
