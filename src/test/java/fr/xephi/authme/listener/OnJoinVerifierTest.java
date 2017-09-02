@@ -439,7 +439,8 @@ public class OnJoinVerifierTest {
      */
     @Test
     public void shouldNotCheckCountry() throws FailedVerificationException {
-        Player player = newPlayerWithAddress("127.0.0.1");
+        Player player = newPlayerWithName("david");
+        TestHelper.mockPlayerIp(player, "127.0.0.1");
 
         // protection setting disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(false);
@@ -457,7 +458,8 @@ public class OnJoinVerifierTest {
     public void shouldCheckAndAcceptUnregisteredPlayerCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.0.1";
-        Player player = newPlayerWithAddress(ip);
+        Player player = newPlayerWithName("lucas");
+        TestHelper.mockPlayerIp(player, ip);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
@@ -472,7 +474,8 @@ public class OnJoinVerifierTest {
     public void shouldCheckAndAcceptRegisteredPlayerCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.10.24";
-        Player player = newPlayerWithAddress(ip);
+        Player player = newPlayerWithName("gabriel");
+        TestHelper.mockPlayerIp(player, ip);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
@@ -488,7 +491,8 @@ public class OnJoinVerifierTest {
     public void shouldThrowForBannedCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.40.0";
-        Player player = newPlayerWithAddress(ip);
+        Player player = newPlayerWithName("bob");
+        TestHelper.mockPlayerIp(player, ip);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(false);
 
@@ -502,12 +506,6 @@ public class OnJoinVerifierTest {
     private static Player newPlayerWithName(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        return player;
-    }
-
-    private static Player newPlayerWithAddress(String ip) {
-        Player player = mock(Player.class);
-        given(player.getAddress()).willReturn(new InetSocketAddress(ip, 80));
         return player;
     }
 
