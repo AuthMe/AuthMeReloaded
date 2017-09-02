@@ -32,7 +32,7 @@ public enum PlayerStatePermission implements PermissionNode {
     BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED),
 
     /**
-     * Permission to use to see own other accounts.
+     * Permission to bypass the GeoIp country code check.
      */
     BYPASS_COUNTRY_CHECK("authme.bypasscountrycheck", DefaultPermission.NOT_ALLOWED);
 
