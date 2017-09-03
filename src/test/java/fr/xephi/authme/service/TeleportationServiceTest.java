@@ -24,6 +24,7 @@ import org.mockito.stubbing.Answer;
 import java.util.Arrays;
 
 import static fr.xephi.authme.TestHelper.runSyncDelayedTask;
+import static fr.xephi.authme.TestHelper.runSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,7 +95,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportNewPlayerToFirstSpawn(player);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(player).teleport(firstSpawn);
@@ -114,7 +115,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnJoin(player);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(player).teleport(spawn);
@@ -186,7 +187,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnJoin(player);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
@@ -212,7 +213,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnJoin(player);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
@@ -253,7 +254,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(player).teleport(spawn);
@@ -300,7 +301,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
@@ -328,7 +329,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
@@ -353,7 +354,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(player).teleport(location);
@@ -375,7 +376,7 @@ public class TeleportationServiceTest {
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
-        runSyncDelayedTask(bukkitService);
+        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(player).teleport(location);
