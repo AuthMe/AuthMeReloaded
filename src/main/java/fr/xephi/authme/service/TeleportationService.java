@@ -155,7 +155,7 @@ public class TeleportationService implements Reloadable {
      * @param event  the event to emit and according to which to teleport
      */
     private void performTeleportation(final Player player, final AbstractTeleportEvent event) {
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
             @Override
             public void run() {
                 bukkitService.callEvent(event);
