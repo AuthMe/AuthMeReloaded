@@ -3,6 +3,7 @@ package fr.xephi.authme.permission.handlers;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -19,7 +20,7 @@ public interface PermissionHandler {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    boolean addToGroup(Player player, String group);
+    boolean addToGroup(OfflinePlayer player, String group);
 
     /**
      * Check whether the current permissions system has group support.
@@ -49,7 +50,7 @@ public interface PermissionHandler {
      * @return True if the player is in the specified group, false otherwise.
      *         False is also returned if groups aren't supported by the used permissions system.
      */
-    default boolean isInGroup(Player player, String group) {
+    default boolean isInGroup(OfflinePlayer player, String group) {
         return getGroups(player).contains(group);
     }
 
@@ -62,7 +63,7 @@ public interface PermissionHandler {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    boolean removeFromGroup(Player player, String group);
+    boolean removeFromGroup(OfflinePlayer player, String group);
 
     /**
      * Set the permission group of a player, if supported.
@@ -74,7 +75,7 @@ public interface PermissionHandler {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    boolean setGroup(Player player, String group);
+    boolean setGroup(OfflinePlayer player, String group);
 
     /**
      * Get the permission groups of a player, if available.
@@ -83,7 +84,7 @@ public interface PermissionHandler {
      *
      * @return Permission groups, or an empty list if this feature is not supported.
      */
-    Collection<String> getGroups(Player player);
+    Collection<String> getGroups(OfflinePlayer player);
 
     /**
      * Get the primary group of a player, if available.
@@ -92,7 +93,7 @@ public interface PermissionHandler {
      *
      * @return The name of the primary permission group. Or null.
      */
-    default String getPrimaryGroup(Player player) {
+    default String getPrimaryGroup(OfflinePlayer player) {
         Collection<String> groups = getGroups(player);
         if (Utils.isCollectionEmpty(groups)) {
             return null;

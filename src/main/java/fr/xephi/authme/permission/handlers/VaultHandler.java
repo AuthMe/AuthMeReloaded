@@ -3,8 +3,8 @@ package fr.xephi.authme.permission.handlers;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean addToGroup(Player player, String group) {
+    public boolean addToGroup(OfflinePlayer player, String group) {
         return vaultProvider.playerAddGroup(null, player, group);
     }
 
@@ -56,17 +56,17 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean isInGroup(Player player, String group) {
+    public boolean isInGroup(OfflinePlayer player, String group) {
         return vaultProvider.playerInGroup(null, player, group);
     }
 
     @Override
-    public boolean removeFromGroup(Player player, String group) {
+    public boolean removeFromGroup(OfflinePlayer player, String group) {
         return vaultProvider.playerRemoveGroup(null, player, group);
     }
 
     @Override
-    public boolean setGroup(Player player, String group) {
+    public boolean setGroup(OfflinePlayer player, String group) {
         for (String groupName : getGroups(player)) {
             removeFromGroup(player, groupName);
         }
@@ -75,12 +75,12 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
-    public List<String> getGroups(Player player) {
+    public List<String> getGroups(OfflinePlayer player) {
         return Arrays.asList(vaultProvider.getPlayerGroups(null, player));
     }
 
     @Override
-    public String getPrimaryGroup(Player player) {
+    public String getPrimaryGroup(OfflinePlayer player) {
         return vaultProvider.getPrimaryGroup(null, player);
     }
 

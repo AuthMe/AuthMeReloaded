@@ -191,15 +191,13 @@ public class PurgeExecutor {
         ConsoleLogger.info("AutoPurge: Removed " + deletedFiles + " EssentialsFiles");
     }
 
-    // TODO #676: What is this method for? Is it correct?
     synchronized void purgePermissions(Collection<OfflinePlayer> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_PERMISSIONS)) {
             return;
         }
 
         for (OfflinePlayer offlinePlayer : cleared) {
-            String name = offlinePlayer.getName();
-            permissionsManager.removeAllGroups(bukkitService.getPlayerExact(name));
+            permissionsManager.removeAllGroups(offlinePlayer);
         }
 
         ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");

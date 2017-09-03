@@ -256,7 +256,7 @@ public class PermissionsManager implements Reloadable {
      *
      * @return Permission groups, or an empty collection if this feature is not supported.
      */
-    public Collection<String> getGroups(Player player) {
+    public Collection<String> getGroups(OfflinePlayer player) {
         return isEnabled() ? handler.getGroups(player) : Collections.emptyList();
     }
 
@@ -267,7 +267,7 @@ public class PermissionsManager implements Reloadable {
      *
      * @return The name of the primary permission group. Or null.
      */
-    public String getPrimaryGroup(Player player) {
+    public String getPrimaryGroup(OfflinePlayer player) {
         return isEnabled() ? handler.getPrimaryGroup(player) : null;
     }
 
@@ -280,7 +280,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if the player is in the specified group, false otherwise.
      *         False is also returned if groups aren't supported by the used permissions system.
      */
-    public boolean isInGroup(Player player, String groupName) {
+    public boolean isInGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.isInGroup(player, groupName);
     }
 
@@ -293,7 +293,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean addGroup(Player player, String groupName) {
+    public boolean addGroup(OfflinePlayer player, String groupName) {
         if (!isEnabled() || StringUtils.isEmpty(groupName)) {
             return false;
         }
@@ -309,7 +309,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if at least one group was added, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean addGroups(Player player, Collection<String> groupNames) {
+    public boolean addGroups(OfflinePlayer player, Collection<String> groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
             return false;
@@ -336,7 +336,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroup(Player player, String groupName) {
+    public boolean removeGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.removeFromGroup(player, groupName);
     }
 
@@ -349,7 +349,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if at least one group was removed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroups(Player player, Collection<String> groupNames) {
+    public boolean removeGroups(OfflinePlayer player, Collection<String> groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
             return false;
@@ -377,7 +377,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean setGroup(Player player, String groupName) {
+    public boolean setGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.setGroup(player, groupName);
     }
 
@@ -391,7 +391,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      *         False will also be returned if this feature isn't supported for the used permissions system.
      */
-    public boolean removeAllGroups(Player player) {
+    public boolean removeAllGroups(OfflinePlayer player) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
             return false;

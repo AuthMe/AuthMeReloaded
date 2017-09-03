@@ -2,6 +2,7 @@ package fr.xephi.authme.permission.handlers;
 
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
@@ -28,12 +29,12 @@ public class PermissionsExHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean addToGroup(Player player, String group) {
+    public boolean addToGroup(OfflinePlayer player, String group) {
         if (!PermissionsEx.getPermissionManager().getGroupNames().contains(group)) {
             return false;
         }
 
-        PermissionUser user = PermissionsEx.getUser(player);
+        PermissionUser user = PermissionsEx.getUser(player.getName());
         user.addGroup(group);
         return true;
     }
@@ -50,31 +51,31 @@ public class PermissionsExHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean isInGroup(Player player, String group) {
-        PermissionUser user = permissionManager.getUser(player);
+    public boolean isInGroup(OfflinePlayer player, String group) {
+        PermissionUser user = permissionManager.getUser(player.getName());
         return user.inGroup(group);
     }
 
     @Override
-    public boolean removeFromGroup(Player player, String group) {
-        PermissionUser user = permissionManager.getUser(player);
+    public boolean removeFromGroup(OfflinePlayer player, String group) {
+        PermissionUser user = permissionManager.getUser(player.getName());
         user.removeGroup(group);
         return true;
     }
 
     @Override
-    public boolean setGroup(Player player, String group) {
+    public boolean setGroup(OfflinePlayer player, String group) {
         List<String> groups = new ArrayList<>();
         groups.add(group);
 
-        PermissionUser user = permissionManager.getUser(player);
+        PermissionUser user = permissionManager.getUser(player.getName());
         user.setParentsIdentifier(groups);
         return true;
     }
 
     @Override
-    public List<String> getGroups(Player player) {
-        PermissionUser user = permissionManager.getUser(player);
+    public List<String> getGroups(OfflinePlayer player) {
+        PermissionUser user = permissionManager.getUser(player.getName());
         return user.getParentIdentifiers(null);
     }
 
