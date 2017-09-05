@@ -440,17 +440,17 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldNotCheckCountry() throws FailedVerificationException {
         Player player = newPlayerWithName("david");
-        TestHelper.mockPlayerIp(player, "127.0.0.1");
+        String ip = "127.0.0.1";
 
         // protection setting disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(false);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
-        onJoinVerifier.checkPlayerCountry(player, false);
+        onJoinVerifier.checkPlayerCountry(player, ip, false);
         verifyZeroInteractions(validationService);
 
         // protection for registered players disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
-        onJoinVerifier.checkPlayerCountry(player, true);
+        onJoinVerifier.checkPlayerCountry(player, ip, true);
         verifyZeroInteractions(validationService);
     }
 
@@ -459,12 +459,11 @@ public class OnJoinVerifierTest {
         // given
         String ip = "192.168.0.1";
         Player player = newPlayerWithName("lucas");
-        TestHelper.mockPlayerIp(player, ip);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
-        onJoinVerifier.checkPlayerCountry(player, false);
+        onJoinVerifier.checkPlayerCountry(player, ip, false);
 
         // then
         verify(validationService).isCountryAdmitted(ip);
@@ -475,13 +474,12 @@ public class OnJoinVerifierTest {
         // given
         String ip = "192.168.10.24";
         Player player = newPlayerWithName("gabriel");
-        TestHelper.mockPlayerIp(player, ip);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
-        onJoinVerifier.checkPlayerCountry(player, true);
+        onJoinVerifier.checkPlayerCountry(player, ip, true);
 
         // then
         verify(validationService).isCountryAdmitted(ip);
@@ -492,7 +490,6 @@ public class OnJoinVerifierTest {
         // given
         String ip = "192.168.40.0";
         Player player = newPlayerWithName("bob");
-        TestHelper.mockPlayerIp(player, ip);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(false);
 
@@ -500,7 +497,7 @@ public class OnJoinVerifierTest {
         expectValidationExceptionWith(MessageKey.COUNTRY_BANNED_ERROR);
 
         // when
-        onJoinVerifier.checkPlayerCountry(player, false);
+        onJoinVerifier.checkPlayerCountry(player, ip, false);
     }
 
     private static Player newPlayerWithName(String name) {

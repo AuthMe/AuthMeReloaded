@@ -169,14 +169,15 @@ public class OnJoinVerifier implements Reloadable {
      * Checks that the player's country is admitted.
      *
      * @param player          the player
+     * @param address         the player address
      * @param isAuthAvailable whether or not the user is registered
      * @throws FailedVerificationException if the verification fails
      */
-    public void checkPlayerCountry(Player player, boolean isAuthAvailable) throws FailedVerificationException {
+    public void checkPlayerCountry(Player player, String address, boolean isAuthAvailable) throws FailedVerificationException {
         if ((!isAuthAvailable || settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED))
             && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)
             && !permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_COUNTRY_CHECK)
-            && !validationService.isCountryAdmitted(player.getAddress().getAddress().getHostAddress())) {
+            && !validationService.isCountryAdmitted(address)) {
                 throw new FailedVerificationException(MessageKey.COUNTRY_BANNED_ERROR);
         }
     }
