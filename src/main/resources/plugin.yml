@@ -6,6 +6,7 @@ main: ${bukkitplugin.main}
 version: ${bukkitplugin.version}
 softdepend:
     - Vault
+    - LuckPerms
     - PermissionsEx
     - bPermissions
     - zPermissions

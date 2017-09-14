@@ -3,6 +3,7 @@ package fr.xephi.authme.permission;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
+import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandlerException;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
@@ -111,6 +112,8 @@ public class PermissionsManager implements Reloadable {
         }
 
         switch (type) {
+            case LUCK_PERMS:
+                return new LuckPermsHandler();
             case PERMISSIONS_EX:
                 return new PermissionsExHandler();
             case Z_PERMISSIONS:

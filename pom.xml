@@ -266,6 +266,12 @@
             <url>http://repo.onarandombox.com/content/groups/public</url>
         </repository>
 
+        <!-- LuckPerms Repo -->
+        <repository>
+            <id>luck-repo</id>
+            <url>https://repo.lucko.me/</url>
+        </repository>
+
         <!-- Vault Repo -->
         <repository>
             <id>vault-repo</id>
@@ -439,6 +445,14 @@
                     <groupId>com.comphenix.executors</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- LuckPerms plugin -->
+        <dependency>
+            <groupId>me.lucko.luckperms</groupId>
+            <artifactId>luckperms-api</artifactId>
+            <version>3.4-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- PermissionsEx plugin -->
