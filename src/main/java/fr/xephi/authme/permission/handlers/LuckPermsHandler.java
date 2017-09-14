@@ -78,12 +78,6 @@ public class LuckPermsHandler implements PermissionHandler {
             }, luckPermsApi.getStorage().getAsyncExecutor());
     }
 
-    private void cleanupUser(User user) {
-        if (Bukkit.getPlayer(user.getUuid()) != null) {
-            luckPermsApi.cleanupUser(user);
-        }
-    }
-
     @Override
     public boolean addToGroup(OfflinePlayer player, String group) {
         Group newGroup = luckPermsApi.getGroup(group);
@@ -102,7 +96,7 @@ public class LuckPermsHandler implements PermissionHandler {
         }
 
         saveUser(user);
-        cleanupUser(user);
+        luckPermsApi.cleanupUser(user);
 
         return true;
     }
@@ -122,7 +116,7 @@ public class LuckPermsHandler implements PermissionHandler {
         Node permissionNode = luckPermsApi.getNodeFactory().newBuilder(node.getNode()).build();
         boolean result = user.hasPermission(permissionNode).asBoolean();
 
-        cleanupUser(user);
+        luckPermsApi.cleanupUser(user);
         return result;
     }
 
@@ -136,7 +130,7 @@ public class LuckPermsHandler implements PermissionHandler {
         Group permissionGroup = luckPermsApi.getGroup(group);
         boolean result = permissionGroup != null && user.isInGroup(permissionGroup);
 
-        cleanupUser(user);
+        luckPermsApi.cleanupUser(user);
         return result;
     }
 
@@ -155,7 +149,7 @@ public class LuckPermsHandler implements PermissionHandler {
         Node groupNode = luckPermsApi.getNodeFactory().makeGroupNode(permissionGroup).build();
         boolean result = user.unsetPermissionUnchecked(groupNode) != DataMutateResult.FAIL;
 
-        cleanupUser(user);
+        luckPermsApi.cleanupUser(user);
         return result;
     }
 
@@ -177,7 +171,7 @@ public class LuckPermsHandler implements PermissionHandler {
         user.clearMatching(node -> node.isGroupNode() && !node.getGroupName().equals(permissionGroup.getName()));
 
         saveUser(user);
-        cleanupUser(user);
+        luckPermsApi.cleanupUser(user);
         return true;
     }
 
@@ -205,7 +199,7 @@ public class LuckPermsHandler implements PermissionHandler {
             .map(Group::getName)
             .collect(Collectors.toList());
 
-        cleanupUser(user);
+        luckPermsApi.cleanupUser(user);
         return result;
     }
 
