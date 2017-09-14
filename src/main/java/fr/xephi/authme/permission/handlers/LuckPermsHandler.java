@@ -3,11 +3,14 @@ package fr.xephi.authme.permission.handlers;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.DataMutateResult;
 import me.lucko.luckperms.api.Group;
 import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
+import me.lucko.luckperms.api.caching.PermissionData;
+import me.lucko.luckperms.api.caching.UserData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -113,8 +116,9 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        Node permissionNode = luckPermsApi.getNodeFactory().newBuilder(node.getNode()).build();
-        boolean result = user.hasPermission(permissionNode).asBoolean();
+        UserData userData = user.getCachedData();
+        PermissionData permissionData = userData.getPermissionData(Contexts.allowAll());
+        boolean result = permissionData.getPermissionValue(node.getNode()).asBoolean();
 
         luckPermsApi.cleanupUser(user);
         return result;
