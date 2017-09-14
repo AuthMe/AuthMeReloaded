@@ -168,7 +168,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
             return true;
         } else {
-            handleWrongPassword(player, ip);
+            handleWrongPassword(player, auth, ip);
             return false;
         }
     }
@@ -177,9 +177,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * Handles a login with wrong password.
      *
      * @param player the player who attempted to log in
+     * @param auth the PlayerAuth object of the player
      * @param ip the ip address of the player
      */
-    private void handleWrongPassword(Player player, String ip) {
+    private void handleWrongPassword(Player player, PlayerAuth auth, String ip) {
         ConsoleLogger.fine(player.getName() + " used the wrong password");
 
         bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
@@ -196,7 +197,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 limboService.muteMessageTask(player);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
                     captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
-            } else if (emailService.hasAllInformation()) {
+            } else if (emailService.hasAllInformation() && !auth.getEmail().equals("your@email.com")) {
                 service.send(player, MessageKey.FORGOT_PASSWORD_MESSAGE);
             }
         }
