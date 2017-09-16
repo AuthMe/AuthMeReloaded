@@ -79,6 +79,8 @@ public class PlayerListener implements Listener {
     @Inject
     private JoinMessageService joinMessageService;
 
+    private boolean isAsyncPlayerPreLoginEventCalled = false;
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
@@ -212,8 +214,6 @@ public class PlayerListener implements Listener {
     // Single session feature can be implemented for Spigot and CraftBukkit by canceling a kick
     // event caused by "logged in from another location". The nicer way, but only for Spigot, would be
     // to check in the AsyncPlayerPreLoginEvent. To support all servers, we use the less nice way.
-
-    private boolean isAsyncPlayerPreLoginEventCalled = false;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
