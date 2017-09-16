@@ -197,7 +197,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 limboService.muteMessageTask(player);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
                     captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
-            } else if (emailService.hasAllInformation() && !auth.getEmail().equals("your@email.com")) {
+            } else if (emailService.hasAllInformation() && !Utils.isEmailEmpty(auth.getEmail())) {
                 service.send(player, MessageKey.FORGOT_PASSWORD_MESSAGE);
             }
         }
