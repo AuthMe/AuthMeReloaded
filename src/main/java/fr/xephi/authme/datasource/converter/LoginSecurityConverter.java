@@ -120,7 +120,7 @@ public class LoginSecurityConverter implements Converter {
             .name(name)
             .realName(name)
             .password(resultSet.getString("password"), null)
-            .ip(resultSet.getString("ip_address"))
+            .lastIp(resultSet.getString("ip_address"))
             .lastLogin(lastLoginMillis)
             // TODO #792: Register date
             .locX(resultSet.getDouble("x"))

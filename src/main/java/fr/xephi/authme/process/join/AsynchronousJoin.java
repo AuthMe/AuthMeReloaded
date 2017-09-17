@@ -176,7 +176,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             database.setUnlogged(name);
             playerCache.removePlayer(name);
             if (auth != null) {
-                if (auth.getIp().equals(PlayerUtils.getPlayerIp(player))) {
+                if (auth.getLastIp().equals(PlayerUtils.getPlayerIp(player))) {
                     RestoreSessionEvent event = bukkitService.createAndCallEvent(
                         isAsync -> new RestoreSessionEvent(player, isAsync));
                     return !event.isCancelled();

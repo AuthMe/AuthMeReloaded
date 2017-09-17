@@ -74,13 +74,21 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_ISLOGGED =
         newProperty("DataSource.mySQLColumnLogged", "isLogged");
 
-    @Comment("Column for storing players ips")
-    public static final Property<String> MYSQL_COL_IP =
+    @Comment("Column for storing the player's last IP")
+    public static final Property<String> MYSQL_COL_LAST_IP =
         newProperty("DataSource.mySQLColumnIp", "ip");
 
     @Comment("Column for storing players lastlogins")
     public static final Property<String> MYSQL_COL_LASTLOGIN =
         newProperty("DataSource.mySQLColumnLastLogin", "lastlogin");
+
+    @Comment("Column storing the registration date")
+    public static final Property<String> MYSQL_COL_REGISTER_DATE =
+        newProperty("DataSource.mySQLColumnRegisterDate", "regdate");
+
+    @Comment("Column for storing the IP address at the time of registration")
+    public static final Property<String> MYSQL_COL_REGISTER_IP =
+        newProperty("DataSource.mySQLColumnRegisterIp", "regip");
 
     @Comment("Column for storing player LastLocation - X")
     public static final Property<String> MYSQL_COL_LASTLOC_X =

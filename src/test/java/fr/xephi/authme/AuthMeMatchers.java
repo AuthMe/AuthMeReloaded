@@ -44,26 +44,26 @@ public final class AuthMeMatchers {
     }
 
     public static Matcher<? super PlayerAuth> hasAuthBasicData(String name, String realName,
-                                                               String email, String ip) {
+                                                               String email, String lastIp) {
         return new TypeSafeMatcher<PlayerAuth>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {
                 return Objects.equals(name, item.getNickname())
                     && Objects.equals(realName, item.getRealName())
                     && Objects.equals(email, item.getEmail())
-                    && Objects.equals(ip, item.getIp());
+                    && Objects.equals(lastIp, item.getLastIp());
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendValue(String.format("PlayerAuth with name %s, realname %s, email %s, ip %s",
-                    name, realName, email, ip));
+                description.appendValue(String.format("PlayerAuth with name %s, realname %s, email %s, lastIp %s",
+                    name, realName, email, lastIp));
             }
 
             @Override
             public void describeMismatchSafely(PlayerAuth item, Description description) {
-                description.appendValue(String.format("PlayerAuth with name %s, realname %s, email %s, ip %s",
-                    item.getNickname(), item.getRealName(), item.getEmail(), item.getIp()));
+                description.appendValue(String.format("PlayerAuth with name %s, realname %s, email %s, lastIp %s",
+                    item.getNickname(), item.getRealName(), item.getEmail(), item.getLastIp()));
             }
         };
     }

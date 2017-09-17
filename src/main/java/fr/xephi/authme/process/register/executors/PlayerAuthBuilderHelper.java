@@ -22,12 +22,13 @@ final class PlayerAuthBuilderHelper {
      * @return the generated PlayerAuth object
      */
     static PlayerAuth createPlayerAuth(Player player, HashedPassword hashedPassword, String email) {
+        String playerIp = PlayerUtils.getPlayerIp(player);
         return PlayerAuth.builder()
             .name(player.getName().toLowerCase())
             .realName(player.getName())
             .password(hashedPassword)
             .email(email)
-            .ip(PlayerUtils.getPlayerIp(player))
+            .registrationIp(playerIp)
             .location(player.getLocation())
             .build();
     }

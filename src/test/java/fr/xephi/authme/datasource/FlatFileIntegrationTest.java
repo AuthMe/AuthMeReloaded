@@ -79,7 +79,7 @@ public class FlatFileIntegrationTest {
     public void shouldAddAuth() {
         // given / when
         boolean response = dataSource.saveAuth(
-            PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").ip("123.45.67.77").build());
+            PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").lastIp("123.45.67.77").build());
         List<PlayerAuth> authList = dataSource.getAllAuths();
 
         // then

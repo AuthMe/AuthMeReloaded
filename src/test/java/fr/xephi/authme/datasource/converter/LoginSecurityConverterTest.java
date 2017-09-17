@@ -72,11 +72,11 @@ public class LoginSecurityConverterTest {
         assertThat(captor.getAllValues().get(0).getRealName(), equalTo("Player1"));
         assertThat(captor.getAllValues().get(0).getLastLogin(), equalTo(1494242093652L));
         assertThat(captor.getAllValues().get(0).getPassword(), equalToHash("$2a$10$E1Ri7XKeIIBv4qVaiPplgepT7QH9xGFh3hbHfcmCjq7hiW.UBTiGK"));
-        assertThat(captor.getAllValues().get(0).getIp(), equalTo("127.0.0.1"));
+        assertThat(captor.getAllValues().get(0).getLastIp(), equalTo("127.0.0.1"));
 
         assertThat(captor.getAllValues().get(1).getNickname(), equalTo("player2"));
         assertThat(captor.getAllValues().get(1).getLastLogin(), equalTo(1494242174589L));
-        assertThat(captor.getAllValues().get(1).getIp(), equalTo("127.4.5.6"));
+        assertThat(captor.getAllValues().get(1).getLastIp(), equalTo("127.4.5.6"));
 
         assertThat(captor.getAllValues().get(2).getRealName(), equalTo("Player3"));
         assertThat(captor.getAllValues().get(2).getPassword(), equalToHash("$2a$10$WFui8KSXMLDOVXKFpCLyPukPi4M82w1cv/rNojsAnwJjba3pp8sba"));
@@ -99,11 +99,11 @@ public class LoginSecurityConverterTest {
         assertThat(captor.getAllValues().get(0).getRealName(), equalTo("Player1"));
         assertThat(captor.getAllValues().get(0).getLastLogin(), equalTo(1494242093000L));
         assertThat(captor.getAllValues().get(0).getPassword(), equalToHash("$2a$10$E1Ri7XKeIIBv4qVaiPplgepT7QH9xGFh3hbHfcmCjq7hiW.UBTiGK"));
-        assertThat(captor.getAllValues().get(0).getIp(), equalTo("127.0.0.1"));
+        assertThat(captor.getAllValues().get(0).getLastIp(), equalTo("127.0.0.1"));
 
         assertThat(captor.getAllValues().get(1).getNickname(), equalTo("player2"));
         assertThat(captor.getAllValues().get(1).getLastLogin(), equalTo(1489317753000L));
-        assertThat(captor.getAllValues().get(1).getIp(), equalTo("127.4.5.6"));
+        assertThat(captor.getAllValues().get(1).getLastIp(), equalTo("127.4.5.6"));
 
         assertThat(captor.getAllValues().get(2).getRealName(), equalTo("Player3"));
         assertThat(captor.getAllValues().get(2).getPassword(), equalToHash("$2a$10$WFui8KSXMLDOVXKFpCLyPukPi4M82w1cv/rNojsAnwJjba3pp8sba"));

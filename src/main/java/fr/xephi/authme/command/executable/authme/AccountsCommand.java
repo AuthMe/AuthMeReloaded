@@ -54,7 +54,7 @@ public class AccountsCommand implements ExecutableCommand {
                         return;
                     }
 
-                    List<String> accountList = dataSource.getAllAuthsByIp(auth.getIp());
+                    List<String> accountList = dataSource.getAllAuthsByIp(auth.getLastIp());
                     if (accountList.isEmpty()) {
                         commonService.send(sender, MessageKey.UNKNOWN_USER);
                     } else if (accountList.size() == 1) {

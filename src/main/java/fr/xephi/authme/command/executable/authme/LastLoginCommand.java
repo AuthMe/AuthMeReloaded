@@ -45,6 +45,6 @@ public class LastLoginCommand implements ExecutableCommand {
         // Show the player status
         sender.sendMessage("[AuthMe] " + playerName + " last login: " + date.toString());
         sender.sendMessage("[AuthMe] The player " + playerName + " last logged in " + lastLoginMessage + " ago.");
-        sender.sendMessage("[AuthMe] Last Player's IP: " + auth.getIp());
+        sender.sendMessage("[AuthMe] Last Player's IP: " + auth.getLastIp());
     }
 }

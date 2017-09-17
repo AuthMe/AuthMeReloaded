@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -152,7 +151,7 @@ public class AuthMeApi {
             auth = dataSource.getAuth(playerName);
         }
         if (auth != null) {
-            return auth.getIp();
+            return auth.getLastIp();
         }
         return null;
     }

@@ -79,7 +79,7 @@ public class FlatFile implements DataSource {
             return false;
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(source, true))) {
-            bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp()
+            bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getLastIp()
                 + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY()
                 + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
@@ -139,7 +139,7 @@ public class FlatFile implements DataSource {
                     newAuth = buildAuthFromArray(args);
                     if (newAuth != null) {
                         newAuth.setLastLogin(auth.getLastLogin());
-                        newAuth.setIp(auth.getIp());
+                        newAuth.setLastIp(auth.getLastIp());
                     }
                     break;
                 }
@@ -393,7 +393,7 @@ public class FlatFile implements DataSource {
             PlayerAuth.Builder builder = PlayerAuth.builder()
                 .name(args[0]).realName(args[0]).password(args[1], null);
 
-            if (args.length >= 3)   builder.ip(args[2]);
+            if (args.length >= 3)   builder.lastIp(args[2]);
             if (args.length >= 4)   builder.lastLogin(Long.parseLong(args[3]));
             if (args.length >= 7) {
                 builder.locX(Double.parseDouble(args[4]))

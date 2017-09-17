@@ -77,8 +77,8 @@ class CountryLookup implements DebugSection {
         if (auth == null) {
             sender.sendMessage("No player with name '" + name + "'");
         } else {
-            sender.sendMessage("Player '" + name + "' has IP address " + auth.getIp());
-            outputInfoForIpAddr(sender, auth.getIp());
+            sender.sendMessage("Player '" + name + "' has IP address " + auth.getLastIp());
+            outputInfoForIpAddr(sender, auth.getLastIp());
         }
     }
 }

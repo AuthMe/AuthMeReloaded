@@ -6,6 +6,8 @@ CREATE TABLE authme (
     password VARCHAR(255) NOT NULL,
     ip VARCHAR(40) NOT NULL,
     lastlogin BIGINT,
+    regdate BIGINT,
+    regip VARCHAR(40),
     x DOUBLE NOT NULL DEFAULT '0.0',
     y DOUBLE NOT NULL DEFAULT '0.0',
     z DOUBLE NOT NULL DEFAULT '0.0',

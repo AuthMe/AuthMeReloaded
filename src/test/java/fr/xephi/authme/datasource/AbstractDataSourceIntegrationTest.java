@@ -211,7 +211,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         DataSource dataSource = getDataSource();
         PlayerAuth bobby = PlayerAuth.builder()
             .name("bobby").realName("BOBBY").lastLogin(123L)
-            .ip("12.12.12.12").build();
+            .lastIp("12.12.12.12").build();
 
         // when
         boolean response = dataSource.updateSession(bobby);
@@ -298,7 +298,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         List<String> initialList = dataSource.getAllAuthsByIp("123.45.67.89");
         List<String> emptyList = dataSource.getAllAuthsByIp("8.8.8.8");
         for (int i = 0; i < 3; ++i) {
-            dataSource.saveAuth(PlayerAuth.builder().name("test-" + i).ip("123.45.67.89").build());
+            dataSource.saveAuth(PlayerAuth.builder().name("test-" + i).lastIp("123.45.67.89").build());
         }
         List<String> updatedList = dataSource.getAllAuthsByIp("123.45.67.89");
 

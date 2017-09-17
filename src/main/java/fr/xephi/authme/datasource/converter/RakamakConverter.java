@@ -80,7 +80,7 @@ public class RakamakConverter implements Converter {
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerName)
                     .realName(playerName)
-                    .ip(ip)
+                    .lastIp(ip)
                     .password(psw)
                     .lastLogin(0)
                     .build();
