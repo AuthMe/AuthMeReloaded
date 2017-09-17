@@ -50,6 +50,7 @@ class HasPermissionChecker implements DebugSection {
         if (arguments.size() < 2) {
             sender.sendMessage("Check if a player has permission:");
             sender.sendMessage("Example: /authme debug perm bobby my.perm.node");
+            sender.sendMessage("Permission system type used: " + permissionsManager.getPermissionSystem());
             return;
         }
 
