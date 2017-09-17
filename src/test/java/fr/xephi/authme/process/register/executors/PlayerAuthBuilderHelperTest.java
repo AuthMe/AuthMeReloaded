@@ -6,11 +6,13 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -21,7 +23,6 @@ import static org.mockito.Mockito.mock;
 public class PlayerAuthBuilderHelperTest {
 
     @Test
-    @Ignore // TODO #792: last IP should be NULL + check registration info
     public void shouldConstructPlayerAuth() {
         // given
         Player player = mock(Player.class);
@@ -39,8 +40,11 @@ public class PlayerAuthBuilderHelperTest {
         PlayerAuth auth = PlayerAuthBuilderHelper.createPlayerAuth(player, hashedPassword, email);
 
         // then
-        assertThat(auth, hasAuthBasicData("noah", "Noah", email, ip));
+        assertThat(auth, hasAuthBasicData("noah", "Noah", email, null));
+        assertThat(auth.getRegistrationIp(), equalTo("192.168.34.47"));
+        assertThat(Math.abs(auth.getRegistrationDate() - System.currentTimeMillis()), lessThan(1000L));
         assertThat(auth, hasAuthLocation(123, 80, -99, "worldName", 2.45f, 7.61f));
+        assertThat(auth.getPassword(), equalToHash("myHash0001"));
     }
 
     @Test

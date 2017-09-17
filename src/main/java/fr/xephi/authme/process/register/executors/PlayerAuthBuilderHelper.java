@@ -29,6 +29,7 @@ final class PlayerAuthBuilderHelper {
             .password(hashedPassword)
             .email(email)
             .registrationIp(playerIp)
+            .registrationDate(System.currentTimeMillis())
             .location(player.getLocation())
             .build();
     }

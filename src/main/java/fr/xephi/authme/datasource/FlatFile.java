@@ -394,7 +394,7 @@ public class FlatFile implements DataSource {
                 .name(args[0]).realName(args[0]).password(args[1], null);
 
             if (args.length >= 3)   builder.lastIp(args[2]);
-            if (args.length >= 4)   builder.lastLogin(Long.parseLong(args[3]));
+            if (args.length >= 4)   builder.lastLogin(parseNullableLong(args[3]));
             if (args.length >= 7) {
                 builder.locX(Double.parseDouble(args[4]))
                     .locY(Double.parseDouble(args[5]))
@@ -405,5 +405,9 @@ public class FlatFile implements DataSource {
             return builder.build();
         }
         return null;
+    }
+
+    private static Long parseNullableLong(String str) {
+        return "null".equals(str) ? null : Long.parseLong(str);
     }
 }

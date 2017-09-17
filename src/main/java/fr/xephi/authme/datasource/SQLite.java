@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
 /**
@@ -94,6 +95,7 @@ public class SQLite implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
             }
 
+            // TODO #792: Remove & migrate not null constraint
             if (isColumnMissing(md, col.LAST_IP)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.LAST_IP + " VARCHAR(40) NOT NULL DEFAULT '';");
@@ -228,35 +230,30 @@ public class SQLite implements DataSource {
                     ConsoleLogger.warning("Warning! Detected hashed password with separate salt but the salt column "
                         + "is not set in the config!");
                 }
-                // TODO #792: Last login and last IP should be NULL here
 
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD
-                    + "," + col.LAST_IP + "," + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL
+                    + "," + col.REAL_NAME + "," + col.EMAIL
                     + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP
                     + ") VALUES (?,?,?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, password.getHash());
-                pst.setString(3, auth.getLastIp());
-                pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, auth.getRealName());
-                pst.setString(6, auth.getEmail());
-                pst.setLong(7, System.currentTimeMillis());
-                pst.setString(8, auth.getRegistrationIp());
+                pst.setString(3, auth.getRealName());
+                pst.setString(4, auth.getEmail());
+                pst.setObject(5, auth.getRegistrationDate());
+                pst.setString(6, auth.getRegistrationIp());
                 pst.executeUpdate();
             } else {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD
-                    + "," + col.LAST_IP + "," + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL
+                    + "," + col.REAL_NAME + "," + col.EMAIL
                     + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP + "," + col.SALT
                     + ") VALUES (?,?,?,?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, password.getHash());
-                pst.setString(3, auth.getLastIp());
-                pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, auth.getRealName());
-                pst.setString(6, auth.getEmail());
-                pst.setLong(7, System.currentTimeMillis());
-                pst.setString(8, auth.getRegistrationIp());
-                pst.setString(9, password.getSalt());
+                pst.setString(3, auth.getRealName());
+                pst.setString(4, auth.getEmail());
+                pst.setObject(5, auth.getRegistrationDate());
+                pst.setString(6, auth.getRegistrationIp());
+                pst.setString(7, password.getSalt());
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -297,10 +294,11 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean updateSession(PlayerAuth auth) {
-        String sql = "UPDATE " + tableName + " SET " + col.LAST_IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
+        String sql = "UPDATE " + tableName + " SET " + col.LAST_IP + "=?, " + col.LAST_LOGIN + "=?, "
+            + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)){
             pst.setString(1, auth.getLastIp());
-            pst.setLong(2, auth.getLastLogin());
+            pst.setObject(2, auth.getLastLogin());
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
@@ -474,7 +472,7 @@ public class SQLite implements DataSource {
     @Override
     public void setUnlogged(String user) {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        if (user != null)
+        if (user != null) {
             try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setInt(1, 0);
                 pst.setString(2, user);
@@ -482,6 +480,7 @@ public class SQLite implements DataSource {
             } catch (SQLException ex) {
                 logSqlException(ex);
             }
+        }
     }
 
     @Override
@@ -572,28 +571,23 @@ public class SQLite implements DataSource {
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = !col.SALT.isEmpty() ? row.getString(col.SALT) : null;
 
-        PlayerAuth.Builder authBuilder = PlayerAuth.builder()
+        return PlayerAuth.builder()
             .name(row.getString(col.NAME))
             .email(row.getString(col.EMAIL))
             .realName(row.getString(col.REAL_NAME))
             .password(row.getString(col.PASSWORD), salt)
-            .lastLogin(row.getLong(col.LAST_LOGIN))
-            .registrationDate(row.getLong(col.REGISTRATION_DATE))
+            .lastLogin(getNullableLong(row, col.LAST_LOGIN))
+            .lastIp(row.getString(col.LAST_IP))
+            .registrationDate(getNullableLong(row, col.REGISTRATION_DATE))
             .registrationIp(row.getString(col.REGISTRATION_IP))
             .locX(row.getDouble(col.LASTLOC_X))
             .locY(row.getDouble(col.LASTLOC_Y))
             .locZ(row.getDouble(col.LASTLOC_Z))
             .locWorld(row.getString(col.LASTLOC_WORLD))
             .locYaw(row.getFloat(col.LASTLOC_YAW))
-            .locPitch(row.getFloat(col.LASTLOC_PITCH));
-
-        String ip = row.getString(col.LAST_IP);
-        if (!ip.isEmpty()) {
-            authBuilder.lastIp(ip);
-        }
-        return authBuilder.build();
+            .locPitch(row.getFloat(col.LASTLOC_PITCH))
+            .build();
     }
-
 
     private static void close(Statement st) {
         if (st != null) {
@@ -609,16 +603,6 @@ public class SQLite implements DataSource {
         if (con != null) {
             try {
                 con.close();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
-        }
-    }
-
-    private static void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
             } catch (SQLException ex) {
                 logSqlException(ex);
             }

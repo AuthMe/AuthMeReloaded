@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,16 +114,17 @@ public class LoginSecurityConverter implements Converter {
      * @return the created player auth object
      */
     private static PlayerAuth buildAuthFromLoginSecurity(String name, ResultSet resultSet) throws SQLException {
-        // TODO #792: Last login should be null if not present
-        long lastLoginMillis = Optional.ofNullable(resultSet.getTimestamp("last_login"))
-            .map(Timestamp::getTime).orElse(System.currentTimeMillis());
+        Long lastLoginMillis = Optional.ofNullable(resultSet.getTimestamp("last_login"))
+            .map(Timestamp::getTime).orElse(null);
+        Long regDate = Optional.ofNullable(resultSet.getDate("registration_date"))
+            .map(Date::getTime).orElse(null);
         return PlayerAuth.builder()
             .name(name)
             .realName(name)
             .password(resultSet.getString("password"), null)
             .lastIp(resultSet.getString("ip_address"))
             .lastLogin(lastLoginMillis)
-            // TODO #792: Register date
+            .registrationDate(regDate)
             .locX(resultSet.getDouble("x"))
             .locY(resultSet.getDouble("y"))
             .locZ(resultSet.getDouble("z"))

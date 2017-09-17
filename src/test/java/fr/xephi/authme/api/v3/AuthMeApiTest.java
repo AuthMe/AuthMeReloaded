@@ -164,7 +164,7 @@ public class AuthMeApiTest {
         String name = "David";
         Player player = mockPlayerWithName(name);
         PlayerAuth auth = PlayerAuth.builder().name(name)
-            .lastLogin(1501597979)
+            .lastLogin(1501597979L)
             .build();
         given(playerCache.getAuth(name)).willReturn(auth);
 

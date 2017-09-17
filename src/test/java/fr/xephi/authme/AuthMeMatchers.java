@@ -68,6 +68,28 @@ public final class AuthMeMatchers {
         };
     }
 
+    public static Matcher<? super PlayerAuth> hasRegistrationInfo(String registrationIp, Long registrationDate) {
+        return new TypeSafeMatcher<PlayerAuth>() {
+            @Override
+            public boolean matchesSafely(PlayerAuth item) {
+                return Objects.equals(registrationIp, item.getRegistrationIp())
+                    && Objects.equals(registrationDate, item.getRegistrationDate());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendValue(String.format("PlayerAuth with reg. IP %s and reg date %d",
+                    registrationIp, registrationDate));
+            }
+
+            @Override
+            public void describeMismatchSafely(PlayerAuth item, Description description) {
+                description.appendValue(String.format("PlayerAuth with reg. IP %s and reg date %d",
+                    item.getRegistrationIp(), item.getRegistrationDate()));
+            }
+        };
+    }
+
     public static Matcher<? super PlayerAuth> hasAuthLocation(PlayerAuth auth) {
         return hasAuthLocation(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(),
             auth.getYaw(), auth.getPitch());

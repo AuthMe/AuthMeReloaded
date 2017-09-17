@@ -64,7 +64,7 @@ public class FlatFileIntegrationTest {
         assertThat(getName("bobby", authList), hasAuthBasicData("bobby", "bobby", "your@email.com", "123.45.67.89"));
         assertThat(getName("bobby", authList), hasAuthLocation(1.05, 2.1, 4.2, "world", 0, 0));
         assertThat(getName("bobby", authList).getPassword(), equalToHash("$SHA$11aa0706173d7272$dbba966"));
-        assertThat(getName("twofields", authList), hasAuthBasicData("twofields", "twofields", "your@email.com", "127.0.0.1"));
+        assertThat(getName("twofields", authList), hasAuthBasicData("twofields", "twofields", "your@email.com", null));
         assertThat(getName("twofields", authList).getPassword(), equalToHash("hash1234"));
         assertThat(getName("threefields", authList), hasAuthBasicData("threefields", "threefields", "your@email.com", "33.33.33.33"));
         assertThat(getName("fourfields", authList), hasAuthBasicData("fourfields", "fourfields", "your@email.com", "4.4.4.4"));

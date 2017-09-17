@@ -3,6 +3,8 @@ package fr.xephi.authme.data.auth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
+import java.util.Objects;
+
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,7 +22,7 @@ public class PlayerAuth {
     private String email;
     private String lastIp;
     private int groupId;
-    private long lastLogin;
+    private Long lastLogin;
     private String registrationIp;
     private Long registrationDate;
     // Fields storing the player's quit location
@@ -115,11 +117,11 @@ public class PlayerAuth {
         this.lastIp = lastIp;
     }
 
-    public long getLastLogin() {
+    public Long getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(long lastLogin) {
+    public void setLastLogin(Long lastLogin) {
         this.lastLogin = lastLogin;
     }
 
@@ -153,7 +155,7 @@ public class PlayerAuth {
             return false;
         }
         PlayerAuth other = (PlayerAuth) obj;
-        return other.getLastIp().equals(this.lastIp) && other.getNickname().equals(this.nickname);
+        return Objects.equals(other.lastIp, this.lastIp) && Objects.equals(other.nickname, this.nickname);
     }
 
     @Override
@@ -185,8 +187,7 @@ public class PlayerAuth {
         private String lastIp;
         private String email;
         private int groupId = -1;
-        // TODO #792: Remove this default
-        private long lastLogin = System.currentTimeMillis();
+        private Long lastLogin;
         private String registrationIp;
         private Long registrationDate;
 
@@ -208,7 +209,7 @@ public class PlayerAuth {
             auth.realName = firstNonNull(realName, "Player");
             auth.password = firstNonNull(password, new HashedPassword(""));
             auth.email = firstNonNull(email, "your@email.com");
-            auth.lastIp = firstNonNull(lastIp, "127.0.0.1"); // TODO #792 remove default
+            auth.lastIp = lastIp;
             auth.groupId = groupId;
             auth.lastLogin = lastLogin;
             auth.registrationIp = registrationIp;
@@ -293,7 +294,7 @@ public class PlayerAuth {
             return this;
         }
 
-        public Builder lastLogin(long lastLogin) {
+        public Builder lastLogin(Long lastLogin) {
             this.lastLogin = lastLogin;
             return this;
         }
@@ -313,8 +314,6 @@ public class PlayerAuth {
             return this;
         }
 
-        // NOTE: This value is not read when a user is registered; the current timestamp is taken.
-        // Registration IP, however, is taken over.
         public Builder registrationDate(Long date) {
             this.registrationDate = date;
             return this;

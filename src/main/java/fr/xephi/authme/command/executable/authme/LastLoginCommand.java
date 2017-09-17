@@ -31,6 +31,10 @@ public class LastLoginCommand implements ExecutableCommand {
         if (auth == null) {
             commonService.send(sender, MessageKey.UNKNOWN_USER);
             return;
+        } else if (auth.getLastLogin() == null) {
+            // TODO #792 Improve this -> could still output last IP of user
+            sender.sendMessage("The user has never logged in.");
+            return;
         }
 
         // Get the last login date
