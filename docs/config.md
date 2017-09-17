@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Aug 12 13:49:42 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Sep 17 11:29:06 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -156,7 +156,7 @@ settings:
         AllowRestrictedUser: false
         # The restricted user feature will kick players listed below
         # if they don't match the defined IP address. Names are case-insensitive.
-        # Ip addresses support regex expressions (regex:127\.0\.0\..*)
+        # You can use * as wildcard (127.0.0.*), or regex with a "regex:" prefix regex:127\.0\.0\..*
         # Example:
         #     AllowedRestrictedUser:
         #     - playername;127.0.0.1
@@ -374,7 +374,7 @@ Protection:
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
     # Countries allowed to join the server and register. For country codes, see
-    # https://dev.bukkit.org/projects/authme-reloaded/pages/countries-codes
+    # http://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # PLEASE USE QUOTES!
     countries: 
     - 'US'
@@ -458,7 +458,7 @@ Security:
         # This prevents an attacker from abusing AuthMe's email feature.
         cooldown: 60
     privacy:
-        # The maill shown using /email show will be partially hidden
+        # The mail shown using /email show will be partially hidden
         # E.g. (if enabled)
         #  original email: my.email@example.com
         #  hidden email: my.***@***mple.com
@@ -540,4 +540,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Aug 12 13:49:42 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Sep 17 11:29:06 CEST 2017

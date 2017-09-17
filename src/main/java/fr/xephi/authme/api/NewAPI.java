@@ -27,7 +27,7 @@ import java.util.List;
  * NewAPI authmeApi = NewAPI.getInstance();
  * </code>
  *
- * @deprecated Will be removed in 5.4! Use {@link fr.xephi.authme.api.v3.AuthMeApi} instead.
+ * @deprecated Will be removed in 5.5! Use {@link fr.xephi.authme.api.v3.AuthMeApi} instead.
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 @Deprecated

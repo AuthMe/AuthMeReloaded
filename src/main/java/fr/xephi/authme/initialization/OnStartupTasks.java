@@ -53,8 +53,10 @@ public class OnStartupTasks {
     public static void sendMetrics(AuthMe plugin, Settings settings) {
         final Metrics metrics = new Metrics(plugin);
 
-        metrics.addCustomChart(new Metrics.SimplePie("messages_language", () -> settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)));
-        metrics.addCustomChart(new Metrics.SimplePie("database_backend", () -> settings.getProperty(DatabaseSettings.BACKEND).toString()));
+        metrics.addCustomChart(new Metrics.SimplePie("messages_language",
+            () -> settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)));
+        metrics.addCustomChart(new Metrics.SimplePie("database_backend",
+            () -> settings.getProperty(DatabaseSettings.BACKEND).toString()));
     }
 
     /**
