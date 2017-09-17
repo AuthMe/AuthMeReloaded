@@ -575,10 +575,10 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).refusePlayerForFullServer(event);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
-        verify(onJoinVerifier).checkAntibot(player, true);
+        verify(onJoinVerifier).checkAntibot(name, true);
         verify(onJoinVerifier).checkKickNonRegistered(true);
-        verify(onJoinVerifier).checkNameCasing(player, auth);
-        verify(onJoinVerifier).checkPlayerCountry(player, ip, true);
+        verify(onJoinVerifier).checkNameCasing(name, auth);
+        verify(onJoinVerifier).checkPlayerCountry(name, ip, true);
         verify(teleportationService).teleportOnJoin(player);
         verifyNoModifyingCalls(event);
     }
@@ -588,7 +588,8 @@ public class PlayerListenerTest {
         // given
         String name = "inval!dName";
         Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
+        TestHelper.mockPlayerIp(player, "33.32.33.33");
+        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", player.getAddress().getAddress()));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
         FailedVerificationException exception = new FailedVerificationException(

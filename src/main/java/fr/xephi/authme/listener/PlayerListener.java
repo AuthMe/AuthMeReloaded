@@ -12,6 +12,7 @@ import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -26,6 +27,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -76,6 +78,8 @@ public class PlayerListener implements Listener {
     private ValidationService validationService;
     @Inject
     private JoinMessageService joinMessageService;
+
+    private boolean isAsyncPlayerPreLoginEventCalled = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -190,19 +194,54 @@ public class PlayerListener implements Listener {
         management.performJoin(player);
     }
 
+    private void runOnJoinChecks(String name, String ip) throws FailedVerificationException {
+        // Fast stuff
+        onJoinVerifier.checkSingleSession(name);
+        onJoinVerifier.checkIsValidName(name);
+
+        // Get the auth later as this may cause the single session check to fail
+        // Slow stuff
+        final PlayerAuth auth = dataSource.getAuth(name);
+        final boolean isAuthAvailable = auth != null;
+        onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkNameCasing(name, auth);
+        onJoinVerifier.checkPlayerCountry(name, ip, isAuthAvailable);
+    }
+
     // Note #831: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
     // e.g. CraftBukkit does not fire it. So we need to run crucial things with PlayerLoginEvent.
     // Single session feature can be implemented for Spigot and CraftBukkit by canceling a kick
     // event caused by "logged in from another location". The nicer way, but only for Spigot, would be
     // to check in the AsyncPlayerPreLoginEvent. To support all servers, we use the less nice way.
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
+        isAsyncPlayerPreLoginEventCalled = true;
+
+        final String name = event.getName();
+
+        if (validationService.isUnrestricted(name)) {
+            return;
+        }
+
+        try {
+            runOnJoinChecks(name, event.getAddress().getHostAddress());
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();
+
         if (validationService.isUnrestricted(name)) {
             return;
         }
+
         if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
         }
@@ -210,26 +249,16 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        try {
-            // Fast stuff
-            onJoinVerifier.checkSingleSession(name);
-            onJoinVerifier.checkIsValidName(name);
-
-            // Get the auth later as this may cause the single session check to fail
-            // Slow stuff
-            final PlayerAuth auth = dataSource.getAuth(name);
-            final boolean isAuthAvailable = auth != null;
-            onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
-            onJoinVerifier.checkAntibot(player, isAuthAvailable);
-            onJoinVerifier.checkNameCasing(player, auth);
-            onJoinVerifier.checkPlayerCountry(player, event.getAddress().getHostAddress(), isAuthAvailable);
-        } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
-        }
-
         teleportationService.teleportOnJoin(player);
+
+        if(!isAsyncPlayerPreLoginEventCalled) {
+            try {
+                runOnJoinChecks(name, event.getAddress().getHostAddress());
+            } catch (FailedVerificationException e) {
+                event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
