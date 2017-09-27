@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Mar 25 00:15:27 CET 2017. See docs/hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Sun Sep 17 11:29:07 CEST 2017. See docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -48,6 +48,7 @@ You can change the hashing algorithm in the config.yml: under `security`, locate
 The recommendation lists our usage recommendation in terms of how secure it is (not how _well_ the algorithm works!).
 - Recommended: The hash algorithm appears to be cryptographically secure and is one we recommend.
 - Acceptable: There are safer algorithms that can be chosen but using the algorithm is generally OK.
+- Deprecated: Cannot be used anymore actively or in the near future.
 - Do not use: Hash algorithm isn't sufficiently secure. Use only if required to hook into another system.
 - Does not work: The algorithm does not work properly; do not use.
 
@@ -82,4 +83,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Mar 25 00:15:27 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Sep 17 11:29:07 CEST 2017

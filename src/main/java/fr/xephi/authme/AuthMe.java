@@ -22,8 +22,6 @@ import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
@@ -67,7 +65,6 @@ public class AuthMe extends JavaPlugin {
 
     // Private instances
     private CommandHandler commandHandler;
-    private PermissionsManager permsMan;
     private Settings settings;
     private DataSource database;
     private BukkitService bukkitService;
@@ -118,7 +115,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Method used to obtain the v2 plugin's api instance
-     * @deprecated Will be removed in 5.4, use {@link fr.xephi.authme.api.v3.AuthMeApi} instead
+     * @deprecated Will be removed in 5.5, use {@link fr.xephi.authme.api.v3.AuthMeApi} instead
      *
      * @return The plugin's api instance
      */
@@ -248,7 +245,6 @@ public class AuthMe extends JavaPlugin {
      */
     void instantiateServices(Injector injector) {
         database = injector.getSingleton(DataSource.class);
-        permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         backupService = injector.getSingleton(BackupService.class);
