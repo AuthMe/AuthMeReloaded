@@ -12,7 +12,6 @@ import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -43,6 +42,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import javax.inject.Inject;
 
@@ -80,6 +80,7 @@ public class PlayerListener implements Listener {
     private JoinMessageService joinMessageService;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
+    private boolean isPlayerSpawnLocationEventCalled = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -190,6 +191,9 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        if (!isPlayerSpawnLocationEventCalled) {
+            teleportationService.teleportOnJoin(player);
+        }
         teleportationService.teleportNewPlayerToFirstSpawn(player);
         management.performJoin(player);
     }
@@ -233,6 +237,9 @@ public class PlayerListener implements Listener {
         }
     }
 
+    //Note: We can't teleport the player in the PlayerLoginEvent listener
+    //as the new player location will be reverted by the server.
+
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
@@ -249,15 +256,32 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        teleportationService.teleportOnJoin(player);
-
-        if(!isAsyncPlayerPreLoginEventCalled) {
+        if (!isAsyncPlayerPreLoginEventCalled) {
             try {
                 runOnJoinChecks(name, event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
                 event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             }
+        }
+    }
+
+    // Note: the following event is called since MC1.9, in older versions we have to fallback on the PlayerJoinEvent
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        isPlayerSpawnLocationEventCalled = true;
+
+        final Player player = event.getPlayer();
+        final String name = player.getName();
+
+        if (validationService.isUnrestricted(name)) {
+            return;
+        }
+
+        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
+        if (customSpawnLocation != null) {
+            event.setSpawnLocation(customSpawnLocation);
         }
     }
 
