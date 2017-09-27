@@ -430,8 +430,9 @@ public class SQLite implements DataSource {
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
             try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next())
+                if (rs.next()) {
                     return rs.getInt(col.IS_LOGGED) == 1;
+                }
             }
         } catch (SQLException ex) {
             logSqlException(ex);
@@ -454,7 +455,7 @@ public class SQLite implements DataSource {
     @Override
     public void setUnlogged(String user) {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        if (user != null)
+        if (user != null) {
             try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setInt(1, 0);
                 pst.setString(2, user);
@@ -462,6 +463,7 @@ public class SQLite implements DataSource {
             } catch (SQLException ex) {
                 logSqlException(ex);
             }
+        }
     }
 
     @Override

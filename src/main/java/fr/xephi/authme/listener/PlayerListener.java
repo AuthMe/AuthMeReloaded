@@ -399,7 +399,7 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // TODO: check this, why do we need to update the quit loc? -sgdc3
+    //TODO: check this, why do we need to update the quit loc? -sgdc3
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {

@@ -9,6 +9,7 @@ import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.lazytags.Tag;
 import fr.xephi.authme.util.lazytags.TagReplacer;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
@@ -48,7 +49,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
 
     /** List of all supported tags for the welcome message. */
     private final List<Tag<Player>> availableTags = Arrays.asList(
-        createTag("&",            () -> "\u00a7"),
+        createTag("&",            () -> String.valueOf(ChatColor.COLOR_CHAR)),
         createTag("{PLAYER}",     pl -> pl.getName()),
         createTag("{ONLINE}",     () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
         createTag("{MAXPLAYERS}", () -> Integer.toString(server.getMaxPlayers())),

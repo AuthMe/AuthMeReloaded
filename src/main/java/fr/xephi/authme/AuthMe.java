@@ -224,7 +224,7 @@ public class AuthMe extends JavaPlugin {
         // Convert deprecated PLAINTEXT hash entries
         MigrationService.changePlainTextToSha256(settings, database, new Sha256());
 
-        // TODO: does this still make sense? -sgdc3
+        //TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged
         if (bukkitService.getOnlinePlayers().isEmpty()) {
             database.purgeLogged();

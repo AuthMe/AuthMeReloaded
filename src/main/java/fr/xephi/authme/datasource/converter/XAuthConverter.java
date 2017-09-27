@@ -49,7 +49,7 @@ public class XAuthConverter implements Converter {
             sender.sendMessage("[AuthMe] xAuth plugin not found");
             return;
         }
-        // TODO ljacqu 20160702: xAuthDb is not used except for the existence check -- is this intended?
+        //TODO ljacqu 20160702: xAuthDb is not used except for the existence check -- is this intended?
         File xAuthDb = new File(dataFolder.getParent(), makePath("xAuth", "xAuth.h2.db"));
         if (!xAuthDb.exists()) {
             sender.sendMessage("[AuthMe] xAuth H2 database not found, checking for MySQL or SQLite data...");
@@ -86,8 +86,9 @@ public class XAuthConverter implements Converter {
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             rs = ps.executeQuery();
-            if (!rs.next())
+            if (!rs.next()) {
                 return null;
+            }
             realPass = rs.getString("playername").toLowerCase();
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve name for account: " + id, e);
@@ -131,8 +132,9 @@ public class XAuthConverter implements Converter {
             ps = conn.prepareStatement(sql);
             ps.setInt(1, accountId);
             rs = ps.executeQuery();
-            if (!rs.next())
+            if (!rs.next()) {
                 return null;
+            }
             realPass = rs.getString("password");
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve password hash for account: " + accountId, e);
