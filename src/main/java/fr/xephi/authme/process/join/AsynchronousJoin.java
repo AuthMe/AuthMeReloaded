@@ -175,19 +175,21 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private boolean canResumeSession(Player player) {
         final String name = player.getName();
         if (/*sessionManager.hasSession(name) ||*/ database.isLogged(name)) {
-            PlayerAuth auth = database.getAuth(name);
             database.setUnlogged(name);
             playerCache.removePlayer(name);
-            if (auth != null) {
-                long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
-                if(timeSinceLastLogin < 0
-                    || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 60 * 1000)
-                    || !auth.getIp().equals(PlayerUtils.getPlayerIp(player))) {
-                    service.send(player, MessageKey.SESSION_EXPIRED);
-                } else {
-                    RestoreSessionEvent event = bukkitService.createAndCallEvent(
-                        isAsync -> new RestoreSessionEvent(player, isAsync));
-                    return !event.isCancelled();
+            if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+                PlayerAuth auth = database.getAuth(name);
+                if (auth != null) {
+                    long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
+                    if(timeSinceLastLogin < 0
+                        || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 60 * 1000)
+                        || !auth.getIp().equals(PlayerUtils.getPlayerIp(player))) {
+                        service.send(player, MessageKey.SESSION_EXPIRED);
+                    } else {
+                        RestoreSessionEvent event = bukkitService.createAndCallEvent(
+                            isAsync -> new RestoreSessionEvent(player, isAsync));
+                        return !event.isCancelled();
+                    }
                 }
             }
         }
