@@ -32,7 +32,7 @@ public class SessionManager implements SettingsDependent, HasCleanup {
      * @param name The name to check.
      * @return True if a session is found.
      */
-    public boolean hasSession(String name) {
+    private boolean hasSession(String name) {
         return enabled && sessions.contains(name.toLowerCase());
     }
 
@@ -41,7 +41,7 @@ public class SessionManager implements SettingsDependent, HasCleanup {
      *
      * @param name The name of the player.
      */
-    public void addSession(String name) {
+    private void addSession(String name) {
         if (enabled) {
             sessions.add(name.toLowerCase());
         }
@@ -52,7 +52,7 @@ public class SessionManager implements SettingsDependent, HasCleanup {
      *
      * @param name The name of the player.
      */
-    public void removeSession(String name) {
+    private void removeSession(String name) {
         sessions.remove(name.toLowerCase());
     }
 
