@@ -36,11 +36,6 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
     @Inject
     private LimboService limboService;
 
-    /*
-    @Inject
-    private SessionManager sessionManager;
-    */
-
     @Inject
     private TeleportationService teleportationService;
 
@@ -56,9 +51,6 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
      * @param player the player logging out
      */
     public void processSyncLogout(Player player) {
-        final String name = player.getName().toLowerCase();
-
-        //sessionManager.removeSession(name);
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
             protocolLibService.sendBlankInventoryPacket(player);
         }

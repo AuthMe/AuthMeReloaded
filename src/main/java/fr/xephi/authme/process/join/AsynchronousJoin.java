@@ -1,7 +1,6 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
-//import fr.xephi.authme.data.SessionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
@@ -52,11 +51,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private LimboService limboService;
-
-    /*
-    @Inject
-    private SessionManager sessionManager;
-    */
 
     @Inject
     private PluginHookService pluginHookService;
@@ -174,7 +168,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     private boolean canResumeSession(Player player) {
         final String name = player.getName();
-        if (/*sessionManager.hasSession(name) ||*/ database.isLogged(name)) {
+        if (database.isLogged(name)) {
             database.setUnlogged(name);
             playerCache.removePlayer(name);
             if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
