@@ -179,7 +179,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 if (auth != null) {
                     long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
                     if(timeSinceLastLogin < 0
-                        || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 60 * 1000)
+                        || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000)
                         || !auth.getIp().equals(PlayerUtils.getPlayerIp(player))) {
                         service.send(player, MessageKey.SESSION_EXPIRED);
                     } else {
