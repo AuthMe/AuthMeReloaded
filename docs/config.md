@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Sep 17 11:29:06 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Sep 30 19:52:39 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -442,6 +442,9 @@ Security:
         # How many minutes before resetting the count for failed logins by IP and username
         # Default: 480 minutes (8 hours)
         minutesBeforeCounterReset: 480
+        # If not empty this command will be executed instead of using the internal server ban system.
+        # Available placeholders: %player%, %ip%
+        customCommand: ''
     recoveryCode:
         # Number of characters a recovery code should have (0 to disable)
         length: 8
@@ -540,4 +543,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Sep 17 11:29:06 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Sep 30 19:52:39 CEST 2017

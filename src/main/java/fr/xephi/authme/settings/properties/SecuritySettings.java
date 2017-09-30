@@ -107,6 +107,11 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> TEMPBAN_MINUTES_BEFORE_RESET =
         newProperty("Security.tempban.minutesBeforeCounterReset", 480);
 
+    @Comment({"If not empty this command will be executed instead of using the internal server ban system.",
+        "Available placeholders: %player%, %ip%"})
+    public static final Property<String> TEMPBAN_CUSTOM_COMMAND =
+        newProperty("Security.tempban.customCommand", "");
+
     @Comment("Number of characters a recovery code should have (0 to disable)")
     public static final Property<Integer> RECOVERY_CODE_LENGTH =
         newProperty("Security.recoveryCode.length", 8);
