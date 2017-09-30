@@ -7,6 +7,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -67,6 +68,80 @@ public class MySQL extends SqlDataSource {
                 + "PRIMARY KEY (" + col.ID + ")"
                 + ") CHARACTER SET = utf8;";
             st.executeUpdate(sql);
+        }
+    }
+
+    @Override
+    protected void checkColumns() throws SQLException {
+        try (Connection con = getConnection(); Statement st = con.createStatement()) {
+            DatabaseMetaData md = con.getMetaData();
+            if (isColumnMissing(md, col.NAME)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.NAME + " VARCHAR(255) NOT NULL UNIQUE AFTER " + col.ID + ";");
+            }
+
+            if (isColumnMissing(md, col.REAL_NAME)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.REAL_NAME + " VARCHAR(255) NOT NULL AFTER " + col.NAME + ";");
+            }
+
+            if (isColumnMissing(md, col.PASSWORD)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL;");
+            }
+
+            if (!col.SALT.isEmpty() && isColumnMissing(md, col.SALT)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
+            }
+
+            if (isColumnMissing(md, col.IP)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL;");
+            }
+
+            if (isColumnMissing(md, col.LAST_LOGIN)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0;");
+            } else {
+                migrateLastLoginColumn(con, md);
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_X)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + col.LAST_LOGIN + " , ADD "
+                    + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + col.LASTLOC_X + " , ADD "
+                    + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + col.LASTLOC_Y);
+            } else {
+                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY "
+                    + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY "
+                    + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY "
+                    + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0';");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_WORLD)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + col.LASTLOC_Z);
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_YAW)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_YAW + " FLOAT;");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_PITCH)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.LASTLOC_PITCH + " FLOAT;");
+            }
+
+            if (isColumnMissing(md, col.EMAIL)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com' AFTER " + col.LASTLOC_WORLD);
+            }
+
+            if (isColumnMissing(md, col.IS_LOGGED)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.EMAIL);
+            }
         }
     }
 

@@ -395,7 +395,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>6.3.0.jre8-preview</version>
+            <version>6.3.3.jre8-preview</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
