@@ -221,6 +221,7 @@ public class TempbanManagerTest {
         given(settings.getProperty(SecuritySettings.TEMPBAN_LENGTH)).willReturn(tempbanLength);
         given(settings.getProperty(SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET))
             .willReturn((int) TEST_EXPIRATION_THRESHOLD / 60_000);
+        given(settings.getProperty(SecuritySettings.TEMPBAN_CUSTOM_COMMAND)).willReturn("");
         return settings;
     }
 

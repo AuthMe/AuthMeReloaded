@@ -107,7 +107,7 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> TEMPBAN_MINUTES_BEFORE_RESET =
         newProperty("Security.tempban.minutesBeforeCounterReset", 480);
 
-    @Comment({"If not empty this command will be executed instead of using the internal server ban system.",
+    @Comment({"The command to execute instead of using the internal ban system, empty if disabled.",
         "Available placeholders: %player%, %ip%"})
     public static final Property<String> TEMPBAN_CUSTOM_COMMAND =
         newProperty("Security.tempban.customCommand", "");
