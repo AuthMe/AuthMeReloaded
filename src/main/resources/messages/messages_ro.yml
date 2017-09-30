@@ -92,7 +92,7 @@ email_cooldown_error: '&cAi primit deja un mail pentru schimbarea parolei. Trebu
 
 # Captcha
 usage_captcha: '&3Pentru a te autentifica, te rugam sa folosesti comanda "/captcha <codul de verificare>"'
-wrong_captcha: '&cCodul de verificare este gresit, te rugam foloseste comanda "/captcha <codul de verificare>"!'
+wrong_captcha: '&cCodul de verificare este gresit, te rugam foloseste comanda "/captcha THE_CAPTCHA"!'
 valid_captcha: '&2Codul de verificare a fost scris corect!'
 
 # Time units
