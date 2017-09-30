@@ -1,7 +1,6 @@
 package fr.xephi.authme.process.logout;
 
 import fr.xephi.authme.ConsoleLogger;
-//import fr.xephi.authme.data.SessionManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
