@@ -22,6 +22,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -77,8 +78,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * Processes the given player that has just joined.
      *
      * @param player the player to process
+     * @param location the desired player location, null if you want to use the current one
      */
-    public void processJoin(final Player player) {
+    public void processJoin(final Player player, Location location) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
 
@@ -131,7 +133,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        processJoinSync(player, isAuthAvailable);
+        processJoinSync(player, isAuthAvailable, location);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -149,12 +151,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @param player the player to process
      * @param isAuthAvailable true if the player is registered, false otherwise
+     * @param location the desired player location, null if you want to use the current one
      */
-    private void processJoinSync(Player player, boolean isAuthAvailable) {
+    private void processJoinSync(Player player, boolean isAuthAvailable, Location location) {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            limboService.createLimboPlayer(player, isAuthAvailable);
+            limboService.createLimboPlayer(player, isAuthAvailable, location);
 
             player.setNoDamageTicks(registrationTimeout);
             if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {

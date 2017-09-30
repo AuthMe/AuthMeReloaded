@@ -189,14 +189,31 @@ public class PlayerListener implements Listener {
         }
     }
 
+    // Note: the following event is called since MC1.9, in older versions we have to fallback on the PlayerJoinEvent
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        isPlayerSpawnLocationEventCalled = true;
+        final Player player = event.getPlayer();
+
+        management.performJoin(player, event.getSpawnLocation());
+
+        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
+        if (customSpawnLocation != null) {
+            event.setSpawnLocation(customSpawnLocation);
+        }
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+
         if (!isPlayerSpawnLocationEventCalled) {
             teleportationService.teleportOnJoin(player);
+            management.performJoin(player, player.getLocation());
         }
+
         teleportationService.teleportNewPlayerToFirstSpawn(player);
-        management.performJoin(player);
     }
 
     private void runOnJoinChecks(String name, String ip) throws FailedVerificationException {
@@ -264,25 +281,6 @@ public class PlayerListener implements Listener {
                 event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             }
-        }
-    }
-
-    // Note: the following event is called since MC1.9, in older versions we have to fallback on the PlayerJoinEvent
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
-        isPlayerSpawnLocationEventCalled = true;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName();
-
-        if (validationService.isUnrestricted(name)) {
-            return;
-        }
-
-        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
-        if (customSpawnLocation != null) {
-            event.setSpawnLocation(customSpawnLocation);
         }
     }
 

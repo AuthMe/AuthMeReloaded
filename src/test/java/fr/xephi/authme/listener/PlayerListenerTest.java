@@ -496,7 +496,7 @@ public class PlayerListenerTest {
 
         // then
         verify(teleportationService).teleportNewPlayerToFirstSpawn(player);
-        verify(management).performJoin(player);
+        verify(management).performJoin(player, player.getLocation());
     }
 
     @Test
