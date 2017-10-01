@@ -88,7 +88,7 @@ show_no_email: '&2Du hast zur Zeit keine E-Mail-Adresse für deinen Account hint
 add_email: '&3Bitte hinterlege deine E-Mail-Adresse: /email add <deineEmail> <emailBestätigen>'
 recovery_email: '&3Passwort vergessen? Nutze "/email recovery <deineEmail>" für ein neues Passwort'
 change_password_expired: 'Mit diesem Befehl kannst Du Dein Passwort nicht mehr ändern.'
-email_cooldown_error: '&cEine E-Mail wurde erst kürzlich versendet. Du musst %time warten, bevor Du eine Neue anfordern kannst.'
+email_cooldown_error: '&cEine E-Mail wurde erst kürzlich versendet. Du musst %time warten, bevor Du eine neue anfordern kannst.'
 
 # Captcha
 usage_captcha: '&3Um dich einzuloggen, tippe dieses Captcha so ein: /captcha <theCaptcha>'
