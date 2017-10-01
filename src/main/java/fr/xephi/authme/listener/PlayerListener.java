@@ -43,7 +43,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import javax.inject.Inject;
 
@@ -80,8 +79,7 @@ public class PlayerListener implements Listener {
     @Inject
     private JoinMessageService joinMessageService;
 
-    private boolean isAsyncPlayerPreLoginEventCalled = false;
-    private boolean isPlayerSpawnLocationEventCalled = false;
+    private static boolean IS_ASYNC_PLAYER_PRE_LOGIN_EVENT_CALLED = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -189,26 +187,11 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // Note: the following event is called since MC1.9, in older versions we have to fallback on the PlayerJoinEvent
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
-        isPlayerSpawnLocationEventCalled = true;
-        final Player player = event.getPlayer();
-
-        management.performJoin(player, event.getSpawnLocation());
-
-        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
-        if (customSpawnLocation != null) {
-            event.setSpawnLocation(customSpawnLocation);
-        }
-    }
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
-        if (!isPlayerSpawnLocationEventCalled) {
+        if (!PlayerListener19.isIsPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
             management.performJoin(player, player.getLocation());
         }
@@ -239,7 +222,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
-        isAsyncPlayerPreLoginEventCalled = true;
+        IS_ASYNC_PLAYER_PRE_LOGIN_EVENT_CALLED = true;
 
         final String name = event.getName();
 
@@ -274,7 +257,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!isAsyncPlayerPreLoginEventCalled) {
+        if (!IS_ASYNC_PLAYER_PRE_LOGIN_EVENT_CALLED) {
             try {
                 runOnJoinChecks(name, event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
