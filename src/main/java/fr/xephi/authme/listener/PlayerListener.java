@@ -79,7 +79,7 @@ public class PlayerListener implements Listener {
     @Inject
     private JoinMessageService joinMessageService;
 
-    private static boolean IS_ASYNC_PLAYER_PRE_LOGIN_EVENT_CALLED = false;
+    private static boolean isAsyncPlayerPreLoginEventCalled = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -193,7 +193,7 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
-        if (!PlayerListener19Spigot.isIsPlayerSpawnLocationEventCalled()) {
+        if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
             management.performJoin(player, player.getLocation());
         }
@@ -224,7 +224,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
-        IS_ASYNC_PLAYER_PRE_LOGIN_EVENT_CALLED = true;
+        isAsyncPlayerPreLoginEventCalled = true;
 
         final String name = event.getName();
 
@@ -259,7 +259,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!IS_ASYNC_PLAYER_PRE_LOGIN_EVENT_CALLED) {
+        if (!isAsyncPlayerPreLoginEventCalled) {
             try {
                 runOnJoinChecks(name, event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
