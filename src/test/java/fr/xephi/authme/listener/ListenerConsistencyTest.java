@@ -32,7 +32,7 @@ public final class ListenerConsistencyTest {
         "PlayerListener#onPlayerQuit", "ServerListener#onPluginDisable",
         "ServerListener#onServerPing", "ServerListener#onPluginEnable",
         "PlayerListener#onJoinMessage", "PlayerListener#onAsyncPlayerPreLoginEvent",
-        "PlayerListener19#onPlayerSpawn");
+        "PlayerListener19Spigot#onPlayerSpawn");
 
     @BeforeClass
     public static void collectListenerClasses() {

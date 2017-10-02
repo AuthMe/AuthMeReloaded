@@ -21,6 +21,7 @@ import fr.xephi.authme.listener.PlayerListener111;
 import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
+import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Sha256;
@@ -311,6 +312,11 @@ public class AuthMe extends JavaPlugin {
         // Try to register 1.9 player listeners
         if (isClassLoaded("org.bukkit.event.player.PlayerSwapHandItemsEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
+        }
+
+        // Try to register 1.9 spigot player listeners
+        if (isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")) {
+            pluginManager.registerEvents(injector.getSingleton(PlayerListener19Spigot.class), this);
         }
 
         // Register listener for 1.11 events if available
