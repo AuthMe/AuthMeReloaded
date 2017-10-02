@@ -130,7 +130,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
-            welcomeMessageConfiguration.sendWelcomeMessage(player);
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+                welcomeMessageConfiguration.sendWelcomeMessage(player);
+            });
 
             // Skip if registration is optional
             return;
