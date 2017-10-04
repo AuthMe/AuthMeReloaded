@@ -94,6 +94,10 @@ public class Management {
         runTask(() -> asyncChangePassword.changePassword(player, oldPassword, newPassword));
     }
 
+    public void performPasswordChangeAsAdmin(CommandSender sender, String playerName, String newPassword) {
+        runTask(() -> asyncChangePassword.changePasswordAsAdmin(sender, playerName, newPassword));
+    }
+
     private void runTask(Runnable runnable) {
         bukkitService.runTaskOptionallyAsync(runnable);
     }

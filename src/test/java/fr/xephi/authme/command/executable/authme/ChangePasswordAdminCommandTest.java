@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
@@ -56,6 +57,9 @@ public class ChangePasswordAdminCommandTest {
     @Mock
     private ValidationService validationService;
 
+    @Mock
+    private Management management;
+
     @BeforeClass
     public static void setUpLogger() {
         TestHelper.setupLogger();
@@ -88,7 +92,6 @@ public class ChangePasswordAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(service).send(sender, MessageKey.UNKNOWN_USER);
@@ -110,7 +113,6 @@ public class ChangePasswordAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, player);
@@ -135,7 +137,6 @@ public class ChangePasswordAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, player);
@@ -159,7 +160,6 @@ public class ChangePasswordAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, player);
