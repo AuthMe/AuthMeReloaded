@@ -5,7 +5,9 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.lazytags.Tag;
 import fr.xephi.authme.util.lazytags.TagReplacer;
@@ -47,6 +49,9 @@ public class WelcomeMessageConfiguration implements Reloadable {
     @Inject
     private PlayerCache playerCache;
 
+    @Inject
+    private CommonService service;
+
     /** List of all supported tags for the welcome message. */
     private final List<Tag<Player>> availableTags = Arrays.asList(
         createTag("&",            () -> String.valueOf(ChatColor.COLOR_CHAR)),
@@ -77,6 +82,22 @@ public class WelcomeMessageConfiguration implements Reloadable {
      */
     public List<String> getWelcomeMessage(Player player) {
         return messageSupplier.getAdaptedMessages(player);
+    }
+
+    /**
+     * Sends the welcome message accordingly to the configuration
+     *
+     * @param player the player for whom the welcome message should be prepared
+     */
+    public void sendWelcomeMessage(Player player) {
+        List<String> welcomeMessage = getWelcomeMessage(player);
+        if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
+                welcomeMessage.forEach(bukkitService::broadcastMessage);
+            } else {
+                welcomeMessage.forEach(player::sendMessage);
+            }
+        }
     }
 
     /**

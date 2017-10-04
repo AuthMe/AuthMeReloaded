@@ -43,7 +43,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import javax.inject.Inject;
 
@@ -80,8 +79,7 @@ public class PlayerListener implements Listener {
     @Inject
     private JoinMessageService joinMessageService;
 
-    private boolean isAsyncPlayerPreLoginEventCalled = false;
-    private boolean isPlayerSpawnLocationEventCalled = false;
+    private static boolean isAsyncPlayerPreLoginEventCalled = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -171,8 +169,10 @@ public class PlayerListener implements Listener {
 
         String customJoinMessage = settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE);
         if (!customJoinMessage.isEmpty()) {
-            event.setJoinMessage(customJoinMessage.replace("{PLAYERNAME}", player.getName())
-                .replace("{DISPLAYNAME}", player.getDisplayName()));
+            event.setJoinMessage(customJoinMessage
+                .replace("{PLAYERNAME}", player.getName())
+                .replace("{DISPLAYNAME}", player.getDisplayName())
+                .replace("{PLAYERLISTNAME}", player.getPlayerListName()));
         }
 
         if (!settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)) {
@@ -189,26 +189,11 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // Note: the following event is called since MC1.9, in older versions we have to fallback on the PlayerJoinEvent
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
-        isPlayerSpawnLocationEventCalled = true;
-        final Player player = event.getPlayer();
-
-        management.performJoin(player, event.getSpawnLocation());
-
-        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
-        if (customSpawnLocation != null) {
-            event.setSpawnLocation(customSpawnLocation);
-        }
-    }
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
-        if (!isPlayerSpawnLocationEventCalled) {
+        if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
             management.performJoin(player, player.getLocation());
         }

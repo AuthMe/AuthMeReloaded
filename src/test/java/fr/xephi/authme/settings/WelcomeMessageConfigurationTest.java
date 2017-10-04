@@ -7,6 +7,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -49,6 +50,8 @@ public class WelcomeMessageConfigurationTest {
     private GeoIpService geoIpService;
     @Mock
     private PlayerCache playerCache;
+    @Mock
+    private CommonService service;
     @DataFolder
     private File testPluginFolder;
 

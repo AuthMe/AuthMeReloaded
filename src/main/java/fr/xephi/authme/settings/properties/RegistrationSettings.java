@@ -80,7 +80,8 @@ public final class RegistrationSettings implements SettingsHolder {
         "keep empty to use the original one.",
         "Available variables:",
         "{PLAYERNAME}: the player name (no colors)",
-        "{DISPLAYNAME}: the player name (with colors)"})
+        "{DISPLAYNAME}: the player display name (with colors)",
+        "{PLAYERLISTNAME}: the player list name (with colors)"})
     public static final Property<String> CUSTOM_JOIN_MESSAGE =
         newProperty("settings.customJoinMessage", "");
 
