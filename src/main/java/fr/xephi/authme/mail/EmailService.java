@@ -67,13 +67,53 @@ public class EmailService {
         File file = null;
         if (settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)) {
             try {
-                file = generateImage(name, newPass);
+                file = generatePasswordImage(name, newPass);
                 mailText = embedImageIntoEmailContent(file, email, mailText);
             } catch (IOException | EmailException e) {
                 ConsoleLogger.logException(
                     "Unable to send new password as image for email " + mailAddress + ":", e);
             }
         }
+
+        boolean couldSendEmail = sendMailSsl.sendEmail(mailText, email);
+        FileUtils.delete(file);
+        return couldSendEmail;
+    }
+
+    /**
+     * Sends an email to the user with the temporary verification code.
+     *
+     * @param name the name of the player
+     * @param mailAddress the player's email
+     * @param code the captcha code
+     * @return true if email could be sent, false otherwise
+     */
+    public boolean sendVerificationMail(String name, String mailAddress, String code) {
+        if (!hasAllInformation()) {
+            ConsoleLogger.warning("Cannot perform email registration: not all email settings are complete");
+            return false;
+        }
+
+        HtmlEmail email;
+        try {
+            email = sendMailSsl.initializeMail(mailAddress);
+        } catch (EmailException e) {
+            ConsoleLogger.logException("Failed to create email with the given settings:", e);
+            return false;
+        }
+
+        String mailText = replaceTagsForCaptchaMail(settings.getVerificationEmailMessage(), name, code);
+        // Generate an image?
+        File file = null;
+        /*if (settings.getProperty()) {   //+Add new setting: generate a verification code image
+            try {
+                file = generateCodeImage(name, code);
+                mailText = embedImageIntoEmailContent(file, email, mailText);
+            } catch (IOException | EmailException e) {
+                ConsoleLogger.logException(
+                    "Unable to send new password as image for email " + mailAddress + ":", e);
+            }
+        }*/
 
         boolean couldSendEmail = sendMailSsl.sendEmail(mailText, email);
         FileUtils.delete(file);
@@ -102,9 +142,16 @@ public class EmailService {
         return sendMailSsl.sendEmail(message, htmlEmail);
     }
 
-    private File generateImage(String name, String newPass) throws IOException {
+    private File generatePasswordImage(String name, String newPass) throws IOException {
         ImageGenerator gen = new ImageGenerator(newPass);
         File file = new File(dataFolder, name + "_new_pass.jpg");
+        ImageIO.write(gen.generateImage(), "jpg", file);
+        return file;
+    }
+
+    private File generateCodeImage(String name, String captcha) throws IOException {
+        ImageGenerator gen = new ImageGenerator(captcha);
+        File file = new File(dataFolder, name + "_temp_captcha.jpg");
         ImageIO.write(gen.generateImage(), "jpg", file);
         return file;
     }
@@ -121,6 +168,13 @@ public class EmailService {
             .replace("<playername />", name)
             .replace("<servername />", serverName)
             .replace("<generatedpass />", newPass);
+    }
+
+    private String replaceTagsForCaptchaMail(String mailText, String name, String captcha) {
+        return mailText
+            .replace("<playername />", name)
+            .replace("<servername />", serverName)
+            .replace("<generatedcaptcha />", captcha);
     }
 
     private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {

@@ -20,6 +20,7 @@ public class Settings extends SettingsManager {
 
     private final File pluginFolder;
     private String passwordEmailMessage;
+    private String captchaEmailMessage;
     private String recoveryCodeEmailMessage;
 
     /**
@@ -47,6 +48,15 @@ public class Settings extends SettingsManager {
     }
 
     /**
+     * Return the text to use in captcha verification emails.
+     *
+     * @return The email message
+     */
+    public String getVerificationEmailMessage() {
+        return captchaEmailMessage;
+    }
+
+    /**
      * Return the text to use when someone requests to receive a recovery code.
      *
      * @return The email message
@@ -57,6 +67,7 @@ public class Settings extends SettingsManager {
 
     private void loadSettingsFromFiles() {
         passwordEmailMessage = readFile("email.html");
+        captchaEmailMessage = readFile("verification_code_email.html");
         recoveryCodeEmailMessage = readFile("recovery_code_email.html");
     }
 
