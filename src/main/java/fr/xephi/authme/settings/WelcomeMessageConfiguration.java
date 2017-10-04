@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +71,10 @@ public class WelcomeMessageConfiguration implements Reloadable {
     @PostConstruct
     @Override
     public void reload() {
-        List<String> welcomeMessage = readWelcomeFile();
+        List<String> welcomeMessage = new ArrayList<>();
+        for(String line : readWelcomeFile()) {
+            welcomeMessage.add(ChatColor.translateAlternateColorCodes('&', line));
+        }
         messageSupplier = TagReplacer.newReplacer(availableTags, welcomeMessage);
     }
 
