@@ -68,7 +68,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
     public void changePasswordAsAdmin(CommandSender sender, final String playerName, String newPassword) {
         final String lowerCaseName = playerName.toLowerCase();
         if (!(playerCache.isAuthenticated(lowerCaseName) || dataSource.isAuthAvailable(lowerCaseName))) {
-            if(sender == null) {
+            if (sender == null) {
                 ConsoleLogger.warning("Tried to change password for user " + lowerCaseName + " but it doesn't exist!");
             } else {
                 commonService.send(sender, MessageKey.UNKNOWN_USER);
@@ -78,14 +78,14 @@ public class AsyncChangePassword implements AsynchronousProcess {
 
         HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, lowerCaseName);
         if (dataSource.updatePassword(lowerCaseName, hashedPassword)) {
-            if(sender != null) {
+            if (sender != null) {
                 commonService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " changed password of " + lowerCaseName);
             } else {
                 ConsoleLogger.info("Changed password of " + lowerCaseName);
             }
         } else {
-            if(sender != null) {
+            if (sender != null) {
                 commonService.send(sender, MessageKey.ERROR);
             }
             ConsoleLogger.warning("An error occurred while changing password for user " + lowerCaseName + "!");

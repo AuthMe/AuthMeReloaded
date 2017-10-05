@@ -1,11 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
@@ -20,18 +16,6 @@ import java.util.List;
 public class ChangePasswordAdminCommand implements ExecutableCommand {
 
     @Inject
-    private PasswordSecurity passwordSecurity;
-
-    @Inject
-    private PlayerCache playerCache;
-
-    @Inject
-    private DataSource dataSource;
-
-    @Inject
-    private BukkitService bukkitService;
-
-    @Inject
     private ValidationService validationService;
 
     @Inject
@@ -41,7 +25,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
     private Management management;
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Get the player and password
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
@@ -50,10 +34,8 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
         ValidationResult validationResult = validationService.validatePassword(playerPass, playerName);
         if (validationResult.hasError()) {
             commonService.send(sender, validationResult.getMessageKey(), validationResult.getArgs());
-            return;
+        } else {
+            management.performPasswordChangeAsAdmin(sender, playerName, playerPass);
         }
-
-        // Set the password
-        management.performPasswordChangeAsAdmin(sender, playerName, playerPass);
     }
 }
