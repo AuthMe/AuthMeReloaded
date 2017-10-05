@@ -57,21 +57,37 @@ public class TeleportationService implements Reloadable {
 
     /**
      * Teleports the player according to the settings when he joins.
-     * <p>
-     * Note: this is triggered by Bukkit's PlayerLoginEvent, during which you cannot use
-     * {@link Player#hasPlayedBefore()}: it always returns {@code false}. We trigger teleportation
-     * from the PlayerLoginEvent and not the PlayerJoinEvent to ensure that the location is overridden
-     * as fast as possible (cf. <a href="https://github.com/AuthMe/AuthMeReloaded/issues/682">AuthMe #682</a>).
      *
      * @param player the player to process
-     * @see <a href="https://bukkit.atlassian.net/browse/BUKKIT-3521">BUKKIT-3521: Player.hasPlayedBefore()
-     * always false</a>
      */
     public void teleportOnJoin(final Player player) {
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
+    }
+
+    /**
+     * Returns the player's custom on join location
+     *
+     * @param player the player to process
+     *
+     * @return the custom spawn location, null if the player should spawn at the original location
+     */
+    public Location prepareOnJoinSpawnLocation(final Player player) {
+        if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
+            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
+            final Location location = spawnLoader.getSpawnLocation(player);
+
+            SpawnTeleportEvent event = new SpawnTeleportEvent(player, location, playerCache.isAuthenticated(player.getName()));
+            bukkitService.callEvent(event);
+            if(!isEventValid(event)) {
+                return null;
+            }
+
+            return location;
+        }
+        return null;
     }
 
     /**
@@ -155,13 +171,10 @@ public class TeleportationService implements Reloadable {
      * @param event  the event to emit and according to which to teleport
      */
     private void performTeleportation(final Player player, final AbstractTeleportEvent event) {
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
-            @Override
-            public void run() {
-                bukkitService.callEvent(event);
-                if (player.isOnline() && isEventValid(event)) {
-                    player.teleport(event.getTo());
-                }
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            bukkitService.callEvent(event);
+            if (player.isOnline() && isEventValid(event)) {
+                player.teleport(event.getTo());
             }
         });
     }

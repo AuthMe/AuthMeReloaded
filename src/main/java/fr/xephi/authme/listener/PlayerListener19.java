@@ -1,11 +1,11 @@
 package fr.xephi.authme.listener;
 
-import javax.inject.Inject;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+
+import javax.inject.Inject;
 
 /**
  * Listener of player events for events introduced in Minecraft 1.9.

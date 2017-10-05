@@ -4,10 +4,8 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
-
 
 public interface PermissionHandler {
 

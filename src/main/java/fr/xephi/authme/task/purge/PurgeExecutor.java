@@ -91,7 +91,7 @@ public class PurgeExecutor {
      */
     synchronized void purgeFromAuthMe(Collection<String> names) {
         dataSource.purgeRecords(names);
-        // TODO ljacqu 20160717: We shouldn't output namedBanned.size() but the actual total that was deleted
+        //TODO ljacqu 20160717: We shouldn't output namedBanned.size() but the actual total that was deleted
         ConsoleLogger.info(ChatColor.GOLD + "Deleted " + names.size() + " user accounts");
     }
 

@@ -195,7 +195,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        return playerCache.isAuthenticated(user);
+        return source.isLogged(user);
     }
 
     @Override

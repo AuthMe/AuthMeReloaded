@@ -1,7 +1,6 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.SessionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
@@ -16,12 +15,15 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -53,9 +55,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private LimboService limboService;
 
     @Inject
-    private SessionManager sessionManager;
-
-    @Inject
     private PluginHookService pluginHookService;
 
     @Inject
@@ -70,6 +69,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private WelcomeMessageConfiguration welcomeMessageConfiguration;
+
     AsynchronousJoin() {
     }
 
@@ -77,8 +79,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * Processes the given player that has just joined.
      *
      * @param player the player to process
+     * @param location the desired player location, null if you want to use the current one
      */
-    public void processJoin(final Player player) {
+    public void processJoin(final Player player, Location location) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
 
@@ -127,11 +130,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+                welcomeMessageConfiguration.sendWelcomeMessage(player);
+            });
+
             // Skip if registration is optional
             return;
         }
 
-        processJoinSync(player, isAuthAvailable);
+        processJoinSync(player, isAuthAvailable, location);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -149,12 +156,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @param player the player to process
      * @param isAuthAvailable true if the player is registered, false otherwise
+     * @param location the desired player location, null if you want to use the current one
      */
-    private void processJoinSync(Player player, boolean isAuthAvailable) {
+    private void processJoinSync(Player player, boolean isAuthAvailable, Location location) {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            limboService.createLimboPlayer(player, isAuthAvailable);
+            limboService.createLimboPlayer(player, isAuthAvailable, location);
 
             player.setNoDamageTicks(registrationTimeout);
             if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
@@ -171,17 +179,22 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     private boolean canResumeSession(Player player) {
         final String name = player.getName();
-        if (sessionManager.hasSession(name) || database.isLogged(name)) {
-            PlayerAuth auth = database.getAuth(name);
+        if (database.isLogged(name)) {
             database.setUnlogged(name);
             playerCache.removePlayer(name);
-            if (auth != null) {
-                if (auth.getLastIp().equals(PlayerUtils.getPlayerIp(player))) {
-                    RestoreSessionEvent event = bukkitService.createAndCallEvent(
-                        isAsync -> new RestoreSessionEvent(player, isAsync));
-                    return !event.isCancelled();
-                } else {
-                    service.send(player, MessageKey.SESSION_EXPIRED);
+            if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+                PlayerAuth auth = database.getAuth(name);
+                if (auth != null) {
+                    long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
+                    if(timeSinceLastLogin < 0
+                        || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000)
+                        || !auth.getLastIp().equals(PlayerUtils.getPlayerIp(player))) {
+                        service.send(player, MessageKey.SESSION_EXPIRED);
+                    } else {
+                        RestoreSessionEvent event = bukkitService.createAndCallEvent(
+                            isAsync -> new RestoreSessionEvent(player, isAsync));
+                        return !event.isCancelled();
+                    }
                 }
             }
         }

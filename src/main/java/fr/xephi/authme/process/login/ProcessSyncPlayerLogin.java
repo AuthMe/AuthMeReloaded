@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
-import java.util.List;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
@@ -91,14 +90,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         player.saveData();
 
         // Login is done, display welcome message
-        List<String> welcomeMessage = welcomeMessageConfiguration.getWelcomeMessage(player);
-        if (commonService.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (commonService.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                welcomeMessage.forEach(bukkitService::broadcastMessage);
-            } else {
-                welcomeMessage.forEach(player::sendMessage);
-            }
-        }
+        welcomeMessageConfiguration.sendWelcomeMessage(player);
 
         // Login is now finished; we can force all commands
         commandManager.runCommandsOnLogin(player);

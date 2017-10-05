@@ -1,7 +1,6 @@
 package fr.xephi.authme.process.logout;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.SessionManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
@@ -37,9 +36,6 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
     private LimboService limboService;
 
     @Inject
-    private SessionManager sessionManager;
-
-    @Inject
     private TeleportationService teleportationService;
 
     @Inject
@@ -54,9 +50,6 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
      * @param player the player logging out
      */
     public void processSyncLogout(Player player) {
-        final String name = player.getName().toLowerCase();
-
-        sessionManager.removeSession(name);
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
             protocolLibService.sendBlankInventoryPacket(player);
         }

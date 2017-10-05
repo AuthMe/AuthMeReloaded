@@ -40,7 +40,7 @@ public class RakamakConverter implements Converter {
     }
 
     @Override
-    // TODO ljacqu 20151229: Restructure this into smaller portions
+    //TODO ljacqu 20151229: Restructure this into smaller portions
     public void execute(CommandSender sender) {
         boolean useIp = settings.getProperty(ConverterSettings.RAKAMAK_USE_IP);
         String fileName = settings.getProperty(ConverterSettings.RAKAMAK_FILE_NAME);

@@ -48,7 +48,7 @@ public class TempbanManagerTest {
     @Test
     public void shouldAddCounts() {
         // given
-        Settings settings = mockSettings(3, 60);
+        Settings settings = mockSettings(3, 60, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         String address = "192.168.1.1";
 
@@ -69,7 +69,7 @@ public class TempbanManagerTest {
     public void shouldIncreaseAndResetCount() {
         // given
         String address = "192.168.1.2";
-        Settings settings = mockSettings(3, 60);
+        Settings settings = mockSettings(3, 60, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
@@ -93,7 +93,7 @@ public class TempbanManagerTest {
     public void shouldNotIncreaseCountForDisabledTempban() {
         // given
         String address = "192.168.1.3";
-        Settings settings = mockSettings(1, 5);
+        Settings settings = mockSettings(1, 5, "");
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
@@ -109,7 +109,7 @@ public class TempbanManagerTest {
     public void shouldNotCheckCountIfTempbanIsDisabled() {
         // given
         String address = "192.168.1.4";
-        Settings settings = mockSettings(1, 5);
+        Settings settings = mockSettings(1, 5, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
 
@@ -129,7 +129,7 @@ public class TempbanManagerTest {
     @Test
     public void shouldNotIssueBanIfDisabled() {
         // given
-        Settings settings = mockSettings(0, 0);
+        Settings settings = mockSettings(0, 0, "");
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
         Player player = mock(Player.class);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
@@ -149,7 +149,7 @@ public class TempbanManagerTest {
         TestHelper.mockPlayerIp(player, ip);
         String banReason = "IP ban too many logins";
         given(messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
-        Settings settings = mockSettings(2, 100);
+        Settings settings = mockSettings(2, 100, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
 
         // when
@@ -169,6 +169,24 @@ public class TempbanManagerTest {
     }
 
     @Test
+    public void shouldBanPlayerIpCustom() {
+        // given
+        Player player = mock(Player.class);
+        String ip = "143.45.77.89";
+        TestHelper.mockPlayerIp(player, ip);
+        String banCommand = "banip %ip% 15d IP ban too many logins";
+        Settings settings = mockSettings(2, 100, banCommand);
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
+
+        // when
+        manager.tempbanPlayer(player);
+        TestHelper.runSyncDelayedTask(bukkitService);
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand(banCommand.replace("%ip%", ip));
+    }
+
+    @Test
     public void shouldResetCountAfterBan() {
         // given
         Player player = mock(Player.class);
@@ -176,7 +194,7 @@ public class TempbanManagerTest {
         TestHelper.mockPlayerIp(player, ip);
         String banReason = "kick msg";
         given(messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
-        Settings settings = mockSettings(10, 60);
+        Settings settings = mockSettings(10, 60, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         manager.increaseCount(ip, "user");
         manager.increaseCount(ip, "name2");
@@ -202,7 +220,7 @@ public class TempbanManagerTest {
         given(counter2.isEmpty()).willReturn(false);
         counts.put("33.33.33.33", counter2);
 
-        TempbanManager manager = new TempbanManager(bukkitService, messages, mockSettings(3, 10));
+        TempbanManager manager = new TempbanManager(bukkitService, messages, mockSettings(3, 10, ""));
         ReflectionTestUtils.setField(TempbanManager.class, manager, "ipLoginFailureCounts", counts);
 
         // when
@@ -214,13 +232,14 @@ public class TempbanManagerTest {
         assertThat(counts.keySet(), contains("33.33.33.33"));
     }
 
-    private static Settings mockSettings(int maxTries, int tempbanLength) {
+    private static Settings mockSettings(int maxTries, int tempbanLength, String customCommand) {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(true);
         given(settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN)).willReturn(maxTries);
         given(settings.getProperty(SecuritySettings.TEMPBAN_LENGTH)).willReturn(tempbanLength);
         given(settings.getProperty(SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET))
             .willReturn((int) TEST_EXPIRATION_THRESHOLD / 60_000);
+        given(settings.getProperty(SecuritySettings.TEMPBAN_CUSTOM_COMMAND)).willReturn(customCommand);
         return settings;
     }
 

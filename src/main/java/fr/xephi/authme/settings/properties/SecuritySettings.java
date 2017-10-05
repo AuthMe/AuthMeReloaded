@@ -107,6 +107,11 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> TEMPBAN_MINUTES_BEFORE_RESET =
         newProperty("Security.tempban.minutesBeforeCounterReset", 480);
 
+    @Comment({"The command to execute instead of using the internal ban system, empty if disabled.",
+        "Available placeholders: %player%, %ip%"})
+    public static final Property<String> TEMPBAN_CUSTOM_COMMAND =
+        newProperty("Security.tempban.customCommand", "");
+
     @Comment("Number of characters a recovery code should have (0 to disable)")
     public static final Property<Integer> RECOVERY_CODE_LENGTH =
         newProperty("Security.recoveryCode.length", 8);
@@ -133,7 +138,7 @@ public final class SecuritySettings implements SettingsHolder {
         newProperty("Security.emailRecovery.cooldown", 60);
 
     @Comment({
-        "The maill shown using /email show will be partially hidden",
+        "The mail shown using /email show will be partially hidden",
         "E.g. (if enabled)",
         " original email: my.email@example.com",
         " hidden email: my.***@***mple.com"

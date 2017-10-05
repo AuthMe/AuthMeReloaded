@@ -12,7 +12,6 @@ import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -35,6 +34,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -79,7 +79,7 @@ public class PlayerListener implements Listener {
     @Inject
     private JoinMessageService joinMessageService;
 
-    private boolean isAsyncPlayerPreLoginEventCalled = false;
+    private static boolean isAsyncPlayerPreLoginEventCalled = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -169,8 +169,10 @@ public class PlayerListener implements Listener {
 
         String customJoinMessage = settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE);
         if (!customJoinMessage.isEmpty()) {
-            event.setJoinMessage(customJoinMessage.replace("{PLAYERNAME}", player.getName())
-                .replace("{DISPLAYNAME}", player.getDisplayName()));
+            event.setJoinMessage(customJoinMessage
+                .replace("{PLAYERNAME}", player.getName())
+                .replace("{DISPLAYNAME}", player.getDisplayName())
+                .replace("{PLAYERLISTNAME}", player.getPlayerListName()));
         }
 
         if (!settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)) {
@@ -190,8 +192,13 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+
+        if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
+            teleportationService.teleportOnJoin(player);
+            management.performJoin(player, player.getLocation());
+        }
+
         teleportationService.teleportNewPlayerToFirstSpawn(player);
-        management.performJoin(player);
     }
 
     private void runOnJoinChecks(String name, String ip) throws FailedVerificationException {
@@ -233,6 +240,9 @@ public class PlayerListener implements Listener {
         }
     }
 
+    //Note: We can't teleport the player in the PlayerLoginEvent listener
+    //as the new player location will be reverted by the server.
+
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
@@ -249,9 +259,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        teleportationService.teleportOnJoin(player);
-
-        if(!isAsyncPlayerPreLoginEventCalled) {
+        if (!isAsyncPlayerPreLoginEventCalled) {
             try {
                 runOnJoinChecks(name, event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
@@ -298,6 +306,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerHeldItem(PlayerItemHeldEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
@@ -375,7 +390,7 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // TODO: check this, why do we need to update the quit loc? -sgdc3
+    //TODO: check this, why do we need to update the quit loc? -sgdc3
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {

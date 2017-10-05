@@ -448,8 +448,9 @@ public class SQLite implements DataSource {
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
             try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next())
+                if (rs.next()) {
                     return rs.getInt(col.IS_LOGGED) == 1;
+                }
             }
         } catch (SQLException ex) {
             logSqlException(ex);

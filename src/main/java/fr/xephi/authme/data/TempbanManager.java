@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static fr.xephi.authme.settings.properties.SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET;
 import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
 
 /**
@@ -33,6 +32,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
     private int threshold;
     private int length;
     private long resetThreshold;
+    private String customCommand;
 
     @Inject
     TempbanManager(BukkitService bukkitService, Messages messages, Settings settings) {
@@ -95,6 +95,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
      */
     public void tempbanPlayer(final Player player) {
         if (isEnabled) {
+            final String name = player.getName();
             final String ip = PlayerUtils.getPlayerIp(player);
             final String reason = messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS);
 
@@ -102,11 +103,15 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
             long newTime = expires.getTime() + (length * MILLIS_PER_MINUTE);
             expires.setTime(newTime);
 
-            bukkitService.scheduleSyncDelayedTask(new Runnable() {
-                @Override
-                public void run() {
+            bukkitService.scheduleSyncDelayedTask(() -> {
+                if(customCommand.isEmpty()) {
                     bukkitService.banIp(ip, reason, expires, "AuthMe");
                     player.kickPlayer(reason);
+                } else {
+                    String command = customCommand
+                        .replaceAll("%player%", name)
+                        .replaceAll("%ip%", ip);
+                    bukkitService.dispatchConsoleCommand(command);
                 }
             });
 
@@ -119,7 +124,8 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         this.isEnabled = settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TEMPBAN);
         this.length = settings.getProperty(SecuritySettings.TEMPBAN_LENGTH);
-        this.resetThreshold = settings.getProperty(TEMPBAN_MINUTES_BEFORE_RESET);
+        this.resetThreshold = settings.getProperty(SecuritySettings.TEMPBAN_MINUTES_BEFORE_RESET);
+        this.customCommand = settings.getProperty(SecuritySettings.TEMPBAN_CUSTOM_COMMAND);
     }
 
     @Override
