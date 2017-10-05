@@ -286,6 +286,16 @@ public class AuthMeApi {
     }
 
     /**
+     * Change a user's password
+     *
+     * @param name the user name
+     * @param newPassword the new password
+     */
+    public void changePassword(String name, String newPassword) {
+        management.performPasswordChangeAsAdmin(null, name, newPassword);
+    }
+
+    /**
      * Get all the registered names (lowercase)
      *
      * @return registered names
