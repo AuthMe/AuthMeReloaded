@@ -8,7 +8,6 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -27,7 +26,6 @@ import static org.mockito.Mockito.when;
 /**
  * Integration test for {@link SQLite}.
  */
-@Ignore // TODO #792: Need to solve not-null constraint in sqlite
 public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */

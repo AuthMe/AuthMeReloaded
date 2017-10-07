@@ -206,9 +206,9 @@ public class PlayerAuth {
         public PlayerAuth build() {
             PlayerAuth auth = new PlayerAuth();
             auth.nickname = checkNotNull(name).toLowerCase();
-            auth.realName = firstNonNull(realName, "Player");
+            auth.realName = realName;
             auth.password = firstNonNull(password, new HashedPassword(""));
-            auth.email = firstNonNull(email, "your@email.com");
+            auth.email = email;
             auth.lastIp = lastIp;
             auth.groupId = groupId;
             auth.lastLogin = lastLogin;

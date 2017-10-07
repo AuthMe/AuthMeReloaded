@@ -176,9 +176,12 @@ public class MySQL implements DataSource {
                     + " ADD COLUMN " + col.NAME + " VARCHAR(255) NOT NULL UNIQUE AFTER " + col.ID + ";");
             }
 
+            String realNameColDefinition = col.REAL_NAME + " VARCHAR(255)";
             if (isColumnMissing(md, col.REAL_NAME)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.REAL_NAME + " VARCHAR(255) NOT NULL AFTER " + col.NAME + ";");
+                    + " ADD COLUMN " + realNameColDefinition + " AFTER " + col.NAME + ";");
+            } else {
+                removeNotNullConstraint(md, con, col.REAL_NAME, realNameColDefinition, "Player");
             }
 
             if (isColumnMissing(md, col.PASSWORD)) {
@@ -197,12 +200,12 @@ public class MySQL implements DataSource {
                 removeNotNullConstraint(md, con, col.LAST_IP, ipColDefinition, "127.0.0.1");
             }
 
-            String lastLoginColDef = col.LAST_LOGIN + " BIGINT;";
+            String lastLoginColDef = col.LAST_LOGIN + " BIGINT";
             if (isColumnMissing(md, col.LAST_LOGIN)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastLoginColDef + ";");
             } else {
                 migrateLastLoginColumn(con, md);
-                removeNotNullConstraint(md, con, col.LAST_LOGIN, ipColDefinition, 0);
+                removeNotNullConstraint(md, con, col.LAST_LOGIN, lastLoginColDef, 0);
             }
 
             if (isColumnMissing(md, col.REGISTRATION_DATE)) {
@@ -242,9 +245,12 @@ public class MySQL implements DataSource {
                     + col.LASTLOC_PITCH + " FLOAT;");
             }
 
+            String emailColDef = col.EMAIL + " VARCHAR(255)";
             if (isColumnMissing(md, col.EMAIL)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                    + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com' AFTER " + col.LASTLOC_WORLD);
+                    + emailColDef + " AFTER " + col.LASTLOC_WORLD);
+            } else {
+                removeEmailDefault(md, con, emailColDef);
             }
 
             if (isColumnMissing(md, col.IS_LOGGED)) {
@@ -278,6 +284,24 @@ public class MySQL implements DataSource {
                 }
             } else if (nullableCode == DatabaseMetaData.columnNullableUnknown) {
                 ConsoleLogger.warning("Unknown nullable status for column '" + columnName + "'");
+            }
+        }
+    }
+
+    private void removeEmailDefault(DatabaseMetaData metaData, Connection con,
+                                    String emailColumnDefinition) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, col.EMAIL)) {
+            if (!rs.next()) {
+                throw new IllegalStateException("Did not find meta data for email column (this should never happen!)");
+            }
+
+            String defaultValue = rs.getString("COLUMN_DEF");
+            if ("your@email.com".equals(defaultValue)) {
+                ConsoleLogger.debug("Removing default 'your@email.com' from email column definition");
+                try (Statement st = con.createStatement()) {
+                    st.execute("ALTER TABLE " + tableName + " MODIFY " + emailColumnDefinition);
+                    changeDefaultValueToNull(con, col.EMAIL, "your@email.com");
+                }
             }
         }
     }
@@ -766,8 +790,7 @@ public class MySQL implements DataSource {
         }
 
         // Create lastlogin column
-        sql = String.format("ALTER TABLE %s ADD COLUMN %s "
-                + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
+        sql = String.format("ALTER TABLE %s ADD COLUMN %s BIGINT AFTER %s",
             tableName, col.LAST_LOGIN, col.LAST_IP);
         con.prepareStatement(sql).execute();
 

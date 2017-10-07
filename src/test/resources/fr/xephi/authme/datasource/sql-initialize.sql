@@ -16,7 +16,7 @@ CREATE TABLE authme (
     pitch FLOAT,
     email VARCHAR(255),
     isLogged INT DEFAULT '0',
-    realname VARCHAR(255) NOT NULL DEFAULT 'Player',
+    realname VARCHAR(255),
     salt varchar(255),
     CONSTRAINT table_const_prim PRIMARY KEY (id)
 );
