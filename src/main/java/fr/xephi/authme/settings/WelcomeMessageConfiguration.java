@@ -72,7 +72,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
     @Override
     public void reload() {
         List<String> welcomeMessage = new ArrayList<>();
-        for(String line : readWelcomeFile()) {
+        for (String line : readWelcomeFile()) {
             welcomeMessage.add(ChatColor.translateAlternateColorCodes('&', line));
         }
         messageSupplier = TagReplacer.newReplacer(availableTags, welcomeMessage);
@@ -94,8 +94,8 @@ public class WelcomeMessageConfiguration implements Reloadable {
      * @param player the player for whom the welcome message should be prepared
      */
     public void sendWelcomeMessage(Player player) {
-        List<String> welcomeMessage = getWelcomeMessage(player);
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            List<String> welcomeMessage = getWelcomeMessage(player);
             if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
                 welcomeMessage.forEach(bukkitService::broadcastMessage);
             } else {
