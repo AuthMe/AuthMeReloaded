@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Mon Oct 09 09:22:33 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Mon Oct 09 10:19:07 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -12,7 +12,8 @@ DataSource:
     # What type of database do you want to use?
     # Valid values: SQLITE, MYSQL
     backend: 'SQLITE'
-    # Enable database caching, should improve database performance
+    # Enable the database caching system, should be disabled on bungeecord environments
+    # or when a website integration is being used.
     caching: true
     # Database host address
     mySQLHost: '127.0.0.1'
@@ -544,4 +545,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Oct 09 09:22:33 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Oct 09 10:19:07 CEST 2017
