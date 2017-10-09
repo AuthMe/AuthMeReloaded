@@ -49,7 +49,12 @@ public class LuckPermsHandler implements PermissionHandler {
             return getUser(player);
         }
 
-        UUID uuid = luckPermsApi.getStorage().getUUID(playerName).join();
+        UUID uuid = null;
+        try {
+            uuid = luckPermsApi.getStorage().getUUID(playerName).get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        }
         if (uuid == null) {
             return null;
         }
