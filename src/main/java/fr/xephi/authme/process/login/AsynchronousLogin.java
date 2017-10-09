@@ -238,9 +238,12 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             ConsoleLogger.fine(player.getName() + " logged in!");
 
-            // makes player isLoggedin via API
+            // makes player loggedin
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
+            if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+                dataSource.grantSession(name);
+            }
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end

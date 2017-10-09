@@ -566,6 +566,44 @@ public class MySQL implements DataSource {
     }
 
     @Override
+    public boolean hasSession(String user) {
+        String sql = "SELECT " + col.HAS_SESSION + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, user);
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next() && (rs.getInt(col.HAS_SESSION) == 1);
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
+    }
+
+    @Override
+    public void grantSession(String user) {
+        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, 1);
+            pst.setString(2, user.toLowerCase());
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+    }
+
+    @Override
+    public void revokeSession(String user) {
+        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, 0);
+            pst.setString(2, user.toLowerCase());
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+    }
+
+    @Override
     public void purgeLogged() {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {

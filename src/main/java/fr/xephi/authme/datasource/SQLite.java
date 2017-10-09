@@ -467,6 +467,48 @@ public class SQLite implements DataSource {
     }
 
     @Override
+    public boolean hasSession(String user) {
+        String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, user);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(col.HAS_SESSION) == 1;
+                }
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
+    }
+
+    @Override
+    public void grantSession(String user) {
+        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE LOWER(" + col.NAME + ")=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, 1);
+            pst.setString(2, user);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+    }
+
+    @Override
+    public void revokeSession(String user) {
+        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE LOWER(" + col.NAME + ")=?;";
+        if (user != null) {
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setInt(1, 0);
+                pst.setString(2, user);
+                pst.executeUpdate();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            }
+        }
+    }
+
+    @Override
     public void purgeLogged() {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
@@ -574,31 +616,10 @@ public class SQLite implements DataSource {
         return authBuilder.build();
     }
 
-
-    private static void close(Statement st) {
-        if (st != null) {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
-        }
-    }
-
     private static void close(Connection con) {
         if (con != null) {
             try {
                 con.close();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
-        }
-    }
-
-    private static void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
             } catch (SQLException ex) {
                 logSqlException(ex);
             }

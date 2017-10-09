@@ -179,8 +179,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     private boolean canResumeSession(Player player) {
         final String name = player.getName();
-        if (database.isLogged(name)) {
+        if (database.hasSession(name)) {
             database.setUnlogged(name);
+            database.revokeSession(name);
             playerCache.removePlayer(name);
             if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
                 PlayerAuth auth = database.getAuth(name);

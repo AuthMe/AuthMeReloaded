@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Sep 30 19:52:39 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Mon Oct 09 08:37:38 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -40,6 +40,8 @@ DataSource:
     mySQLColumnEmail: 'email'
     # Column for storing if a player is logged in or not
     mySQLColumnLogged: 'isLogged'
+    # Column for storing if a player has a valid session or not
+    mySQLColumnHasSession: 'isLogged'
     # Column for storing players ips
     mySQLColumnIp: 'ip'
     # Column for storing players lastlogins
@@ -292,7 +294,8 @@ settings:
     # keep empty to use the original one.
     # Available variables:
     # {PLAYERNAME}: the player name (no colors)
-    # {DISPLAYNAME}: the player name (with colors)
+    # {DISPLAYNAME}: the player display name (with colors)
+    # {PLAYERLISTNAME}: the player list name (with colors)
     customJoinMessage: ''
     # Should we remove the leave messages of unlogged users?
     removeUnloggedLeaveMessage: false
@@ -442,7 +445,7 @@ Security:
         # How many minutes before resetting the count for failed logins by IP and username
         # Default: 480 minutes (8 hours)
         minutesBeforeCounterReset: 480
-        # If not empty this command will be executed instead of using the internal server ban system.
+        # The command to execute instead of using the internal ban system, empty if disabled.
         # Available placeholders: %player%, %ip%
         customCommand: ''
     recoveryCode:
@@ -543,4 +546,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Sep 30 19:52:39 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Oct 09 08:37:38 CEST 2017

@@ -26,6 +26,7 @@ public final class Columns {
     public final String EMAIL;
     public final String ID;
     public final String IS_LOGGED;
+    public final String HAS_SESSION;
 
     public Columns(Settings settings) {
         NAME          = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
@@ -44,6 +45,7 @@ public final class Columns {
         EMAIL         = settings.getProperty(DatabaseSettings.MYSQL_COL_EMAIL);
         ID            = settings.getProperty(DatabaseSettings.MYSQL_COL_ID);
         IS_LOGGED     = settings.getProperty(DatabaseSettings.MYSQL_COL_ISLOGGED);
+        HAS_SESSION   = settings.getProperty(DatabaseSettings.MYSQL_COL_HASSESSION);
     }
 
 }

@@ -82,8 +82,11 @@ public class AsynchronousQuit implements AsynchronousProcess {
         playerCache.removePlayer(name);
 
         //always update the database when the player quit the game (if sessions are disabled)
-        if(!wasLoggedIn || !service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+        if(wasLoggedIn) {
             database.setUnlogged(name);
+            if(!service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+                database.revokeSession(name);
+            }
         }
 
         if (plugin.isEnabled()) {
