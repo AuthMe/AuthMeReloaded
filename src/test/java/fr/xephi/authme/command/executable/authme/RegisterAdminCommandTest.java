@@ -144,7 +144,6 @@ public class RegisterAdminCommandTest {
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
-        verify(dataSource).setUnlogged(user);
     }
 
     @Test
@@ -174,7 +173,6 @@ public class RegisterAdminCommandTest {
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
-        verify(dataSource).setUnlogged(user);
         verify(player).kickPlayer(kickForAdminRegister);
     }
 
