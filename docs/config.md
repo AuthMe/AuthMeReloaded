@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Mon Oct 09 08:37:38 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Oct 10 13:51:56 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -41,7 +41,7 @@ DataSource:
     # Column for storing if a player is logged in or not
     mySQLColumnLogged: 'isLogged'
     # Column for storing if a player has a valid session or not
-    mySQLColumnHasSession: 'isLogged'
+    mySQLColumnHasSession: 'hasSession'
     # Column for storing players ips
     mySQLColumnIp: 'ip'
     # Column for storing players lastlogins
@@ -546,4 +546,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Oct 09 08:37:38 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Oct 10 13:51:56 CEST 2017
