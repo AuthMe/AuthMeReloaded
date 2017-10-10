@@ -241,7 +241,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // makes player loggedin
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
-            if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+            if (service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
                 dataSource.grantSession(name);
             }
 

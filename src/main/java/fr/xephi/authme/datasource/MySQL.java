@@ -237,6 +237,11 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.EMAIL);
             }
+
+            if (isColumnMissing(md, col.HAS_SESSION)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.HAS_SESSION + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.IS_LOGGED);
+            }
         }
         ConsoleLogger.info("MySQL setup finished");
     }

@@ -67,8 +67,6 @@ public class RegisterAdminCommand implements ExecutableCommand {
                 commonService.send(sender, MessageKey.ERROR);
                 return;
             }
-            dataSource.setUnlogged(playerNameLowerCase);
-            dataSource.revokeSession(playerNameLowerCase);
 
             commonService.send(sender, MessageKey.REGISTER_SUCCESS);
             ConsoleLogger.info(sender.getName() + " registered " + playerName);

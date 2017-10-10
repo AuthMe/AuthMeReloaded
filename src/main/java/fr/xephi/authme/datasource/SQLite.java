@@ -136,6 +136,10 @@ public class SQLite implements DataSource {
             if (isColumnMissing(md, col.IS_LOGGED)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.IS_LOGGED + " INT DEFAULT '0';");
             }
+
+            if (isColumnMissing(md, col.HAS_SESSION)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.HAS_SESSION + " INT DEFAULT '0';");
+            }
         }
         ConsoleLogger.info("SQLite Setup finished");
     }
@@ -426,7 +430,7 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
+        String sql = "SELECT " + col.IS_LOGGED + " FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
             try (ResultSet rs = pst.executeQuery()) {
@@ -455,20 +459,18 @@ public class SQLite implements DataSource {
     @Override
     public void setUnlogged(String user) {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        if (user != null) {
-            try (PreparedStatement pst = con.prepareStatement(sql)) {
-                pst.setInt(1, 0);
-                pst.setString(2, user);
-                pst.executeUpdate();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, 0);
+            pst.setString(2, user);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
     }
 
     @Override
     public boolean hasSession(String user) {
-        String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
+        String sql = "SELECT " + col.HAS_SESSION + " FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
             try (ResultSet rs = pst.executeQuery()) {
@@ -497,14 +499,12 @@ public class SQLite implements DataSource {
     @Override
     public void revokeSession(String user) {
         String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        if (user != null) {
-            try (PreparedStatement pst = con.prepareStatement(sql)) {
-                pst.setInt(1, 0);
-                pst.setString(2, user);
-                pst.executeUpdate();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, 0);
+            pst.setString(2, user);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
     }
 
