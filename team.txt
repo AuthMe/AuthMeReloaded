@@ -19,3 +19,4 @@ Translators:
 irobin591 - DE Translator
 WaterCXubic - ZHHK Translator
 Bodyash - Russian/Ukrainian translator
+MineSAT - Spanish translator
