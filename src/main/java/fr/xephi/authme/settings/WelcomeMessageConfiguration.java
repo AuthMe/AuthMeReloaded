@@ -13,6 +13,7 @@ import fr.xephi.authme.util.lazytags.Tag;
 import fr.xephi.authme.util.lazytags.TagReplacer;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -54,23 +56,28 @@ public class WelcomeMessageConfiguration implements Reloadable {
 
     /** List of all supported tags for the welcome message. */
     private final List<Tag<Player>> availableTags = Arrays.asList(
-        createTag("&",            () -> String.valueOf(ChatColor.COLOR_CHAR)),
-        createTag("{PLAYER}",     pl -> pl.getName()),
-        createTag("{ONLINE}",     () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
-        createTag("{MAXPLAYERS}", () -> Integer.toString(server.getMaxPlayers())),
-        createTag("{IP}",         pl -> PlayerUtils.getPlayerIp(pl)),
-        createTag("{LOGINS}",     () -> Integer.toString(playerCache.getLogged())),
-        createTag("{WORLD}",      pl -> pl.getWorld().getName()),
-        createTag("{SERVER}",     () -> server.getServerName()),
-        createTag("{VERSION}",    () -> server.getBukkitVersion()),
-        createTag("{COUNTRY}",    pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
+        createTag("&",             () -> String.valueOf(ChatColor.COLOR_CHAR)),
+        createTag("{PLAYER}",      HumanEntity::getName),
+        createTag("{DISPLAYNAME}", Player::getDisplayName),
+        createTag("{DISPLAYNAMENOCOLOR}", Player::getDisplayName),
+        createTag("{ONLINE}",      () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
+        createTag("{MAXPLAYERS}",  () -> Integer.toString(server.getMaxPlayers())),
+        createTag("{IP}",          PlayerUtils::getPlayerIp),
+        createTag("{LOGINS}",      () -> Integer.toString(playerCache.getLogged())),
+        createTag("{WORLD}",       pl -> pl.getWorld().getName()),
+        createTag("{SERVER}",      () -> server.getServerName()),
+        createTag("{VERSION}",     () -> server.getBukkitVersion()),
+        createTag("{COUNTRY}",     pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
 
     private TagReplacer<Player> messageSupplier;
 
     @PostConstruct
     @Override
     public void reload() {
-        List<String> welcomeMessage = readWelcomeFile();
+        List<String> welcomeMessage = new ArrayList<>();
+        for (String line : readWelcomeFile()) {
+            welcomeMessage.add(ChatColor.translateAlternateColorCodes('&', line));
+        }
         messageSupplier = TagReplacer.newReplacer(availableTags, welcomeMessage);
     }
 
@@ -90,8 +97,8 @@ public class WelcomeMessageConfiguration implements Reloadable {
      * @param player the player for whom the welcome message should be prepared
      */
     public void sendWelcomeMessage(Player player) {
-        List<String> welcomeMessage = getWelcomeMessage(player);
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            List<String> welcomeMessage = getWelcomeMessage(player);
             if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
                 welcomeMessage.forEach(bukkitService::broadcastMessage);
             } else {

@@ -15,6 +15,7 @@ import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -172,7 +173,8 @@ public class PlayerListener implements Listener {
             event.setJoinMessage(customJoinMessage
                 .replace("{PLAYERNAME}", player.getName())
                 .replace("{DISPLAYNAME}", player.getDisplayName())
-                .replace("{PLAYERLISTNAME}", player.getPlayerListName()));
+                .replace("{DISPLAYNAMENOCOLOR}", ChatColor.stripColor(player.getDisplayName()))
+            );
         }
 
         if (!settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)) {

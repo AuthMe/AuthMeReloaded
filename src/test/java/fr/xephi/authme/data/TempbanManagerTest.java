@@ -172,6 +172,7 @@ public class TempbanManagerTest {
     public void shouldBanPlayerIpCustom() {
         // given
         Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bob");
         String ip = "143.45.77.89";
         TestHelper.mockPlayerIp(player, ip);
         String banCommand = "banip %ip% 15d IP ban too many logins";

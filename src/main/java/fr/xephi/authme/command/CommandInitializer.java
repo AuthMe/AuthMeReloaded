@@ -416,6 +416,7 @@ public class CommandInitializer {
             .labels("messages", "msg")
             .description("Add missing messages")
             .detailedDescription("Adds missing messages to the current messages file.")
+            .withArgument("help", "Add 'help' to update the help messages file", true)
             .permission(AdminPermission.UPDATE_MESSAGES)
             .executableCommand(MessagesCommand.class)
             .register();

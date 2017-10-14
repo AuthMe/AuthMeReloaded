@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Sep 30 19:52:39 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Mon Oct 09 10:19:07 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -12,7 +12,8 @@ DataSource:
     # What type of database do you want to use?
     # Valid values: SQLITE, MYSQL
     backend: 'SQLITE'
-    # Enable database caching, should improve database performance
+    # Enable the database caching system, should be disabled on bungeecord environments
+    # or when a website integration is being used.
     caching: true
     # Database host address
     mySQLHost: '127.0.0.1'
@@ -292,7 +293,8 @@ settings:
     # keep empty to use the original one.
     # Available variables:
     # {PLAYERNAME}: the player name (no colors)
-    # {DISPLAYNAME}: the player name (with colors)
+    # {DISPLAYNAME}: the player display name (with colors)
+    # {DISPLAYNAMENOCOLOR}: the player display name (without colors)
     customJoinMessage: ''
     # Should we remove the leave messages of unlogged users?
     removeUnloggedLeaveMessage: false
@@ -442,7 +444,7 @@ Security:
         # How many minutes before resetting the count for failed logins by IP and username
         # Default: 480 minutes (8 hours)
         minutesBeforeCounterReset: 480
-        # If not empty this command will be executed instead of using the internal server ban system.
+        # The command to execute instead of using the internal ban system, empty if disabled.
         # Available placeholders: %player%, %ip%
         customCommand: ''
     recoveryCode:
@@ -543,4 +545,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Sep 30 19:52:39 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Oct 09 10:19:07 CEST 2017

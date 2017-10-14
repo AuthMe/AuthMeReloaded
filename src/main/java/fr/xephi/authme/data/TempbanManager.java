@@ -109,8 +109,8 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
                     player.kickPlayer(reason);
                 } else {
                     String command = customCommand
-                        .replaceAll("%player%", name)
-                        .replaceAll("%ip%", ip);
+                        .replace("%player%", name)
+                        .replace("%ip%", ip);
                     bukkitService.dispatchConsoleCommand(command);
                 }
             });

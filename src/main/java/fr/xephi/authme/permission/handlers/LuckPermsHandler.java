@@ -19,6 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +49,12 @@ public class LuckPermsHandler implements PermissionHandler {
             return getUser(player);
         }
 
-        UUID uuid = luckPermsApi.getStorage().getUUID(playerName).join();
+        UUID uuid = null;
+        try {
+            uuid = luckPermsApi.getStorage().getUUID(playerName).get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        }
         if (uuid == null) {
             return null;
         }
@@ -63,7 +71,11 @@ public class LuckPermsHandler implements PermissionHandler {
         if (user == null) {
             // user not loaded, we need to load them from the storage.
             // this is a blocking call.
-            luckPermsApi.getStorage().loadUser(playerUuid).join();
+            try {
+                luckPermsApi.getStorage().loadUser(playerUuid).get(1, TimeUnit.SECONDS);
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                e.printStackTrace();
+            }
 
             // then grab a new instance
             user = luckPermsApi.getUser(playerUuid);

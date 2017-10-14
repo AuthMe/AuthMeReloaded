@@ -805,19 +805,18 @@ public class PlayerListenerTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn("doooew");
         given(player.getDisplayName()).willReturn("Displ");
-        given(player.getPlayerListName()).willReturn("List");
         String joinMsg = "The player joined";
         PlayerJoinEvent event = new PlayerJoinEvent(player, joinMsg);
         given(settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE))
-            .willReturn("Hello {PLAYERNAME} (aka {DISPLAYNAME} / {PLAYERLISTNAME})");
+            .willReturn("Hello {PLAYERNAME} (aka {DISPLAYNAME})");
         given(settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)).willReturn(false);
 
         // when
         listener.onJoinMessage(event);
 
         // then
-        assertThat(event.getJoinMessage(), equalTo("Hello doooew (aka Displ / List)"));
+        assertThat(event.getJoinMessage(), equalTo("Hello doooew (aka Displ)"));
         verifyZeroInteractions(joinMessageService);
     }
 
@@ -827,7 +826,6 @@ public class PlayerListenerTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn("thename0");
         given(player.getDisplayName()).willReturn("(not used)");
-        given(player.getPlayerListName()).willReturn("listName");
         String joinMsg = "The player joined";
         PlayerJoinEvent event = new PlayerJoinEvent(player, joinMsg);
         given(settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)).willReturn(false);

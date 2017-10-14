@@ -298,7 +298,7 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>injector</artifactId>
-            <version>0.4</version>
+            <version>0.4.1</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>

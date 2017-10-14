@@ -280,6 +280,19 @@ public class AuthMeApiTest {
         verify(management).performUnregisterByAdmin(null, name, player);
     }
 
+    @Test
+    public void shouldChangePassword() {
+        // given
+        String name = "Bobby12";
+        String password = "resetPw!";
+
+        // when
+        api.changePassword(name, password);
+
+        // then
+        verify(management).performPasswordChangeAsAdmin(null, name, password);
+    }
+
     private static Player mockPlayerWithName(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
