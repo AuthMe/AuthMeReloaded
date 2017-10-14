@@ -1,7 +1,6 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -17,7 +16,6 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -46,9 +44,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private CommonService service;
-
-    @Inject
-    private PlayerCache playerCache;
 
     @Inject
     private LimboService limboService;
