@@ -188,7 +188,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
                     if(timeSinceLastLogin < 0
                         || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000)
-                        || !auth.getIp().equals(PlayerUtils.getPlayerIp(player))) {
+                        || !auth.getLastIp().equals(PlayerUtils.getPlayerIp(player))) {
                         service.send(player, MessageKey.SESSION_EXPIRED);
                     } else {
                         RestoreSessionEvent event = bukkitService.createAndCallEvent(

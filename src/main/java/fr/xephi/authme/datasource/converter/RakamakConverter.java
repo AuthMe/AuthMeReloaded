@@ -80,11 +80,11 @@ public class RakamakConverter implements Converter {
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerName)
                     .realName(playerName)
-                    .ip(ip)
+                    .lastIp(ip)
                     .password(psw)
-                    .lastLogin(0)
                     .build();
                 database.saveAuth(auth);
+                database.updateSession(auth);
             }
             Utils.logAndSendMessage(sender, "Rakamak database has been imported correctly");
         } catch (IOException ex) {

@@ -65,7 +65,7 @@ public class LastLoginCommandTest {
             (412 * DAY_IN_MSEC + 10 * HOUR_IN_MSEC - 9000);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getLastLogin()).willReturn(lastLogin);
-        given(auth.getIp()).willReturn("123.45.66.77");
+        given(auth.getLastIp()).willReturn("123.45.66.77");
         given(dataSource.getAuth(player)).willReturn(auth);
         CommandSender sender = mock(CommandSender.class);
 
@@ -94,7 +94,7 @@ public class LastLoginCommandTest {
             - (412 * DAY_IN_MSEC + 10 * HOUR_IN_MSEC - 9000);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getLastLogin()).willReturn(lastLogin);
-        given(auth.getIp()).willReturn("123.45.66.77");
+        given(auth.getLastIp()).willReturn("123.45.66.77");
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when

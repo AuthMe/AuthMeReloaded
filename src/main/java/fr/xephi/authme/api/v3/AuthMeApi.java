@@ -128,7 +128,7 @@ public class AuthMeApi {
      * Get the last location of an online player.
      *
      * @param player The player to process
-     * @return Location The location of the player
+     * @return The location of the player
      */
     public Location getLastLocation(Player player) {
         PlayerAuth auth = playerCache.getAuth(player.getName());
@@ -143,7 +143,7 @@ public class AuthMeApi {
      * Get the last ip address of a player.
      *
      * @param playerName The name of the player to process
-     * @return String The last ip address of the player
+     * @return The last ip address of the player
      */
     public String getLastIp(String playerName) {
         PlayerAuth auth = playerCache.getAuth(playerName);
@@ -151,7 +151,7 @@ public class AuthMeApi {
             auth = dataSource.getAuth(playerName);
         }
         if (auth != null) {
-            return auth.getIp();
+            return auth.getLastIp();
         }
         return null;
     }
@@ -160,7 +160,7 @@ public class AuthMeApi {
      * Get user names by ip.
      *
      * @param address The ip address to process
-     * @return List The list of user names related to the ip address
+     * @return The list of user names related to the ip address
      */
     public List<String> getNamesByIp(String address) {
         return dataSource.getAllAuthsByIp(address);
@@ -170,14 +170,14 @@ public class AuthMeApi {
      * Get the last login date of a player.
      *
      * @param playerName The name of the player to process
-     * @return Date The date of the last login
+     * @return The date of the last login, or null if the player doesn't exist or has never logged in
      */
     public Date getLastLogin(String playerName) {
         PlayerAuth auth = playerCache.getAuth(playerName);
         if(auth == null) {
             auth = dataSource.getAuth(playerName);
         }
-        if (auth != null) {
+        if (auth != null && auth.getLastLogin() != null) {
             return new Date(auth.getLastLogin());
         }
         return null;
@@ -223,6 +223,7 @@ public class AuthMeApi {
             .name(name)
             .password(result)
             .realName(playerName)
+            .registrationDate(System.currentTimeMillis())
             .build();
         return dataSource.saveAuth(auth);
     }

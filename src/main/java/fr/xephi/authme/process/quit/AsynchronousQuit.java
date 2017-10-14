@@ -72,7 +72,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
                 .realName(player.getName())
-                .ip(ip)
+                .lastIp(ip)
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);

@@ -25,6 +25,8 @@ import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -125,7 +127,9 @@ public class EmailRegisterExecutorProviderTest {
         PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
-        assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", "123.45.67.89"));
+        assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", null));
+        assertThat(auth.getRegistrationIp(), equalTo("123.45.67.89"));
+        assertIsCloseTo(auth.getRegistrationDate(), System.currentTimeMillis(), 1000);
         assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld", 0, 0));
         assertThat(auth.getPassword().getHash(), stringWithLength(12));
     }
@@ -167,4 +171,7 @@ public class EmailRegisterExecutorProviderTest {
         verifyZeroInteractions(syncProcessManager);
     }
 
+    private static void assertIsCloseTo(long value1, long value2, long tolerance) {
+        assertThat(Math.abs(value1 - value2), not(greaterThan(tolerance)));
+    }
 }

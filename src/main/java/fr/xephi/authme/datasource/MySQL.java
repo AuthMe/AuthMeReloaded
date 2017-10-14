@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
 public class MySQL implements DataSource {
@@ -189,16 +190,29 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
             }
 
-            if (isColumnMissing(md, col.IP)) {
-                st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL;");
+            String ipColDefinition = col.LAST_IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin";
+            if (isColumnMissing(md, col.LAST_IP)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + ipColDefinition + ";");
+            } else {
+                removeNotNullConstraint(md, con, col.LAST_IP, ipColDefinition, "127.0.0.1");
             }
 
+            String lastLoginColDef = col.LAST_LOGIN + " BIGINT";
             if (isColumnMissing(md, col.LAST_LOGIN)) {
-                st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastLoginColDef + ";");
             } else {
                 migrateLastLoginColumn(con, md);
+                removeNotNullConstraint(md, con, col.LAST_LOGIN, lastLoginColDef, 0);
+            }
+
+            if (isColumnMissing(md, col.REGISTRATION_DATE)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.REGISTRATION_DATE + " BIGINT;");
+            }
+
+            if (isColumnMissing(md, col.REGISTRATION_IP)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.REGISTRATION_IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin;");
             }
 
             if (isColumnMissing(md, col.LASTLOC_X)) {
@@ -244,6 +258,37 @@ public class MySQL implements DataSource {
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
         try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
             return !rs.next();
+        }
+    }
+
+    private void removeNotNullConstraint(DatabaseMetaData metaData, Connection con, String columnName,
+                                         String columnDefinition, Object oldDefaultValue) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+            if (!rs.next()) {
+                throw new IllegalStateException("Did not find meta data for column '" + columnName
+                    + "' while migrating not-null columns (this should never happen!)");
+            }
+
+            int nullableCode = rs.getInt("NULLABLE");
+            if (nullableCode == DatabaseMetaData.columnNoNulls) {
+                ConsoleLogger.debug("Migrating column `{0}` with default value `{1}`", columnName, oldDefaultValue);
+                try (Statement st = con.createStatement()) {
+                    st.execute("ALTER TABLE " + tableName + " MODIFY " + columnDefinition);
+                    changeDefaultValueToNull(con, columnName, oldDefaultValue);
+                }
+            } else if (nullableCode == DatabaseMetaData.columnNullableUnknown) {
+                ConsoleLogger.warning("Unknown nullable status for column '" + columnName + "'");
+            }
+        }
+    }
+
+    private void changeDefaultValueToNull(Connection con, String columnName, Object defaultValue) throws SQLException {
+        if (defaultValue != null) {
+            String sql = "UPDATE " + tableName + " SET " + columnName + " = NULL WHERE " + columnName + " = ?;";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setObject(1, defaultValue);
+                pst.execute();
+            }
         }
     }
 
@@ -305,20 +350,19 @@ public class MySQL implements DataSource {
     public boolean saveAuth(PlayerAuth auth) {
         try (Connection con = getConnection()) {
             String sql;
-
             boolean useSalt = !col.SALT.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
             sql = "INSERT INTO " + tableName + "("
-                + col.NAME + "," + col.PASSWORD + "," + col.IP + ","
-                + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL
+                + col.NAME + "," + col.PASSWORD + "," + col.REAL_NAME
+                + "," + col.EMAIL + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP
                 + (useSalt ? "," + col.SALT : "")
                 + ") VALUES (?,?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
             try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getPassword().getHash());
-                pst.setString(3, auth.getIp());
-                pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, auth.getRealName());
-                pst.setString(6, auth.getEmail());
+                pst.setString(3, auth.getRealName());
+                pst.setString(4, auth.getEmail());
+                pst.setObject(5, auth.getRegistrationDate());
+                pst.setString(6, auth.getRegistrationIp());
                 if (useSalt) {
                     pst.setString(7, auth.getPassword().getSalt());
                 }
@@ -382,10 +426,10 @@ public class MySQL implements DataSource {
     @Override
     public boolean updateSession(PlayerAuth auth) {
         String sql = "UPDATE " + tableName + " SET "
-            + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
+            + col.LAST_IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, auth.getIp());
-            pst.setLong(2, auth.getLastLogin());
+            pst.setString(1, auth.getLastIp());
+            pst.setObject(2, auth.getLastLogin());
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
@@ -479,7 +523,7 @@ public class MySQL implements DataSource {
     @Override
     public List<String> getAllAuthsByIp(String ip) {
         List<String> result = new ArrayList<>();
-        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;";
+        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_IP + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);
             try (ResultSet rs = pst.executeQuery()) {
@@ -664,16 +708,18 @@ public class MySQL implements DataSource {
             .name(row.getString(col.NAME))
             .realName(row.getString(col.REAL_NAME))
             .password(row.getString(col.PASSWORD), salt)
-            .lastLogin(row.getLong(col.LAST_LOGIN))
-            .ip(row.getString(col.IP))
+            .lastLogin(getNullableLong(row, col.LAST_LOGIN))
+            .lastIp(row.getString(col.LAST_IP))
+            .email(row.getString(col.EMAIL))
+            .registrationDate(row.getLong(col.REGISTRATION_DATE))
+            .registrationIp(row.getString(col.REGISTRATION_IP))
+            .groupId(group)
             .locWorld(row.getString(col.LASTLOC_WORLD))
             .locX(row.getDouble(col.LASTLOC_X))
             .locY(row.getDouble(col.LASTLOC_Y))
             .locZ(row.getDouble(col.LASTLOC_Z))
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
-            .email(row.getString(col.EMAIL))
-            .groupId(group)
             .build();
     }
 
@@ -706,6 +752,7 @@ public class MySQL implements DataSource {
      * Performs conversion of lastlogin column from timestamp type to bigint.
      *
      * @param con connection to the database
+     * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/477">#477</a>
      */
     private void migrateLastLoginColumnFromTimestamp(Connection con) throws SQLException {
         ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
@@ -721,7 +768,7 @@ public class MySQL implements DataSource {
         // Create lastlogin column
         sql = String.format("ALTER TABLE %s ADD COLUMN %s "
                 + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
-            tableName, col.LAST_LOGIN, col.IP);
+            tableName, col.LAST_LOGIN, col.LAST_IP);
         con.prepareStatement(sql).execute();
 
         // Set values of lastlogin based on lastlogin_old
@@ -740,6 +787,8 @@ public class MySQL implements DataSource {
      * Performs conversion of lastlogin column from int to bigint.
      *
      * @param con connection to the database
+     * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/887">
+     *      #887: Migrate lastlogin column from int32 to bigint</a>
      */
     private void migrateLastLoginColumnFromInt(Connection con) throws SQLException {
         // Change from int to bigint

@@ -26,6 +26,8 @@ import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -107,8 +109,10 @@ public class PasswordRegisterExecutorTest {
         PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
-        assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", "123.45.67.89"));
+        assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", null));
         assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld", 1.1f, 0.28f));
+        assertThat(auth.getRegistrationIp(), equalTo("123.45.67.89"));
+        assertIsCloseTo(auth.getRegistrationDate(), System.currentTimeMillis(), 500);
         assertThat(auth.getPassword(), equalToHash("pass"));
     }
 
@@ -148,5 +152,9 @@ public class PasswordRegisterExecutorTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         return player;
+    }
+
+    private static void assertIsCloseTo(long value1, long value2, long tolerance) {
+        assertThat(Math.abs(value1 - value2), not(greaterThan(tolerance)));
     }
 }

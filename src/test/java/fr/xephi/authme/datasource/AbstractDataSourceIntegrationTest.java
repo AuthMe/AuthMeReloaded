@@ -12,6 +12,7 @@ import java.util.Set;
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
+import static fr.xephi.authme.AuthMeMatchers.hasRegistrationInfo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -97,11 +98,13 @@ public abstract class AbstractDataSourceIntegrationTest {
 
         assertThat(bobbyAuth, hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89"));
         assertThat(bobbyAuth, hasAuthLocation(1.05, 2.1, 4.2, "world", -0.44f, 2.77f));
+        assertThat(bobbyAuth, hasRegistrationInfo("127.0.4.22", 1436778723L));
         assertThat(bobbyAuth.getLastLogin(), equalTo(1449136800L));
         assertThat(bobbyAuth.getPassword(), equalToHash("$SHA$11aa0706173d7272$dbba966"));
 
         assertThat(userAuth, hasAuthBasicData("user", "user", "user@example.org", "34.56.78.90"));
         assertThat(userAuth, hasAuthLocation(124.1, 76.3, -127.8, "nether", 0.23f, 4.88f));
+        assertThat(userAuth, hasRegistrationInfo(null, 0));
         assertThat(userAuth.getLastLogin(), equalTo(1453242857L));
         assertThat(userAuth.getPassword(), equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
     }
@@ -211,7 +214,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         DataSource dataSource = getDataSource();
         PlayerAuth bobby = PlayerAuth.builder()
             .name("bobby").realName("BOBBY").lastLogin(123L)
-            .ip("12.12.12.12").build();
+            .lastIp("12.12.12.12").build();
 
         // when
         boolean response = dataSource.updateSession(bobby);
@@ -298,7 +301,9 @@ public abstract class AbstractDataSourceIntegrationTest {
         List<String> initialList = dataSource.getAllAuthsByIp("123.45.67.89");
         List<String> emptyList = dataSource.getAllAuthsByIp("8.8.8.8");
         for (int i = 0; i < 3; ++i) {
-            dataSource.saveAuth(PlayerAuth.builder().name("test-" + i).ip("123.45.67.89").build());
+            PlayerAuth auth = PlayerAuth.builder().name("test-" + i).lastIp("123.45.67.89").build();
+            dataSource.saveAuth(auth);
+            dataSource.updateSession(auth); // trigger storage of last IP
         }
         List<String> updatedList = dataSource.getAllAuthsByIp("123.45.67.89");
 
@@ -329,8 +334,9 @@ public abstract class AbstractDataSourceIntegrationTest {
     public void shouldGetRecordsToPurge() {
         // given
         DataSource dataSource = getDataSource();
-        PlayerAuth auth = PlayerAuth.builder().name("potato").lastLogin(0).build();
+        PlayerAuth auth = PlayerAuth.builder().name("potato").lastLogin(0L).build();
         dataSource.saveAuth(auth);
+        dataSource.updateSession(auth);
         // 1453242857 -> user, 1449136800 -> bobby, 0 -> potato
 
         // when

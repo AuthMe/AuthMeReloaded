@@ -46,6 +46,7 @@ public class RoyalAuthConverter implements Converter {
                     .build();
 
                 dataSource.saveAuth(auth);
+                dataSource.updateSession(auth);
             } catch (Exception e) {
                 ConsoleLogger.logException("Error while trying to import " + player.getName() + " RoyalAuth data", e);
             }
