@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.RestoreSessionEvent;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -14,22 +15,31 @@ import javax.inject.Inject;
 /**
  * Handles the user sessions.
  */
-public class SessionService {
+public class SessionService implements Reloadable {
 
-    private CommonService service;
-    private BukkitService bukkitService;
-    private DataSource database;
+    private final CommonService service;
+    private final BukkitService bukkitService;
+    private final DataSource database;
+
+    private boolean isEnabled;
 
     @Inject
     SessionService(CommonService service, BukkitService bukkitService, DataSource database) {
         this.service = service;
         this.bukkitService = bukkitService;
         this.database = database;
+        reload();
     }
 
+    /**
+     * Returns whether the player has a session he can resume.
+     *
+     * @param player the player to check
+     * @return true if there is a current session, false otherwise
+     */
     public boolean canResumeSession(Player player) {
         final String name = player.getName();
-        if (service.getProperty(PluginSettings.SESSIONS_ENABLED) && database.hasSession(name)) {
+        if (isEnabled && database.hasSession(name)) {
             database.setUnlogged(name);
             database.revokeSession(name);
             PlayerAuth auth = database.getAuth(name);
@@ -44,6 +54,14 @@ public class SessionService {
         return false;
     }
 
+    /**
+     * Checks if the given Player has a current session by comparing its properties
+     * with the given PlayerAuth's.
+     *
+     * @param auth the player auth
+     * @param player the associated player
+     * @return true if the player may resume his login session, false otherwise
+     */
     private boolean hasValidSessionData(PlayerAuth auth, Player player) {
         if (auth == null) {
             ConsoleLogger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
@@ -53,5 +71,16 @@ public class SessionService {
         return auth.getIp().equals(PlayerUtils.getPlayerIp(player))
             && timeSinceLastLogin > 0
             && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000;
+    }
+
+    public void grantSession(String name) {
+        if (isEnabled) {
+            database.grantSession(name);
+        }
+    }
+
+    @Override
+    public void reload() {
+        this.isEnabled = service.getProperty(PluginSettings.SESSIONS_ENABLED);
     }
 }

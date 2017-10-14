@@ -20,6 +20,7 @@ import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -68,6 +69,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private EmailService emailService;
+
+    @Inject
+    private SessionService sessionService;
 
     AsynchronousLogin() {
     }
@@ -241,9 +245,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // makes player loggedin
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
-            if (service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-                dataSource.grantSession(name);
-            }
+            sessionService.grantSession(name);
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end
