@@ -102,10 +102,12 @@ public class EmailService {
             return false;
         }
 
-        String mailText = replaceTagsForCaptchaMail(settings.getVerificationEmailMessage(), name, code);
+        String mailText = replaceTagsForVerificationEmail(settings.getVerificationEmailMessage(), name, code);
+
         // Generate an image?
-        File file = null;
-        /*if (settings.getProperty()) {   //+Add new setting: generate a verification code image
+
+        /*File file = null;
+        if (settings.getProperty()) {   //+Add new setting: generate a verification code image
             try {
                 file = generateCodeImage(name, code);
                 mailText = embedImageIntoEmailContent(file, email, mailText);
@@ -116,7 +118,7 @@ public class EmailService {
         }*/
 
         boolean couldSendEmail = sendMailSsl.sendEmail(mailText, email);
-        FileUtils.delete(file);
+        //FileUtils.delete(file);
         return couldSendEmail;
     }
 
@@ -149,12 +151,12 @@ public class EmailService {
         return file;
     }
 
-    private File generateCodeImage(String name, String captcha) throws IOException {
-        ImageGenerator gen = new ImageGenerator(captcha);
-        File file = new File(dataFolder, name + "_temp_captcha.jpg");
+    /*private File generateCodeImage(String name, String code) throws IOException {
+        ImageGenerator gen = new ImageGenerator(code);
+        File file = new File(dataFolder, name + "_temp_code.jpg");
         ImageIO.write(gen.generateImage(), "jpg", file);
         return file;
-    }
+    }*/
 
     private static String embedImageIntoEmailContent(File image, HtmlEmail email, String content)
         throws EmailException {
@@ -170,11 +172,11 @@ public class EmailService {
             .replace("<generatedpass />", newPass);
     }
 
-    private String replaceTagsForCaptchaMail(String mailText, String name, String captcha) {
+    private String replaceTagsForVerificationEmail(String mailText, String name, String code) {
         return mailText
             .replace("<playername />", name)
             .replace("<servername />", serverName)
-            .replace("<generatedcaptcha />", captcha);
+            .replace("<generatedcode />", code);
     }
 
     private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {

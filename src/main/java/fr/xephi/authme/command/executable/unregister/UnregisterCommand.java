@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.unregister;
 
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -24,6 +25,9 @@ public class UnregisterCommand extends PlayerCommand {
     @Inject
     private PlayerCache playerCache;
 
+    @Inject
+    private VerificationCodeManager codeManager;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
         String playerPass = arguments.get(0);
@@ -32,6 +36,13 @@ public class UnregisterCommand extends PlayerCommand {
         // Make sure the player is authenticated
         if (!playerCache.isAuthenticated(playerName)) {
             commonService.send(player, MessageKey.NOT_LOGGED_IN);
+            return;
+        }
+
+        // Check if the user has been verified or not
+        if(codeManager.isVerificationRequired(playerName)){
+            codeManager.getCodeOrGenerateNewOne(playerName);
+            commonService.send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
             return;
         }
 
