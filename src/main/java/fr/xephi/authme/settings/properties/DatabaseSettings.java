@@ -14,7 +14,8 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<DataSourceType> BACKEND =
         newProperty(DataSourceType.class, "DataSource.backend", DataSourceType.SQLITE);
 
-    @Comment("Enable database caching, should improve database performance")
+    @Comment({"Enable the database caching system, should be disabled on bungeecord environments",
+        "or when a website integration is being used."})
     public static final Property<Boolean> USE_CACHING =
         newProperty("DataSource.caching", true);
 

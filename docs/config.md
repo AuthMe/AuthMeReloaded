@@ -12,7 +12,8 @@ DataSource:
     # What type of database do you want to use?
     # Valid values: SQLITE, MYSQL
     backend: 'SQLITE'
-    # Enable database caching, should improve database performance
+    # Enable the database caching system, should be disabled on bungeecord environments
+    # or when a website integration is being used.
     caching: true
     # Database host address
     mySQLHost: '127.0.0.1'
@@ -295,7 +296,7 @@ settings:
     # Available variables:
     # {PLAYERNAME}: the player name (no colors)
     # {DISPLAYNAME}: the player display name (with colors)
-    # {PLAYERLISTNAME}: the player list name (with colors)
+    # {DISPLAYNAMENOCOLOR}: the player display name (without colors)
     customJoinMessage: ''
     # Should we remove the leave messages of unlogged users?
     removeUnloggedLeaveMessage: false

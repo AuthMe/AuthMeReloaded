@@ -13,6 +13,7 @@ import fr.xephi.authme.util.lazytags.Tag;
 import fr.xephi.authme.util.lazytags.TagReplacer;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
@@ -55,16 +56,18 @@ public class WelcomeMessageConfiguration implements Reloadable {
 
     /** List of all supported tags for the welcome message. */
     private final List<Tag<Player>> availableTags = Arrays.asList(
-        createTag("&",            () -> String.valueOf(ChatColor.COLOR_CHAR)),
-        createTag("{PLAYER}",     pl -> pl.getName()),
-        createTag("{ONLINE}",     () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
-        createTag("{MAXPLAYERS}", () -> Integer.toString(server.getMaxPlayers())),
-        createTag("{IP}",         pl -> PlayerUtils.getPlayerIp(pl)),
-        createTag("{LOGINS}",     () -> Integer.toString(playerCache.getLogged())),
-        createTag("{WORLD}",      pl -> pl.getWorld().getName()),
-        createTag("{SERVER}",     () -> server.getServerName()),
-        createTag("{VERSION}",    () -> server.getBukkitVersion()),
-        createTag("{COUNTRY}",    pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
+        createTag("&",             () -> String.valueOf(ChatColor.COLOR_CHAR)),
+        createTag("{PLAYER}",      HumanEntity::getName),
+        createTag("{DISPLAYNAME}", Player::getDisplayName),
+        createTag("{DISPLAYNAMENOCOLOR}", Player::getDisplayName),
+        createTag("{ONLINE}",      () -> Integer.toString(bukkitService.getOnlinePlayers().size())),
+        createTag("{MAXPLAYERS}",  () -> Integer.toString(server.getMaxPlayers())),
+        createTag("{IP}",          PlayerUtils::getPlayerIp),
+        createTag("{LOGINS}",      () -> Integer.toString(playerCache.getLogged())),
+        createTag("{WORLD}",       pl -> pl.getWorld().getName()),
+        createTag("{SERVER}",      () -> server.getServerName()),
+        createTag("{VERSION}",     () -> server.getBukkitVersion()),
+        createTag("{COUNTRY}",     pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
 
     private TagReplacer<Player> messageSupplier;
 
