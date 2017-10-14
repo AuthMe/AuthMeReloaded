@@ -88,6 +88,10 @@ public class LoginSecurityConverterTest {
         assertIsCloseTo(captor.getAllValues().get(2).getRegistrationDate(), System.currentTimeMillis(), 500L);
     }
 
+    // Note ljacqu 20171014: JDBC mapping of a Date column to a java.sql.Date is difficult to handle,
+    // cf. https://stackoverflow.com/questions/9202857/timezones-in-sql-date-vs-java-sql-date
+    // For H2 it looks like Date#getTime returns the millis of the date at 12AM in the system's timezone,
+    // so we check with a margin of 12 hours to cover most cases...
     @Test
     public void shouldConvertFromMySql() throws IOException, SQLException {
         // given
@@ -105,7 +109,7 @@ public class LoginSecurityConverterTest {
         assertThat(captor.getAllValues().get(0).getLastLogin(), equalTo(1494242093000L));
         assertThat(captor.getAllValues().get(0).getPassword(), equalToHash("$2a$10$E1Ri7XKeIIBv4qVaiPplgepT7QH9xGFh3hbHfcmCjq7hiW.UBTiGK"));
         assertThat(captor.getAllValues().get(0).getLastIp(), equalTo("127.0.0.1"));
-        assertThat(captor.getAllValues().get(0).getRegistrationDate(), equalTo(1494194400000L));
+        assertIsCloseTo(captor.getAllValues().get(0).getRegistrationDate(), 1494201600000L, 12 * 60 * 60 * 1000);
 
         assertThat(captor.getAllValues().get(1).getNickname(), equalTo("player2"));
         assertThat(captor.getAllValues().get(1).getLastLogin(), equalTo(1489317753000L));
