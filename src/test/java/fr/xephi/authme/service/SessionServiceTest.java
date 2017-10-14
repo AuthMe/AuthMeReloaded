@@ -1,5 +1,8 @@
 package fr.xephi.authme.service;
 
+import ch.jalu.injector.testing.BeforeInjecting;
+import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -10,9 +13,7 @@ import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.function.Function;
 
@@ -30,10 +31,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link SessionService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(DelayedInjectionRunner.class)
 public class SessionServiceTest {
 
-    @InjectMocks
+    @InjectDelayed
     private SessionService sessionService;
 
     @Mock
@@ -48,11 +49,17 @@ public class SessionServiceTest {
         TestHelper.setupLogger();
     }
 
+    @BeforeInjecting
+    public void setUpEnabledProperty() {
+        given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
+    }
+
     @Test
     public void shouldCheckSessionsEnabledSetting() {
         // given
         Player player = mock(Player.class);
         given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(false);
+        sessionService.reload();
 
         // when
         boolean result = sessionService.canResumeSession(player);
@@ -68,7 +75,6 @@ public class SessionServiceTest {
         String name = "Bobby";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
         given(dataSource.hasSession(name)).willReturn(false);
 
         // when
@@ -86,7 +92,6 @@ public class SessionServiceTest {
         String name = "Bobby";
         String ip = "127.3.12.15";
         Player player = mockPlayerWithNameAndIp(name, ip);
-        given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
         given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
         given(dataSource.hasSession(name)).willReturn(true);
         PlayerAuth auth = PlayerAuth.builder()
@@ -113,7 +118,6 @@ public class SessionServiceTest {
         String name = "Bobby";
         String ip = "127.3.12.15";
         Player player = mockPlayerWithNameAndIp(name, ip);
-        given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
         given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
         given(dataSource.hasSession(name)).willReturn(true);
         PlayerAuth auth = PlayerAuth.builder()
@@ -140,7 +144,6 @@ public class SessionServiceTest {
         String name = "Bobby";
         String ip = "127.3.12.15";
         Player player = mockPlayerWithNameAndIp(name, ip);
-        given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
         given(dataSource.hasSession(name)).willReturn(true);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
@@ -166,7 +169,6 @@ public class SessionServiceTest {
         String name = "Bobby";
         String ip = "127.3.12.15";
         Player player = mockPlayerWithNameAndIp(name, ip);
-        given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
         given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
         given(dataSource.hasSession(name)).willReturn(true);
         PlayerAuth auth = PlayerAuth.builder()
@@ -196,7 +198,6 @@ public class SessionServiceTest {
         // given
         String name = "Bobby";
         Player player = mockPlayerWithNameAndIp(name, "127.3.12.15");
-        given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
         given(dataSource.hasSession(name)).willReturn(true);
         given(dataSource.getAuth(name)).willReturn(null);
 

@@ -134,11 +134,13 @@ public class SQLite implements DataSource {
             }
 
             if (isColumnMissing(md, col.IS_LOGGED)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.IS_LOGGED + " INT DEFAULT '0';");
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.IS_LOGGED + " INT NOT NULL DEFAULT '0';");
             }
 
             if (isColumnMissing(md, col.HAS_SESSION)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.HAS_SESSION + " INT DEFAULT '0';");
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.HAS_SESSION + " INT NOT NULL DEFAULT '0';");
             }
         }
         ConsoleLogger.info("SQLite Setup finished");
