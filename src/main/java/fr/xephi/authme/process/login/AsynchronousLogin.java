@@ -215,7 +215,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             final String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
-            auth.setIp(ip);
+            auth.setLastIp(ip);
             dataSource.updateSession(auth);
 
             // Successful login, so reset the captcha & temp ban count
@@ -227,8 +227,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.LOGIN_SUCCESS);
 
             // Other auths
-            List<String> auths = dataSource.getAllAuthsByIp(auth.getIp());
-            runCommandOtherAccounts(auths, player, auth.getIp());
+            List<String> auths = dataSource.getAllAuthsByIp(auth.getLastIp());
+            runCommandOtherAccounts(auths, player, auth.getLastIp());
             displayOtherAccounts(auths, player);
 
             final String email = auth.getEmail();

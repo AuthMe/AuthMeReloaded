@@ -171,7 +171,7 @@ public class AccountsCommandTest {
     private static PlayerAuth authWithIp(String ip) {
         return PlayerAuth.builder()
             .name("Test")
-            .ip(ip)
+            .lastIp(ip)
             .build();
     }
 }

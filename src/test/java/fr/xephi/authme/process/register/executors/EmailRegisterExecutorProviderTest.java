@@ -12,8 +12,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +20,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
-import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -116,17 +115,15 @@ public class EmailRegisterExecutorProviderTest {
         Player player = mock(Player.class);
         TestHelper.mockPlayerIp(player, "123.45.67.89");
         given(player.getName()).willReturn("Veronica");
-        World world = mock(World.class);
-        given(world.getName()).willReturn("someWorld");
-        given(player.getLocation()).willReturn(new Location(world, 48, 96, 144));
         EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
 
         // when
         PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
-        assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", "123.45.67.89"));
-        assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld", 0, 0));
+        assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", "127.0.0.1"));
+        assertThat(auth.getRegistrationIp(), equalTo("123.45.67.89"));
+        assertIsCloseTo(auth.getRegistrationDate(), System.currentTimeMillis(), 1000);
         assertThat(auth.getPassword().getHash(), stringWithLength(12));
     }
 
@@ -167,4 +164,7 @@ public class EmailRegisterExecutorProviderTest {
         verifyZeroInteractions(syncProcessManager);
     }
 
+    private static void assertIsCloseTo(long value1, long value2, long tolerance) {
+        assertThat(Math.abs(value1 - value2), not(greaterThan(tolerance)));
+    }
 }

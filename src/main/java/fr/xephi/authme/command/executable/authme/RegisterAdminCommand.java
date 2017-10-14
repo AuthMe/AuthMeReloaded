@@ -64,6 +64,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     .name(playerNameLowerCase)
                     .realName(playerName)
                     .password(hashedPassword)
+                    .registrationDate(System.currentTimeMillis())
                     .build();
 
                 if (!dataSource.saveAuth(auth)) {

@@ -13,8 +13,6 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +22,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
-import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -98,17 +97,15 @@ public class PasswordRegisterExecutorTest {
             invocation -> new HashedPassword(invocation.getArgument(0)));
         Player player = mockPlayerWithName("S1m0N");
         TestHelper.mockPlayerIp(player, "123.45.67.89");
-        World world = mock(World.class);
-        given(world.getName()).willReturn("someWorld");
-        given(player.getLocation()).willReturn(new Location(world, 48, 96, 144, 1.1f, 0.28f));
         PasswordRegisterParams params = PasswordRegisterParams.of(player, "pass", "mail@example.org");
 
         // when
         PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
-        assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", "123.45.67.89"));
-        assertThat(auth, hasAuthLocation(48, 96, 144, "someWorld", 1.1f, 0.28f));
+        assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", "127.0.0.1"));
+        assertThat(auth.getRegistrationIp(), equalTo("123.45.67.89"));
+        assertIsCloseTo(auth.getRegistrationDate(), System.currentTimeMillis(), 500);
         assertThat(auth.getPassword(), equalToHash("pass"));
     }
 
@@ -148,5 +145,9 @@ public class PasswordRegisterExecutorTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         return player;
+    }
+
+    private static void assertIsCloseTo(long value1, long value2, long tolerance) {
+        assertThat(Math.abs(value1 - value2), not(greaterThan(tolerance)));
     }
 }
