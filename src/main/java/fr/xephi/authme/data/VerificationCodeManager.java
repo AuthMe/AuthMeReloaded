@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class VerificationCodeManager implements SettingsDependent, HasCleanup {
 
     @Inject
-    public EmailService emailService;
+    private EmailService emailService;
 
     @Inject
     private DataSource dataSource;
@@ -57,23 +57,23 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     }
 
     /**
-     * Returns the stored code for the player or generates and saves a new one.
+     * Check if a code exist for the player or generates and saves a new one.
      *
      * @param name the player's name
-     * @return the code the player is required to enter
      */
-    public String getCodeOrGenerateNewOne(String name){
+    public void codeExistOrGenerateNew(String name){
         String code = verificationCodes.get(name.toLowerCase());
-        return code == null ? generateCode(name) : code;
+        if(code == null){
+            generateCode(name);
+        }
     }
 
     /**
      * Generates a code for the player and returns it.
      *
      * @param name the name of the player to generate a code for
-     * @return the generated code
      */
-    public String generateCode(String name){
+    private void generateCode(String name){
         String code = RandomStringUtils.generateNum(6); // 6 digits code
         verificationCodes.put(name.toLowerCase(), code);
         DataSourceResult<String> emailResult = dataSource.getEmail(name);
@@ -81,7 +81,6 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
             final String email = emailResult.getValue();
             emailService.sendVerificationMail(name, email, code);
         }
-        return code;
     }
 
     /**
@@ -93,7 +92,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean checkCode(String name, String code){
         boolean correct = false;
-        if(verificationCodes.get(name).equals(code)){
+        if(verificationCodes.get(name.toLowerCase()).equals(code)){
             verify(name);
             correct = true;
         }
