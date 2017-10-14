@@ -73,94 +73,83 @@ public class SQLite implements DataSource {
     @VisibleForTesting
     protected void setup() throws SQLException {
         try (Statement st = con.createStatement()) {
+            // Note: cannot add unique fields later on in SQLite, so we add it on initialization
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " ("
+                + col.ID + " INTEGER AUTO_INCREMENT, "
+                + col.NAME + " VARCHAR(255) NOT NULL UNIQUE, "
+                + "CONSTRAINT table_const_prim PRIMARY KEY (" + col.ID + "));");
+
             DatabaseMetaData md = con.getMetaData();
-            initializeTable(md, st);
 
-            boolean hasNonNullColumn = hasNotNullConstraint(md, col.REAL_NAME)
-                || hasNotNullConstraint(md, col.LAST_IP)
-                || hasEntryWithOldDefaultEmail(st);
+            if (isColumnMissing(md, col.REAL_NAME)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.REAL_NAME + " VARCHAR(255) NOT NULL DEFAULT 'Player';");
+            }
 
-            if (hasNonNullColumn) {
-                // TODO #792: Force some sort of backup / interaction from the user.
-                recreateDatabaseWithNewDefinitions(con, md);
+            if (isColumnMissing(md, col.PASSWORD)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) NOT NULL DEFAULT '';");
+            }
+
+            if (!col.SALT.isEmpty() && isColumnMissing(md, col.SALT)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
+            }
+
+            if (isColumnMissing(md, col.LAST_IP)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LAST_IP + " VARCHAR(40) NOT NULL DEFAULT '';");
+            }
+
+            if (isColumnMissing(md, col.LAST_LOGIN)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LAST_LOGIN + " TIMESTAMP;");
+            }
+
+            if (isColumnMissing(md, col.REGISTRATION_IP)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.REGISTRATION_IP + " VARCHAR(40);");
+            }
+
+            if (isColumnMissing(md, col.REGISTRATION_DATE)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.REGISTRATION_DATE + " TIMESTAMP;");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_X)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_X
+                    + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Y
+                    + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Z
+                    + " DOUBLE NOT NULL DEFAULT '0.0';");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_WORLD)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_YAW)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LASTLOC_YAW + " FLOAT;");
+            }
+
+            if (isColumnMissing(md, col.LASTLOC_PITCH)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.LASTLOC_PITCH + " FLOAT;");
+            }
+
+            if (isColumnMissing(md, col.EMAIL)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com';");
+            }
+
+            if (isColumnMissing(md, col.IS_LOGGED)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.IS_LOGGED + " INT DEFAULT '0';");
             }
         }
-    }
-
-    private void initializeTable(DatabaseMetaData md, Statement st) throws SQLException {
-        // Note: cannot add unique fields later on in SQLite, so we add it on initialization
-        st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " ("
-            + col.ID + " INTEGER AUTO_INCREMENT, "
-            + col.NAME + " VARCHAR(255) NOT NULL UNIQUE, "
-            + "CONSTRAINT table_const_prim PRIMARY KEY (" + col.ID + "));");
-
-        if (isColumnMissing(md, col.REAL_NAME)) {
-            st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                + col.REAL_NAME + " VARCHAR(255);");
-        }
-
-        if (isColumnMissing(md, col.PASSWORD)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) NOT NULL DEFAULT '';");
-        }
-
-        if (!col.SALT.isEmpty() && isColumnMissing(md, col.SALT)) {
-            st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
-        }
-
-        if (isColumnMissing(md, col.LAST_IP)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.LAST_IP + " VARCHAR(40);");
-        }
-
-        if (isColumnMissing(md, col.LAST_LOGIN)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.LAST_LOGIN + " TIMESTAMP;");
-        }
-
-        if (isColumnMissing(md, col.REGISTRATION_IP)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.REGISTRATION_IP + " VARCHAR(40);");
-        }
-
-        if (isColumnMissing(md, col.REGISTRATION_DATE)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.REGISTRATION_DATE + " TIMESTAMP;");
-        }
-
-        if (isColumnMissing(md, col.LASTLOC_X)) {
-            st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_X
-                + " DOUBLE NOT NULL DEFAULT '0.0';");
-            st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Y
-                + " DOUBLE NOT NULL DEFAULT '0.0';");
-            st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Z
-                + " DOUBLE NOT NULL DEFAULT '0.0';");
-        }
-
-        if (isColumnMissing(md, col.LASTLOC_WORLD)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
-        }
-
-        if (isColumnMissing(md, col.LASTLOC_YAW)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.LASTLOC_YAW + " FLOAT;");
-        }
-
-        if (isColumnMissing(md, col.LASTLOC_PITCH)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.LASTLOC_PITCH + " FLOAT;");
-        }
-
-        if (isColumnMissing(md, col.EMAIL)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.EMAIL + " VARCHAR(255);");
-        }
-
-        if (isColumnMissing(md, col.IS_LOGGED)) {
-            st.executeUpdate("ALTER TABLE " + tableName
-                + " ADD COLUMN " + col.IS_LOGGED + " INT DEFAULT '0';");
-        }
+        ConsoleLogger.info("SQLite setup finished");
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
@@ -598,71 +587,6 @@ public class SQLite implements DataSource {
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .build();
-    }
-
-    private boolean hasNotNullConstraint(DatabaseMetaData metaData, String columnName) throws SQLException {
-        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
-            if (!rs.next()) {
-                throw new IllegalStateException("Did not find meta data for column '" + columnName
-                    + "' while migrating not-null columns (this should never happen!)");
-            }
-
-            int nullableCode = rs.getInt("NULLABLE");
-            if (nullableCode == DatabaseMetaData.columnNoNulls) {
-                ConsoleLogger.debug("Detected column `{0}` has non-null constraint", columnName);
-                return true;
-            } else if (nullableCode == DatabaseMetaData.columnNullableUnknown) {
-                ConsoleLogger.warning("Unknown nullable status for column '" + columnName + "'");
-            }
-        }
-        return false;
-    }
-
-    // Cannot rename or remove a column from SQLite, so we have to rename the table and create an updated one
-    // cf. https://stackoverflow.com/questions/805363/how-do-i-rename-a-column-in-a-sqlite-database-table
-    private void recreateDatabaseWithNewDefinitions(Connection con, DatabaseMetaData md) throws SQLException {
-        try (Statement st = con.createStatement()) {
-            String tempTable = "tmp_" + tableName;
-            st.execute("ALTER TABLE " + tableName + " RENAME TO " + tempTable + ";");
-            initializeTable(md, st);
-
-            String copySql = "INSERT INTO $table ($id, $name, $realName, $password, $lastIp, $lastLogin, $regIp, "
-                + "$regDate, $locX, $locY, $locZ, $locWorld, $locPitch, $locYaw, $email, $isLogged)"
-                + "SELECT $id, $name, CASE WHEN $realName = 'Player' THEN NULL ELSE $realName END,"
-                + " $password, CASE WHEN $lastIp = '127.0.0.1' THEN NULL else $lastIp END,"
-                + " $lastLogin, $regIp, $regDate, $locX, $locY, $locZ, $locWorld, $locPitch, $locYaw,"
-                + " CASE WHEN $email = 'your@email.com' THEN NULL ELSE $email END, $isLogged"
-                + " FROM " + tempTable + ";";
-            int insertedEntries = st.executeUpdate(replaceColumnVariables(copySql));
-            ConsoleLogger.info("Copied over " + insertedEntries + " from the old table to the new one");
-
-            st.execute("DROP TABLE " + tempTable + ";");
-        }
-    }
-
-    private String replaceColumnVariables(String sql) {
-        String replacedSql = sql.replace("$table", tableName).replace("$id", col.ID)
-            .replace("$name", col.NAME).replace("$realName", col.REAL_NAME)
-            .replace("$password", col.PASSWORD).replace("$lastIp", col.LAST_IP)
-            .replace("$lastLogin", col.LAST_LOGIN).replace("$regIp", col.REGISTRATION_IP)
-            .replace("$regDate", col.REGISTRATION_DATE).replace("$locX", col.LASTLOC_X)
-            .replace("$locY", col.LASTLOC_Y).replace("$locZ", col.LASTLOC_Z)
-            .replace("$locWorld", col.LASTLOC_WORLD).replace("$locPitch", col.LASTLOC_PITCH)
-            .replace("$locYaw", col.LASTLOC_YAW).replace("$email", col.EMAIL)
-            .replace("$isLogged", col.IS_LOGGED);
-        if (replacedSql.contains("$")) {
-            throw new IllegalStateException("SQL still statement still has '$' in it - was a tag not replaced?"
-                + " Replacement result: " + replacedSql);
-        }
-        return replacedSql;
-    }
-
-    /* Returns whether there is an entry in the DB with 'your@email.com' as email. */
-    private boolean hasEntryWithOldDefaultEmail(Statement st) throws SQLException {
-        String sql = "select exists (select 1 from " + tableName + " where " + col.EMAIL + " = 'your@email.com')";
-        try (ResultSet rs = st.executeQuery(sql)) {
-            return "1".equals(rs.getString(1));
-        }
     }
 
     private static void close(Statement st) {

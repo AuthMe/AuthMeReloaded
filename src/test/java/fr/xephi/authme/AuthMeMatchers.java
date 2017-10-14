@@ -68,7 +68,7 @@ public final class AuthMeMatchers {
         };
     }
 
-    public static Matcher<? super PlayerAuth> hasRegistrationInfo(String registrationIp, Long registrationDate) {
+    public static Matcher<? super PlayerAuth> hasRegistrationInfo(String registrationIp, long registrationDate) {
         return new TypeSafeMatcher<PlayerAuth>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {

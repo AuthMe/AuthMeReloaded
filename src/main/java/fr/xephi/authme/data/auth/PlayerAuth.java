@@ -210,10 +210,10 @@ public class PlayerAuth {
         public PlayerAuth build() {
             PlayerAuth auth = new PlayerAuth();
             auth.nickname = checkNotNull(name).toLowerCase();
-            auth.realName = realName;
+            auth.realName = firstNonNull(realName, "Player");
             auth.password = firstNonNull(password, new HashedPassword(""));
-            auth.email = email;
-            auth.lastIp = lastIp;
+            auth.email = firstNonNull(email, "your@email.com");
+            auth.lastIp = firstNonNull(lastIp, "127.0.0.1");
             auth.groupId = groupId;
             auth.lastLogin = lastLogin;
             auth.registrationIp = registrationIp;

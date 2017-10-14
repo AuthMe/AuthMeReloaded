@@ -104,7 +104,7 @@ public abstract class AbstractDataSourceIntegrationTest {
 
         assertThat(userAuth, hasAuthBasicData("user", "user", "user@example.org", "34.56.78.90"));
         assertThat(userAuth, hasAuthLocation(124.1, 76.3, -127.8, "nether", 0.23f, 4.88f));
-        assertThat(userAuth, hasRegistrationInfo(null, null));
+        assertThat(userAuth, hasRegistrationInfo(null, 0));
         assertThat(userAuth.getLastLogin(), equalTo(1453242857L));
         assertThat(userAuth.getPassword(), equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
     }

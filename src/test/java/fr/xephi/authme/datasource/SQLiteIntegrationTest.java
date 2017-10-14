@@ -99,7 +99,6 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             + "id bigint, "
             + "username varchar(255) unique, "
             + "password varchar(255) not null, "
-            + "ip varchar(40) not null, "
             + "primary key (id));");
         SQLite sqLite = new SQLite(settings, con);
 
