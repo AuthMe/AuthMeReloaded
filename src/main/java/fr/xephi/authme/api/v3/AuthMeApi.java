@@ -223,6 +223,7 @@ public class AuthMeApi {
             .name(name)
             .password(result)
             .realName(playerName)
+            .registrationDate(System.currentTimeMillis())
             .build();
         return dataSource.saveAuth(auth);
     }

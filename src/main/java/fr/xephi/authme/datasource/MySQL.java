@@ -735,7 +735,7 @@ public class MySQL implements DataSource {
             .lastLogin(getNullableLong(row, col.LAST_LOGIN))
             .lastIp(row.getString(col.LAST_IP))
             .email(row.getString(col.EMAIL))
-            .registrationDate(getNullableLong(row, col.REGISTRATION_DATE))
+            .registrationDate(row.getLong(col.REGISTRATION_DATE))
             .registrationIp(row.getString(col.REGISTRATION_IP))
             .groupId(group)
             .locWorld(row.getString(col.LASTLOC_WORLD))

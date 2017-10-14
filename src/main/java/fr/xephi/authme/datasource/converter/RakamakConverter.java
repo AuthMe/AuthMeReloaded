@@ -84,6 +84,7 @@ public class RakamakConverter implements Converter {
                     .password(psw)
                     .build();
                 database.saveAuth(auth);
+                database.updateSession(auth);
             }
             Utils.logAndSendMessage(sender, "Rakamak database has been imported correctly");
         } catch (IOException ex) {

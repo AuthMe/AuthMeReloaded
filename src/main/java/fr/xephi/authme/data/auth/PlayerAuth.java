@@ -24,7 +24,7 @@ public class PlayerAuth {
     private int groupId;
     private Long lastLogin;
     private String registrationIp;
-    private Long registrationDate;
+    private long registrationDate;
     // Fields storing the player's quit location
     private double x;
     private double y;
@@ -145,8 +145,12 @@ public class PlayerAuth {
         return registrationIp;
     }
 
-    public Long getRegistrationDate() {
+    public long getRegistrationDate() {
         return registrationDate;
+    }
+
+    public void setRegistrationDate(long registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     @Override
@@ -213,7 +217,7 @@ public class PlayerAuth {
             auth.groupId = groupId;
             auth.lastLogin = lastLogin;
             auth.registrationIp = registrationIp;
-            auth.registrationDate = registrationDate;
+            auth.registrationDate = registrationDate == null ? System.currentTimeMillis() : registrationDate;
 
             auth.x = x;
             auth.y = y;
@@ -314,7 +318,7 @@ public class PlayerAuth {
             return this;
         }
 
-        public Builder registrationDate(Long date) {
+        public Builder registrationDate(long date) {
             this.registrationDate = date;
             return this;
         }

@@ -589,7 +589,7 @@ public class SQLite implements DataSource {
             .password(row.getString(col.PASSWORD), salt)
             .lastLogin(getNullableLong(row, col.LAST_LOGIN))
             .lastIp(row.getString(col.LAST_IP))
-            .registrationDate(getNullableLong(row, col.REGISTRATION_DATE))
+            .registrationDate(row.getLong(col.REGISTRATION_DATE))
             .registrationIp(row.getString(col.REGISTRATION_IP))
             .locX(row.getDouble(col.LASTLOC_X))
             .locY(row.getDouble(col.LASTLOC_Y))

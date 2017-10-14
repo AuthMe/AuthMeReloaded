@@ -95,6 +95,7 @@ public class LoginSecurityConverter implements Converter {
             } else {
                 PlayerAuth auth = buildAuthFromLoginSecurity(name, resultSet);
                 dataSource.saveAuth(auth);
+                dataSource.updateSession(auth);
                 ++successfulSaves;
             }
         }
@@ -116,8 +117,8 @@ public class LoginSecurityConverter implements Converter {
     private static PlayerAuth buildAuthFromLoginSecurity(String name, ResultSet resultSet) throws SQLException {
         Long lastLoginMillis = Optional.ofNullable(resultSet.getTimestamp("last_login"))
             .map(Timestamp::getTime).orElse(null);
-        Long regDate = Optional.ofNullable(resultSet.getDate("registration_date"))
-            .map(Date::getTime).orElse(null);
+        long regDate = Optional.ofNullable(resultSet.getDate("registration_date"))
+            .map(Date::getTime).orElse(System.currentTimeMillis());
         return PlayerAuth.builder()
             .name(name)
             .realName(name)
