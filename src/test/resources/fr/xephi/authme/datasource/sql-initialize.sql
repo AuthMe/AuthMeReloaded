@@ -18,6 +18,7 @@ CREATE TABLE authme (
     isLogged INT DEFAULT '0',
     realname VARCHAR(255) NOT NULL DEFAULT 'Player',
     salt varchar(255),
+    hasSession INT NOT NULL DEFAULT '0',
     CONSTRAINT table_const_prim PRIMARY KEY (id)
 );
 

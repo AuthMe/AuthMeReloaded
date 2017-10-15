@@ -30,7 +30,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
@@ -262,12 +261,6 @@ public class AuthMe extends JavaPlugin {
         // Force single session disabled
         if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
             ConsoleLogger.warning("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
-        }
-
-        // Session timeout disabled
-        if (settings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
-            && settings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-            ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
         }
 
         // Use TLS property only affects port 25

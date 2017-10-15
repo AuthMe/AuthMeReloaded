@@ -330,6 +330,19 @@ public class FlatFile implements DataSource {
     }
 
     @Override
+    public boolean hasSession(String user) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    @Override
+    public void grantSession(String user) {
+    }
+
+    @Override
+    public void revokeSession(String user) {
+    }
+
+    @Override
     public void purgeLogged() {
     }
 

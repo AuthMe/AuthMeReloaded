@@ -435,4 +435,36 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(loggedPlayersWithEmptyMail, contains("Bobby"));
     }
+
+    @Test
+    public void shouldGrantAndRetrieveSessionFlag() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        dataSource.grantSession("bobby");
+        dataSource.grantSession("doesNotExist");
+
+        // then
+        assertThat(dataSource.hasSession("bobby"), equalTo(true));
+        assertThat(dataSource.hasSession("user"), equalTo(false));
+        assertThat(dataSource.hasSession("bogus"), equalTo(false));
+    }
+
+    @Test
+    public void shouldRevokeSession() {
+        // given
+        DataSource dataSource = getDataSource();
+        dataSource.grantSession("bobby");
+        dataSource.grantSession("user");
+
+        // when
+        dataSource.revokeSession("bobby");
+        dataSource.revokeSession("userNotInDatabase");
+
+        // then
+        assertThat(dataSource.hasSession("bobby"), equalTo(false));
+        assertThat(dataSource.hasSession("user"), equalTo(true));
+        assertThat(dataSource.hasSession("nonExistentName"), equalTo(false));
+    }
 }
