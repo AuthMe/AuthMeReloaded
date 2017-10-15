@@ -74,11 +74,9 @@ public interface DataSource extends Reloadable {
      * Get all records in the database whose last login was before the given time.
      *
      * @param until The minimum last login
-     * @param includeEntriesWithLastLoginZero Whether entries with lastlogin = 0 should be included or not,
-     *        see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/886">issue #886</a>
      * @return The account names selected to purge
      */
-    Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero);
+    Set<String> getRecordsToPurge(long until);
 
     /**
      * Purge the given players from the database.

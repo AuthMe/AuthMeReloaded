@@ -189,7 +189,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
+    public Set<String> getRecordsToPurge(long until) {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 

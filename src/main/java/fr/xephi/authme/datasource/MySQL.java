@@ -407,12 +407,12 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
+    public Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
-        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + " < ?";
-        if (!includeEntriesWithLastLoginZero) {
-            select += " AND " + col.LAST_LOGIN + " <> 0";
-        }
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE GREATEST("
+            + " COALESCE(" + col.LAST_LOGIN + ", 0),"
+            + " COALESCE(" + col.REGISTRATION_DATE + ", 0)"
+            + ") < ?;";
         try (Connection con = getConnection();
              PreparedStatement selectPst = con.prepareStatement(select)) {
             selectPst.setLong(1, until);

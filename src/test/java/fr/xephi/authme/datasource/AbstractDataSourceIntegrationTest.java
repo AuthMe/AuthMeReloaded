@@ -2,13 +2,13 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
@@ -332,24 +332,35 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    @Ignore // TODO #792: Fix purging logic
     public void shouldGetRecordsToPurge() {
         // given
         DataSource dataSource = getDataSource();
-        PlayerAuth auth = PlayerAuth.builder().name("potato").lastLogin(0L).build();
-        dataSource.saveAuth(auth);
-        dataSource.updateSession(auth);
-        // 1453242857 -> user, 1449136800 -> bobby, 0 -> potato
+        // 1453242857 -> user, 1449136800 -> bobby
+
+        PlayerAuth potato = PlayerAuth.builder().name("potato")
+            .registrationDate(0L).lastLogin(1_455_000_000L).build();
+        PlayerAuth tomato = PlayerAuth.builder().name("tomato")
+            .registrationDate(1_457_000_000L).lastLogin(null).build();
+        PlayerAuth lettuce = PlayerAuth.builder().name("Lettuce")
+            .registrationDate(1_400_000_000L).lastLogin(1_453_000_000L).build();
+        PlayerAuth onion = PlayerAuth.builder().name("onion")
+            .registrationDate(1_200_000_000L).lastLogin(1_300_000_000L).build();
+        Stream.of(potato, tomato, lettuce, onion).forEach(auth -> {
+            dataSource.saveAuth(auth);
+            dataSource.updateSession(auth);
+        });
 
         // when
-        Set<String> records1 = dataSource.getRecordsToPurge(1450000000, true);
-        Set<String> records2 = dataSource.getRecordsToPurge(1460000000, false);
+        Set<String> records1 = dataSource.getRecordsToPurge(1_450_000_000);
+        Set<String> records2 = dataSource.getRecordsToPurge(1_460_000_000);
 
         // then
-        assertThat(records1, containsInAnyOrder("bobby", "potato"));
-        assertThat(records2, containsInAnyOrder("bobby", "user"));
+        assertThat(records1, containsInAnyOrder("bobby", "onion"));
+        assertThat(records2, containsInAnyOrder("bobby", "onion", "user", "tomato", "potato", "lettuce"));
         // check that the entry was not deleted because of running this command
         assertThat(dataSource.isAuthAvailable("bobby"), equalTo(true));
+        assertThat(dataSource.isAuthAvailable("tomato"), equalTo(true));
+        assertThat(dataSource.isAuthAvailable("Lettuce"), equalTo(true));
     }
 
     @Test
