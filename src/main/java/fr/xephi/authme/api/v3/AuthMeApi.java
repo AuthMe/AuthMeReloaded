@@ -177,7 +177,7 @@ public class AuthMeApi {
         if (auth == null) {
             auth = dataSource.getAuth(playerName);
         }
-        if (auth != null) {
+        if (auth != null && auth.getLastLogin() != null) {
             return new Date(auth.getLastLogin());
         }
         return null;

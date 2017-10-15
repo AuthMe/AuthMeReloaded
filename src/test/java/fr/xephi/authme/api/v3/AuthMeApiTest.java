@@ -162,18 +162,34 @@ public class AuthMeApiTest {
     public void shouldGetLastLogin() {
         // given
         String name = "David";
-        Player player = mockPlayerWithName(name);
         PlayerAuth auth = PlayerAuth.builder().name(name)
-            .lastLogin(1501597979)
+            .lastLogin(1501597979L)
             .build();
         given(playerCache.getAuth(name)).willReturn(auth);
 
         // when
-        Date result = api.getLastLogin(player.getName());
+        Date result = api.getLastLogin(name);
 
         // then
         assertThat(result, not(nullValue()));
         assertThat(result, equalTo(new Date(1501597979)));
+    }
+
+    @Test
+    public void shouldHandleNullLastLogin() {
+        // given
+        String name = "John";
+        PlayerAuth auth = PlayerAuth.builder().name(name)
+            .lastLogin(null)
+            .build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+
+        // when
+        Date result = api.getLastLogin(name);
+
+        // then
+        assertThat(result, nullValue());
+        verify(dataSource).getAuth(name);
     }
 
     @Test

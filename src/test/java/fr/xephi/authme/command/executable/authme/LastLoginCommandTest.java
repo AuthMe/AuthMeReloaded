@@ -111,4 +111,25 @@ public class LastLoginCommandTest {
         assertThat(captor.getAllValues().get(2), containsString("123.45.66.77"));
     }
 
+    @Test
+    public void shouldHandleNullLastLoginDate() {
+        // given
+        String name = "player";
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .lastIp("123.45.67.89")
+            .build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(name));
+
+        // then
+        verify(dataSource).getAuth(name);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender, times(2)).sendMessage(captor.capture());
+        assertThat(captor.getAllValues().get(0), allOf(containsString(name), containsString("never")));
+        assertThat(captor.getAllValues().get(1), containsString("123.45.67.89"));
+    }
 }

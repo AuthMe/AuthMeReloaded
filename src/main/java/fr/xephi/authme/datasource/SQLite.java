@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
 /**
@@ -140,7 +141,7 @@ public class SQLite implements DataSource {
 
             if (isColumnMissing(md, col.EMAIL)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com';");
+                    + " ADD COLUMN " + col.EMAIL + " VARCHAR(255);");
             }
 
             if (isColumnMissing(md, col.IS_LOGGED)) {
@@ -295,7 +296,7 @@ public class SQLite implements DataSource {
             + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)){
             pst.setString(1, auth.getLastIp());
-            pst.setLong(2, auth.getLastLogin());
+            pst.setObject(2, auth.getLastLogin());
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
@@ -574,7 +575,7 @@ public class SQLite implements DataSource {
             .email(row.getString(col.EMAIL))
             .realName(row.getString(col.REAL_NAME))
             .password(row.getString(col.PASSWORD), salt)
-            .lastLogin(row.getLong(col.LAST_LOGIN))
+            .lastLogin(getNullableLong(row, col.LAST_LOGIN))
             .lastIp(row.getString(col.LAST_IP))
             .registrationDate(row.getLong(col.REGISTRATION_DATE))
             .registrationIp(row.getString(col.REGISTRATION_IP))

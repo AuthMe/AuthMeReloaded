@@ -177,6 +177,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         });
     }
 
+    // TODO #792: lastlogin date might be null (not updating now because of has_session branch changes)
+
     private boolean canResumeSession(Player player) {
         final String name = player.getName();
         if (database.isLogged(name)) {

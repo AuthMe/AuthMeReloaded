@@ -14,6 +14,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class PlayerAuth {
 
+    /** Default email used in the database if the email column is defined to be NOT NULL. */
+    public static final String DB_EMAIL_DEFAULT = "your@email.com";
+    /** Default last login value used in the database if the last login column is NOT NULL. */
+    public static final long DB_LAST_LOGIN_DEFAULT = 0;
+
     /** The player's name in lowercase, e.g. "xephi". */
     private String nickname;
     /** The player's name in the correct casing, e.g. "Xephi". */
@@ -22,7 +27,7 @@ public class PlayerAuth {
     private String email;
     private String lastIp;
     private int groupId;
-    private long lastLogin;
+    private Long lastLogin;
     private String registrationIp;
     private long registrationDate;
     // Fields storing the player's quit location
@@ -117,7 +122,7 @@ public class PlayerAuth {
         this.lastIp = lastIp;
     }
 
-    public long getLastLogin() {
+    public Long getLastLogin() {
         return lastLogin;
     }
 
@@ -191,7 +196,7 @@ public class PlayerAuth {
         private String lastIp;
         private String email;
         private int groupId = -1;
-        private long lastLogin = System.currentTimeMillis();
+        private Long lastLogin;
         private String registrationIp;
         private Long registrationDate;
 
@@ -212,10 +217,10 @@ public class PlayerAuth {
             auth.nickname = checkNotNull(name).toLowerCase();
             auth.realName = firstNonNull(realName, "Player");
             auth.password = firstNonNull(password, new HashedPassword(""));
-            auth.email = firstNonNull(email, "your@email.com");
+            auth.email = DB_EMAIL_DEFAULT.equals(email) ? null : email;
             auth.lastIp = firstNonNull(lastIp, "127.0.0.1");
             auth.groupId = groupId;
-            auth.lastLogin = lastLogin;
+            auth.lastLogin = isEqualTo(lastLogin, DB_LAST_LOGIN_DEFAULT) ? null : lastLogin;
             auth.registrationIp = registrationIp;
             auth.registrationDate = registrationDate == null ? System.currentTimeMillis() : registrationDate;
 
@@ -226,6 +231,10 @@ public class PlayerAuth {
             auth.yaw = yaw;
             auth.pitch = pitch;
             return auth;
+        }
+
+        private static boolean isEqualTo(Long value, long defaultValue) {
+            return value != null && defaultValue == value;
         }
 
         public Builder name(String name) {
@@ -298,7 +307,7 @@ public class PlayerAuth {
             return this;
         }
 
-        public Builder lastLogin(long lastLogin) {
+        public Builder lastLogin(Long lastLogin) {
             this.lastLogin = lastLogin;
             return this;
         }
