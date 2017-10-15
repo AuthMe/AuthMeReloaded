@@ -51,38 +51,29 @@ public class RegisterAdminCommand implements ExecutableCommand {
             return;
         }
 
-        bukkitService.runTaskOptionallyAsync(new Runnable() {
+        bukkitService.runTaskOptionallyAsync(() -> {
+            if (dataSource.isAuthAvailable(playerNameLowerCase)) {
+                commonService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
+                return;
+            }
+            HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
+            PlayerAuth auth = PlayerAuth.builder()
+                .name(playerNameLowerCase)
+                .realName(playerName)
+                .password(hashedPassword)
+                .build();
 
-            @Override
-            public void run() {
-                if (dataSource.isAuthAvailable(playerNameLowerCase)) {
-                    commonService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
-                    return;
-                }
-                HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
-                PlayerAuth auth = PlayerAuth.builder()
-                    .name(playerNameLowerCase)
-                    .realName(playerName)
-                    .password(hashedPassword)
-                    .build();
+            if (!dataSource.saveAuth(auth)) {
+                commonService.send(sender, MessageKey.ERROR);
+                return;
+            }
 
-                if (!dataSource.saveAuth(auth)) {
-                    commonService.send(sender, MessageKey.ERROR);
-                    return;
-                }
-                dataSource.setUnlogged(playerNameLowerCase);
-
-                commonService.send(sender, MessageKey.REGISTER_SUCCESS);
-                ConsoleLogger.info(sender.getName() + " registered " + playerName);
-                final Player player = bukkitService.getPlayerExact(playerName);
-                if (player != null) {
-                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            player.kickPlayer(commonService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER));
-                        }
-                    });
-                }
+            commonService.send(sender, MessageKey.REGISTER_SUCCESS);
+            ConsoleLogger.info(sender.getName() + " registered " + playerName);
+            final Player player = bukkitService.getPlayerExact(playerName);
+            if (player != null) {
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
+                    player.kickPlayer(commonService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER)));
             }
         });
     }

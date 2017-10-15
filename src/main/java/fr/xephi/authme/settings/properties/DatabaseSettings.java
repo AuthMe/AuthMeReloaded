@@ -75,6 +75,10 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_ISLOGGED =
         newProperty("DataSource.mySQLColumnLogged", "isLogged");
 
+    @Comment("Column for storing if a player has a valid session or not")
+    public static final Property<String> MYSQL_COL_HASSESSION =
+        newProperty("DataSource.mySQLColumnHasSession", "hasSession");
+
     @Comment("Column for storing players ips")
     public static final Property<String> MYSQL_COL_IP =
         newProperty("DataSource.mySQLColumnIp", "ip");

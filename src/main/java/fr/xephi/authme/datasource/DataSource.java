@@ -162,6 +162,29 @@ public interface DataSource extends Reloadable {
     void setUnlogged(String user);
 
     /**
+     * Query the datasource whether the player has an active session or not.
+     * Warning: this value won't expire, you have also to check the user's last login timestamp.
+     *
+     * @param user The name of the player to verify
+     * @return True if the user has a valid session, false otherwise
+     */
+    boolean hasSession(String user);
+
+    /**
+     * Mark the user's hasSession value to true.
+     *
+     * @param user The name of the player to change
+     */
+    void grantSession(String user);
+
+    /**
+     * Mark the user's hasSession value to false.
+     *
+     * @param user The name of the player to change
+     */
+    void revokeSession(String user);
+
+    /**
      * Set all players who are marked as logged in as NOT logged in.
      */
     void purgeLogged();

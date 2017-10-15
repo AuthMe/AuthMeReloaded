@@ -237,6 +237,11 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.IS_LOGGED + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.EMAIL);
             }
+
+            if (isColumnMissing(md, col.HAS_SESSION)) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                    + col.HAS_SESSION + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.IS_LOGGED);
+            }
         }
         ConsoleLogger.info("MySQL setup finished");
     }
@@ -556,6 +561,44 @@ public class MySQL implements DataSource {
     @Override
     public void setUnlogged(String user) {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, 0);
+            pst.setString(2, user.toLowerCase());
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+    }
+
+    @Override
+    public boolean hasSession(String user) {
+        String sql = "SELECT " + col.HAS_SESSION + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, user);
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next() && (rs.getInt(col.HAS_SESSION) == 1);
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
+    }
+
+    @Override
+    public void grantSession(String user) {
+        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setInt(1, 1);
+            pst.setString(2, user.toLowerCase());
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+    }
+
+    @Override
+    public void revokeSession(String user) {
+        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 0);
             pst.setString(2, user.toLowerCase());
