@@ -40,7 +40,7 @@ public class UnregisterCommand extends PlayerCommand {
         }
 
         // Check if the user has been verified or not
-        if(codeManager.isVerificationRequired(playerName)){
+        if(codeManager.isVerificationRequired(playerName)) {
             codeManager.codeExistOrGenerateNew(playerName);
             commonService.send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
             return;

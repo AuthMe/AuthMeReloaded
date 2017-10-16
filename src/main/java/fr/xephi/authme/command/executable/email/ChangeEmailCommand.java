@@ -29,8 +29,10 @@ public class ChangeEmailCommand extends PlayerCommand {
         String playerMailOld = arguments.get(0);
         String playerMailNew = arguments.get(1);
 
+        final String playerName = player.getName();
         // Check if the user has been verified or not
-        if(codeManager.isVerificationRequired(player.getName().toLowerCase())){
+        if(codeManager.isVerificationRequired(playerName)) {
+            codeManager.codeExistOrGenerateNew(playerName);
             commonService.send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
             return;
         }
