@@ -95,6 +95,13 @@ usage_captcha: '&3To login you have to solve a captcha code, please use the comm
 wrong_captcha: '&cWrong captcha, please type "/captcha THE_CAPTCHA" into the chat!'
 valid_captcha: '&2Captcha code solved correctly!'
 
+# Verification Code
+verification_code_required: '&3This command is sensible and requires an email verification! Check your inbox and follow the email''s instructions.'
+usage_verification_code: '&cUsage: /verification <code>'
+incorrect_verification_code: '&cIncorrect code, please type "/verification THE_CODE" into the chat!'
+verification_code_verified: '&2Your identity has been verified! You can now execute every sensible command within the current session!'
+verification_code_useless: '&2You don''t need to be verified or you code has expired!'
+
 # Time units
 second: 'second'
 seconds: 'seconds'
