@@ -97,6 +97,13 @@ usage_captcha: '&8[&6玩家系统&8] &c正确用法：/captcha <theCaptcha>'
 wrong_captcha: '&8[&6玩家系统&8] &c错误的验证码，请输入：“/captcha THE_CAPTCHA”'
 valid_captcha: '&8[&6玩家系统&8] &c你的验证码是有效的！'
 
+# Verification code
+# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+# TODO usage_verification_code: '&cUsage: /verification <code>'
+# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification THE_CODE" into the chat!'
+# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
+# TODO verification_code_useless: '&2You don''t need to be verified or your code has expired!'
+
 # 时间单位
 second: '秒'
 seconds: '秒'

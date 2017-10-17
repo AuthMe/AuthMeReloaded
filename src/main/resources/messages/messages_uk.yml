@@ -95,6 +95,13 @@ usage_captcha: '&3Для продовження доведеться ввест�
 wrong_captcha: '&cНевірно введена капча! Спробуйте ще раз — "/captcha THE_CAPTCHA"'
 valid_captcha: '&2Капчу прийнято.'
 
+# Verification code
+# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+# TODO usage_verification_code: '&cUsage: /verification <code>'
+# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification THE_CODE" into the chat!'
+# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
+# TODO verification_code_useless: '&2You don''t need to be verified or your code has expired!'
+
 # Time units
 # TODO second: 'second'
 # TODO seconds: 'seconds'
