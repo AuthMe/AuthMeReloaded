@@ -45,4 +45,9 @@ public class VerificationCommand extends PlayerCommand {
            commonService.send(player, MessageKey.VERIFICATION_CODE_USELESS);
         }
     }
+
+    @Override
+    public MessageKey getArgumentsMismatchMessage() {
+        return MessageKey.USAGE_VERIFICATION_CODE;
+    }
 }

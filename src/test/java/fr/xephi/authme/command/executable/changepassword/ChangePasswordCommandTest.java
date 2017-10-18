@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.changepassword;
 
+import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -46,6 +47,9 @@ public class ChangePasswordCommandTest {
     private PlayerCache playerCache;
 
     @Mock
+    private VerificationCodeManager codeManager;
+
+    @Mock
     private ValidationService validationService;
 
     @Mock
@@ -82,6 +86,7 @@ public class ChangePasswordCommandTest {
         String password = "newPW";
         given(validationService.validatePassword(password, "abc12"))
             .willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
+        given(codeManager.isVerificationRequired("abc12")).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList("tester", password));
@@ -98,6 +103,7 @@ public class ChangePasswordCommandTest {
         String newPass = "abc123";
         Player player = initPlayerWithName("parker", true);
         given(validationService.validatePassword("abc123", "parker")).willReturn(new ValidationResult());
+        given(codeManager.isVerificationRequired("parker")).willReturn(false);
 
         // when
         command.executeCommand(player, Arrays.asList(oldPass, newPass));

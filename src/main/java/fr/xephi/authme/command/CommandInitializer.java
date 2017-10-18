@@ -40,6 +40,7 @@ import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.command.executable.register.RegisterCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
+import fr.xephi.authme.command.executable.verification.VerificationCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PlayerPermission;
@@ -143,6 +144,17 @@ public class CommandInitializer {
             .executableCommand(CaptchaCommand.class)
             .register();
 
+        // Register the base verification code command
+        CommandDescription verificationBase = CommandDescription.builder()
+            .parent(null)
+            .labels("verification")
+            .description("Verification Command")
+            .detailedDescription("Command to complete the verification process for AuthMeReloaded.")
+            .withArgument("code", "The Code", false)
+            //.permission(PlayerPermission.VERIFICATION) // Should we define a permission for this?
+            .executableCommand(VerificationCommand.class)
+            .register();
+
         List<CommandDescription> baseCommands = ImmutableList.of(
             authMeBase,
             emailBase,
@@ -151,7 +163,8 @@ public class CommandInitializer {
             registerBase,
             unregisterBase,
             changePasswordBase,
-            captchaBase);
+            captchaBase,
+            verificationBase);
 
         setHelpOnAllBases(baseCommands);
         commands = baseCommands;

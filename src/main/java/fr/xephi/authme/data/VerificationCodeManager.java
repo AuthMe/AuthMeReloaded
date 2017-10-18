@@ -22,7 +22,6 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     private DataSource dataSource;
 
     private final ExpiringMap<String, String> verificationCodes;
-    private final ExpiringMap<String, String> tempEmails;   // Store the email for 1 min?
     private final Set<String> verifiedPlayers;
 
     private boolean isEnabled;
@@ -34,7 +33,6 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
         isEnabled = emailService.hasAllInformation() && settings.getProperty(SecuritySettings.USE_VERIFICATION_CODES);
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
-        tempEmails = new ExpiringMap<>(1, TimeUnit.MINUTES);
         verifiedPlayers = new HashSet<>();
     }
 
@@ -51,7 +49,6 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
             if (emailResult.playerExists()) {
                 final String email = emailResult.getValue();
                 if(!Utils.isEmailEmpty(email)) {
-                    tempEmails.put(name.toLowerCase(), email);
                     result = true;
                 }
             }
@@ -87,18 +84,13 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @param name the name of the player to generate a code for
      */
     private void generateCode(String name) {
-        String code = RandomStringUtils.generateNum(6); // 6 digits code
-        verificationCodes.put(name.toLowerCase(), code);
-        if(tempEmails.get(name.toLowerCase()) != null) {
-            final String email = tempEmails.get(name.toLowerCase());
-            emailService.sendVerificationMail(name, email, code);
-        } else {
-            DataSourceResult<String> emailResult = dataSource.getEmail(name);
-            if (emailResult.playerExists()) {
-                final String email = emailResult.getValue();
-                if(!Utils.isEmailEmpty(email)) {
-                    emailService.sendVerificationMail(name, email, code);
-                }
+        DataSourceResult<String> emailResult = dataSource.getEmail(name);
+        if (emailResult.playerExists()) {
+            final String email = emailResult.getValue();
+            if(!Utils.isEmailEmpty(email)) {
+                String code = RandomStringUtils.generateNum(6); // 6 digits code
+                verificationCodes.put(name.toLowerCase(), code);
+                emailService.sendVerificationMail(name, email, code);
             }
         }
     }
@@ -145,8 +137,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     }
 
     @Override
-    public void performCleanup(){
+    public void performCleanup() {
         verificationCodes.removeExpiredEntries();
-        tempEmails.removeExpiredEntries();
     }
 }

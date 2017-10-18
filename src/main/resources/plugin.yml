@@ -49,6 +49,9 @@ commands:
   captcha:
     description: Captcha Command
     usage: /captcha <captcha>
+  verification:
+    description: Verification Command
+    usage: /verification <code>
 permissions:
   authme.admin.*:
     description: Gives access to all admin commands
@@ -156,7 +159,7 @@ permissions:
     description: Permission node to bypass AntiBot protection.
     default: op
   authme.bypasscountrycheck:
-    description: Permission to use to see own other accounts.
+    description: Permission to bypass the GeoIp country code check.
     default: false
   authme.bypassforcesurvival:
     description: Permission for users to bypass force-survival mode.
