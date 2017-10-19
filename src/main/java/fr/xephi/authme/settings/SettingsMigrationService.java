@@ -11,7 +11,6 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -301,8 +300,8 @@ public class SettingsMigrationService extends PlainMigrationService {
         HashAlgorithm currentHash = SecuritySettings.PASSWORD_HASH.getValue(resource);
         // Skip CUSTOM (has no class) and PLAINTEXT (is force-migrated later on in the startup process)
         if (currentHash != HashAlgorithm.CUSTOM && currentHash != HashAlgorithm.PLAINTEXT) {
-            Class<? extends EncryptionMethod> clazz = currentHash.getClazz();
-            if (clazz.isAnnotationPresent(Deprecated.class)) {
+            Class<?> encryptionClass = currentHash.getClazz();
+            if (encryptionClass.isAnnotationPresent(Deprecated.class)) {
                 resource.setValue(SecuritySettings.PASSWORD_HASH.getPath(), HashAlgorithm.SHA256);
                 Set<HashAlgorithm> legacyHashes = SecuritySettings.LEGACY_HASHES.getValue(resource);
                 legacyHashes.add(currentHash);
