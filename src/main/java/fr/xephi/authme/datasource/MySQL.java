@@ -97,7 +97,7 @@ public class MySQL implements DataSource {
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
         this.col = new Columns(settings);
-        sqlExtension = extensionsFactory.buildExtension(col);
+        this.sqlExtension = extensionsFactory.buildExtension(col);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         if (poolSize == -1) {
             poolSize = Utils.getCoreCount() * 3;
@@ -199,12 +199,11 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.LAST_LOGIN + " BIGINT;");
             } else {
-                migrateLastLoginColumn(con, md);
+                migrateLastLoginColumn(st, md);
             }
 
             if (isColumnMissing(md, col.REGISTRATION_DATE)) {
-                st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.REGISTRATION_DATE + " BIGINT NOT NULL;");
+                addRegistrationDateColumn(st);
             }
 
             if (isColumnMissing(md, col.REGISTRATION_IP)) {
@@ -735,12 +734,10 @@ public class MySQL implements DataSource {
     /**
      * Checks if the last login column has a type that needs to be migrated.
      *
-     * @param con      connection to the database
+     * @param st       Statement object to the database
      * @param metaData lastlogin column meta data
-     *
-     * @throws SQLException .
      */
-    private void migrateLastLoginColumn(Connection con, DatabaseMetaData metaData) throws SQLException {
+    private void migrateLastLoginColumn(Statement st, DatabaseMetaData metaData) throws SQLException {
         final int columnType;
         try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
             if (!rs.next()) {
@@ -751,68 +748,85 @@ public class MySQL implements DataSource {
         }
 
         if (columnType == Types.TIMESTAMP) {
-            migrateLastLoginColumnFromTimestamp(con);
+            migrateLastLoginColumnFromTimestamp(st);
         } else if (columnType == Types.INTEGER) {
-            migrateLastLoginColumnFromInt(con);
+            migrateLastLoginColumnFromInt(st);
         }
     }
 
     /**
      * Performs conversion of lastlogin column from timestamp type to bigint.
      *
-     * @param con connection to the database
+     * @param st Statement object to the database
      * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/477">#477</a>
      */
-    private void migrateLastLoginColumnFromTimestamp(Connection con) throws SQLException {
+    private void migrateLastLoginColumnFromTimestamp(Statement st) throws SQLException {
         ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
         final String lastLoginOld = col.LAST_LOGIN + "_old";
 
         // Rename lastlogin to lastlogin_old
         String sql = String.format("ALTER TABLE %s CHANGE COLUMN %s %s BIGINT",
             tableName, col.LAST_LOGIN, lastLoginOld);
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.execute();
-        }
+        st.execute(sql);
 
         // Create lastlogin column
         sql = String.format("ALTER TABLE %s ADD COLUMN %s "
                 + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
             tableName, col.LAST_LOGIN, col.LAST_IP);
-        con.prepareStatement(sql).execute();
+        st.execute(sql);
 
         // Set values of lastlogin based on lastlogin_old
         sql = String.format("UPDATE %s SET %s = UNIX_TIMESTAMP(%s) * 1000",
             tableName, col.LAST_LOGIN, lastLoginOld);
-        con.prepareStatement(sql).execute();
+        st.execute(sql);
 
         // Drop lastlogin_old
         sql = String.format("ALTER TABLE %s DROP COLUMN %s",
             tableName, lastLoginOld);
-        con.prepareStatement(sql).execute();
+        st.execute(sql);
         ConsoleLogger.info("Finished migration of lastlogin (timestamp to bigint)");
     }
 
     /**
      * Performs conversion of lastlogin column from int to bigint.
      *
-     * @param con connection to the database
+     * @param st Statement object to the database
      * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/887">
      *      #887: Migrate lastlogin column from int32 to bigint</a>
      */
-    private void migrateLastLoginColumnFromInt(Connection con) throws SQLException {
+    private void migrateLastLoginColumnFromInt(Statement st) throws SQLException {
         // Change from int to bigint
         ConsoleLogger.info("Migrating lastlogin column from int to bigint");
         String sql = String.format("ALTER TABLE %s MODIFY %s BIGINT;", tableName, col.LAST_LOGIN);
-        con.prepareStatement(sql).execute();
+        st.execute(sql);
 
         // Migrate timestamps in seconds format to milliseconds format if they are plausible
         int rangeStart = 1262304000; // timestamp for 2010-01-01
         int rangeEnd = 1514678400;   // timestamp for 2017-12-31
         sql = String.format("UPDATE %s SET %s = %s * 1000 WHERE %s > %d AND %s < %d;",
             tableName, col.LAST_LOGIN, col.LAST_LOGIN, col.LAST_LOGIN, rangeStart, col.LAST_LOGIN, rangeEnd);
-        int changedRows = con.prepareStatement(sql).executeUpdate();
+        int changedRows = st.executeUpdate(sql);
 
         ConsoleLogger.warning("You may have entries with invalid timestamps. Please check your data "
             + "before purging. " + changedRows + " rows were migrated from seconds to milliseconds.");
+    }
+
+    /**
+     * Creates the column for registration date and sets all entries to the current timestamp.
+     * We do so in order to avoid issues with purging, where entries with 0 / NULL might get
+     * purged immediately on startup otherwise.
+     *
+     * @param st Statement object to the database
+     */
+    private void addRegistrationDateColumn(Statement st) throws SQLException {
+        st.executeUpdate("ALTER TABLE " + tableName
+            + " ADD COLUMN " + col.REGISTRATION_DATE + " BIGINT NOT NULL;");
+
+        // Use the timestamp from Java to avoid timezone issues in case JVM and database are out of sync
+        long currentTimestamp = System.currentTimeMillis();
+        int updatedRows = st.executeUpdate(String.format("UPDATE %s SET %s = %d;",
+            tableName, col.REGISTRATION_DATE, currentTimestamp));
+        ConsoleLogger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
+            + currentTimestamp + ", to all " + updatedRows + " rows");
     }
 }

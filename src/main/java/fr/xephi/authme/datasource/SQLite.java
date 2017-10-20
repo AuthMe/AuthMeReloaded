@@ -111,8 +111,7 @@ public class SQLite implements DataSource {
             }
 
             if (isColumnMissing(md, col.REGISTRATION_DATE)) {
-                st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.REGISTRATION_DATE + " TIMESTAMP NOT NULL DEFAULT '0';");
+                addRegistrationDateColumn(st);
             }
 
             if (isColumnMissing(md, col.LASTLOC_X)) {
@@ -630,6 +629,25 @@ public class SQLite implements DataSource {
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .build();
+    }
+
+    /**
+     * Creates the column for registration date and sets all entries to the current timestamp.
+     * We do so in order to avoid issues with purging, where entries with 0 / NULL might get
+     * purged immediately on startup otherwise.
+     *
+     * @param st Statement object to the database
+     */
+    private void addRegistrationDateColumn(Statement st) throws SQLException {
+        st.executeUpdate("ALTER TABLE " + tableName
+            + " ADD COLUMN " + col.REGISTRATION_DATE + " TIMESTAMP NOT NULL DEFAULT '0';");
+
+        // Use the timestamp from Java to avoid timezone issues in case JVM and database are out of sync
+        long currentTimestamp = System.currentTimeMillis();
+        int updatedRows = st.executeUpdate(String.format("UPDATE %s SET %s = %d;",
+            tableName, col.REGISTRATION_DATE, currentTimestamp));
+        ConsoleLogger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
+            + currentTimestamp + ", to all " + updatedRows + " rows");
     }
 
     private static void close(Statement st) {
