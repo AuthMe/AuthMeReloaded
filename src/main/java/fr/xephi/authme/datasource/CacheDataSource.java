@@ -209,6 +209,21 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public boolean hasSession(final String user) {
+        return source.hasSession(user);
+    }
+
+    @Override
+    public void grantSession(final String user) {
+        source.grantSession(user);
+    }
+
+    @Override
+    public void revokeSession(final String user) {
+        source.revokeSession(user);
+    }
+
+    @Override
     public void purgeLogged() {
         source.purgeLogged();
         cachedAuths.invalidateAll();

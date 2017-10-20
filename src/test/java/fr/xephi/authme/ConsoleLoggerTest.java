@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -142,25 +143,22 @@ public class ConsoleLoggerTest {
         ConsoleLogger.setLoggingOptions(newSettings(true, LogLevel.DEBUG));
 
         // when
-        ConsoleLogger.debug("Got {0} entries", "test");
-        ConsoleLogger.debug("Player `{0}` is in world `{1}`", "Bobby", "world");
-        ConsoleLogger.debug("The {0} is {1} the {2}", "fox", "behind", "chicken");
+        ConsoleLogger.debug("Got {0} entries", 17);
+        ConsoleLogger.debug("Player `{0}` is in world `{1}`", "Bobby", new World("world"));
         ConsoleLogger.debug("{0} quick {1} jump over {2} lazy {3} (reason: {4})", 5, "foxes", 3, "dogs", null);
         ConsoleLogger.debug(() -> "Too little too late");
 
         // then
-        verify(logger).log(Level.INFO, "[DEBUG] Got {0} entries", "test");
-        verify(logger).log(Level.INFO, "[DEBUG] Player `{0}` is in world `{1}`", new Object[]{"Bobby", "world"});
-        verify(logger).log(Level.INFO, "[DEBUG] The {0} is {1} the {2}", new Object[]{"fox", "behind", "chicken"});
+        verify(logger).log(Level.INFO, "[DEBUG] Got {0} entries", 17);
+        verify(logger).log(Level.INFO, "[DEBUG] Player `{0}` is in world `{1}`", new Object[]{"Bobby", new World("world")});
         verify(logger).log(Level.INFO, "[DEBUG] {0} quick {1} jump over {2} lazy {3} (reason: {4})",
-            new Object[]{"5", "foxes", "3", "dogs", "null"});
+            new Object[]{5, "foxes", 3, "dogs", null});
         verify(logger).info("[DEBUG] Too little too late");
 
         List<String> loggedLines = Files.readAllLines(logFile.toPath(), StandardCharsets.UTF_8);
         assertThat(loggedLines, contains(
-            containsString("[DEBUG] Got {0} entries {test}"),
-            containsString("[DEBUG] Player `{0}` is in world `{1}` {Bobby, world}"),
-            containsString("[DEBUG] The {0} is {1} the {2} {fox, behind, chicken}"),
+            containsString("[DEBUG] Got {0} entries {17}"),
+            containsString("[DEBUG] Player `{0}` is in world `{1}` {Bobby, w[world]}"),
             containsString("[DEBUG] {0} quick {1} jump over {2} lazy {3} (reason: {4}) {5, foxes, 3, dogs, null}"),
             containsString("[DEBUG] Too little too late")));
     }
@@ -175,5 +173,26 @@ public class ConsoleLoggerTest {
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(logToFile);
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(logLevel);
         return settings;
+    }
+
+    private static final class World {
+        private final String name;
+
+        World(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return "w[" + name + "]";
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other instanceof World) {
+                return Objects.equals(this.name, ((World) other).name);
+            }
+            return false;
+        }
     }
 }

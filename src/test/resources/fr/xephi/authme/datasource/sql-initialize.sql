@@ -14,10 +14,13 @@ CREATE TABLE authme (
     world VARCHAR(255) NOT NULL DEFAULT 'world',
     yaw FLOAT,
     pitch FLOAT,
-    email VARCHAR(255),
+    email VARCHAR(255), 
     isLogged INT DEFAULT '0',
     realname VARCHAR(255) NOT NULL DEFAULT 'Player',
     salt varchar(255),
+    recoverycode VARCHAR(20),
+    recoveryexpiration BIGINT,
+    hasSession INT NOT NULL DEFAULT '0',
     CONSTRAINT table_const_prim PRIMARY KEY (id)
 );
 

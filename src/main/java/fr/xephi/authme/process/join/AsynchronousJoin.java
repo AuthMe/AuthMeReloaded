@@ -1,12 +1,9 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -14,11 +11,11 @@ import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -49,9 +46,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private CommonService service;
 
     @Inject
-    private PlayerCache playerCache;
-
-    @Inject
     private LimboService limboService;
 
     @Inject
@@ -71,6 +65,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private WelcomeMessageConfiguration welcomeMessageConfiguration;
+
+    @Inject
+    private SessionService sessionService;
 
     AsynchronousJoin() {
     }
@@ -121,7 +118,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
 
             // Session logic
-            if (canResumeSession(player)) {
+            if (sessionService.canResumeSession(player)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
                 bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
@@ -175,32 +172,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             commandManager.runCommandsOnJoin(player);
         });
-    }
-
-    // TODO #792: lastlogin date might be null (not updating now because of has_session branch changes)
-
-    private boolean canResumeSession(Player player) {
-        final String name = player.getName();
-        if (database.isLogged(name)) {
-            database.setUnlogged(name);
-            playerCache.removePlayer(name);
-            if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-                PlayerAuth auth = database.getAuth(name);
-                if (auth != null) {
-                    long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
-                    if(timeSinceLastLogin < 0
-                        || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000)
-                        || !auth.getLastIp().equals(PlayerUtils.getPlayerIp(player))) {
-                        service.send(player, MessageKey.SESSION_EXPIRED);
-                    } else {
-                        RestoreSessionEvent event = bukkitService.createAndCallEvent(
-                            isAsync -> new RestoreSessionEvent(player, isAsync));
-                        return !event.isCancelled();
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     /**

@@ -53,7 +53,7 @@ public final class SecuritySettings implements SettingsHolder {
         newProperty("settings.security.passwordMaxLength", 30);
 
     @Comment({
-        "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,",
+        "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512,",
         "MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,",
         "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at",
         "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md"
