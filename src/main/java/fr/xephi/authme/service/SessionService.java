@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
+import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
+
 /**
  * Handles the user sessions.
  */
@@ -66,11 +68,13 @@ public class SessionService implements Reloadable {
         if (auth == null) {
             ConsoleLogger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
             return false;
+        } else if (auth.getLastLogin() == null) {
+            return false;
         }
         long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
         return PlayerUtils.getPlayerIp(player).equals(auth.getLastIp())
             && timeSinceLastLogin > 0
-            && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000;
+            && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * MILLIS_PER_MINUTE;
     }
 
     public void grantSession(String name) {

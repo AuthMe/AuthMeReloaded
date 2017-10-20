@@ -21,9 +21,9 @@ public class MySqlDefaultChangerColumnsTest {
 
         // when / then
         for (MySqlDefaultChanger.Columns col : MySqlDefaultChanger.Columns.values()) {
-            if (!properties.add(col.columnName.getPath())) {
+            if (!properties.add(col.getColumnNameProperty().getPath())) {
                 fail("Column '" + col + "' has a column name property path that was already encountered: "
-                    + col.columnName.getPath());
+                    + col.getColumnNameProperty().getPath());
             }
         }
     }
@@ -44,8 +44,8 @@ public class MySqlDefaultChangerColumnsTest {
 
     private void verifyHasCorrespondingColumnDefinitions(MySqlDefaultChanger.Columns column) {
         // given / when
-        String nullable = column.nullableDefinition;
-        String notNull = column.notNullDefinition;
+        String nullable = column.getNullableDefinition();
+        String notNull = column.getNotNullDefinition();
 
         // then
         String expectedNotNull = nullable + " NOT NULL DEFAULT ";
@@ -56,8 +56,8 @@ public class MySqlDefaultChangerColumnsTest {
 
     private void verifyHasSameDefaultValueInNotNullDefinition(MySqlDefaultChanger.Columns column) {
         // given / when
-        String notNull = column.notNullDefinition;
-        Object defaultValue = column.defaultValue;
+        String notNull = column.getNotNullDefinition();
+        Object defaultValue = column.getDefaultValue();
 
         // then
         String defaultValueAsString = String.valueOf(defaultValue);

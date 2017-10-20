@@ -113,7 +113,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldRefuseSessionForAuthWithZeroLastLoginTimestamp() {
+    public void shouldRefuseSessionForAuthWithNullLastLoginTimestamp() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -122,7 +122,7 @@ public class SessionServiceTest {
         given(dataSource.hasSession(name)).willReturn(true);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
-            .lastLogin(0L)
+            .lastLogin(null)
             .lastIp(ip).build();
         given(dataSource.getAuth(name)).willReturn(auth);
 
