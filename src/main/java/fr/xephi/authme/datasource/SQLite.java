@@ -641,4 +641,15 @@ public class SQLite implements DataSource {
             }
         }
     }
+
+    private static void close(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            }
+        }
+    }
+
 }

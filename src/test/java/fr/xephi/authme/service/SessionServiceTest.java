@@ -97,7 +97,7 @@ public class SessionServiceTest {
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .lastLogin(System.currentTimeMillis() - 10 * 60 * 1000)
-            .ip(ip).build();
+            .lastIp(ip).build();
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when
@@ -122,8 +122,8 @@ public class SessionServiceTest {
         given(dataSource.hasSession(name)).willReturn(true);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
-            .lastLogin(0)
-            .ip(ip).build();
+            .lastLogin(0L)
+            .lastIp(ip).build();
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when
@@ -148,7 +148,7 @@ public class SessionServiceTest {
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .lastLogin(System.currentTimeMillis())
-            .ip("8.8.8.8").build();
+            .lastIp("8.8.8.8").build();
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when
@@ -174,7 +174,7 @@ public class SessionServiceTest {
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .lastLogin(System.currentTimeMillis() - 7 * 60 * 1000)
-            .ip(ip).build();
+            .lastIp(ip).build();
         given(dataSource.getAuth(name)).willReturn(auth);
         RestoreSessionEvent event = spy(new RestoreSessionEvent(player, false));
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);

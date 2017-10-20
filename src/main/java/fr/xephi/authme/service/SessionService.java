@@ -68,7 +68,7 @@ public class SessionService implements Reloadable {
             return false;
         }
         long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
-        return auth.getIp().equals(PlayerUtils.getPlayerIp(player))
+        return auth.getLastIp().equals(PlayerUtils.getPlayerIp(player))
             && timeSinceLastLogin > 0
             && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000;
     }
