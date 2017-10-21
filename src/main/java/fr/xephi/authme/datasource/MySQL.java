@@ -583,7 +583,7 @@ public class MySQL implements DataSource {
     public boolean hasSession(String user) {
         String sql = "SELECT " + col.HAS_SESSION + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
+            pst.setString(1, user.toLowerCase());
             try (ResultSet rs = pst.executeQuery()) {
                 return rs.next() && (rs.getInt(col.HAS_SESSION) == 1);
             }

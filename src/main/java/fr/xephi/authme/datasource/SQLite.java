@@ -509,7 +509,7 @@ public class SQLite implements DataSource {
     public boolean hasSession(String user) {
         String sql = "SELECT " + col.HAS_SESSION + " FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
+            pst.setString(1, user.toLowerCase());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(col.HAS_SESSION) == 1;
@@ -526,7 +526,7 @@ public class SQLite implements DataSource {
         String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE LOWER(" + col.NAME + ")=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 1);
-            pst.setString(2, user);
+            pst.setString(2, user.toLowerCase());
             pst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
@@ -538,7 +538,7 @@ public class SQLite implements DataSource {
         String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE LOWER(" + col.NAME + ")=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 0);
-            pst.setString(2, user);
+            pst.setString(2, user.toLowerCase());
             pst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);

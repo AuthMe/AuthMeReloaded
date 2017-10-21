@@ -23,7 +23,6 @@ import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -267,13 +266,6 @@ public class AuthMe extends JavaPlugin {
         if (!settings.getProperty(EmailSettings.PORT25_USE_TLS)
             && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
             ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
-        }
-
-        // Unsalted hashes will be deprecated in 5.4 (see Github issue #1016)
-        HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
-        if (OnStartupTasks.isHashDeprecatedIn54(hash)) {
-            ConsoleLogger.warning("You are using an unsalted hash (" + hash + "). Support for this will be removed "
-                + "in 5.4 -- do you still need it? Comment on https://github.com/AuthMe/AuthMeReloaded/issues/1016");
         }
     }
 
