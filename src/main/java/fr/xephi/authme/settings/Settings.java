@@ -34,6 +34,7 @@ public class Settings extends SettingsManager {
                     ConfigurationData configurationData) {
         super(resource, migrationService, configurationData);
         this.pluginFolder = pluginFolder;
+        SettingsWarner.logWarningsForMisconfigurations(this);
         loadSettingsFromFiles();
     }
 
@@ -63,6 +64,7 @@ public class Settings extends SettingsManager {
     @Override
     public void reload() {
         super.reload();
+        SettingsWarner.logWarningsForMisconfigurations(this);
         loadSettingsFromFiles();
     }
 

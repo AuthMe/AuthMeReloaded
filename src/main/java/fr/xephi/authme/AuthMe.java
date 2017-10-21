@@ -28,8 +28,6 @@ import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
@@ -140,9 +138,6 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
-        // Show settings warnings
-        showSettingsWarnings();
-
         // Do a backup on start
         backupService.doBackup(BackupService.BackupCause.START);
 
@@ -251,22 +246,6 @@ public class AuthMe extends JavaPlugin {
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(fr.xephi.authme.api.v3.AuthMeApi.class);
         injector.getSingleton(NewAPI.class);
-    }
-
-    /**
-     * Show the settings warnings, for various risky settings.
-     */
-    private void showSettingsWarnings() {
-        // Force single session disabled
-        if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
-            ConsoleLogger.warning("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
-        }
-
-        // Use TLS property only affects port 25
-        if (!settings.getProperty(EmailSettings.PORT25_USE_TLS)
-            && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
-            ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
-        }
     }
 
     /**
