@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -20,11 +22,16 @@ import static org.junit.Assert.fail;
 public class DebugSectionConsistencyTest {
 
     private static List<Class<?>> debugClasses;
+    private static List<DebugSection> debugSections;
 
     @BeforeClass
     public static void collectClasses() {
-        debugClasses = new ClassCollector(
-            TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "command/executable/authme/debug").collectClasses();
+        // TODO ljacqu 20171021: Improve ClassCollector (pass pkg by class, improve #getInstancesOfType's instantiation)
+        ClassCollector classCollector = new ClassCollector(
+            TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "command/executable/authme/debug");
+
+        debugClasses = classCollector.collectClasses();
+        debugSections = classCollector.getInstancesOfType(DebugSection.class, clz -> instantiate(clz));
     }
 
     @Test
@@ -40,13 +47,26 @@ public class DebugSectionConsistencyTest {
     @Test
     public void shouldHaveDifferentSubcommandName() throws IllegalAccessException, InstantiationException {
         Set<String> names = new HashSet<>();
-        for (Class<?> clazz : debugClasses) {
-            if (DebugSection.class.isAssignableFrom(clazz) && !clazz.isInterface()) {
-                DebugSection debugSection = (DebugSection) clazz.newInstance();
-                if (!names.add(debugSection.getName())) {
-                    fail("Encountered name '" + debugSection.getName() + "' a second time in " + clazz);
-                }
+        for (DebugSection debugSection : debugSections) {
+            if (!names.add(debugSection.getName())) {
+                fail("Encountered name '" + debugSection.getName() + "' a second time in " + debugSection.getClass());
             }
+        }
+    }
+
+    @Test
+    public void shouldAllHaveDescription() {
+        for (DebugSection debugSection : debugSections) {
+            assertThat("Description of '" + debugSection.getClass() + "' may not be null",
+                debugSection.getDescription(), not(nullValue()));
+        }
+    }
+
+    private static DebugSection instantiate(Class<? extends DebugSection> clazz) {
+        try {
+            return ClassCollector.canInstantiate(clazz) ? clazz.newInstance() : null;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
         }
     }
 }

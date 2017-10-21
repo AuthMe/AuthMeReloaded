@@ -97,7 +97,7 @@ public class SQLite implements DataSource {
 
             if (isColumnMissing(md, col.LAST_IP)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.LAST_IP + " VARCHAR(40) NOT NULL DEFAULT '';");
+                    + " ADD COLUMN " + col.LAST_IP + " VARCHAR(40);");
             }
 
             if (isColumnMissing(md, col.LAST_LOGIN)) {
@@ -152,8 +152,28 @@ public class SQLite implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.HAS_SESSION + " INT NOT NULL DEFAULT '0';");
             }
+
+            if (isMigrationRequired(md)) {
+                ConsoleLogger.warning("READ ME! Your SQLite database is outdated and cannot save new players.");
+                ConsoleLogger.warning("Run /authme debug migratesqlite after making a backup");
+            }
         }
         ConsoleLogger.info("SQLite Setup finished");
+    }
+
+    /**
+     * Returns whether the database needs to be migrated.
+     * <p>
+     * Background: Before commit 22911a0 (July 2016), new SQLite databases initialized the last IP column to be NOT NULL
+     * without a default value. Allowing the last IP to be null (#792) is therefore not compatible.
+     *
+     * @param metaData the database meta data
+     * @return true if a migration is necessary, false otherwise
+     * @throws SQLException .
+     */
+    public boolean isMigrationRequired(DatabaseMetaData metaData) throws SQLException {
+        return SqlDataSourceUtils.isNotNullColumn(metaData, tableName, col.LAST_IP)
+            && SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, col.LAST_IP) == null;
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {

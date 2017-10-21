@@ -18,12 +18,16 @@ public class PlayerAuthTest {
         PlayerAuth auth = PlayerAuth.builder()
             .name("Bobby")
             .lastLogin(0L)
+            .lastIp("127.0.0.1")
             .email("your@email.com")
             .build();
 
         // then
         assertThat(auth.getNickname(), equalTo("bobby"));
         assertThat(auth.getLastLogin(), nullValue());
+        // Note ljacqu 20171020: Although 127.0.0.1 is the default value, we need to keep it because it might
+        // legitimately be the resolved IP of a player
+        assertThat(auth.getLastIp(), equalTo("127.0.0.1"));
         assertThat(auth.getEmail(), nullValue());
     }
 
@@ -50,6 +54,7 @@ public class PlayerAuthTest {
             .name("Charlie")
             .email(null)
             .lastLogin(null)
+            .lastIp(null)
             .groupId(19)
             .locPitch(123.004f)
             .build();
@@ -57,6 +62,7 @@ public class PlayerAuthTest {
         // then
         assertThat(auth.getEmail(), nullValue());
         assertThat(auth.getLastLogin(), nullValue());
+        assertThat(auth.getLastIp(), nullValue());
         assertThat(auth.getGroupId(), equalTo(19));
         assertThat(auth.getPitch(), equalTo(123.004f));
     }

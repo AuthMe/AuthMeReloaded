@@ -33,7 +33,7 @@ public class PlayerAuthBuilderHelperTest {
         PlayerAuth auth = PlayerAuthBuilderHelper.createPlayerAuth(player, hashedPassword, email);
 
         // then
-        assertThat(auth, hasAuthBasicData("noah", "Noah", email, "127.0.0.1"));
+        assertThat(auth, hasAuthBasicData("noah", "Noah", email, null));
         assertThat(auth.getRegistrationIp(), equalTo("192.168.34.47"));
         assertThat(Math.abs(auth.getRegistrationDate() - System.currentTimeMillis()), lessThan(1000L));
         assertThat(auth.getPassword(), equalToHash("myHash0001"));

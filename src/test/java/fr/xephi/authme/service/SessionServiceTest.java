@@ -213,6 +213,30 @@ public class SessionServiceTest {
         verify(dataSource).getAuth(name);
     }
 
+    @Test
+    public void shouldHandlePlayerAuthWithNullLastIp() {
+        // given
+        String name = "Charles";
+        Player player = mockPlayerWithNameAndIp(name, "144.117.118.145");
+        given(dataSource.hasSession(name)).willReturn(true);
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .lastIp(null)
+            .lastLogin(System.currentTimeMillis()).build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+
+        // when
+        boolean result = sessionService.canResumeSession(player);
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
+        verify(dataSource).hasSession(name);
+        verify(dataSource).setUnlogged(name);
+        verify(dataSource).revokeSession(name);
+        verify(dataSource).getAuth(name);
+    }
+
     private static Player mockPlayerWithNameAndIp(String name, String ip) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);

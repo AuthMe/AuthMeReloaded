@@ -103,7 +103,7 @@ public class PasswordRegisterExecutorTest {
         PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
-        assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", "127.0.0.1"));
+        assertThat(auth, hasAuthBasicData("s1m0n", "S1m0N", "mail@example.org", null));
         assertThat(auth.getRegistrationIp(), equalTo("123.45.67.89"));
         assertIsCloseTo(auth.getRegistrationDate(), System.currentTimeMillis(), 500);
         assertThat(auth.getPassword(), equalToHash("pass"));

@@ -2,13 +2,14 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  * Utilities for SQL data sources.
  */
-final class SqlDataSourceUtils {
+public final class SqlDataSourceUtils {
 
     private SqlDataSourceUtils() {
     }
@@ -18,7 +19,7 @@ final class SqlDataSourceUtils {
      *
      * @param e the exception to log
      */
-    static void logSqlException(SQLException e) {
+    public static void logSqlException(SQLException e) {
         ConsoleLogger.logException("Error during SQL operation:", e);
     }
 
@@ -31,8 +32,55 @@ final class SqlDataSourceUtils {
      * @return the value (which may be null)
      * @throws SQLException :)
      */
-    static Long getNullableLong(ResultSet rs, String columnName) throws SQLException {
+    public static Long getNullableLong(ResultSet rs, String columnName) throws SQLException {
         long longValue = rs.getLong(columnName);
         return rs.wasNull() ? null : longValue;
+    }
+
+    /**
+     * Returns whether the given column has a NOT NULL constraint.
+     *
+     * @param metaData the database meta data
+     * @param tableName the name of the table in which the column is
+     * @param columnName the name of the column to check
+     * @return true if the column is NOT NULL, false otherwise
+     * @throws SQLException :)
+     */
+    public static boolean isNotNullColumn(DatabaseMetaData metaData, String tableName,
+                                          String columnName) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+            if (!rs.next()) {
+                throw new IllegalStateException("Did not find meta data for column '"
+                    + columnName + "' while checking for not-null constraint");
+            }
+
+            int nullableCode = rs.getInt("NULLABLE");
+            if (nullableCode == DatabaseMetaData.columnNoNulls) {
+                return true;
+            } else if (nullableCode == DatabaseMetaData.columnNullableUnknown) {
+                ConsoleLogger.warning("Unknown nullable status for column '" + columnName + "'");
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the default value of a column (as per its SQL definition).
+     *
+     * @param metaData the database meta data
+     * @param tableName the name of the table in which the column is
+     * @param columnName the name of the column to check
+     * @return the default value of the column (may be null)
+     * @throws SQLException :)
+     */
+    public static Object getColumnDefaultValue(DatabaseMetaData metaData, String tableName,
+                                               String columnName) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+            if (!rs.next()) {
+                throw new IllegalStateException("Did not find meta data for column '"
+                    + columnName + "' while checking its default value");
+            }
+            return rs.getObject("COLUMN_DEF");
+        }
     }
 }

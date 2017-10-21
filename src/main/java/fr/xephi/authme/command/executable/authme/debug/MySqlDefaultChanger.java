@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.authme.debug;
 import ch.jalu.configme.properties.Property;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.permission.DebugSectionPermissions;
@@ -15,21 +14,23 @@ import org.bukkit.command.CommandSender;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.castToTypeOrNull;
+import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.unwrapSourceFromCacheDataSource;
 import static fr.xephi.authme.data.auth.PlayerAuth.DB_EMAIL_DEFAULT;
+import static fr.xephi.authme.data.auth.PlayerAuth.DB_LAST_IP_DEFAULT;
 import static fr.xephi.authme.data.auth.PlayerAuth.DB_LAST_LOGIN_DEFAULT;
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.isNotNullColumn;
 import static java.lang.String.format;
 
 /**
@@ -48,10 +49,7 @@ class MySqlDefaultChanger implements DebugSection {
 
     @PostConstruct
     void setMySqlField() {
-        DataSource dataSource = unwrapSourceFromCacheDataSource(this.dataSource);
-        if (dataSource instanceof MySQL) {
-            this.mySql = (MySQL) dataSource;
-        }
+        this.mySql = castToTypeOrNull(unwrapSourceFromCacheDataSource(this.dataSource), MySQL.class);
     }
 
     @Override
@@ -213,24 +211,6 @@ class MySqlDefaultChanger implements DebugSection {
         }
     }
 
-    private boolean isNotNullColumn(DatabaseMetaData metaData, String tableName,
-                                    String columnName) throws SQLException {
-        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
-            if (!rs.next()) {
-                throw new IllegalStateException("Did not find meta data for column '" + columnName
-                    + "' while migrating not-null columns (this should never happen!)");
-            }
-
-            int nullableCode = rs.getInt("NULLABLE");
-            if (nullableCode == DatabaseMetaData.columnNoNulls) {
-                return true;
-            } else if (nullableCode == DatabaseMetaData.columnNullableUnknown) {
-                ConsoleLogger.warning("Unknown nullable status for column '" + columnName + "'");
-            }
-        }
-        return false;
-    }
-
     /**
      * Gets the Connection object from the MySQL data source.
      *
@@ -246,28 +226,6 @@ class MySqlDefaultChanger implements DebugSection {
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new IllegalStateException("Could not get MySQL connection", e);
         }
-    }
-
-    /**
-     * Unwraps the "cache data source" and returns the underlying source. Returns the
-     * same as the input argument otherwise.
-     *
-     * @param dataSource the data source to unwrap if applicable
-     * @return the non-cache data source
-     */
-    @VisibleForTesting
-    static DataSource unwrapSourceFromCacheDataSource(DataSource dataSource) {
-        if (dataSource instanceof CacheDataSource) {
-            try {
-                Field source = CacheDataSource.class.getDeclaredField("source");
-                source.setAccessible(true);
-                return (DataSource) source.get(dataSource);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                ConsoleLogger.logException("Could not get source of CacheDataSource:", e);
-                return null;
-            }
-        }
-        return dataSource;
     }
 
     private static <E extends Enum<E>> E matchToEnum(List<String> arguments, int index, Class<E> clazz) {
@@ -289,6 +247,11 @@ class MySqlDefaultChanger implements DebugSection {
 
         LASTLOGIN(DatabaseSettings.MYSQL_COL_LASTLOGIN,
             "BIGINT", "BIGINT NOT NULL DEFAULT 0", DB_LAST_LOGIN_DEFAULT),
+
+        LASTIP(DatabaseSettings.MYSQL_COL_LAST_IP,
+            "VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin",
+            "VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT '127.0.0.1'",
+            DB_LAST_IP_DEFAULT),
 
         EMAIL(DatabaseSettings.MYSQL_COL_EMAIL,
             "VARCHAR(255)", "VARCHAR(255) NOT NULL DEFAULT 'your@email.com'", DB_EMAIL_DEFAULT);

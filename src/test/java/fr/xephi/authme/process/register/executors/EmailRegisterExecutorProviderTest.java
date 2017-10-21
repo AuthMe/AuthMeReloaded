@@ -121,7 +121,7 @@ public class EmailRegisterExecutorProviderTest {
         PlayerAuth auth = executor.buildPlayerAuth(params);
 
         // then
-        assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", "127.0.0.1"));
+        assertThat(auth, hasAuthBasicData("veronica", "Veronica", "test@example.com", null));
         assertThat(auth.getRegistrationIp(), equalTo("123.45.67.89"));
         assertIsCloseTo(auth.getRegistrationDate(), System.currentTimeMillis(), 1000);
         assertThat(auth.getPassword().getHash(), stringWithLength(12));

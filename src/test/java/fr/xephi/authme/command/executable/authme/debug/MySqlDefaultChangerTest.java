@@ -7,7 +7,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MySQL;
-import fr.xephi.authme.datasource.MySqlTestUtil;
+import fr.xephi.authme.datasource.SqlDataSourceTestUtil;
 import fr.xephi.authme.settings.Settings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,32 +35,6 @@ public class MySqlDefaultChangerTest {
     private Settings settings;
 
     @Test
-    public void shouldReturnSameDataSourceInstance() {
-        // given
-        DataSource dataSource = mock(DataSource.class);
-
-        // when
-        DataSource result = MySqlDefaultChanger.unwrapSourceFromCacheDataSource(dataSource);
-
-        // then
-        assertThat(result, equalTo(dataSource));
-    }
-
-    @Test
-    public void shouldUnwrapCacheDataSource() {
-        // given
-        DataSource source = mock(DataSource.class);
-        PlayerCache playerCache = mock(PlayerCache.class);
-        CacheDataSource cacheDataSource = new CacheDataSource(source, playerCache);
-
-        // when
-        DataSource result = MySqlDefaultChanger.unwrapSourceFromCacheDataSource(cacheDataSource);
-
-        // then
-        assertThat(result, equalTo(source));
-    }
-
-    @Test
     public void shouldReturnMySqlConnection() throws SQLException {
         // given
         Settings settings = mock(Settings.class);
@@ -68,7 +42,7 @@ public class MySqlDefaultChangerTest {
         HikariDataSource dataSource = mock(HikariDataSource.class);
         Connection connection = mock(Connection.class);
         given(dataSource.getConnection()).willReturn(connection);
-        MySQL mySQL = MySqlTestUtil.createMySql(settings, dataSource);
+        MySQL mySQL = SqlDataSourceTestUtil.createMySql(settings, dataSource);
         MySqlDefaultChanger defaultChanger = createDefaultChanger(mySQL);
 
         // when

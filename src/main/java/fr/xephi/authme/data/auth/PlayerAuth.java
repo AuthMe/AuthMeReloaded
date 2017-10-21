@@ -18,6 +18,8 @@ public class PlayerAuth {
     public static final String DB_EMAIL_DEFAULT = "your@email.com";
     /** Default last login value used in the database if the last login column is NOT NULL. */
     public static final long DB_LAST_LOGIN_DEFAULT = 0;
+    /** Default last ip value used in the database if the last IP column is NOT NULL. */
+    public static final String DB_LAST_IP_DEFAULT = "127.0.0.1";
 
     /** The player's name in lowercase, e.g. "xephi". */
     private String nickname;
@@ -218,7 +220,7 @@ public class PlayerAuth {
             auth.realName = firstNonNull(realName, "Player");
             auth.password = firstNonNull(password, new HashedPassword(""));
             auth.email = DB_EMAIL_DEFAULT.equals(email) ? null : email;
-            auth.lastIp = firstNonNull(lastIp, "127.0.0.1");
+            auth.lastIp = lastIp; // Don't check against default value 127.0.0.1 as it may be a legit value
             auth.groupId = groupId;
             auth.lastLogin = isEqualTo(lastLogin, DB_LAST_LOGIN_DEFAULT) ? null : lastLogin;
             auth.registrationIp = registrationIp;
