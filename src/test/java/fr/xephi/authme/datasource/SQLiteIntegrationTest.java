@@ -78,7 +78,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         Statement st = con.createStatement();
         // table is absent
         st.execute("DROP TABLE authme");
-        SQLite sqLite = new SQLite(settings, con);
+        SQLite sqLite = new SQLite(settings, null, con);
 
         // when
         sqLite.setup();
@@ -100,7 +100,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             + "username varchar(255) unique, "
             + "password varchar(255) not null, "
             + "primary key (id));");
-        SQLite sqLite = new SQLite(settings, con);
+        SQLite sqLite = new SQLite(settings, null, con);
 
         // when
         sqLite.setup();
@@ -114,7 +114,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Override
     protected DataSource getDataSource(String saltColumn) {
         when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
-        return new SQLite(settings, con);
+        return new SQLite(settings, null, con);
     }
 
     private static <T> void set(Property<T> property, T value) {

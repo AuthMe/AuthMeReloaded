@@ -8,6 +8,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.util.StringUtils;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -29,6 +30,8 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
  */
 public class SQLite implements DataSource {
 
+    private final Settings settings;
+    private final File dataFolder;
     private final String database;
     private final String tableName;
     private final Columns col;
@@ -39,10 +42,11 @@ public class SQLite implements DataSource {
      *
      * @param settings The settings instance
      *
-     * @throws ClassNotFoundException if no driver could be found for the datasource
-     * @throws SQLException           when initialization of a SQL datasource failed
+     * @throws SQLException when initialization of a SQL datasource failed
      */
-    public SQLite(Settings settings) throws ClassNotFoundException, SQLException {
+    public SQLite(Settings settings, File dataFolder) throws SQLException {
+        this.settings = settings;
+        this.dataFolder = dataFolder;
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
@@ -50,23 +54,31 @@ public class SQLite implements DataSource {
         try {
             this.connect();
             this.setup();
-        } catch (ClassNotFoundException | SQLException ex) {
+            this.migrateIfNeeded();
+        } catch (Exception ex) {
             ConsoleLogger.logException("Error during SQLite initialization:", ex);
             throw ex;
         }
     }
 
     @VisibleForTesting
-    SQLite(Settings settings, Connection connection) {
+    SQLite(Settings settings, File dataFolder, Connection connection) {
+        this.settings = settings;
+        this.dataFolder = dataFolder;
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
         this.con = connection;
     }
 
-    private void connect() throws ClassNotFoundException, SQLException {
-        Class.forName("org.sqlite.JDBC");
-        ConsoleLogger.info("SQLite driver loaded");
+    protected void connect() throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+
+        ConsoleLogger.debug("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
     }
 
@@ -152,28 +164,18 @@ public class SQLite implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.HAS_SESSION + " INT NOT NULL DEFAULT '0';");
             }
-
-            if (isMigrationRequired(md)) {
-                ConsoleLogger.warning("READ ME! Your SQLite database is outdated and cannot save new players.");
-                ConsoleLogger.warning("Run /authme debug migratesqlite after making a backup");
-            }
         }
         ConsoleLogger.info("SQLite Setup finished");
     }
 
-    /**
-     * Returns whether the database needs to be migrated.
-     * <p>
-     * Background: Before commit 22911a0 (July 2016), new SQLite databases initialized the last IP column to be NOT NULL
-     * without a default value. Allowing the last IP to be null (#792) is therefore not compatible.
-     *
-     * @param metaData the database meta data
-     * @return true if a migration is necessary, false otherwise
-     * @throws SQLException .
-     */
-    public boolean isMigrationRequired(DatabaseMetaData metaData) throws SQLException {
-        return SqlDataSourceUtils.isNotNullColumn(metaData, tableName, col.LAST_IP)
-            && SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, col.LAST_IP) == null;
+    protected void migrateIfNeeded() throws SQLException {
+        DatabaseMetaData metaData = con.getMetaData();
+        if (SqLiteMigrater.isMigrationRequired(metaData, tableName, col)) {
+            new SqLiteMigrater(settings, dataFolder).performMigration(this);
+            // Migration deletes the table and recreates it, therefore call connect() again
+            // to get an up-to-date Connection to the database
+            connect();
+        }
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
@@ -188,8 +190,9 @@ public class SQLite implements DataSource {
         try {
             this.connect();
             this.setup();
-        } catch (ClassNotFoundException | SQLException ex) {
-            ConsoleLogger.logException("Error during SQLite initialization:", ex);
+            this.migrateIfNeeded();
+        } catch (SQLException ex) {
+            ConsoleLogger.logException("Error while reloading SQLite:", ex);
         }
     }
 

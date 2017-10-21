@@ -1,13 +1,10 @@
-package fr.xephi.authme.command.executable.authme.debug;
+package fr.xephi.authme.datasource;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,25 +15,24 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
-import static fr.xephi.authme.datasource.SqlDataSourceTestUtil.createSqliteAndInitialize;
+import static fr.xephi.authme.datasource.SqlDataSourceTestUtil.createSqlite;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Integration test for {@link SqliteMigrater}. Uses a real SQLite database.
+ * Integration test for {@link SqLiteMigrater}. Uses a real SQLite database.
  */
-public class SqliteMigraterIntegrationTest {
+public class SqLiteMigraterIntegrationTest {
 
-    private static final String CONFIRMATION_CODE = "ABCD";
-
-    private SqliteMigrater sqliteMigrater;
+    private File dataFolder;
     private SQLite sqLite;
 
     @Rule
@@ -50,26 +46,20 @@ public class SqliteMigraterIntegrationTest {
         TestHelper.returnDefaultsForAllProperties(settings);
 
         File sqliteDbFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "datasource/sqlite.april2016.db");
-        File tempFile = temporaryFolder.newFile();
+        dataFolder = temporaryFolder.newFolder();
+        File tempFile = new File(dataFolder, "authme.db");
         Files.copy(sqliteDbFile, tempFile);
 
         Connection con = DriverManager.getConnection("jdbc:sqlite:" + tempFile.getPath());
-        sqLite = createSqliteAndInitialize(settings, con);
+        sqLite = createSqlite(settings, dataFolder, con);
 
-        sqliteMigrater = new SqliteMigrater();
-        ReflectionTestUtils.setField(sqliteMigrater, "dataSource", sqLite);
-        ReflectionTestUtils.setField(sqliteMigrater, "settings", settings);
-        ReflectionTestUtils.setField(sqliteMigrater, "confirmationCode", CONFIRMATION_CODE);
-        sqliteMigrater.setSqLiteField();
     }
 
     @Test
     public void shouldRun() throws ClassNotFoundException, SQLException {
-        // given
-        CommandSender sender = mock(CommandSender.class);
-
-        // when
-        sqliteMigrater.execute(sender, Collections.singletonList(CONFIRMATION_CODE));
+        // given / when
+        sqLite.setup();
+        sqLite.migrateIfNeeded();
 
         // then
         List<PlayerAuth> auths = sqLite.getAllAuths();
@@ -99,6 +89,12 @@ public class SqliteMigraterIntegrationTest {
         assertThat(auth6, hasAuthBasicData("mysql6", "MySql6", "user6@example.com", "44.45.67.188"));
         assertThat(auth6, hasAuthLocation(28.5, 53.43, -147.23, "world6", 0, 0));
         assertThat(auth6.getLastLogin(), equalTo(1472992686300L));
+
+        // Check that backup was made
+        File backupsFolder = new File(dataFolder, "backups");
+        assertThat(backupsFolder.exists(), equalTo(true));
+        assertThat(backupsFolder.isDirectory(), equalTo(true));
+        assertThat(backupsFolder.list(), arrayContaining(containsString("authme")));
     }
 
     private static PlayerAuth getByNameOrFail(String name, List<PlayerAuth> auths) {
