@@ -70,4 +70,21 @@ public class PlayerUtilsTest {
         // given / when / then
         TestHelper.validateHasOnlyPrivateEmptyConstructor(PlayerUtils.class);
     }
+
+    @Test
+    public void shouldCheckIfIsNpc() {
+        // given
+        Player player1 = mock(Player.class);
+        given(player1.hasMetadata("NPC")).willReturn(false);
+        Player player2 = mock(Player.class);
+        given(player2.hasMetadata("NPC")).willReturn(true);
+
+        // when
+        boolean result1 = PlayerUtils.isNpc(player1);
+        boolean result2 = PlayerUtils.isNpc(player2);
+
+        // then
+        assertThat(result1, equalTo(false));
+        assertThat(result2, equalTo(true));
+    }
 }

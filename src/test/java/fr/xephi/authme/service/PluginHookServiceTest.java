@@ -58,8 +58,6 @@ public class PluginHookServiceTest {
         assertThat(pluginHookService.isEssentialsAvailable(), equalTo(true));
     }
 
-    // Note ljacqu 20160312: Cannot test with CombatTagPlus because its class is declared final
-
     @Test
     public void shouldHookIntoEssentialsAtInitialization() {
         // given

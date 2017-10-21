@@ -10,8 +10,8 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.GeoIpService;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -33,7 +33,6 @@ public class AuthMeApi {
 
     private static AuthMeApi singleton;
     private final AuthMe plugin;
-    private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
@@ -45,11 +44,9 @@ public class AuthMeApi {
      * Constructor for AuthMeApi.
      */
     @Inject
-    AuthMeApi(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PlayerCache playerCache,
-              PasswordSecurity passwordSecurity, Management management, ValidationService validationService,
-              GeoIpService geoIpService) {
+    AuthMeApi(AuthMe plugin, DataSource dataSource, PlayerCache playerCache, PasswordSecurity passwordSecurity,
+              Management management, ValidationService validationService, GeoIpService geoIpService) {
         this.plugin = plugin;
-        this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
@@ -109,7 +106,7 @@ public class AuthMeApi {
      * @return true if the player is an npc
      */
     public boolean isNpc(Player player) {
-        return pluginHookService.isNpc(player);
+        return PlayerUtils.isNpc(player);
     }
 
     /**

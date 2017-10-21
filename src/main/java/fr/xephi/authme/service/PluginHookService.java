@@ -76,16 +76,6 @@ public class PluginHookService {
         return null;
     }
 
-    /**
-     * Checks whether the player is an NPC.
-     *
-     * @param player The player to process
-     * @return True if player is NPC, false otherwise
-     */
-    public boolean isNpc(Player player) {
-        return player.hasMetadata("NPC");
-    }
-
 
     // ------
     // "Is plugin available" methods

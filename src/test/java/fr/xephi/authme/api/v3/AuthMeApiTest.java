@@ -6,7 +6,6 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,8 +42,6 @@ public class AuthMeApiTest {
     @InjectMocks
     private AuthMeApi api;
 
-    @Mock
-    private PluginHookService pluginHookService;
     @Mock
     private ValidationService validationService;
     @Mock
@@ -84,13 +81,14 @@ public class AuthMeApiTest {
     public void shouldReturnIfPlayerIsNpc() {
         // given
         Player player = mock(Player.class);
-        given(pluginHookService.isNpc(player)).willReturn(true);
+        given(player.hasMetadata("NPC")).willReturn(true);
 
         // when
         boolean result = api.isNpc(player);
 
         // then
         assertThat(result, equalTo(true));
+        verify(player).hasMetadata("NPC");
     }
 
     @Test
