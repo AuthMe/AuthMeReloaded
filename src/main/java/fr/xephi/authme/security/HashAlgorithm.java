@@ -34,7 +34,7 @@ public enum HashAlgorithm {
 
     @Deprecated DOUBLEMD5(fr.xephi.authme.security.crypts.DoubleMd5.class),
     @Deprecated MD5(fr.xephi.authme.security.crypts.Md5.class),
-    @Deprecated PLAINTEXT(fr.xephi.authme.security.crypts.PlainText.class),
+    @Deprecated PLAINTEXT(null),
     @Deprecated SHA1(fr.xephi.authme.security.crypts.Sha1.class),
     @Deprecated SHA512(fr.xephi.authme.security.crypts.Sha512.class),
     @Deprecated WHIRLPOOL(fr.xephi.authme.security.crypts.Whirlpool.class);

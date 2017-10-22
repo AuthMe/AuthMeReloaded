@@ -81,7 +81,7 @@ public class HashAlgorithmIntegrationTest {
 
         // when
         for (HashAlgorithm hashAlgorithm : HashAlgorithm.values()) {
-            if (hashAlgorithm != HashAlgorithm.CUSTOM) {
+            if (hashAlgorithm != HashAlgorithm.CUSTOM && hashAlgorithm != HashAlgorithm.PLAINTEXT) {
                 boolean isEnumDeprecated = HashAlgorithm.class.getDeclaredField(hashAlgorithm.name())
                     .isAnnotationPresent(Deprecated.class);
                 boolean isDeprecatedClass = hashAlgorithm.getClazz().isAnnotationPresent(Deprecated.class);
