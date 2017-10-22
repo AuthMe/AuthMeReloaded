@@ -1,6 +1,9 @@
 machine:
   java:
     version: oraclejdk8
+dependencies:
+  pre:
+    - "sudo apt-get update; sudo apt-get install -y git; sudo git clone https://www.github.com/P-H-C/phc-winner-argon2.git argon2-src; cd argon2-src; sudo make; sudo make install"
 general:
   artifacts:
     - "target/AuthMe-*.jar"
