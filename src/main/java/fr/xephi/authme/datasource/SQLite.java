@@ -71,17 +71,23 @@ public class SQLite implements DataSource {
         this.con = connection;
     }
 
+    /**
+     * Initializes the connection to the SQLite database.
+     */
     protected void connect() throws SQLException {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException("Failed to load SQLite JDBC class", e);
         }
 
         ConsoleLogger.debug("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
     }
 
+    /**
+     * Creates the table if necessary, or adds any missing columns to the table.
+     */
     @VisibleForTesting
     protected void setup() throws SQLException {
         try (Statement st = con.createStatement()) {

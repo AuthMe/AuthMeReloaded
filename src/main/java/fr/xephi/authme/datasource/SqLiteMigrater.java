@@ -25,11 +25,11 @@ import java.util.Date;
 class SqLiteMigrater {
 
     @DataFolder
-    private File dataFolder;
+    private final File dataFolder;
 
-    private String databaseName;
-    private String tableName;
-    private Columns col;
+    private final String databaseName;
+    private final String tableName;
+    private final Columns col;
 
     @Inject
     SqLiteMigrater(Settings settings, @DataFolder File dataFolder) {
@@ -49,13 +49,17 @@ class SqLiteMigrater {
      * @param tableName the table name (SQLite file name)
      * @param col column names configuration
      * @return true if a migration is necessary, false otherwise
-     * @throws SQLException .
      */
     static boolean isMigrationRequired(DatabaseMetaData metaData, String tableName, Columns col) throws SQLException {
         return SqlDataSourceUtils.isNotNullColumn(metaData, tableName, col.LAST_IP)
             && SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, col.LAST_IP) == null;
     }
 
+    /**
+     * Migrates the given SQLite instance.
+     *
+     * @param sqLite the instance to migrate
+     */
     void performMigration(SQLite sqLite) throws SQLException {
         ConsoleLogger.warning("YOUR SQLITE DATABASE NEEDS MIGRATING! DO NOT TURN OFF YOUR SERVER");
 
@@ -82,7 +86,13 @@ class SqLiteMigrater {
         }
     }
 
-    // Cannot rename or remove a column from SQLite, so we have to rename the table and create an updated one
+    /**
+     * Renames the current database, creates a new database under the name and copies the data
+     * from the renamed database to the newly created one. This is necessary because SQLite
+     * does not support dropping or modifying a column.
+     *
+     * @param sqLite the SQLite instance to migrate
+     */
     // cf. https://stackoverflow.com/questions/805363/how-do-i-rename-a-column-in-a-sqlite-database-table
     private void recreateDatabaseWithNewDefinitions(SQLite sqLite) throws SQLException {
         Connection connection = getConnection(sqLite);
