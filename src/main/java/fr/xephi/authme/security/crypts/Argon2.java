@@ -2,6 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import de.mkammerer.argon2.Argon2Constants;
 import de.mkammerer.argon2.Argon2Factory;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -17,6 +18,22 @@ public class Argon2 extends UnsaltedMethod {
 
     public Argon2() {
         argon2 = Argon2Factory.create();
+    }
+
+    /**
+     * Checks if the argon2 library is available in java.library.path.
+     *
+     * @return true if the library is present, false otherwise
+     */
+    public static boolean isLibraryLoaded() {
+        try {
+            System.loadLibrary("argon2");
+            return true;
+        } catch (UnsatisfiedLinkError e) {
+            ConsoleLogger.logException(
+                "Cannot find argon2 library: https://github.com/AuthMe/AuthMeReloaded/wiki/Argon2-as-Password-Hash", e);
+        }
+        return false;
     }
 
     @Override

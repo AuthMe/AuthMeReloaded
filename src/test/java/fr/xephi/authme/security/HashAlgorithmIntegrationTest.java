@@ -2,6 +2,7 @@ package fr.xephi.authme.security;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.description.Recommendation;
@@ -61,13 +62,9 @@ public class HashAlgorithmIntegrationTest {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
-                if (HashAlgorithm.ARGON2.equals(algorithm)) {
-                    try {
-                        System.loadLibrary("argon2");
-                    } catch (UnsatisfiedLinkError e) {
-                        System.out.println("[WARNING] Cannot find argon2 library, skipping test suite");
-                        continue;
-                    }
+                if (HashAlgorithm.ARGON2.equals(algorithm) && !Argon2.isLibraryLoaded()) {
+                    System.out.println("[WARNING] Cannot find argon2 library, skipping integration test");
+                    continue;
                 }
                 EncryptionMethod method = injector.createIfHasDependencies(algorithm.getClazz());
                 if (method == null) {
@@ -107,5 +104,4 @@ public class HashAlgorithmIntegrationTest {
             fail("Found inconsistencies:\n" + String.join("\n", failedEntries));
         }
     }
-
 }

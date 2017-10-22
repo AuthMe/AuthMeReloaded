@@ -113,9 +113,6 @@ public abstract class AbstractEncryptionMethodTest {
 
     @Test
     public void testGivenPasswords() {
-        if (method.getClass() == Argon2.class && !checkArgon2LibraryExists()) {
-            return;
-        }
         // Start with the 2nd to last password if we skip long tests
         int start = SKIP_LONG_TESTS ? GIVEN_PASSWORDS.length - 2 : 0;
         // Test entries in GIVEN_PASSWORDS except the last one
@@ -138,9 +135,6 @@ public abstract class AbstractEncryptionMethodTest {
 
     @Test
     public void testPasswordEquality() {
-        if (method.getClass() == Argon2.class && !checkArgon2LibraryExists()) {
-            return;
-        }
         List<String> internalPasswords = method.getClass().isAnnotationPresent(AsciiRestricted.class)
             ? INTERNAL_PASSWORDS.subList(0, INTERNAL_PASSWORDS.size() - 1)
             : INTERNAL_PASSWORDS;
@@ -174,9 +168,6 @@ public abstract class AbstractEncryptionMethodTest {
     /** Tests various strings to ensure that encryption methods don't rely on the hash's format too much. */
     @Test
     public void testMalformedHashes() {
-        if (method.getClass() == Argon2.class && !checkArgon2LibraryExists()) {
-            return;
-        }
         assumeThat(SKIP_LONG_TESTS, equalTo(false));
         String salt = method.hasSeparateSalt() ? "testSalt" : null;
         for (String bogusHash : BOGUS_HASHES) {
@@ -244,17 +235,4 @@ public abstract class AbstractEncryptionMethodTest {
         return true;
     }
 
-    /**
-     * Return whether the libargon2 is installed or not
-     * @return True if we can found argon2 library on system, False otherwise
-     */
-    private boolean checkArgon2LibraryExists() {
-        try {
-            System.loadLibrary("argon2");
-            return true;
-        } catch (UnsatisfiedLinkError e) {
-            System.out.println("[WARNING] Cannot find argon2 library, skipping argon2 password hashing test");
-            return false;
-        }
-    }
 }

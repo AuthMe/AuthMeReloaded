@@ -24,6 +24,7 @@ import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -270,9 +271,9 @@ public class AuthMe extends JavaPlugin {
         }
         // Check if argon2 library is present and can be loaded
         if (settings.getProperty(SecuritySettings.PASSWORD_HASH).equals(HashAlgorithm.ARGON2)
-            && !OnStartupTasks.checkArgon2Presence()) {
-            ConsoleLogger.warning("WARNING!!! You use Argon2 Hash Algorithm method but we can't found any "
-                + "Argon2 library on your system !");
+            && !Argon2.isLibraryLoaded()) {
+            ConsoleLogger.warning("WARNING!!! You use Argon2 Hash Algorithm method but we can't find the Argon2 "
+                + "library on your system! See https://github.com/AuthMe/AuthMeReloaded/wiki/Argon2-as-Password-Hash");
             stopOrUnload();
         }
     }

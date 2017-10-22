@@ -392,7 +392,7 @@
             <optional>true</optional>
         </dependency>
 
-		<!-- Argon2 implementation -->
+        <!-- Argon2 implementation -->
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
