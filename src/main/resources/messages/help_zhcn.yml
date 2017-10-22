@@ -106,9 +106,6 @@ commands:
         arg1:
             label: '天数'
             description: '天数'
-        arg2:
-            label: 'all'
-            description: '添加all到最后来清理最后登录为0的玩家'
     authme.resetpos:
        description: '重置玩家登出位置'
        detailedDescription: '重置玩家登出位置'
@@ -190,9 +187,6 @@ commands:
         arg1:
             label: '邮箱'
             description: '邮箱地址'
-        arg2:
-            label: '验证码'
-            description: '验证码'
     email.help:
         description: '查看帮助'
         detailedDescription: '查看邮箱帮助'
