@@ -14,7 +14,7 @@ public class DataSourceValues {
         return UNKNOWN_PLAYER;
     }
 
-    <T> void put(Column<T> column, Object value) {
+    <T> void put(Column<T, ?> column, Object value) {
         final Class<T> typeClass = column.getType().getClazz();
         if (value == null || typeClass.isInstance(value)) {
             values.put(column, value);
@@ -25,7 +25,7 @@ public class DataSourceValues {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T get(Column<T> column) {
+    public <T> T get(Column<T, ?> column) {
         return (T) values.computeIfAbsent(column, c -> {
            throw new IllegalArgumentException("No value available for column '" + c + "'");
         });

@@ -4,9 +4,9 @@ import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.AuthMeMatchers;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.sqlcolumns.Column;
+import fr.xephi.authme.datasource.sqlcolumns.AuthMeColumns;
 import fr.xephi.authme.datasource.sqlcolumns.DataSourceValues;
-import fr.xephi.authme.datasource.sqlcolumns.SqliteTestExt;
+import fr.xephi.authme.datasource.sqlcolumns.SqlColumnsHandler;
 import fr.xephi.authme.datasource.sqlcolumns.UpdateValues;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -117,15 +117,20 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         assertThat(sqLite.getAllAuths(), hasSize(1));
     }
 
+    private SqlColumnsHandler<Columns> createColumnsHandler() {
+        return new SqlColumnsHandler<>(con, new Columns(settings), settings.getProperty(DatabaseSettings.MYSQL_TABLE),
+            settings.getProperty(DatabaseSettings.MYSQL_COL_NAME));
+    }
+
     @Test
     public void shouldUpdateValues() {
         // given
-        UpdateValues values = UpdateValues.builder()
-            .put(Column.REALNAME, "BoBBy")
-            .put(Column.EMAIL, "bobbers@example.com")
-            .put(Column.REGISTRATION_DATE, 123456L)
+        UpdateValues<Columns> values = UpdateValues
+            .with(AuthMeColumns.REALNAME, "BoBBy")
+            .and(AuthMeColumns.EMAIL, "bobbers@example.com")
+            .and(AuthMeColumns.REGISTRATION_DATE, 123456L)
             .build();
-        SqliteTestExt ds = (SqliteTestExt) getDataSource();
+        SqlColumnsHandler<Columns> ds = createColumnsHandler();
 
         // when
         ds.update("bobby", values);
@@ -139,26 +144,26 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Test
     public void shouldGetValues() {
         // given
-        SqliteTestExt ds = (SqliteTestExt) getDataSource();
+        SqlColumnsHandler<Columns> ds = createColumnsHandler();
 
         // when
         DataSourceValues result = ds.retrieve("bobby",
-            Column.LAST_IP, Column.EMAIL, Column.REALNAME, Column.REGISTRATION_DATE);
+            AuthMeColumns.LAST_IP, AuthMeColumns.EMAIL, AuthMeColumns.REALNAME, AuthMeColumns.REGISTRATION_DATE);
 
         // then
-        assertThat(result.get(Column.LAST_IP), equalTo("123.45.67.89"));
-        assertThat(result.get(Column.EMAIL), equalTo("your@email.com")); // TODO: should be null?
-        assertThat(result.get(Column.REALNAME), equalTo("Bobby"));
-        assertThat(result.get(Column.REGISTRATION_DATE), equalTo(1436778723L));
+        assertThat(result.get(AuthMeColumns.LAST_IP), equalTo("123.45.67.89"));
+        assertThat(result.get(AuthMeColumns.EMAIL), equalTo("your@email.com")); // TODO: should be null?
+        assertThat(result.get(AuthMeColumns.REALNAME), equalTo("Bobby"));
+        assertThat(result.get(AuthMeColumns.REGISTRATION_DATE), equalTo(1436778723L));
     }
 
     @Test
     public void shouldGetSingleValue() {
         // given
-        SqliteTestExt ds = (SqliteTestExt) getDataSource();
+        SqlColumnsHandler<Columns> ds = createColumnsHandler();
 
         // when
-        DataSourceResult<String> result = ds.retrieve("bobby", Column.LAST_IP);
+        DataSourceResult<String> result = ds.retrieve("bobby", AuthMeColumns.LAST_IP);
 
         // then
         assertThat(result.getValue(), equalTo("123.45.67.89"));
@@ -167,10 +172,10 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Test
     public void shouldHandleUnknownUser() {
         // given
-        SqliteTestExt ds = (SqliteTestExt) getDataSource();
+        SqlColumnsHandler<Columns> ds = createColumnsHandler();
 
         // when
-        DataSourceValues result = ds.retrieve("doesNotExist", Column.LAST_IP, Column.REGISTRATION_DATE);
+        DataSourceValues result = ds.retrieve("doesNotExist", AuthMeColumns.LAST_IP, AuthMeColumns.REGISTRATION_DATE);
 
         // then
         assertThat(result.playerExists(), equalTo(false));
@@ -179,7 +184,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Override
     protected DataSource getDataSource(String saltColumn) {
         when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
-        return new SqliteTestExt(settings, con);
+        return new SQLite(settings, con);
     }
 
     private static <T> void set(Property<T> property, T value) {

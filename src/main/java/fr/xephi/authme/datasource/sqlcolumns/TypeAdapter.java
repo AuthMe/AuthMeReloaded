@@ -1,23 +1,21 @@
 package fr.xephi.authme.datasource.sqlcolumns;
 
-import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.SqlDataSourceUtils;
-import fr.xephi.authme.settings.Settings;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-public class TypeAdapter {
+public class TypeAdapter<C> {
 
-    private Columns col;
+    private C col;
 
-    TypeAdapter(Settings settings) {
-        this.col = new Columns(settings);
+    TypeAdapter(C col) {
+        this.col = col;
     }
 
-    public <T> T get(ResultSet rs, Column<T> column) throws SQLException {
-        return createResultSetGetter(column.getType(), rs).getValue(column.returnName(col));
+    public <T> T get(ResultSet rs, Column<T, C> column) throws SQLException {
+        return createResultSetGetter(column.getType(), rs).getValue(column.resolveName(col));
     }
 
     private static <T> ResultSetGetter<T> createResultSetGetter(Type<T> type, ResultSet rs) {
