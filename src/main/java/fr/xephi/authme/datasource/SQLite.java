@@ -57,7 +57,7 @@ public class SQLite implements DataSource {
     }
 
     @VisibleForTesting
-    SQLite(Settings settings, Connection connection) {
+    protected SQLite(Settings settings, Connection connection) {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
