@@ -21,7 +21,7 @@ public class DebugCommand implements ExecutableCommand {
     private static final Set<Class<? extends DebugSection>> SECTION_CLASSES = ImmutableSet.of(
         PermissionGroups.class, DataStatistics.class, CountryLookup.class, PlayerAuthViewer.class, InputValidator.class,
         LimboPlayerViewer.class, CountryLookup.class, HasPermissionChecker.class, TestEmailSender.class,
-        SpawnLocationViewer.class, MySqlDefaultChanger.class, SqliteMigrater.class);
+        SpawnLocationViewer.class, MySqlDefaultChanger.class);
 
     @Inject
     private Factory<DebugSection> debugSectionFactory;
