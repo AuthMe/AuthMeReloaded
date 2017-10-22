@@ -5,13 +5,13 @@
 common:
     header: '==========[ AuthMeReloaded - Pomoc ]=========='
     optional: 'Opcjonalnie'
-    hasPermission: 'Nie posidasz permisji'
-    noPermission: 'Brak permisji'
-    default: 'Domyslnie'
+    hasPermission: 'Nie posidasz uprawnień'
+    noPermission: 'Brak uprawnień'
+    default: 'Domyślnie'
     result: 'Wynik'
     defaultPermissions:
-        notAllowed: 'Nie posiadasz permisji'
-        opOnly: 'Tylko OP'
+        notAllowed: 'Nie posiadasz uprawnień'
+        opOnly: 'Tylko dla OP'
         allowed: 'Dozwolone dla wszyskich'
 
 # -------------------------------------------------------
@@ -20,11 +20,11 @@ common:
 #   alternatives: ''
 section:
     command: 'Komenda'
-    description: 'Krotki opis'
-    detailedDescription: 'Dlugi opis'
+    description: 'Opis'
+    detailedDescription: 'Szczegółowy opis'
     arguments: 'Argumenty'
-    permissions: 'Permisje'
-    alternatives: 'Alternatywy'
+    permissions: 'Uprawnienia'
+    alternatives: 'Aliasy'
     children: 'Komendy'
 
 # -------------------------------------------------------
@@ -36,10 +36,10 @@ section:
 commands:
     authme.register:
         description: 'Rejestracja gracza'
-        detailedDescription: 'Rerejestracja gracza z okreslonym haslem'
+        detailedDescription: 'Rejestracja gracza z okreslonym hasłem'
         arg1:
             label: 'player'
             description: 'Nazwa gracza'
         arg2:
             label: 'password'
-            description: 'Haslo'
+            description: 'Hasło gracza'
