@@ -74,8 +74,8 @@ public class Management {
         runTask(() -> asynchronousUnregister.adminUnregister(initiator, name, player));
     }
 
-    public void performJoin(Player player, Location location) {
-        runTask(() -> asynchronousJoin.processJoin(player, location));
+    public void performJoin(Player player) {
+        runTask(() -> asynchronousJoin.processJoin(player));
     }
 
     public void performQuit(Player player) {
