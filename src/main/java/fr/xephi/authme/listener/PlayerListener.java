@@ -197,8 +197,8 @@ public class PlayerListener implements Listener {
 
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
-            management.performJoin(player, player.getLocation());
         }
+        management.performJoin(player, player.getLocation());
 
         teleportationService.teleportNewPlayerToFirstSpawn(player);
     }
