@@ -1,12 +1,11 @@
 package fr.xephi.authme.datasource;
 
 import ch.jalu.configme.properties.Property;
-import fr.xephi.authme.AuthMeMatchers;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.sqlcolumns.AuthMeColumns;
+import fr.xephi.authme.datasource.sqlcolumns.AuthMeColumnsHandler;
 import fr.xephi.authme.datasource.sqlcolumns.DataSourceValues;
-import fr.xephi.authme.datasource.sqlcolumns.SqlColumnsHandler;
 import fr.xephi.authme.datasource.sqlcolumns.UpdateValues;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -23,8 +22,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static fr.xephi.authme.AuthMeMatchers.equalToHash;
+import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
+import static fr.xephi.authme.AuthMeMatchers.hasRegistrationInfo;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -117,8 +121,8 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         assertThat(sqLite.getAllAuths(), hasSize(1));
     }
 
-    private SqlColumnsHandler<Columns> createColumnsHandler() {
-        return new SqlColumnsHandler<>(con, new Columns(settings), settings.getProperty(DatabaseSettings.MYSQL_TABLE),
+    private AuthMeColumnsHandler createColumnsHandler() {
+        return new AuthMeColumnsHandler(con, new Columns(settings), settings.getProperty(DatabaseSettings.MYSQL_TABLE),
             settings.getProperty(DatabaseSettings.MYSQL_COL_NAME));
     }
 
@@ -130,21 +134,21 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             .and(AuthMeColumns.EMAIL, "bobbers@example.com")
             .and(AuthMeColumns.REGISTRATION_DATE, 123456L)
             .build();
-        SqlColumnsHandler<Columns> ds = createColumnsHandler();
+        AuthMeColumnsHandler ds = createColumnsHandler();
 
         // when
         ds.update("bobby", values);
 
         // then
         PlayerAuth auth = getDataSource().getAuth("bobby");
-        assertThat(auth, AuthMeMatchers.hasAuthBasicData("bobby", "BoBBy", "bobbers@example.com", "123.45.67.89"));
+        assertThat(auth, hasAuthBasicData("bobby", "BoBBy", "bobbers@example.com", "123.45.67.89"));
         assertThat(auth.getRegistrationDate(), equalTo(123456L));
     }
 
     @Test
     public void shouldGetValues() {
         // given
-        SqlColumnsHandler<Columns> ds = createColumnsHandler();
+        AuthMeColumnsHandler ds = createColumnsHandler();
 
         // when
         DataSourceValues result = ds.retrieve("bobby",
@@ -160,7 +164,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Test
     public void shouldGetSingleValue() {
         // given
-        SqlColumnsHandler<Columns> ds = createColumnsHandler();
+        AuthMeColumnsHandler ds = createColumnsHandler();
 
         // when
         DataSourceResult<String> result = ds.retrieve("bobby", AuthMeColumns.LAST_IP);
@@ -172,13 +176,62 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Test
     public void shouldHandleUnknownUser() {
         // given
-        SqlColumnsHandler<Columns> ds = createColumnsHandler();
+        AuthMeColumnsHandler ds = createColumnsHandler();
 
         // when
         DataSourceValues result = ds.retrieve("doesNotExist", AuthMeColumns.LAST_IP, AuthMeColumns.REGISTRATION_DATE);
 
         // then
         assertThat(result.playerExists(), equalTo(false));
+    }
+
+    @Test
+    public void shouldInsertValues() {
+        // given
+        AuthMeColumnsHandler handler = createColumnsHandler();
+
+        // when
+        handler.insert(UpdateValues
+            .with(AuthMeColumns.EMAIL, "my.mail@example.org")
+            .and(AuthMeColumns.NAME, "kmfdm")
+            .and(AuthMeColumns.PASSWORD_HASH, "test")
+            .and(AuthMeColumns.REALNAME, "KMfDM")
+            .and(AuthMeColumns.REGISTRATION_DATE, 1444L)
+            .and(AuthMeColumns.LAST_IP, "144.117.11.12").build());
+
+        // then
+        DataSource ds = getDataSource();
+        PlayerAuth auth = ds.getAuth("kmfdm");
+        assertThat(auth, not(nullValue()));
+        assertThat(auth, hasAuthBasicData("kmfdm", "KMfDM", "my.mail@example.org", "144.117.11.12"));
+        assertThat(auth.getPassword(), equalToHash("test"));
+        assertThat(auth.getRegistrationDate(), equalTo(1444L));
+    }
+
+    @Test
+    public void shouldInsertValuesFromAuth() {
+        // given
+        AuthMeColumnsHandler handler = createColumnsHandler();
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("jonathan")
+            .registrationDate(1234567L)
+            .registrationIp("124.56.78.99")
+            .lastLogin(123L) // <-- ignored
+            .realName("JONathan") // <-- ignored
+            .password("SHA256$abcd123", null).build();
+
+        // when
+        handler.insert(auth, AuthMeColumns.EMAIL, AuthMeColumns.NAME, AuthMeColumns.REGISTRATION_DATE,
+            AuthMeColumns.REGISTRATION_IP, AuthMeColumns.PASSWORD_HASH);
+
+        // then
+        DataSource ds = getDataSource();
+        PlayerAuth result = ds.getAuth("jonathan");
+        assertThat(result, not(nullValue()));
+        assertThat(result, hasAuthBasicData("jonathan", "Player", null, null));
+        assertThat(result.getLastLogin(), nullValue());
+        assertThat(result.getPassword(), equalToHash("SHA256$abcd123"));
+        assertThat(result, hasRegistrationInfo("124.56.78.99", 1234567L));
     }
 
     @Override

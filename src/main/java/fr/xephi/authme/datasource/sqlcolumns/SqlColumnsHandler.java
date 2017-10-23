@@ -12,13 +12,13 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
+public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
 
-    private Connection connection;
-    private String tableName;
-    private TypeAdapter<C> typeAdapter;
-    private C context;
-    private String idColumn;
+    private final Connection connection;
+    private final String tableName;
+    private final String idColumn;
+    private final TypeAdapter<C> typeAdapter;
+    private final C context;
 
     /**
      * Constructor.
@@ -26,7 +26,7 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
      * @param connection connection to the database
      * @param context the context object (for name resolution)
      * @param tableName name of the SQL table
-     * @param idColumn the identifier column
+     * @param idColumn the name of the identifier column
      */
     public SqlColumnsHandler(Connection connection, C context, String tableName, String idColumn)  {
         this.context = context;
@@ -37,12 +37,12 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
     }
 
     @Override
-    public <T> DataSourceResult<T> retrieve(String identifier, Column<T, C> column) {
+    public <T> DataSourceResult<T> retrieve(I identifier, Column<T, C> column) {
         // TODO: handle empty column
         String sql = "SELECT " + column.resolveName(context) + " FROM " + tableName
             + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
-            pst.setString(1, identifier);
+            pst.setObject(1, identifier);
             try (ResultSet rs = pst.executeQuery()) {
                 return rs.next()
                     ? DataSourceResult.of(typeAdapter.get(rs, column))
@@ -54,12 +54,12 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
     }
 
     @Override
-    public DataSourceValues retrieve(String identifier, Column<?, C>... columns) {
+    public DataSourceValues retrieve(I identifier, Column<?, C>... columns) {
         Set<Column<?, C>> nonEmptyColumns = removeSkippedColumns(columns);
         String sql = "SELECT " + commaSeparatedList(nonEmptyColumns)
             + " FROM " + tableName + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
-            pst.setString(1, identifier);
+            pst.setObject(1, identifier);
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     DataSourceValues values = new DataSourceValues();
@@ -81,13 +81,13 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
     }
 
     @Override
-    public <T> boolean update(String identifier, Column<T, C> column, T value) {
+    public <T> boolean update(I identifier, Column<T, C> column, T value) {
         // TODO: handle optional column
-        String sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?;",
-            tableName, column.resolveName(context), idColumn);
+        String sql = "UPDATE " + tableName + " SET " + column.resolveName(context)
+            + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             pst.setObject(1, value);
-            pst.setString(2, identifier);
+            pst.setObject(2, identifier);
             return pst.execute();
         } catch (SQLException e) {
             throw new IllegalStateException(e);
@@ -95,21 +95,32 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
     }
 
     @Override
-    public boolean update(String identifier, UpdateValues<C> updateValues) {
+    public boolean update(I identifier, UpdateValues<C> updateValues) {
         return performUpdate(
             identifier,
             updateValues.getColumns(),
             updateValues::get);
     }
 
-    public <D> boolean update(String identifier, D auth, DependentColumn<?, C, D>... columns) {
+    @Override
+    public <D> boolean update(I identifier, D dependent, DependentColumn<?, C, D>... columns) {
         return performUpdate(
             identifier,
             Arrays.asList(columns),
-            column -> column.getFromDependent(auth));
+            column -> column.getValueFromDependent(dependent));
     }
 
-    private <E extends Column<?, C>> boolean performUpdate(String identifier, Collection<E> columns,
+    @Override
+    public boolean insert(UpdateValues<C> updateValues) {
+        return performInsert(updateValues.getColumns(), updateValues::get);
+    }
+
+    @Override
+    public <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns) {
+        return performInsert(Arrays.asList(columns), column -> column.getValueFromDependent(dependent));
+    }
+
+    private <E extends Column<?, C>> boolean performUpdate(I identifier, Collection<E> columns,
                                                            Function<E, Object> valueGetter) {
         Set<E> nonEmptyColumns = removeSkippedColumns(columns);
         if (nonEmptyColumns.isEmpty()) {
@@ -121,7 +132,23 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
             + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             int index = bindValues(pst, 1, columns, valueGetter);
-            pst.setString(index, identifier);
+            pst.setObject(index, identifier);
+            return pst.execute();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private <E extends Column<?, C>> boolean performInsert(Collection<E> columns, Function<E, Object> valueGetter) {
+        Set<E> nonEmptyColumns = removeSkippedColumns(columns);
+        if (nonEmptyColumns.isEmpty()) {
+            throw new IllegalStateException("Cannot perform insert when all columns are empty: " + columns);
+        }
+
+        String sql = "INSERT INTO " + tableName + " (" + commaSeparatedList(nonEmptyColumns) + ") "
+            + "VALUES(" + commaSeparatedList(nonEmptyColumns, c -> "?") + ");";
+        try (PreparedStatement pst = connection.prepareStatement(sql)) {
+            bindValues(pst, 1, nonEmptyColumns, valueGetter);
             return pst.execute();
         } catch (SQLException e) {
             throw new IllegalStateException(e);
@@ -148,6 +175,18 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
             .collect(Collectors.joining(", "));
     }
 
+    /**
+     * Binds the values of the given columns with the provided {@code valueGetter} to the PreparedStatement,
+     * starting from the given index (to allow values to be bound before this method is called).
+     * The ending index is returned (to allow more values to be bound after calling this method).
+     *
+     * @param pst the prepared statement
+     * @param startIndex the index at which value binding should begin
+     * @param columns the columns
+     * @param valueGetter function to look up the value to bind, based on the column
+     * @param <E> the column extension type
+     * @return the index at which binding should continue (if applicable)
+     */
     private <E extends Column<?, C>> int bindValues(PreparedStatement pst,
                                                     int startIndex,
                                                     Collection<E> columns,
@@ -160,13 +199,22 @@ public class SqlColumnsHandler<C> implements ColumnsHandler<C, String> {
         return index;
     }
 
+    /**
+     * Returns a Set of columns without any that should be skipped
+     * (as determined by {@link Column#isColumnUsed}.
+     *
+     * @param cols the columns to filter
+     * @param <E> the column extension type
+     * @return set with all columns to use
+     */
     private <E extends Column<?, C>> Set<E> removeSkippedColumns(Collection<E> cols) {
         return cols.stream()
             .filter(column -> !column.isColumnUsed(context))
             .collect(Collectors.toSet());
     }
 
-    private Set<Column<?, C>> removeSkippedColumns(Column<?, C>... cols) {
+    @SafeVarargs
+    private final Set<Column<?, C>> removeSkippedColumns(Column<?, C>... cols) {
         return removeSkippedColumns(Arrays.asList(cols));
     }
 }

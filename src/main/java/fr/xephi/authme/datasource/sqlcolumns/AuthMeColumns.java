@@ -16,9 +16,11 @@ public class AuthMeColumns<T> implements DependentColumn<T, Columns, PlayerAuth>
     public static final AuthMeColumns<String> REALNAME = col(
         Type.STRING, c -> c.REAL_NAME, false, PlayerAuth::getRealName);
 
-    public static final AuthMeColumns<String> PASSWORD_HASH = null;
+    public static final AuthMeColumns<String> PASSWORD_HASH = col(
+        Type.STRING, c -> c.PASSWORD, false, auth -> auth.getPassword().getHash());
 
-    public static final AuthMeColumns<String> PASSWORD_SALT = null;
+    public static final AuthMeColumns<String> PASSWORD_SALT = col(
+        Type.STRING, c -> c.SALT, false, auth -> auth.getPassword().getSalt());
 
     public static final AuthMeColumns<String> EMAIL = col(
         Type.STRING, c -> c.EMAIL, false, PlayerAuth::getEmail);
@@ -27,9 +29,10 @@ public class AuthMeColumns<T> implements DependentColumn<T, Columns, PlayerAuth>
         Type.STRING, c -> c.LAST_IP, false, PlayerAuth::getLastIp);
 
     public static final AuthMeColumns<Long> REGISTRATION_DATE = col(
-        Type.LONG, c -> c.REGISTRATION_DATE, false, PlayerAuth::getLastLogin);
+        Type.LONG, c -> c.REGISTRATION_DATE, false, PlayerAuth::getRegistrationDate);
 
-    public static final AuthMeColumns<String> REGISTRATION_IP = null;
+    public static final AuthMeColumns<String> REGISTRATION_IP = col(
+        Type.STRING, c -> c.REGISTRATION_IP, false, PlayerAuth::getRegistrationIp);
 
 
     private final Type<T> type;
@@ -46,7 +49,7 @@ public class AuthMeColumns<T> implements DependentColumn<T, Columns, PlayerAuth>
     }
 
     private static <T> AuthMeColumns<T> col(Type<T> type, Function<Columns, String> nameGetter,
-                                     boolean isOptional, Function<PlayerAuth, T> playerAuthGetter) {
+                                            boolean isOptional, Function<PlayerAuth, T> playerAuthGetter) {
         return new AuthMeColumns<>(type, nameGetter, isOptional, playerAuthGetter);
     }
 
@@ -66,7 +69,7 @@ public class AuthMeColumns<T> implements DependentColumn<T, Columns, PlayerAuth>
     }
 
     @Override
-    public T getFromDependent(PlayerAuth auth) {
+    public T getValueFromDependent(PlayerAuth auth) {
         return playerAuthGetter.apply(auth);
     }
 }

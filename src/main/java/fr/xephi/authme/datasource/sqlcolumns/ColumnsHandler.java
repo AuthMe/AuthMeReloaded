@@ -36,7 +36,7 @@ public interface ColumnsHandler<C, I> {
      * @param <T> the column type
      * @return true upon success, false otherwise
      */
-    <T> boolean update(String identifier, Column<T, C> column, T value);
+    <T> boolean update(I identifier, Column<T, C> column, T value);
 
     /**
      * Updates a row to have the given values.
@@ -57,5 +57,25 @@ public interface ColumnsHandler<C, I> {
      * @return true upon success, false otherwise
      */
     <D> boolean update(I identifier, D dependent, DependentColumn<?, C, D>... columns);
+
+    /**
+     * Inserts the given values into a new row.
+     *
+     * @param updateValues the values to insert
+     * @return true upon success, false otherwise
+     * @throws IllegalStateException if there is not at least one column that is not skipped
+     */
+    boolean insert(UpdateValues<C> updateValues);
+
+    /**
+     * Inserts the given values into a new row, as taken from the dependent object.
+     *
+     * @param dependent the dependent to get values from
+     * @param columns the columns to insert
+     * @param <D> the dependent type
+     * @return true upon success, false otherwise
+     * @throws IllegalStateException if there is not at least one column that is not skipped
+     */
+    <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns);
 
 }
