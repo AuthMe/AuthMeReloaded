@@ -5,14 +5,14 @@
 common:
     header: '==========[ AuthMeReloaded - Pomoc ]=========='
     optional: 'Opcjonalnie'
-    hasPermission: 'Nie posidasz uprawnień'
+    hasPermission: 'Posiadasz uprawnienia'
     noPermission: 'Brak uprawnień'
     default: 'Domyślnie'
     result: 'Wynik'
     defaultPermissions:
         notAllowed: 'Nie posiadasz uprawnień'
         opOnly: 'Tylko dla OP'
-        allowed: 'Dozwolone dla wszyskich'
+        allowed: 'Dozwolone dla wszystkich'
 
 # -------------------------------------------------------
 # Tytuly z inwidualnych stref w pomoc.
@@ -36,10 +36,10 @@ section:
 commands:
     authme.register:
         description: 'Rejestracja gracza'
-        detailedDescription: 'Rejestracja gracza z okreslonym hasłem'
+        detailedDescription: 'Rejestracja gracza z określonym hasłem'
         arg1:
-            label: 'player'
+            label: 'gracz'
             description: 'Nazwa gracza'
         arg2:
-            label: 'password'
+            label: 'hasło'
             description: 'Hasło gracza'
