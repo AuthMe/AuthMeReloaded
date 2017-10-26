@@ -30,7 +30,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     VerificationCodeManager(Settings settings, DataSource dataSource, EmailService emailService) {
         this.emailService = emailService;
         this.dataSource = dataSource;
-        isEnabled = emailService.hasAllInformation() && settings.getProperty(SecuritySettings.USE_VERIFICATION_CODES);
+        isEnabled = emailService.hasAllInformation();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
         verifiedPlayers = new HashSet<>();
@@ -131,7 +131,6 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
 
     @Override
     public void reload(Settings settings) {
-        isEnabled = settings.getProperty(SecuritySettings.USE_VERIFICATION_CODES);
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes.setExpiration(countTimeout, TimeUnit.MINUTES);
     }

@@ -2,7 +2,9 @@ package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,10 +35,10 @@ public class ChangeEmailCommandTest {
     private ChangeEmailCommand command;
 
     @Mock
-    private VerificationCodeManager codeManager;
+    private Management management;
 
     @Mock
-    private Management management;
+    private CommonService commonService;
 
 
     @Test
@@ -55,7 +57,7 @@ public class ChangeEmailCommandTest {
     public void shouldForwardData() {
         // given
         Player sender = initPlayerWithName("AmATest");
-        given(codeManager.isVerificationRequired("AmATest")).willReturn(false);
+        given(commonService.hasPermission(sender, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList("new.mail@example.org", "old_mail@example.org"));

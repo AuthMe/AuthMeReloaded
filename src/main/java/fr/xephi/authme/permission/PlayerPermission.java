@@ -63,7 +63,12 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission to use to see own other accounts.
      */
-    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
+    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts"),
+
+    /**
+     * Permission to use to use the email verification codes feature.
+     */
+    VERIFICATION_CODE("authme.player.security.verificationcode");
 
     /**
      * The permission node.

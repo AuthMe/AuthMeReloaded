@@ -151,7 +151,7 @@ public class CommandInitializer {
             .description("Verification Command")
             .detailedDescription("Command to complete the verification process for AuthMeReloaded.")
             .withArgument("code", "The Code", false)
-            //.permission(PlayerPermission.VERIFICATION) // Should we define a permission for this?
+            .permission(PlayerPermission.VERIFICATION_CODE)
             .executableCommand(VerificationCommand.class)
             .register();
 

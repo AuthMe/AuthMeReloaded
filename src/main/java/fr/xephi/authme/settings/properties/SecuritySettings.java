@@ -146,14 +146,6 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<Boolean> USE_EMAIL_MASKING =
         newProperty("Security.privacy.enableEmailMasking", false);
 
-    @Comment({
-        "Requires a working SMTP server.",
-        "The user must enter the 6 digits verification code",
-        "sent via email to change his personal information."
-    })
-    public static final Property<Boolean> USE_VERIFICATION_CODES =
-        newProperty("Security.privacy.enableVerificationCode", false);
-
     @Comment("Minutes after which a verification code will expire")
     public static final Property<Integer> VERIFICATION_CODE_EXPIRATION_MINUTES =
         newProperty("Security.privacy.verificationCodeExpiration", 10);

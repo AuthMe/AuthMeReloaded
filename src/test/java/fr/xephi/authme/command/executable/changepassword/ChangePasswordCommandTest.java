@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.changepassword;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -84,9 +85,8 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
         String password = "newPW";
-        given(validationService.validatePassword(password, "abc12"))
-            .willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
-        given(codeManager.isVerificationRequired("abc12")).willReturn(false);
+        given(validationService.validatePassword(password, "abc12")).willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
+        given(commandService.hasPermission((Player)sender, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList("tester", password));
@@ -103,7 +103,7 @@ public class ChangePasswordCommandTest {
         String newPass = "abc123";
         Player player = initPlayerWithName("parker", true);
         given(validationService.validatePassword("abc123", "parker")).willReturn(new ValidationResult());
-        given(codeManager.isVerificationRequired("parker")).willReturn(false);
+        given(commandService.hasPermission(player, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
 
         // when
         command.executeCommand(player, Arrays.asList(oldPass, newPass));

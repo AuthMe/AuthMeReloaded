@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.unregister;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
@@ -32,9 +33,6 @@ public class UnregisterCommandTest {
 
     @InjectMocks
     private UnregisterCommand command;
-
-    @Mock
-    private VerificationCodeManager codeManager;
 
     @Mock
     private Management management;
@@ -71,7 +69,7 @@ public class UnregisterCommandTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         given(playerCache.isAuthenticated(name)).willReturn(true);
-        given(codeManager.isVerificationRequired("jas0n_")).willReturn(false);
+        given(commandService.hasPermission(player, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList(password));
