@@ -258,8 +258,16 @@ public enum MessageKey {
      */
     VERIFICATION_CODE_VERIFIED("verification_code_verified"),
 
-    /** You don't need to be verified or you code has expired! */
-    VERIFICATION_CODE_USELESS("verification_code_useless"),
+    /**
+     * You can already execute every sensible command within the current session!
+     */
+    VERIFICATION_CODE_ALREADY_VERIFIED("verification_code_already_verified"),
+
+    /** Your code has expired! Execute an other sensible command to get a new code! */
+    VERIFICATION_CODE_EXPIRED("verification_code_expired"),
+
+    /** To verify your identity you need to link an email address with your account! */
+    VERIFICATION_CODE_EMAIL_NEEDED("verification_code_email_needed"),
 
     /** second */
     SECOND("second"),
