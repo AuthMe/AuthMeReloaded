@@ -104,7 +104,7 @@ public class EmailService {
 
         String mailText = replaceTagsForVerificationEmail(settings.getVerificationEmailMessage(), name, code);
 
-        // TODO: integrate verification code email's image
+        // TODO integrate verification code email's image
 
         /* File file = null;
         if (settings.getProperty()) {   //+Add new setting: generate a verification code image
@@ -151,7 +151,7 @@ public class EmailService {
         return file;
     }
 
-    // TODO: integrate verification code email's image
+    // TODO integrate verification code email's image
 
     /*private File generateCodeImage(String name, String code) throws IOException {
         ImageGenerator gen = new ImageGenerator(code);
