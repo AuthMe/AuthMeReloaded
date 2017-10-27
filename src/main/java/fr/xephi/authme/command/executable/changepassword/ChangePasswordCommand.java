@@ -36,10 +36,8 @@ public class ChangePasswordCommand extends PlayerCommand {
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
-        String oldPassword = arguments.get(0);
-        String newPassword = arguments.get(1);
-
         String name = player.getName().toLowerCase();
+
         if (!playerCache.isAuthenticated(name)) {
             commonService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
@@ -53,6 +51,9 @@ public class ChangePasswordCommand extends PlayerCommand {
                 return;
             }
         }
+
+        String oldPassword = arguments.get(0);
+        String newPassword = arguments.get(1);
 
         // Make sure the password is allowed
         ValidationResult passwordValidation = validationService.validatePassword(newPassword, name);

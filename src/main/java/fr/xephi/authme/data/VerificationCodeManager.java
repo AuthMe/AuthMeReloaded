@@ -30,10 +30,11 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     VerificationCodeManager(Settings settings, DataSource dataSource, EmailService emailService) {
         this.emailService = emailService;
         this.dataSource = dataSource;
-        isEnabled = emailService.hasAllInformation();
+        verifiedPlayers = new HashSet<>();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
-        verifiedPlayers = new HashSet<>();
+        reload(settings);
+
     }
 
     /**
@@ -85,7 +86,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @param name the name of the player to verify
      * @return true if the code exists, false otherwise
      */
-    private boolean hasCode(String name) {
+    public boolean hasCode(String name) {
         return (verificationCodes.get(name.toLowerCase()) != null);
     }
 
@@ -112,12 +113,10 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      *
      * @param name the player's name
      */
-    public boolean codeExistOrGenerateNew(String name) {
+    public void codeExistOrGenerateNew(String name) {
         if(!hasCode(name)){
             generateCode(name);
-            return true;
         }
-        return false;
     }
 
     /**
@@ -173,6 +172,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
 
     @Override
     public void reload(Settings settings) {
+        isEnabled = emailService.hasAllInformation();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes.setExpiration(countTimeout, TimeUnit.MINUTES);
     }

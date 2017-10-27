@@ -55,12 +55,12 @@ public class VerificationCodeManagerTest {
         codeManager2.codeExistOrGenerateNew(player);
 
         // when
-        boolean test1 = codeManager1.codeExistOrGenerateNew(player);
-        boolean test2 = codeManager2.codeExistOrGenerateNew(player);
+        boolean test1 = codeManager1.hasCode(player);
+        boolean test2 = codeManager2.hasCode(player);
 
         // then
-        assertThat(test1, equalTo(true));
-        assertThat(test2, equalTo(false));
+        assertThat(test1, equalTo(false));
+        assertThat(test2, equalTo(true));
     }
 
     @Test
