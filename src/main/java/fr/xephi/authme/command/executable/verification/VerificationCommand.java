@@ -22,27 +22,34 @@ public class VerificationCommand extends PlayerCommand {
     @Inject
     private VerificationCodeManager codeManager;
 
-    @Inject
-    private EmailService emailService;
-
     @Override
     public void runCommand(Player player, List<String> arguments) {
-        final String playerName = player.getName().toLowerCase();
+        final String playerName = player.getName();
 
-        if (!emailService.hasAllInformation()) {
+        if (!codeManager.isEnabled()) {
             ConsoleLogger.warning("Mail API is not set");
             commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
         }
 
-        if(codeManager.isCodeRequired(playerName)){
-            if(codeManager.checkCode(playerName, arguments.get(0))){
-                commonService.send(player, MessageKey.VERIFICATION_CODE_VERIFIED);
-            }else{
-                commonService.send(player, MessageKey.INCORRECT_VERIFICATION_CODE);
+        if (codeManager.isVerificationRequired(playerName)) {
+            if (codeManager.isCodeRequired(playerName)) {
+                if (codeManager.checkCode(playerName, arguments.get(0))) {
+                    commonService.send(player, MessageKey.VERIFICATION_CODE_VERIFIED);
+                } else {
+                    commonService.send(player, MessageKey.INCORRECT_VERIFICATION_CODE);
+                }
+            } else {
+                commonService.send(player, MessageKey.VERIFICATION_CODE_EXPIRED);
             }
-        }else{
-           commonService.send(player, MessageKey.VERIFICATION_CODE_USELESS);
+        } else {
+            if (codeManager.hasEmail(playerName)) {
+                commonService.send(player, MessageKey.VERIFICATION_CODE_ALREADY_VERIFIED);
+            } else {
+                commonService.send(player, MessageKey.VERIFICATION_CODE_EMAIL_NEEDED);
+                commonService.send(player, MessageKey.ADD_EMAIL_MESSAGE);
+            }
+
         }
     }
 

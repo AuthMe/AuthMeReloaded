@@ -37,6 +37,15 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     }
 
     /**
+     * Returns if the service has been enabled
+     *
+     * @return true if the service is enabled, false otherwise
+     */
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    /**
      * Returns whether the given player is able to verify his identity
      *
      * @param name the name of the player to verify
@@ -44,14 +53,8 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean isVerificationRequired(String name) {
         boolean result = false;
-        if(isEnabled && !verifiedPlayers.contains(name.toLowerCase())) {
-            DataSourceResult<String> emailResult = dataSource.getEmail(name);
-            if (emailResult.playerExists()) {
-                final String email = emailResult.getValue();
-                if(!Utils.isEmailEmpty(email)) {
-                    result = true;
-                }
-            }
+        if(isEnabled && !isPlayerVerified(name)) {
+            result = hasEmail(name);
         }
         return result;
     }
@@ -63,7 +66,45 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @return true if the player has an existing code and has not been verified yet, false otherwise
      */
     public boolean isCodeRequired(String name) {
-        return isEnabled && (verificationCodes.get(name.toLowerCase()) != null) && !verifiedPlayers.contains(name.toLowerCase());
+        return isEnabled && hasCode(name) && !isPlayerVerified(name);
+    }
+
+    /**
+     * Returns whether the given player has been verified or not
+     *
+     * @param name the name of the player to verify
+     * @return true if the player has been verified, false otherwise
+     */
+    private boolean isPlayerVerified(String name) {
+        return verifiedPlayers.contains(name.toLowerCase());
+    }
+
+    /**
+     * Returns if a code exists for the player
+     *
+     * @param name the name of the player to verify
+     * @return true if the code exists, false otherwise
+     */
+    private boolean hasCode(String name) {
+        return (verificationCodes.get(name.toLowerCase()) != null);
+    }
+
+    /**
+     * Returns whether the given player is able to receive emails
+     *
+     * @param name the name of the player to verify
+     * @return true if the player is able to receive emails, false otherwise
+     */
+    public boolean hasEmail(String name) {
+        boolean result = false;
+        DataSourceResult<String> emailResult = dataSource.getEmail(name);
+        if (emailResult.playerExists()) {
+            final String email = emailResult.getValue();
+            if(!Utils.isEmailEmpty(email)) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     /**
@@ -71,11 +112,12 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      *
      * @param name the player's name
      */
-    public void codeExistOrGenerateNew(String name) {
-        String code = verificationCodes.get(name.toLowerCase());
-        if(code == null){
+    public boolean codeExistOrGenerateNew(String name) {
+        if(!hasCode(name)){
             generateCode(name);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -104,7 +146,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean checkCode(String name, String code) {
         boolean correct = false;
-        if(verificationCodes.get(name.toLowerCase()).equals(code)) {
+        if(hasCode(name) && verificationCodes.get(name.toLowerCase()).equals(code)) {
             verify(name);
             correct = true;
         }
