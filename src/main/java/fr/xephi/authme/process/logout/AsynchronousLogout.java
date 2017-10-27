@@ -57,7 +57,6 @@ public class AsynchronousLogout implements AsynchronousProcess {
 
         playerCache.removePlayer(name);
         database.setUnlogged(name);
-        codeManager.unverify(name);
         syncProcessManager.processSyncPlayerLogout(player);
     }
 }
