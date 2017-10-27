@@ -23,10 +23,6 @@ public final class UpdateValues<C> {
         });
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static <C, T> Builder<C> with(Column<T, C> column, T value) {
         return new Builder<C>().and(column, value);
     }

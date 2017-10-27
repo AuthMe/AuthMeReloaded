@@ -137,12 +137,31 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         AuthMeColumnsHandler ds = createColumnsHandler();
 
         // when
-        ds.update("bobby", values);
+        boolean wasSuccessful = ds.update("bobby", values);
 
         // then
+        assertThat(wasSuccessful, equalTo(true));
         PlayerAuth auth = getDataSource().getAuth("bobby");
         assertThat(auth, hasAuthBasicData("bobby", "BoBBy", "bobbers@example.com", "123.45.67.89"));
         assertThat(auth.getRegistrationDate(), equalTo(123456L));
+    }
+
+    @Test
+    public void shouldHandleUpdateOnUnknownUser() {
+        // given
+        UpdateValues<Columns> values = UpdateValues
+            .with(AuthMeColumns.EMAIL, "test@tld.tld")
+            .and(AuthMeColumns.LAST_IP, "144.144.144.144")
+            .build();
+        AuthMeColumnsHandler ds = createColumnsHandler();
+
+        // when
+        boolean wasSuccessful = ds.update("bogus", values);
+
+        // then
+        assertThat(wasSuccessful, equalTo(false));
+        PlayerAuth bogusAuth = getDataSource().getAuth("bogus");
+        assertThat(bogusAuth, nullValue());
     }
 
     @Test
@@ -156,7 +175,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
 
         // then
         assertThat(result.get(AuthMeColumns.LAST_IP), equalTo("123.45.67.89"));
-        assertThat(result.get(AuthMeColumns.EMAIL), equalTo("your@email.com")); // TODO: should be null?
+        assertThat(result.get(AuthMeColumns.EMAIL), equalTo("your@email.com"));
         assertThat(result.get(AuthMeColumns.REALNAME), equalTo("Bobby"));
         assertThat(result.get(AuthMeColumns.REGISTRATION_DATE), equalTo(1436778723L));
     }
@@ -191,7 +210,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         AuthMeColumnsHandler handler = createColumnsHandler();
 
         // when
-        handler.insert(UpdateValues
+        boolean wasSuccessful = handler.insert(UpdateValues
             .with(AuthMeColumns.EMAIL, "my.mail@example.org")
             .and(AuthMeColumns.NAME, "kmfdm")
             .and(AuthMeColumns.PASSWORD_HASH, "test")
@@ -200,6 +219,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             .and(AuthMeColumns.LAST_IP, "144.117.11.12").build());
 
         // then
+        assertThat(wasSuccessful, equalTo(true));
         DataSource ds = getDataSource();
         PlayerAuth auth = ds.getAuth("kmfdm");
         assertThat(auth, not(nullValue()));
@@ -221,10 +241,11 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             .password("SHA256$abcd123", null).build();
 
         // when
-        handler.insert(auth, AuthMeColumns.EMAIL, AuthMeColumns.NAME, AuthMeColumns.REGISTRATION_DATE,
+        boolean wasSuccessful = handler.insert(auth, AuthMeColumns.EMAIL, AuthMeColumns.NAME, AuthMeColumns.REGISTRATION_DATE,
             AuthMeColumns.REGISTRATION_IP, AuthMeColumns.PASSWORD_HASH);
 
         // then
+        assertThat(wasSuccessful, equalTo(true));
         DataSource ds = getDataSource();
         PlayerAuth result = ds.getAuth("jonathan");
         assertThat(result, not(nullValue()));

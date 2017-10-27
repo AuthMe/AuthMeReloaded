@@ -7,6 +7,8 @@ public final class Type<T> {
 
     public static final Type<Long> LONG = new Type<>(Long.class);
 
+    public static final Type<Integer> INTEGER = new Type<>(Integer.class);
+
     public static final Type<Boolean> BOOLEAN = new Type<>(Boolean.class);
 
 

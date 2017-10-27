@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
 
@@ -37,8 +38,10 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     }
 
     @Override
-    public <T> DataSourceResult<T> retrieve(I identifier, Column<T, C> column) {
-        // TODO: handle empty column
+    public <T> DataSourceResult<T> retrieve(I identifier, Column<T, C> column) throws SQLException {
+        if (!column.isColumnUsed(context)) {
+            return DataSourceResult.of(null);
+        }
         String sql = "SELECT " + column.resolveName(context) + " FROM " + tableName
             + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
@@ -48,13 +51,11 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
                     ? DataSourceResult.of(typeAdapter.get(rs, column))
                     : DataSourceResult.unknownPlayer();
             }
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
         }
     }
 
     @Override
-    public DataSourceValues retrieve(I identifier, Column<?, C>... columns) {
+    public DataSourceValues retrieve(I identifier, Column<?, C>... columns) throws SQLException {
         Set<Column<?, C>> nonEmptyColumns = removeSkippedColumns(columns);
         String sql = "SELECT " + commaSeparatedList(nonEmptyColumns)
             + " FROM " + tableName + " WHERE " + idColumn + " = ?;";
@@ -75,27 +76,25 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
                     return DataSourceValues.unknownPlayer();
                 }
             }
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
         }
     }
 
     @Override
-    public <T> boolean update(I identifier, Column<T, C> column, T value) {
-        // TODO: handle optional column
+    public <T> boolean update(I identifier, Column<T, C> column, T value) throws SQLException {
+        if (!column.isColumnUsed(context)) {
+            return true;
+        }
         String sql = "UPDATE " + tableName + " SET " + column.resolveName(context)
             + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             pst.setObject(1, value);
             pst.setObject(2, identifier);
-            return pst.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
+            return performUpdateAction(pst);
         }
     }
 
     @Override
-    public boolean update(I identifier, UpdateValues<C> updateValues) {
+    public boolean update(I identifier, UpdateValues<C> updateValues) throws SQLException {
         return performUpdate(
             identifier,
             updateValues.getColumns(),
@@ -103,7 +102,8 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     }
 
     @Override
-    public <D> boolean update(I identifier, D dependent, DependentColumn<?, C, D>... columns) {
+    @SuppressWarnings("unchecked")
+    public <D> boolean update(I identifier, D dependent, DependentColumn<?, C, D>... columns) throws SQLException {
         return performUpdate(
             identifier,
             Arrays.asList(columns),
@@ -111,17 +111,18 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     }
 
     @Override
-    public boolean insert(UpdateValues<C> updateValues) {
+    public boolean insert(UpdateValues<C> updateValues) throws SQLException {
         return performInsert(updateValues.getColumns(), updateValues::get);
     }
 
     @Override
-    public <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns) {
+    @SuppressWarnings("unchecked")
+    public <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns) throws SQLException {
         return performInsert(Arrays.asList(columns), column -> column.getValueFromDependent(dependent));
     }
 
     private <E extends Column<?, C>> boolean performUpdate(I identifier, Collection<E> columns,
-                                                           Function<E, Object> valueGetter) {
+                                                           Function<E, Object> valueGetter) throws SQLException{
         Set<E> nonEmptyColumns = removeSkippedColumns(columns);
         if (nonEmptyColumns.isEmpty()) {
             return true;
@@ -133,25 +134,42 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             int index = bindValues(pst, 1, columns, valueGetter);
             pst.setObject(index, identifier);
-            return pst.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
+            return performUpdateAction(pst);
         }
     }
 
-    private <E extends Column<?, C>> boolean performInsert(Collection<E> columns, Function<E, Object> valueGetter) {
+    private <E extends Column<?, C>> boolean performInsert(Collection<E> columns,
+                                                           Function<E, Object> valueGetter) throws SQLException {
         Set<E> nonEmptyColumns = removeSkippedColumns(columns);
         if (nonEmptyColumns.isEmpty()) {
             throw new IllegalStateException("Cannot perform insert when all columns are empty: " + columns);
         }
 
         String sql = "INSERT INTO " + tableName + " (" + commaSeparatedList(nonEmptyColumns) + ") "
-            + "VALUES(" + commaSeparatedList(nonEmptyColumns, c -> "?") + ");";
+            + "VALUES(" + commaSeparatedList(nonEmptyColumns, "?") + ");";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             bindValues(pst, 1, nonEmptyColumns, valueGetter);
-            return pst.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
+            return performUpdateAction(pst);
+        }
+    }
+
+    /**
+     * Wraps {@link PreparedStatement#executeUpdate()} for UPDATE and INSERT statements and returns a boolean
+     * based on its return value.
+     *
+     * @param pst the prepared statement
+     * @return true if one row was updated, false otherwise
+     * @throws IllegalStateException if more than one row was updated (should never happen)
+     * @throws SQLException on SQL errors
+     */
+    protected boolean performUpdateAction(PreparedStatement pst) throws SQLException {
+        int count = pst.executeUpdate();
+        if (count == 1) {
+            return true;
+        } else if (count == 0) {
+            return false;
+        } else {
+            throw new IllegalStateException("Found " + count + " rows updated/inserted by statement, expected only 1");
         }
     }
 
@@ -160,6 +178,12 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
      */
     private String commaSeparatedList(Collection<? extends Column<?, C>> columns) {
         return commaSeparatedList(columns, Function.identity());
+    }
+
+    private String commaSeparatedList(Collection<? extends Column<?, ?>> columns, String value) {
+        return IntStream.range(0, columns.size())
+            .mapToObj(i -> value)
+            .collect(Collectors.joining(", "));
     }
 
     /*

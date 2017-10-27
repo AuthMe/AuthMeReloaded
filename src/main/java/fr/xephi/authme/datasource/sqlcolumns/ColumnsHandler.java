@@ -6,6 +6,7 @@ import fr.xephi.authme.datasource.DataSourceResult;
  * Handler which performs operations on the data source based on the given
  * columns and values.
  */
+@SuppressWarnings("unchecked")
 public interface ColumnsHandler<C, I> {
 
     /**
@@ -16,7 +17,7 @@ public interface ColumnsHandler<C, I> {
      * @param <T> the column type
      * @return the result of the lookup
      */
-    <T> DataSourceResult<T> retrieve(I identifier, Column<T, C> column);
+    <T> DataSourceResult<T> retrieve(I identifier, Column<T, C> column) throws Exception;
 
     /**
      * Retrieves multiple values from a given row.
@@ -25,7 +26,7 @@ public interface ColumnsHandler<C, I> {
      * @param columns the columns to retrieve
      * @return map-like object with the requested values
      */
-    DataSourceValues retrieve(I identifier, Column<?, C>... columns);
+    DataSourceValues retrieve(I identifier, Column<?, C>... columns) throws Exception;
 
     /**
      * Changes a column from a specific row to the given value.
@@ -36,7 +37,7 @@ public interface ColumnsHandler<C, I> {
      * @param <T> the column type
      * @return true upon success, false otherwise
      */
-    <T> boolean update(I identifier, Column<T, C> column, T value);
+    <T> boolean update(I identifier, Column<T, C> column, T value) throws Exception;
 
     /**
      * Updates a row to have the given values.
@@ -45,7 +46,7 @@ public interface ColumnsHandler<C, I> {
      * @param updateValues the values to set on the row
      * @return true upon success, false otherwise
      */
-    boolean update(I identifier, UpdateValues<C> updateValues);
+    boolean update(I identifier, UpdateValues<C> updateValues) throws Exception;
 
     /**
      * Updates a row to have the values as retrieved from the dependent object.
@@ -56,7 +57,7 @@ public interface ColumnsHandler<C, I> {
      * @param <D> the dependent type
      * @return true upon success, false otherwise
      */
-    <D> boolean update(I identifier, D dependent, DependentColumn<?, C, D>... columns);
+    <D> boolean update(I identifier, D dependent, DependentColumn<?, C, D>... columns) throws Exception;
 
     /**
      * Inserts the given values into a new row.
@@ -65,7 +66,7 @@ public interface ColumnsHandler<C, I> {
      * @return true upon success, false otherwise
      * @throws IllegalStateException if there is not at least one column that is not skipped
      */
-    boolean insert(UpdateValues<C> updateValues);
+    boolean insert(UpdateValues<C> updateValues) throws Exception;
 
     /**
      * Inserts the given values into a new row, as taken from the dependent object.
@@ -76,6 +77,6 @@ public interface ColumnsHandler<C, I> {
      * @return true upon success, false otherwise
      * @throws IllegalStateException if there is not at least one column that is not skipped
      */
-    <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns);
+    <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns) throws Exception;
 
 }
