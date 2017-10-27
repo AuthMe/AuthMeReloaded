@@ -176,6 +176,7 @@ permissions:
       authme.debug.group: true
       authme.debug.limbo: true
       authme.debug.mail: true
+      authme.debug.mysqldef: true
       authme.debug.perm: true
       authme.debug.spawn: true
       authme.debug.stats: true
@@ -197,6 +198,9 @@ permissions:
     default: op
   authme.debug.mail:
     description: Permission to use the test email sender.
+    default: op
+  authme.debug.mysqldef:
+    description: Permission to change nullable status of MySQL columns.
     default: op
   authme.debug.perm:
     description: Permission to use the permission checker.

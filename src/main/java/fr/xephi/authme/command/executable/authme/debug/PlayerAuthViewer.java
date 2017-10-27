@@ -65,10 +65,12 @@ class PlayerAuthViewer implements DebugSection {
      */
     private void displayAuthToSender(PlayerAuth auth, CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "[AuthMe] Player " + auth.getNickname() + " / " + auth.getRealName());
-        sender.sendMessage("Email: " + auth.getEmail() + ". IP: " + auth.getIp() + ". Group: " + auth.getGroupId());
+        sender.sendMessage("Email: " + auth.getEmail() + ". IP: " + auth.getLastIp() + ". Group: " + auth.getGroupId());
         sender.sendMessage("Quit location: "
             + formatLocation(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld()));
-        sender.sendMessage("Last login: " + formatLastLogin(auth));
+        sender.sendMessage("Last login: " + formatDate(auth.getLastLogin()));
+        sender.sendMessage("Registration: " + formatDate(auth.getRegistrationDate())
+            + " with IP " + auth.getRegistrationIp());
 
         HashedPassword hashedPass = auth.getPassword();
         sender.sendMessage("Hash / salt (partial): '" + safeSubstring(hashedPass.getHash(), 6)
@@ -94,17 +96,18 @@ class PlayerAuthViewer implements DebugSection {
     }
 
     /**
-     * Formats the last login date from the given PlayerAuth.
+     * Formats the given timestamp to a human readable date.
      *
-     * @param auth the auth object
-     * @return the last login as human readable date
+     * @param timestamp the timestamp to format (nullable)
+     * @return the formatted timestamp
      */
-    private static String formatLastLogin(PlayerAuth auth) {
-        long lastLogin = auth.getLastLogin();
-        if (lastLogin == 0) {
-            return "Never (0)";
+    private static String formatDate(Long timestamp) {
+        if (timestamp == null) {
+            return "Not available (null)";
+        } else if (timestamp == 0) {
+            return "Not available (0)";
         } else {
-            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastLogin), ZoneId.systemDefault());
+            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
             return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(date);
         }
     }

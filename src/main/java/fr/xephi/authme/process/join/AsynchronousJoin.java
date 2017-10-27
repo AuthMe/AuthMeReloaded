@@ -1,12 +1,9 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -14,11 +11,11 @@ import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -49,9 +46,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private CommonService service;
 
     @Inject
-    private PlayerCache playerCache;
-
-    @Inject
     private LimboService limboService;
 
     @Inject
@@ -72,6 +66,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private WelcomeMessageConfiguration welcomeMessageConfiguration;
 
+    @Inject
+    private SessionService sessionService;
+
     AsynchronousJoin() {
     }
 
@@ -79,9 +76,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * Processes the given player that has just joined.
      *
      * @param player the player to process
-     * @param location the desired player location, null if you want to use the current one
      */
-    public void processJoin(final Player player, Location location) {
+    public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
 
@@ -121,7 +117,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
 
             // Session logic
-            if (canResumeSession(player)) {
+            if (sessionService.canResumeSession(player)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
                 bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
@@ -138,7 +134,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        processJoinSync(player, isAuthAvailable, location);
+        processJoinSync(player, isAuthAvailable);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -156,13 +152,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @param player the player to process
      * @param isAuthAvailable true if the player is registered, false otherwise
-     * @param location the desired player location, null if you want to use the current one
      */
-    private void processJoinSync(Player player, boolean isAuthAvailable, Location location) {
+    private void processJoinSync(Player player, boolean isAuthAvailable) {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            limboService.createLimboPlayer(player, isAuthAvailable, location);
+            limboService.createLimboPlayer(player, isAuthAvailable);
 
             player.setNoDamageTicks(registrationTimeout);
             if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
@@ -175,30 +170,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             commandManager.runCommandsOnJoin(player);
         });
-    }
-
-    private boolean canResumeSession(Player player) {
-        final String name = player.getName();
-        if (database.isLogged(name)) {
-            database.setUnlogged(name);
-            playerCache.removePlayer(name);
-            if(service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-                PlayerAuth auth = database.getAuth(name);
-                if (auth != null) {
-                    long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
-                    if(timeSinceLastLogin < 0
-                        || timeSinceLastLogin > (service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * 60 * 1000)
-                        || !auth.getIp().equals(PlayerUtils.getPlayerIp(player))) {
-                        service.send(player, MessageKey.SESSION_EXPIRED);
-                    } else {
-                        RestoreSessionEvent event = bukkitService.createAndCallEvent(
-                            isAsync -> new RestoreSessionEvent(player, isAsync));
-                        return !event.isCancelled();
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     /**

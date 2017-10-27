@@ -10,8 +10,8 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.GeoIpService;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -33,7 +33,6 @@ public class AuthMeApi {
 
     private static AuthMeApi singleton;
     private final AuthMe plugin;
-    private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
@@ -45,11 +44,9 @@ public class AuthMeApi {
      * Constructor for AuthMeApi.
      */
     @Inject
-    AuthMeApi(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PlayerCache playerCache,
-              PasswordSecurity passwordSecurity, Management management, ValidationService validationService,
-              GeoIpService geoIpService) {
+    AuthMeApi(AuthMe plugin, DataSource dataSource, PlayerCache playerCache, PasswordSecurity passwordSecurity,
+              Management management, ValidationService validationService, GeoIpService geoIpService) {
         this.plugin = plugin;
-        this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
@@ -109,7 +106,7 @@ public class AuthMeApi {
      * @return true if the player is an npc
      */
     public boolean isNpc(Player player) {
-        return pluginHookService.isNpc(player);
+        return PlayerUtils.isNpc(player);
     }
 
     /**
@@ -128,7 +125,7 @@ public class AuthMeApi {
      * Get the last location of an online player.
      *
      * @param player The player to process
-     * @return Location The location of the player
+     * @return The location of the player
      */
     public Location getLastLocation(Player player) {
         PlayerAuth auth = playerCache.getAuth(player.getName());
@@ -143,7 +140,7 @@ public class AuthMeApi {
      * Get the last ip address of a player.
      *
      * @param playerName The name of the player to process
-     * @return String The last ip address of the player
+     * @return The last ip address of the player
      */
     public String getLastIp(String playerName) {
         PlayerAuth auth = playerCache.getAuth(playerName);
@@ -151,7 +148,7 @@ public class AuthMeApi {
             auth = dataSource.getAuth(playerName);
         }
         if (auth != null) {
-            return auth.getIp();
+            return auth.getLastIp();
         }
         return null;
     }
@@ -160,7 +157,7 @@ public class AuthMeApi {
      * Get user names by ip.
      *
      * @param address The ip address to process
-     * @return List The list of user names related to the ip address
+     * @return The list of user names related to the ip address
      */
     public List<String> getNamesByIp(String address) {
         return dataSource.getAllAuthsByIp(address);
@@ -170,14 +167,14 @@ public class AuthMeApi {
      * Get the last login date of a player.
      *
      * @param playerName The name of the player to process
-     * @return Date The date of the last login
+     * @return The date of the last login, or null if the player doesn't exist or has never logged in
      */
     public Date getLastLogin(String playerName) {
         PlayerAuth auth = playerCache.getAuth(playerName);
-        if(auth == null) {
+        if (auth == null) {
             auth = dataSource.getAuth(playerName);
         }
-        if (auth != null) {
+        if (auth != null && auth.getLastLogin() != null) {
             return new Date(auth.getLastLogin());
         }
         return null;
@@ -223,6 +220,7 @@ public class AuthMeApi {
             .name(name)
             .password(result)
             .realName(playerName)
+            .registrationDate(System.currentTimeMillis())
             .build();
         return dataSource.saveAuth(auth);
     }

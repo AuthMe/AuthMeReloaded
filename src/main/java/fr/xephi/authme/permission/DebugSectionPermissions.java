@@ -29,6 +29,9 @@ public enum DebugSectionPermissions implements PermissionNode {
     /** Permission to view data from the database. */
     PLAYER_AUTH_VIEWER("authme.debug.db"),
 
+    /** Permission to change nullable status of MySQL columns. */
+    MYSQL_DEFAULT_CHANGER("authme.debug.mysqldef"),
+
     /** Permission to view spawn information. */
     SPAWN_LOCATION("authme.debug.spawn"),
 

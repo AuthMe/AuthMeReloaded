@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.List;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -27,6 +28,7 @@ public class CodeClimateConfigTest {
 
         // then
         assertThat(excludePaths, not(empty()));
+        removeTestsExclusionOrThrow(excludePaths);
         for (String path : excludePaths) {
             verifySourceFileExists(path);
         }
@@ -44,5 +46,11 @@ public class CodeClimateConfigTest {
         if (new File("/" + path).exists()) {
             fail("Path '" + path + "' does not exist!");
         }
+    }
+
+    private static void removeTestsExclusionOrThrow(List<String> excludePaths) {
+        boolean wasRemoved = excludePaths.removeIf("src/test/java/**Test.java"::equals);
+        assertThat("Expected an exclusion for test classes",
+            wasRemoved, equalTo(true));
     }
 }

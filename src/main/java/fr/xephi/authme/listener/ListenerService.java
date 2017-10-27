@@ -2,11 +2,11 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityEvent;
@@ -20,17 +20,15 @@ import javax.inject.Inject;
 class ListenerService implements SettingsDependent {
 
     private final DataSource dataSource;
-    private final PluginHookService pluginHookService;
     private final PlayerCache playerCache;
     private final ValidationService validationService;
 
     private boolean isRegistrationForced;
 
     @Inject
-    ListenerService(Settings settings, DataSource dataSource, PluginHookService pluginHookService,
-                    PlayerCache playerCache, ValidationService validationService) {
+    ListenerService(Settings settings, DataSource dataSource, PlayerCache playerCache,
+                    ValidationService validationService) {
         this.dataSource = dataSource;
-        this.pluginHookService = pluginHookService;
         this.playerCache = playerCache;
         this.validationService = validationService;
         reload(settings);
@@ -79,7 +77,7 @@ class ListenerService implements SettingsDependent {
      * @return true if the associated event should be canceled, false otherwise
      */
     public boolean shouldCancelEvent(Player player) {
-        return player != null && !checkAuth(player.getName()) && !pluginHookService.isNpc(player);
+        return player != null && !checkAuth(player.getName()) && !PlayerUtils.isNpc(player);
     }
 
     @Override

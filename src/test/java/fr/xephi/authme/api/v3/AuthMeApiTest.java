@@ -6,7 +6,6 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,8 +42,6 @@ public class AuthMeApiTest {
     @InjectMocks
     private AuthMeApi api;
 
-    @Mock
-    private PluginHookService pluginHookService;
     @Mock
     private ValidationService validationService;
     @Mock
@@ -84,13 +81,14 @@ public class AuthMeApiTest {
     public void shouldReturnIfPlayerIsNpc() {
         // given
         Player player = mock(Player.class);
-        given(pluginHookService.isNpc(player)).willReturn(true);
+        given(player.hasMetadata("NPC")).willReturn(true);
 
         // when
         boolean result = api.isNpc(player);
 
         // then
         assertThat(result, equalTo(true));
+        verify(player).hasMetadata("NPC");
     }
 
     @Test
@@ -146,7 +144,7 @@ public class AuthMeApiTest {
         String name = "Gabriel";
         Player player = mockPlayerWithName(name);
         PlayerAuth auth = PlayerAuth.builder().name(name)
-            .ip("93.23.44.55")
+            .lastIp("93.23.44.55")
             .build();
         given(playerCache.getAuth(name)).willReturn(auth);
 
@@ -162,18 +160,34 @@ public class AuthMeApiTest {
     public void shouldGetLastLogin() {
         // given
         String name = "David";
-        Player player = mockPlayerWithName(name);
         PlayerAuth auth = PlayerAuth.builder().name(name)
-            .lastLogin(1501597979)
+            .lastLogin(1501597979L)
             .build();
         given(playerCache.getAuth(name)).willReturn(auth);
 
         // when
-        Date result = api.getLastLogin(player.getName());
+        Date result = api.getLastLogin(name);
 
         // then
         assertThat(result, not(nullValue()));
         assertThat(result, equalTo(new Date(1501597979)));
+    }
+
+    @Test
+    public void shouldHandleNullLastLogin() {
+        // given
+        String name = "John";
+        PlayerAuth auth = PlayerAuth.builder().name(name)
+            .lastLogin(null)
+            .build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+
+        // when
+        Date result = api.getLastLogin(name);
+
+        // then
+        assertThat(result, nullValue());
+        verify(dataSource).getAuth(name);
     }
 
     @Test

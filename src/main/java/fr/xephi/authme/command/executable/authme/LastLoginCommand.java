@@ -34,17 +34,23 @@ public class LastLoginCommand implements ExecutableCommand {
         }
 
         // Get the last login date
-        final long lastLogin = auth.getLastLogin();
+        final Long lastLogin = auth.getLastLogin();
+        final String lastLoginDate = lastLogin == null ? "never" : new Date(lastLogin).toString();
+
+        // Show the player status
+        sender.sendMessage("[AuthMe] " + playerName + " last login: " + lastLoginDate);
+        if (lastLogin != null) {
+            sender.sendMessage("[AuthMe] The player " + playerName + " last logged in "
+                + createLastLoginIntervalMessage(lastLogin) + " ago");
+        }
+        sender.sendMessage("[AuthMe] Last player's IP: " + auth.getLastIp());
+    }
+
+    private static String createLastLoginIntervalMessage(long lastLogin) {
         final long diff = System.currentTimeMillis() - lastLogin;
-        final String lastLoginMessage = (int) (diff / 86400000) + " days "
+        return (int) (diff / 86400000) + " days "
             + (int) (diff / 3600000 % 24) + " hours "
             + (int) (diff / 60000 % 60) + " mins "
             + (int) (diff / 1000 % 60) + " secs";
-        Date date = new Date(lastLogin);
-
-        // Show the player status
-        sender.sendMessage("[AuthMe] " + playerName + " last login: " + date.toString());
-        sender.sendMessage("[AuthMe] The player " + playerName + " last logged in " + lastLoginMessage + " ago.");
-        sender.sendMessage("[AuthMe] Last Player's IP: " + auth.getIp());
     }
 }

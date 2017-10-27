@@ -41,24 +41,12 @@ public class PurgeCommand implements ExecutableCommand {
             return;
         }
 
-        // If second param is available, check that it is equal to "all"
-        boolean includeLastLoginZeroEntries = false;
-        if (arguments.size() >= 2) {
-            if ("all".equals(arguments.get(1))) {
-                includeLastLoginZeroEntries = true;
-            } else {
-                sender.sendMessage("Purge process aborted; use '/authme purge " + days + " all' "
-                    + "to include users with lastlogin = 0");
-                return;
-            }
-        }
-
         // Create a calender instance to determine the date
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -days);
         long until = calendar.getTimeInMillis();
 
         // Run the purge
-        purgeService.runPurge(sender, until, includeLastLoginZeroEntries);
+        purgeService.runPurge(sender, until);
     }
 }

@@ -27,6 +27,7 @@ public class AccountsCommand implements ExecutableCommand {
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
+        // TODO #1366: last IP vs. registration IP?
         final String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         // Assumption: a player name cannot contain '.'
@@ -52,9 +53,12 @@ public class AccountsCommand implements ExecutableCommand {
                     if (auth == null) {
                         commonService.send(sender, MessageKey.UNKNOWN_USER);
                         return;
+                    } else if (auth.getLastIp() == null) {
+                        sender.sendMessage("No known last IP address for player");
+                        return;
                     }
 
-                    List<String> accountList = dataSource.getAllAuthsByIp(auth.getIp());
+                    List<String> accountList = dataSource.getAllAuthsByIp(auth.getLastIp());
                     if (accountList.isEmpty()) {
                         commonService.send(sender, MessageKey.UNKNOWN_USER);
                     } else if (accountList.size() == 1) {

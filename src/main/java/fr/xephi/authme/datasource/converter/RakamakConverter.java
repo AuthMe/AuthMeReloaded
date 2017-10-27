@@ -76,17 +76,17 @@ public class RakamakConverter implements Converter {
             for (Entry<String, HashedPassword> m : playerPassword.entrySet()) {
                 String playerName = m.getKey();
                 HashedPassword psw = playerPassword.get(playerName);
-                String ip = useIp ? playerIp.get(playerName) : "127.0.0.1";
+                String ip = playerIp.get(playerName);
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerName)
                     .realName(playerName)
-                    .ip(ip)
+                    .lastIp(ip)
                     .password(psw)
-                    .lastLogin(0)
                     .build();
                 database.saveAuth(auth);
+                database.updateSession(auth);
             }
-            Utils.logAndSendMessage(sender, "Rakamak database has been imported correctly");
+            Utils.logAndSendMessage(sender, "Rakamak database has been imported successfully");
         } catch (IOException ex) {
             ConsoleLogger.logException("Can't open the rakamak database file! Does it exist?", ex);
         }

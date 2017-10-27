@@ -9,8 +9,8 @@ import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -35,7 +35,6 @@ public class NewAPI {
 
     private static NewAPI singleton;
     private final AuthMe plugin;
-    private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
@@ -46,10 +45,9 @@ public class NewAPI {
      * Constructor for NewAPI.
      */
     @Inject
-    NewAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
+    NewAPI(AuthMe plugin, DataSource dataSource, PasswordSecurity passwordSecurity,
            Management management, ValidationService validationService, PlayerCache playerCache) {
         this.plugin = plugin;
-        this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
@@ -108,7 +106,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return pluginHookService.isNpc(player);
+        return PlayerUtils.isNpc(player);
     }
 
     /**
@@ -178,6 +176,7 @@ public class NewAPI {
             .name(name)
             .password(result)
             .realName(playerName)
+            .registrationDate(System.currentTimeMillis())
             .build();
         return dataSource.saveAuth(auth);
     }

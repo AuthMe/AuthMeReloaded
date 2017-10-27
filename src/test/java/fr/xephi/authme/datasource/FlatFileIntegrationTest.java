@@ -61,13 +61,13 @@ public class FlatFileIntegrationTest {
 
         // then
         assertThat(authList, hasSize(7));
-        assertThat(getName("bobby", authList), hasAuthBasicData("bobby", "bobby", "your@email.com", "123.45.67.89"));
+        assertThat(getName("bobby", authList), hasAuthBasicData("bobby", "bobby", null, "123.45.67.89"));
         assertThat(getName("bobby", authList), hasAuthLocation(1.05, 2.1, 4.2, "world", 0, 0));
         assertThat(getName("bobby", authList).getPassword(), equalToHash("$SHA$11aa0706173d7272$dbba966"));
-        assertThat(getName("twofields", authList), hasAuthBasicData("twofields", "twofields", "your@email.com", "127.0.0.1"));
+        assertThat(getName("twofields", authList), hasAuthBasicData("twofields", "twofields", null, null));
         assertThat(getName("twofields", authList).getPassword(), equalToHash("hash1234"));
-        assertThat(getName("threefields", authList), hasAuthBasicData("threefields", "threefields", "your@email.com", "33.33.33.33"));
-        assertThat(getName("fourfields", authList), hasAuthBasicData("fourfields", "fourfields", "your@email.com", "4.4.4.4"));
+        assertThat(getName("threefields", authList), hasAuthBasicData("threefields", "threefields", null, "33.33.33.33"));
+        assertThat(getName("fourfields", authList), hasAuthBasicData("fourfields", "fourfields", null, "4.4.4.4"));
         assertThat(getName("fourfields", authList).getLastLogin(), equalTo(404040404L));
         assertThat(getName("sevenfields", authList), hasAuthLocation(7.7, 14.14, 21.21, "world", 0, 0));
         assertThat(getName("eightfields", authList), hasAuthLocation(8.8, 17.6, 26.4, "eightworld", 0, 0));
@@ -79,7 +79,7 @@ public class FlatFileIntegrationTest {
     public void shouldAddAuth() {
         // given / when
         boolean response = dataSource.saveAuth(
-            PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").ip("123.45.67.77").build());
+            PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").lastIp("123.45.67.77").build());
         List<PlayerAuth> authList = dataSource.getAllAuths();
 
         // then

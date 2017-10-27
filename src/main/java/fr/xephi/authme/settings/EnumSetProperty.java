@@ -3,8 +3,8 @@ package fr.xephi.authme.settings;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyResource;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,9 +27,9 @@ public class EnumSetProperty<E extends Enum<E>> extends Property<Set<E>> {
 
     @Override
     protected Set<E> getFromResource(PropertyResource resource) {
-        List<?> elements = resource.getList(getPath());
-        if (elements != null) {
-            return elements.stream()
+        Object entry = resource.getObject(getPath());
+        if (entry instanceof Collection<?>) {
+            return ((Collection<?>) entry).stream()
                 .map(val -> toEnum(String.valueOf(val)))
                 .filter(e -> e != null)
                 .collect(Collectors.toCollection(LinkedHashSet::new));

@@ -116,9 +116,6 @@ commands:
         arg1:
             label: 'giorni'
             description: 'Numero di giorni'
-        arg2:
-            label: 'all'
-            description: 'Aggiungi ''all'' alla fine per eliminare anche i giocatori con l''ultima autenticazione pari a 0'
     authme.resetpos:
         description: 'Elimina l''ultima posizione di un giocatore'
         detailedDescription: 'Elimina l''ultima posizione conosciuta del giocatore indicato o di tutti i giocatori.'

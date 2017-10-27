@@ -5,10 +5,9 @@ import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -39,9 +38,6 @@ public class ListenerServiceTest {
 
     @Mock
     private DataSource dataSource;
-
-    @Mock
-    private PluginHookService pluginHookService;
 
     @Mock
     private PlayerCache playerCache;
@@ -161,14 +157,14 @@ public class ListenerServiceTest {
         Player player = mockPlayerWithName(playerName);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
-        given(pluginHookService.isNpc(player)).willReturn(true);
+        given(player.hasMetadata("NPC")).willReturn(true);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);
 
         // then
         assertThat(result, equalTo(false));
-        verify(pluginHookService).isNpc(player);
+        verify(player).hasMetadata("NPC");
     }
 
     @Test
@@ -215,7 +211,6 @@ public class ListenerServiceTest {
         assertThat(result, equalTo(true));
         verify(playerCache).isAuthenticated(playerName);
         verifyZeroInteractions(dataSource);
-        verify(pluginHookService).isNpc(player);
     }
 
     private static Player mockPlayerWithName(String name) {

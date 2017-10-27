@@ -20,6 +20,7 @@ import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -68,6 +69,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private EmailService emailService;
+
+    @Inject
+    private SessionService sessionService;
 
     AsynchronousLogin() {
     }
@@ -215,7 +219,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             final String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
-            auth.setIp(ip);
+            auth.setLastIp(ip);
             dataSource.updateSession(auth);
 
             // Successful login, so reset the captcha & temp ban count
@@ -227,8 +231,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.LOGIN_SUCCESS);
 
             // Other auths
-            List<String> auths = dataSource.getAllAuthsByIp(auth.getIp());
-            runCommandOtherAccounts(auths, player, auth.getIp());
+            List<String> auths = dataSource.getAllAuthsByIp(auth.getLastIp());
+            runCommandOtherAccounts(auths, player, auth.getLastIp());
             displayOtherAccounts(auths, player);
 
             final String email = auth.getEmail();
@@ -238,9 +242,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             ConsoleLogger.fine(player.getName() + " logged in!");
 
-            // makes player isLoggedin via API
+            // makes player loggedin
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
+            sessionService.grantSession(name);
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end

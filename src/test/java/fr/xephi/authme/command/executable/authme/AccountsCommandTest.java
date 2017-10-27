@@ -82,7 +82,8 @@ public class AccountsCommandTest {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
-        given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
+        PlayerAuth auth = authWithIp("144.56.77.88");
+        given(dataSource.getAuth("someuser")).willReturn(auth);
 
         // when
         command.executeCommand(sender, arguments);
@@ -171,7 +172,7 @@ public class AccountsCommandTest {
     private static PlayerAuth authWithIp(String ip) {
         return PlayerAuth.builder()
             .name("Test")
-            .ip(ip)
+            .lastIp(ip)
             .build();
     }
 }

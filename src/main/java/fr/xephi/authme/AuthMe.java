@@ -24,13 +24,13 @@ import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
@@ -264,23 +264,17 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.warning("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
 
-        // Session timeout disabled
-        if (settings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
-            && settings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-            ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
-        }
-
         // Use TLS property only affects port 25
         if (!settings.getProperty(EmailSettings.PORT25_USE_TLS)
             && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
             ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
         }
-
-        // Unsalted hashes will be deprecated in 5.4 (see Github issue #1016)
-        HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
-        if (OnStartupTasks.isHashDeprecatedIn54(hash)) {
-            ConsoleLogger.warning("You are using an unsalted hash (" + hash + "). Support for this will be removed "
-                + "in 5.4 -- do you still need it? Comment on https://github.com/AuthMe/AuthMeReloaded/issues/1016");
+        // Check if argon2 library is present and can be loaded
+        if (settings.getProperty(SecuritySettings.PASSWORD_HASH).equals(HashAlgorithm.ARGON2)
+            && !Argon2.isLibraryLoaded()) {
+            ConsoleLogger.warning("WARNING!!! You use Argon2 Hash Algorithm method but we can't find the Argon2 "
+                + "library on your system! See https://github.com/AuthMe/AuthMeReloaded/wiki/Argon2-as-Password-Hash");
+            stopOrUnload();
         }
     }
 

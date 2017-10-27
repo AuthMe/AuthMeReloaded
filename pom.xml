@@ -193,6 +193,10 @@
                             <shadedPattern>fr.xephi.authme.libs.de.rtner</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>de.mkammerer</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.de.mkammerer</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>javax.inject</pattern>
                             <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
                         </relocation>
@@ -325,7 +329,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>23.2-jre</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -360,7 +364,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.7.1</version>
+            <version>2.7.2</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -386,6 +390,13 @@
             <version>1.1.2</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Argon2 implementation -->
+        <dependency>
+            <groupId>de.mkammerer</groupId>
+            <artifactId>argon2-jvm-nolibs</artifactId>
+            <version>2.2</version>
         </dependency>
 
         <!-- Spigot API, http://www.spigotmc.org/ -->

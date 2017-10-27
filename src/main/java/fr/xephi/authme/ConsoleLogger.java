@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * The plugin's static logger.
@@ -168,7 +169,7 @@ public final class ConsoleLogger {
      * @param message the message
      * @param param1 parameter to replace in the message
      */
-    public static void debug(String message, String param1) {
+    public static void debug(String message, Object param1) {
         if (logLevel.includes(LogLevel.DEBUG)) {
             String debugMessage = "[DEBUG] " + message;
             logger.log(Level.INFO, debugMessage, param1);
@@ -184,24 +185,9 @@ public final class ConsoleLogger {
      * @param param2 second param to replace in message
      */
     // Avoids array creation if DEBUG level is disabled
-    public static void debug(String message, String param1, String param2) {
+    public static void debug(String message, Object param1, Object param2) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            debug(message, new String[]{param1, param2});
-        }
-    }
-
-    /**
-     * Log the DEBUG message.
-     *
-     * @param message the message
-     * @param params the params to replace in the message
-     */
-    // Equivalent to debug(String, Object...) but avoids conversions
-    public static void debug(String message, String... params) {
-        if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + message;
-            logger.log(Level.INFO, debugMessage, params);
-            writeLog(debugMessage + " {" + String.join(", ", params) + "}");
+            debug(message, new Object[]{param1, param2});
         }
     }
 
@@ -213,7 +199,10 @@ public final class ConsoleLogger {
      */
     public static void debug(String message, Object... params) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            debug(message, Arrays.stream(params).map(String::valueOf).toArray(String[]::new));
+            String debugMessage = "[DEBUG] " + message;
+            logger.log(Level.INFO, debugMessage, params);
+            writeLog(debugMessage + " {"
+                + Arrays.stream(params).map(String::valueOf).collect(Collectors.joining(", ")) + "}");
         }
     }
 
