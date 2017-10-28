@@ -23,15 +23,12 @@ import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
@@ -143,7 +140,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Show settings warnings
-        showSettingsWarnings();
+        injector.getSingleton(SettingsWarner.class).logWarningsForMisconfigurations();
 
         // Do a backup on start
         backupService.doBackup(BackupService.BackupCause.START);
@@ -253,29 +250,6 @@ public class AuthMe extends JavaPlugin {
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(fr.xephi.authme.api.v3.AuthMeApi.class);
         injector.getSingleton(NewAPI.class);
-    }
-
-    /**
-     * Show the settings warnings, for various risky settings.
-     */
-    private void showSettingsWarnings() {
-        // Force single session disabled
-        if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
-            ConsoleLogger.warning("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
-        }
-
-        // Use TLS property only affects port 25
-        if (!settings.getProperty(EmailSettings.PORT25_USE_TLS)
-            && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
-            ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
-        }
-        // Check if argon2 library is present and can be loaded
-        if (settings.getProperty(SecuritySettings.PASSWORD_HASH).equals(HashAlgorithm.ARGON2)
-            && !Argon2.isLibraryLoaded()) {
-            ConsoleLogger.warning("WARNING!!! You use Argon2 Hash Algorithm method but we can't find the Argon2 "
-                + "library on your system! See https://github.com/AuthMe/AuthMeReloaded/wiki/Argon2-as-Password-Hash");
-            stopOrUnload();
-        }
     }
 
     /**
