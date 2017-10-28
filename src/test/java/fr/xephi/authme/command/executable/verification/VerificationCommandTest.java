@@ -38,7 +38,7 @@ public class VerificationCommandTest {
         // given
         String name = "Alligator";
         Player player = mockPlayerWithName(name);
-        given(codeManager.isEnabled()).willReturn(false);
+        given(codeManager.canSendMail()).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList("code"));
@@ -53,7 +53,7 @@ public class VerificationCommandTest {
         String name = "Duck";
         String code = "123932";
         Player player = mockPlayerWithName(name);
-        given(codeManager.isEnabled()).willReturn(true);
+        given(codeManager.canSendMail()).willReturn(true);
         given(codeManager.isVerificationRequired(player)).willReturn(true);
         given(codeManager.isCodeRequired(name)).willReturn(true);
         given(codeManager.checkCode(name, code)).willReturn(true);
@@ -74,7 +74,7 @@ public class VerificationCommandTest {
         String name = "Spider";
         String code = "98345222";   // more than 6 digits
         Player player = mockPlayerWithName(name);
-        given(codeManager.isEnabled()).willReturn(true);
+        given(codeManager.canSendMail()).willReturn(true);
         given(codeManager.isVerificationRequired(player)).willReturn(true);
         given(codeManager.isCodeRequired(name)).willReturn(true);
         given(codeManager.checkCode(name, code)).willReturn(false);
@@ -95,7 +95,7 @@ public class VerificationCommandTest {
         String name = "Dog";
         String code = "131552";
         Player player = mockPlayerWithName(name);
-        given(codeManager.isEnabled()).willReturn(true);
+        given(codeManager.canSendMail()).willReturn(true);
         given(codeManager.isVerificationRequired(player)).willReturn(true);
         given(codeManager.isCodeRequired(name)).willReturn(false);
 
@@ -114,7 +114,7 @@ public class VerificationCommandTest {
         String name = "Cow";
         String code = "973583";
         Player player = mockPlayerWithName(name);
-        given(codeManager.isEnabled()).willReturn(true);
+        given(codeManager.canSendMail()).willReturn(true);
         given(codeManager.isVerificationRequired(player)).willReturn(false);
         given(codeManager.hasEmail(name)).willReturn(true);
 
@@ -133,7 +133,7 @@ public class VerificationCommandTest {
         String name = "Frog";
         String code = "774543";
         Player player = mockPlayerWithName(name);
-        given(codeManager.isEnabled()).willReturn(true);
+        given(codeManager.canSendMail()).willReturn(true);
         given(codeManager.isVerificationRequired(player)).willReturn(false);
         given(codeManager.hasEmail(name)).willReturn(false);
 

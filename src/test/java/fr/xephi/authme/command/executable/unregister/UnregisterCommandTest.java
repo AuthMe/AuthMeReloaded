@@ -37,7 +37,7 @@ public class UnregisterCommandTest {
     private Management management;
 
     @Mock
-    private CommonService commandService;
+    private CommonService commonService;
 
     @Mock
     private PlayerCache playerCache;
@@ -59,7 +59,7 @@ public class UnregisterCommandTest {
 
         // then
         verify(playerCache).isAuthenticated(name);
-        verify(commandService).send(player, MessageKey.NOT_LOGGED_IN);
+        verify(commonService).send(player, MessageKey.NOT_LOGGED_IN);
         verifyZeroInteractions(management);
     }
 
@@ -78,7 +78,7 @@ public class UnregisterCommandTest {
         // then
         verify(playerCache).isAuthenticated(name);
         verify(codeManager).codeExistOrGenerateNew(name);
-        verify(commandService).send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
+        verify(commonService).send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
         verifyZeroInteractions(management);
     }
 

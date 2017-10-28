@@ -80,7 +80,6 @@ email_added: '&2Az email címed rögzítése sikeresen megtörtént!'
 email_confirm: '&cKérlek, ellenőrízd az email címedet!'
 email_changed: '&2Az email cím cseréje sikeresen megtörtént!'
 email_send: '&2A jelszó visszaállításhoz szükséges emailt elküldtük! Ellenőrizd a leveleidet!'
-email_exists: '&cA visszaállító emailt elküldtük! Hiba esetén újra kérheted az alábbi parancs segítségével:'
 email_show: '&2A jelenlegi email-ed a következő: &f%email'
 incomplete_email_settings: 'Hiba: nem lett beállítva az összes szükséges beállítás az email küldéshez. Vedd fel a kapcsolatot egy adminnal.'
 email_already_used: '&4Ez az email cím már használatban van!'
@@ -88,6 +87,7 @@ email_send_failure: 'Nem sikerült elküldeni az emailt. Lépj kapcsolatba egy a
 show_no_email: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
 add_email: '&3Kérlek, rendeld hozzá a felhasználódhoz az email címedet "&7/email add <email címed> <email címed ismét>&3".'
 recovery_email: '&3Ha elfelejtetted a jelszavad, használd az "&7/email recovery <regisztrált email címed>&3".'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
 email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldése előtt várnod kell: %time.'
 
 # Captcha
@@ -98,10 +98,10 @@ valid_captcha: '&2A CAPTCHA sikeresen feloldva!'
 # Verification code
 # TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
 # TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification THE_CODE" into the chat!'
+# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
 # TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensible command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute an other sensible command to get a new code!'
+# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
+# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
 # TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units

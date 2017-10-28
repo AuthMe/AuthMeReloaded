@@ -28,7 +28,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     private final ExpiringMap<String, String> verificationCodes;
     private final Set<String> verifiedPlayers;
 
-    private boolean isEnabled;
+    private boolean canSendMail;
 
     @Inject
     VerificationCodeManager(Settings settings, DataSource dataSource, EmailService emailService,
@@ -40,16 +40,15 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
         reload(settings);
-
     }
 
     /**
-     * Returns if the service has been enabled
+     * Returns if it is possible to send emails
      *
      * @return true if the service is enabled, false otherwise
      */
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean canSendMail() {
+        return canSendMail;
     }
 
     /**
@@ -60,7 +59,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean isVerificationRequired(Player player) {
         final String name = player.getName();
-        return isEnabled
+        return canSendMail
             && !isPlayerVerified(name)
             && permissionsManager.hasPermission(player, PlayerPermission.VERIFICATION_CODE)
             && hasEmail(name);
@@ -73,7 +72,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @return true if the player has an existing code and has not been verified yet, false otherwise
      */
     public boolean isCodeRequired(String name) {
-        return isEnabled && hasCode(name) && !isPlayerVerified(name);
+        return canSendMail && hasCode(name) && !isPlayerVerified(name);
     }
 
     /**
@@ -115,7 +114,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     }
 
     /**
-     * Check if a code exist for the player or generates and saves a new one.
+     * Check if a code exists for the player or generates and saves a new one.
      *
      * @param name the player's name
      */
@@ -151,7 +150,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean checkCode(String name, String code) {
         boolean correct = false;
-        if (hasCode(name) && verificationCodes.get(name.toLowerCase()).equals(code)) {
+        if (code.equals(verificationCodes.get(name.toLowerCase()))) {
             verify(name);
             correct = true;
         }
@@ -178,7 +177,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
 
     @Override
     public void reload(Settings settings) {
-        isEnabled = emailService.hasAllInformation();
+        canSendMail = emailService.hasAllInformation();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes.setExpiration(countTimeout, TimeUnit.MINUTES);
     }

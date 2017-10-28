@@ -249,7 +249,7 @@ public enum MessageKey {
     /** Usage: /verification &lt;code&gt; */
     USAGE_VERIFICATION_CODE("usage_verification_code"),
 
-    /** Incorrect code, please type "/verification THE_CODE" into the chat! */
+    /** Incorrect code, please type "/verification &lt;code&gt;" into the chat! */
     INCORRECT_VERIFICATION_CODE("incorrect_verification_code"),
 
     /**

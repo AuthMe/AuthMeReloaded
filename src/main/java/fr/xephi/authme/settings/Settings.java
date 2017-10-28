@@ -48,7 +48,7 @@ public class Settings extends SettingsManager {
     }
 
     /**
-     * Return the text to for verification emails (before sensitive commands can be used).
+     * Return the text for verification emails (before sensitive commands can be used).
      *
      * @return The email message
      */

@@ -102,7 +102,8 @@ public class EmailService {
             return false;
         }
 
-        String mailText = replaceTagsForVerificationEmail(settings.getVerificationEmailMessage(), name, code);
+        String mailText = replaceTagsForVerificationEmail(settings.getVerificationEmailMessage(), name, code,
+            settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES));
         return sendMailSsl.sendEmail(mailText, email);
     }
 
@@ -149,11 +150,12 @@ public class EmailService {
             .replace("<generatedpass />", newPass);
     }
 
-    private String replaceTagsForVerificationEmail(String mailText, String name, String code) {
+    private String replaceTagsForVerificationEmail(String mailText, String name, String code, int minutesValid) {
         return mailText
             .replace("<playername />", name)
             .replace("<servername />", serverName)
-            .replace("<generatedcode />", code);
+            .replace("<generatedcode />", code)
+            .replace("<minutesvalid />", String.valueOf(minutesValid));
     }
 
     private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {

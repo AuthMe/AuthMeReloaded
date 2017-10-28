@@ -25,7 +25,7 @@ public class VerificationCommand extends PlayerCommand {
     public void runCommand(Player player, List<String> arguments) {
         final String playerName = player.getName();
 
-        if (!codeManager.isEnabled()) {
+        if (!codeManager.canSendMail()) {
             ConsoleLogger.warning("Mail API is not set");
             commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;

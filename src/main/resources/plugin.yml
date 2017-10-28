@@ -47,10 +47,10 @@ commands:
     - changepass
     - cp
   captcha:
-    description: Captcha Command
+    description: Captcha command
     usage: /captcha <captcha>
   verification:
-    description: Verification Command
+    description: Verification command
     usage: /verification <code>
 permissions:
   authme.admin.*:
@@ -268,7 +268,7 @@ permissions:
     description: Command permission to register.
     default: true
   authme.player.security.verificationcode:
-    description: Permission to use to use the email verification codes feature.
+    description: Permission to use the email verification codes feature.
     default: true
   authme.player.seeownaccounts:
     description: Permission to use to see own other accounts.
