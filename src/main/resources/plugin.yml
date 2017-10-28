@@ -47,8 +47,11 @@ commands:
     - changepass
     - cp
   captcha:
-    description: Captcha Command
+    description: Captcha command
     usage: /captcha <captcha>
+  verification:
+    description: Verification command
+    usage: /verification <code>
 permissions:
   authme.admin.*:
     description: Gives access to all admin commands
@@ -173,7 +176,6 @@ permissions:
       authme.debug.group: true
       authme.debug.limbo: true
       authme.debug.mail: true
-      authme.debug.migratesqlite: true
       authme.debug.mysqldef: true
       authme.debug.perm: true
       authme.debug.spawn: true
@@ -196,9 +198,6 @@ permissions:
     default: op
   authme.debug.mail:
     description: Permission to use the test email sender.
-    default: op
-  authme.debug.migratesqlite:
-    description: Permission to perform a migration of SQLite.
     default: op
   authme.debug.mysqldef:
     description: Permission to change nullable status of MySQL columns.
@@ -228,6 +227,7 @@ permissions:
       authme.player.login: true
       authme.player.logout: true
       authme.player.register: true
+      authme.player.security.verificationcode: true
       authme.player.seeownaccounts: true
       authme.player.unregister: true
   authme.player.canbeforced:
@@ -266,6 +266,9 @@ permissions:
     default: true
   authme.player.register:
     description: Command permission to register.
+    default: true
+  authme.player.security.verificationcode:
+    description: Permission to use the email verification codes feature.
     default: true
   authme.player.seeownaccounts:
     description: Permission to use to see own other accounts.

@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.CacheDataSource;
@@ -44,6 +45,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private VerificationCodeManager codeManager;
+
     AsynchronousQuit() {
     }
 
@@ -80,6 +84,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
 
         //always unauthenticate the player - use session only for auto logins on the same ip
         playerCache.removePlayer(name);
+        codeManager.unverify(name);
 
         //always update the database when the player quit the game (if sessions are disabled)
         if (wasLoggedIn) {

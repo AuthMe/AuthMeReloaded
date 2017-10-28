@@ -5,6 +5,7 @@ import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -26,27 +27,23 @@ public final class SqlDataSourceTestUtil {
         return new MySQL(settings, hikariDataSource, extensionsFactory);
     }
 
-    public static SQLite createSqlite(Settings settings, Connection connection) {
-        return new SQLite(settings, connection) {
+    public static SQLite createSqlite(Settings settings, File dataFolder, Connection connection) {
+        return new SQLite(settings, dataFolder, connection) {
             // Override reload() so it doesn't run SQLite#connect, since we're given a specific Connection to use
             @Override
             public void reload() {
                 try {
                     this.setup();
+                    this.migrateIfNeeded();
                 } catch (SQLException e) {
                     throw new IllegalStateException(e);
                 }
             }
-        };
-    }
 
-    public static SQLite createSqliteAndInitialize(Settings settings, Connection connection) {
-        SQLite sqLite = createSqlite(settings, connection);
-        try {
-            sqLite.setup();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        }
-        return sqLite;
+            @Override
+            protected void connect() {
+                // noop
+            }
+        };
     }
 }

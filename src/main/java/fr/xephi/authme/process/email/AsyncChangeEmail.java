@@ -47,7 +47,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
                 service.send(player, MessageKey.USAGE_ADD_EMAIL);
             } else if (newEmail == null || !validationService.validateEmail(newEmail)) {
                 service.send(player, MessageKey.INVALID_NEW_EMAIL);
-            } else if (!oldEmail.equals(currentEmail)) {
+            } else if (!oldEmail.equalsIgnoreCase(currentEmail)) {
                 service.send(player, MessageKey.INVALID_OLD_EMAIL);
             } else if (!validationService.isEmailFreeForRegistration(newEmail, player)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);

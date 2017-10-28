@@ -2,6 +2,7 @@ package fr.xephi.authme.security;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.description.Recommendation;
@@ -61,6 +62,10 @@ public class HashAlgorithmIntegrationTest {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
+                if (HashAlgorithm.ARGON2.equals(algorithm) && !Argon2.isLibraryLoaded()) {
+                    System.out.println("[WARNING] Cannot find argon2 library, skipping integration test");
+                    continue;
+                }
                 EncryptionMethod method = injector.createIfHasDependencies(algorithm.getClazz());
                 if (method == null) {
                     fail("Could not create '" + algorithm.getClazz() + "' - forgot to provide some class?");
@@ -81,7 +86,7 @@ public class HashAlgorithmIntegrationTest {
 
         // when
         for (HashAlgorithm hashAlgorithm : HashAlgorithm.values()) {
-            if (hashAlgorithm != HashAlgorithm.CUSTOM) {
+            if (hashAlgorithm != HashAlgorithm.CUSTOM && hashAlgorithm != HashAlgorithm.PLAINTEXT) {
                 boolean isEnumDeprecated = HashAlgorithm.class.getDeclaredField(hashAlgorithm.name())
                     .isAnnotationPresent(Deprecated.class);
                 boolean isDeprecatedClass = hashAlgorithm.getClazz().isAnnotationPresent(Deprecated.class);

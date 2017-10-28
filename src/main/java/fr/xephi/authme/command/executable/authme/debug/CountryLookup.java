@@ -42,6 +42,7 @@ class CountryLookup implements DebugSection {
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe country lookup");
         if (arguments.isEmpty()) {
             sender.sendMessage("Check player: /authme debug cty Bobby");
             sender.sendMessage("Check IP address: /authme debug cty 127.123.45.67");

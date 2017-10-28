@@ -7,6 +7,7 @@ import fr.xephi.authme.security.crypts.EncryptionMethod;
  */
 public enum HashAlgorithm {
 
+    ARGON2(fr.xephi.authme.security.crypts.Argon2.class),
     BCRYPT(fr.xephi.authme.security.crypts.BCrypt.class),
     BCRYPT2Y(fr.xephi.authme.security.crypts.BCrypt2y.class),
     CRAZYCRYPT1(fr.xephi.authme.security.crypts.CrazyCrypt1.class),
@@ -34,7 +35,7 @@ public enum HashAlgorithm {
 
     @Deprecated DOUBLEMD5(fr.xephi.authme.security.crypts.DoubleMd5.class),
     @Deprecated MD5(fr.xephi.authme.security.crypts.Md5.class),
-    @Deprecated PLAINTEXT(fr.xephi.authme.security.crypts.PlainText.class),
+    @Deprecated PLAINTEXT(null),
     @Deprecated SHA1(fr.xephi.authme.security.crypts.Sha1.class),
     @Deprecated SHA512(fr.xephi.authme.security.crypts.Sha512.class),
     @Deprecated WHIRLPOOL(fr.xephi.authme.security.crypts.Whirlpool.class);

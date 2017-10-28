@@ -62,12 +62,7 @@ public class AuthMeApi {
      * @return The AuthMeApi object, or null if the AuthMe plugin is not enabled or not fully initialized yet
      */
     public static AuthMeApi getInstance() {
-        if (singleton != null) {
-            return singleton;
-        }
-        // AuthMeApi is initialized in AuthMe#onEnable -> if singleton is null,
-        // it means AuthMe isn't initialized (yet)
-        return null;
+        return singleton;
     }
 
     /**
@@ -144,7 +139,7 @@ public class AuthMeApi {
      */
     public String getLastIp(String playerName) {
         PlayerAuth auth = playerCache.getAuth(playerName);
-        if(auth == null) {
+        if (auth == null) {
             auth = dataSource.getAuth(playerName);
         }
         if (auth != null) {
@@ -212,10 +207,10 @@ public class AuthMeApi {
      */
     public boolean registerPlayer(String playerName, String password) {
         String name = playerName.toLowerCase();
-        HashedPassword result = passwordSecurity.computeHash(password, name);
         if (isRegistered(name)) {
             return false;
         }
+        HashedPassword result = passwordSecurity.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .password(result)

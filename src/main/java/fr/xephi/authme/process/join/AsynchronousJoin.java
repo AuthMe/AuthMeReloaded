@@ -76,9 +76,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * Processes the given player that has just joined.
      *
      * @param player the player to process
-     * @param location the desired player location, null if you want to use the current one
      */
-    public void processJoin(final Player player, Location location) {
+    public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
 
@@ -135,7 +134,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        processJoinSync(player, isAuthAvailable, location);
+        processJoinSync(player, isAuthAvailable);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -153,13 +152,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @param player the player to process
      * @param isAuthAvailable true if the player is registered, false otherwise
-     * @param location the desired player location, null if you want to use the current one
      */
-    private void processJoinSync(Player player, boolean isAuthAvailable, Location location) {
+    private void processJoinSync(Player player, boolean isAuthAvailable) {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            limboService.createLimboPlayer(player, isAuthAvailable, location);
+            limboService.createLimboPlayer(player, isAuthAvailable);
 
             player.setNoDamageTicks(registrationTimeout);
             if (pluginHookService.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {

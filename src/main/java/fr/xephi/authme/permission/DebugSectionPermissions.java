@@ -32,9 +32,6 @@ public enum DebugSectionPermissions implements PermissionNode {
     /** Permission to change nullable status of MySQL columns. */
     MYSQL_DEFAULT_CHANGER("authme.debug.mysqldef"),
 
-    /** Permission to perform a migration of SQLite. */
-    MIGRATE_SQLITE("authme.debug.migratesqlite"),
-
     /** Permission to view spawn information. */
     SPAWN_LOCATION("authme.debug.spawn"),
 

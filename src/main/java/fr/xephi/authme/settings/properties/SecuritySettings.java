@@ -55,8 +55,9 @@ public final class SecuritySettings implements SettingsHolder {
     @Comment({
         "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512,",
         "MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,",
-        "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at",
-        "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md"
+        "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, ARGON2, CUSTOM (for developers only). See full list at",
+        "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md",
+        "If you use ARGON2, check that you have the argon2 c library on your system"
     })
     public static final Property<HashAlgorithm> PASSWORD_HASH =
         newProperty(HashAlgorithm.class, "settings.security.passwordHash", HashAlgorithm.SHA256);
@@ -145,6 +146,10 @@ public final class SecuritySettings implements SettingsHolder {
     })
     public static final Property<Boolean> USE_EMAIL_MASKING =
         newProperty("Security.privacy.enableEmailMasking", false);
+
+    @Comment("Minutes after which a verification code will expire")
+    public static final Property<Integer> VERIFICATION_CODE_EXPIRATION_MINUTES =
+        newProperty("Security.privacy.verificationCodeExpiration", 10);
 
     private SecuritySettings() {
     }

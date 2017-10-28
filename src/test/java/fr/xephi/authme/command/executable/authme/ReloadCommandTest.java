@@ -11,6 +11,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -56,6 +57,9 @@ public class ReloadCommandTest {
     private CommonService commandService;
 
     @Mock
+    private SettingsWarner settingsWarner;
+
+    @Mock
     private SingletonStore<Reloadable> reloadableStore;
 
     @Mock
@@ -93,6 +97,7 @@ public class ReloadCommandTest {
         verify(settings).reload();
         verifyReloadingCalls(reloadables, dependents);
         verify(commandService).send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
+        verify(settingsWarner).logWarningsForMisconfigurations();
     }
 
     @Test

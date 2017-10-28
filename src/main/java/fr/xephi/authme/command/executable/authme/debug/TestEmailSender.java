@@ -44,6 +44,7 @@ class TestEmailSender implements DebugSection {
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe test email sender");
         if (!sendMailSsl.hasAllInformation()) {
             sender.sendMessage(ChatColor.RED + "You haven't set all required configurations in config.yml "
                 + "for sending emails. Please check your config.yml");

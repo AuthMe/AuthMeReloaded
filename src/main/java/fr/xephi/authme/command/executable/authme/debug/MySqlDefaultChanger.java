@@ -30,6 +30,7 @@ import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.
 import static fr.xephi.authme.data.auth.PlayerAuth.DB_EMAIL_DEFAULT;
 import static fr.xephi.authme.data.auth.PlayerAuth.DB_LAST_IP_DEFAULT;
 import static fr.xephi.authme.data.auth.PlayerAuth.DB_LAST_LOGIN_DEFAULT;
+import static fr.xephi.authme.datasource.SqlDataSourceUtils.getColumnDefaultValue;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.isNotNullColumn;
 import static java.lang.String.format;
 
@@ -38,6 +39,9 @@ import static java.lang.String.format;
  * in the MySQL data source.
  */
 class MySqlDefaultChanger implements DebugSection {
+
+    private static final String NOT_NULL_SUFFIX = ChatColor.DARK_AQUA + "@" + ChatColor.RESET;
+    private static final String DEFAULT_VALUE_SUFFIX = ChatColor.GOLD + "#" + ChatColor.RESET;
 
     @Inject
     private Settings settings;
@@ -59,7 +63,7 @@ class MySqlDefaultChanger implements DebugSection {
 
     @Override
     public String getDescription() {
-        return "Add or remove the default value of a column for MySQL";
+        return "Add or remove the default value of MySQL columns";
     }
 
     @Override
@@ -76,9 +80,12 @@ class MySqlDefaultChanger implements DebugSection {
 
         Operation operation = matchToEnum(arguments, 0, Operation.class);
         Columns column = matchToEnum(arguments, 1, Columns.class);
-        if (operation == null || column == null) {
+        if (operation == Operation.DETAILS) {
+            showColumnDetails(sender);
+        } else if (operation == null || column == null) {
             displayUsageHints(sender);
         } else {
+            sender.sendMessage(ChatColor.BLUE + "[AuthMe] MySQL change '" + column + "'");
             try (Connection con = getConnection(mySql)) {
                 switch (operation) {
                     case ADD:
@@ -165,50 +172,70 @@ class MySqlDefaultChanger implements DebugSection {
             + sender.getName() + "'");
     }
 
+    private void showColumnDetails(CommandSender sender) {
+        sender.sendMessage(ChatColor.BLUE + "MySQL column details");
+        final String tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        try (Connection con = getConnection(mySql)) {
+            final DatabaseMetaData metaData = con.getMetaData();
+            for (Columns col : Columns.values()) {
+                String columnName = settings.getProperty(col.getColumnNameProperty());
+                String isNullText = isNotNullColumn(metaData, tableName, columnName) ? "NOT NULL" : "nullable";
+                Object defaultValue = getColumnDefaultValue(metaData, tableName, columnName);
+                String defaultText = defaultValue == null ? "no default" : "default: '" + defaultValue + "'";
+                sender.sendMessage(formatColumnWithMetadata(col, metaData, tableName)
+                    + " (" + columnName + "): " + isNullText + ", " + defaultText);
+            }
+        } catch (SQLException e) {
+            ConsoleLogger.logException("Failed while showing column details:", e);
+            sender.sendMessage("Failed while showing column details. See log for info");
+        }
+
+    }
+
     /**
      * Displays sample commands and the list of columns that can be changed.
      *
      * @param sender the sender issuing the command
      */
     private void displayUsageHints(CommandSender sender) {
+        sender.sendMessage(ChatColor.BLUE + "MySQL column changer");
         sender.sendMessage("Adds or removes a NOT NULL constraint for a column.");
-        sender.sendMessage("  Only available for MySQL.");
-        if (mySql == null) {
-            sender.sendMessage("You are currently not using MySQL!");
-            return;
-        }
-
         sender.sendMessage("Examples: add a NOT NULL constraint with");
         sender.sendMessage(" /authme debug mysqldef add <column>");
-        sender.sendMessage("Remove a NOT NULL constraint with");
-        sender.sendMessage(" /authme debug mysqldef remove <column>");
+        sender.sendMessage("Remove one with /authme debug mysqldef remove <column>");
 
-        // Note ljacqu 20171015: Intentionally avoid green & red as to avoid suggesting that one state is good or bad
-        sender.sendMessage("Available columns: " + constructColoredColumnList());
-        sender.sendMessage(" where " + ChatColor.DARK_AQUA + "blue " + ChatColor.RESET
-            + "is currently not-null, and " + ChatColor.GOLD + "gold " + ChatColor.RESET + "is null");
+        sender.sendMessage("Available columns: " + constructColumnListWithMetadata());
+        sender.sendMessage(" " + NOT_NULL_SUFFIX + ": not-null, " + DEFAULT_VALUE_SUFFIX
+            + ": has default. See /authme debug mysqldef details");
     }
 
     /**
-     * @return list of {@link Columns} we can toggle, colored by their current not-null status
+     * @return list of {@link Columns} we can toggle with suffixes indicating their NOT NULL and default value status
      */
-    private String constructColoredColumnList() {
+    private String constructColumnListWithMetadata() {
         try (Connection con = getConnection(mySql)) {
             final DatabaseMetaData metaData = con.getMetaData();
             final String tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
 
             List<String> formattedColumns = new ArrayList<>(Columns.values().length);
             for (Columns col : Columns.values()) {
-                String columnName = settings.getProperty(col.getColumnNameProperty());
-                boolean isNotNull = isNotNullColumn(metaData, tableName, columnName);
-                String formattedColumn = (isNotNull ? ChatColor.DARK_AQUA : ChatColor.GOLD) + col.name().toLowerCase();
-                formattedColumns.add(formattedColumn);
+                formattedColumns.add(formatColumnWithMetadata(col, metaData, tableName));
             }
             return String.join(ChatColor.RESET + ", ", formattedColumns);
         } catch (SQLException e) {
             ConsoleLogger.logException("Failed to construct column list:", e);
             return ChatColor.RED + "An error occurred! Please see the console for details.";
         }
+    }
+
+    private String formatColumnWithMetadata(Columns column, DatabaseMetaData metaData,
+                                            String tableName) throws SQLException {
+        String columnName = settings.getProperty(column.getColumnNameProperty());
+        boolean isNotNull = isNotNullColumn(metaData, tableName, columnName);
+        boolean hasDefaultValue = getColumnDefaultValue(metaData, tableName, columnName) != null;
+        return column.name()
+            + (isNotNull ? NOT_NULL_SUFFIX : "")
+            + (hasDefaultValue ? DEFAULT_VALUE_SUFFIX : "");
     }
 
     /**
@@ -239,7 +266,7 @@ class MySqlDefaultChanger implements DebugSection {
     }
 
     private enum Operation {
-        ADD, REMOVE
+        ADD, REMOVE, DETAILS
     }
 
     /** MySQL columns which can be toggled between being NOT NULL and allowing NULL values. */

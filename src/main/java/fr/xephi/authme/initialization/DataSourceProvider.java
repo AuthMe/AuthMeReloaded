@@ -57,11 +57,10 @@ public class DataSourceProvider implements Provider<DataSource> {
      * Sets up the data source.
      *
      * @return the constructed datasource
-     * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
      * @throws IOException            if flat file cannot be read
      */
-    private DataSource createDataSource() throws ClassNotFoundException, SQLException, IOException {
+    private DataSource createDataSource() throws SQLException, IOException {
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
         DataSource dataSource;
         switch (dataSourceType) {
@@ -73,7 +72,7 @@ public class DataSourceProvider implements Provider<DataSource> {
                 dataSource = new MySQL(settings, mySqlExtensionsFactory);
                 break;
             case SQLITE:
-                dataSource = new SQLite(settings);
+                dataSource = new SQLite(settings, dataFolder);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
@@ -113,7 +112,7 @@ public class DataSourceProvider implements Provider<DataSource> {
                 + "to SQLite... Connection will be impossible until conversion is done!");
             FlatFile flatFile = (FlatFile) dataSource;
             try {
-                SQLite sqlite = new SQLite(settings);
+                SQLite sqlite = new SQLite(settings, dataFolder);
                 ForceFlatToSqlite converter = new ForceFlatToSqlite(flatFile, sqlite);
                 converter.execute(null);
                 settings.setProperty(DatabaseSettings.BACKEND, DataSourceType.SQLITE);

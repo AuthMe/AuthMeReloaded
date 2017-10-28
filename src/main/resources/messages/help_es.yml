@@ -106,9 +106,6 @@ commands:
     arg1:
       label:                  días
       description:            Número de días
-    arg2:
-      label:                  all
-      description:            Añade 'all' al final del comando también para purgar a los jugadores con el último inicio de sesión desde el día 0
   authme.purgeplayer:
     description:              Purgar los datos de un jugador
     detailedDescription:      Purgar los datos de un jugador seleccionado.

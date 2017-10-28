@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Oct 08 19:56:41 CEST 2017. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Sat Oct 28 10:39:36 CEST 2017. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -32,7 +32,7 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.admin.firstspawn`
 - **/authme setfirstspawn**: Change the first player's spawn to your current position.
   <br />Requires `authme.admin.setfirstspawn`
-- **/authme purge** &lt;days> [all]: Purge old AuthMeReloaded data longer than the specified number of days ago.
+- **/authme purge** &lt;days>: Purge old AuthMeReloaded data longer than the specified number of days ago.
   <br />Requires `authme.admin.purge`
 - **/authme purgeplayer** &lt;player> [options]: Purges data of the given player.
   <br />Requires `authme.admin.purgeplayer`
@@ -86,8 +86,11 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/captcha** &lt;captcha>: Captcha command for AuthMeReloaded.
   <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help for /captcha commands.
+- **/verification** &lt;code>: Command to complete the verification process for AuthMeReloaded.
+  <br />Requires `authme.player.security.verificationcode`
+- **/verification help** [query]: View detailed help for /verification commands.
 
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 08 19:56:41 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 28 10:39:36 CEST 2017
