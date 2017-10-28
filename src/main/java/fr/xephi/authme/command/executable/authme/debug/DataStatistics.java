@@ -10,6 +10,7 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -47,6 +48,7 @@ class DataStatistics implements DebugSection {
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe statistics");
         sender.sendMessage("LimboPlayers in memory: " + applyToLimboPlayersMap(limboService, Map::size));
         sender.sendMessage("PlayerCache size: " + playerCache.getLogged() + " (= logged in players)");
 
@@ -68,11 +70,10 @@ class DataStatistics implements DebugSection {
     }
 
     private void outputInjectorStats(CommandSender sender) {
-        sender.sendMessage(
-            String.format("Singleton Java classes: %d (Reloadable: %d / SettingsDependent: %d / HasCleanup: %d)",
-                singletonStore.retrieveAllOfType().size(),
-                singletonStore.retrieveAllOfType(Reloadable.class).size(),
-                singletonStore.retrieveAllOfType(SettingsDependent.class).size(),
-                singletonStore.retrieveAllOfType(HasCleanup.class).size()));
+        sender.sendMessage("Singleton Java classes: " + singletonStore.retrieveAllOfType().size());
+        sender.sendMessage(String.format("(Reloadable: %d / SettingsDependent: %d / HasCleanup: %d)",
+            singletonStore.retrieveAllOfType(Reloadable.class).size(),
+            singletonStore.retrieveAllOfType(SettingsDependent.class).size(),
+            singletonStore.retrieveAllOfType(HasCleanup.class).size()));
     }
 }

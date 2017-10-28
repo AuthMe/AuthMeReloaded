@@ -12,6 +12,7 @@ import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.initialization.factory.SingletonStore;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +81,9 @@ public class DataStatisticsTest {
         ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(stringCaptor.capture());
         assertThat(stringCaptor.getAllValues(), containsInAnyOrder(
-            "Singleton Java classes: 7 (Reloadable: 4 / SettingsDependent: 3 / HasCleanup: 2)",
+            ChatColor.BLUE + "AuthMe statistics",
+            "Singleton Java classes: 7",
+            "(Reloadable: 4 / SettingsDependent: 3 / HasCleanup: 2)",
             "LimboPlayers in memory: 1",
             "Total players in DB: 219",
             "PlayerCache size: 12 (= logged in players)"));

@@ -40,7 +40,7 @@ class InputValidator implements DebugSection {
 
     @Override
     public String getDescription() {
-        return "Check if email / password is valid according to your settings";
+        return "Checks if your config.yml allows a password / email";
     }
 
     @Override
@@ -68,16 +68,18 @@ class InputValidator implements DebugSection {
     }
 
     private void displayUsageHint(CommandSender sender) {
-        sender.sendMessage("You can define forbidden emails and passwords in your config.yml");
-        sender.sendMessage("This command allows you to test some of the values:");
-        sender.sendMessage("/authme debug valid pass test1234 -- test if 'test1234' is allowed password");
-        sender.sendMessage("/authme debug valid mail t@t.tld -- test if 't@t.tld' is allowed email");
-        sender.sendMessage("/authme debug valid name bobby1 -- test if 'bobby1' is allowed username");
+        sender.sendMessage(ChatColor.BLUE + "Validation tests");
+        sender.sendMessage("You can define forbidden emails and passwords in your config.yml."
+            + " You can test your settings with this command.");
+        final String command = ChatColor.GOLD + "/authme debug valid";
+        sender.sendMessage(" Use " + command + " pass <pass>" + ChatColor.RESET + " to check a password");
+        sender.sendMessage(" Use " + command + " mail <mail>" + ChatColor.RESET + " to check an email");
+        sender.sendMessage(" Use " + command + " name <name>" + ChatColor.RESET + " to check a username");
     }
 
     private void validatePassword(CommandSender sender, String password) {
         ValidationResult validationResult = validationService.validatePassword(password, "");
-        sender.sendMessage("Validation of password '" + password + "' returned:");
+        sender.sendMessage(ChatColor.BLUE + "Validation of password '" + password + "'");
         if (validationResult.hasError()) {
             messages.send(sender, validationResult.getMessageKey(), validationResult.getArgs());
         } else {
@@ -87,7 +89,7 @@ class InputValidator implements DebugSection {
 
     private void validateEmail(CommandSender sender, String email) {
         boolean isValidEmail = validationService.validateEmail(email);
-        sender.sendMessage("Validation of email '" + email + "' returned:");
+        sender.sendMessage(ChatColor.BLUE + "Validation of email '" + email + "'");
         if (isValidEmail) {
             sender.sendMessage(ChatColor.DARK_GREEN + "Valid email!");
         } else {
@@ -96,7 +98,7 @@ class InputValidator implements DebugSection {
     }
 
     private void validateUsername(CommandSender sender, String username) {
-        sender.sendMessage("Validation of username '" + username + "' returned:");
+        sender.sendMessage(ChatColor.BLUE + "Validation of username '" + username + "'");
         try {
             onJoinVerifier.checkIsValidName(username);
             sender.sendMessage("Valid username!");
