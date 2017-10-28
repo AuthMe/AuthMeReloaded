@@ -1,0 +1,109 @@
+common:
+  header: 'My custom help header'
+  optional: t-opt
+  result: t-res
+  defaultPermissions:
+    notAllowed: t-noperm
+    allowed: t-allperm
+
+section:
+  command: my command translation
+  description: ''  # <-- empty! Must be kept
+  children: ''
+
+commands:
+  # Full command entries
+  authme:
+    description: test auth desc
+    detailedDescription: test auth long desc
+  authme.register:
+    description: test reg desc
+    detailedDescription: test reg long desc
+    arg1:
+      label: test reg arg1
+      description: test reg arg1 text
+    arg2:
+      label: test reg arg2
+      description: test reg arg2 text
+
+  # Command with only one property specified
+  authme.unregister:
+    detailedDescription: Detailed description for unregister.
+
+  # Command with only one argument present
+  authme.password:
+    arg2:
+      label: pwd
+      description: New password
+
+  # Subcommand without an entry for the parent (email)
+  email.add:
+    description: email add desc
+    detailedDescription: email add long desc
+    arg1:
+      label: add arg1
+      description: add arg1 text
+    arg2:
+      label: add arg2
+      description: add arg2 text
+
+  # Unknown subcommand
+  email.doesNotExist:
+    description: Command that doesn't exist
+    detailedDescription: Command that doesn't exist
+    arg1:
+      label: arg1
+      description: Command that doesn't exist
+    arg2:
+      label: arg2
+      description: Command that doesn't exist
+
+  # Command with unknown properties
+  login:
+    unknownProperty: This does not exist
+    detailedDescription: /login detailed desc.
+    arg1:
+      label: loginArg
+      nonExistent: does not exist
+    someProp:
+      label: '''someProp'' does not exist'
+      description: idk
+
+  # Command that is not present at all
+  #logout:
+  #  description: Logout command
+  #  detailedDescription: Command to logout using AuthMeReloaded.
+
+  # Entry with too many args
+  unregister:
+    description: unreg_desc
+    detailedDescription: unreg_detail_desc
+    arg1:
+      label: unreg_arg_label
+      description: unreg_arg_desc
+    arg2:
+      label: This argument does not exist.
+      description: argument does not exist
+
+  # Entry with invalid data types
+  changepassword:
+    description:
+    - a list
+    - instead of text
+    detailedDescription: 1337
+    arg1:
+      label: true
+      description: []
+    arg2:
+      label:
+        unexpected: 5
+        object: 4
+      description: null
+
+  # Entry with empty texts! These need to be preserved
+  captcha:
+    description: Captcha command
+    detailedDescription: 'Captcha detail'
+    arg1:
+      label: ''
+      description: ''
