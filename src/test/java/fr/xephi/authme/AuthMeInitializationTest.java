@@ -4,7 +4,6 @@ import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import com.google.common.io.Files;
-import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
@@ -76,7 +75,7 @@ public class AuthMeInitializationTest {
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
 
         // Mock / wire various Bukkit components
-        given(server.getLogger()).willReturn(mock(Logger.class));
+        given(server.getLogger()).willReturn(Logger.getGlobal());
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         given(server.getPluginManager()).willReturn(pluginManager);
 
