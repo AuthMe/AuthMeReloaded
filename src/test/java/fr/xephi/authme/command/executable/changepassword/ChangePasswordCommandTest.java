@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.changepassword;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -42,7 +41,7 @@ public class ChangePasswordCommandTest {
     private ChangePasswordCommand command;
 
     @Mock
-    private CommonService commandService;
+    private CommonService commonService;
 
     @Mock
     private PlayerCache playerCache;
@@ -77,23 +76,24 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, Arrays.asList("pass", "pass"));
 
         // then
-        verify(commandService).send(sender, MessageKey.NOT_LOGGED_IN);
+        verify(commonService).send(sender, MessageKey.NOT_LOGGED_IN);
     }
 
     @Test
     public void shouldRejectInvalidPassword() {
         // given
-        CommandSender sender = initPlayerWithName("abc12", true);
+        Player sender = initPlayerWithName("abc12", true);
         String password = "newPW";
         given(validationService.validatePassword(password, "abc12")).willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
-        given(commandService.hasPermission((Player)sender, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
+        given(codeManager.isVerificationRequired(sender)).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList("tester", password));
 
         // then
         verify(validationService).validatePassword(password, "abc12");
-        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, new String[0]);
+        verify(commonService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, new String[0]);
+        verify(codeManager).isVerificationRequired(sender);
     }
 
     @Test
@@ -103,15 +103,16 @@ public class ChangePasswordCommandTest {
         String newPass = "abc123";
         Player player = initPlayerWithName("parker", true);
         given(validationService.validatePassword("abc123", "parker")).willReturn(new ValidationResult());
-        given(commandService.hasPermission(player, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
+        given(codeManager.isVerificationRequired(player)).willReturn(false);
 
         // when
         command.executeCommand(player, Arrays.asList(oldPass, newPass));
 
         // then
         verify(validationService).validatePassword(newPass, "parker");
-        verify(commandService, never()).send(eq(player), any(MessageKey.class));
+        verify(commonService, never()).send(eq(player), any(MessageKey.class));
         verify(management).performPasswordChange(player, oldPass, newPass);
+        verify(codeManager).isVerificationRequired(player);
     }
 
     @Test

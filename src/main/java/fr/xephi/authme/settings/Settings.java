@@ -48,7 +48,7 @@ public class Settings extends SettingsManager {
     }
 
     /**
-     * Return the text to use in captcha verification emails.
+     * Return the text to for verification emails (before sensitive commands can be used).
      *
      * @return The email message
      */

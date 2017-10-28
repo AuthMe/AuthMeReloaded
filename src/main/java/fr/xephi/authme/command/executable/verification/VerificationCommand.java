@@ -31,7 +31,7 @@ public class VerificationCommand extends PlayerCommand {
             return;
         }
 
-        if (codeManager.isVerificationRequired(playerName)) {
+        if (codeManager.isVerificationRequired(player)) {
             if (codeManager.isCodeRequired(playerName)) {
                 if (codeManager.checkCode(playerName, arguments.get(0))) {
                     commonService.send(player, MessageKey.VERIFICATION_CODE_VERIFIED);
@@ -48,7 +48,6 @@ public class VerificationCommand extends PlayerCommand {
                 commonService.send(player, MessageKey.VERIFICATION_CODE_EMAIL_NEEDED);
                 commonService.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
-
         }
     }
 

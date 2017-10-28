@@ -4,7 +4,6 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -44,8 +43,7 @@ public class ChangePasswordCommand extends PlayerCommand {
         }
 
         // Check if the user has been verified or not
-        if(commonService.hasPermission(player, PlayerPermission.VERIFICATION_CODE)
-            && codeManager.isVerificationRequired(name)) {
+        if (codeManager.isVerificationRequired(player)) {
             codeManager.codeExistOrGenerateNew(name);
             commonService.send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
             return;

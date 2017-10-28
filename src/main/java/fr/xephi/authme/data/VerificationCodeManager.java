@@ -5,11 +5,14 @@ import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.mail.EmailService;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.expiring.ExpiringMap;
+import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -18,8 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 public class VerificationCodeManager implements SettingsDependent, HasCleanup {
 
-    private EmailService emailService;
-    private DataSource dataSource;
+    private final EmailService emailService;
+    private final DataSource dataSource;
+    private final PermissionsManager permissionsManager;
 
     private final ExpiringMap<String, String> verificationCodes;
     private final Set<String> verifiedPlayers;
@@ -27,9 +31,11 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     private boolean isEnabled;
 
     @Inject
-    VerificationCodeManager(Settings settings, DataSource dataSource, EmailService emailService) {
+    VerificationCodeManager(Settings settings, DataSource dataSource, EmailService emailService,
+                            PermissionsManager permissionsManager) {
         this.emailService = emailService;
         this.dataSource = dataSource;
+        this.permissionsManager = permissionsManager;
         verifiedPlayers = new HashSet<>();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
@@ -49,19 +55,19 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     /**
      * Returns whether the given player is able to verify his identity
      *
-     * @param name the name of the player to verify
+     * @param player the player to verify
      * @return true if the player has not been verified yet, false otherwise
      */
-    public boolean isVerificationRequired(String name) {
-        boolean result = false;
-        if(isEnabled && !isPlayerVerified(name)) {
-            result = hasEmail(name);
-        }
-        return result;
+    public boolean isVerificationRequired(Player player) {
+        final String name = player.getName();
+        return isEnabled
+            && !isPlayerVerified(name)
+            && permissionsManager.hasPermission(player, PlayerPermission.VERIFICATION_CODE)
+            && hasEmail(name);
     }
 
     /**
-     * Returns whether the given player is required to verify his identity trough a command
+     * Returns whether the given player is required to verify his identity through a command
      *
      * @param name the name of the player to verify
      * @return true if the player has an existing code and has not been verified yet, false otherwise
@@ -101,7 +107,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
         DataSourceResult<String> emailResult = dataSource.getEmail(name);
         if (emailResult.playerExists()) {
             final String email = emailResult.getValue();
-            if(!Utils.isEmailEmpty(email)) {
+            if (!Utils.isEmailEmpty(email)) {
                 result = true;
             }
         }
@@ -114,7 +120,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @param name the player's name
      */
     public void codeExistOrGenerateNew(String name) {
-        if(!hasCode(name)){
+        if (!hasCode(name)) {
             generateCode(name);
         }
     }
@@ -128,7 +134,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
         DataSourceResult<String> emailResult = dataSource.getEmail(name);
         if (emailResult.playerExists()) {
             final String email = emailResult.getValue();
-            if(!Utils.isEmailEmpty(email)) {
+            if (!Utils.isEmailEmpty(email)) {
                 String code = RandomStringUtils.generateNum(6); // 6 digits code
                 verificationCodes.put(name.toLowerCase(), code);
                 emailService.sendVerificationMail(name, email, code);
@@ -145,7 +151,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean checkCode(String name, String code) {
         boolean correct = false;
-        if(hasCode(name) && verificationCodes.get(name.toLowerCase()).equals(code)) {
+        if (hasCode(name) && verificationCodes.get(name.toLowerCase()).equals(code)) {
             verify(name);
             correct = true;
         }

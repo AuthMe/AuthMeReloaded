@@ -17,9 +17,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-/*
+/**
  * Test for {@link VerificationCommand}.
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -55,7 +54,7 @@ public class VerificationCommandTest {
         String code = "123932";
         Player player = mockPlayerWithName(name);
         given(codeManager.isEnabled()).willReturn(true);
-        given(codeManager.isVerificationRequired(name)).willReturn(true);
+        given(codeManager.isVerificationRequired(player)).willReturn(true);
         given(codeManager.isCodeRequired(name)).willReturn(true);
         given(codeManager.checkCode(name, code)).willReturn(true);
 
@@ -63,7 +62,7 @@ public class VerificationCommandTest {
         command.executeCommand(player, Collections.singletonList(code));
 
         // then
-        verify(codeManager).isVerificationRequired(name);
+        verify(codeManager).isVerificationRequired(player);
         verify(codeManager).isCodeRequired(name);
         verify(codeManager).checkCode(name, code);
         verify(commonService).send(player, MessageKey.VERIFICATION_CODE_VERIFIED);
@@ -76,7 +75,7 @@ public class VerificationCommandTest {
         String code = "98345222";   // more than 6 digits
         Player player = mockPlayerWithName(name);
         given(codeManager.isEnabled()).willReturn(true);
-        given(codeManager.isVerificationRequired(name)).willReturn(true);
+        given(codeManager.isVerificationRequired(player)).willReturn(true);
         given(codeManager.isCodeRequired(name)).willReturn(true);
         given(codeManager.checkCode(name, code)).willReturn(false);
 
@@ -84,7 +83,7 @@ public class VerificationCommandTest {
         command.executeCommand(player, Collections.singletonList(code));
 
         // then
-        verify(codeManager).isVerificationRequired(name);
+        verify(codeManager).isVerificationRequired(player);
         verify(codeManager).isCodeRequired(name);
         verify(codeManager).checkCode(name, code);
         verify(commonService).send(player, MessageKey.INCORRECT_VERIFICATION_CODE);
@@ -97,14 +96,14 @@ public class VerificationCommandTest {
         String code = "131552";
         Player player = mockPlayerWithName(name);
         given(codeManager.isEnabled()).willReturn(true);
-        given(codeManager.isVerificationRequired(name)).willReturn(true);
+        given(codeManager.isVerificationRequired(player)).willReturn(true);
         given(codeManager.isCodeRequired(name)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList(code));
 
         // then
-        verify(codeManager).isVerificationRequired(name);
+        verify(codeManager).isVerificationRequired(player);
         verify(codeManager).isCodeRequired(name);
         verify(commonService).send(player, MessageKey.VERIFICATION_CODE_EXPIRED);
     }
@@ -116,14 +115,14 @@ public class VerificationCommandTest {
         String code = "973583";
         Player player = mockPlayerWithName(name);
         given(codeManager.isEnabled()).willReturn(true);
-        given(codeManager.isVerificationRequired(name)).willReturn(false);
+        given(codeManager.isVerificationRequired(player)).willReturn(false);
         given(codeManager.hasEmail(name)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList(code));
 
         // then
-        verify(codeManager).isVerificationRequired(name);
+        verify(codeManager).isVerificationRequired(player);
         verify(codeManager).hasEmail(name);
         verify(commonService).send(player, MessageKey.VERIFICATION_CODE_ALREADY_VERIFIED);
     }
@@ -135,14 +134,14 @@ public class VerificationCommandTest {
         String code = "774543";
         Player player = mockPlayerWithName(name);
         given(codeManager.isEnabled()).willReturn(true);
-        given(codeManager.isVerificationRequired(name)).willReturn(false);
+        given(codeManager.isVerificationRequired(player)).willReturn(false);
         given(codeManager.hasEmail(name)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList(code));
 
         // then
-        verify(codeManager).isVerificationRequired(name);
+        verify(codeManager).isVerificationRequired(player);
         verify(codeManager).hasEmail(name);
         verify(commonService).send(player, MessageKey.VERIFICATION_CODE_EMAIL_NEEDED);
         verify(commonService).send(player, MessageKey.ADD_EMAIL_MESSAGE);

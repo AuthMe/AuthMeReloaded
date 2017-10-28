@@ -2,7 +2,6 @@ package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.BlockCommandSender;
@@ -40,6 +39,9 @@ public class ChangeEmailCommandTest {
     @Mock
     private CommonService commonService;
 
+    @Mock
+    private VerificationCodeManager codeManager;
+
 
     @Test
     public void shouldRejectNonPlayerSender() {
@@ -54,16 +56,33 @@ public class ChangeEmailCommandTest {
     }
 
     @Test
+    public void shouldStopIfVerificationIsRequired() {
+        // given
+        String name = "Testeroni";
+        Player player = initPlayerWithName(name);
+        given(codeManager.isVerificationRequired(player)).willReturn(true);
+
+        // when
+        command.executeCommand(player, Arrays.asList("mail@example.org", "otherMail@example.com"));
+
+        // then
+        verify(codeManager).codeExistOrGenerateNew(name);
+        verify(commonService).send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
+        verifyZeroInteractions(management);
+    }
+
+    @Test
     public void shouldForwardData() {
         // given
         Player sender = initPlayerWithName("AmATest");
-        given(commonService.hasPermission(sender, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
+        given(codeManager.isVerificationRequired(sender)).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList("new.mail@example.org", "old_mail@example.org"));
 
         // then
         verify(management).performChangeEmail(sender, "new.mail@example.org", "old_mail@example.org");
+        verify(codeManager).isVerificationRequired(sender);
     }
 
     @Test

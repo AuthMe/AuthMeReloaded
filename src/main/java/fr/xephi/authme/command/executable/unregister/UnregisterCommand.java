@@ -4,7 +4,6 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
@@ -41,8 +40,7 @@ public class UnregisterCommand extends PlayerCommand {
         }
 
         // Check if the user has been verified or not
-        if(commonService.hasPermission(player, PlayerPermission.VERIFICATION_CODE)
-            && codeManager.isVerificationRequired(playerName)) {
+        if (codeManager.isVerificationRequired(player)) {
             codeManager.codeExistOrGenerateNew(playerName);
             commonService.send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
             return;

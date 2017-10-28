@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.email;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
@@ -27,18 +26,16 @@ public class ChangeEmailCommand extends PlayerCommand {
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
-        String playerMailOld = arguments.get(0);
-        String playerMailNew = arguments.get(1);
-
         final String playerName = player.getName();
         // Check if the user has been verified or not
-        if(commonService.hasPermission(player, PlayerPermission.VERIFICATION_CODE)
-            && codeManager.isVerificationRequired(playerName)) {
+        if (codeManager.isVerificationRequired(player)) {
             codeManager.codeExistOrGenerateNew(playerName);
             commonService.send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
             return;
         }
 
+        String playerMailOld = arguments.get(0);
+        String playerMailNew = arguments.get(1);
         management.performChangeEmail(player, playerMailOld, playerMailNew);
     }
 

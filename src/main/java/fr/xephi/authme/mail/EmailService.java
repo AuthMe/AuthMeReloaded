@@ -85,12 +85,12 @@ public class EmailService {
      *
      * @param name the name of the player
      * @param mailAddress the player's email
-     * @param code the captcha code
+     * @param code the verification code
      * @return true if email could be sent, false otherwise
      */
     public boolean sendVerificationMail(String name, String mailAddress, String code) {
         if (!hasAllInformation()) {
-            ConsoleLogger.warning("Cannot perform email registration: not all email settings are complete");
+            ConsoleLogger.warning("Cannot send verification email: not all email settings are complete");
             return false;
         }
 
@@ -98,27 +98,12 @@ public class EmailService {
         try {
             email = sendMailSsl.initializeMail(mailAddress);
         } catch (EmailException e) {
-            ConsoleLogger.logException("Failed to create email with the given settings:", e);
+            ConsoleLogger.logException("Failed to create verification email with the given settings:", e);
             return false;
         }
 
         String mailText = replaceTagsForVerificationEmail(settings.getVerificationEmailMessage(), name, code);
-        // TODO #1311: integrate verification code email's image?
-
-        /* File file = null;
-        if (settings.getProperty()) {   //+Add new setting: generate a verification code image
-            try {
-                file = generateCodeImage(name, code);
-                mailText = embedImageIntoEmailContent(file, email, mailText);
-            } catch (IOException | EmailException e) {
-                ConsoleLogger.logException(
-                    "Unable to send new password as image for email " + mailAddress + ":", e);
-            }
-        }*/
-
-        boolean couldSendEmail = sendMailSsl.sendEmail(mailText, email);
-        //FileUtils.delete(file);
-        return couldSendEmail;
+        return sendMailSsl.sendEmail(mailText, email);
     }
 
     /**
@@ -149,15 +134,6 @@ public class EmailService {
         ImageIO.write(gen.generateImage(), "jpg", file);
         return file;
     }
-
-    // TODO #1311: integrate verification code email's image?
-
-    /*private File generateCodeImage(String name, String code) throws IOException {
-        ImageGenerator gen = new ImageGenerator(code);
-        File file = new File(dataFolder, name + "_temp_code.jpg");
-        ImageIO.write(gen.generateImage(), "jpg", file);
-        return file;
-    }*/
 
     private static String embedImageIntoEmailContent(File image, HtmlEmail email, String content)
         throws EmailException {
