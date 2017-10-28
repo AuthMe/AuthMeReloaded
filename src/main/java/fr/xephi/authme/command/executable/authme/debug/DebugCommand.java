@@ -49,6 +49,7 @@ public class DebugCommand implements ExecutableCommand {
     }
 
     private void sendAvailableSections(CommandSender sender) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe debug utils");
         sender.sendMessage("Sections available to you:");
         long availableSections = getSections().values().stream()
             .filter(section -> permissionsManager.hasPermission(sender, section.getRequiredPermission()))

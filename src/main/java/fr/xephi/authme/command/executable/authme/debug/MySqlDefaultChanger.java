@@ -63,7 +63,7 @@ class MySqlDefaultChanger implements DebugSection {
 
     @Override
     public String getDescription() {
-        return "Add or remove the default value of a column for MySQL";
+        return "Add or remove the default value of MySQL columns";
     }
 
     @Override
@@ -85,6 +85,7 @@ class MySqlDefaultChanger implements DebugSection {
         } else if (operation == null || column == null) {
             displayUsageHints(sender);
         } else {
+            sender.sendMessage(ChatColor.BLUE + "[AuthMe] MySQL change '" + column + "'");
             try (Connection con = getConnection(mySql)) {
                 switch (operation) {
                     case ADD:
@@ -172,6 +173,7 @@ class MySqlDefaultChanger implements DebugSection {
     }
 
     private void showColumnDetails(CommandSender sender) {
+        sender.sendMessage(ChatColor.BLUE + "MySQL column details");
         final String tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         try (Connection con = getConnection(mySql)) {
             final DatabaseMetaData metaData = con.getMetaData();
@@ -196,6 +198,7 @@ class MySqlDefaultChanger implements DebugSection {
      * @param sender the sender issuing the command
      */
     private void displayUsageHints(CommandSender sender) {
+        sender.sendMessage(ChatColor.BLUE + "MySQL column changer");
         sender.sendMessage("Adds or removes a NOT NULL constraint for a column.");
         sender.sendMessage("Examples: add a NOT NULL constraint with");
         sender.sendMessage(" /authme debug mysqldef add <column>");
