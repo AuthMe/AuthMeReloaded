@@ -5,6 +5,9 @@ import fr.xephi.authme.datasource.DataSourceResult;
 /**
  * Handler which performs operations on the data source based on the given
  * columns and values.
+ *
+ * @param <C> the context type
+ * @param <I> the identifier type
  */
 @SuppressWarnings("unchecked")
 public interface ColumnsHandler<C, I> {

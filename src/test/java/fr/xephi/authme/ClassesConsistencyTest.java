@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
+import fr.xephi.authme.datasource.sqlcolumns.Column;
+import fr.xephi.authme.datasource.sqlcolumns.ColumnType;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.crypts.Whirlpool;
@@ -49,7 +51,7 @@ public class ClassesConsistencyTest {
         /* JDK */
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
         /* AuthMe */
-        Property.class, RegistrationMethod.class,
+        Property.class, RegistrationMethod.class, Column.class, ColumnType.class,
         /* Guava */
         ImmutableMap.class, ImmutableList.class);
 

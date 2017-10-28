@@ -19,7 +19,7 @@ public interface Column<T, C> {
     /**
      * @return the type of the value represented by this column
      */
-    Type<T> getType();
+    ColumnType<T> getType();
 
     /**
      * Returns whether this column should be used.

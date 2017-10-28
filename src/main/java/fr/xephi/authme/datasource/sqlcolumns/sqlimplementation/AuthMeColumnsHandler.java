@@ -1,8 +1,13 @@
-package fr.xephi.authme.datasource.sqlcolumns;
+package fr.xephi.authme.datasource.sqlcolumns.sqlimplementation;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.DataSourceResult;
+import fr.xephi.authme.datasource.sqlcolumns.AuthMeColumns;
+import fr.xephi.authme.datasource.sqlcolumns.Column;
+import fr.xephi.authme.datasource.sqlcolumns.DataSourceValues;
+import fr.xephi.authme.datasource.sqlcolumns.DependentColumn;
+import fr.xephi.authme.datasource.sqlcolumns.UpdateValues;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,7 +47,7 @@ public class AuthMeColumnsHandler extends SqlColumnsHandler<Columns, String> {
             return super.retrieve(name, columns);
         } catch (SQLException e) {
             logSqlException(e);
-            return DataSourceValues.unknownPlayer();
+            return DataSourceValuesImpl.unknownPlayer();
         }
     }
 
@@ -75,7 +80,6 @@ public class AuthMeColumnsHandler extends SqlColumnsHandler<Columns, String> {
             return false;
         }
     }
-
 
     @Override
     public boolean insert(UpdateValues<Columns> updateValues) {

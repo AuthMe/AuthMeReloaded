@@ -1,6 +1,11 @@
-package fr.xephi.authme.datasource.sqlcolumns;
+package fr.xephi.authme.datasource.sqlcolumns.sqlimplementation;
 
 import fr.xephi.authme.datasource.DataSourceResult;
+import fr.xephi.authme.datasource.sqlcolumns.Column;
+import fr.xephi.authme.datasource.sqlcolumns.ColumnsHandler;
+import fr.xephi.authme.datasource.sqlcolumns.DataSourceValues;
+import fr.xephi.authme.datasource.sqlcolumns.DependentColumn;
+import fr.xephi.authme.datasource.sqlcolumns.UpdateValues;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +18,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
+/**
+ * Implementation of {@link ColumnsHandler} for a SQL data source.
+ *
+ * @param <C> the context type
+ * @param <I> the identifier type
+ */
+public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
 
     private final Connection connection;
     private final String tableName;
@@ -63,7 +74,7 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
             pst.setObject(1, identifier);
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    DataSourceValues values = new DataSourceValues();
+                    DataSourceValuesImpl values = new DataSourceValuesImpl();
                     for (Column<?, C> column : columns) {
                         if (nonEmptyColumns.contains(column)) {
                             values.put(column, typeAdapter.get(rs, column));
@@ -73,7 +84,7 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
                     }
                     return values;
                 } else {
-                    return DataSourceValues.unknownPlayer();
+                    return DataSourceValuesImpl.unknownPlayer();
                 }
             }
         }
@@ -233,7 +244,7 @@ public abstract class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
      */
     private <E extends Column<?, C>> Set<E> removeSkippedColumns(Collection<E> cols) {
         return cols.stream()
-            .filter(column -> !column.isColumnUsed(context))
+            .filter(column -> column.isColumnUsed(context))
             .collect(Collectors.toSet());
     }
 
