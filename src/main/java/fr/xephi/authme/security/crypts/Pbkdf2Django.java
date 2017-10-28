@@ -5,7 +5,7 @@ import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 @AsciiRestricted
 public class Pbkdf2Django extends HexSaltedMethod {
@@ -18,7 +18,7 @@ public class Pbkdf2Django extends HexSaltedMethod {
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), DEFAULT_ITERATIONS);
         PBKDF2Engine engine = new PBKDF2Engine(params);
 
-        return result + DatatypeConverter.printBase64Binary(engine.deriveKey(password, 32));
+        return result + Base64.getEncoder().encodeToString(engine.deriveKey(password, 32));
     }
 
     @Override
@@ -35,7 +35,7 @@ public class Pbkdf2Django extends HexSaltedMethod {
             return false;
         }
         String salt = line[2];
-        byte[] derivedKey = DatatypeConverter.parseBase64Binary(line[3]);
+        byte[] derivedKey = Base64.getDecoder().decode(line[3]);
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), iterations, derivedKey);
         PBKDF2Engine engine = new PBKDF2Engine(params);
         return engine.verifyKey(password);
