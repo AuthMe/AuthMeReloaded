@@ -10,8 +10,9 @@ public final class RandomStringUtils {
 
     private static final char[] CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private static final Random RANDOM = new SecureRandom();
-    private static final int HEX_MAX_INDEX = 16;
+    private static final int NUM_INDEX = 10;
     private static final int LOWER_ALPHANUMERIC_INDEX = 36;
+    private static final int HEX_MAX_INDEX = 16;
 
     // Utility class
     private RandomStringUtils() {
@@ -36,6 +37,17 @@ public final class RandomStringUtils {
      */
     public static String generateHex(int length) {
         return generateString(length, HEX_MAX_INDEX);
+    }
+
+    /**
+     * Generate a random numbers string of the given length. In other words, the generated string
+     * contains characters only within the range [0-9].
+     *
+     * @param length The length of the random string to generate
+     * @return The random numbers string
+     */
+    public static String generateNum(int length) {
+        return generateString(length, NUM_INDEX);
     }
 
     /**

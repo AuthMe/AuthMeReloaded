@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.changepassword;
 
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -29,16 +30,27 @@ public class ChangePasswordCommand extends PlayerCommand {
     @Inject
     private Management management;
 
+    @Inject
+    private VerificationCodeManager codeManager;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
-        String oldPassword = arguments.get(0);
-        String newPassword = arguments.get(1);
-
         String name = player.getName().toLowerCase();
+
         if (!playerCache.isAuthenticated(name)) {
             commonService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }
+
+        // Check if the user has been verified or not
+        if (codeManager.isVerificationRequired(player)) {
+            codeManager.codeExistOrGenerateNew(name);
+            commonService.send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
+            return;
+        }
+
+        String oldPassword = arguments.get(0);
+        String newPassword = arguments.get(1);
 
         // Make sure the password is allowed
         ValidationResult passwordValidation = validationService.validatePassword(newPassword, name);

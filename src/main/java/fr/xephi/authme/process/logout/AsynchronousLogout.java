@@ -1,5 +1,6 @@
 package fr.xephi.authme.process.logout;
 
+import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -27,6 +28,9 @@ public class AsynchronousLogout implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
+    private VerificationCodeManager codeManager;
+
+    @Inject
     private SyncProcessManager syncProcessManager;
 
     AsynchronousLogout() {
@@ -52,6 +56,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
         }
 
         playerCache.removePlayer(name);
+        codeManager.unverify(name);
         database.setUnlogged(name);
         database.revokeSession(name);
         syncProcessManager.processSyncPlayerLogout(player);

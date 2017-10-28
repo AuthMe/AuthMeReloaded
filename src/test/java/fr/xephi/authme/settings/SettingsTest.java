@@ -77,6 +77,24 @@ public class SettingsTest {
         assertThat(result, equalTo(emailMessage));
     }
 
+    @Test
+    public void shouldLoadVerificationMessage() throws IOException {
+        // given
+        String emailMessage = "Please verify your identity with <recoverycode />.";
+        File emailFile = new File(testPluginFolder, "verification_code_email.html");
+        createFile(emailFile);
+        Files.write(emailFile.toPath(), emailMessage.getBytes());
+
+        PropertyResource resource = mock(PropertyResource.class);
+        Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
+
+        // when
+        String result = settings.getVerificationEmailMessage();
+
+        // then
+        assertThat(result, equalTo(emailMessage));
+    }
+
     private static void createFile(File file) {
         try {
             file.getParentFile().mkdirs();

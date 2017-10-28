@@ -61,6 +61,22 @@ public class RandomStringUtilsTest {
         }
     }
 
+    @Test
+    public void shouldGenerateRandomNumberString() {
+        // given
+        int[] lengths = {0, 1, 18, 147, 1833};
+        Pattern badChars = Pattern.compile(".*[^0-9].*");
+
+        // when / then
+        for (int length : lengths) {
+            String result = RandomStringUtils.generateNum(length);
+            assertThat("Result '" + result + "' should have length " + length,
+                result.length(), equalTo(length));
+            assertThat("Result '" + result + "' should only have characters 0-9",
+                badChars.matcher(result).matches(), equalTo(false));
+        }
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowForInvalidLength() {
         // given/when

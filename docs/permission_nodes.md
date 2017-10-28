@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Sep 02 12:24:17 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sat Oct 28 12:12:40 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -40,6 +40,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.debug.group** – Permission to view permission groups.
 - **authme.debug.limbo** – Permission to use the limbo data viewer.
 - **authme.debug.mail** – Permission to use the test email sender.
+- **authme.debug.mysqldef** – Permission to change nullable status of MySQL columns.
 - **authme.debug.perm** – Permission to use the permission checker.
 - **authme.debug.spawn** – Permission to view spawn information.
 - **authme.debug.stats** – Permission to use the stats section.
@@ -56,6 +57,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.player.login** – Command permission to login.
 - **authme.player.logout** – Command permission to logout.
 - **authme.player.register** – Command permission to register.
+- **authme.player.security.verificationcode** – Permission to use the email verification codes feature.
 - **authme.player.seeownaccounts** – Permission to use to see own other accounts.
 - **authme.player.unregister** – Command permission to unregister.
 - **authme.vip** – When the server is full and someone with this permission joins the server, someone will be kicked.
@@ -63,4 +65,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Sep 02 12:24:17 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 28 12:12:40 CEST 2017

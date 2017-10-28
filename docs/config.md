@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Oct 10 13:51:56 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Oct 28 10:39:36 CEST 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -43,10 +43,14 @@ DataSource:
     mySQLColumnLogged: 'isLogged'
     # Column for storing if a player has a valid session or not
     mySQLColumnHasSession: 'hasSession'
-    # Column for storing players ips
+    # Column for storing the player's last IP
     mySQLColumnIp: 'ip'
     # Column for storing players lastlogins
     mySQLColumnLastLogin: 'lastlogin'
+    # Column storing the registration date
+    mySQLColumnRegisterDate: 'regdate'
+    # Column for storing the IP address at the time of registration
+    mySQLColumnRegisterIp: 'regip'
     # Column for storing player LastLocation - X
     mySQLlastlocX: 'x'
     # Column for storing player LastLocation - Y
@@ -226,10 +230,11 @@ settings:
         minPasswordLength: 5
         # Maximum length of password
         passwordMaxLength: 30
-        # Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,
+        # Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512,
         # MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,
-        # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at
+        # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, ARGON2, CUSTOM (for developers only). See full list at
         # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md
+        # If you use ARGON2, check that you have the argon2 c library on your system
         passwordHash: 'SHA256'
         # If a password check fails, AuthMe will also try to check with the following hash methods.
         # Use this setting when you change from one hash method to another.
@@ -470,6 +475,8 @@ Security:
         #  original email: my.email@example.com
         #  hidden email: my.***@***mple.com
         enableEmailMasking: false
+        # Minutes after which a verification code will expire
+        verificationCodeExpiration: 10
 # Before a user logs in, various properties are temporarily removed from the player,
 # such as OP status, ability to fly, and walk/fly speed.
 # Once the user is logged in, we add back the properties we previously saved.
@@ -547,4 +554,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Oct 10 13:51:56 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 28 10:39:36 CEST 2017
