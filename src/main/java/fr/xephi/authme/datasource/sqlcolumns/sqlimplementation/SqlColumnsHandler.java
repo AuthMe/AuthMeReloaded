@@ -6,6 +6,8 @@ import fr.xephi.authme.datasource.sqlcolumns.ColumnsHandler;
 import fr.xephi.authme.datasource.sqlcolumns.DataSourceValues;
 import fr.xephi.authme.datasource.sqlcolumns.DependentColumn;
 import fr.xephi.authme.datasource.sqlcolumns.UpdateValues;
+import fr.xephi.authme.datasource.sqlcolumns.predicate.Predicate;
+import fr.xephi.authme.datasource.sqlcolumns.sqlimplementation.PredicateSqlGenerator.WhereClauseResult;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,6 +32,7 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     private final String tableName;
     private final String idColumn;
     private final TypeAdapter<C> typeAdapter;
+    private final PredicateSqlGenerator<C> predicateSqlGenerator;
     private final C context;
 
     /**
@@ -43,6 +46,7 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     public SqlColumnsHandler(Connection connection, C context, String tableName, String idColumn)  {
         this.context = context;
         this.typeAdapter = new TypeAdapter<>(context);
+        this.predicateSqlGenerator = new PredicateSqlGenerator<>(context);
         this.tableName = tableName;
         this.connection = connection;
         this.idColumn = idColumn;
@@ -130,6 +134,21 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     @SuppressWarnings("unchecked")
     public <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns) throws SQLException {
         return performInsert(Arrays.asList(columns), column -> column.getValueFromDependent(dependent));
+    }
+
+    @Override
+    public int count(Predicate<C> predicate) throws SQLException {
+        WhereClauseResult whereResult = predicateSqlGenerator.generateWhereClause(predicate);
+        String sql = "SELECT COUNT(1) FROM " + tableName + " WHERE " + whereResult.getGeneratedSql();
+        try (PreparedStatement pst = connection.prepareStatement(sql)) {
+            bindValues(pst, 1, whereResult.getBindings());
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                throw new IllegalStateException("Could not fetch count for SQL '" + sql + "'");
+            }
+        }
     }
 
     private <E extends Column<?, C>> boolean performUpdate(I identifier, Collection<E> columns,
@@ -229,6 +248,15 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
         int index = startIndex;
         for (E column : columns) {
             pst.setObject(index, valueGetter.apply(column));
+            ++index;
+        }
+        return index;
+    }
+
+    private int bindValues(PreparedStatement pst, int startIndex, Collection<Object> bindings) throws SQLException {
+        int index = startIndex;
+        for (Object binding : bindings) {
+            pst.setObject(index, binding);
             ++index;
         }
         return index;

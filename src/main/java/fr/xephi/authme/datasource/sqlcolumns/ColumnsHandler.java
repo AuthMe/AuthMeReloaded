@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource.sqlcolumns;
 
 import fr.xephi.authme.datasource.DataSourceResult;
+import fr.xephi.authme.datasource.sqlcolumns.predicate.Predicate;
 
 /**
  * Handler which performs operations on the data source based on the given
@@ -81,5 +82,7 @@ public interface ColumnsHandler<C, I> {
      * @throws IllegalStateException if there is not at least one column that is not skipped
      */
     <D> boolean insert(D dependent, DependentColumn<?, C, D>... columns) throws Exception;
+
+    int count(Predicate<C> predicate) throws Exception;
 
 }

@@ -1,7 +1,7 @@
 package fr.xephi.authme.datasource.sqlcolumns;
 
 /**
- * Created by Lucas-Keoki on 10/27/2017.
+ *
  */
 public interface DataSourceValues {
 

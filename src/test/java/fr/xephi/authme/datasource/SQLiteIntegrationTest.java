@@ -21,10 +21,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.stream.Stream;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasRegistrationInfo;
+import static fr.xephi.authme.datasource.sqlcolumns.predicate.StandardPredicates.eq;
+import static fr.xephi.authme.datasource.sqlcolumns.predicate.StandardPredicates.not;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
@@ -253,6 +256,41 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         assertThat(result.getLastLogin(), nullValue());
         assertThat(result.getPassword(), equalToHash("SHA256$abcd123"));
         assertThat(result, hasRegistrationInfo("124.56.78.99", 1234567L));
+    }
+
+    @Test
+    public void shouldCountWithPredicate() throws SQLException {
+        // given
+        PlayerAuth auth1 = PlayerAuth.builder().name("user001").registrationIp("1.1.1.1").email("test@email.org").build();
+        PlayerAuth auth2 = PlayerAuth.builder().name("user002").registrationIp("1.1.1.1").email("other@other.tld").build();
+        PlayerAuth auth3 = PlayerAuth.builder().name("user003").registrationIp("1.1.1.1").email("test@email.org").build();
+        PlayerAuth auth4 = PlayerAuth.builder().name("user004").registrationIp("2.2.2.2").email("other@other.tld").build();
+        PlayerAuth auth5 = PlayerAuth.builder().name("user005").registrationIp("2.2.2.2").email("test@email.org").build();
+
+        DataSource ds = getDataSource();
+        Stream.of(auth1, auth2, auth3, auth4, auth5).forEach(ds::saveAuth);
+
+        AuthMeColumnsHandler handler = createColumnsHandler();
+
+        // when
+        int testMailOr1111IpCount = handler.count(
+            eq(AuthMeColumns.EMAIL, "test@email.org").or(eq(AuthMeColumns.REGISTRATION_IP, "1.1.1.1")));
+        int testMailAnd1111IpCount = handler.count(
+            eq(AuthMeColumns.EMAIL, "test@email.org").and(eq(AuthMeColumns.REGISTRATION_IP, "1.1.1.1")));
+        int otherMailCount = handler.count(eq(AuthMeColumns.EMAIL, "other@other.tld"));
+        int nonExistentCount = handler.count(eq(AuthMeColumns.EMAIL, "doesNotExist"));
+        int ipAndEmailCount = handler.count(
+                eq(AuthMeColumns.EMAIL, "test@email.org").and(eq(AuthMeColumns.REGISTRATION_IP, "1.1.1.1"))
+            .or(
+                eq(AuthMeColumns.EMAIL, "other@other.tld").and(eq(AuthMeColumns.REGISTRATION_IP, "2.2.2.2"))));
+        // TODO: Not predicate does not work with SQLite
+
+        // then
+        assertThat(testMailOr1111IpCount, equalTo(4));
+        assertThat(testMailAnd1111IpCount, equalTo(2));
+        assertThat(otherMailCount, equalTo(2));
+        assertThat(nonExistentCount, equalTo(0));
+        assertThat(ipAndEmailCount, equalTo(3));
     }
 
     @Override
