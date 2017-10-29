@@ -2,7 +2,7 @@ package fr.xephi.authme.datasource.sqlcolumns.predicate;
 
 public abstract class AbstractPredicate<C> implements Predicate<C> {
 
-    public Predicate<C> and(Predicate other) {
+    public Predicate<C> and(Predicate<C> other) {
         return new AndPredicate<>(this, other);
     }
 

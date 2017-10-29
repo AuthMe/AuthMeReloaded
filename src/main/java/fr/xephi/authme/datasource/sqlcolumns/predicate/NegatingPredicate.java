@@ -4,7 +4,7 @@ public class NegatingPredicate<C> extends AbstractPredicate<C> {
 
     private final Predicate<C> predicate;
 
-    NegatingPredicate(Predicate<C> predicate) {
+    public NegatingPredicate(Predicate<C> predicate) {
         this.predicate = predicate;
     }
 

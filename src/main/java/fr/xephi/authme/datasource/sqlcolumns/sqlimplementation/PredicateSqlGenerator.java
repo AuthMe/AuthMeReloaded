@@ -3,6 +3,7 @@ package fr.xephi.authme.datasource.sqlcolumns.sqlimplementation;
 
 import fr.xephi.authme.datasource.sqlcolumns.predicate.AndPredicate;
 import fr.xephi.authme.datasource.sqlcolumns.predicate.EqualityPredicate;
+import fr.xephi.authme.datasource.sqlcolumns.predicate.IsNullPredicate;
 import fr.xephi.authme.datasource.sqlcolumns.predicate.NegatingPredicate;
 import fr.xephi.authme.datasource.sqlcolumns.predicate.OrPredicate;
 import fr.xephi.authme.datasource.sqlcolumns.predicate.Predicate;
@@ -42,6 +43,9 @@ public class PredicateSqlGenerator<C> {
             sqlResult.append("!(");
             generateWhereClause(neg.getPredicate(), sqlResult, objects);
             sqlResult.append(")");
+        } else if (clazz == IsNullPredicate.class) {
+            IsNullPredicate<C> isNull = (IsNullPredicate<C>) predicate;
+            sqlResult.append(isNull.getColumn().resolveName(context)).append(" IS NULL");
         } else {
             throw new IllegalStateException("Unhandled predicate '" + predicate + "'");
         }

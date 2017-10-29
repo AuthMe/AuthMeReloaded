@@ -26,8 +26,10 @@ import java.util.stream.Stream;
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasRegistrationInfo;
+import static fr.xephi.authme.datasource.sqlcolumns.predicate.StandardPredicates.and;
 import static fr.xephi.authme.datasource.sqlcolumns.predicate.StandardPredicates.eq;
-import static fr.xephi.authme.datasource.sqlcolumns.predicate.StandardPredicates.not;
+import static fr.xephi.authme.datasource.sqlcolumns.predicate.StandardPredicates.isNull;
+import static fr.xephi.authme.datasource.sqlcolumns.predicate.StandardPredicates.or;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
@@ -279,11 +281,13 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
             eq(AuthMeColumns.EMAIL, "test@email.org").and(eq(AuthMeColumns.REGISTRATION_IP, "1.1.1.1")));
         int otherMailCount = handler.count(eq(AuthMeColumns.EMAIL, "other@other.tld"));
         int nonExistentCount = handler.count(eq(AuthMeColumns.EMAIL, "doesNotExist"));
-        int ipAndEmailCount = handler.count(
-                eq(AuthMeColumns.EMAIL, "test@email.org").and(eq(AuthMeColumns.REGISTRATION_IP, "1.1.1.1"))
-            .or(
-                eq(AuthMeColumns.EMAIL, "other@other.tld").and(eq(AuthMeColumns.REGISTRATION_IP, "2.2.2.2"))));
+        int ipAndEmailCount = handler.count(or(
+            and(eq(AuthMeColumns.EMAIL, "test@email.org"), eq(AuthMeColumns.REGISTRATION_IP, "1.1.1.1")),
+            and(eq(AuthMeColumns.EMAIL, "other@other.tld"), eq(AuthMeColumns.REGISTRATION_IP, "2.2.2.2")))
+        );
         // TODO: Not predicate does not work with SQLite
+        int ip2222OrNull = handler.count(eq(AuthMeColumns.REGISTRATION_IP, "2.2.2.2")
+            .or(isNull(AuthMeColumns.REGISTRATION_IP)));
 
         // then
         assertThat(testMailOr1111IpCount, equalTo(4));
@@ -291,6 +295,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         assertThat(otherMailCount, equalTo(2));
         assertThat(nonExistentCount, equalTo(0));
         assertThat(ipAndEmailCount, equalTo(3));
+        assertThat(ip2222OrNull, equalTo(3));
     }
 
     @Override
