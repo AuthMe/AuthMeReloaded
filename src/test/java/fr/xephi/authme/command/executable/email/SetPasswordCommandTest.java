@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.email;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.logging.Logger;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -47,6 +49,8 @@ public class SetPasswordCommandTest {
 
     @Test
     public void shouldChangePassword() {
+        ConsoleLogger.setLogger(Logger.getAnonymousLogger());
+
         // given
         Player player = mock(Player.class);
         String name = "Jerry";

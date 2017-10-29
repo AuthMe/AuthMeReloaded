@@ -75,7 +75,7 @@ public class AuthMeInitializationTest {
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
 
         // Mock / wire various Bukkit components
-        given(server.getLogger()).willReturn(Logger.getGlobal());
+        given(server.getLogger()).willReturn(Logger.getAnonymousLogger());
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         given(server.getPluginManager()).willReturn(pluginManager);
 
