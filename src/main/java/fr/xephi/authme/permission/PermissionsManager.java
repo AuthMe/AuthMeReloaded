@@ -9,6 +9,8 @@ import fr.xephi.authme.permission.handlers.PermissionHandlerException;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -38,6 +40,8 @@ public class PermissionsManager implements Reloadable {
     private final Server server;
     private final PluginManager pluginManager;
 
+    private Settings settings;
+
     /**
      * The permission handler that is currently in use.
      * Null if no permission system is hooked.
@@ -51,9 +55,10 @@ public class PermissionsManager implements Reloadable {
      * @param pluginManager Bukkit plugin manager
      */
     @Inject
-    public PermissionsManager(Server server, PluginManager pluginManager) {
+    public PermissionsManager(Server server, PluginManager pluginManager, Settings settings) {
         this.server = server;
         this.pluginManager = pluginManager;
+        this.settings = settings;
     }
 
     /**
@@ -70,19 +75,33 @@ public class PermissionsManager implements Reloadable {
      */
     @PostConstruct
     private void setup() {
-        // Loop through all the available permissions system types
-        for (PermissionsSystemType type : PermissionsSystemType.values()) {
+        if(settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)) {
             try {
-                PermissionHandler handler = createPermissionHandler(type);
+                PermissionHandler handler = createPermissionHandler(PermissionsSystemType.VAULT);
                 if (handler != null) {
                     // Show a success message and return
                     this.handler = handler;
-                    ConsoleLogger.info("Hooked into " + type.getDisplayName() + "!");
+                    ConsoleLogger.info("Hooked into " + PermissionsSystemType.VAULT.getDisplayName() + "!");
                     return;
                 }
-            } catch (Exception ex) {
-                // An error occurred, show a warning message
-                ConsoleLogger.logException("Error while hooking into " + type.getDisplayName(), ex);
+            } catch (PermissionHandlerException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Loop through all the available permissions system types
+            for (PermissionsSystemType type : PermissionsSystemType.values()) {
+                try {
+                    PermissionHandler handler = createPermissionHandler(type);
+                    if (handler != null) {
+                        // Show a success message and return
+                        this.handler = handler;
+                        ConsoleLogger.info("Hooked into " + type.getDisplayName() + "!");
+                        return;
+                    }
+                } catch (Exception ex) {
+                    // An error occurred, show a warning message
+                    ConsoleLogger.logException("Error while hooking into " + type.getDisplayName(), ex);
+                }
             }
         }
 
