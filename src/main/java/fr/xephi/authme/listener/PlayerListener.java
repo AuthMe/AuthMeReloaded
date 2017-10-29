@@ -4,6 +4,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
@@ -79,6 +80,8 @@ public class PlayerListener implements Listener {
     private ValidationService validationService;
     @Inject
     private JoinMessageService joinMessageService;
+    @Inject
+    private PermissionsManager permissionsManager;
 
     private static boolean isAsyncPlayerPreLoginEventCalled = false;
 
@@ -232,6 +235,13 @@ public class PlayerListener implements Listener {
 
         if (validationService.isUnrestricted(name)) {
             return;
+        }
+
+        // Keep pre-UUID compatibility
+        try {
+            permissionsManager.loadUserData(event.getUniqueId());
+        } catch (NoSuchMethodError e) {
+            permissionsManager.loadUserData(name);
         }
 
         try {

@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 /**
  * PermissionsManager.
@@ -424,5 +425,19 @@ public class PermissionsManager implements Reloadable {
 
         // Remove each group
         return removeGroups(player, groupNames);
+    }
+
+    public void loadUserData(UUID uuid) {
+        if(!isEnabled()) {
+            return;
+        }
+        handler.loadUserData(uuid);
+    }
+
+    public void loadUserData(String name) {
+        if(!isEnabled()) {
+            return;
+        }
+        handler.loadUserData(name);
     }
 }
