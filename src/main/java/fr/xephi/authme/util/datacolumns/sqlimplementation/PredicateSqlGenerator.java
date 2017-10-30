@@ -2,9 +2,9 @@ package fr.xephi.authme.util.datacolumns.sqlimplementation;
 
 
 import fr.xephi.authme.util.datacolumns.predicate.AndPredicate;
-import fr.xephi.authme.util.datacolumns.predicate.EqualityPredicate;
+import fr.xephi.authme.util.datacolumns.predicate.ComparingPredicate;
+import fr.xephi.authme.util.datacolumns.predicate.IsNotNullPredicate;
 import fr.xephi.authme.util.datacolumns.predicate.IsNullPredicate;
-import fr.xephi.authme.util.datacolumns.predicate.NegatingPredicate;
 import fr.xephi.authme.util.datacolumns.predicate.OrPredicate;
 import fr.xephi.authme.util.datacolumns.predicate.Predicate;
 
@@ -28,26 +28,44 @@ public class PredicateSqlGenerator<C> {
 
     private void generateWhereClause(Predicate<C> predicate, StringBuilder sqlResult, List<Object> objects) {
         final Class<?> clazz = predicate.getClass();
-        if (clazz == EqualityPredicate.class) {
-            EqualityPredicate<?, C> eq = (EqualityPredicate<?, C>) predicate;
-            sqlResult.append(eq.getColumn().resolveName(context)).append(" = ?");
-            objects.add(eq.getObject());
+        if (clazz == ComparingPredicate.class) {
+            ComparingPredicate<?, C> eq = (ComparingPredicate<?, C>) predicate;
+            processComparingClause(eq, sqlResult, objects);
         } else if (clazz == OrPredicate.class) {
             OrPredicate<C> or = (OrPredicate<C>) predicate;
             processCombiningClause(or.getLeft(), or.getRight(), "OR", sqlResult, objects);
         } else if (clazz == AndPredicate.class) {
             AndPredicate<C> and = (AndPredicate<C>) predicate;
             processCombiningClause(and.getLeft(), and.getRight(), "AND", sqlResult, objects);
-        } else if (clazz == NegatingPredicate.class) {
-            NegatingPredicate<C> neg = (NegatingPredicate<C>) predicate;
-            sqlResult.append("!(");
-            generateWhereClause(neg.getPredicate(), sqlResult, objects);
-            sqlResult.append(")");
-        } else if (clazz == IsNullPredicate.class) {
+        }  else if (clazz == IsNullPredicate.class) {
             IsNullPredicate<C> isNull = (IsNullPredicate<C>) predicate;
             sqlResult.append(isNull.getColumn().resolveName(context)).append(" IS NULL");
+        } else if (clazz == IsNotNullPredicate.class) {
+            IsNotNullPredicate<C> isNotNull = (IsNotNullPredicate<C>) predicate;
+            sqlResult.append(isNotNull.getColumn().resolveName(context)).append(" IS NOT NULL");
         } else {
             throw new IllegalStateException("Unhandled predicate '" + predicate + "'");
+        }
+    }
+
+    private void processComparingClause(ComparingPredicate<?, C> predicate, StringBuilder sqlResult,
+                                        List<Object> objects) {
+        sqlResult.append(predicate.getColumn().resolveName(context))
+            .append(convertComparingTypeToSqlOperator(predicate.getType()))
+            .append("?");
+        objects.add(predicate.getValue());
+    }
+
+    private String convertComparingTypeToSqlOperator(ComparingPredicate.Type type) {
+        switch (type) {
+            case LESS:           return " < ";
+            case LESS_EQUALS:    return " <= ";
+            case EQUALS:         return " = ";
+            case NOT_EQUALS:     return " <> ";
+            case GREATER:        return " > ";
+            case GREATER_EQUALS: return " >= ";
+            default:
+                throw new IllegalStateException("Unknown comparing predicate type '" + type + "'");
         }
     }
 
