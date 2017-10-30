@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.sqlcolumns;
+package fr.xephi.authme.util.datacolumns;
 
 /**
  * Column whose value may be derived from an external object.

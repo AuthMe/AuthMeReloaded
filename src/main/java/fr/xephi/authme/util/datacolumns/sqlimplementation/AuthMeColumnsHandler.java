@@ -1,13 +1,13 @@
-package fr.xephi.authme.datasource.sqlcolumns.sqlimplementation;
+package fr.xephi.authme.util.datacolumns.sqlimplementation;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.DataSourceResult;
-import fr.xephi.authme.datasource.sqlcolumns.AuthMeColumns;
-import fr.xephi.authme.datasource.sqlcolumns.Column;
-import fr.xephi.authme.datasource.sqlcolumns.DataSourceValues;
-import fr.xephi.authme.datasource.sqlcolumns.DependentColumn;
-import fr.xephi.authme.datasource.sqlcolumns.UpdateValues;
+import fr.xephi.authme.util.datacolumns.AuthMeColumns;
+import fr.xephi.authme.util.datacolumns.Column;
+import fr.xephi.authme.util.datacolumns.DataSourceValues;
+import fr.xephi.authme.util.datacolumns.DependentColumn;
+import fr.xephi.authme.util.datacolumns.UpdateValues;
 
 import java.sql.Connection;
 import java.sql.SQLException;

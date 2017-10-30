@@ -1,7 +1,7 @@
-package fr.xephi.authme.datasource.sqlcolumns;
+package fr.xephi.authme.util.datacolumns;
 
 import fr.xephi.authme.datasource.DataSourceResult;
-import fr.xephi.authme.datasource.sqlcolumns.predicate.Predicate;
+import fr.xephi.authme.util.datacolumns.predicate.Predicate;
 
 /**
  * Handler which performs operations on the data source based on the given

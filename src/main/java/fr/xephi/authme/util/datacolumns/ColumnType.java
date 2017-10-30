@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.sqlcolumns;
+package fr.xephi.authme.util.datacolumns;
 
 /**
  * C.

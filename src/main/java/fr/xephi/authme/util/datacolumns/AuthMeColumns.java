@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.sqlcolumns;
+package fr.xephi.authme.util.datacolumns;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;

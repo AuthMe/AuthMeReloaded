@@ -1,6 +1,6 @@
-package fr.xephi.authme.datasource.sqlcolumns.predicate;
+package fr.xephi.authme.util.datacolumns.predicate;
 
-import fr.xephi.authme.datasource.sqlcolumns.Column;
+import fr.xephi.authme.util.datacolumns.Column;
 
 public class StandardPredicates {
 

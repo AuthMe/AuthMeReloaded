@@ -1,12 +1,12 @@
-package fr.xephi.authme.datasource.sqlcolumns.sqlimplementation;
+package fr.xephi.authme.util.datacolumns.sqlimplementation;
 
 
-import fr.xephi.authme.datasource.sqlcolumns.predicate.AndPredicate;
-import fr.xephi.authme.datasource.sqlcolumns.predicate.EqualityPredicate;
-import fr.xephi.authme.datasource.sqlcolumns.predicate.IsNullPredicate;
-import fr.xephi.authme.datasource.sqlcolumns.predicate.NegatingPredicate;
-import fr.xephi.authme.datasource.sqlcolumns.predicate.OrPredicate;
-import fr.xephi.authme.datasource.sqlcolumns.predicate.Predicate;
+import fr.xephi.authme.util.datacolumns.predicate.AndPredicate;
+import fr.xephi.authme.util.datacolumns.predicate.EqualityPredicate;
+import fr.xephi.authme.util.datacolumns.predicate.IsNullPredicate;
+import fr.xephi.authme.util.datacolumns.predicate.NegatingPredicate;
+import fr.xephi.authme.util.datacolumns.predicate.OrPredicate;
+import fr.xephi.authme.util.datacolumns.predicate.Predicate;
 
 import java.util.LinkedList;
 import java.util.List;

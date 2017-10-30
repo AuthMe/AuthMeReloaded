@@ -1,8 +1,8 @@
-package fr.xephi.authme.datasource.sqlcolumns.sqlimplementation;
+package fr.xephi.authme.util.datacolumns.sqlimplementation;
 
-import fr.xephi.authme.datasource.sqlcolumns.Column;
-import fr.xephi.authme.datasource.sqlcolumns.ColumnType;
-import fr.xephi.authme.datasource.sqlcolumns.StandardTypes;
+import fr.xephi.authme.util.datacolumns.Column;
+import fr.xephi.authme.util.datacolumns.ColumnType;
+import fr.xephi.authme.util.datacolumns.StandardTypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -1,7 +1,7 @@
-package fr.xephi.authme.datasource.sqlcolumns.sqlimplementation;
+package fr.xephi.authme.util.datacolumns.sqlimplementation;
 
-import fr.xephi.authme.datasource.sqlcolumns.Column;
-import fr.xephi.authme.datasource.sqlcolumns.DataSourceValues;
+import fr.xephi.authme.util.datacolumns.Column;
+import fr.xephi.authme.util.datacolumns.DataSourceValues;
 
 import java.util.HashMap;
 import java.util.Map;

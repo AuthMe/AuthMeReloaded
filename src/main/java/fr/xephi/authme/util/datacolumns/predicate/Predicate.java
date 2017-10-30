@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.sqlcolumns.predicate;
+package fr.xephi.authme.util.datacolumns.predicate;
 
 public interface Predicate<C> {
 

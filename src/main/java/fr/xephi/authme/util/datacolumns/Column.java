@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.sqlcolumns;
+package fr.xephi.authme.util.datacolumns;
 
 /**
  * Column interface. Represents a datum from a data source, e.g. a column in a SQL table.
