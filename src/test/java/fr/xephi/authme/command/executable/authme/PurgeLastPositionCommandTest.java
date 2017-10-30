@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
@@ -35,6 +36,8 @@ public class PurgeLastPositionCommandTest {
     @Mock
     private CommonService service;
 
+    @Mock
+    private BungeeService bungeeService;
 
     @Test
     public void shouldPurgeLastPosOfUser() {

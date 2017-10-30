@@ -7,8 +7,10 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -48,6 +50,12 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private VerificationCodeManager codeManager;
 
+    @Inject
+    private SessionService sessionService;
+
+    @Inject
+    private BungeeService bungeeService;
+
     AsynchronousQuit() {
     }
 
@@ -70,6 +78,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
                     .name(name).location(loc)
                     .realName(player.getName()).build();
                 database.updateQuitLoc(auth);
+                bungeeService.sendRefreshQuitLoc(name);
             }
 
             final String ip = PlayerUtils.getPlayerIp(player);
@@ -80,6 +89,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);
+            bungeeService.sendRefreshSession(name);
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip
@@ -90,7 +100,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         if (wasLoggedIn) {
             database.setUnlogged(name);
             if (!service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-                database.revokeSession(name);
+                sessionService.revokeSession(name);
             }
         }
 

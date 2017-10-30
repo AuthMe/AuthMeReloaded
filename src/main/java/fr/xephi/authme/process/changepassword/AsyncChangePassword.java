@@ -6,6 +6,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -28,6 +29,9 @@ public class AsyncChangePassword implements AsynchronousProcess {
     @Inject
     private PlayerCache playerCache;
 
+    @Inject
+    private BungeeService bungeeService;
+
     AsyncChangePassword() {
     }
 
@@ -49,6 +53,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
                 commonService.send(player, MessageKey.ERROR);
                 return;
             }
+            bungeeService.sendRefreshPassword(name);
 
             playerCache.updatePlayer(auth);
             commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
@@ -78,6 +83,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
 
         HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, lowerCaseName);
         if (dataSource.updatePassword(lowerCaseName, hashedPassword)) {
+            bungeeService.sendRefreshPassword(lowerCaseName);
             if (sender != null) {
                 commonService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " changed password of " + lowerCaseName);

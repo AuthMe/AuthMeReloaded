@@ -6,6 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -37,6 +38,8 @@ public class AsyncChangePasswordTest {
     private PlayerCache playerCache;
     @Mock
     private PasswordSecurity passwordSecurity;
+    @Mock
+    private BungeeService bungeeService;
 
     @Before
     public void setUpLogger() {

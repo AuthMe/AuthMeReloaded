@@ -363,4 +363,8 @@ public class BukkitService implements SettingsDependent {
     public BanEntry banIp(String ip, String reason, Date expires, String source) {
         return Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, source);
     }
+
+    public void sendPluginMessage(String channel, byte[] data) {
+        Bukkit.getServer().sendPluginMessage(authMe, channel, data);
+    }
 }

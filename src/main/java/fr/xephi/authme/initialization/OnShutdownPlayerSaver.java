@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -34,6 +35,8 @@ public class OnShutdownPlayerSaver {
     private PlayerCache playerCache;
     @Inject
     private LimboService limboService;
+    @Inject
+    private BungeeService bungeeService;
 
     OnShutdownPlayerSaver() {
     }
@@ -68,6 +71,7 @@ public class OnShutdownPlayerSaver {
                 .realName(player.getName())
                 .location(loc).build();
             dataSource.updateQuitLoc(auth);
+            bungeeService.sendRefreshQuitLoc(player.getName());
         }
     }
 }

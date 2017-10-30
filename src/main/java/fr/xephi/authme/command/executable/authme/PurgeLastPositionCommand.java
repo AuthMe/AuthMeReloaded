@@ -4,6 +4,7 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 
@@ -21,6 +22,9 @@ public class PurgeLastPositionCommand implements ExecutableCommand {
     @Inject
     private CommonService commonService;
 
+    @Inject
+    private BungeeService bungeeService;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
@@ -29,6 +33,7 @@ public class PurgeLastPositionCommand implements ExecutableCommand {
             for (PlayerAuth auth : dataSource.getAllAuths()) {
                 resetLastPosition(auth);
                 dataSource.updateQuitLoc(auth);
+                bungeeService.sendRefreshQuitLoc(playerName);
             }
             sender.sendMessage("All players last position locations are now reset");
         } else {
@@ -41,6 +46,7 @@ public class PurgeLastPositionCommand implements ExecutableCommand {
 
             resetLastPosition(auth);
             dataSource.updateQuitLoc(auth);
+            bungeeService.sendRefreshQuitLoc(playerName);
             sender.sendMessage(playerName + "'s last position location is now reset");
         }
     }
