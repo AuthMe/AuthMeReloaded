@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
@@ -80,18 +81,6 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
             sendBungeecordMessage("Connect", player.getName(), destinationServerOnLogin), 20L);
     }
 
-    public class AuthMeBungeeMessageType {
-        public static final String LOGIN = "login";
-        public static final String LOGOUT = "logout";
-        public static final String REGISTER = "register";
-        public static final String UNREGISTER = "unregister";
-        public static final String REFRESH_PASSWORD = "refresh.password";
-        public static final String REFRESH_SESSION = "refresh.session";
-        public static final String REFRESH_QUITLOC = "refresh.quitloc";
-        public static final String REFRESH_EMAIL = "refresh.email";
-        public static final String REFRESH = "refresh";
-    }
-
     private void sendAuthMeBungeecordMessage(String type, String... data) {
         if(!isEnabled) {
             return;
@@ -143,7 +132,7 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
 
         ByteArrayDataInput in = ByteStreams.newDataInput(data);
         String subchannel = in.readUTF();
-        if(!subchannel.equals("AuthMe")) {
+        if(!"Authme".equals(subchannel)) {
             return;
         }
 
@@ -158,6 +147,8 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
             case AuthMeBungeeMessageType.REFRESH:
                 handleRefresh(in.readUTF());
                 break;
+            default:
+                ConsoleLogger.debug("Received unsupported bungeecord message type! (" + type + ")");
         }
     }
 
@@ -180,6 +171,21 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
         CacheDataSource cacheDataSource = (CacheDataSource) dataSource;
 
         cacheDataSource.getCachedAuths().invalidate(name);
+    }
+
+    public class AuthMeBungeeMessageType {
+        public static final String LOGIN = "login";
+        public static final String LOGOUT = "logout";
+        public static final String REGISTER = "register";
+        public static final String UNREGISTER = "unregister";
+        public static final String REFRESH_PASSWORD = "refresh.password";
+        public static final String REFRESH_SESSION = "refresh.session";
+        public static final String REFRESH_QUITLOC = "refresh.quitloc";
+        public static final String REFRESH_EMAIL = "refresh.email";
+        public static final String REFRESH = "refresh";
+
+        private AuthMeBungeeMessageType() {
+        }
     }
 
 }
