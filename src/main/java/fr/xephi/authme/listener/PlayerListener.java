@@ -14,6 +14,7 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.ChatColor;
@@ -206,7 +207,9 @@ public class PlayerListener implements Listener {
         teleportationService.teleportNewPlayerToFirstSpawn(player);
     }
 
-    private void runOnJoinChecks(String name, String ip) throws FailedVerificationException {
+    private void runOnJoinChecksOnline(Player player, String ip) throws FailedVerificationException {
+        String name = player.getName();
+
         // Fast stuff
         onJoinVerifier.checkSingleSession(name);
         onJoinVerifier.checkIsValidName(name);
@@ -216,9 +219,24 @@ public class PlayerListener implements Listener {
         final PlayerAuth auth = dataSource.getAuth(name);
         final boolean isAuthAvailable = auth != null;
         onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibotOnline(player, isAuthAvailable); // Has permission check
         onJoinVerifier.checkNameCasing(name, auth);
-        onJoinVerifier.checkPlayerCountry(name, ip, isAuthAvailable);
+        onJoinVerifier.checkPlayerCountryOnline(player, ip, isAuthAvailable); // Has permission check
+    }
+
+    private void runOnJoinChecksOffline(String name, String ip) throws FailedVerificationException {
+        // Fast stuff
+        onJoinVerifier.checkSingleSession(name);
+        onJoinVerifier.checkIsValidName(name);
+
+        // Get the auth later as this may cause the single session check to fail
+        // Slow stuff
+        final PlayerAuth auth = dataSource.getAuth(name);
+        final boolean isAuthAvailable = auth != null;
+        onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+        onJoinVerifier.checkAntibotOffline(name, isAuthAvailable); // Has permission check
+        onJoinVerifier.checkNameCasing(name, auth);
+        onJoinVerifier.checkPlayerCountryOffline(name, ip, isAuthAvailable); // Has permission check
     }
 
     // Note #831: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
@@ -230,6 +248,9 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
         isAsyncPlayerPreLoginEventCalled = true;
+        if(!settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
+            return;
+        }
 
         final String name = event.getName();
 
@@ -245,7 +266,7 @@ public class PlayerListener implements Listener {
         }
 
         try {
-            runOnJoinChecks(name, event.getAddress().getHostAddress());
+            runOnJoinChecksOffline(name, event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
             event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -271,9 +292,10 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!isAsyncPlayerPreLoginEventCalled) {
+        if (!isAsyncPlayerPreLoginEventCalled
+            || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
             try {
-                runOnJoinChecks(name, event.getAddress().getHostAddress());
+                runOnJoinChecksOnline(player, event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
                 event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);

@@ -382,7 +382,7 @@ public class OnJoinVerifierTest {
         given(antiBotService.shouldKick()).willReturn(false);
 
         // when
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibotOffline(name, isAuthAvailable);
 
         // then
         verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
@@ -396,7 +396,7 @@ public class OnJoinVerifierTest {
         boolean isAuthAvailable = true;
 
         // when
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibotOffline(name, isAuthAvailable);
 
         // then
         verifyZeroInteractions(permissionsManager, antiBotService);
@@ -410,7 +410,7 @@ public class OnJoinVerifierTest {
         given(permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(true);
 
         // when
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibotOffline(name, isAuthAvailable);
 
         // then
         verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
@@ -427,7 +427,7 @@ public class OnJoinVerifierTest {
 
         // when / then
         try {
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            onJoinVerifier.checkAntibotOffline(name, isAuthAvailable);
             fail("Expected exception to be thrown");
         } catch (FailedVerificationException e) {
             verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
@@ -447,12 +447,12 @@ public class OnJoinVerifierTest {
         // protection setting disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(false);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
+        onJoinVerifier.checkPlayerCountryOffline(name, ip, false);
         verifyZeroInteractions(validationService);
 
         // protection for registered players disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
-        onJoinVerifier.checkPlayerCountry(name, ip, true);
+        onJoinVerifier.checkPlayerCountryOffline(name, ip, true);
         verifyZeroInteractions(validationService);
     }
 
@@ -465,7 +465,7 @@ public class OnJoinVerifierTest {
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
+        onJoinVerifier.checkPlayerCountryOffline(name, ip, false);
 
         // then
         verify(validationService).isCountryAdmitted(ip);
@@ -481,7 +481,7 @@ public class OnJoinVerifierTest {
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
-        onJoinVerifier.checkPlayerCountry(name, ip, true);
+        onJoinVerifier.checkPlayerCountryOffline(name, ip, true);
 
         // then
         verify(validationService).isCountryAdmitted(ip);
@@ -499,7 +499,7 @@ public class OnJoinVerifierTest {
         expectValidationExceptionWith(MessageKey.COUNTRY_BANNED_ERROR);
 
         // when
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
+        onJoinVerifier.checkPlayerCountryOffline(name, ip, false);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
