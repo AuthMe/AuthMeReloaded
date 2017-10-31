@@ -14,6 +14,7 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
@@ -575,10 +576,10 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).refusePlayerForFullServer(event);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
-        verify(onJoinVerifier).checkAntibot(name, true);
+        verify(onJoinVerifier).checkAntibotOnline(player, true);
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkNameCasing(name, auth);
-        verify(onJoinVerifier).checkPlayerCountry(name, ip, true);
+        verify(onJoinVerifier).checkPlayerCountryOnline(player, ip, true);
         verifyNoModifyingCalls(event);
     }
 
