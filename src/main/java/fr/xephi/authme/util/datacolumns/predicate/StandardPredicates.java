@@ -9,6 +9,11 @@ import static fr.xephi.authme.util.datacolumns.predicate.ComparingPredicate.Type
 import static fr.xephi.authme.util.datacolumns.predicate.ComparingPredicate.Type.LESS_EQUALS;
 import static fr.xephi.authme.util.datacolumns.predicate.ComparingPredicate.Type.NOT_EQUALS;
 
+/**
+ * Class with static methods to generate predicates. Meant to be imported statically.
+ * <p>
+ * If you add more predicates note that you can extend this class.
+ */
 public class StandardPredicates {
 
     protected StandardPredicates() {

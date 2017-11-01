@@ -1,6 +1,7 @@
 package fr.xephi.authme.util.datacolumns.sqlimplementation;
 
-
+import fr.xephi.authme.util.datacolumns.Column;
+import fr.xephi.authme.util.datacolumns.predicate.AlwaysTruePredicate;
 import fr.xephi.authme.util.datacolumns.predicate.AndPredicate;
 import fr.xephi.authme.util.datacolumns.predicate.ComparingPredicate;
 import fr.xephi.authme.util.datacolumns.predicate.IsNotNullPredicate;
@@ -39,21 +40,31 @@ public class PredicateSqlGenerator<C> {
             processCombiningClause(and.getLeft(), and.getRight(), "AND", sqlResult, objects);
         }  else if (clazz == IsNullPredicate.class) {
             IsNullPredicate<C> isNull = (IsNullPredicate<C>) predicate;
-            sqlResult.append(isNull.getColumn().resolveName(context)).append(" IS NULL");
+            processIsNullAndNotNullPredicate(false, isNull.getColumn(), sqlResult);
         } else if (clazz == IsNotNullPredicate.class) {
             IsNotNullPredicate<C> isNotNull = (IsNotNullPredicate<C>) predicate;
-            sqlResult.append(isNotNull.getColumn().resolveName(context)).append(" IS NOT NULL");
+            processIsNullAndNotNullPredicate(true, isNotNull.getColumn(), sqlResult);
+        } else if (clazz == AlwaysTruePredicate.class) {
+            addAlwaysTruePredicate(sqlResult);
         } else {
             throw new IllegalStateException("Unhandled predicate '" + predicate + "'");
         }
     }
 
+    private void addAlwaysTruePredicate(StringBuilder sqlResult) {
+        sqlResult.append("1 = 1");
+    }
+
     private void processComparingClause(ComparingPredicate<?, C> predicate, StringBuilder sqlResult,
                                         List<Object> objects) {
-        sqlResult.append(predicate.getColumn().resolveName(context))
-            .append(convertComparingTypeToSqlOperator(predicate.getType()))
-            .append("?");
-        objects.add(predicate.getValue());
+        if (predicate.getColumn().isColumnUsed(context)) {
+            sqlResult.append(predicate.getColumn().resolveName(context))
+                .append(convertComparingTypeToSqlOperator(predicate.getType()))
+                .append("?");
+            objects.add(predicate.getValue());
+        } else {
+            addAlwaysTruePredicate(sqlResult);
+        }
     }
 
     private String convertComparingTypeToSqlOperator(ComparingPredicate.Type type) {
@@ -66,6 +77,15 @@ public class PredicateSqlGenerator<C> {
             case GREATER_EQUALS: return " >= ";
             default:
                 throw new IllegalStateException("Unknown comparing predicate type '" + type + "'");
+        }
+    }
+
+    private void processIsNullAndNotNullPredicate(boolean isNegated, Column<?, C> column, StringBuilder sqlResult) {
+        if (column.isColumnUsed(context)) {
+            final String condition = isNegated ? " IS NOT NULL" : " IS NULL";
+            sqlResult.append(column.resolveName(context)).append(condition);
+        } else {
+            addAlwaysTruePredicate(sqlResult);
         }
     }
 

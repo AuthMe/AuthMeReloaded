@@ -1,5 +1,10 @@
 package fr.xephi.authme.util.datacolumns.predicate;
 
+/**
+ * Common base for predicates.
+ *
+ * @param <C> the context type
+ */
 public abstract class AbstractPredicate<C> implements Predicate<C> {
 
     @Override

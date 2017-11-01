@@ -32,7 +32,7 @@ public class ComparingPredicate<T, C> extends AbstractPredicate<C> {
         return type;
     }
 
-
+    /** The comparison type. */
     public enum Type {
         LESS,
         LESS_EQUALS,

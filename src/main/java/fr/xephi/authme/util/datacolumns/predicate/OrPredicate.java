@@ -1,5 +1,10 @@
 package fr.xephi.authme.util.datacolumns.predicate;
 
+/**
+ * Predicate combining two predicates as a boolean {@code OR}.
+ *
+ * @param <C> the context type
+ */
 public class OrPredicate<C> extends AbstractPredicate<C> {
 
     private final Predicate<C> left;
