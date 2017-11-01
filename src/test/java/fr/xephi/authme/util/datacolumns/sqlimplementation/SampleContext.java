@@ -2,15 +2,9 @@ package fr.xephi.authme.util.datacolumns.sqlimplementation;
 
 public class SampleContext {
 
-    private final boolean isEmailEmpty;
-    private final boolean isIsLockedEmpty;
-    private final boolean isLastLoginEmpty;
-
-    public SampleContext(boolean isEmailEmpty, boolean isIsLockedEmpty, boolean isLastLoginEmpty) {
-        this.isEmailEmpty = isEmailEmpty;
-        this.isIsLockedEmpty = isIsLockedEmpty;
-        this.isLastLoginEmpty = isLastLoginEmpty;
-    }
+    private boolean isEmailEmpty;
+    private boolean isIsLockedEmpty;
+    private boolean isLastLoginEmpty;
 
     public String resolveName(SampleColumns<?> col) {
         if (col == SampleColumns.NAME) {
@@ -25,8 +19,16 @@ public class SampleContext {
             return "is_active";
         } else if (col == SampleColumns.LAST_LOGIN) {
             return isLastLoginEmpty ? "" : "last_login";
+        } else if (col == SampleColumns.IP) {
+            return "ip";
         } else {
             throw new IllegalStateException("Unknown sample column '" + col + "'");
         }
+    }
+
+    public void setEmptyOptions(boolean isEmailEmpty, boolean isIsLockedEmpty, boolean isLastLoginEmpty) {
+        this.isEmailEmpty = isEmailEmpty;
+        this.isIsLockedEmpty = isIsLockedEmpty;
+        this.isLastLoginEmpty = isLastLoginEmpty;
     }
 }

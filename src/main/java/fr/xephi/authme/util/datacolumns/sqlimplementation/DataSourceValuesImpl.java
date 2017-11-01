@@ -30,9 +30,11 @@ class DataSourceValuesImpl implements DataSourceValues {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T get(Column<T, ?> column) {
-        return (T) values.computeIfAbsent(column, c -> {
-           throw new IllegalArgumentException("No value available for column '" + c + "'");
-        });
+        final T value = (T) values.get(column);
+        if (value == null && !values.containsKey(column)) {
+            throw new IllegalArgumentException("No value available for column '" + column + "'");
+        }
+        return value;
     }
 
     /**

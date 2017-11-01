@@ -55,7 +55,7 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     @Override
     public <T> DataSourceResult<T> retrieve(I identifier, Column<T, C> column) throws SQLException {
         if (!column.isColumnUsed(context)) {
-            return DataSourceResult.of(null);
+            return DataSourceResult.of(null); // TODO: revise!
         }
         String sql = "SELECT " + column.resolveName(context) + " FROM " + tableName
             + " WHERE " + idColumn + " = ?;";
@@ -70,8 +70,9 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public DataSourceValues retrieve(I identifier, Column<?, C>... columns) throws SQLException {
-        Set<Column<?, C>> nonEmptyColumns = removeSkippedColumns(columns);
+        Set<Column<?, C>> nonEmptyColumns = removeSkippedColumns(columns); // TODO: handle no used columns
         String sql = "SELECT " + commaSeparatedList(nonEmptyColumns)
             + " FROM " + tableName + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
@@ -100,7 +101,7 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
             return true;
         }
         String sql = "UPDATE " + tableName + " SET " + column.resolveName(context)
-            + " WHERE " + idColumn + " = ?;";
+            + " = ? WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             pst.setObject(1, value);
             pst.setObject(2, identifier);

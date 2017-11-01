@@ -23,9 +23,11 @@ public final class UpdateValues<C> {
 
     @SuppressWarnings("unchecked")
     public <T> T get(Column<T, C> column) {
-        return (T) values.computeIfAbsent(column, c -> {
-            throw new IllegalArgumentException("No value available for column '" + c + "'");
-        });
+        final T value = (T) values.get(column);
+        if (value == null && !values.containsKey(column)) {
+            throw new IllegalArgumentException("No value available for column '" + column + "'");
+        }
+        return value;
     }
 
     /**
