@@ -48,7 +48,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,6 +63,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
@@ -555,7 +555,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldPerformAllJoinVerificationsSuccessfully() throws FailedVerificationException, UnknownHostException {
+    public void shouldPerformAllJoinVerificationsSuccessfully() throws FailedVerificationException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -575,10 +575,10 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).refusePlayerForFullServer(event);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
-        verify(onJoinVerifier).checkAntibot(name, true);
+        verify(onJoinVerifier).checkAntibot(any(JoiningPlayer.class), eq(true));
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkNameCasing(name, auth);
-        verify(onJoinVerifier).checkPlayerCountry(name, ip, true);
+        verify(onJoinVerifier).checkPlayerCountry(any(JoiningPlayer.class), eq(ip), eq(true));
         verifyNoModifyingCalls(event);
     }
 
