@@ -71,7 +71,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         final PlayerAuth cachedAuth = playerCache.getAuth(name);
         if (passwordSecurity.comparePassword(password, cachedAuth.getPassword(), name)) {
             if (dataSource.removeAuth(name)) {
-                performUnregister(name, player);
+                performPostUnregisterActions(name, player);
                 ConsoleLogger.info(name + " unregistered himself");
                 bukkitService.createAndCallEvent(isAsync -> new UnregisterByPlayerEvent(player, isAsync));
             } else {
@@ -83,7 +83,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     }
 
     /**
-     * Unregisters a player.
+     * Unregisters a player as administrator or console.
      *
      * @param initiator the initiator of this process (nullable)
      * @param name the name of the player
@@ -93,7 +93,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     // we might have some player in the database that has never been online on the server
     public void adminUnregister(CommandSender initiator, String name, Player player) {
         if (dataSource.removeAuth(name)) {
-            performUnregister(name, player);
+            performPostUnregisterActions(name, player);
             bukkitService.createAndCallEvent(isAsync -> new UnregisterByAdminEvent(player, name, isAsync, initiator));
 
             if (initiator == null) {
@@ -107,7 +107,13 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         }
     }
 
-    private void performUnregister(String name, Player player) {
+    /**
+     * Process the post unregister actions. Makes the user status consistent.
+     *
+     * @param name the name of the player
+     * @param player the according Player object (nullable)
+     */
+    private void performPostUnregisterActions(String name, Player player) {
         playerCache.removePlayer(name);
         bungeeService.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
 
@@ -134,4 +140,5 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
     }
+
 }

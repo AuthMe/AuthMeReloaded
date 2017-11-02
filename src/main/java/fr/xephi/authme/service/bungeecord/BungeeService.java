@@ -5,7 +5,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.service.BukkitService;
@@ -80,6 +79,12 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
             sendBungeecordMessage("Connect", player.getName(), destinationServerOnLogin), 20L);
     }
 
+    /**
+     * Sends a message to the AuthMe plugin messaging channel, if enabled.
+     *
+     * @param type The message type, {@see MessageType}
+     * @param playerName the player related to the message
+     */
     public void sendAuthMeBungeecordMessage(String type, String playerName) {
         if(!isEnabled) {
             return;
