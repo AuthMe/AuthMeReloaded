@@ -11,9 +11,10 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -108,7 +109,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
     private void performUnregister(String name, Player player) {
         playerCache.removePlayer(name);
-        bungeeService.sendUnregister(name);
+        bungeeService.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
 
         if (player == null || !player.isOnline()) {
             return;

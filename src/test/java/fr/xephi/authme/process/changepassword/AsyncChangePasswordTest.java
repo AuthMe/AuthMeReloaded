@@ -6,7 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;

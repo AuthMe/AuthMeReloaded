@@ -262,4 +262,18 @@ public class CacheDataSource implements DataSource {
             .map(PlayerAuth::getRealName)
             .collect(Collectors.toList());
     }
+
+    @Override
+    public void invalidateCache(String playerName) {
+        cachedAuths.invalidate(playerName);
+    }
+
+    @Override
+    public void refreshCache(String playerName) {
+        if (cachedAuths.getIfPresent(playerName) == null) {
+            return;
+        }
+        cachedAuths.refresh(playerName);
+    }
+
 }

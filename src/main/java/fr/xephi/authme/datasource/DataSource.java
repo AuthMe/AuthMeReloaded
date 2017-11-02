@@ -231,4 +231,20 @@ public interface DataSource extends Reloadable {
     @Override
     void reload();
 
+    /**
+     * Invalidate any cached data related to the specified player name.
+     *
+     * @param playerName the player name
+     */
+    default void invalidateCache(String playerName) {
+    }
+
+    /**
+     * Refresh any cached data (if present) related to the specified player name.
+     *
+     * @param playerName the player name
+     */
+    default void refreshCache(String playerName) {
+    }
+
 }

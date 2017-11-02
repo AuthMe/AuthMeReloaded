@@ -19,9 +19,10 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -225,7 +226,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             auth.setLastLogin(System.currentTimeMillis());
             auth.setLastIp(ip);
             dataSource.updateSession(auth);
-            bungeeService.sendRefreshSession(player.getName());
+            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
 
             // Successful login, so reset the captcha & temp ban count
             final String name = player.getName();
@@ -251,7 +252,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
             sessionService.grantSession(name);
-            bungeeService.sendLogin(name);
+            bungeeService.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end

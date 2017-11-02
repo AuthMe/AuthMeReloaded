@@ -1,4 +1,4 @@
-package fr.xephi.authme.service;
+package fr.xephi.authme.service.bungeecord;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -8,6 +8,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.entity.Player;
@@ -15,8 +16,6 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Class to manage all BungeeCord related processes.
@@ -81,47 +80,12 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
             sendBungeecordMessage("Connect", player.getName(), destinationServerOnLogin), 20L);
     }
 
-    private void sendAuthMeBungeecordMessage(String type, String... data) {
+    public void sendAuthMeBungeecordMessage(String type, String playerName) {
         if(!isEnabled) {
             return;
         }
 
-        List<String> dataList = Arrays.asList(data);
-        dataList.add(0, "AuthMe");
-        dataList.add(1, type);
-        sendBungeecordMessage(dataList.toArray(new String[dataList.size()]));
-    }
-
-    public void sendLogin(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.LOGIN, name.toLowerCase());
-    }
-
-    public void sendLogout(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.LOGOUT, name.toLowerCase());
-    }
-
-    public void sendRegister(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.REGISTER, name.toLowerCase());
-    }
-
-    public void sendUnregister(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.UNREGISTER, name.toLowerCase());
-    }
-
-    public void sendRefreshPassword(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.REFRESH_PASSWORD, name.toLowerCase());
-    }
-
-    public void sendRefreshSession(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.REFRESH_SESSION, name.toLowerCase());
-    }
-
-    public void sendRefreshQuitLoc(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.REFRESH_QUITLOC, name.toLowerCase());
-    }
-
-    public void sendRefreshEmail(String name) {
-        sendAuthMeBungeecordMessage(AuthMeBungeeMessageType.REFRESH_EMAIL, name.toLowerCase());
+        sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
     }
 
     @Override
@@ -137,54 +101,19 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
         }
 
         String type = in.readUTF();
+        String name = in.readUTF();
         switch (type) {
-            case AuthMeBungeeMessageType.UNREGISTER:
-                handleRemove(in.readUTF());
+            case MessageType.UNREGISTER:
+                dataSource.invalidateCache(name);
                 break;
-            case AuthMeBungeeMessageType.REFRESH_PASSWORD:
-            case AuthMeBungeeMessageType.REFRESH_QUITLOC:
-            case AuthMeBungeeMessageType.REFRESH_EMAIL:
-            case AuthMeBungeeMessageType.REFRESH:
-                handleRefresh(in.readUTF());
+            case MessageType.REFRESH_PASSWORD:
+            case MessageType.REFRESH_QUITLOC:
+            case MessageType.REFRESH_EMAIL:
+            case MessageType.REFRESH:
+                dataSource.refreshCache(name);
                 break;
             default:
                 ConsoleLogger.debug("Received unsupported bungeecord message type! (" + type + ")");
-        }
-    }
-
-    private void handleRefresh(String name) {
-        if(!(dataSource instanceof CacheDataSource)) {
-            return;
-        }
-        CacheDataSource cacheDataSource = (CacheDataSource) dataSource;
-
-        if (cacheDataSource.getCachedAuths().getIfPresent(name) == null) {
-            return;
-        }
-        cacheDataSource.getCachedAuths().refresh(name);
-    }
-
-    private void handleRemove(String name) {
-        if(!(dataSource instanceof CacheDataSource)) {
-            return;
-        }
-        CacheDataSource cacheDataSource = (CacheDataSource) dataSource;
-
-        cacheDataSource.getCachedAuths().invalidate(name);
-    }
-
-    public class AuthMeBungeeMessageType {
-        public static final String LOGIN = "login";
-        public static final String LOGOUT = "logout";
-        public static final String REGISTER = "register";
-        public static final String UNREGISTER = "unregister";
-        public static final String REFRESH_PASSWORD = "refresh.password";
-        public static final String REFRESH_SESSION = "refresh.session";
-        public static final String REFRESH_QUITLOC = "refresh.quitloc";
-        public static final String REFRESH_EMAIL = "refresh.email";
-        public static final String REFRESH = "refresh";
-
-        private AuthMeBungeeMessageType() {
         }
     }
 
