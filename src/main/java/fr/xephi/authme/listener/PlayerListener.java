@@ -14,6 +14,7 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.ChatColor;
@@ -83,7 +84,7 @@ public class PlayerListener implements Listener {
     @Inject
     private PermissionsManager permissionsManager;
 
-    private static boolean isAsyncPlayerPreLoginEventCalled = false;
+    private boolean isAsyncPlayerPreLoginEventCalled = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -206,8 +207,9 @@ public class PlayerListener implements Listener {
         teleportationService.teleportNewPlayerToFirstSpawn(player);
     }
 
-    private void runOnJoinChecks(String name, String ip) throws FailedVerificationException {
+    private void runOnJoinChecks(JoiningPlayer joiningPlayer, String ip) throws FailedVerificationException {
         // Fast stuff
+        final String name = joiningPlayer.getName();
         onJoinVerifier.checkSingleSession(name);
         onJoinVerifier.checkIsValidName(name);
 
@@ -216,9 +218,9 @@ public class PlayerListener implements Listener {
         final PlayerAuth auth = dataSource.getAuth(name);
         final boolean isAuthAvailable = auth != null;
         onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibot(joiningPlayer, isAuthAvailable);
         onJoinVerifier.checkNameCasing(name, auth);
-        onJoinVerifier.checkPlayerCountry(name, ip, isAuthAvailable);
+        onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, isAuthAvailable);
     }
 
     // Note #831: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
@@ -230,6 +232,9 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
         isAsyncPlayerPreLoginEventCalled = true;
+        if (!settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
+            return;
+        }
 
         final String name = event.getName();
 
@@ -245,7 +250,7 @@ public class PlayerListener implements Listener {
         }
 
         try {
-            runOnJoinChecks(name, event.getAddress().getHostAddress());
+            runOnJoinChecks(JoiningPlayer.fromName(name), event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
             event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -271,9 +276,9 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!isAsyncPlayerPreLoginEventCalled) {
+        if (!isAsyncPlayerPreLoginEventCalled || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
             try {
-                runOnJoinChecks(name, event.getAddress().getHostAddress());
+                runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
                 event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);

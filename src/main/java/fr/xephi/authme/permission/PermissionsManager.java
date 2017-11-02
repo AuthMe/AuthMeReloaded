@@ -2,6 +2,7 @@ package fr.xephi.authme.permission;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.listener.JoiningPlayer;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
@@ -76,7 +77,7 @@ public class PermissionsManager implements Reloadable {
      */
     @PostConstruct
     private void setup() {
-        if(settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)) {
+        if (settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)) {
             try {
                 PermissionHandler handler = createPermissionHandler(PermissionsSystemType.VAULT);
                 if (handler != null) {
@@ -86,7 +87,7 @@ public class PermissionsManager implements Reloadable {
                     return;
                 }
             } catch (PermissionHandlerException e) {
-                e.printStackTrace();
+                ConsoleLogger.logException("Failed to create Vault hook (forced):", e);
             }
         } else {
             // Loop through all the available permissions system types
@@ -227,6 +228,17 @@ public class PermissionsManager implements Reloadable {
 
         Player player = (Player) sender;
         return player.hasPermission(permissionNode.getNode());
+    }
+
+    /**
+     * Check if the given player has permission for the given permission node.
+     *
+     * @param joiningPlayer The player to check
+     * @param permissionNode The permission node to verify
+     * @return true if the player has permission, false otherwise
+     */
+    public boolean hasPermission(JoiningPlayer joiningPlayer, PermissionNode permissionNode) {
+        return joiningPlayer.getPermissionLookupFunction().apply(this, permissionNode);
     }
 
     /**
