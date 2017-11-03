@@ -3,7 +3,7 @@ package fr.xephi.authme.util.datacolumns.sqlimplementation;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.util.datacolumns.DataSourceValues;
-import fr.xephi.authme.util.datacolumns.predicate.StandardPredicates;
+import fr.xephi.authme.util.datacolumns.UpdateValues;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +16,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static fr.xephi.authme.util.datacolumns.UpdateValues.with;
+import static fr.xephi.authme.util.datacolumns.predicate.StandardPredicates.eq;
+import static fr.xephi.authme.util.datacolumns.predicate.StandardPredicates.greaterThan;
+import static fr.xephi.authme.util.datacolumns.predicate.StandardPredicates.greaterThanEquals;
+import static fr.xephi.authme.util.datacolumns.predicate.StandardPredicates.isNull;
+import static fr.xephi.authme.util.datacolumns.predicate.StandardPredicates.notEq;
+import static fr.xephi.authme.util.datacolumns.predicate.StandardPredicates.or;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -150,12 +156,45 @@ public class SqlColumnsHandlerTest {
     }
 
     @Test
+    public void shouldInsertValues() throws SQLException {
+        // given
+        UpdateValues<SampleContext> values = UpdateValues
+            .with(SampleColumns.ID, 414)
+            .and(SampleColumns.NAME, "Oliver")
+            .and(SampleColumns.IS_LOCKED, 0)
+            .and(SampleColumns.IS_ACTIVE, 1)
+            .and(SampleColumns.LAST_LOGIN, 555L)
+            .build();
+
+        // when
+        boolean result = handler.insert(values);
+
+        // then
+        assertThat(result, equalTo(true));
+        DataSourceValues retrievedValues = handler.retrieve(414,
+            SampleColumns.NAME, SampleColumns.LAST_LOGIN, SampleColumns.IS_ACTIVE);
+        assertThat(retrievedValues.get(SampleColumns.NAME), equalTo("Oliver"));
+        assertThat(retrievedValues.get(SampleColumns.IS_ACTIVE), equalTo(1));
+        assertThat(retrievedValues.get(SampleColumns.LAST_LOGIN), equalTo(555L));
+    }
+
+    @Test
     public void shouldCountWithPredicates() throws SQLException {
         // given / when
-        int emailCount = handler.count(StandardPredicates.eq(SampleColumns.EMAIL, "other@test.tld"));
+        int emailCount = handler.count(eq(SampleColumns.EMAIL, "other@test.tld"));
+        int ipLastLoginCount = handler.count(isNull(SampleColumns.IP).and(
+            greaterThan(SampleColumns.LAST_LOGIN, 800000L)));
+        int hasEmailAndIsActiveCount = handler.count(notEq(SampleColumns.EMAIL, "test@example.com")
+            .and(greaterThanEquals(SampleColumns.IS_ACTIVE, 1)));
+        int lockedAndActiveSameValue = handler.count(or(
+            eq(SampleColumns.IS_ACTIVE, 0).and(eq(SampleColumns.IS_LOCKED, 0)),
+            eq(SampleColumns.IS_ACTIVE, 1).and(eq(SampleColumns.IS_LOCKED, 1))));
 
         // then
         assertThat(emailCount, equalTo(3));
+        assertThat(ipLastLoginCount, equalTo(2));
+        assertThat(hasEmailAndIsActiveCount, equalTo(2));
+        assertThat(lockedAndActiveSameValue, equalTo(4));
     }
 
     private static void verifyThrowsException(Runnable runnable) {

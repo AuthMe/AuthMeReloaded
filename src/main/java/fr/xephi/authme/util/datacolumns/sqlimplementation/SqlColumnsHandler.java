@@ -54,17 +54,18 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
 
     @Override
     public <T> DataSourceResult<T> retrieve(I identifier, Column<T, C> column) throws SQLException {
-        if (!column.isColumnUsed(context)) {
-            return DataSourceResult.of(null); // TODO: revise!
-        }
-        String sql = "SELECT " + column.resolveName(context) + " FROM " + tableName
-            + " WHERE " + idColumn + " = ?;";
+        final boolean isColumnUsed = column.isColumnUsed(context);
+        final String columnName = isColumnUsed ? column.resolveName(context) : "1";
+        final String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + idColumn + " = ?;";
+
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             pst.setObject(1, identifier);
             try (ResultSet rs = pst.executeQuery()) {
-                return rs.next()
-                    ? DataSourceResult.of(typeAdapter.get(rs, column))
-                    : DataSourceResult.unknownPlayer();
+                if (rs.next()) {
+                    return isColumnUsed ? DataSourceResult.of(typeAdapter.get(rs, column))
+                        : DataSourceResult.of(null);
+                }
+                return DataSourceResult.unknownPlayer();
             }
         }
     }
@@ -72,9 +73,10 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
     @Override
     @SuppressWarnings("unchecked")
     public DataSourceValues retrieve(I identifier, Column<?, C>... columns) throws SQLException {
-        Set<Column<?, C>> nonEmptyColumns = removeSkippedColumns(columns); // TODO: handle no used columns
-        String sql = "SELECT " + commaSeparatedList(nonEmptyColumns)
+        final Set<Column<?, C>> nonEmptyColumns = removeSkippedColumns(columns);
+        final String sql = "SELECT " + (nonEmptyColumns.isEmpty() ? "1" : commaSeparatedList(nonEmptyColumns))
             + " FROM " + tableName + " WHERE " + idColumn + " = ?;";
+
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             pst.setObject(1, identifier);
             try (ResultSet rs = pst.executeQuery()) {
@@ -154,12 +156,12 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
 
     private <E extends Column<?, C>> boolean performUpdate(I identifier, Collection<E> columns,
                                                            Function<E, Object> valueGetter) throws SQLException{
-        Set<E> nonEmptyColumns = removeSkippedColumns(columns);
+        final Set<E> nonEmptyColumns = removeSkippedColumns(columns);
         if (nonEmptyColumns.isEmpty()) {
             return true;
         }
 
-        String sql = "UPDATE " + tableName + " SET "
+        final String sql = "UPDATE " + tableName + " SET "
             + commaSeparatedList(nonEmptyColumns, colName -> colName + " = ?")
             + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
@@ -171,13 +173,13 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
 
     private <E extends Column<?, C>> boolean performInsert(Collection<E> columns,
                                                            Function<E, Object> valueGetter) throws SQLException {
-        Set<E> nonEmptyColumns = removeSkippedColumns(columns);
+        final Set<E> nonEmptyColumns = removeSkippedColumns(columns);
         if (nonEmptyColumns.isEmpty()) {
             throw new IllegalStateException("Cannot perform insert when all columns are empty: " + columns);
         }
 
-        String sql = "INSERT INTO " + tableName + " (" + commaSeparatedList(nonEmptyColumns) + ") "
-            + "VALUES(" + commaSeparatedList(nonEmptyColumns, "?") + ");";
+        final String sql = "INSERT INTO " + tableName + " (" + commaSeparatedList(nonEmptyColumns) + ") "
+            + "VALUES(" + createQuestionMarkList(nonEmptyColumns.size()) + ");";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
             bindValues(pst, 1, nonEmptyColumns, valueGetter);
             return performUpdateAction(pst);
@@ -211,12 +213,6 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
         return commaSeparatedList(columns, Function.identity());
     }
 
-    private String commaSeparatedList(Collection<? extends Column<?, ?>> columns, String value) {
-        return IntStream.range(0, columns.size())
-            .mapToObj(i -> value)
-            .collect(Collectors.joining(", "));
-    }
-
     /*
      * Creates a comma-separated list with the result of the provided function, to which each column's name is given.
      * Typically used to generate a portion of an SQL query, e.g. {@code name -> name + " = ?"} to yield something like
@@ -227,6 +223,12 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
         return columns.stream()
             .map(column -> column.resolveName(context))
             .map(columnNameToSql)
+            .collect(Collectors.joining(", "));
+    }
+
+    private static String createQuestionMarkList(int elements) {
+        return IntStream.range(0, elements)
+            .mapToObj(i -> "?")
             .collect(Collectors.joining(", "));
     }
 
