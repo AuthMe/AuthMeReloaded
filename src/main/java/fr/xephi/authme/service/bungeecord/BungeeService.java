@@ -21,13 +21,13 @@ import javax.inject.Inject;
  */
 public class BungeeService implements SettingsDependent, PluginMessageListener {
 
-    private AuthMe plugin;
-    private BukkitService service;
+    private final AuthMe plugin;
+    private final BukkitService service;
+    private final DataSource dataSource;
 
     private boolean isEnabled;
     private String destinationServerOnLogin;
 
-    private DataSource dataSource;
 
     /*
      * Constructor.
@@ -58,7 +58,7 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
 
     private void sendBungeecordMessage(String... data) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        for(String element : data) {
+        for (String element : data) {
             out.writeUTF(element);
         }
         service.sendPluginMessage("BungeeCord", out.toByteArray());
@@ -86,7 +86,7 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
      * @param playerName the player related to the message
      */
     public void sendAuthMeBungeecordMessage(String type, String playerName) {
-        if(!isEnabled) {
+        if (isEnabled) {
             return;
         }
 
@@ -95,13 +95,13 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] data) {
-        if(!isEnabled) {
+        if (!isEnabled) {
             return;
         }
 
         ByteArrayDataInput in = ByteStreams.newDataInput(data);
         String subchannel = in.readUTF();
-        if(!"Authme".equals(subchannel)) {
+        if (!"Authme".equals(subchannel)) {
             return;
         }
 
@@ -118,7 +118,7 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
                 dataSource.refreshCache(name);
                 break;
             default:
-                ConsoleLogger.debug("Received unsupported bungeecord message type! (" + type + ")");
+                ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", type);
         }
     }
 

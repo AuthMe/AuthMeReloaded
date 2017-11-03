@@ -270,10 +270,9 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void refreshCache(String playerName) {
-        if (cachedAuths.getIfPresent(playerName) == null) {
-            return;
+        if (cachedAuths.getIfPresent(playerName) != null) {
+            cachedAuths.refresh(playerName);
         }
-        cachedAuths.refresh(playerName);
     }
 
 }
