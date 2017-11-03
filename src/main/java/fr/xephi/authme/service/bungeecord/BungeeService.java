@@ -82,7 +82,7 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
     /**
      * Sends a message to the AuthMe plugin messaging channel, if enabled.
      *
-     * @param type The message type, {@see MessageType}
+     * @param type The message type, See {@link MessageType}
      * @param playerName the player related to the message
      */
     public void sendAuthMeBungeecordMessage(String type, String playerName) {
