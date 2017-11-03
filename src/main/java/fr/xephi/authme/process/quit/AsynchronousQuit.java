@@ -4,16 +4,18 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeService;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -48,6 +50,12 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private VerificationCodeManager codeManager;
 
+    @Inject
+    private SessionService sessionService;
+
+    @Inject
+    private BungeeService bungeeService;
+
     AsynchronousQuit() {
     }
 
@@ -80,6 +88,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);
+            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip
@@ -90,7 +99,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         if (wasLoggedIn) {
             database.setUnlogged(name);
             if (!service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-                database.revokeSession(name);
+                sessionService.revokeSession(name);
             }
         }
 
@@ -99,9 +108,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         }
 
         // remove player from cache
-        if (database instanceof CacheDataSource) {
-            ((CacheDataSource) database).getCachedAuths().invalidate(name);
-        }
+        database.invalidateCache(name);
     }
 
 }

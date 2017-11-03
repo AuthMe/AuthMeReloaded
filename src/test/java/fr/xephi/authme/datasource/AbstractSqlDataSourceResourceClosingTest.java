@@ -66,7 +66,7 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
     private static List<Method> getDataSourceMethods() {
         List<Method> publicMethods = new ArrayList<>();
         for (Method method : DataSource.class.getDeclaredMethods()) {
-            if (!IGNORED_METHODS.contains(method.getName())) {
+            if (!IGNORED_METHODS.contains(method.getName()) && !method.isSynthetic()) {
                 publicMethods.add(method);
             }
         }

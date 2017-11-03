@@ -8,7 +8,7 @@ import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
@@ -96,6 +96,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         commandManager.runCommandsOnLogin(player);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.connectPlayer(player);
+        bungeeService.connectPlayerOnLogin(player);
     }
 }

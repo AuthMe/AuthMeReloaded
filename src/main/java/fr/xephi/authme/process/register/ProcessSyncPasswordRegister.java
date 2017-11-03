@@ -4,7 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.service.BungeeService;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.EmailSettings;
@@ -72,6 +72,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.connectPlayer(player);
+        bungeeService.connectPlayerOnLogin(player);
     }
 }
