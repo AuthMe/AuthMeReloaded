@@ -158,14 +158,14 @@ public class SqlColumnsHandler<C, I> implements ColumnsHandler<C, I> {
                                                            Function<E, Object> valueGetter) throws SQLException{
         final Set<E> nonEmptyColumns = removeSkippedColumns(columns);
         if (nonEmptyColumns.isEmpty()) {
-            return true;
+            return false;
         }
 
         final String sql = "UPDATE " + tableName + " SET "
             + commaSeparatedList(nonEmptyColumns, colName -> colName + " = ?")
             + " WHERE " + idColumn + " = ?;";
         try (PreparedStatement pst = connection.prepareStatement(sql)) {
-            int index = bindValues(pst, 1, columns, valueGetter);
+            int index = bindValues(pst, 1, nonEmptyColumns, valueGetter);
             pst.setObject(index, identifier);
             return performUpdateAction(pst);
         }

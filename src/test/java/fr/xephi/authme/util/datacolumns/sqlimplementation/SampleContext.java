@@ -31,4 +31,12 @@ public class SampleContext {
         this.isIsLockedEmpty = isIsLockedEmpty;
         this.isLastLoginEmpty = isLastLoginEmpty;
     }
+
+    @Override
+    public String toString() {
+        return "empty{email=" + isEmailEmpty
+            + ", isLocked=" + isIsLockedEmpty
+            + ", lastLogin=" + isLastLoginEmpty
+            + "}";
+    }
 }
