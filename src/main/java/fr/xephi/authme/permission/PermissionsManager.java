@@ -2,6 +2,7 @@ package fr.xephi.authme.permission;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.listener.JoiningPlayer;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
@@ -9,6 +10,8 @@ import fr.xephi.authme.permission.handlers.PermissionHandlerException;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -21,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 /**
  * PermissionsManager.
@@ -38,6 +42,8 @@ public class PermissionsManager implements Reloadable {
     private final Server server;
     private final PluginManager pluginManager;
 
+    private Settings settings;
+
     /**
      * The permission handler that is currently in use.
      * Null if no permission system is hooked.
@@ -51,9 +57,10 @@ public class PermissionsManager implements Reloadable {
      * @param pluginManager Bukkit plugin manager
      */
     @Inject
-    public PermissionsManager(Server server, PluginManager pluginManager) {
+    public PermissionsManager(Server server, PluginManager pluginManager, Settings settings) {
         this.server = server;
         this.pluginManager = pluginManager;
+        this.settings = settings;
     }
 
     /**
@@ -70,19 +77,33 @@ public class PermissionsManager implements Reloadable {
      */
     @PostConstruct
     private void setup() {
-        // Loop through all the available permissions system types
-        for (PermissionsSystemType type : PermissionsSystemType.values()) {
+        if (settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)) {
             try {
-                PermissionHandler handler = createPermissionHandler(type);
+                PermissionHandler handler = createPermissionHandler(PermissionsSystemType.VAULT);
                 if (handler != null) {
                     // Show a success message and return
                     this.handler = handler;
-                    ConsoleLogger.info("Hooked into " + type.getDisplayName() + "!");
+                    ConsoleLogger.info("Hooked into " + PermissionsSystemType.VAULT.getDisplayName() + "!");
                     return;
                 }
-            } catch (Exception ex) {
-                // An error occurred, show a warning message
-                ConsoleLogger.logException("Error while hooking into " + type.getDisplayName(), ex);
+            } catch (PermissionHandlerException e) {
+                ConsoleLogger.logException("Failed to create Vault hook (forced):", e);
+            }
+        } else {
+            // Loop through all the available permissions system types
+            for (PermissionsSystemType type : PermissionsSystemType.values()) {
+                try {
+                    PermissionHandler handler = createPermissionHandler(type);
+                    if (handler != null) {
+                        // Show a success message and return
+                        this.handler = handler;
+                        ConsoleLogger.info("Hooked into " + type.getDisplayName() + "!");
+                        return;
+                    }
+                } catch (Exception ex) {
+                    // An error occurred, show a warning message
+                    ConsoleLogger.logException("Error while hooking into " + type.getDisplayName(), ex);
+                }
             }
         }
 
@@ -207,6 +228,17 @@ public class PermissionsManager implements Reloadable {
 
         Player player = (Player) sender;
         return player.hasPermission(permissionNode.getNode());
+    }
+
+    /**
+     * Check if the given player has permission for the given permission node.
+     *
+     * @param joiningPlayer The player to check
+     * @param permissionNode The permission node to verify
+     * @return true if the player has permission, false otherwise
+     */
+    public boolean hasPermission(JoiningPlayer joiningPlayer, PermissionNode permissionNode) {
+        return joiningPlayer.getPermissionLookupFunction().apply(this, permissionNode);
     }
 
     /**
@@ -405,5 +437,19 @@ public class PermissionsManager implements Reloadable {
 
         // Remove each group
         return removeGroups(player, groupNames);
+    }
+
+    public void loadUserData(UUID uuid) {
+        if(!isEnabled()) {
+            return;
+        }
+        handler.loadUserData(uuid);
+    }
+
+    public void loadUserData(String name) {
+        if(!isEnabled()) {
+            return;
+        }
+        handler.loadUserData(name);
     }
 }

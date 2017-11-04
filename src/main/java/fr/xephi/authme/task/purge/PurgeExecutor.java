@@ -197,6 +197,11 @@ public class PurgeExecutor {
         }
 
         for (OfflinePlayer offlinePlayer : cleared) {
+            try {
+                permissionsManager.loadUserData(offlinePlayer.getUniqueId());
+            } catch (NoSuchMethodError e) {
+                permissionsManager.loadUserData(offlinePlayer.getName());
+            }
             permissionsManager.removeAllGroups(offlinePlayer);
         }
 

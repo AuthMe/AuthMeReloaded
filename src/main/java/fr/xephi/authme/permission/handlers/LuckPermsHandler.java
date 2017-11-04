@@ -11,9 +11,7 @@ import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.caching.PermissionData;
 import me.lucko.luckperms.api.caching.UserData;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,46 +41,6 @@ public class LuckPermsHandler implements PermissionHandler {
         }
     }
 
-    private User getUser(String playerName) {
-        Player player = Bukkit.getPlayerExact(playerName);
-        if (player != null) {
-            return getUser(player);
-        }
-
-        UUID uuid = null;
-        try {
-            uuid = luckPermsApi.getStorage().getUUID(playerName).get(1, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
-        }
-        if (uuid == null) {
-            return null;
-        }
-
-        return getUser(uuid);
-    }
-
-    private User getUser(OfflinePlayer player) {
-        return getUser(player.getUniqueId());
-    }
-
-    private User getUser(UUID playerUuid) {
-        User user = luckPermsApi.getUser(playerUuid);
-        if (user == null) {
-            // user not loaded, we need to load them from the storage.
-            // this is a blocking call.
-            try {
-                luckPermsApi.getStorage().loadUser(playerUuid).get(1, TimeUnit.SECONDS);
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            // then grab a new instance
-            user = luckPermsApi.getUser(playerUuid);
-        }
-        return user;
-    }
-
     private void saveUser(User user) {
         luckPermsApi.getStorage().saveUser(user)
             .thenAcceptAsync(wasSuccessful -> {
@@ -100,7 +58,7 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        User user = getUser(player);
+        User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
             return false;
         }
@@ -123,7 +81,7 @@ public class LuckPermsHandler implements PermissionHandler {
 
     @Override
     public boolean hasPermissionOffline(String name, PermissionNode node) {
-        User user = getUser(name);
+        User user = luckPermsApi.getUser(name);
         if (user == null) {
             return false;
         }
@@ -138,7 +96,7 @@ public class LuckPermsHandler implements PermissionHandler {
 
     @Override
     public boolean isInGroup(OfflinePlayer player, String group) {
-        User user = getUser(player);
+        User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
             return false;
         }
@@ -152,7 +110,7 @@ public class LuckPermsHandler implements PermissionHandler {
 
     @Override
     public boolean removeFromGroup(OfflinePlayer player, String group) {
-        User user = getUser(player);
+        User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
             return false;
         }
@@ -171,7 +129,7 @@ public class LuckPermsHandler implements PermissionHandler {
 
     @Override
     public boolean setGroup(OfflinePlayer player, String group) {
-        User user = getUser(player);
+        User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
             return false;
         }
@@ -193,7 +151,7 @@ public class LuckPermsHandler implements PermissionHandler {
 
     @Override
     public List<String> getGroups(OfflinePlayer player) {
-        User user = getUser(player);
+        User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
             return Collections.emptyList();
         }
@@ -223,4 +181,24 @@ public class LuckPermsHandler implements PermissionHandler {
     public PermissionsSystemType getPermissionSystem() {
         return PermissionsSystemType.LUCK_PERMS;
     }
+
+    @Override
+    public void loadUserData(UUID uuid) {
+        try {
+            luckPermsApi.getStorage().loadUser(uuid).get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void loadUserData(String name) {
+        try {
+            UUID uuid = luckPermsApi.getStorage().getUUID(name).get(5, TimeUnit.SECONDS);
+            loadUserData(uuid);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -10,7 +10,9 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -36,6 +38,8 @@ public class AsyncRegister implements AsynchronousProcess {
     private PermissionsManager permissionsManager;
     @Inject
     private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
+    @Inject
+    private BungeeService bungeeService;
 
     AsyncRegister() {
     }
@@ -84,6 +88,7 @@ public class AsyncRegister implements AsynchronousProcess {
         PlayerAuth auth = executor.buildPlayerAuth(parameters);
         if (database.saveAuth(auth)) {
             executor.executePostPersistAction(parameters);
+            bungeeService.sendAuthMeBungeecordMessage(MessageType.REGISTER, parameters.getPlayerName());
         } else {
             service.send(parameters.getPlayer(), MessageKey.ERROR);
         }

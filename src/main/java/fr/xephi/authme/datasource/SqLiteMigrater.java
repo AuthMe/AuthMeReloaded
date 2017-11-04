@@ -1,12 +1,10 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.util.FileUtils;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,15 +22,12 @@ import java.util.Date;
  */
 class SqLiteMigrater {
 
-    @DataFolder
     private final File dataFolder;
-
     private final String databaseName;
     private final String tableName;
     private final Columns col;
 
-    @Inject
-    SqLiteMigrater(Settings settings, @DataFolder File dataFolder) {
+    SqLiteMigrater(Settings settings, File dataFolder) {
         this.dataFolder = dataFolder;
         this.databaseName = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);

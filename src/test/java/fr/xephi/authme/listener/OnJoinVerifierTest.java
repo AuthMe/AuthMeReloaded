@@ -29,7 +29,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -376,27 +375,27 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldAllowUser() throws FailedVerificationException {
         // given
-        String name = "Bobby";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("Bobby");
         boolean isAuthAvailable = false;
-        given(permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
+        given(permissionsManager.hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
         given(antiBotService.shouldKick()).willReturn(false);
 
         // when
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibot(joiningPlayer, isAuthAvailable);
 
         // then
-        verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
+        verify(permissionsManager).hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT);
         verify(antiBotService).shouldKick();
     }
 
     @Test
     public void shouldAllowUserWithAuth() throws FailedVerificationException {
         // given
-        String name = "Lacey";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("Lacey");
         boolean isAuthAvailable = true;
 
         // when
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibot(joiningPlayer, isAuthAvailable);
 
         // then
         verifyZeroInteractions(permissionsManager, antiBotService);
@@ -405,32 +404,32 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldAllowUserWithBypassPermission() throws FailedVerificationException {
         // given
-        String name = "Steward";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("Steward");
         boolean isAuthAvailable = false;
-        given(permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(true);
+        given(permissionsManager.hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(true);
 
         // when
-        onJoinVerifier.checkAntibot(name, isAuthAvailable);
+        onJoinVerifier.checkAntibot(joiningPlayer, isAuthAvailable);
 
         // then
-        verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
+        verify(permissionsManager).hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT);
         verifyZeroInteractions(antiBotService);
     }
 
     @Test
     public void shouldKickUserForFailedAntibotCheck() throws FailedVerificationException {
         // given
-        String name = "D3";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("D3");
         boolean isAuthAvailable = false;
-        given(permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
+        given(permissionsManager.hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT)).willReturn(false);
         given(antiBotService.shouldKick()).willReturn(true);
 
         // when / then
         try {
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
+            onJoinVerifier.checkAntibot(joiningPlayer, isAuthAvailable);
             fail("Expected exception to be thrown");
         } catch (FailedVerificationException e) {
-            verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
+            verify(permissionsManager).hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT);
             verify(antiBotService).shouldKick();
         }
 
@@ -441,18 +440,18 @@ public class OnJoinVerifierTest {
      */
     @Test
     public void shouldNotCheckCountry() throws FailedVerificationException {
-        String name = "david";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("david");
         String ip = "127.0.0.1";
 
         // protection setting disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(false);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
+        onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, false);
         verifyZeroInteractions(validationService);
 
         // protection for registered players disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
-        onJoinVerifier.checkPlayerCountry(name, ip, true);
+        onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, true);
         verifyZeroInteractions(validationService);
     }
 
@@ -460,12 +459,12 @@ public class OnJoinVerifierTest {
     public void shouldCheckAndAcceptUnregisteredPlayerCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.0.1";
-        String name = "lucas";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("lucas");
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
+        onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, false);
 
         // then
         verify(validationService).isCountryAdmitted(ip);
@@ -475,13 +474,13 @@ public class OnJoinVerifierTest {
     public void shouldCheckAndAcceptRegisteredPlayerCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.10.24";
-        String name = "gabriel";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("gabriel");
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(true);
 
         // when
-        onJoinVerifier.checkPlayerCountry(name, ip, true);
+        onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, true);
 
         // then
         verify(validationService).isCountryAdmitted(ip);
@@ -491,7 +490,7 @@ public class OnJoinVerifierTest {
     public void shouldThrowForBannedCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.40.0";
-        String name = "bob";
+        JoiningPlayer joiningPlayer = JoiningPlayer.fromName("bob");
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(false);
 
@@ -499,7 +498,7 @@ public class OnJoinVerifierTest {
         expectValidationExceptionWith(MessageKey.COUNTRY_BANNED_ERROR);
 
         // when
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
+        onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, false);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

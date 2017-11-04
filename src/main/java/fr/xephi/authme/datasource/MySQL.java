@@ -20,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -193,17 +192,19 @@ public class MySQL implements DataSource {
             if (isColumnMissing(md, col.LAST_IP)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.LAST_IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin;");
+            } else {
+                MySqlMigrater.migrateLastIpColumn(st, md, tableName, col);
             }
 
             if (isColumnMissing(md, col.LAST_LOGIN)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.LAST_LOGIN + " BIGINT;");
             } else {
-                migrateLastLoginColumn(st, md);
+                MySqlMigrater.migrateLastLoginColumn(st, md, tableName, col);
             }
 
             if (isColumnMissing(md, col.REGISTRATION_DATE)) {
-                addRegistrationDateColumn(st);
+                MySqlMigrater.addRegistrationDateColumn(st, tableName, col);
             }
 
             if (isColumnMissing(md, col.REGISTRATION_IP)) {
@@ -319,22 +320,28 @@ public class MySQL implements DataSource {
     @Override
     public boolean saveAuth(PlayerAuth auth) {
         try (Connection con = getConnection()) {
-            String sql;
+            // TODO ljacqu 20171104: Replace with generic columns util to clean this up
             boolean useSalt = !col.SALT.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
-            sql = "INSERT INTO " + tableName + "("
+            boolean hasEmail = auth.getEmail() != null;
+            String emailPlaceholder = hasEmail ? "?" : "DEFAULT";
+
+            String sql = "INSERT INTO " + tableName + "("
                 + col.NAME + "," + col.PASSWORD + "," + col.REAL_NAME
                 + "," + col.EMAIL + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP
                 + (useSalt ? "," + col.SALT : "")
-                + ") VALUES (?,?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
+                + ") VALUES (?,?,?," + emailPlaceholder + ",?,?" + (useSalt ? ",?" : "") + ");";
             try (PreparedStatement pst = con.prepareStatement(sql)) {
-                pst.setString(1, auth.getNickname());
-                pst.setString(2, auth.getPassword().getHash());
-                pst.setString(3, auth.getRealName());
-                pst.setString(4, auth.getEmail());
-                pst.setObject(5, auth.getRegistrationDate());
-                pst.setString(6, auth.getRegistrationIp());
+                int index = 1;
+                pst.setString(index++, auth.getNickname());
+                pst.setString(index++, auth.getPassword().getHash());
+                pst.setString(index++, auth.getRealName());
+                if (hasEmail) {
+                    pst.setString(index++, auth.getEmail());
+                }
+                pst.setObject(index++, auth.getRegistrationDate());
+                pst.setString(index++, auth.getRegistrationIp());
                 if (useSalt) {
-                    pst.setString(7, auth.getPassword().getSalt());
+                    pst.setString(index++, auth.getPassword().getSalt());
                 }
                 pst.executeUpdate();
             }
@@ -729,104 +736,5 @@ public class MySQL implements DataSource {
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .build();
-    }
-
-    /**
-     * Checks if the last login column has a type that needs to be migrated.
-     *
-     * @param st       Statement object to the database
-     * @param metaData lastlogin column meta data
-     */
-    private void migrateLastLoginColumn(Statement st, DatabaseMetaData metaData) throws SQLException {
-        final int columnType;
-        try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
-            if (!rs.next()) {
-                ConsoleLogger.warning("Could not get LAST_LOGIN meta data. This should never happen!");
-                return;
-            }
-            columnType = rs.getInt("DATA_TYPE");
-        }
-
-        if (columnType == Types.TIMESTAMP) {
-            migrateLastLoginColumnFromTimestamp(st);
-        } else if (columnType == Types.INTEGER) {
-            migrateLastLoginColumnFromInt(st);
-        }
-    }
-
-    /**
-     * Performs conversion of lastlogin column from timestamp type to bigint.
-     *
-     * @param st Statement object to the database
-     * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/477">#477</a>
-     */
-    private void migrateLastLoginColumnFromTimestamp(Statement st) throws SQLException {
-        ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
-        final String lastLoginOld = col.LAST_LOGIN + "_old";
-
-        // Rename lastlogin to lastlogin_old
-        String sql = String.format("ALTER TABLE %s CHANGE COLUMN %s %s BIGINT",
-            tableName, col.LAST_LOGIN, lastLoginOld);
-        st.execute(sql);
-
-        // Create lastlogin column
-        sql = String.format("ALTER TABLE %s ADD COLUMN %s "
-                + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
-            tableName, col.LAST_LOGIN, col.LAST_IP);
-        st.execute(sql);
-
-        // Set values of lastlogin based on lastlogin_old
-        sql = String.format("UPDATE %s SET %s = UNIX_TIMESTAMP(%s) * 1000",
-            tableName, col.LAST_LOGIN, lastLoginOld);
-        st.execute(sql);
-
-        // Drop lastlogin_old
-        sql = String.format("ALTER TABLE %s DROP COLUMN %s",
-            tableName, lastLoginOld);
-        st.execute(sql);
-        ConsoleLogger.info("Finished migration of lastlogin (timestamp to bigint)");
-    }
-
-    /**
-     * Performs conversion of lastlogin column from int to bigint.
-     *
-     * @param st Statement object to the database
-     * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/887">
-     *      #887: Migrate lastlogin column from int32 to bigint</a>
-     */
-    private void migrateLastLoginColumnFromInt(Statement st) throws SQLException {
-        // Change from int to bigint
-        ConsoleLogger.info("Migrating lastlogin column from int to bigint");
-        String sql = String.format("ALTER TABLE %s MODIFY %s BIGINT;", tableName, col.LAST_LOGIN);
-        st.execute(sql);
-
-        // Migrate timestamps in seconds format to milliseconds format if they are plausible
-        int rangeStart = 1262304000; // timestamp for 2010-01-01
-        int rangeEnd = 1514678400;   // timestamp for 2017-12-31
-        sql = String.format("UPDATE %s SET %s = %s * 1000 WHERE %s > %d AND %s < %d;",
-            tableName, col.LAST_LOGIN, col.LAST_LOGIN, col.LAST_LOGIN, rangeStart, col.LAST_LOGIN, rangeEnd);
-        int changedRows = st.executeUpdate(sql);
-
-        ConsoleLogger.warning("You may have entries with invalid timestamps. Please check your data "
-            + "before purging. " + changedRows + " rows were migrated from seconds to milliseconds.");
-    }
-
-    /**
-     * Creates the column for registration date and sets all entries to the current timestamp.
-     * We do so in order to avoid issues with purging, where entries with 0 / NULL might get
-     * purged immediately on startup otherwise.
-     *
-     * @param st Statement object to the database
-     */
-    private void addRegistrationDateColumn(Statement st) throws SQLException {
-        st.executeUpdate("ALTER TABLE " + tableName
-            + " ADD COLUMN " + col.REGISTRATION_DATE + " BIGINT NOT NULL;");
-
-        // Use the timestamp from Java to avoid timezone issues in case JVM and database are out of sync
-        long currentTimestamp = System.currentTimeMillis();
-        int updatedRows = st.executeUpdate(String.format("UPDATE %s SET %s = %d;",
-            tableName, col.REGISTRATION_DATE, currentTimestamp));
-        ConsoleLogger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
-            + currentTimestamp + ", to all " + updatedRows + " rows");
     }
 }

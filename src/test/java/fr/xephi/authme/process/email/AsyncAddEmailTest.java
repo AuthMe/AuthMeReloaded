@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.entity.Player;
@@ -44,6 +45,9 @@ public class AsyncAddEmailTest {
 
     @Mock
     private ValidationService validationService;
+
+    @Mock
+    private BungeeService bungeeService;
 
     @BeforeClass
     public static void setUp() {

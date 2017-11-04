@@ -5,8 +5,10 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -27,6 +29,9 @@ public class AsyncChangeEmail implements AsynchronousProcess {
 
     @Inject
     private ValidationService validationService;
+
+    @Inject
+    private BungeeService bungeeService;
 
     AsyncChangeEmail() { }
 
@@ -63,6 +68,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         auth.setEmail(newEmail);
         if (dataSource.updateEmail(auth)) {
             playerCache.updatePlayer(auth);
+            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, player.getName());
             service.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
         } else {
             service.send(player, MessageKey.ERROR);

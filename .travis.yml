@@ -6,7 +6,9 @@ addons:
       - git
 
 language: java
-jdk: oraclejdk8
+jdk:
+  - oraclejdk8
+  - oraclejdk9
 
 before_script:
     - "sudo git clone https://www.github.com/P-H-C/phc-winner-argon2.git argon2-src"

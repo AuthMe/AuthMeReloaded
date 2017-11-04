@@ -83,6 +83,10 @@ public class SessionService implements Reloadable {
         }
     }
 
+    public void revokeSession(String name) {
+        database.revokeSession(name);
+    }
+
     @Override
     public void reload() {
         this.isEnabled = service.getProperty(PluginSettings.SESSIONS_ENABLED);

@@ -6,6 +6,7 @@ import fr.xephi.authme.util.Utils;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public interface PermissionHandler {
 
@@ -105,4 +106,11 @@ public interface PermissionHandler {
      * @return The permission system.
      */
     PermissionsSystemType getPermissionSystem();
+
+    default void loadUserData(UUID uuid) {
+    }
+
+    default void loadUserData(String name) {
+    }
+
 }
