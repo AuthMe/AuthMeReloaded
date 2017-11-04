@@ -71,12 +71,10 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
      * @param player The player to send.
      */
     public void connectPlayerOnLogin(Player player) {
-        if (!isEnabled || destinationServerOnLogin.isEmpty()) {
-            return;
+        if (isEnabled && !destinationServerOnLogin.isEmpty()) {
+            service.scheduleSyncDelayedTask(() ->
+                sendBungeecordMessage("Connect", player.getName(), destinationServerOnLogin), 20L);
         }
-
-        service.scheduleSyncDelayedTask(() ->
-            sendBungeecordMessage("Connect", player.getName(), destinationServerOnLogin), 20L);
     }
 
     /**
@@ -87,10 +85,8 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
      */
     public void sendAuthMeBungeecordMessage(String type, String playerName) {
         if (isEnabled) {
-            return;
+            sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
         }
-
-        sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
     }
 
     @Override
