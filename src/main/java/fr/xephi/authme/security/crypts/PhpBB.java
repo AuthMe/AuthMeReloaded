@@ -147,10 +147,7 @@ public class PhpBB implements EncryptionMethod {
         }
 
         private static boolean phpbb_check_hash(String password, String hash) {
-            if (hash.length() == 34) {
-                return _hash_crypt_private(password, hash).equals(hash);
-            }
-            return md5(password).equals(hash);
+            return _hash_crypt_private(password, hash).equals(hash);
         }
     }
 }
