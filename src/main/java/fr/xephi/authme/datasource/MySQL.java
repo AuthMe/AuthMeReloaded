@@ -320,22 +320,28 @@ public class MySQL implements DataSource {
     @Override
     public boolean saveAuth(PlayerAuth auth) {
         try (Connection con = getConnection()) {
-            String sql;
+            // TODO ljacqu 20171104: Replace with generic columns util to clean this up
             boolean useSalt = !col.SALT.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
-            sql = "INSERT INTO " + tableName + "("
+            boolean hasEmail = auth.getEmail() != null;
+            String emailPlaceholder = hasEmail ? "?" : "DEFAULT";
+
+            String sql = "INSERT INTO " + tableName + "("
                 + col.NAME + "," + col.PASSWORD + "," + col.REAL_NAME
                 + "," + col.EMAIL + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP
                 + (useSalt ? "," + col.SALT : "")
-                + ") VALUES (?,?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
+                + ") VALUES (?,?,?," + emailPlaceholder + ",?,?" + (useSalt ? ",?" : "") + ");";
             try (PreparedStatement pst = con.prepareStatement(sql)) {
-                pst.setString(1, auth.getNickname());
-                pst.setString(2, auth.getPassword().getHash());
-                pst.setString(3, auth.getRealName());
-                pst.setString(4, auth.getEmail());
-                pst.setObject(5, auth.getRegistrationDate());
-                pst.setString(6, auth.getRegistrationIp());
+                int index = 1;
+                pst.setString(index++, auth.getNickname());
+                pst.setString(index++, auth.getPassword().getHash());
+                pst.setString(index++, auth.getRealName());
+                if (hasEmail) {
+                    pst.setString(index++, auth.getEmail());
+                }
+                pst.setObject(index++, auth.getRegistrationDate());
+                pst.setString(index++, auth.getRegistrationIp());
                 if (useSalt) {
-                    pst.setString(7, auth.getPassword().getSalt());
+                    pst.setString(index++, auth.getPassword().getSalt());
                 }
                 pst.executeUpdate();
             }
