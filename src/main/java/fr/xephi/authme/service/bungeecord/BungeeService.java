@@ -7,6 +7,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -24,6 +25,7 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
     private final AuthMe plugin;
     private final BukkitService service;
     private final DataSource dataSource;
+    private final Management management;
 
     private boolean isEnabled;
     private String destinationServerOnLogin;
@@ -33,10 +35,12 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
      * Constructor.
      */
     @Inject
-    BungeeService(AuthMe plugin, BukkitService service, Settings settings, DataSource dataSource) {
+    BungeeService(AuthMe plugin, BukkitService service, Settings settings, DataSource dataSource,
+                  Management management) {
         this.plugin = plugin;
         this.service = service;
         this.dataSource = dataSource;
+        this.management = management;
         reload(settings);
     }
 
@@ -113,9 +117,21 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
             case MessageType.REFRESH:
                 dataSource.refreshCache(name);
                 break;
+            case MessageType.BUNGEE_LOGIN:
+                handleBungeeLogin(name);
             default:
                 ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", type);
         }
+    }
+
+    private void handleBungeeLogin(String name) {
+        Player player = service.getPlayerExact(name);
+        if(player == null || !player.isOnline()) {
+            return;
+        }
+        management.forceLogin(player);
+        ConsoleLogger.info("The user " + player.getName() + " has been automatically logged in, " +
+            "as requested by the AuthMeBungee integration.");
     }
 
 }
