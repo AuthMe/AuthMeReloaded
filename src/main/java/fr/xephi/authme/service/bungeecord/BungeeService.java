@@ -97,7 +97,7 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
 
         ByteArrayDataInput in = ByteStreams.newDataInput(data);
         String subchannel = in.readUTF();
-        if (!"Authme".equals(subchannel)) {
+        if (!"AuthMe".equals(subchannel)) {
             return;
         }
 
