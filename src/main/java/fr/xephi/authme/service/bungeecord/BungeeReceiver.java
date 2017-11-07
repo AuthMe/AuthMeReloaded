@@ -1,6 +1,5 @@
 package fr.xephi.authme.service.bungeecord;
 
-import ch.jalu.injector.Injector;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.ConsoleLogger;
@@ -60,12 +59,12 @@ public class BungeeReceiver implements PluginMessageListener {
 
     private void handleBungeeLogin(String name) {
         Player player = service.getPlayerExact(name);
-        if(player == null || !player.isOnline()) {
+        if (player == null || !player.isOnline()) {
             return;
         }
         management.forceLogin(player);
-        ConsoleLogger.info("The user " + player.getName() + " has been automatically logged in, " +
-            "as requested by the AuthMeBungee integration.");
+        ConsoleLogger.info("The user " + player.getName() + " has been automatically logged in, "
+            + "as requested by the AuthMeBungee integration.");
     }
 
 }
