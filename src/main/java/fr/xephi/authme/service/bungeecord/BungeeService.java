@@ -1,46 +1,38 @@
 package fr.xephi.authme.service.bungeecord;
 
-import com.google.common.io.ByteArrayDataInput;
+import ch.jalu.injector.Injector;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import javax.inject.Inject;
 
 /**
  * Class to manage all BungeeCord related processes.
  */
-public class BungeeService implements SettingsDependent, PluginMessageListener {
+public class BungeeService implements SettingsDependent {
 
     private final AuthMe plugin;
     private final BukkitService service;
-    private final DataSource dataSource;
-    private final Management management;
+    private final Injector injector;
 
     private boolean isEnabled;
     private String destinationServerOnLogin;
-
 
     /*
      * Constructor.
      */
     @Inject
-    BungeeService(AuthMe plugin, BukkitService service, Settings settings, DataSource dataSource,
-                  Management management) {
+    BungeeService(AuthMe plugin, BukkitService service, Settings settings, Injector injector) {
         this.plugin = plugin;
         this.service = service;
-        this.dataSource = dataSource;
-        this.management = management;
+        this.injector = injector;
         reload(settings);
     }
 
@@ -56,8 +48,12 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
             messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
         }
         if (!messenger.isIncomingChannelRegistered(plugin, "BungeeCord")) {
-            messenger.registerIncomingPluginChannel(plugin, "BungeeCord", this);
+            messenger.registerIncomingPluginChannel(plugin, "BungeeCord", injector.getSingleton(BungeeReceiver.class));
         }
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
     private void sendBungeecordMessage(String... data) {
@@ -84,54 +80,13 @@ public class BungeeService implements SettingsDependent, PluginMessageListener {
     /**
      * Sends a message to the AuthMe plugin messaging channel, if enabled.
      *
-     * @param type The message type, See {@link MessageType}
+     * @param type       The message type, See {@link MessageType}
      * @param playerName the player related to the message
      */
     public void sendAuthMeBungeecordMessage(String type, String playerName) {
         if (isEnabled) {
             sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
         }
-    }
-
-    @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] data) {
-        if (!isEnabled) {
-            return;
-        }
-
-        ByteArrayDataInput in = ByteStreams.newDataInput(data);
-        String subchannel = in.readUTF();
-        if (!"Authme".equals(subchannel)) {
-            return;
-        }
-
-        String type = in.readUTF();
-        String name = in.readUTF();
-        switch (type) {
-            case MessageType.UNREGISTER:
-                dataSource.invalidateCache(name);
-                break;
-            case MessageType.REFRESH_PASSWORD:
-            case MessageType.REFRESH_QUITLOC:
-            case MessageType.REFRESH_EMAIL:
-            case MessageType.REFRESH:
-                dataSource.refreshCache(name);
-                break;
-            case MessageType.BUNGEE_LOGIN:
-                handleBungeeLogin(name);
-            default:
-                ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", type);
-        }
-    }
-
-    private void handleBungeeLogin(String name) {
-        Player player = service.getPlayerExact(name);
-        if(player == null || !player.isOnline()) {
-            return;
-        }
-        management.forceLogin(player);
-        ConsoleLogger.info("The user " + player.getName() + " has been automatically logged in, " +
-            "as requested by the AuthMeBungee integration.");
     }
 
 }
