@@ -6,10 +6,10 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.bungeecord.BungeeService;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,7 +31,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
     private PlayerCache playerCache;
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     AsyncChangePassword() {
     }
@@ -54,7 +54,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
                 commonService.send(player, MessageKey.ERROR);
                 return;
             }
-            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_PASSWORD, name);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_PASSWORD, name);
 
             playerCache.updatePlayer(auth);
             commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
@@ -84,7 +84,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
 
         HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, lowerCaseName);
         if (dataSource.updatePassword(lowerCaseName, hashedPassword)) {
-            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_PASSWORD, lowerCaseName);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_PASSWORD, lowerCaseName);
             if (sender != null) {
                 commonService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " changed password of " + lowerCaseName);

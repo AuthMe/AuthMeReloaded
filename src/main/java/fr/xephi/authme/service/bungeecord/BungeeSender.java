@@ -1,6 +1,5 @@
 package fr.xephi.authme.service.bungeecord;
 
-import ch.jalu.injector.Injector;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
@@ -13,14 +12,10 @@ import org.bukkit.plugin.messaging.Messenger;
 
 import javax.inject.Inject;
 
-/**
- * Class to manage all BungeeCord related processes.
- */
-public class BungeeService implements SettingsDependent {
+public class BungeeSender implements SettingsDependent {
 
     private final AuthMe plugin;
-    private final BukkitService service;
-    private final Injector injector;
+    private final BukkitService bukkitService;
 
     private boolean isEnabled;
     private String destinationServerOnLogin;
@@ -29,10 +24,9 @@ public class BungeeService implements SettingsDependent {
      * Constructor.
      */
     @Inject
-    BungeeService(AuthMe plugin, BukkitService service, Settings settings, Injector injector) {
+    BungeeSender(AuthMe plugin, BukkitService bukkitService, Settings settings) {
         this.plugin = plugin;
-        this.service = service;
-        this.injector = injector;
+        this.bukkitService = bukkitService;
         reload(settings);
     }
 
@@ -40,15 +34,12 @@ public class BungeeService implements SettingsDependent {
     public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         this.destinationServerOnLogin = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
-        Messenger messenger = plugin.getServer().getMessenger();
-        if (!this.isEnabled) {
-            return;
-        }
-        if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
-            messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
-        }
-        if (!messenger.isIncomingChannelRegistered(plugin, "BungeeCord")) {
-            messenger.registerIncomingPluginChannel(plugin, "BungeeCord", injector.getSingleton(BungeeReceiver.class));
+
+        if (this.isEnabled) {
+            Messenger messenger = plugin.getServer().getMessenger();
+            if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
+                messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+            }
         }
     }
 
@@ -61,7 +52,7 @@ public class BungeeService implements SettingsDependent {
         for (String element : data) {
             out.writeUTF(element);
         }
-        service.sendPluginMessage("BungeeCord", out.toByteArray());
+        bukkitService.sendPluginMessage("BungeeCord", out.toByteArray());
     }
 
     /**
@@ -72,7 +63,7 @@ public class BungeeService implements SettingsDependent {
      */
     public void connectPlayerOnLogin(Player player) {
         if (isEnabled && !destinationServerOnLogin.isEmpty()) {
-            service.scheduleSyncDelayedTask(() ->
+            bukkitService.scheduleSyncDelayedTask(() ->
                 sendBungeecordMessage("Connect", player.getName(), destinationServerOnLogin), 20L);
         }
     }
@@ -88,5 +79,4 @@ public class BungeeService implements SettingsDependent {
             sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
         }
     }
-
 }
