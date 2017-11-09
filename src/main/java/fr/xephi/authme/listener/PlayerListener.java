@@ -8,11 +8,11 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.MessageType;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -86,7 +86,7 @@ public class PlayerListener implements Listener {
     @Inject
     private PermissionsManager permissionsManager;
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
 
@@ -430,7 +430,7 @@ public class PlayerListener implements Listener {
                 .location(spawn)
                 .build();
             dataSource.updateQuitLoc(auth);
-            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);

@@ -8,10 +8,10 @@ import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -25,7 +25,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     @Inject
     private LimboService limboService;
@@ -96,6 +96,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         commandManager.runCommandsOnLogin(player);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.connectPlayerOnLogin(player);
+        bungeeSender.connectPlayerOnLogin(player);
     }
 }

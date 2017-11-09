@@ -10,9 +10,9 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.command.CommandSender;
@@ -63,7 +63,7 @@ public class AsynchronousUnregisterTest {
     @Mock
     private CommandManager commandManager;
     @Mock
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     @BeforeClass
     public static void initLogger() {

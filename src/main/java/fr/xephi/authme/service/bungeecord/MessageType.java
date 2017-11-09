@@ -11,6 +11,7 @@ public final class MessageType {
     public static final String REFRESH_QUITLOC = "refresh.quitloc";
     public static final String REFRESH_EMAIL = "refresh.email";
     public static final String REFRESH = "refresh";
+    public static final String BUNGEE_LOGIN = "bungeelogin";
 
     private MessageType() {
     }

@@ -6,9 +6,9 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
@@ -33,7 +33,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
     private ValidationService validationService;
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     AsyncAddEmail() { }
 
@@ -60,7 +60,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 auth.setEmail(email);
                 if (dataSource.updateEmail(auth)) {
                     playerCache.updatePlayer(auth);
-                    bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
+                    bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
                     service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
                     ConsoleLogger.warning("Could not save email for player '" + player + "'");
