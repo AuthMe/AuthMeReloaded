@@ -97,14 +97,14 @@ usage_captcha: '&8[&6玩家系统&8] &c正确用法：/captcha <theCaptcha>'
 wrong_captcha: '&8[&6玩家系统&8] &c错误的验证码，请输入：“/captcha THE_CAPTCHA”'
 valid_captcha: '&8[&6玩家系统&8] &c你的验证码是有效的！'
 
-# Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+# 验证码
+verification_code_required: '&3这个命令非常敏感，需要电子邮件验证！请检查您的收件箱，并遵循邮件的指导。'
+usage_verification_code: '&c使用方法： /verification <验证码>'
+incorrect_verification_code: '&c验证码错误， 请在聊天框输入 "/verification <验证码>"，使用您在电子邮件中收到的验证码。
+verification_code_verified: '&2您的身份已经得到验证！您现在可以在当前会话中执行所有命令！'
+verification_code_already_verified: '&2您已经可以在当前会话中执行任何敏感命令！'
+verification_code_expired: '&3您的验证码已失效！执行另一个敏感命令以获得新的验证码！'
+verification_code_email_needed: '&3为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！！'
 
 # 时间单位
 second: '秒'
