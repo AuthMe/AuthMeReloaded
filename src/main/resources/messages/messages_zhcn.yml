@@ -100,7 +100,7 @@ valid_captcha: '&8[&6玩家系统&8] &c你的验证码是有效的！'
 # 验证码
 verification_code_required: '&3这个命令非常敏感，需要电子邮件验证！请检查您的收件箱，并遵循邮件的指导。'
 usage_verification_code: '&c使用方法： /verification <验证码>'
-incorrect_verification_code: '&c验证码错误， 请在聊天框输入 "/verification <验证码>"，使用您在电子邮件中收到的验证码。
+incorrect_verification_code: '&c验证码错误， 请在聊天框输入 "/verification <验证码>"，使用您在电子邮件中收到的验证码。'
 verification_code_verified: '&2您的身份已经得到验证！您现在可以在当前会话中执行所有命令！'
 verification_code_already_verified: '&2您已经可以在当前会话中执行任何敏感命令！'
 verification_code_expired: '&3您的验证码已失效！执行另一个敏感命令以获得新的验证码！'
