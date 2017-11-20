@@ -1,5 +1,6 @@
 package fr.xephi.authme.service.bungeecord;
 
+import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
@@ -52,7 +53,10 @@ public class BungeeSender implements SettingsDependent {
         for (String element : data) {
             out.writeUTF(element);
         }
-        bukkitService.sendPluginMessage("BungeeCord", out.toByteArray());
+        Player player = Iterables.getFirst(plugin.getServer().getOnlinePlayers(), null);
+        if (player != null) {
+            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        }
     }
 
     /**
