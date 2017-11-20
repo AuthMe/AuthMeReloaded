@@ -1,5 +1,6 @@
 package fr.xephi.authme.service;
 
+import com.google.common.collect.Iterables;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
@@ -329,6 +330,18 @@ public class BukkitService implements SettingsDependent {
     @Override
     public void reload(Settings settings) {
         useAsyncTasks = settings.getProperty(PluginSettings.USE_ASYNC_TASKS);
+    }
+
+    /**
+     * Send the specified message to bungeecord using the first available player connection.
+     *
+     * @param bytes the message
+     */
+    public void sendBungeeMessage(byte[] bytes) {
+        Player player = Iterables.getFirst(getOnlinePlayers(), null);
+        if (player != null) {
+            player.sendPluginMessage(authMe, "BungeeCord", bytes);
+        }
     }
 
     /**
