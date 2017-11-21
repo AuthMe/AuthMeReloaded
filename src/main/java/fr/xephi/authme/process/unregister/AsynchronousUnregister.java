@@ -120,7 +120,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         if (player == null || !player.isOnline()) {
             return;
         }
-        commandManager.runCommandsOnUnregister(player);
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
+            commandManager.runCommandsOnUnregister(player));
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
             teleportationService.teleportOnJoin(player);

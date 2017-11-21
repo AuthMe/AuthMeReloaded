@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.TestHelper.runSyncTaskFromOptionallyAsyncTask;
+import static fr.xephi.authme.TestHelper.setBukkitServiceToRunOptionallyAsyncTasks;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -161,11 +161,11 @@ public class RegisterAdminCommandTest {
         String kickForAdminRegister = "Admin registered you -- log in again";
         given(commandService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
         TestHelper.runOptionallyAsyncTask(bukkitService);
-        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);

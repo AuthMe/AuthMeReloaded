@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -134,17 +135,17 @@ public final class TestHelper {
     }
 
     /**
-     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncTaskFromOptionallyAsyncTask}
-     * method. Note that calling this method expects that there be a runnable sent to the method and will fail
-     * otherwise.
+     * Sets a BukkitService mock to run any Runnable it is passed to its method
+     * {@link BukkitService#scheduleSyncTaskFromOptionallyAsyncTask}.
      *
-     * @param service The mock service
+     * @param bukkitService the mock to set behavior on
      */
-    public static void runSyncTaskFromOptionallyAsyncTask(BukkitService service) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(service).scheduleSyncTaskFromOptionallyAsyncTask(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
+    public static void setBukkitServiceToRunOptionallyAsyncTasks(BukkitService bukkitService) {
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            runnable.run();
+            return null;
+        }).when(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
     }
 
     /**
