@@ -100,7 +100,7 @@ verification_code_required: '&3Ta komenda wymaga weryfikacji przez e-mail! Spraw
 usage_verification_code: '&cUżycie: /verification <kod>'
 incorrect_verification_code: '&cNieprawidłowy kod z e-maila, wpisz komende "/verification <kod>". W miejscu <kod> wpisz swój kod z emaila.'
 verification_code_verified: '&2Twoja tożsamość została zweryfikowana! Możesz teraz wykonywać wszystkie komendy w bieżącej sesji!'
-verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
+verification_code_already_verified: '&2Możesz już wykonać każdą komende w bieżącej sesji!'
 verification_code_expired: '&3Twój kod wygasł! Wykonaj ponownie komende, aby uzyskać nowy kod!'
 verification_code_email_needed: '&3Aby zweryfikować swoją tożsamość, musisz połączyć adres e-mail z kontem!'
 
