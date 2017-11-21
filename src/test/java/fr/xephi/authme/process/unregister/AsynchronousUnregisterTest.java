@@ -31,7 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.function.Function;
 
-import static fr.xephi.authme.TestHelper.setBukkitServiceToRunOptionallyAsyncTasks;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -115,7 +115,7 @@ public class AsynchronousUnregisterTest {
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
         given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(21);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -148,7 +148,7 @@ public class AsynchronousUnregisterTest {
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(false);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -179,7 +179,7 @@ public class AsynchronousUnregisterTest {
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(false);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -257,7 +257,7 @@ public class AsynchronousUnregisterTest {
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(false);
         CommandSender initiator = mock(CommandSender.class);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.adminUnregister(initiator, name, player);

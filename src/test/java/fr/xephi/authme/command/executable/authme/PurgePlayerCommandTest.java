@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static fr.xephi.authme.TestHelper.runOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.containsString;
@@ -45,10 +45,10 @@ public class PurgePlayerCommandTest {
         String name = "Bobby";
         given(dataSource.isAuthAvailable(name)).willReturn(true);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, singletonList(name));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(sender).sendMessage(argThat(containsString("This player is still registered")));
@@ -63,10 +63,10 @@ public class PurgePlayerCommandTest {
         OfflinePlayer player = mock(OfflinePlayer.class);
         given(bukkitService.getOfflinePlayer(name)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, singletonList(name));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(dataSource).isAuthAvailable(name);
@@ -80,10 +80,10 @@ public class PurgePlayerCommandTest {
         OfflinePlayer player = mock(OfflinePlayer.class);
         given(bukkitService.getOfflinePlayer(name)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, asList(name, "force"));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(purgeExecutor).executePurge(singletonList(player), singletonList(name.toLowerCase()));

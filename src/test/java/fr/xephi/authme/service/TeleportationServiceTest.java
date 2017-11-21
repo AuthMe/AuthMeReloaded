@@ -21,7 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.TestHelper.setBukkitServiceToRunOptionallyAsyncTasks;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,7 +89,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         Location firstSpawn = mockLocation();
         given(spawnLoader.getFirstSpawn()).willReturn(firstSpawn);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportNewPlayerToFirstSpawn(player);
@@ -109,7 +109,7 @@ public class TeleportationServiceTest {
         given(player.isOnline()).willReturn(true);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnJoin(player);
@@ -178,7 +178,7 @@ public class TeleportationServiceTest {
             event.setTo(null);
             return null;
         }).when(bukkitService).callEvent(any(SpawnTeleportEvent.class));
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnJoin(player);
@@ -201,7 +201,7 @@ public class TeleportationServiceTest {
             event.setCancelled(true);
             return null;
         }).when(bukkitService).callEvent(any(SpawnTeleportEvent.class));
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnJoin(player);
@@ -242,7 +242,7 @@ public class TeleportationServiceTest {
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("forced1");
         given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -289,7 +289,7 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -317,7 +317,7 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -342,7 +342,7 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location location = mockLocation();
         given(limbo.getLocation()).willReturn(location);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -364,7 +364,7 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location location = mockLocation();
         given(limbo.getLocation()).willReturn(location);
-        setBukkitServiceToRunOptionallyAsyncTasks(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);

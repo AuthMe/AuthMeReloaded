@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -105,10 +106,10 @@ public class ConverterCommandTest {
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
         Converter converter = createMockReturnedByInjector(converterClass);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, Collections.singletonList(converterName));
-        TestHelper.runInnerRunnable(bukkitService);
 
         // then
         verify(converter).execute(sender);
@@ -125,10 +126,10 @@ public class ConverterCommandTest {
         Converter converter = createMockReturnedByInjector(converterClass);
         doThrow(IllegalStateException.class).when(converter).execute(any(CommandSender.class));
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, Collections.singletonList(converterName.toUpperCase()));
-        TestHelper.runInnerRunnable(bukkitService);
 
         // then
         verify(converter).execute(sender);

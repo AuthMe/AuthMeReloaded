@@ -16,7 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.TestHelper.runOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -74,10 +74,10 @@ public class SetEmailCommandTest {
         given(validationService.validateEmail(email)).willReturn(true);
         given(dataSource.getAuth(user)).willReturn(null);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validateEmail(email);
@@ -96,10 +96,10 @@ public class SetEmailCommandTest {
         given(dataSource.getAuth(user)).willReturn(auth);
         CommandSender sender = mock(CommandSender.class);
         given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(false);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validateEmail(email);
@@ -121,10 +121,10 @@ public class SetEmailCommandTest {
         CommandSender sender = mock(CommandSender.class);
         given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
         given(dataSource.updateEmail(auth)).willReturn(false);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validateEmail(email);
@@ -147,10 +147,10 @@ public class SetEmailCommandTest {
         given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(playerCache.getAuth(user)).willReturn(null);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validateEmail(email);
@@ -174,10 +174,10 @@ public class SetEmailCommandTest {
         given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(playerCache.getAuth(user)).willReturn(mock(PlayerAuth.class));
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, email));
-        runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validateEmail(email);
