@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.Instant;
 
 import static fr.xephi.authme.IsEqualByReflectionMatcher.isEqualTo;
 import static org.hamcrest.Matchers.contains;
@@ -202,7 +203,7 @@ public class AuthMeApiTest {
 
         // then
         assertThat(result, not(nullValue()));
-        assertThat(result, equalTo(new Date(1501597979)));
+        assertThat(result, equalTo(new Date(1501597979L)));
     }
 
     @Test
@@ -216,6 +217,40 @@ public class AuthMeApiTest {
 
         // when
         Date result = api.getLastLogin(name);
+
+        // then
+        assertThat(result, nullValue());
+        verify(dataSource).getAuth(name);
+    }
+
+    @Test
+    public void shouldGetLastLoginTime() {
+        // given
+        String name = "David";
+        PlayerAuth auth = PlayerAuth.builder().name(name)
+            .lastLogin(1501597979L)
+            .build();
+        given(playerCache.getAuth(name)).willReturn(auth);
+
+        // when
+        Instant result = api.getLastLoginTime(name);
+
+        // then
+        assertThat(result, not(nullValue()));
+        assertThat(result, equalTo(Instant.ofEpochMilli(1501597979L)));
+    }
+
+    @Test
+    public void shouldHandleNullLastLoginTime() {
+        // given
+        String name = "John";
+        PlayerAuth auth = PlayerAuth.builder().name(name)
+            .lastLogin(null)
+            .build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+
+        // when
+        Instant result = api.getLastLoginTime(name);
 
         // then
         assertThat(result, nullValue());

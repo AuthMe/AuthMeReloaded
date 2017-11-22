@@ -17,6 +17,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -164,13 +166,24 @@ public class AuthMeApi {
      * @param playerName The name of the player to process
      * @return The date of the last login, or null if the player doesn't exist or has never logged in
      */
+    @Deprecated
     public Date getLastLogin(String playerName) {
-        PlayerAuth auth = playerCache.getAuth(playerName);
+        Long lastLogin = getLastLoginMillis(playerName);
+        return lastLogin == null ? null : new Date(lastLogin);
+    }
+
+    public Instant getLastLoginTime(String playerName) {
+        Long lastLogin = getLastLoginMillis(playerName);
+        return lastLogin == null ? null : Instant.ofEpochMilli(lastLogin);
+    }
+
+    private Long getLastLoginMillis(String playerName) {
+    	    PlayerAuth auth = playerCache.getAuth(playerName);
         if (auth == null) {
             auth = dataSource.getAuth(playerName);
         }
         if (auth != null && auth.getLastLogin() != null) {
-            return new Date(auth.getLastLogin());
+            return auth.getLastLogin();
         }
         return null;
     }
