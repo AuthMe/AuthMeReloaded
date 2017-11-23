@@ -11,7 +11,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -81,10 +80,10 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    @Ignore // TODO ljacqu fix test
     public void shouldActivateAntibot() {
         // given - listening antibot
-        reset(bukkitService);
+        BukkitTask task = mock(BukkitTask.class);
+        given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(task);
 
         // when
         antiBotService.overrideAntiBotStatus(true);
