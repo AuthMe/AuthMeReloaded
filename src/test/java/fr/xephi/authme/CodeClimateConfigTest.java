@@ -43,7 +43,7 @@ public class CodeClimateConfigTest {
             fail("Expected path '" + path + "' to end with '.java'");
         }
 
-        if (new File("/" + path).exists()) {
+        if (!new File(path).exists()) {
             fail("Path '" + path + "' does not exist!");
         }
     }
