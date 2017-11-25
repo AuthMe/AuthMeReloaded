@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.converter.Converter;
-import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;

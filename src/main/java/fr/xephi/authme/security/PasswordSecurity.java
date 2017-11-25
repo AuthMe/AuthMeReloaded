@@ -1,9 +1,9 @@
 package fr.xephi.authme.security;
 
+import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
