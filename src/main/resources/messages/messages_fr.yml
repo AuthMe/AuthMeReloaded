@@ -48,9 +48,8 @@ accounts_owned_self: 'Vous avez %count comptes:'
 accounts_owned_other: 'Le joueur %name a %count comptes:'
 two_factor_create: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
 recovery_code_sent: 'Un code de récupération a été envoyé à votre adresse email afin de réinitialiser votre mot de passe.'
-# TODO: Missing tags %count
-recovery_code_incorrect: '&cLe code de réinitialisation est incorrect!%nl%Faites "/email recovery [email]" pour en générer un nouveau.'
-recovery_tries_exceeded: 'Vous avez atteint le nombre maximum d''essai pour rentrer le code. Refaites "/email recovery [email]" pour en régénérer à nouveau.'
+recovery_code_incorrect: '&cLe code de réinitialisation est incorrect! Il vous reste %count% essai(s).'
+recovery_tries_exceeded: 'Vous avez atteint le nombre maximum d''essai pour rentrer le code.%nl%Refaites "/email recovery [email]" pour en régénérer à nouveau.'
 recovery_code_correct: 'Code de réinitialisation correct !'
 recovery_change_password: 'Veuillez faire "/email setpassword <new password>" pour changer votre mot de passe directement.'
 vb_nonActiv: '&fCe compte n''est pas actif, consultez vos emails !'
@@ -91,7 +90,7 @@ incomplete_email_settings: '&cErreur : Tous les paramètres requis ne sont pas p
 email_already_used: '&cCette adresse email est déjà utilisée !'
 email_send_failure: '&cL''email n''a pas pu être envoyé. Veuillez contacter un admin.'
 show_no_email: '&c&oVous n''avez aucune adresse mail enregistré sur votre compte.'
-add_email: '&cRajoutez un email de récupération: /email add <Email> <ConfirmerEmail>'
+add_email: '&cLier votre email à votre compte: /email add <Email> <ConfirmerEmail>'
 recovery_email: '&cVous avez oublié votre Mot de Passe? Utilisez "/email recovery <votreEmail>"'
 change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cette commande.'
 email_cooldown_error: '&cUn email de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
@@ -101,14 +100,14 @@ usage_captcha: '&cTrop de tentatives de connexion échouées, utilisez: /captcha
 wrong_captcha: '&cCaptcha incorrect, écrivez de nouveau: /captcha THE_CAPTCHA'
 valid_captcha: '&aCaptché validé! Veuillez maintenant vous connecter.'
 
-# Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+# Vérification par code
+verification_code_required: '&cCette commande est sensible, elle nécessite donc une confirmation par email.%nl%&cVeuillez suivre les instructions qui viennent de vous être envoyé par email.'
+usage_verification_code: '&cUsage: /verification <code>'
+incorrect_verification_code: '&cCode incorrect !%nl%&cVeuillez taper "/verification <code>" dans le chat en utilisant le code reçu par email.'
+verification_code_verified: '&aVotre identité a bien été vérifié !%nl%&aVous pouvez désormais utiliser la commande souhaitée durant toute la session.'
+verification_code_already_verified: '&aVous êtes déjà autorisé à utiliser les commandes sensibles durant votre session actuelle.'
+verification_code_expired: '&cVotre code d''identification a expiré !%nl%&cVeuillez re-exécuter une commande sensible pour recevoir un nouveau code.'
+verification_code_email_needed: '&cAfin de vérifier votre identité, vous devez avoir un email lié à votre compte.%nl%&cPour cela, faites "/email add <Email> <ConfirmerEmail>"'
 
 # Unités de temps
 second: 'seconde'
