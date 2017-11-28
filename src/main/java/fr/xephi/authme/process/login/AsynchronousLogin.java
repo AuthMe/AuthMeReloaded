@@ -220,6 +220,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
      */
     private void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
+            final boolean isFirstLogin = (auth.getLastLogin() == null);
+
             // Update auth to reflect this new login
             final String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
@@ -258,7 +260,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            syncProcessManager.processSyncPlayerLogin(player);
+            syncProcessManager.processSyncPlayerLogin(player, isFirstLogin);
         } else {
             ConsoleLogger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");
         }

@@ -24,7 +24,9 @@
 #     command: 'broadcast %p has joined, welcome back!'
 #     executor: CONSOLE
 # 
-# Supported command events: onLogin, onSessionLogin, onJoin, onLogout, onRegister, onUnregister
+# Supported command events: onLogin, onSessionLogin, onFirstLogin, onJoin, onLogout, onRegister, onUnregister
+# Commands to run for players logging in whose 'last login date' was empty
+onFirstLogin: {}
 onJoin: {}
 onLogin: {}
 # These commands are called whenever a logged in player uses /logout or quits.
