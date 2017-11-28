@@ -35,6 +35,7 @@ public class SpawnLoader implements Reloadable {
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
+    private Location cmiSpawn;
 
     /**
      * Constructor.
@@ -131,6 +132,32 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
+     * Load the spawn point defined in CMI.
+     */
+    public void loadCMISpawn() {
+        File cmiFolder = pluginHookService.getCMIDataFolder();
+        if (cmiFolder == null) {
+            return;
+        }
+
+        File cmiConfig = new File(cmiFolder, "config.yml");
+        if (cmiConfig.exists()) {
+            cmiSpawn = getLocationFromConfigurationUpper(
+                YamlConfiguration.loadConfiguration(cmiConfig), "Spawn.Main");
+        } else {
+            cmiSpawn = null;
+            ConsoleLogger.info("CMI config file not found: '" + cmiConfig.getAbsolutePath() + "'");
+        }
+    }
+
+    /**
+     * Unset the spawn point defined in CMI.
+     */
+    public void unloadCMISpawn() {
+        cmiSpawn = null;
+    }
+
+    /**
      * Return the spawn location for the given player. The source of the spawn location varies
      * depending on the spawn priority setting.
      *
@@ -161,6 +188,9 @@ public class SpawnLoader implements Reloadable {
                     break;
                 case "essentials":
                     spawnLoc = essentialsSpawn;
+                    break;
+                case "cmi":
+                    spawnLoc = cmiSpawn;
                     break;
                 case "authme":
                     spawnLoc = getSpawn();
@@ -243,6 +273,28 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
+     * Build a {@link Location} object from the given path in the file configuration.
+     *
+     * @param configuration The file configuration to read from
+     * @param pathPrefix    The path to get the spawn point from
+     *
+     * @return Location corresponding to the values in the path
+     */
+    private static Location getLocationFromConfigurationUpper(FileConfiguration configuration, String pathPrefix) {
+        if (containsAllSpawnFieldsUpper(configuration, pathPrefix)) {
+            String prefix = pathPrefix + ".";
+            String worldName = configuration.getString(prefix + "World");
+            World world = Bukkit.getWorld(worldName);
+            if (!StringUtils.isEmpty(worldName) && world != null) {
+                return new Location(world, configuration.getDouble(prefix + "X"),
+                    configuration.getDouble(prefix + "Y"), configuration.getDouble(prefix + "Z"),
+                    getFloat(configuration, prefix + "Yaw"), getFloat(configuration, prefix + "Pitch"));
+            }
+        }
+        return null;
+    }
+
+    /**
      * Return whether the file configuration contains all fields necessary to define a spawn
      * under the given path.
      *
@@ -253,6 +305,25 @@ public class SpawnLoader implements Reloadable {
      */
     private static boolean containsAllSpawnFields(FileConfiguration configuration, String pathPrefix) {
         String[] fields = {"world", "x", "y", "z", "yaw", "pitch"};
+        for (String field : fields) {
+            if (!configuration.contains(pathPrefix + "." + field)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Return whether the file configuration contains all fields necessary to define a spawn
+     * under the given path.
+     *
+     * @param configuration The file configuration to use
+     * @param pathPrefix    The path to verify
+     *
+     * @return True if all spawn fields are present, false otherwise
+     */
+    private static boolean containsAllSpawnFieldsUpper(FileConfiguration configuration, String pathPrefix) {
+        String[] fields = {"World", "X", "Y", "Z", "Yaw", "Pitch"};
         for (String field : fields) {
             if (!configuration.contains(pathPrefix + "." + field)) {
                 return false;
@@ -274,4 +345,5 @@ public class SpawnLoader implements Reloadable {
         // This behavior is consistent with FileConfiguration#getDouble
         return (value instanceof Number) ? ((Number) value).floatValue() : 0;
     }
+
 }
