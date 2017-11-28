@@ -716,6 +716,22 @@ public class MySQL implements DataSource {
         return players;
     }
 
+    @Override
+    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        List<PlayerAuth> players = new ArrayList<>();
+        String sql = "SELECT * FROM " + tableName + " ORDER BY " + col.LAST_LOGIN + " DESC LIMIT 10;";
+        try (Connection con = getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                players.add(buildAuthFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return players;
+    }
+
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);
