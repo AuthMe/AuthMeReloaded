@@ -34,6 +34,7 @@ public class CommandManager implements Reloadable {
     private WrappedTagReplacer<Command, Player> onJoinCommands;
     private WrappedTagReplacer<Command, Player> onLoginCommands;
     private WrappedTagReplacer<Command, Player> onSessionLoginCommands;
+    private WrappedTagReplacer<Command, Player> onFirstLoginCommands;
     private WrappedTagReplacer<Command, Player> onRegisterCommands;
     private WrappedTagReplacer<Command, Player> onUnregisterCommands;
     private WrappedTagReplacer<Command, Player> onLogoutCommands;
@@ -75,7 +76,6 @@ public class CommandManager implements Reloadable {
         executeCommands(player, onLoginCommands.getAdaptedItems(player));
     }
 
-
     /**
      * Runs the configured commands for when a player has logged in successfully due to session.
      *
@@ -83,6 +83,15 @@ public class CommandManager implements Reloadable {
      */
     public void runCommandsOnSessionLogin(Player player) {
         executeCommands(player, onSessionLoginCommands.getAdaptedItems(player));
+    }
+
+    /**
+     * Runs the configured commands for when a player logs in the first time.
+     *
+     * @param player the player that has logged in for the first time
+     */
+    public void runCommandsOnFirstLogin(Player player) {
+        executeCommands(player, onFirstLoginCommands.getAdaptedItems(player));
     }
 
     /**
@@ -124,6 +133,7 @@ public class CommandManager implements Reloadable {
         CommandConfig commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
         onJoinCommands = newReplacer(commandConfig.getOnJoin());
         onLoginCommands = newReplacer(commandConfig.getOnLogin());
+        onFirstLoginCommands = newReplacer(commandConfig.getOnFirstLogin());
         onSessionLoginCommands = newReplacer(commandConfig.getOnSessionLogin());
         onRegisterCommands = newReplacer(commandConfig.getOnRegister());
         onUnregisterCommands = newReplacer(commandConfig.getOnUnregister());

@@ -62,7 +62,13 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
     }
 
-    public void processPlayerLogin(Player player) {
+    /**
+     * Performs operations in sync mode for a player that has just logged in.
+     *
+     * @param player the player that was logged in
+     * @param isFirstLogin true if this is the first time the player logged in
+     */
+    public void processPlayerLogin(Player player, boolean isFirstLogin) {
         final String name = player.getName().toLowerCase();
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
@@ -93,6 +99,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         welcomeMessageConfiguration.sendWelcomeMessage(player);
 
         // Login is now finished; we can force all commands
+        if (isFirstLogin) {
+            commandManager.runCommandsOnFirstLogin(player);
+        }
         commandManager.runCommandsOnLogin(player);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
