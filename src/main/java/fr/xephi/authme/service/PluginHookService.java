@@ -34,7 +34,7 @@ public class PluginHookService {
     public PluginHookService(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
         tryHookToEssentials();
-        tryHookToCMI();
+        tryHookToCmi();
         tryHookToMultiverse();
     }
 
@@ -67,7 +67,7 @@ public class PluginHookService {
      *
      * @return The CMI data folder, or null if unavailable
      */
-    public File getCMIDataFolder() {
+    public File getCmiDataFolder() {
         Plugin plugin = pluginManager.getPlugin("CMI");
         if(plugin == null) {
             return null;
@@ -105,7 +105,7 @@ public class PluginHookService {
     /**
      * @return true if we have a hook to CMI, false otherwise
      */
-    public boolean isCMIAvailable() {
+    public boolean isCmiAvailable() {
         return cmi != null;
     }
 
@@ -134,7 +134,7 @@ public class PluginHookService {
     /**
      * Attempts to create a hook into CMI.
      */
-    public void tryHookToCMI() {
+    public void tryHookToCmi() {
         try {
             cmi = getPlugin(pluginManager, "CMI", Plugin.class);
         } catch (Exception | NoClassDefFoundError ignored) {
@@ -167,7 +167,7 @@ public class PluginHookService {
     /**
      * Unhooks from CMI.
      */
-    public void unhookCMI() {
+    public void unhookCmi() {
         cmi = null;
     }
 

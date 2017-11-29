@@ -60,7 +60,7 @@ public class ServerListenerTest {
         checkEnableHandling(ESSENTIALS,       () -> verify(pluginHookService).tryHookToEssentials());
         checkEnableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).loadEssentialsSpawn());
         checkEnableHandling(CMI,              () -> {
-            verify(pluginHookService).tryHookToCMI();
+            verify(pluginHookService).tryHookToCmi();
             verify(spawnLoader).loadCMISpawn();
         });
         checkEnableHandling(MULTIVERSE,       () -> verify(pluginHookService).tryHookToMultiverse());
@@ -73,7 +73,7 @@ public class ServerListenerTest {
         checkDisableHandling(ESSENTIALS,       () -> verify(pluginHookService).unhookEssentials());
         checkDisableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).unloadEssentialsSpawn());
         checkDisableHandling(CMI,              () -> {
-            verify(pluginHookService).unhookCMI();
+            verify(pluginHookService).unhookCmi();
             verify(spawnLoader).unloadCMISpawn();
         });
         checkDisableHandling(MULTIVERSE,       () -> verify(pluginHookService).unhookMultiverse());

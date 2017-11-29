@@ -135,7 +135,7 @@ public class SpawnLoader implements Reloadable {
      * Load the spawn point defined in CMI.
      */
     public void loadCMISpawn() {
-        File cmiFolder = pluginHookService.getCMIDataFolder();
+        File cmiFolder = pluginHookService.getCmiDataFolder();
         if (cmiFolder == null) {
             return;
         }
