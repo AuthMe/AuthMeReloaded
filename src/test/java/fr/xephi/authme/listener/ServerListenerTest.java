@@ -31,6 +31,7 @@ public class ServerListenerTest {
 
     private static final String ESSENTIALS = "Essentials";
     private static final String ESSENTIALS_SPAWN = "EssentialsSpawn";
+    private static final String CMI = "CMI";
     private static final String MULTIVERSE = "Multiverse-Core";
     private static final String PROTOCOL_LIB = "ProtocolLib";
 
@@ -58,6 +59,10 @@ public class ServerListenerTest {
     public void shouldForwardPluginNameOnEnable() {
         checkEnableHandling(ESSENTIALS,       () -> verify(pluginHookService).tryHookToEssentials());
         checkEnableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).loadEssentialsSpawn());
+        checkEnableHandling(CMI,              () -> {
+            verify(pluginHookService).tryHookToCmi();
+            verify(spawnLoader).loadCMISpawn();
+        });
         checkEnableHandling(MULTIVERSE,       () -> verify(pluginHookService).tryHookToMultiverse());
         checkEnableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).setup());
         checkEnableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
@@ -67,6 +72,10 @@ public class ServerListenerTest {
     public void shouldForwardPluginNameOnDisable() {
         checkDisableHandling(ESSENTIALS,       () -> verify(pluginHookService).unhookEssentials());
         checkDisableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).unloadEssentialsSpawn());
+        checkDisableHandling(CMI,              () -> {
+            verify(pluginHookService).unhookCmi();
+            verify(spawnLoader).unloadCMISpawn();
+        });
         checkDisableHandling(MULTIVERSE,       () -> verify(pluginHookService).unhookMultiverse());
         checkDisableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).disable());
         checkDisableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
