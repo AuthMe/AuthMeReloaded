@@ -134,7 +134,7 @@ public class SpawnLoader implements Reloadable {
     /**
      * Load the spawn point defined in CMI.
      */
-    public void loadCMISpawn() {
+    public void loadCmiSpawn() {
         File cmiFolder = pluginHookService.getCmiDataFolder();
         if (cmiFolder == null) {
             return;
@@ -142,8 +142,7 @@ public class SpawnLoader implements Reloadable {
 
         File cmiConfig = new File(cmiFolder, "config.yml");
         if (cmiConfig.exists()) {
-            cmiSpawn = getLocationFromConfigurationUpper(
-                YamlConfiguration.loadConfiguration(cmiConfig), "Spawn.Main");
+            cmiSpawn = getLocationFromCmiConfiguration(YamlConfiguration.loadConfiguration(cmiConfig));
         } else {
             cmiSpawn = null;
             ConsoleLogger.info("CMI config file not found: '" + cmiConfig.getAbsolutePath() + "'");
@@ -153,7 +152,7 @@ public class SpawnLoader implements Reloadable {
     /**
      * Unset the spawn point defined in CMI.
      */
-    public void unloadCMISpawn() {
+    public void unloadCmiSpawn() {
         cmiSpawn = null;
     }
 
@@ -273,15 +272,15 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
-     * Build a {@link Location} object from the given path in the file configuration.
+     * Build a {@link Location} object based on the CMI configuration.
      *
-     * @param configuration The file configuration to read from
-     * @param pathPrefix    The path to get the spawn point from
+     * @param configuration The CMI file configuration to read from
      *
      * @return Location corresponding to the values in the path
      */
-    private static Location getLocationFromConfigurationUpper(FileConfiguration configuration, String pathPrefix) {
-        if (containsAllSpawnFieldsUpper(configuration, pathPrefix)) {
+    private static Location getLocationFromCmiConfiguration(FileConfiguration configuration) {
+        final String pathPrefix = "Spawn.Main";
+        if (isLocationCompleteInCmiConfig(configuration, pathPrefix)) {
             String prefix = pathPrefix + ".";
             String worldName = configuration.getString(prefix + "World");
             World world = Bukkit.getWorld(worldName);
@@ -314,18 +313,17 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
-     * Return whether the file configuration contains all fields necessary to define a spawn
-     * under the given path.
+     * Return whether the CMI file configuration contains all spawn fields under the given path.
      *
-     * @param configuration The file configuration to use
-     * @param pathPrefix    The path to verify
+     * @param cmiConfiguration The file configuration from CMI
+     * @param pathPrefix       The path to verify
      *
      * @return True if all spawn fields are present, false otherwise
      */
-    private static boolean containsAllSpawnFieldsUpper(FileConfiguration configuration, String pathPrefix) {
+    private static boolean isLocationCompleteInCmiConfig(FileConfiguration cmiConfiguration, String pathPrefix) {
         String[] fields = {"World", "X", "Y", "Z", "Yaw", "Pitch"};
         for (String field : fields) {
-            if (!configuration.contains(pathPrefix + "." + field)) {
+            if (!cmiConfiguration.contains(pathPrefix + "." + field)) {
                 return false;
             }
         }

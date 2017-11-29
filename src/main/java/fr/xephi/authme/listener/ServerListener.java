@@ -42,7 +42,7 @@ public class ServerListener implements Listener {
             ConsoleLogger.info("Essentials has been disabled: unhooking");
         } else if ("CMI".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookCmi();
-            spawnLoader.unloadCMISpawn();
+            spawnLoader.unloadCmiSpawn();
             ConsoleLogger.info("CMI has been disabled: unhooking");
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookMultiverse();
@@ -76,7 +76,7 @@ public class ServerListener implements Listener {
             spawnLoader.loadEssentialsSpawn();
         } else if ("CMI".equalsIgnoreCase(pluginName)) {
             pluginHookService.tryHookToCmi();
-            spawnLoader.loadCMISpawn();
+            spawnLoader.loadCmiSpawn();
         } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
             protocolLibService.setup();
         }
