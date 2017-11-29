@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.collect.Lists;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
@@ -466,5 +467,31 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(dataSource.hasSession("bobby"), equalTo(false));
         assertThat(dataSource.hasSession("user"), equalTo(true));
         assertThat(dataSource.hasSession("nonExistentName"), equalTo(false));
+    }
+
+    @Test
+    public void shouldGetRecentlyLoggedInPlayers() {
+        // given
+        DataSource dataSource = getDataSource();
+        String[] names = {"user3", "user8", "user2", "user4", "user7",
+            "user11", "user14", "user12", "user18", "user16",
+            "user28", "user29", "user22", "user20", "user24"};
+        long timestamp = 1461024000; // 2016-04-19 00:00:00
+        for (int i = 0; i < names.length; ++i) {
+            PlayerAuth auth = PlayerAuth.builder().name(names[i])
+                .registrationDate(1234567)
+                .lastLogin(timestamp + i * 3600)
+                .build();
+            dataSource.saveAuth(auth);
+            dataSource.updateSession(auth);
+        }
+
+        // when
+        List<PlayerAuth> recentPlayers = dataSource.getRecentlyLoggedInPlayers();
+
+        // then
+        assertThat(Lists.transform(recentPlayers, PlayerAuth::getNickname),
+            contains("user24", "user20", "user22", "user29", "user28",
+                "user16", "user18", "user12", "user14", "user11"));
     }
 }

@@ -226,6 +226,13 @@ public interface DataSource extends Reloadable {
     List<PlayerAuth> getAllAuths();
 
     /**
+     * Returns the last ten players who have recently logged in (first ten players with highest last login date).
+     *
+     * @return the 10 last players who last logged in
+     */
+    List<PlayerAuth> getRecentlyLoggedInPlayers();
+
+    /**
      * Reload the data source.
      */
     @Override

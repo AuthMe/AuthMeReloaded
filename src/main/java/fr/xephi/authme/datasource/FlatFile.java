@@ -393,6 +393,11 @@ public class FlatFile implements DataSource {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
+    @Override
+    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
     /**
      * Creates a PlayerAuth object from the read data.
      *

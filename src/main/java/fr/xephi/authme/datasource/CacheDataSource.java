@@ -264,6 +264,11 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        return source.getRecentlyLoggedInPlayers();
+    }
+
+    @Override
     public void invalidateCache(String playerName) {
         cachedAuths.invalidate(playerName);
     }

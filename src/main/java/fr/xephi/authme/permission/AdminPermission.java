@@ -51,6 +51,11 @@ public enum AdminPermission implements PermissionNode {
     GET_IP("authme.admin.getip"),
 
     /**
+     * Administrator command to see the last recently logged in players.
+     */
+    SEE_RECENT_PLAYERS("authme.admin.seerecent"),
+
+    /**
      * Administrator command to teleport to the AuthMe spawn.
      */
     SPAWN("authme.admin.spawn"),

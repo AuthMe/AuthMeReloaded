@@ -17,7 +17,7 @@ softdepend:
 commands:
   authme:
     description: AuthMe op commands
-    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
+    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|recent|debug
   email:
     description: Add email or recover password
     usage: /email show|add|change|recover|code|setpassword
@@ -74,6 +74,7 @@ permissions:
       authme.admin.register: true
       authme.admin.reload: true
       authme.admin.seeotheraccounts: true
+      authme.admin.seerecent: true
       authme.admin.setfirstspawn: true
       authme.admin.setspawn: true
       authme.admin.spawn: true
@@ -133,6 +134,9 @@ permissions:
     default: op
   authme.admin.seeotheraccounts:
     description: Permission to see the other accounts of the players that log in.
+    default: op
+  authme.admin.seerecent:
+    description: Administrator command to see the last recently logged in players.
     default: op
   authme.admin.setfirstspawn:
     description: Administrator command to set the first AuthMe spawn.
