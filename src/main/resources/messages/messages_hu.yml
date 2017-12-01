@@ -87,7 +87,7 @@ email_send_failure: 'Nem sikerült elküldeni az emailt. Lépj kapcsolatba egy a
 show_no_email: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
 add_email: '&3Kérlek, rendeld hozzá a felhasználódhoz az email címedet "&7/email add <email címed> <email címed ismét>&3".'
 recovery_email: '&3Ha elfelejtetted a jelszavad, használd az "&7/email recovery <regisztrált email címed>&3".'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+change_password_expired: 'Ezzel a paranccsal már nem módosíthatja jelszavát.'
 email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldése előtt várnod kell: %time.'
 
 # Captcha
@@ -96,13 +96,13 @@ wrong_captcha: '&cHibás CAPTCHA, kérlek, írd be a következő parancsot: "&7/
 valid_captcha: '&2A CAPTCHA sikeresen feloldva!'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification_code_required: '&3Ez a parancs érzékeny, és e-mailes igazolást igényel! Ellenőrizze a bejövő postafiókot, és kövesse az e-mail utasításait.'
+usage_verification_code: '&cHasználat: /verification <kód>'
+incorrect_verification_code: '&cHelytelen kód, írd be "/verification <kód>" be a chatbe, az e-mailben kapott kód használatával'
+verification_code_verified: '&2Az Ön személyazonosságát ellenőrizték! Mostantól végrehajthatja az összes parancsot az aktuális munkamenetben!'
+verification_code_already_verified: '&2Már minden érzékeny parancsot végrehajthat az aktuális munkameneten belül!'
+verification_code_expired: '&3A kód lejárt! Végezzen el egy másik érzékeny parancsot, hogy új kódot kapjon!'
+verification_code_email_needed: '&3A személyazonosságának igazolásához e-mail címet kell csatolnia fiókjához!'
 
 # Time units
 second: 'másodperc'
