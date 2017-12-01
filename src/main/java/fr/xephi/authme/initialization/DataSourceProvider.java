@@ -9,6 +9,7 @@ import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.datasource.converter.ForceFlatToSqlite;
+import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -36,6 +37,8 @@ public class DataSourceProvider implements Provider<DataSource> {
     private BukkitService bukkitService;
     @Inject
     private PlayerCache playerCache;
+    @Inject
+    private MySqlExtensionsFactory mySqlExtensionsFactory;
 
     DataSourceProvider() {
     }
@@ -54,11 +57,10 @@ public class DataSourceProvider implements Provider<DataSource> {
      * Sets up the data source.
      *
      * @return the constructed datasource
-     * @throws ClassNotFoundException if no driver could be found for the datasource
      * @throws SQLException           when initialization of a SQL datasource failed
      * @throws IOException            if flat file cannot be read
      */
-    private DataSource createDataSource() throws ClassNotFoundException, SQLException, IOException {
+    private DataSource createDataSource() throws SQLException, IOException {
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
         DataSource dataSource;
         switch (dataSourceType) {
@@ -67,10 +69,10 @@ public class DataSourceProvider implements Provider<DataSource> {
                 dataSource = new FlatFile(source);
                 break;
             case MYSQL:
-                dataSource = new MySQL(settings);
+                dataSource = new MySQL(settings, mySqlExtensionsFactory);
                 break;
             case SQLITE:
-                dataSource = new SQLite(settings);
+                dataSource = new SQLite(settings, dataFolder);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
@@ -82,12 +84,12 @@ public class DataSourceProvider implements Provider<DataSource> {
             dataSource = new CacheDataSource(dataSource, playerCache);
         }
         if (DataSourceType.SQLITE.equals(dataSourceType)) {
-            checkDataSourceSize(dataSource, bukkitService);
+            checkDataSourceSize(dataSource);
         }
         return dataSource;
     }
 
-    private void checkDataSourceSize(final DataSource dataSource, BukkitService bukkitService) {
+    private void checkDataSourceSize(DataSource dataSource) {
         bukkitService.runTaskAsynchronously(() -> {
             int accounts = dataSource.getAccountsRegistered();
             if (accounts >= SQLITE_MAX_SIZE) {
@@ -110,7 +112,7 @@ public class DataSourceProvider implements Provider<DataSource> {
                 + "to SQLite... Connection will be impossible until conversion is done!");
             FlatFile flatFile = (FlatFile) dataSource;
             try {
-                SQLite sqlite = new SQLite(settings);
+                SQLite sqlite = new SQLite(settings, dataFolder);
                 ForceFlatToSqlite converter = new ForceFlatToSqlite(flatFile, sqlite);
                 converter.execute(null);
                 settings.setProperty(DatabaseSettings.BACKEND, DataSourceType.SQLITE);

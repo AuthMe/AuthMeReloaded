@@ -47,8 +47,8 @@ public class SyncProcessManager {
         runTask(() -> processSyncPlayerLogout.processSyncLogout(player));
     }
 
-    public void processSyncPlayerLogin(Player player) {
-        runTask(() -> processSyncPlayerLogin.processPlayerLogin(player));
+    public void processSyncPlayerLogin(Player player, boolean isFirstLogin) {
+        runTask(() -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin));
     }
 
     public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {

@@ -99,14 +99,14 @@ public class PurgeServiceTest {
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(true);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
         Set<String> playerNames = newHashSet("alpha", "bravo", "charlie", "delta");
-        given(dataSource.getRecordsToPurge(anyLong(), eq(false))).willReturn(playerNames);
+        given(dataSource.getRecordsToPurge(anyLong())).willReturn(playerNames);
 
         // when
         purgeService.runAutoPurge();
 
         // then
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        verify(dataSource).getRecordsToPurge(captor.capture(), eq(false));
+        verify(dataSource).getRecordsToPurge(captor.capture());
         assertCorrectPurgeTimestamp(captor.getValue(), 60);
         assertThat(Boolean.TRUE, equalTo(
             ReflectionTestUtils.getFieldValue(PurgeService.class, purgeService, "isPurging")));
@@ -117,15 +117,14 @@ public class PurgeServiceTest {
     public void shouldRecognizeNoPlayersToPurge() {
         // given
         final long delay = 123012301L;
-        final boolean includeLastLoginZeroEntries = true;
-        given(dataSource.getRecordsToPurge(delay, includeLastLoginZeroEntries)).willReturn(Collections.emptySet());
+        given(dataSource.getRecordsToPurge(delay)).willReturn(Collections.emptySet());
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        purgeService.runPurge(sender, delay, includeLastLoginZeroEntries);
+        purgeService.runPurge(sender, delay);
 
         // then
-        verify(dataSource).getRecordsToPurge(delay, includeLastLoginZeroEntries);
+        verify(dataSource).getRecordsToPurge(delay);
         verify(dataSource, never()).purgeRecords(anyCollection());
         verify(sender).sendMessage("No players to purge");
         verifyZeroInteractions(bukkitService, permissionsManager);
@@ -135,18 +134,17 @@ public class PurgeServiceTest {
     public void shouldRunPurge() {
         // given
         final long delay = 1809714L;
-        final boolean includeLastLoginZeroEntries = false;
         Set<String> playerNames = newHashSet("charlie", "delta", "echo", "foxtrot");
-        given(dataSource.getRecordsToPurge(delay, includeLastLoginZeroEntries)).willReturn(playerNames);
+        given(dataSource.getRecordsToPurge(delay)).willReturn(playerNames);
         Player sender = mock(Player.class);
         UUID uuid = UUID.randomUUID();
         given(sender.getUniqueId()).willReturn(uuid);
 
         // when
-        purgeService.runPurge(sender, delay, includeLastLoginZeroEntries);
+        purgeService.runPurge(sender, delay);
 
         // then
-        verify(dataSource).getRecordsToPurge(delay, includeLastLoginZeroEntries);
+        verify(dataSource).getRecordsToPurge(delay);
         verifyScheduledPurgeTask(uuid, playerNames);
     }
 

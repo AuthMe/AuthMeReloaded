@@ -20,6 +20,9 @@ import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -68,6 +71,12 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private EmailService emailService;
+
+    @Inject
+    private SessionService sessionService;
+
+    @Inject
+    private BungeeSender bungeeSender;
 
     AsynchronousLogin() {
     }
@@ -168,7 +177,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
             return true;
         } else {
-            handleWrongPassword(player, ip);
+            handleWrongPassword(player, auth, ip);
             return false;
         }
     }
@@ -177,9 +186,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * Handles a login with wrong password.
      *
      * @param player the player who attempted to log in
+     * @param auth the PlayerAuth object of the player
      * @param ip the ip address of the player
      */
-    private void handleWrongPassword(Player player, String ip) {
+    private void handleWrongPassword(Player player, PlayerAuth auth, String ip) {
         ConsoleLogger.fine(player.getName() + " used the wrong password");
 
         bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
@@ -196,7 +206,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 limboService.muteMessageTask(player);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
                     captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
-            } else if (emailService.hasAllInformation()) {
+            } else if (emailService.hasAllInformation() && !Utils.isEmailEmpty(auth.getEmail())) {
                 service.send(player, MessageKey.FORGOT_PASSWORD_MESSAGE);
             }
         }
@@ -210,12 +220,15 @@ public class AsynchronousLogin implements AsynchronousProcess {
      */
     private void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
+            final boolean isFirstLogin = (auth.getLastLogin() == null);
+
             // Update auth to reflect this new login
             final String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
-            auth.setIp(ip);
+            auth.setLastIp(ip);
             dataSource.updateSession(auth);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
 
             // Successful login, so reset the captcha & temp ban count
             final String name = player.getName();
@@ -226,8 +239,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.LOGIN_SUCCESS);
 
             // Other auths
-            List<String> auths = dataSource.getAllAuthsByIp(auth.getIp());
-            runCommandOtherAccounts(auths, player, auth.getIp());
+            List<String> auths = dataSource.getAllAuthsByIp(auth.getLastIp());
+            runCommandOtherAccounts(auths, player, auth.getLastIp());
             displayOtherAccounts(auths, player);
 
             final String email = auth.getEmail();
@@ -237,15 +250,17 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             ConsoleLogger.fine(player.getName() + " logged in!");
 
-            // makes player isLoggedin via API
+            // makes player loggedin
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
+            sessionService.grantSession(name);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            syncProcessManager.processSyncPlayerLogin(player);
+            syncProcessManager.processSyncPlayerLogin(player, isFirstLogin);
         } else {
             ConsoleLogger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");
         }

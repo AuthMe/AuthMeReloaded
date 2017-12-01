@@ -23,7 +23,7 @@ class CommandMigrationService implements MigrationService {
     /** List of all properties in {@link CommandConfig}. */
     @VisibleForTesting
     static final List<String> COMMAND_CONFIG_PROPERTIES = ImmutableList.of(
-        "onJoin", "onLogin", "onSessionLogin", "onRegister", "onUnregister", "onLogout");
+        "onJoin", "onLogin", "onSessionLogin", "onFirstLogin", "onRegister", "onUnregister", "onLogout");
 
     @Inject
     private SettingsMigrationService settingsMigrationService;

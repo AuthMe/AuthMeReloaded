@@ -5,7 +5,6 @@ import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import fr.xephi.authme.ConsoleLogger;
-import net.minelink.ctplus.CombatTagPlus;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -23,8 +22,8 @@ public class PluginHookService {
 
     private final PluginManager pluginManager;
     private Essentials essentials;
+    private Plugin cmi;
     private MultiverseCore multiverse;
-    private CombatTagPlus combatTagPlus;
 
     /**
      * Constructor.
@@ -34,8 +33,8 @@ public class PluginHookService {
     @Inject
     public PluginHookService(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
-        tryHookToCombatPlus();
         tryHookToEssentials();
+        tryHookToCmi();
         tryHookToMultiverse();
     }
 
@@ -64,6 +63,19 @@ public class PluginHookService {
     }
 
     /**
+     * If CMI is hooked into, return CMI' data folder.
+     *
+     * @return The CMI data folder, or null if unavailable
+     */
+    public File getCmiDataFolder() {
+        Plugin plugin = pluginManager.getPlugin("CMI");
+        if(plugin == null) {
+            return null;
+        }
+        return plugin.getDataFolder();
+    }
+
+    /**
      * Return the spawn of the given world as defined by Multiverse (if available).
      *
      * @param world The world to get the Multiverse spawn for
@@ -79,30 +91,10 @@ public class PluginHookService {
         return null;
     }
 
-    /**
-     * Checks whether the player is an NPC.
-     *
-     * @param player The player to process
-     * @return True if player is NPC, false otherwise
-     */
-    public boolean isNpc(Player player) {
-        return player.hasMetadata("NPC") || isNpcInCombatTagPlus(player);
-    }
-
-    /**
-     * Queries the CombatTagPlus plugin whether the given player is an NPC.
-     *
-     * @param player The player to verify
-     * @return True if the player is an NPC according to CombatTagPlus, false if not or if the plugin is unavailable
-     */
-    private boolean isNpcInCombatTagPlus(Player player) {
-        return combatTagPlus != null && combatTagPlus.getNpcPlayerHelper().isNpc(player);
-    }
-
-
     // ------
     // "Is plugin available" methods
     // ------
+
     /**
      * @return true if we have a hook to Essentials, false otherwise
      */
@@ -111,17 +103,17 @@ public class PluginHookService {
     }
 
     /**
+     * @return true if we have a hook to CMI, false otherwise
+     */
+    public boolean isCmiAvailable() {
+        return cmi != null;
+    }
+
+    /**
      * @return true if we have a hook to Multiverse, false otherwise
      */
     public boolean isMultiverseAvailable() {
         return multiverse != null;
-    }
-
-    /**
-     * @return true if we have a hook to CombatTagPlus, false otherwise
-     */
-    public boolean isCombatTagPlusAvailable() {
-        return combatTagPlus != null;
     }
 
     // ------
@@ -140,13 +132,13 @@ public class PluginHookService {
     }
 
     /**
-     * Attempts to create a hook into CombatTagPlus.
+     * Attempts to create a hook into CMI.
      */
-    public void tryHookToCombatPlus() {
+    public void tryHookToCmi() {
         try {
-            combatTagPlus = getPlugin(pluginManager, "CombatTagPlus", CombatTagPlus.class);
+            cmi = getPlugin(pluginManager, "CMI", Plugin.class);
         } catch (Exception | NoClassDefFoundError ignored) {
-            combatTagPlus = null;
+            cmi = null;
         }
     }
 
@@ -164,6 +156,7 @@ public class PluginHookService {
     // ------
     // Unhook methods
     // ------
+
     /**
      * Unhooks from Essentials.
      */
@@ -172,10 +165,10 @@ public class PluginHookService {
     }
 
     /**
-     * Unhooks from CombatTagPlus.
+     * Unhooks from CMI.
      */
-    public void unhookCombatPlus() {
-        combatTagPlus = null;
+    public void unhookCmi() {
+        cmi = null;
     }
 
     /**
@@ -188,6 +181,7 @@ public class PluginHookService {
     // ------
     // Helpers
     // ------
+
     private static <T extends Plugin> T getPlugin(PluginManager pluginManager, String name, Class<T> clazz)
         throws Exception, NoClassDefFoundError {
         if (pluginManager.isPluginEnabled(name)) {
@@ -197,6 +191,5 @@ public class PluginHookService {
         }
         return null;
     }
-
 
 }

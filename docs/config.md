@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun May 21 12:23:19 CEST 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Nov 28 12:49:57 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -12,7 +12,8 @@ DataSource:
     # What type of database do you want to use?
     # Valid values: SQLITE, MYSQL
     backend: 'SQLITE'
-    # Enable database caching, should improve database performance
+    # Enable the database caching system, should be disabled on bungeecord environments
+    # or when a website integration is being used.
     caching: true
     # Database host address
     mySQLHost: '127.0.0.1'
@@ -40,10 +41,16 @@ DataSource:
     mySQLColumnEmail: 'email'
     # Column for storing if a player is logged in or not
     mySQLColumnLogged: 'isLogged'
-    # Column for storing players ips
+    # Column for storing if a player has a valid session or not
+    mySQLColumnHasSession: 'hasSession'
+    # Column for storing the player's last IP
     mySQLColumnIp: 'ip'
     # Column for storing players lastlogins
     mySQLColumnLastLogin: 'lastlogin'
+    # Column storing the registration date
+    mySQLColumnRegisterDate: 'regdate'
+    # Column for storing the IP address at the time of registration
+    mySQLColumnRegisterIp: 'regip'
     # Column for storing player LastLocation - X
     mySQLlastlocX: 'x'
     # Column for storing player LastLocation - Y
@@ -58,6 +65,9 @@ DataSource:
     mySQLlastlocPitch: 'pitch'
     # Overrides the size of the DB Connection Pool, -1 = Auto
     poolSize: -1
+    # The maximum lifetime of a connection in the pool, default = 1800 seconds
+    # You should set this at least 30 seconds less than mysql server wait_timeout
+    maxLifetime: 1800
 ExternalBoardOptions:
     # Column for storing players passwords salts
     mySQLColumnSalt: ''
@@ -79,6 +89,8 @@ ExternalBoardOptions:
     IPBTablePrefix: 'ipb_'
     # IP Board default group ID; 3 is the default registered group defined by IP Board
     IPBActivatedGroupId: 3
+    # Xenforo table prefix defined during the Xenforo installation process
+    XFTablePrefix: 'xf_'
     # XenForo default group ID; 2 is the default registered group defined by Xenforo
     XFActivatedGroupId: 2
     # Wordpress prefix defined during WordPress installation
@@ -98,6 +110,8 @@ settings:
     # Message language, available languages:
     # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md
     messagesLanguage: 'en'
+    # Forces authme to hook into Vault instead of a specific permission handler system.
+    forceVaultHook: false
     # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
     # FINE for some additional detailed ones (like password failed),
     # and DEBUG for debugging
@@ -105,6 +119,10 @@ settings:
     # By default we schedule async tasks when talking to the database. If you want
     # typical communication with the database to happen synchronously, set this to false
     useAsyncTasks: true
+    # By default we handle the AsyncPlayerPreLoginEvent which makes the plugin faster
+    # but it is incompatible with any permission plugin not included in our compatibility list.
+    # If you have issues with permission checks on player join please disable this option.
+    useAsyncPreLoginEvent: true
     restrictions:
         # Can not authenticated players chat?
         # Keep in mind that this feature also blocks all commands not
@@ -151,9 +169,11 @@ settings:
         AllowRestrictedUser: false
         # The restricted user feature will kick players listed below
         # if they don't match the defined IP address. Names are case-insensitive.
+        # You can use * as wildcard (127.0.0.*), or regex with a "regex:" prefix regex:127\.0\.0\..*
         # Example:
         #     AllowedRestrictedUser:
         #     - playername;127.0.0.1
+        #     - playername;regex:127\.0\.0\..*
         AllowedRestrictedUser: []
         # Ban unknown IPs trying to log in with a restricted username?
         banUnsafedIP: false
@@ -182,16 +202,18 @@ settings:
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
-        # Spawn priority; values: authme, essentials, multiverse, default
-        spawnPriority: 'authme,essentials,multiverse,default'
+        # Spawn priority; values: authme, essentials, cmi, multiverse, default
+        spawnPriority: 'authme,essentials,cmi,multiverse,default'
         # Maximum Login authorized by IP
         maxLoginPerIp: 0
         # Maximum Join authorized by IP
         maxJoinPerIp: 0
         # AuthMe will NEVER teleport players if set to true!
         noTeleport: false
-        # Regex syntax for allowed chars in passwords
-        allowedPasswordCharacters: '[\x21-\x7E]*'
+        # Regex syntax for allowed chars in passwords. The default [!-~] allows all visible ASCII
+        # characters, which is what we recommend. See also http://asciitable.com
+        # You can test your regex with https://regex101.com
+        allowedPasswordCharacters: '[!-~]*'
         # Threshold of the other accounts command, a value less than 2 means disabled.
         otherAccountsCmdThreshold: 0
         # Command to run when a user has more accounts than the configured threshold.
@@ -214,10 +236,11 @@ settings:
         minPasswordLength: 5
         # Maximum length of password
         passwordMaxLength: 30
-        # Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,
+        # Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512,
         # MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,
-        # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at
+        # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, ARGON2, CUSTOM (for developers only). See full list at
         # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md
+        # If you use ARGON2, check that you have the argon2 c library on your system
         passwordHash: 'SHA256'
         # If a password check fails, AuthMe will also try to check with the following hash methods.
         # Use this setting when you change from one hash method to another.
@@ -283,7 +306,8 @@ settings:
     # keep empty to use the original one.
     # Available variables:
     # {PLAYERNAME}: the player name (no colors)
-    # {DISPLAYNAME}: the player name (with colors)
+    # {DISPLAYNAME}: the player display name (with colors)
+    # {DISPLAYNAMENOCOLOR}: the player display name (without colors)
     customJoinMessage: ''
     # Should we remove the leave messages of unlogged users?
     removeUnloggedLeaveMessage: false
@@ -365,7 +389,7 @@ Protection:
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
     # Countries allowed to join the server and register. For country codes, see
-    # https://dev.bukkit.org/projects/authme-reloaded/pages/countries-codes
+    # http://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # PLEASE USE QUOTES!
     countries: 
     - 'US'
@@ -433,6 +457,9 @@ Security:
         # How many minutes before resetting the count for failed logins by IP and username
         # Default: 480 minutes (8 hours)
         minutesBeforeCounterReset: 480
+        # The command to execute instead of using the internal ban system, empty if disabled.
+        # Available placeholders: %player%, %ip%
+        customCommand: ''
     recoveryCode:
         # Number of characters a recovery code should have (0 to disable)
         length: 8
@@ -448,6 +475,14 @@ Security:
         # Seconds a user has to wait for before a password recovery mail may be sent again
         # This prevents an attacker from abusing AuthMe's email feature.
         cooldown: 60
+    privacy:
+        # The mail shown using /email show will be partially hidden
+        # E.g. (if enabled)
+        #  original email: my.email@example.com
+        #  hidden email: my.***@***mple.com
+        enableEmailMasking: false
+        # Minutes after which a verification code will expire
+        verificationCodeExpiration: 10
 # Before a user logs in, various properties are temporarily removed from the player,
 # such as OP status, ability to fly, and walk/fly speed.
 # Once the user is logged in, we add back the properties we previously saved.
@@ -472,18 +507,19 @@ limbo:
         # Note: if you change this setting all data will be migrated. If you have a lot of data,
         # change this setting only on server restart, not with /authme reload.
         distributionSize: 'SIXTEEN'
-    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE.
-    # RESTORE sets back the old property from the player.
+    # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE, NOTHING.
+    # RESTORE sets back the old property from the player. NOTHING will prevent AuthMe
+    # from modifying the 'allow flight' property on the player.
     restoreAllowFlight: 'RESTORE'
     # Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # RESTORE: restore the speed the player had;
     # DEFAULT: always set to default speed;
     # MAX_RESTORE: take the maximum of the player's current speed and the previous one
     # RESTORE_NO_ZERO: Like 'restore' but sets speed to default if the player's speed was 0
-    restoreFlySpeed: 'MAX_RESTORE'
+    restoreFlySpeed: 'RESTORE_NO_ZERO'
     # Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # See above for a description of the values.
-    restoreWalkSpeed: 'MAX_RESTORE'
+    restoreWalkSpeed: 'RESTORE_NO_ZERO'
 BackupSystem:
     # General configuration for backups: if false, no backups are possible
     ActivateBackup: false
@@ -524,4 +560,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun May 21 12:23:19 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Nov 28 12:49:57 CET 2017

@@ -3,6 +3,8 @@ package fr.xephi.authme.data.limbo;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SpawnLoader;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -37,6 +39,9 @@ public class LimboService {
     @Inject
     private AuthGroupHandler authGroupHandler;
 
+    @Inject
+    private SpawnLoader spawnLoader;
+
     LimboService() {
     }
 
@@ -60,8 +65,9 @@ public class LimboService {
             ConsoleLogger.debug("LimboPlayer for `{0}` already present in memory", name);
         }
 
+        Location location = spawnLoader.getPlayerLocationOrSpawn(player);
         LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
-        limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered), limboPlayer);
+        limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered, location), limboPlayer);
 
         taskManager.registerMessageTask(player, limboPlayer, isRegistered);
         taskManager.registerTimeoutTask(player, limboPlayer);

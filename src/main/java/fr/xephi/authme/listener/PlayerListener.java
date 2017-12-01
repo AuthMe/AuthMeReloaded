@@ -4,17 +4,22 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -26,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -33,6 +39,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -76,6 +83,12 @@ public class PlayerListener implements Listener {
     private ValidationService validationService;
     @Inject
     private JoinMessageService joinMessageService;
+    @Inject
+    private PermissionsManager permissionsManager;
+    @Inject
+    private BungeeSender bungeeSender;
+
+    private boolean isAsyncPlayerPreLoginEventCalled = false;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -165,8 +178,11 @@ public class PlayerListener implements Listener {
 
         String customJoinMessage = settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE);
         if (!customJoinMessage.isEmpty()) {
-            event.setJoinMessage(customJoinMessage.replace("{PLAYERNAME}", player.getName())
-                .replace("{DISPLAYNAME}", player.getDisplayName()));
+            event.setJoinMessage(customJoinMessage
+                .replace("{PLAYERNAME}", player.getName())
+                .replace("{DISPLAYNAME}", player.getDisplayName())
+                .replace("{DISPLAYNAMENOCOLOR}", ChatColor.stripColor(player.getDisplayName()))
+            );
         }
 
         if (!settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)) {
@@ -186,8 +202,29 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        teleportationService.teleportNewPlayerToFirstSpawn(player);
+
+        if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
+            teleportationService.teleportOnJoin(player);
+        }
         management.performJoin(player);
+
+        teleportationService.teleportNewPlayerToFirstSpawn(player);
+    }
+
+    private void runOnJoinChecks(JoiningPlayer joiningPlayer, String ip) throws FailedVerificationException {
+        // Fast stuff
+        final String name = joiningPlayer.getName();
+        onJoinVerifier.checkSingleSession(name);
+        onJoinVerifier.checkIsValidName(name);
+
+        // Get the auth later as this may cause the single session check to fail
+        // Slow stuff
+        final PlayerAuth auth = dataSource.getAuth(name);
+        final boolean isAuthAvailable = auth != null;
+        onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
+        onJoinVerifier.checkAntibot(joiningPlayer, isAuthAvailable);
+        onJoinVerifier.checkNameCasing(name, auth);
+        onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, isAuthAvailable);
     }
 
     // Note #831: AsyncPlayerPreLoginEvent is not fired by all servers in offline mode
@@ -196,13 +233,46 @@ public class PlayerListener implements Listener {
     // event caused by "logged in from another location". The nicer way, but only for Spigot, would be
     // to check in the AsyncPlayerPreLoginEvent. To support all servers, we use the less nice way.
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
+        isAsyncPlayerPreLoginEventCalled = true;
+        if (!settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
+            return;
+        }
+
+        final String name = event.getName();
+
+        if (validationService.isUnrestricted(name)) {
+            return;
+        }
+
+        // Keep pre-UUID compatibility
+        try {
+            permissionsManager.loadUserData(event.getUniqueId());
+        } catch (NoSuchMethodError e) {
+            permissionsManager.loadUserData(name);
+        }
+
+        try {
+            runOnJoinChecks(JoiningPlayer.fromName(name), event.getAddress().getHostAddress());
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+        }
+    }
+
+    //Note: We can't teleport the player in the PlayerLoginEvent listener
+    //as the new player location will be reverted by the server.
+
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();
+
         if (validationService.isUnrestricted(name)) {
             return;
         }
+
         if (onJoinVerifier.refusePlayerForFullServer(event)) {
             return;
         }
@@ -210,26 +280,14 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        try {
-            // Fast stuff
-            onJoinVerifier.checkSingleSession(name);
-            onJoinVerifier.checkIsValidName(name);
-
-            // Get the auth later as this may cause the single session check to fail
-            // Slow stuff
-            final PlayerAuth auth = dataSource.getAuth(name);
-            final boolean isAuthAvailable = auth != null;
-            onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
-            onJoinVerifier.checkAntibot(player, isAuthAvailable);
-            onJoinVerifier.checkNameCasing(player, auth);
-            onJoinVerifier.checkPlayerCountry(isAuthAvailable, event.getAddress().getHostAddress());
-        } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
+        if (!isAsyncPlayerPreLoginEventCalled || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
+            try {
+                runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
+            } catch (FailedVerificationException e) {
+                event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            }
         }
-
-        teleportationService.teleportOnJoin(player);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -269,6 +327,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerHeldItem(PlayerItemHeldEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
@@ -346,7 +411,7 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // TODO: check this, why do we need to update the quit loc? -sgdc3
+    //TODO: check this, why do we need to update the quit loc? -sgdc3
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
@@ -365,6 +430,7 @@ public class PlayerListener implements Listener {
                 .location(spawn)
                 .build();
             dataSource.updateQuitLoc(auth);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);

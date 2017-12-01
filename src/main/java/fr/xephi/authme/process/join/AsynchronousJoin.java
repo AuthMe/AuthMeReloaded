@@ -1,13 +1,9 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.SessionManager;
-import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -15,13 +11,16 @@ import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -47,13 +46,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private CommonService service;
 
     @Inject
-    private PlayerCache playerCache;
-
-    @Inject
     private LimboService limboService;
-
-    @Inject
-    private SessionManager sessionManager;
 
     @Inject
     private PluginHookService pluginHookService;
@@ -70,9 +63,20 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private WelcomeMessageConfiguration welcomeMessageConfiguration;
+
+    @Inject
+    private SessionService sessionService;
+
     AsynchronousJoin() {
     }
 
+    /**
+     * Processes the given player that has just joined.
+     *
+     * @param player the player to process
+     */
     public void processJoin(final Player player) {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
@@ -91,15 +95,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         if (!validationService.fulfillsNameRestrictions(player)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(new Runnable() {
-                @Override
-                public void run() {
-                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
-                    if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
-                        server.banIP(ip);
-                    }
-                }
-            });
+            handlePlayerWithUnmetNameRestriction(player, ip);
             return;
         }
 
@@ -121,18 +117,43 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
 
             // Session logic
-            if (canResumeSession(player)) {
+            if (sessionService.canResumeSession(player)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> commandManager.runCommandsOnSessionLogin(player));
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                    () -> commandManager.runCommandsOnSessionLogin(player));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+                welcomeMessageConfiguration.sendWelcomeMessage(player);
+            });
+
             // Skip if registration is optional
             return;
         }
 
+        processJoinSync(player, isAuthAvailable);
+    }
+
+    private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
+            if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
+                server.banIP(ip);
+            }
+        });
+    }
+
+    /**
+     * Performs various operations in sync mode for an unauthenticated player (such as blindness effect and
+     * limbo player creation).
+     *
+     * @param player the player to process
+     * @param isAuthAvailable true if the player is registered, false otherwise
+     */
+    private void processJoinSync(Player player, boolean isAuthAvailable) {
         final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
@@ -149,25 +170,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             commandManager.runCommandsOnJoin(player);
         });
-    }
-
-    private boolean canResumeSession(Player player) {
-        final String name = player.getName();
-        if (sessionManager.hasSession(name) || database.isLogged(name)) {
-            PlayerAuth auth = database.getAuth(name);
-            database.setUnlogged(name);
-            playerCache.removePlayer(name);
-            if (auth != null) {
-                if (auth.getIp().equals(PlayerUtils.getPlayerIp(player))) {
-                    RestoreSessionEvent event = bukkitService.createAndCallEvent(
-                        isAsync -> new RestoreSessionEvent(player, isAsync));
-                    return !event.isCancelled();
-                } else {
-                    service.send(player, MessageKey.SESSION_EXPIRED);
-                }
-            }
-        }
-        return false;
     }
 
     /**

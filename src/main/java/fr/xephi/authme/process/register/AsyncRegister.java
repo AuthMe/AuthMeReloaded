@@ -1,16 +1,18 @@
 package fr.xephi.authme.process.register;
 
+import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
-import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
+import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -36,6 +38,8 @@ public class AsyncRegister implements AsynchronousProcess {
     private PermissionsManager permissionsManager;
     @Inject
     private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
+    @Inject
+    private BungeeSender bungeeSender;
 
     AsyncRegister() {
     }
@@ -84,6 +88,7 @@ public class AsyncRegister implements AsynchronousProcess {
         PlayerAuth auth = executor.buildPlayerAuth(parameters);
         if (database.saveAuth(auth)) {
             executor.executePostPersistAction(parameters);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REGISTER, parameters.getPlayerName());
         } else {
             service.send(parameters.getPlayer(), MessageKey.ERROR);
         }

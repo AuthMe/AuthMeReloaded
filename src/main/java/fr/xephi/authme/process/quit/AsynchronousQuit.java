@@ -1,18 +1,21 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.data.SessionManager;
+import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
-import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
-import fr.xephi.authme.service.ValidationService;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -39,13 +42,19 @@ public class AsynchronousQuit implements AsynchronousProcess {
     private SyncProcessManager syncProcessManager;
 
     @Inject
-    private SessionManager sessionManager;
-
-    @Inject
     private SpawnLoader spawnLoader;
 
     @Inject
     private ValidationService validationService;
+
+    @Inject
+    private VerificationCodeManager codeManager;
+
+    @Inject
+    private SessionService sessionService;
+
+    @Inject
+    private BungeeSender bungeeSender;
 
     AsynchronousQuit() {
     }
@@ -75,27 +84,31 @@ public class AsynchronousQuit implements AsynchronousProcess {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
                 .realName(player.getName())
-                .ip(ip)
+                .lastIp(ip)
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);
-
-            sessionManager.addSession(name);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip
         playerCache.removePlayer(name);
+        codeManager.unverify(name);
 
-        //always update the database when the player quit the game
-        database.setUnlogged(name);
+        //always update the database when the player quit the game (if sessions are disabled)
+        if (wasLoggedIn) {
+            database.setUnlogged(name);
+            if (!service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+                sessionService.revokeSession(name);
+            }
+        }
 
         if (plugin.isEnabled()) {
             syncProcessManager.processSyncPlayerQuit(player, wasLoggedIn);
         }
+
         // remove player from cache
-        if (database instanceof CacheDataSource) {
-            ((CacheDataSource) database).getCachedAuths().invalidate(name);
-        }
+        database.invalidateCache(name);
     }
 
 }

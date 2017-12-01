@@ -7,6 +7,8 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -28,6 +30,9 @@ public class AsyncChangeEmail implements AsynchronousProcess {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private BungeeSender bungeeSender;
+
     AsyncChangeEmail() { }
 
     /**
@@ -47,7 +52,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
                 service.send(player, MessageKey.USAGE_ADD_EMAIL);
             } else if (newEmail == null || !validationService.validateEmail(newEmail)) {
                 service.send(player, MessageKey.INVALID_NEW_EMAIL);
-            } else if (!oldEmail.equals(currentEmail)) {
+            } else if (!oldEmail.equalsIgnoreCase(currentEmail)) {
                 service.send(player, MessageKey.INVALID_OLD_EMAIL);
             } else if (!validationService.isEmailFreeForRegistration(newEmail, player)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
@@ -63,6 +68,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         auth.setEmail(newEmail);
         if (dataSource.updateEmail(auth)) {
             playerCache.updatePlayer(auth);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, player.getName());
             service.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
         } else {
             service.send(player, MessageKey.ERROR);

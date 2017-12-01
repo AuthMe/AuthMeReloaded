@@ -60,7 +60,7 @@ public class PurgeService {
         calendar.add(Calendar.DATE, -daysBeforePurge);
         long until = calendar.getTimeInMillis();
 
-        runPurge(null, until, false);
+        runPurge(null, until);
     }
 
     /**
@@ -69,11 +69,10 @@ public class PurgeService {
      *
      * @param sender Sender running the command
      * @param until The last login threshold in milliseconds
-     * @param includeEntriesWithLastLoginZero True to also purge players with lastlogin = 0, false otherwise
      */
-    public void runPurge(CommandSender sender, long until, boolean includeEntriesWithLastLoginZero) {
+    public void runPurge(CommandSender sender, long until) {
         //todo: note this should may run async because it may executes a SQL-Query
-        Set<String> toPurge = dataSource.getRecordsToPurge(until, includeEntriesWithLastLoginZero);
+        Set<String> toPurge = dataSource.getRecordsToPurge(until);
         if (Utils.isCollectionEmpty(toPurge)) {
             logAndSendMessage(sender, "No players to purge");
             return;

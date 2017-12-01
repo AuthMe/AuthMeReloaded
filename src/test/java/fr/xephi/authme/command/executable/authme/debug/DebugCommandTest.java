@@ -1,9 +1,10 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import fr.xephi.authme.initialization.factory.Factory;
+import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,11 +86,12 @@ public class DebugCommandTest {
         verify(permissionsManager, atLeast(MIN_DEBUG_SECTIONS)).hasPermission(eq(sender), any(DebugSectionPermissions.class));
 
         ArgumentCaptor<String> strCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(3)).sendMessage(strCaptor.capture());
+        verify(sender, times(4)).sendMessage(strCaptor.capture());
         assertThat(strCaptor.getAllValues(), contains(
-            containsString("Sections available to you"),
+            equalTo(ChatColor.BLUE + "AuthMe debug utils"),
+            equalTo("Sections available to you:"),
             containsString("stats: Outputs general data statistics"),
-            containsString("valid: Check if email / password is valid")));
+            containsString("valid: Checks if your config.yml allows a password / email")));
     }
 
     @Test
@@ -106,8 +108,9 @@ public class DebugCommandTest {
         verify(permissionsManager, atLeast(MIN_DEBUG_SECTIONS)).hasPermission(eq(sender), any(DebugSectionPermissions.class));
 
         ArgumentCaptor<String> strCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(2)).sendMessage(strCaptor.capture());
+        verify(sender, times(3)).sendMessage(strCaptor.capture());
         assertThat(strCaptor.getAllValues(), contains(
+            equalTo(ChatColor.BLUE + "AuthMe debug utils"),
             equalTo("Sections available to you:"),
             containsString("You don't have permission to view any debug section")));
     }

@@ -13,6 +13,7 @@ public class CommandConfig {
     private Map<String, Command> onJoin = new LinkedHashMap<>();
     private Map<String, Command> onLogin = new LinkedHashMap<>();
     private Map<String, Command> onSessionLogin = new LinkedHashMap<>();
+    private Map<String, Command> onFirstLogin = new LinkedHashMap<>();
     private Map<String, Command> onRegister = new LinkedHashMap<>();
     private Map<String, Command> onUnregister = new LinkedHashMap<>();
     private Map<String, Command> onLogout = new LinkedHashMap<>();
@@ -39,6 +40,14 @@ public class CommandConfig {
 
     public void setOnSessionLogin(Map<String, Command> onSessionLogin) {
         this.onSessionLogin = onSessionLogin;
+    }
+
+    public Map<String, Command> getOnFirstLogin() {
+        return onFirstLogin;
+    }
+
+    public void setOnFirstLogin(Map<String, Command> onFirstLogin) {
+        this.onFirstLogin = onFirstLogin;
     }
 
     public Map<String, Command> getOnRegister() {

@@ -8,10 +8,10 @@ import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -19,14 +19,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
-import java.util.List;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     @Inject
     private LimboService limboService;
@@ -63,7 +62,13 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
     }
 
-    public void processPlayerLogin(Player player) {
+    /**
+     * Performs operations in sync mode for a player that has just logged in.
+     *
+     * @param player the player that was logged in
+     * @param isFirstLogin true if this is the first time the player logged in
+     */
+    public void processPlayerLogin(Player player, boolean isFirstLogin) {
         final String name = player.getName().toLowerCase();
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
@@ -91,19 +96,15 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         player.saveData();
 
         // Login is done, display welcome message
-        List<String> welcomeMessage = welcomeMessageConfiguration.getWelcomeMessage(player);
-        if (commonService.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (commonService.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                welcomeMessage.forEach(bukkitService::broadcastMessage);
-            } else {
-                welcomeMessage.forEach(player::sendMessage);
-            }
-        }
+        welcomeMessageConfiguration.sendWelcomeMessage(player);
 
         // Login is now finished; we can force all commands
+        if (isFirstLogin) {
+            commandManager.runCommandsOnFirstLogin(player);
+        }
         commandManager.runCommandsOnLogin(player);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.connectPlayer(player);
+        bungeeSender.connectPlayerOnLogin(player);
     }
 }

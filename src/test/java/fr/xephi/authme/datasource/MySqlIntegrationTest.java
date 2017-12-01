@@ -9,8 +9,6 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +17,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,19 +35,13 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     /**
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BeforeClass
     public static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an H2 driver
         Class.forName("org.h2.jdbcx.JdbcDataSource");
 
         settings = mock(Settings.class);
-        when(settings.getProperty(any(Property.class))).thenAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return ((Property) invocation.getArguments()[0]).getDefaultValue();
-            }
-        });
+        TestHelper.returnDefaultsForAllProperties(settings);
         set(DatabaseSettings.MYSQL_DATABASE, "h2_test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
         TestHelper.setRealLogger();
@@ -85,7 +76,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     @Override
     protected DataSource getDataSource(String saltColumn) {
         when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
-        return new MySQL(settings, hikariSource);
+        return SqlDataSourceTestUtil.createMySql(settings, hikariSource);
     }
 
     private static <T> void set(Property<T> property, T value) {

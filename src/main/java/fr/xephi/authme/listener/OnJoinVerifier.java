@@ -64,15 +64,16 @@ public class OnJoinVerifier implements Reloadable {
     /**
      * Checks if Antibot is enabled.
      *
-     * @param player          the player
+     * @param joiningPlayer   the joining player to check
      * @param isAuthAvailable whether or not the player is registered
+     * @throws FailedVerificationException if the verification fails
      */
-    public void checkAntibot(Player player, boolean isAuthAvailable) throws FailedVerificationException {
-        if (isAuthAvailable || permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)) {
+    public void checkAntibot(JoiningPlayer joiningPlayer, boolean isAuthAvailable) throws FailedVerificationException {
+        if (isAuthAvailable || permissionsManager.hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT)) {
             return;
         }
         if (antiBotService.shouldKick()) {
-            antiBotService.addPlayerKick(player.getName());
+            antiBotService.addPlayerKick(joiningPlayer.getName());
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }
     }
@@ -81,6 +82,7 @@ public class OnJoinVerifier implements Reloadable {
      * Checks whether non-registered players should be kicked, and if so, whether the player should be kicked.
      *
      * @param isAuthAvailable whether or not the player is registered
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkKickNonRegistered(boolean isAuthAvailable) throws FailedVerificationException {
         if (!isAuthAvailable && settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)) {
@@ -92,6 +94,7 @@ public class OnJoinVerifier implements Reloadable {
      * Checks that the name adheres to the configured username restrictions.
      *
      * @param name the name to verify
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkIsValidName(String name) throws FailedVerificationException {
         if (name.length() > settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)
@@ -145,13 +148,13 @@ public class OnJoinVerifier implements Reloadable {
     /**
      * Checks that the casing in the username corresponds to the one in the database, if so configured.
      *
-     * @param player the player to verify
-     * @param auth   the auth object associated with the player
+     * @param connectingName the player name to verify
+     * @param auth the auth object associated with the player
+     * @throws FailedVerificationException if the verification fails
      */
-    public void checkNameCasing(Player player, PlayerAuth auth) throws FailedVerificationException {
+    public void checkNameCasing(String connectingName, PlayerAuth auth) throws FailedVerificationException {
         if (auth != null && settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)) {
             String realName = auth.getRealName(); // might be null or "Player"
-            String connectingName = player.getName();
 
             if (StringUtils.isEmpty(realName) || "Player".equals(realName)) {
                 dataSource.updateRealName(connectingName.toLowerCase(), connectingName);
@@ -164,14 +167,17 @@ public class OnJoinVerifier implements Reloadable {
     /**
      * Checks that the player's country is admitted.
      *
+     * @param joiningPlayer   the joining player to verify
+     * @param address         the player address
      * @param isAuthAvailable whether or not the user is registered
-     * @param playerIp        the ip address of the player
+     * @throws FailedVerificationException if the verification fails
      */
-    public void checkPlayerCountry(boolean isAuthAvailable,
-                                   String playerIp) throws FailedVerificationException {
+    public void checkPlayerCountry(JoiningPlayer joiningPlayer, String address,
+                                   boolean isAuthAvailable) throws FailedVerificationException {
         if ((!isAuthAvailable || settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED))
             && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)
-            && !validationService.isCountryAdmitted(playerIp)) {
+            && !permissionsManager.hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_COUNTRY_CHECK)
+            && !validationService.isCountryAdmitted(address)) {
                 throw new FailedVerificationException(MessageKey.COUNTRY_BANNED_ERROR);
         }
     }
@@ -181,6 +187,7 @@ public class OnJoinVerifier implements Reloadable {
      * connection if so configured.
      *
      * @param name the player name to check
+     * @throws FailedVerificationException if the verification fails
      */
     public void checkSingleSession(String name) throws FailedVerificationException {
         if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {

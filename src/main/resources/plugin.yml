@@ -6,8 +6,8 @@ main: ${bukkitplugin.main}
 version: ${bukkitplugin.version}
 softdepend:
     - Vault
-    - PermissionsBukkit
-    - PermissionsEX
+    - LuckPerms
+    - PermissionsEx
     - bPermissions
     - zPermissions
     - Multiverse-Core
@@ -17,7 +17,10 @@ softdepend:
 commands:
   authme:
     description: AuthMe op commands
-    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|debug
+    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|recent|debug
+  email:
+    description: Add email or recover password
+    usage: /email show|add|change|recover|code|setpassword
   login:
     description: Login command
     usage: /login <password>
@@ -43,12 +46,12 @@ commands:
     aliases:
     - changepass
     - cp
-  email:
-    description: Add email or recover password
-    usage: /email show|add|change|recover|code|setpassword
   captcha:
-    description: Captcha Command
+    description: Captcha command
     usage: /captcha <captcha>
+  verification:
+    description: Verification command
+    usage: /verification <code>
 permissions:
   authme.admin.*:
     description: Gives access to all admin commands
@@ -71,6 +74,7 @@ permissions:
       authme.admin.register: true
       authme.admin.reload: true
       authme.admin.seeotheraccounts: true
+      authme.admin.seerecent: true
       authme.admin.setfirstspawn: true
       authme.admin.setspawn: true
       authme.admin.spawn: true
@@ -131,6 +135,9 @@ permissions:
   authme.admin.seeotheraccounts:
     description: Permission to see the other accounts of the players that log in.
     default: op
+  authme.admin.seerecent:
+    description: Administrator command to see the last recently logged in players.
+    default: op
   authme.admin.setfirstspawn:
     description: Administrator command to set the first AuthMe spawn.
     default: op
@@ -155,6 +162,9 @@ permissions:
   authme.bypassantibot:
     description: Permission node to bypass AntiBot protection.
     default: op
+  authme.bypasscountrycheck:
+    description: Permission to bypass the GeoIp country code check.
+    default: false
   authme.bypassforcesurvival:
     description: Permission for users to bypass force-survival mode.
     default: op
@@ -170,6 +180,7 @@ permissions:
       authme.debug.group: true
       authme.debug.limbo: true
       authme.debug.mail: true
+      authme.debug.mysqldef: true
       authme.debug.perm: true
       authme.debug.spawn: true
       authme.debug.stats: true
@@ -192,6 +203,9 @@ permissions:
   authme.debug.mail:
     description: Permission to use the test email sender.
     default: op
+  authme.debug.mysqldef:
+    description: Permission to change nullable status of MySQL columns.
+    default: op
   authme.debug.perm:
     description: Permission to use the permission checker.
     default: op
@@ -213,9 +227,11 @@ permissions:
       authme.player.email.add: true
       authme.player.email.change: true
       authme.player.email.recover: true
+      authme.player.email.see: true
       authme.player.login: true
       authme.player.logout: true
       authme.player.register: true
+      authme.player.security.verificationcode: true
       authme.player.seeownaccounts: true
       authme.player.unregister: true
   authme.player.canbeforced:
@@ -233,6 +249,7 @@ permissions:
       authme.player.email.add: true
       authme.player.email.change: true
       authme.player.email.recover: true
+      authme.player.email.see: true
   authme.player.email.add:
     description: Command permission to add an email address.
     default: true
@@ -241,6 +258,9 @@ permissions:
     default: true
   authme.player.email.recover:
     description: Command permission to recover an account using its email address.
+    default: true
+  authme.player.email.see:
+    description: Command permission to see the own email address.
     default: true
   authme.player.login:
     description: Command permission to login.
@@ -251,6 +271,9 @@ permissions:
   authme.player.register:
     description: Command permission to register.
     default: true
+  authme.player.security.verificationcode:
+    description: Permission to use the email verification codes feature.
+    default: true
   authme.player.seeownaccounts:
     description: Permission to use to see own other accounts.
     default: true
@@ -258,5 +281,6 @@ permissions:
     description: Command permission to unregister.
     default: true
   authme.vip:
-    description: When the server is full and someone with this permission joins the server, someone will be kicked.
+    description: When the server is full and someone with this permission joins the
+      server, someone will be kicked.
     default: op

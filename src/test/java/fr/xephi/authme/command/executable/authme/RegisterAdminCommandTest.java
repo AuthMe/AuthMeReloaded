@@ -22,7 +22,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.TestHelper.runSyncTaskFromOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -86,10 +87,10 @@ public class RegisterAdminCommandTest {
         given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
         given(dataSource.isAuthAvailable(user)).willReturn(true);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -108,10 +109,10 @@ public class RegisterAdminCommandTest {
         HashedPassword hashedPassword = new HashedPassword("235sdf4w5udsgf");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -133,10 +134,10 @@ public class RegisterAdminCommandTest {
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
         given(bukkitService.getPlayerExact(user)).willReturn(null);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -144,7 +145,6 @@ public class RegisterAdminCommandTest {
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
-        verify(dataSource).setUnlogged(user);
     }
 
     @Test
@@ -162,11 +162,11 @@ public class RegisterAdminCommandTest {
         String kickForAdminRegister = "Admin registered you -- log in again";
         given(commandService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
         CommandSender sender = mock(CommandSender.class);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
-        TestHelper.runOptionallyAsyncTask(bukkitService);
-        runSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // then
         verify(validationService).validatePassword(password, user);
@@ -174,7 +174,6 @@ public class RegisterAdminCommandTest {
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
-        verify(dataSource).setUnlogged(user);
         verify(player).kickPlayer(kickForAdminRegister);
     }
 

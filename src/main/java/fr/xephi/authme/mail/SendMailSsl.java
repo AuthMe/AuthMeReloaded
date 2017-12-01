@@ -45,6 +45,7 @@ public class SendMailSsl {
      *
      * @param emailAddress the email address the email is destined for
      * @return the created HtmlEmail object
+     * @throws EmailException if the mail is invalid
      */
     public HtmlEmail initializeMail(String emailAddress) throws EmailException {
         String senderMail = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_ADDRESS))

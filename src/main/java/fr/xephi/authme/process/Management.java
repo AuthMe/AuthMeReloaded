@@ -12,6 +12,7 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
 import fr.xephi.authme.service.BukkitService;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -91,6 +92,10 @@ public class Management {
 
     public void performPasswordChange(Player player, String oldPassword, String newPassword) {
         runTask(() -> asyncChangePassword.changePassword(player, oldPassword, newPassword));
+    }
+
+    public void performPasswordChangeAsAdmin(CommandSender sender, String playerName, String newPassword) {
+        runTask(() -> asyncChangePassword.changePasswordAsAdmin(sender, playerName, newPassword));
     }
 
     private void runTask(Runnable runnable) {

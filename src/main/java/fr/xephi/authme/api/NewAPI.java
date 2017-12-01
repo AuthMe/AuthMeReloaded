@@ -9,8 +9,8 @@ import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,7 +27,7 @@ import java.util.List;
  * NewAPI authmeApi = NewAPI.getInstance();
  * </code>
  *
- * @deprecated Will be removed in 5.4! Use {@link fr.xephi.authme.api.v3.AuthMeApi} instead.
+ * @deprecated Will be removed in 5.5! Use {@link fr.xephi.authme.api.v3.AuthMeApi} instead.
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 @Deprecated
@@ -35,7 +35,6 @@ public class NewAPI {
 
     private static NewAPI singleton;
     private final AuthMe plugin;
-    private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
@@ -46,10 +45,9 @@ public class NewAPI {
      * Constructor for NewAPI.
      */
     @Inject
-    NewAPI(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PasswordSecurity passwordSecurity,
+    NewAPI(AuthMe plugin, DataSource dataSource, PasswordSecurity passwordSecurity,
            Management management, ValidationService validationService, PlayerCache playerCache) {
         this.plugin = plugin;
-        this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
@@ -64,12 +62,7 @@ public class NewAPI {
      * @return The API object, or null if the AuthMe plugin is not enabled or not fully initialized yet
      */
     public static NewAPI getInstance() {
-        if (singleton != null) {
-            return singleton;
-        }
-        // NewAPI is initialized in AuthMe#onEnable -> if singleton is null,
-        // it means AuthMe isn't initialized (yet)
-        return null;
+        return singleton;
     }
 
     /**
@@ -108,7 +101,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return pluginHookService.isNpc(player);
+        return PlayerUtils.isNpc(player);
     }
 
     /**
@@ -170,14 +163,15 @@ public class NewAPI {
      */
     public boolean registerPlayer(String playerName, String password) {
         String name = playerName.toLowerCase();
-        HashedPassword result = passwordSecurity.computeHash(password, name);
         if (isRegistered(name)) {
             return false;
         }
+        HashedPassword result = passwordSecurity.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .password(result)
             .realName(playerName)
+            .registrationDate(System.currentTimeMillis())
             .build();
         return dataSource.saveAuth(auth);
     }

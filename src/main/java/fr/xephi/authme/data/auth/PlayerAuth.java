@@ -3,6 +3,8 @@ package fr.xephi.authme.data.auth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
+import java.util.Objects;
+
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -12,15 +14,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class PlayerAuth {
 
+    /** Default email used in the database if the email column is defined to be NOT NULL. */
+    public static final String DB_EMAIL_DEFAULT = "your@email.com";
+    /** Default last login value used in the database if the last login column is NOT NULL. */
+    public static final long DB_LAST_LOGIN_DEFAULT = 0;
+    /** Default last ip value used in the database if the last IP column is NOT NULL. */
+    public static final String DB_LAST_IP_DEFAULT = "127.0.0.1";
+
     /** The player's name in lowercase, e.g. "xephi". */
     private String nickname;
     /** The player's name in the correct casing, e.g. "Xephi". */
     private String realName;
     private HashedPassword password;
     private String email;
-    private String ip;
+    private String lastIp;
     private int groupId;
-    private long lastLogin;
+    private Long lastLogin;
+    private String registrationIp;
+    private long registrationDate;
     // Fields storing the player's quit location
     private double x;
     private double y;
@@ -28,13 +39,6 @@ public class PlayerAuth {
     private String world;
     private float yaw;
     private float pitch;
-
-    /**
-     * @param serialized String
-     */
-    public PlayerAuth(String serialized) {
-        this.deserialize(serialized);
-    }
 
     /**
      * Hidden constructor.
@@ -112,15 +116,15 @@ public class PlayerAuth {
         return pitch;
     }
 
-    public String getIp() {
-        return ip;
+    public String getLastIp() {
+        return lastIp;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setLastIp(String lastIp) {
+        this.lastIp = lastIp;
     }
 
-    public long getLastLogin() {
+    public Long getLastLogin() {
         return lastLogin;
     }
 
@@ -144,74 +148,43 @@ public class PlayerAuth {
         this.password = password;
     }
 
+    public String getRegistrationIp() {
+        return registrationIp;
+    }
+
+    public long getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(long registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerAuth)) {
             return false;
         }
         PlayerAuth other = (PlayerAuth) obj;
-        return other.getIp().equals(this.ip) && other.getNickname().equals(this.nickname);
+        return Objects.equals(other.lastIp, this.lastIp) && Objects.equals(other.nickname, this.nickname);
     }
 
     @Override
     public int hashCode() {
         int hashCode = 7;
         hashCode = 71 * hashCode + (this.nickname != null ? this.nickname.hashCode() : 0);
-        hashCode = 71 * hashCode + (this.ip != null ? this.ip.hashCode() : 0);
+        hashCode = 71 * hashCode + (this.lastIp != null ? this.lastIp.hashCode() : 0);
         return hashCode;
     }
 
     @Override
     public String toString() {
         return "Player : " + nickname + " | " + realName
-            + " ! IP : " + ip
+            + " ! IP : " + lastIp
             + " ! LastLogin : " + lastLogin
             + " ! LastPosition : " + x + "," + y + "," + z + "," + world
             + " ! Email : " + email
             + " ! Password : {" + password.getHash() + ", " + password.getSalt() + "}";
-    }
-
-    /**
-     * Method to serialize PlayerAuth
-     *
-     * @return String
-     */
-    public String serialize() {
-        StringBuilder str = new StringBuilder();
-        char d = ';';
-        str.append(this.nickname).append(d);
-        str.append(this.realName).append(d);
-        str.append(this.ip).append(d);
-        str.append(this.email).append(d);
-        str.append(this.password.getHash()).append(d);
-        str.append(this.password.getSalt()).append(d);
-        str.append(this.groupId).append(d);
-        str.append(this.lastLogin).append(d);
-        str.append(this.world).append(d);
-        str.append(this.x).append(d);
-        str.append(this.y).append(d);
-        str.append(this.z);
-        return str.toString();
-    }
-
-    /**
-     * Method to deserialize PlayerAuth
-     * 
-     * @param str String
-     */
-    public void deserialize(String str) {
-        String[] args = str.split(";");
-        this.nickname = args[0];
-        this.realName = args[1];
-        this.ip = args[2];
-        this.email = args[3];
-        this.password = new HashedPassword(args[4], args[5]);
-        this.groupId = Integer.parseInt(args[6]);
-        this.lastLogin = Long.parseLong(args[7]);
-        this.world = args[8];
-        this.x = Double.parseDouble(args[9]);
-        this.y = Double.parseDouble(args[10]);
-        this.z = Double.parseDouble(args[11]);
     }
 
     public static Builder builder() {
@@ -222,10 +195,12 @@ public class PlayerAuth {
         private String name;
         private String realName;
         private HashedPassword password;
-        private String ip;
+        private String lastIp;
         private String email;
         private int groupId = -1;
-        private long lastLogin = System.currentTimeMillis();
+        private Long lastLogin;
+        private String registrationIp;
+        private Long registrationDate;
 
         private double x;
         private double y;
@@ -244,10 +219,12 @@ public class PlayerAuth {
             auth.nickname = checkNotNull(name).toLowerCase();
             auth.realName = firstNonNull(realName, "Player");
             auth.password = firstNonNull(password, new HashedPassword(""));
-            auth.email = firstNonNull(email, "your@email.com");
-            auth.ip = firstNonNull(ip, "127.0.0.1");
+            auth.email = DB_EMAIL_DEFAULT.equals(email) ? null : email;
+            auth.lastIp = lastIp; // Don't check against default value 127.0.0.1 as it may be a legit value
             auth.groupId = groupId;
-            auth.lastLogin = lastLogin;
+            auth.lastLogin = isEqualTo(lastLogin, DB_LAST_LOGIN_DEFAULT) ? null : lastLogin;
+            auth.registrationIp = registrationIp;
+            auth.registrationDate = registrationDate == null ? System.currentTimeMillis() : registrationDate;
 
             auth.x = x;
             auth.y = y;
@@ -256,6 +233,10 @@ public class PlayerAuth {
             auth.yaw = yaw;
             auth.pitch = pitch;
             return auth;
+        }
+
+        private static boolean isEqualTo(Long value, long defaultValue) {
+            return value != null && defaultValue == value;
         }
 
         public Builder name(String name) {
@@ -277,8 +258,8 @@ public class PlayerAuth {
             return password(new HashedPassword(hash, salt));
         }
 
-        public Builder ip(String ip) {
-            this.ip = ip;
+        public Builder lastIp(String lastIp) {
+            this.lastIp = lastIp;
             return this;
         }
 
@@ -328,7 +309,7 @@ public class PlayerAuth {
             return this;
         }
 
-        public Builder lastLogin(long lastLogin) {
+        public Builder lastLogin(Long lastLogin) {
             this.lastLogin = lastLogin;
             return this;
         }
@@ -340,6 +321,16 @@ public class PlayerAuth {
 
         public Builder email(String email) {
             this.email = email;
+            return this;
+        }
+
+        public Builder registrationIp(String ip) {
+            this.registrationIp = ip;
+            return this;
+        }
+
+        public Builder registrationDate(long date) {
+            this.registrationDate = date;
             return this;
         }
     }

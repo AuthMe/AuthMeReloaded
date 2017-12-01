@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.unregister;
 
+import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -15,11 +16,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link UnregisterCommand}.
@@ -34,10 +37,13 @@ public class UnregisterCommandTest {
     private Management management;
 
     @Mock
-    private CommonService commandService;
+    private CommonService commonService;
 
     @Mock
     private PlayerCache playerCache;
+
+    @Mock
+    private VerificationCodeManager codeManager;
 
     @Test
     public void shouldCatchUnauthenticatedUser() {
@@ -53,7 +59,26 @@ public class UnregisterCommandTest {
 
         // then
         verify(playerCache).isAuthenticated(name);
-        verify(commandService).send(player, MessageKey.NOT_LOGGED_IN);
+        verify(commonService).send(player, MessageKey.NOT_LOGGED_IN);
+        verifyZeroInteractions(management);
+    }
+
+    @Test
+    public void shouldStopForMissingVerificationCode() {
+        // given
+        String name = "asldjf";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        given(playerCache.isAuthenticated(name)).willReturn(true);
+        given(codeManager.isVerificationRequired(player)).willReturn(true);
+
+        // when
+        command.executeCommand(player, Collections.singletonList("blergh"));
+
+        // then
+        verify(playerCache).isAuthenticated(name);
+        verify(codeManager).codeExistOrGenerateNew(name);
+        verify(commonService).send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
         verifyZeroInteractions(management);
     }
 
@@ -65,6 +90,7 @@ public class UnregisterCommandTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         given(playerCache.isAuthenticated(name)).willReturn(true);
+        given(codeManager.isVerificationRequired(player)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList(password));
@@ -72,6 +98,7 @@ public class UnregisterCommandTest {
         // then
         verify(playerCache).isAuthenticated(name);
         verify(management).performUnregister(player, password);
+        verify(codeManager).isVerificationRequired(player);
     }
 
     @Test
@@ -87,4 +114,9 @@ public class UnregisterCommandTest {
         verify(sender).sendMessage(argThat(containsString("/authme unregister <player>")));
     }
 
+    @Test
+    public void shouldDefineArgumentMismatchMessage() {
+        // given / when / then
+        assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_UNREGISTER));
+    }
 }

@@ -1,5 +1,11 @@
 package fr.xephi.authme.security.crypts;
 
+import org.junit.Test;
+
+import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 /**
  * Test for {@link Smf}.
  */
@@ -13,4 +19,25 @@ public class SmfTest extends AbstractEncryptionMethodTest {
             "03cca5af1eb0a93be47777651b2e7be4fd5d537d"); // âË_3(íù*
     }
 
+    @Override
+    protected void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isSaltConstructor) {
+        // Smf declares to use a separate salt, but it's not used in the actual hashing mechanism, see Smf class Javadoc
+        assertThat(method.hasSeparateSalt(), equalTo(true));
+        assertThat(isSaltConstructor, equalTo(false));
+    }
+
+    @Test
+    public void shouldGenerateFourCharSalt() {
+        // given
+        EncryptionMethod method = new Smf();
+
+        // when / then
+        assertThat(method.hasSeparateSalt(), equalTo(true));
+        for (int i = 0; i < 3; ++i) {
+            HashedPassword hash = method.computeHash("pw", "name");
+            String salt = hash.getSalt();
+            assertThat(salt, stringWithLength(4));
+            assertThat(salt.matches("[a-z0-9]{4}"), equalTo(true));
+        }
+    }
 }

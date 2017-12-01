@@ -42,6 +42,12 @@ public class XfBCrypt implements EncryptionMethod {
         return false;
     }
 
+    /**
+     * Extracts the password hash from the given BLOB.
+     *
+     * @param blob the blob to process
+     * @return the extracted hash
+     */
     public static String getHashFromBlob(byte[] blob) {
         String line = new String(blob);
         Matcher m = HASH_PATTERN.matcher(line);

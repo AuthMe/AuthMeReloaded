@@ -10,14 +10,15 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.GeoIpService;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +33,6 @@ public class AuthMeApi {
 
     private static AuthMeApi singleton;
     private final AuthMe plugin;
-    private final PluginHookService pluginHookService;
     private final DataSource dataSource;
     private final PasswordSecurity passwordSecurity;
     private final Management management;
@@ -44,11 +44,9 @@ public class AuthMeApi {
      * Constructor for AuthMeApi.
      */
     @Inject
-    AuthMeApi(AuthMe plugin, PluginHookService pluginHookService, DataSource dataSource, PlayerCache playerCache,
-              PasswordSecurity passwordSecurity, Management management, ValidationService validationService,
-              GeoIpService geoIpService) {
+    AuthMeApi(AuthMe plugin, DataSource dataSource, PlayerCache playerCache, PasswordSecurity passwordSecurity,
+              Management management, ValidationService validationService, GeoIpService geoIpService) {
         this.plugin = plugin;
-        this.pluginHookService = pluginHookService;
         this.dataSource = dataSource;
         this.passwordSecurity = passwordSecurity;
         this.management = management;
@@ -64,12 +62,7 @@ public class AuthMeApi {
      * @return The AuthMeApi object, or null if the AuthMe plugin is not enabled or not fully initialized yet
      */
     public static AuthMeApi getInstance() {
-        if (singleton != null) {
-            return singleton;
-        }
-        // AuthMeApi is initialized in AuthMe#onEnable -> if singleton is null,
-        // it means AuthMe isn't initialized (yet)
-        return null;
+        return singleton;
     }
 
     /**
@@ -108,7 +101,7 @@ public class AuthMeApi {
      * @return true if the player is an npc
      */
     public boolean isNpc(Player player) {
-        return pluginHookService.isNpc(player);
+        return PlayerUtils.isNpc(player);
     }
 
     /**
@@ -127,13 +120,57 @@ public class AuthMeApi {
      * Get the last location of an online player.
      *
      * @param player The player to process
-     * @return Location The location of the player
+     * @return The location of the player
      */
     public Location getLastLocation(Player player) {
         PlayerAuth auth = playerCache.getAuth(player.getName());
         if (auth != null) {
             return new Location(Bukkit.getWorld(auth.getWorld()),
                 auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getYaw(), auth.getPitch());
+        }
+        return null;
+    }
+
+    /**
+     * Get the last ip address of a player.
+     *
+     * @param playerName The name of the player to process
+     * @return The last ip address of the player
+     */
+    public String getLastIp(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if (auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return auth.getLastIp();
+        }
+        return null;
+    }
+
+    /**
+     * Get user names by ip.
+     *
+     * @param address The ip address to process
+     * @return The list of user names related to the ip address
+     */
+    public List<String> getNamesByIp(String address) {
+        return dataSource.getAllAuthsByIp(address);
+    }
+
+    /**
+     * Get the last login date of a player.
+     *
+     * @param playerName The name of the player to process
+     * @return The date of the last login, or null if the player doesn't exist or has never logged in
+     */
+    public Date getLastLogin(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if (auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null && auth.getLastLogin() != null) {
+            return new Date(auth.getLastLogin());
         }
         return null;
     }
@@ -170,14 +207,15 @@ public class AuthMeApi {
      */
     public boolean registerPlayer(String playerName, String password) {
         String name = playerName.toLowerCase();
-        HashedPassword result = passwordSecurity.computeHash(password, name);
         if (isRegistered(name)) {
             return false;
         }
+        HashedPassword result = passwordSecurity.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .password(result)
             .realName(playerName)
+            .registrationDate(System.currentTimeMillis())
             .build();
         return dataSource.saveAuth(auth);
     }
@@ -238,6 +276,16 @@ public class AuthMeApi {
      */
     public void forceUnregister(String name) {
         management.performUnregisterByAdmin(null, name, Bukkit.getPlayer(name));
+    }
+
+    /**
+     * Change a user's password
+     *
+     * @param name the user name
+     * @param newPassword the new password
+     */
+    public void changePassword(String name, String newPassword) {
+        management.performPasswordChangeAsAdmin(null, name, newPassword);
     }
 
     /**

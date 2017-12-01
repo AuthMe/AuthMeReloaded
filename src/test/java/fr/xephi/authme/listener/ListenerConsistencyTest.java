@@ -31,7 +31,8 @@ public final class ListenerConsistencyTest {
         "PlayerListener#onPlayerJoin", "PlayerListener#onPlayerLogin",
         "PlayerListener#onPlayerQuit", "ServerListener#onPluginDisable",
         "ServerListener#onServerPing", "ServerListener#onPluginEnable",
-        "PlayerListener#onJoinMessage");
+        "PlayerListener#onJoinMessage", "PlayerListener#onAsyncPlayerPreLoginEvent",
+        "PlayerListener19Spigot#onPlayerSpawn");
 
     @BeforeClass
     public static void collectListenerClasses() {
@@ -116,10 +117,9 @@ public final class ListenerConsistencyTest {
     }
 
     private static boolean isTestableMethod(Method method) {
-        // Exclude any methods with "$" in it: jacoco creates a "$jacocoInit" method we want to ignore, and
-        // methods like "access$000" are created by the compiler when a private member is being accessed by an inner
-        // class, which is not of interest for us
-        if (Modifier.isPrivate(method.getModifiers()) || method.getName().contains("$")) {
+        // Exclude getters and synthetic methods
+        String methodName = method.getName();
+        if (Modifier.isPrivate(method.getModifiers()) || method.isSynthetic() || methodName.startsWith("get") || methodName.startsWith("is")) {
             return false;
         }
         // Skip reload() method (implementation of Reloadable interface)

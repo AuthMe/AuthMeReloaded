@@ -3,7 +3,7 @@ package fr.xephi.authme.permission.handlers;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public class ZPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean addToGroup(Player player, String group) {
+    public boolean addToGroup(OfflinePlayer player, String group) {
         return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
             "permissions player " + player.getName() + " addgroup " + group);
     }
@@ -42,34 +42,28 @@ public class ZPermissionsHandler implements PermissionHandler {
     @Override
     public boolean hasPermissionOffline(String name, PermissionNode node) {
         Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(null, null, name);
-        if (perms.containsKey(node.getNode())) {
-            return perms.get(node.getNode());
-        } else {
-            return false;
-        }
+        return perms.getOrDefault(node.getNode(), false);
     }
 
     @Override
-    public boolean removeFromGroup(Player player, String group) {
+    public boolean removeFromGroup(OfflinePlayer player, String group) {
         return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
             "permissions player " + player.getName() + " removegroup " + group);
     }
 
     @Override
-    public boolean setGroup(Player player, String group) {
+    public boolean setGroup(OfflinePlayer player, String group) {
         return Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
             "permissions player " + player.getName() + " setgroup " + group);
     }
 
     @Override
-    public Collection<String> getGroups(Player player) {
-        // TODO Gnat008 20160631: Use UUID not name?
+    public Collection<String> getGroups(OfflinePlayer player) {
         return zPermissionsService.getPlayerGroups(player.getName());
     }
 
     @Override
-    public String getPrimaryGroup(Player player) {
-        // TODO Gnat008 20160631: Use UUID not name?
+    public String getPrimaryGroup(OfflinePlayer player) {
         return zPermissionsService.getPlayerPrimaryGroup(player.getName());
     }
 

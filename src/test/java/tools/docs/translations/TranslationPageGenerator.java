@@ -111,6 +111,7 @@ public class TranslationPageGenerator implements AutoToolTask {
             .put("cz", "Czech")
             .put("de", "German")
             .put("en", "English")
+            .put("eo", "Esperanto")
             .put("es", "Spanish")
             .put("et", "Estonian")
             .put("eu", "Basque")

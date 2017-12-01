@@ -28,7 +28,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
-import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 
 /**
  * Test for {@link MigrationService}.

@@ -8,7 +8,10 @@
       "yaw": 222.14977,
       "pitch": 10.649977
     },
-    "group": "staff",
+    "groups": [
+      "staff",
+      "mod"
+    ],
     "operator": true,
     "can-fly": false,
     "walk-speed": 0.3,

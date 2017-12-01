@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import ch.jalu.injector.factory.Factory;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -21,7 +21,7 @@ public class DebugCommand implements ExecutableCommand {
     private static final Set<Class<? extends DebugSection>> SECTION_CLASSES = ImmutableSet.of(
         PermissionGroups.class, DataStatistics.class, CountryLookup.class, PlayerAuthViewer.class, InputValidator.class,
         LimboPlayerViewer.class, CountryLookup.class, HasPermissionChecker.class, TestEmailSender.class,
-        SpawnLocationViewer.class);
+        SpawnLocationViewer.class, MySqlDefaultChanger.class);
 
     @Inject
     private Factory<DebugSection> debugSectionFactory;
@@ -49,6 +49,7 @@ public class DebugCommand implements ExecutableCommand {
     }
 
     private void sendAvailableSections(CommandSender sender) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe debug utils");
         sender.sendMessage("Sections available to you:");
         long availableSections = getSections().values().stream()
             .filter(section -> permissionsManager.hasPermission(sender, section.getRequiredPermission()))

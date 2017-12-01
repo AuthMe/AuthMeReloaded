@@ -2,6 +2,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.datasource.CacheDataSource;
+import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.Location;
 
 import java.lang.reflect.Field;
@@ -85,7 +87,7 @@ final class DebugSectionUtils {
      * @param function the function to apply to the map
      * @param <U> the result type of the function
      *
-     * @return player names for which there is a LimboPlayer (or error message upon failure)
+     * @return the value of the function applied to the map, or null upon error
      */
     static <U> U applyToLimboPlayersMap(LimboService limboService, Function<Map, U> function) {
         Field limboPlayerEntriesField = getLimboPlayerEntriesField();
@@ -97,5 +99,30 @@ final class DebugSectionUtils {
             }
         }
         return null;
+    }
+
+    static <T> T castToTypeOrNull(Object object, Class<T> clazz) {
+        return clazz.isInstance(object) ? clazz.cast(object) : null;
+    }
+
+    /**
+     * Unwraps the "cache data source" and returns the underlying source. Returns the
+     * same as the input argument otherwise.
+     *
+     * @param dataSource the data source to unwrap if applicable
+     * @return the non-cache data source
+     */
+    static DataSource unwrapSourceFromCacheDataSource(DataSource dataSource) {
+        if (dataSource instanceof CacheDataSource) {
+            try {
+                Field source = CacheDataSource.class.getDeclaredField("source");
+                source.setAccessible(true);
+                return (DataSource) source.get(dataSource);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                ConsoleLogger.logException("Could not get source of CacheDataSource:", e);
+                return null;
+            }
+        }
+        return dataSource;
     }
 }

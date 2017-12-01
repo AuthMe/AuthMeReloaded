@@ -64,6 +64,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
 
 import java.util.Arrays;
 
+@Deprecated
 @Recommendation(Usage.DEPRECATED)
 public class Whirlpool extends UnsaltedMethod {
 

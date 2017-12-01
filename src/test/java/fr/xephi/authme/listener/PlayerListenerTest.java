@@ -55,6 +55,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -63,6 +64,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
@@ -559,6 +561,7 @@ public class PlayerListenerTest {
         String name = "someone";
         Player player = mockPlayerWithName(name);
         String ip = "12.34.56.78";
+
         PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", mockAddrWithIp(ip)));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
@@ -573,11 +576,10 @@ public class PlayerListenerTest {
         verify(onJoinVerifier).refusePlayerForFullServer(event);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
-        verify(onJoinVerifier).checkAntibot(player, true);
+        verify(onJoinVerifier).checkAntibot(any(JoiningPlayer.class), eq(true));
         verify(onJoinVerifier).checkKickNonRegistered(true);
-        verify(onJoinVerifier).checkNameCasing(player, auth);
-        verify(onJoinVerifier).checkPlayerCountry(true, ip);
-        verify(teleportationService).teleportOnJoin(player);
+        verify(onJoinVerifier).checkNameCasing(name, auth);
+        verify(onJoinVerifier).checkPlayerCountry(any(JoiningPlayer.class), eq(ip), eq(true));
         verifyNoModifyingCalls(event);
     }
 
@@ -586,7 +588,8 @@ public class PlayerListenerTest {
         // given
         String name = "inval!dName";
         Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
+        TestHelper.mockPlayerIp(player, "33.32.33.33");
+        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", player.getAddress().getAddress()));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
         FailedVerificationException exception = new FailedVerificationException(
@@ -753,13 +756,13 @@ public class PlayerListenerTest {
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
 
         // when
         listener.onPlayerInventoryOpen(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(true));
-        TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
         verify(player).closeInventory();
     }
 
@@ -889,5 +892,4 @@ public class PlayerListenerTest {
         given(addr.getHostAddress()).willReturn(ip);
         return addr;
     }
-
 }

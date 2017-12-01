@@ -6,6 +6,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -42,6 +43,7 @@ class SpawnLocationViewer implements DebugSection {
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe spawn location viewer");
         if (arguments.isEmpty()) {
             showGeneralInfo(sender);
         } else if ("?".equals(arguments.get(0))) {

@@ -42,14 +42,16 @@ class HasPermissionChecker implements DebugSection {
 
     @Override
     public String getDescription() {
-        return "Checks if player has given permission: /authme debug perm bobby my.perm";
+        return "Checks if a player has a given permission";
     }
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe permission check");
         if (arguments.size() < 2) {
             sender.sendMessage("Check if a player has permission:");
             sender.sendMessage("Example: /authme debug perm bobby my.perm.node");
+            sender.sendMessage("Permission system type used: " + permissionsManager.getPermissionSystem());
             return;
         }
 

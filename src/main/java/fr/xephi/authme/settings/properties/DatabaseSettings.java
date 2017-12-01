@@ -10,11 +10,12 @@ import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 public final class DatabaseSettings implements SettingsHolder {
 
     @Comment({"What type of database do you want to use?",
-            "Valid values: SQLITE, MYSQL"})
+        "Valid values: SQLITE, MYSQL"})
     public static final Property<DataSourceType> BACKEND =
         newProperty(DataSourceType.class, "DataSource.backend", DataSourceType.SQLITE);
 
-    @Comment("Enable database caching, should improve database performance")
+    @Comment({"Enable the database caching system, should be disabled on bungeecord environments",
+        "or when a website integration is being used."})
     public static final Property<Boolean> USE_CACHING =
         newProperty("DataSource.caching", true);
 
@@ -74,13 +75,25 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_ISLOGGED =
         newProperty("DataSource.mySQLColumnLogged", "isLogged");
 
-    @Comment("Column for storing players ips")
-    public static final Property<String> MYSQL_COL_IP =
+    @Comment("Column for storing if a player has a valid session or not")
+    public static final Property<String> MYSQL_COL_HASSESSION =
+        newProperty("DataSource.mySQLColumnHasSession", "hasSession");
+
+    @Comment("Column for storing the player's last IP")
+    public static final Property<String> MYSQL_COL_LAST_IP =
         newProperty("DataSource.mySQLColumnIp", "ip");
 
     @Comment("Column for storing players lastlogins")
     public static final Property<String> MYSQL_COL_LASTLOGIN =
         newProperty("DataSource.mySQLColumnLastLogin", "lastlogin");
+
+    @Comment("Column storing the registration date")
+    public static final Property<String> MYSQL_COL_REGISTER_DATE =
+        newProperty("DataSource.mySQLColumnRegisterDate", "regdate");
+
+    @Comment("Column for storing the IP address at the time of registration")
+    public static final Property<String> MYSQL_COL_REGISTER_IP =
+        newProperty("DataSource.mySQLColumnRegisterIp", "regip");
 
     @Comment("Column for storing player LastLocation - X")
     public static final Property<String> MYSQL_COL_LASTLOC_X =
@@ -113,6 +126,11 @@ public final class DatabaseSettings implements SettingsHolder {
     @Comment("Overrides the size of the DB Connection Pool, -1 = Auto")
     public static final Property<Integer> MYSQL_POOL_SIZE =
         newProperty("DataSource.poolSize", -1);
+
+    @Comment({"The maximum lifetime of a connection in the pool, default = 1800 seconds",
+        "You should set this at least 30 seconds less than mysql server wait_timeout"})
+    public static final Property<Integer> MYSQL_CONNECTION_MAX_LIFETIME =
+        newProperty("DataSource.maxLifetime", 1800);
 
     private DatabaseSettings() {
     }

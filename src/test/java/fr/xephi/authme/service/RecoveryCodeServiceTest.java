@@ -125,7 +125,7 @@ public class RecoveryCodeServiceTest {
         return ReflectionTestUtils.getFieldValue(RecoveryCodeService.class, recoveryCodeService, "recoveryCodes");
     }
 
-    private ExpiringMap<String, String> getTriesCounter() {
+    private ExpiringMap<String, Integer> getTriesCounter() {
         return ReflectionTestUtils.getFieldValue(RecoveryCodeService.class, recoveryCodeService, "playerTries");
     }
 }

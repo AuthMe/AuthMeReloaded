@@ -22,6 +22,8 @@ import org.mockito.Mock;
 
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -207,5 +209,11 @@ public class RecoverEmailCommandTest {
         verify(emailService).hasAllInformation();
         verify(dataSource).getEmail(name);
         verify(recoveryService).generateAndSendNewPassword(sender, email);
+    }
+
+    @Test
+    public void shouldDefineArgumentMismatchMessage() {
+        // given / when / then
+        assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_RECOVER_EMAIL));
     }
 }

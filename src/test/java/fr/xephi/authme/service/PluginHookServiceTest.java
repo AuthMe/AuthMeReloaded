@@ -35,6 +35,8 @@ public class PluginHookServiceTest {
 
     /** The plugin name of Essentials. */
     private static final String ESSENTIALS = "Essentials";
+    /** The plugin name of CMI. */
+    private static final String CMI = "CMI";
     /** The plugin name of Multiverse-Core. */
     private static final String MULTIVERSE = "Multiverse-Core";
 
@@ -58,8 +60,6 @@ public class PluginHookServiceTest {
         assertThat(pluginHookService.isEssentialsAvailable(), equalTo(true));
     }
 
-    // Note ljacqu 20160312: Cannot test with CombatTagPlus because its class is declared final
-
     @Test
     public void shouldHookIntoEssentialsAtInitialization() {
         // given
@@ -71,6 +71,19 @@ public class PluginHookServiceTest {
 
         // then
         assertThat(pluginHookService.isEssentialsAvailable(), equalTo(true));
+    }
+
+    @Test
+    public void shouldHookIntoCmiAtInitialization() {
+        // given
+        PluginManager pluginManager = mock(PluginManager.class);
+        setPluginAvailable(pluginManager, CMI, Plugin.class);
+
+        // when
+        PluginHookService pluginHookService = new PluginHookService(pluginManager);
+
+        // then
+        assertThat(pluginHookService.isCmiAvailable(), equalTo(true));
     }
 
     @Test
@@ -177,8 +190,8 @@ public class PluginHookServiceTest {
 
         // then
         assertThat(pluginHookService.isEssentialsAvailable(), equalTo(false));
+        assertThat(pluginHookService.isCmiAvailable(), equalTo(false));
         assertThat(pluginHookService.isMultiverseAvailable(), equalTo(false));
-        assertThat(pluginHookService.isCombatTagPlusAvailable(), equalTo(false));
     }
 
     @Test

@@ -150,7 +150,7 @@
             <property name="scope" value="package"/>
             <property name="allowMissingThrowsTags" value="true"/>
             <property name="minLineCount" value="4"/>
-            <property name="allowedAnnotations" value="Override, Test, SectionComments, EventHandler"/>
+            <property name="allowedAnnotations" value="Override, Test, SectionComments, EventHandler, Before, BeforeClass"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
         </module>
         <module name="JavadocMethod">

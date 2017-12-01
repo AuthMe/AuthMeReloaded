@@ -22,7 +22,7 @@ public final class ProtectionSettings implements SettingsHolder {
 
     @Comment({
         "Countries allowed to join the server and register. For country codes, see",
-        "https://dev.bukkit.org/projects/authme-reloaded/pages/countries-codes",
+        "http://dev.maxmind.com/geoip/legacy/codes/iso3166/",
         "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_WHITELIST =
         newListProperty("Protection.countries", "US", "GB");

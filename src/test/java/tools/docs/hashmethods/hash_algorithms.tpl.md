@@ -22,6 +22,7 @@ You can change the hashing algorithm in the config.yml: under `security`, locate
 The recommendation lists our usage recommendation in terms of how secure it is (not how _well_ the algorithm works!).
 - Recommended: The hash algorithm appears to be cryptographically secure and is one we recommend.
 - Acceptable: There are safer algorithms that can be chosen but using the algorithm is generally OK.
+- Deprecated: Cannot be used anymore actively or in the near future.
 - Do not use: Hash algorithm isn't sufficiently secure. Use only if required to hook into another system.
 - Does not work: The algorithm does not work properly; do not use.
 

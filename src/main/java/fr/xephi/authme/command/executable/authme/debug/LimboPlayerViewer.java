@@ -50,6 +50,7 @@ class LimboPlayerViewer implements DebugSection {
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) {
+            sender.sendMessage(ChatColor.BLUE + "AuthMe limbo viewer");
             sender.sendMessage("/authme debug limbo <player>: show a player's limbo info");
             sender.sendMessage("Available limbo records: " + applyToLimboPlayersMap(limboService, Map::keySet));
             return;
@@ -59,11 +60,12 @@ class LimboPlayerViewer implements DebugSection {
         Player player = bukkitService.getPlayerExact(arguments.get(0));
         LimboPlayer diskLimbo = player != null ? limboPersistence.getLimboPlayer(player) : null;
         if (memoryLimbo == null && player == null) {
-            sender.sendMessage("No limbo info and no player online with name '" + arguments.get(0) + "'");
+            sender.sendMessage(ChatColor.BLUE + "No AuthMe limbo data");
+            sender.sendMessage("No limbo data and no player online with name '" + arguments.get(0) + "'");
             return;
         }
 
-        sender.sendMessage(ChatColor.GOLD + "Showing player / limbo / disk limbo info for '" + arguments.get(0) + "'");
+        sender.sendMessage(ChatColor.BLUE + "Player / limbo / disk limbo info for '" + arguments.get(0) + "'");
         new InfoDisplayer(sender, player, memoryLimbo, diskLimbo)
             .sendEntry("Is op", Player::isOp, LimboPlayer::isOperator)
             .sendEntry("Walk speed", Player::getWalkSpeed, LimboPlayer::getWalkSpeed)
@@ -72,7 +74,7 @@ class LimboPlayerViewer implements DebugSection {
             .sendEntry("Location", p -> formatLocation(p.getLocation()), l -> formatLocation(l.getLocation()))
             .sendEntry("Prim. group",
                 p -> permissionsManager.hasGroupSupport() ? permissionsManager.getPrimaryGroup(p) : "N/A",
-                LimboPlayer::getGroup);
+                LimboPlayer::getGroups);
     }
 
     @Override

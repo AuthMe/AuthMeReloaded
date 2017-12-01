@@ -137,8 +137,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
-        return source.getRecordsToPurge(until, includeEntriesWithLastLoginZero);
+    public Set<String> getRecordsToPurge(long until) {
+        return source.getRecordsToPurge(until);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        return playerCache.isAuthenticated(user);
+        return source.isLogged(user);
     }
 
     @Override
@@ -206,6 +206,21 @@ public class CacheDataSource implements DataSource {
     @Override
     public void setUnlogged(final String user) {
         source.setUnlogged(user.toLowerCase());
+    }
+
+    @Override
+    public boolean hasSession(final String user) {
+        return source.hasSession(user);
+    }
+
+    @Override
+    public void grantSession(final String user) {
+        source.grantSession(user);
+    }
+
+    @Override
+    public void revokeSession(final String user) {
+        source.revokeSession(user);
     }
 
     @Override
@@ -247,4 +262,22 @@ public class CacheDataSource implements DataSource {
             .map(PlayerAuth::getRealName)
             .collect(Collectors.toList());
     }
+
+    @Override
+    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        return source.getRecentlyLoggedInPlayers();
+    }
+
+    @Override
+    public void invalidateCache(String playerName) {
+        cachedAuths.invalidate(playerName);
+    }
+
+    @Override
+    public void refreshCache(String playerName) {
+        if (cachedAuths.getIfPresent(playerName) != null) {
+            cachedAuths.refresh(playerName);
+        }
+    }
+
 }

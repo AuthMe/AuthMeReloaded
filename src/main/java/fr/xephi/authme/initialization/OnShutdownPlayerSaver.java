@@ -5,11 +5,13 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -31,11 +33,11 @@ public class OnShutdownPlayerSaver {
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
-    private PluginHookService pluginHookService;
-    @Inject
     private PlayerCache playerCache;
     @Inject
     private LimboService limboService;
+    @Inject
+    private BungeeSender bungeeSender;
 
     OnShutdownPlayerSaver() {
     }
@@ -51,7 +53,7 @@ public class OnShutdownPlayerSaver {
 
     private void savePlayer(Player player) {
         final String name = player.getName().toLowerCase();
-        if (pluginHookService.isNpc(player) || validationService.isUnrestricted(name)) {
+        if (PlayerUtils.isNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
         if (limboService.hasLimboPlayer(name)) {
@@ -70,6 +72,7 @@ public class OnShutdownPlayerSaver {
                 .realName(player.getName())
                 .location(loc).build();
             dataSource.updateQuitLoc(auth);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, player.getName());
         }
     }
 }

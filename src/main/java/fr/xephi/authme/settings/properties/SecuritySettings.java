@@ -53,10 +53,11 @@ public final class SecuritySettings implements SettingsHolder {
         newProperty("settings.security.passwordMaxLength", 30);
 
     @Comment({
-        "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512, WHIRLPOOL,",
+        "Possible values: SHA256, BCRYPT, BCRYPT2Y, PBKDF2, SALTEDSHA512,",
         "MYBB, IPB3, PHPBB, PHPFUSION, SMF, XENFORO, XAUTH, JOOMLA, WBB3, WBB4, MD5VB,",
-        "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (for developers only). See full list at",
-        "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md"
+        "PBKDF2DJANGO, WORDPRESS, ROYALAUTH, ARGON2, CUSTOM (for developers only). See full list at",
+        "https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md",
+        "If you use ARGON2, check that you have the argon2 c library on your system"
     })
     public static final Property<HashAlgorithm> PASSWORD_HASH =
         newProperty(HashAlgorithm.class, "settings.security.passwordHash", HashAlgorithm.SHA256);
@@ -107,6 +108,11 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<Integer> TEMPBAN_MINUTES_BEFORE_RESET =
         newProperty("Security.tempban.minutesBeforeCounterReset", 480);
 
+    @Comment({"The command to execute instead of using the internal ban system, empty if disabled.",
+        "Available placeholders: %player%, %ip%"})
+    public static final Property<String> TEMPBAN_CUSTOM_COMMAND =
+        newProperty("Security.tempban.customCommand", "");
+
     @Comment("Number of characters a recovery code should have (0 to disable)")
     public static final Property<Integer> RECOVERY_CODE_LENGTH =
         newProperty("Security.recoveryCode.length", 8);
@@ -131,6 +137,19 @@ public final class SecuritySettings implements SettingsHolder {
     })
     public static final Property<Integer> EMAIL_RECOVERY_COOLDOWN_SECONDS =
         newProperty("Security.emailRecovery.cooldown", 60);
+
+    @Comment({
+        "The mail shown using /email show will be partially hidden",
+        "E.g. (if enabled)",
+        " original email: my.email@example.com",
+        " hidden email: my.***@***mple.com"
+    })
+    public static final Property<Boolean> USE_EMAIL_MASKING =
+        newProperty("Security.privacy.enableEmailMasking", false);
+
+    @Comment("Minutes after which a verification code will expire")
+    public static final Property<Integer> VERIFICATION_CODE_EXPIRATION_MINUTES =
+        newProperty("Security.privacy.verificationCodeExpiration", 10);
 
     private SecuritySettings() {
     }

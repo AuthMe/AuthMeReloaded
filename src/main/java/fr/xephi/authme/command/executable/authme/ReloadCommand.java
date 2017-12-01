@@ -1,15 +1,16 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
@@ -35,6 +36,9 @@ public class ReloadCommand implements ExecutableCommand {
     private CommonService commonService;
 
     @Inject
+    private SettingsWarner settingsWarner;
+
+    @Inject
     private SingletonStore<Reloadable> reloadableStore;
 
     @Inject
@@ -45,6 +49,8 @@ public class ReloadCommand implements ExecutableCommand {
         try {
             settings.reload();
             ConsoleLogger.setLoggingOptions(settings);
+            settingsWarner.logWarningsForMisconfigurations();
+
             // We do not change database type for consistency issues, but we'll output a note in the logs
             if (!settings.getProperty(DatabaseSettings.BACKEND).equals(dataSource.getType())) {
                 Utils.logAndSendMessage(sender, "Note: cannot change database type during /authme reload");

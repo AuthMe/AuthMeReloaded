@@ -6,7 +6,6 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -80,7 +79,9 @@ public class FlatFile implements DataSource {
             return false;
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(source, true))) {
-            bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
+            bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getLastIp()
+                + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY()
+                + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
             ConsoleLogger.warning(ex.getMessage());
             return false;
@@ -138,7 +139,7 @@ public class FlatFile implements DataSource {
                     newAuth = buildAuthFromArray(args);
                     if (newAuth != null) {
                         newAuth.setLastLogin(auth.getLastLogin());
-                        newAuth.setIp(auth.getIp());
+                        newAuth.setLastIp(auth.getLastIp());
                     }
                     break;
                 }
@@ -188,7 +189,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero) {
+    public Set<String> getRecordsToPurge(long until) {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
@@ -203,7 +204,7 @@ public class FlatFile implements DataSource {
             return false;
         }
         ArrayList<String> lines = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(source));) {
+        try (BufferedReader br = new BufferedReader(new FileReader(source))) {
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -329,6 +330,19 @@ public class FlatFile implements DataSource {
     }
 
     @Override
+    public boolean hasSession(String user) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    @Override
+    public void grantSession(String user) {
+    }
+
+    @Override
+    public void revokeSession(String user) {
+    }
+
+    @Override
     public void purgeLogged() {
     }
 
@@ -379,14 +393,26 @@ public class FlatFile implements DataSource {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
+    @Override
+    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    /**
+     * Creates a PlayerAuth object from the read data.
+     *
+     * @param args the data read from the line
+     * @return the player auth object with the data
+     */
+    @SuppressWarnings("checkstyle:NeedBraces")
     private static PlayerAuth buildAuthFromArray(String[] args) {
         // Format allows 2, 3, 4, 7, 8, 9 fields. Anything else is unknown
         if (args.length >= 2 && args.length <= 9 && args.length != 5 && args.length != 6) {
             PlayerAuth.Builder builder = PlayerAuth.builder()
                 .name(args[0]).realName(args[0]).password(args[1], null);
 
-            if (args.length >= 3)   builder.ip(args[2]);
-            if (args.length >= 4)   builder.lastLogin(Long.parseLong(args[3]));
+            if (args.length >= 3)   builder.lastIp(args[2]);
+            if (args.length >= 4)   builder.lastLogin(parseNullableLong(args[3]));
             if (args.length >= 7) {
                 builder.locX(Double.parseDouble(args[4]))
                     .locY(Double.parseDouble(args[5]))
@@ -397,5 +423,9 @@ public class FlatFile implements DataSource {
             return builder.build();
         }
         return null;
+    }
+
+    private static Long parseNullableLong(String str) {
+        return "null".equals(str) ? null : Long.parseLong(str);
     }
 }

@@ -74,11 +74,9 @@ public interface DataSource extends Reloadable {
      * Get all records in the database whose last login was before the given time.
      *
      * @param until The minimum last login
-     * @param includeEntriesWithLastLoginZero Whether entries with lastlogin = 0 should be included or not,
-     *        see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/886">issue #886</a>
      * @return The account names selected to purge
      */
-    Set<String> getRecordsToPurge(long until, boolean includeEntriesWithLastLoginZero);
+    Set<String> getRecordsToPurge(long until);
 
     /**
      * Purge the given players from the database.
@@ -162,6 +160,29 @@ public interface DataSource extends Reloadable {
     void setUnlogged(String user);
 
     /**
+     * Query the datasource whether the player has an active session or not.
+     * Warning: this value won't expire, you have also to check the user's last login timestamp.
+     *
+     * @param user The name of the player to verify
+     * @return True if the user has a valid session, false otherwise
+     */
+    boolean hasSession(String user);
+
+    /**
+     * Mark the user's hasSession value to true.
+     *
+     * @param user The name of the player to change
+     */
+    void grantSession(String user);
+
+    /**
+     * Mark the user's hasSession value to false.
+     *
+     * @param user The name of the player to change
+     */
+    void revokeSession(String user);
+
+    /**
      * Set all players who are marked as logged in as NOT logged in.
      */
     void purgeLogged();
@@ -205,9 +226,32 @@ public interface DataSource extends Reloadable {
     List<PlayerAuth> getAllAuths();
 
     /**
+     * Returns the last ten players who have recently logged in (first ten players with highest last login date).
+     *
+     * @return the 10 last players who last logged in
+     */
+    List<PlayerAuth> getRecentlyLoggedInPlayers();
+
+    /**
      * Reload the data source.
      */
     @Override
     void reload();
+
+    /**
+     * Invalidate any cached data related to the specified player name.
+     *
+     * @param playerName the player name
+     */
+    default void invalidateCache(String playerName) {
+    }
+
+    /**
+     * Refresh any cached data (if present) related to the specified player name.
+     *
+     * @param playerName the player name
+     */
+    default void refreshCache(String playerName) {
+    }
 
 }

@@ -10,6 +10,7 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
+import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -20,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
@@ -73,6 +75,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | hasSupportOldPasswordProperty(resource)
             | convertToRegistrationType(resource)
             | mergeAndMovePermissionGroupSettings(resource)
+            | moveDeprecatedHashAlgorithmIntoLegacySection(resource)
             || hasDeprecatedProperties(resource);
     }
 
@@ -284,6 +287,31 @@ public class SettingsMigrationService extends PlainMigrationService {
         performedChanges |= moveProperty(newProperty("permission.EnablePermissionCheck", false),
             PluginSettings.ENABLE_PERMISSION_CHECK, resource);
         return performedChanges;
+    }
+
+    /**
+     * If a deprecated hash is used, it is added to the legacy hashes option and the active hash
+     * is changed to SHA256.
+     *
+     * @param resource The property resource
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean moveDeprecatedHashAlgorithmIntoLegacySection(PropertyResource resource) {
+        HashAlgorithm currentHash = SecuritySettings.PASSWORD_HASH.getValue(resource);
+        // Skip CUSTOM (has no class) and PLAINTEXT (is force-migrated later on in the startup process)
+        if (currentHash != HashAlgorithm.CUSTOM && currentHash != HashAlgorithm.PLAINTEXT) {
+            Class<?> encryptionClass = currentHash.getClazz();
+            if (encryptionClass.isAnnotationPresent(Deprecated.class)) {
+                resource.setValue(SecuritySettings.PASSWORD_HASH.getPath(), HashAlgorithm.SHA256);
+                Set<HashAlgorithm> legacyHashes = SecuritySettings.LEGACY_HASHES.getValue(resource);
+                legacyHashes.add(currentHash);
+                resource.setValue(SecuritySettings.LEGACY_HASHES.getPath(), legacyHashes);
+                ConsoleLogger.warning("The hash algorithm '" + currentHash
+                    + "' is no longer supported for active use. New hashes will be in SHA256.");
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

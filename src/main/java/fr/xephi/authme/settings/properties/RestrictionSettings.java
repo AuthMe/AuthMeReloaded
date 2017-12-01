@@ -78,9 +78,11 @@ public final class RestrictionSettings implements SettingsHolder {
     @Comment({
         "The restricted user feature will kick players listed below",
         "if they don't match the defined IP address. Names are case-insensitive.",
+        "You can use * as wildcard (127.0.0.*), or regex with a \"regex:\" prefix regex:127\\.0\\.0\\..*",
         "Example:",
         "    AllowedRestrictedUser:",
-        "    - playername;127.0.0.1"})
+        "    - playername;127.0.0.1",
+        "    - playername;regex:127\\.0\\.0\\..*"})
     public static final Property<List<String>> RESTRICTED_USERS =
         newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
 
@@ -138,9 +140,9 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Boolean> DISPLAY_OTHER_ACCOUNTS =
         newProperty("settings.restrictions.displayOtherAccounts", true);
 
-    @Comment("Spawn priority; values: authme, essentials, multiverse, default")
+    @Comment("Spawn priority; values: authme, essentials, cmi, multiverse, default")
     public static final Property<String> SPAWN_PRIORITY =
-        newProperty("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+        newProperty("settings.restrictions.spawnPriority", "authme,essentials,cmi,multiverse,default");
 
     @Comment("Maximum Login authorized by IP")
     public static final Property<Integer> MAX_LOGIN_PER_IP =
@@ -154,9 +156,13 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Boolean> NO_TELEPORT =
         newProperty("settings.restrictions.noTeleport", false);
 
-    @Comment("Regex syntax for allowed chars in passwords")
+    @Comment({
+        "Regex syntax for allowed chars in passwords. The default [!-~] allows all visible ASCII",
+        "characters, which is what we recommend. See also http://asciitable.com",
+        "You can test your regex with https://regex101.com"
+    })
     public static final Property<String> ALLOWED_PASSWORD_REGEX =
-        newProperty("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
+        newProperty("settings.restrictions.allowedPasswordCharacters", "[!-~]*");
 
     @Comment("Force survival gamemode when player joins?")
     public static final Property<Boolean> FORCE_SURVIVAL_MODE =

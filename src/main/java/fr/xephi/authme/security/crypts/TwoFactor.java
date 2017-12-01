@@ -19,6 +19,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Two factor authentication.
+ *
+ * @see <a href="http://thegreyblog.blogspot.com/2011/12/google-authenticator-using-it-in-your.html">Original source</a>
+ */
 @Recommendation(Usage.DOES_NOT_WORK)
 @HasSalt(SaltType.NONE)
 public class TwoFactor extends UnsaltedMethod {
@@ -30,7 +35,15 @@ public class TwoFactor extends UnsaltedMethod {
     private static final int TIME_PRECISION = 3;
     private static final String CRYPTO_ALGO = "HmacSHA1";
 
-    public static String getQRBarcodeURL(String user, String host, String secret) {
+    /**
+     * Creates a link to a QR barcode with the provided secret.
+     *
+     * @param user the player's name
+     * @param host the server host
+     * @param secret the TOTP secret
+     * @return URL leading to a QR code
+     */
+    public static String getQrBarcodeUrl(String user, String host, String secret) {
         String format = "https://www.google.com/chart?chs=130x130&chld=M%%7C0&cht=qr&chl="
                 + "otpauth://totp/"
                 + "%s@%s%%3Fsecret%%3D%s";
@@ -72,18 +85,17 @@ public class TwoFactor extends UnsaltedMethod {
         }
 
         long currentTime = Calendar.getInstance().getTimeInMillis() / TimeUnit.SECONDS.toMillis(30);
-        return check_code(secretKey, code, currentTime);
+        return checkCode(secretKey, code, currentTime);
     }
 
-    private boolean check_code(String secret, long code, long t)
-            throws NoSuchAlgorithmException, InvalidKeyException {
+    private boolean checkCode(String secret, long code, long t) throws NoSuchAlgorithmException, InvalidKeyException {
         byte[] decodedKey = BaseEncoding.base32().decode(secret);
 
         // Window is used to check codes generated in the near past.
         // You can use this value to tune how far you're willing to go.
         int window = TIME_PRECISION;
         for (int i = -window; i <= window; ++i) {
-            long hash = verify_code(decodedKey, t + i);
+            long hash = verifyCode(decodedKey, t + i);
 
             if (hash == code) {
                 return true;
@@ -94,7 +106,7 @@ public class TwoFactor extends UnsaltedMethod {
         return false;
     }
 
-    private int verify_code(byte[] key, long t) throws NoSuchAlgorithmException, InvalidKeyException {
+    private int verifyCode(byte[] key, long t) throws NoSuchAlgorithmException, InvalidKeyException {
         byte[] data = new byte[8];
         long value = t;
         for (int i = 8; i-- > 0; value >>>= 8) {

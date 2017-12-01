@@ -6,6 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,8 +45,11 @@ public class AsyncChangeEmailTest {
     @Mock
     private ValidationService validationService;
 
+    @Mock
+    private BungeeSender bungeeSender;
+
     @Test
-    public void shouldAddEmail() {
+    public void shouldChangeEmail() {
         // given
         String newEmail = "new@mail.tld";
         given(player.getName()).willReturn("Bobby");
@@ -58,6 +62,28 @@ public class AsyncChangeEmailTest {
 
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
+
+        // then
+        verify(dataSource).updateEmail(auth);
+        verify(playerCache).updatePlayer(auth);
+        verify(service).send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
+    }
+
+    @Test
+    public void shouldNotBeCaseSensitiveWhenComparingEmails() {
+        // given
+        String newEmail = "newmail@example.com";
+        given(player.getName()).willReturn("Debra");
+        given(playerCache.isAuthenticated("debra")).willReturn(true);
+        String oldEmail = "OLD-mail@example.org";
+        PlayerAuth auth = authWithMail(oldEmail);
+        given(playerCache.getAuth("debra")).willReturn(auth);
+        given(dataSource.updateEmail(auth)).willReturn(true);
+        given(validationService.validateEmail(newEmail)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+
+        // when
+        process.changeEmail(player, "old-mail@example.org", newEmail);
 
         // then
         verify(dataSource).updateEmail(auth);

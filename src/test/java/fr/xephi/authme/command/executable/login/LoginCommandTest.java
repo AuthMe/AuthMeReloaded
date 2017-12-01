@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.login;
 
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -57,4 +60,9 @@ public class LoginCommandTest {
         verify(management).performLogin(eq(sender), eq("password"));
     }
 
+    @Test
+    public void shouldDefineArgumentMismatchMessage() {
+        // given / when / then
+        assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_LOGIN));
+    }
 }

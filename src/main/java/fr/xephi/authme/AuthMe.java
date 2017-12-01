@@ -12,8 +12,6 @@ import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
 import fr.xephi.authme.initialization.OnStartupTasks;
 import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
-import fr.xephi.authme.initialization.factory.FactoryDependencyHandler;
-import fr.xephi.authme.initialization.factory.SingletonStoreDependencyHandler;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -21,18 +19,15 @@ import fr.xephi.authme.listener.PlayerListener111;
 import fr.xephi.authme.listener.PlayerListener16;
 import fr.xephi.authme.listener.PlayerListener18;
 import fr.xephi.authme.listener.PlayerListener19;
+import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PermissionsSystemType;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
+import fr.xephi.authme.service.bungeecord.BungeeReceiver;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
@@ -67,7 +62,6 @@ public class AuthMe extends JavaPlugin {
 
     // Private instances
     private CommandHandler commandHandler;
-    private PermissionsManager permsMan;
     private Settings settings;
     private DataSource database;
     private BukkitService bukkitService;
@@ -118,7 +112,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Method used to obtain the v2 plugin's api instance
-     * @deprecated Will be removed in 5.4, use {@link fr.xephi.authme.api.v3.AuthMeApi} instead
+     * @deprecated Will be removed in 5.5, use {@link fr.xephi.authme.api.v3.AuthMeApi} instead
      *
      * @return The plugin's api instance
      */
@@ -145,13 +139,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Show settings warnings
-        showSettingsWarnings();
-
-        // If server is using PermissionsBukkit, print a warning that some features may not be supported
-        if (PermissionsSystemType.PERMISSIONS_BUKKIT.equals(permsMan.getPermissionSystem())) {
-            ConsoleLogger.warning("Warning! This server uses PermissionsBukkit for permissions. Some permissions "
-                + "features may not be supported!");
-        }
+        injector.getSingleton(SettingsWarner.class).logWarningsForMisconfigurations();
 
         // Do a backup on start
         backupService.doBackup(BackupService.BackupCause.START);
@@ -205,14 +193,12 @@ public class AuthMe extends JavaPlugin {
         if(!SystemUtils.isJavaVersionAtLeast(1.8f)) {
             throw new IllegalStateException("You need Java 1.8 or above to run this plugin!");
         }
-        OnStartupTasks.verifyIfLegacyJarIsNeeded();
 
         // Create plugin folder
         getDataFolder().mkdir();
 
         // Create injector, provide elements from the Bukkit environment and register providers
         injector = new InjectorBuilder()
-            .addHandlers(new FactoryDependencyHandler(), new SingletonStoreDependencyHandler())
             .addDefaultHandlers("fr.xephi.authme")
             .create();
         injector.register(AuthMe.class, this);
@@ -234,7 +220,7 @@ public class AuthMe extends JavaPlugin {
         // Convert deprecated PLAINTEXT hash entries
         MigrationService.changePlainTextToSha256(settings, database, new Sha256());
 
-        // TODO: does this still make sense? -sgdc3
+        //TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged
         if (bukkitService.getOnlinePlayers().isEmpty()) {
             database.purgeLogged();
@@ -255,43 +241,16 @@ public class AuthMe extends JavaPlugin {
      */
     void instantiateServices(Injector injector) {
         database = injector.getSingleton(DataSource.class);
-        permsMan = injector.getSingleton(PermissionsManager.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         backupService = injector.getSingleton(BackupService.class);
 
+        // Trigger instantiation (class not used elsewhere)
+        injector.getSingleton(BungeeReceiver.class);
+
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(fr.xephi.authme.api.v3.AuthMeApi.class);
         injector.getSingleton(NewAPI.class);
-    }
-
-    /**
-     * Show the settings warnings, for various risky settings.
-     */
-    private void showSettingsWarnings() {
-        // Force single session disabled
-        if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
-            ConsoleLogger.warning("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
-        }
-
-        // Session timeout disabled
-        if (settings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
-            && settings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-            ConsoleLogger.warning("WARNING!!! You set session timeout to 0, this may cause security issues!");
-        }
-
-        // Use TLS property only affects port 25
-        if (!settings.getProperty(EmailSettings.PORT25_USE_TLS)
-            && settings.getProperty(EmailSettings.SMTP_PORT) != 25) {
-            ConsoleLogger.warning("Note: You have set Email.useTls to false but this only affects mail over port 25");
-        }
-
-        // Unsalted hashes will be deprecated in 5.4 (see Github issue #1016)
-        HashAlgorithm hash = settings.getProperty(SecuritySettings.PASSWORD_HASH);
-        if (OnStartupTasks.isHashDeprecatedIn54(hash)) {
-            ConsoleLogger.warning("You are using an unsalted hash (" + hash + "). Support for this will be removed "
-                + "in 5.4 -- do you still need it? Comment on https://github.com/AuthMe/AuthMeReloaded/issues/1016");
-        }
     }
 
     /**
@@ -322,6 +281,11 @@ public class AuthMe extends JavaPlugin {
         // Try to register 1.9 player listeners
         if (isClassLoaded("org.bukkit.event.player.PlayerSwapHandItemsEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
+        }
+
+        // Try to register 1.9 spigot player listeners
+        if (isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")) {
+            pluginManager.registerEvents(injector.getSingleton(PlayerListener19Spigot.class), this);
         }
 
         // Register listener for 1.11 events if available

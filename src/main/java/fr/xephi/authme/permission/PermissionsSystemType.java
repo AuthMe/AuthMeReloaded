@@ -6,14 +6,14 @@ package fr.xephi.authme.permission;
 public enum PermissionsSystemType {
 
     /**
+     *  LuckPerms.
+     */
+    LUCK_PERMS("LuckPerms", "LuckPerms"),
+
+    /**
      * Permissions Ex.
      */
     PERMISSIONS_EX("PermissionsEx", "PermissionsEx"),
-
-    /**
-     * Permissions Bukkit.
-     */
-    PERMISSIONS_BUKKIT("Permissions Bukkit", "PermissionsBukkit"),
 
     /**
      * bPermissions.

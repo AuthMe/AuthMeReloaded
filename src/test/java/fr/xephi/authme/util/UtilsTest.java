@@ -1,16 +1,22 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.TestHelper;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -97,6 +103,68 @@ public class UtilsTest {
         // then
         verify(logger).info(message);
         verifyZeroInteractions(sender);
+    }
+
+    @Test
+    public void shouldCheckIfCollectionIsEmpty() {
+        // given
+        List<String> emptyList = Collections.emptyList();
+        Collection<Integer> nonEmptyColl = Arrays.asList(3, 4, 5);
+
+        // when / then
+        assertThat(Utils.isCollectionEmpty(emptyList), equalTo(true));
+        assertThat(Utils.isCollectionEmpty(nonEmptyColl), equalTo(false));
+        assertThat(Utils.isCollectionEmpty(null), equalTo(true));
+    }
+
+    @Test
+    public void shouldReturnCoreCount() {
+        // given / when / then
+        assertThat(Utils.getCoreCount(), greaterThan(0));
+    }
+
+    @Test
+    public void shouldLogAndSendWarning() {
+        // given
+        Logger logger = TestHelper.setupLogger();
+        String message = "Error while performing action";
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        Utils.logAndSendWarning(sender, message);
+
+        // then
+        verify(logger).warning(message);
+        verify(sender).sendMessage(ChatColor.RED + message);
+    }
+
+    @Test
+    public void shouldLogWarningAndNotSendToConsoleSender() {
+        // given
+        Logger logger = TestHelper.setupLogger();
+        String message = "Error while performing action";
+        CommandSender sender = mock(ConsoleCommandSender.class);
+
+        // when
+        Utils.logAndSendWarning(sender, message);
+
+        // then
+        verify(logger).warning(message);
+        verifyZeroInteractions(sender);
+    }
+
+    @Test
+    public void shouldLogWarningAndHandleNullCommandSender() {
+        // given
+        Logger logger = TestHelper.setupLogger();
+        String message = "Error while performing action";
+        CommandSender sender = null;
+
+        // when
+        Utils.logAndSendWarning(sender, message);
+
+        // then
+        verify(logger).warning(message);
     }
 
     @Test

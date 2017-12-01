@@ -64,10 +64,7 @@ public abstract class AbstractEncryptionMethodTest {
      */
     public AbstractEncryptionMethodTest(EncryptionMethod method, String hash0,
                                         String hash1, String hash2, String hash3) {
-        if (method.hasSeparateSalt()) {
-            throw new UnsupportedOperationException("Test must be initialized with HashedPassword objects if "
-                + "the salt is stored separately. Use the other constructor");
-        }
+        verifyCorrectConstructorIsUsed(method, false);
         this.method = method;
 
         hashes = ImmutableMap.of(
@@ -89,10 +86,7 @@ public abstract class AbstractEncryptionMethodTest {
      */
     public AbstractEncryptionMethodTest(EncryptionMethod method, HashedPassword result0, HashedPassword result1,
                                         HashedPassword result2, HashedPassword result3) {
-        if (!method.hasSeparateSalt()) {
-            throw new UnsupportedOperationException("Salt is not stored separately, so test should be initialized"
-                + " with the password hashes only. Use the other constructor");
-        }
+        verifyCorrectConstructorIsUsed(method, true);
         this.method = method;
 
         hashes = ImmutableMap.of(
@@ -105,6 +99,16 @@ public abstract class AbstractEncryptionMethodTest {
     @BeforeClass
     public static void setupLogger() {
         TestHelper.setupLogger();
+    }
+
+    protected void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isConstructorWithSalt) {
+        if (isConstructorWithSalt && !method.hasSeparateSalt()) {
+            throw new UnsupportedOperationException("Salt is not stored separately, so test should be initialized"
+                + " with the password hashes only. Use the other constructor");
+        } else if (!isConstructorWithSalt && method.hasSeparateSalt()) {
+            throw new UnsupportedOperationException("Test must be initialized with HashedPassword objects if "
+                + "the salt is stored separately. Use the other constructor");
+        }
     }
 
     @Test

@@ -5,10 +5,11 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static fr.xephi.authme.util.Utils.logAndSendMessage;
 
 /**
  * Converts from one AuthMe data source type to another.
@@ -61,6 +62,7 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
             } else {
                 adaptPlayerAuth(auth);
                 destination.saveAuth(auth);
+                destination.updateSession(auth);
                 destination.updateQuitLoc(auth);
             }
         }
@@ -87,13 +89,4 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
      * @throws Exception during initialization of source
      */
     protected abstract S getSource() throws Exception;
-
-    private static void logAndSendMessage(CommandSender sender, String message) {
-        ConsoleLogger.info(message);
-        // Make sure sender is not console user, which will see the message from ConsoleLogger already
-        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(message);
-        }
-    }
-
 }

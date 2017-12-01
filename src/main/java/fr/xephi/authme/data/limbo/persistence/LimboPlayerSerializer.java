@@ -1,5 +1,6 @@
 package fr.xephi.authme.data.limbo.persistence;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -22,11 +23,13 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
     static final String LOC_YAW = "yaw";
     static final String LOC_PITCH = "pitch";
 
-    static final String GROUP = "group";
+    static final String GROUPS = "groups";
     static final String IS_OP = "operator";
     static final String CAN_FLY = "can-fly";
     static final String WALK_SPEED = "walk-speed";
     static final String FLY_SPEED = "fly-speed";
+
+    private static final Gson GSON = new Gson();
 
 
     @Override
@@ -42,7 +45,8 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
 
         JsonObject obj = new JsonObject();
         obj.add(LOCATION, locationObject);
-        obj.addProperty(GROUP, limboPlayer.getGroup());
+        obj.add(GROUPS, GSON.toJsonTree(limboPlayer.getGroups()).getAsJsonArray());
+
         obj.addProperty(IS_OP, limboPlayer.isOperator());
         obj.addProperty(CAN_FLY, limboPlayer.isCanFly());
         obj.addProperty(WALK_SPEED, limboPlayer.getWalkSpeed());

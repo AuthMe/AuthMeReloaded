@@ -1,8 +1,8 @@
 package fr.xephi.authme.command;
 
+import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -69,6 +69,12 @@ public class CommandHandler {
         return !FoundResultStatus.MISSING_BASE_COMMAND.equals(result.getResultStatus());
     }
 
+    /**
+     * Processes the given {@link FoundCommandResult} for the provided command sender.
+     *
+     * @param sender the command sender who executed the command
+     * @param result the command mapping result
+     */
     private void handleCommandResult(CommandSender sender, FoundCommandResult result) {
         switch (result.getResultStatus()) {
             case SUCCESS:

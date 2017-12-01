@@ -67,7 +67,7 @@ public class EmailService {
         File file = null;
         if (settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)) {
             try {
-                file = generateImage(name, newPass);
+                file = generatePasswordImage(name, newPass);
                 mailText = embedImageIntoEmailContent(file, email, mailText);
             } catch (IOException | EmailException e) {
                 ConsoleLogger.logException(
@@ -78,6 +78,33 @@ public class EmailService {
         boolean couldSendEmail = sendMailSsl.sendEmail(mailText, email);
         FileUtils.delete(file);
         return couldSendEmail;
+    }
+
+    /**
+     * Sends an email to the user with the temporary verification code.
+     *
+     * @param name the name of the player
+     * @param mailAddress the player's email
+     * @param code the verification code
+     * @return true if email could be sent, false otherwise
+     */
+    public boolean sendVerificationMail(String name, String mailAddress, String code) {
+        if (!hasAllInformation()) {
+            ConsoleLogger.warning("Cannot send verification email: not all email settings are complete");
+            return false;
+        }
+
+        HtmlEmail email;
+        try {
+            email = sendMailSsl.initializeMail(mailAddress);
+        } catch (EmailException e) {
+            ConsoleLogger.logException("Failed to create verification email with the given settings:", e);
+            return false;
+        }
+
+        String mailText = replaceTagsForVerificationEmail(settings.getVerificationEmailMessage(), name, code,
+            settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES));
+        return sendMailSsl.sendEmail(mailText, email);
     }
 
     /**
@@ -102,7 +129,7 @@ public class EmailService {
         return sendMailSsl.sendEmail(message, htmlEmail);
     }
 
-    private File generateImage(String name, String newPass) throws IOException {
+    private File generatePasswordImage(String name, String newPass) throws IOException {
         ImageGenerator gen = new ImageGenerator(newPass);
         File file = new File(dataFolder, name + "_new_pass.jpg");
         ImageIO.write(gen.generateImage(), "jpg", file);
@@ -121,6 +148,14 @@ public class EmailService {
             .replace("<playername />", name)
             .replace("<servername />", serverName)
             .replace("<generatedpass />", newPass);
+    }
+
+    private String replaceTagsForVerificationEmail(String mailText, String name, String code, int minutesValid) {
+        return mailText
+            .replace("<playername />", name)
+            .replace("<servername />", serverName)
+            .replace("<generatedcode />", code)
+            .replace("<minutesvalid />", String.valueOf(minutesValid));
     }
 
     private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {

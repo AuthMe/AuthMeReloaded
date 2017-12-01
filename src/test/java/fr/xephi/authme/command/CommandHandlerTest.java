@@ -1,12 +1,12 @@
 package fr.xephi.authme.command;
 
 import ch.jalu.injector.Injector;
+import ch.jalu.injector.factory.Factory;
 import com.google.common.collect.Sets;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;

@@ -31,6 +31,11 @@ public enum PlayerPermission implements PermissionNode {
     CHANGE_PASSWORD("authme.player.changepassword"),
 
     /**
+     * Command permission to see the own email address.
+     */
+    SEE_EMAIL("authme.player.email.see"),
+
+    /**
      * Command permission to add an email address.
      */
     ADD_EMAIL("authme.player.email.add"),
@@ -58,7 +63,12 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission to use to see own other accounts.
      */
-    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
+    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts"),
+
+    /**
+     * Permission to use the email verification codes feature.
+     */
+    VERIFICATION_CODE("authme.player.security.verificationcode");
 
     /**
      * The permission node.

@@ -239,6 +239,36 @@ public enum MessageKey {
     /** An email was already sent recently. You must wait %time before you can send a new one. */
     EMAIL_COOLDOWN_ERROR("email_cooldown_error", "%time"),
 
+    /**
+     * The command you are trying to execute is sensitive and requires a verification!
+     * A verification code has been sent to your email,
+     * run the command "/verification [code]" to verify your identity.
+     */
+    VERIFICATION_CODE_REQUIRED("verification_code_required"),
+
+    /** Usage: /verification &lt;code&gt; */
+    USAGE_VERIFICATION_CODE("usage_verification_code"),
+
+    /** Incorrect code, please type "/verification &lt;code&gt;" into the chat! */
+    INCORRECT_VERIFICATION_CODE("incorrect_verification_code"),
+
+    /**
+     * Your identity has been verified!
+     * You can now execute every sensitive command within the current session!
+     */
+    VERIFICATION_CODE_VERIFIED("verification_code_verified"),
+
+    /**
+     * You can already execute every sensitive command within the current session!
+     */
+    VERIFICATION_CODE_ALREADY_VERIFIED("verification_code_already_verified"),
+
+    /** Your code has expired! Execute another sensitive command to get a new code! */
+    VERIFICATION_CODE_EXPIRED("verification_code_expired"),
+
+    /** To verify your identity you need to link an email address with your account! */
+    VERIFICATION_CODE_EMAIL_NEEDED("verification_code_email_needed"),
+
     /** second */
     SECOND("second"),
 

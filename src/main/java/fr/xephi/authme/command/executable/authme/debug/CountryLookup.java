@@ -42,6 +42,7 @@ class CountryLookup implements DebugSection {
 
     @Override
     public void execute(CommandSender sender, List<String> arguments) {
+        sender.sendMessage(ChatColor.BLUE + "AuthMe country lookup");
         if (arguments.isEmpty()) {
             sender.sendMessage("Check player: /authme debug cty Bobby");
             sender.sendMessage("Check IP address: /authme debug cty 127.123.45.67");
@@ -72,13 +73,16 @@ class CountryLookup implements DebugSection {
         sender.sendMessage("Note: if " + ProtectionSettings.ENABLE_PROTECTION + " is false no country is blocked");
     }
 
+    // TODO #1366: Extend with registration IP?
     private void outputInfoForPlayer(CommandSender sender, String name) {
         PlayerAuth auth = dataSource.getAuth(name);
         if (auth == null) {
             sender.sendMessage("No player with name '" + name + "'");
+        } else if (auth.getLastIp() == null) {
+            sender.sendMessage("No last IP address known for '" + name + "'");
         } else {
-            sender.sendMessage("Player '" + name + "' has IP address " + auth.getIp());
-            outputInfoForIpAddr(sender, auth.getIp());
+            sender.sendMessage("Player '" + name + "' has IP address " + auth.getLastIp());
+            outputInfoForIpAddr(sender, auth.getLastIp());
         }
     }
 }

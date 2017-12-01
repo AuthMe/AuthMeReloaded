@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Mar 25 00:15:27 CET 2017. See docs/hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Sat Oct 28 13:29:59 CEST 2017. See docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -7,14 +7,13 @@ AuthMe supports the following hash algorithms for storing your passwords safely.
 
 Algorithm | Recommendation | Hash length | ASCII |     | Salt type | Length | Separate?
 --------- | -------------- | ----------- | ----- | --- | --------- | ------ | ---------
+ARGON2 | Recommended | 96 |  | | Text | 16 | 
 BCRYPT | Recommended | 60 |  | | Text |  | 
 BCRYPT2Y | Recommended | 60 |  | | Text | 22 | 
 CRAZYCRYPT1 | Do not use | 128 |  | | Username |  | 
-DOUBLEMD5 | Deprecated | 32 |  | | None |  | 
 IPB3 | Acceptable | 32 |  | | Text | 5 | Y
 IPB4 | Does not work | 60 |  | | Text | 22 | Y
 JOOMLA | Acceptable | 65 |  | | Text | 32 | 
-MD5 | Deprecated | 32 |  | | None |  | 
 MD5VB | Acceptable | 56 |  | | Text | 16 | 
 MYBB | Acceptable | 32 |  | | Text | 8 | Y
 PBKDF2 | Recommended | 165 |  | | Text | 16 | 
@@ -24,14 +23,11 @@ PHPFUSION | Do not use | 64 | Y | |  |  | Y
 ROYALAUTH | Do not use | 128 |  | | None |  | 
 SALTED2MD5 | Acceptable | 32 |  | | Text |  | Y
 SALTEDSHA512 | Recommended | 128 |  | |  |  | Y
-SHA1 | Deprecated | 40 |  | | None |  | 
 SHA256 | Recommended | 86 |  | | Text | 16 | 
-SHA512 | Deprecated | 128 |  | | None |  | 
-SMF | Do not use | 40 |  | | Username |  | 
+SMF | Do not use | 40 |  | | Username |  | Y
 TWO_FACTOR | Does not work | 16 |  | | None |  | 
 WBB3 | Acceptable | 40 |  | | Text | 40 | Y
 WBB4 | Recommended | 60 |  | | Text | 8 | 
-WHIRLPOOL | Deprecated | 128 |  | | None |  | 
 WORDPRESS | Acceptable | 34 |  | | Text | 9 | 
 XAUTH | Recommended | 140 |  | | Text | 12 | 
 XFBCRYPT |  | 60 |  | |  |  | 
@@ -48,6 +44,7 @@ You can change the hashing algorithm in the config.yml: under `security`, locate
 The recommendation lists our usage recommendation in terms of how secure it is (not how _well_ the algorithm works!).
 - Recommended: The hash algorithm appears to be cryptographically secure and is one we recommend.
 - Acceptable: There are safer algorithms that can be chosen but using the algorithm is generally OK.
+- Deprecated: Cannot be used anymore actively or in the near future.
 - Do not use: Hash algorithm isn't sufficiently secure. Use only if required to hook into another system.
 - Does not work: The algorithm does not work properly; do not use.
 
@@ -82,4 +79,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Mar 25 00:15:27 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 28 13:29:59 CEST 2017

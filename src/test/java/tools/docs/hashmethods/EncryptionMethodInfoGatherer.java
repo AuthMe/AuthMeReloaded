@@ -1,28 +1,28 @@
 package tools.docs.hashmethods;
 
-import ch.jalu.configme.properties.Property;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import com.google.common.collect.ImmutableSet;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.settings.Settings;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Gathers information on {@link EncryptionMethod} implementations based on
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  */
 public class EncryptionMethodInfoGatherer {
 
-    private final static Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
+    private static final Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
         ImmutableSet.of(HasSalt.class, Recommendation.class, AsciiRestricted.class);
 
     private static Injector injector = createInitializer();
@@ -38,6 +38,7 @@ public class EncryptionMethodInfoGatherer {
     private Map<HashAlgorithm, MethodDescription> descriptions;
 
     public EncryptionMethodInfoGatherer() {
+        ConsoleLogger.setLogger(Logger.getAnonymousLogger()); // set logger because of Argon2.isLibraryLoaded()
         descriptions = new LinkedHashMap<>();
         constructDescriptions();
     }
@@ -48,7 +49,7 @@ public class EncryptionMethodInfoGatherer {
 
     private void constructDescriptions() {
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            if (!HashAlgorithm.CUSTOM.equals(algorithm) && !algorithm.getClazz().isAnnotationPresent(Deprecated.class)) {
+            if (algorithm.getClazz() != null && !algorithm.getClazz().isAnnotationPresent(Deprecated.class)) {
                 MethodDescription description = createDescription(algorithm);
                 descriptions.put(algorithm, description);
             }
@@ -57,10 +58,7 @@ public class EncryptionMethodInfoGatherer {
 
     private static MethodDescription createDescription(HashAlgorithm algorithm) {
         Class<? extends EncryptionMethod> clazz = algorithm.getClazz();
-        EncryptionMethod method = injector.createIfHasDependencies(clazz);
-        if (method == null) {
-            throw new NullPointerException("Method for '" + algorithm + "' is null");
-        }
+        EncryptionMethod method = createEncryptionMethod(clazz);
         MethodDescription description = new MethodDescription(clazz);
         description.setHashLength(method.computeHash("test", "user").getHash().length());
         description.setHasSeparateSalt(method.hasSeparateSalt());
@@ -76,6 +74,19 @@ public class EncryptionMethodInfoGatherer {
             description.setAsciiRestricted(true);
         }
         return description;
+    }
+
+    private static EncryptionMethod createEncryptionMethod(Class<? extends EncryptionMethod> clazz) {
+        if (clazz == Argon2.class && !Argon2.isLibraryLoaded()) {
+            // The library for Argon2 isn't installed, so override the hash implementation to avoid using the library
+            return new Argon2DummyExtension();
+        }
+
+        EncryptionMethod method = injector.createIfHasDependencies(clazz);
+        if (method == null) {
+            throw new NullPointerException("Failed to instantiate '" + clazz + "'. Is a dependency missing?");
+        }
+        return method;
     }
 
     private static Map<Class<?>, Annotation> gatherAnnotations(Class<?> methodClass) {
@@ -104,6 +115,9 @@ public class EncryptionMethodInfoGatherer {
     /**
      * Returns the super class of the given encryption method if it is also of EncryptionMethod type.
      * (Anything beyond EncryptionMethod is not of interest.)
+     *
+     * @param methodClass the class to process
+     * @return the super class of the given class if it is also an EncryptionMethod type, otherwise null
      */
     private static Class<?> getSuperClass(Class<?> methodClass) {
         Class<?> zuper = methodClass.getSuperclass();
@@ -137,23 +151,21 @@ public class EncryptionMethodInfoGatherer {
         return key.cast(map.get(key));
     }
 
-    @SuppressWarnings("unchecked")
     private static Injector createInitializer() {
         Settings settings = mock(Settings.class);
-        // Return the default value for any property
-        when(settings.getProperty(any(Property.class))).thenAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Property<?> property = (Property<?>) invocation.getArguments()[0];
-                return property.getDefaultValue();
-            }
-        });
+        TestHelper.returnDefaultsForAllProperties(settings);
 
-        // By passing some bogus "package" to the constructor, the injector will throw if it needs to
-        // instantiate any dependency other than what we provide.
+        // Limit instantiation to the crypts package only so any dependencies need to be passed explicitly
         Injector injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme.security.crypts").create();
         injector.register(Settings.class, settings);
         return injector;
     }
 
+    private static final class Argon2DummyExtension extends Argon2 {
+        @Override
+        public String computeHash(String password) {
+            // Argon2 produces hashes of 96 characters -> return dummy value with this length
+            return String.join("", Collections.nCopies(96, "."));
+        }
+    }
 }

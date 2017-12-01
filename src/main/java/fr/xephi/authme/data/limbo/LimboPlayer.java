@@ -4,6 +4,8 @@ import fr.xephi.authme.task.MessageTask;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Collection;
+
 /**
  * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
  * which may be revoked from the player until he has logged in or registered.
@@ -15,17 +17,18 @@ public class LimboPlayer {
 
     private final boolean canFly;
     private final boolean operator;
-    private final String group;
+    private final Collection<String> groups;
     private final Location loc;
     private final float walkSpeed;
     private final float flySpeed;
     private BukkitTask timeoutTask = null;
     private MessageTask messageTask = null;
 
-    public LimboPlayer(Location loc, boolean operator, String group, boolean fly, float walkSpeed, float flySpeed) {
+    public LimboPlayer(Location loc, boolean operator, Collection<String> groups, boolean fly, float walkSpeed,
+                       float flySpeed) {
         this.loc = loc;
         this.operator = operator;
-        this.group = group;
+        this.groups = groups;
         this.canFly = fly;
         this.walkSpeed = walkSpeed;
         this.flySpeed = flySpeed;
@@ -50,12 +53,12 @@ public class LimboPlayer {
     }
 
     /**
-     * Return the player's permissions group.
+     * Return the player's permissions groups.
      *
-     * @return The permissions group the player belongs to
+     * @return The permissions groups the player belongs to
      */
-    public String getGroup() {
-        return group;
+    public Collection<String> getGroups() {
+        return groups;
     }
 
     public boolean isCanFly() {

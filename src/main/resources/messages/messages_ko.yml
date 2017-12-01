@@ -16,7 +16,7 @@ password_error: '&c비밀번호가 일치하지 않습니다, 다시 확인해�
 password_error_nick: '&c자신의 닉네임을 비밀번호로 사용할 수 없습니다, 다른 비밀번호를 사용하세요...'
 password_error_unsafe: '&c이 비밀번호는 안전하지 않습니다, 다른 비밀번호를 사용하세요...'
 password_error_chars: '&4비밀번호에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
-pass_len: '&c너의 비번은 좆같이 길거나 좆같이 작아! 제발 다른걸 써줘!'
+pass_len: '&c비밀번호가 너무 짧거나 작습니다!'
 
 # 로그인
 usage_log: '&c사용법: /login <비밀번호>'
@@ -34,7 +34,6 @@ tempban_max_logins: '&c너무 많이 로그인에 실패하여 잠시 서버에�
 max_reg: '&c당신은 가입할 수 있는 계정 한도를 초과했습니다 (%reg_count/%max_acc %reg_names)!'
 no_perm: '&4이 작업을 수행할 수 있는 권한이 없습니다!'
 error: '&4예기치 않은 오류가 발생했습니다, 관리자에게 알려주세요!'
-unsafe_spawn: '&c마지막으로 접속한 위치가 안전하지 않습니다, 이 세계의 스폰 지점으로 텔레포트 됩니다.'
 kick_forvip: '&3서버가 꽉 차있을땐 VIP 플레이어만 접속이 가능합니다!'
 
 # AntiBot
@@ -48,7 +47,11 @@ accounts_owned_self: '%count 개의 계정을 소유하고 있습니다:'
 accounts_owned_other: '플레이어 %name 는 %count 개의 계정을 소유하고 있습니다:'
 two_factor_create: '&2당신의 비밀 코드는 %code 입니다. %url 에서 스캔할 수 있습니다'
 recovery_code_sent: '비밀번호 재설정을 위한 복구 코드가 이메일로 전송되었습니다.'
+# TODO: Missing tags %count
 recovery_code_incorrect: '복구 코드가 올바르지 않습니다! "/email recovery [이메일 주소]"를 이용하여 새로 생성하세요'
+# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+# TODO recovery_code_correct: 'Recovery code entered correctly!'
+# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 vb_nonActiv: '&c계정이 아직 활성화되지 않았습니다, 이메일을 확인해보세요!'
 usage_unreg: '&c사용법: /unregister <비밀번호>'
 pwd_changed: '&2비밀번호가 변경되었습니다!'
@@ -76,13 +79,12 @@ usage_email_add: '&c사용법: /email add <이메일 주소> <이메일 주소 �
 usage_email_change: '&c사용법: /email change <예전 이메일 주소> <새 이메일 주소>'
 usage_email_recovery: '&c사용법: /email recovery <이메일 주소>'
 new_email_invalid: '&c새 이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
-old_email_invalid: '&c에전 이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
+old_email_invalid: '&c예전 이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
 email_invalid: '&c이메일 주소가 잘못되었습니다, 다시 시도해보세요!'
 email_added: '&2계정에 이메일 주소를 추가했습니다!'
 email_confirm: '&c이메일 주소를 확인해주세요!'
 email_changed: '&2이메일 주소가 변경되었습니다!'
 email_send: '&2복구 이메일을 보냈습니다! 메일함을 확인해보세요!'
-email_exists: '&c복구 이메일을 이미 보냈습니다! 아래 명령어를 사용하여 취소하고 다시 보낼 수 있습니다:'
 email_show: '&2현재 이메일 주소: &f%email'
 incomplete_email_settings: '오류: 메일을 보내기 위해 필요한 설정이 되어 있지 않습니다. 관리자에게 알려주세요.'
 email_already_used: '&4이메일 주소가 이미 사용 중입니다.'
@@ -90,8 +92,29 @@ email_send_failure: '이메일을 보낼 수 없습니다. 관리자에게 알�
 show_no_email: '&2현재 이 계정과 연결된 이메일 주소가 없습니다.'
 add_email: '&3다음 명령어로 계정에 이메일 주소를 추가하세요: /email add <이메일 주소> <이메일 주소 확인>'
 recovery_email: '&3비밀번호를 잊으셨나요? 이 명령어를 사용해보세요: /email recovery <이메일 주소>'
+# TODO change_password_expired: 'You cannot change your password using this command anymore.'
+# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Captcha
 usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다, 이 명령어를 사용하세요: /captcha <theCaptcha>'
 wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다, "/captcha THE_CAPTCHA"을 입력해주세요!'
 valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
+
+# Verification Code
+# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+# TODO usage_verification_code: '&cUsage: /verification <code>'
+# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
+# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
+# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
+# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+
+# Time units
+# TODO second: 'second'
+# TODO seconds: 'seconds'
+# TODO minute: 'minute'
+# TODO minutes: 'minutes'
+# TODO hour: 'hour'
+# TODO hours: 'hours'
+# TODO day: 'day'
+# TODO days: 'days'

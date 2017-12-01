@@ -1,8 +1,8 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.service.BukkitService;
+import ch.jalu.configme.properties.Property;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -18,10 +18,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * AuthMe test utilities.
@@ -72,76 +71,6 @@ public final class TestHelper {
         } catch (URISyntaxException e) {
             throw new IllegalStateException("File '" + path + "' cannot be converted to a URI");
         }
-    }
-
-    /**
-     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#runTaskAsynchronously} method.
-     * Note that calling this method expects that there be a runnable sent to the method and will fail
-     * otherwise.
-     *
-     * @param service The mock service
-     */
-    public static void runInnerRunnable(BukkitService service) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(service).runTaskAsynchronously(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
-    }
-
-    /**
-     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#runTaskOptionallyAsync} method.
-     * Note that calling this method expects that there be a runnable sent to the method and will fail
-     * otherwise.
-     *
-     * @param service The mock service
-     */
-    public static void runOptionallyAsyncTask(BukkitService service) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(service).runTaskOptionallyAsync(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
-    }
-
-    /**
-     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncDelayedTask(Runnable)}
-     * method. Note that calling this method expects that there be a runnable sent to the method and will fail
-     * otherwise.
-     *
-     * @param service The mock service
-     */
-    public static void runSyncDelayedTask(BukkitService service) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(service).scheduleSyncDelayedTask(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
-    }
-
-    /**
-     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncDelayedTask(Runnable, long)}
-     * method. Note that calling this method expects that there be a runnable sent to the method and will fail
-     * otherwise.
-     *
-     * @param service The mock service
-     */
-    public static void runSyncDelayedTaskWithDelay(BukkitService service) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(service).scheduleSyncDelayedTask(captor.capture(), anyLong());
-        Runnable runnable = captor.getValue();
-        runnable.run();
-    }
-
-    /**
-     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncTaskFromOptionallyAsyncTask}
-     * method. Note that calling this method expects that there be a runnable sent to the method and will fail
-     * otherwise.
-     *
-     * @param service The mock service
-     */
-    public static void runSyncTaskFromOptionallyAsyncTask(BukkitService service) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(service).scheduleSyncTaskFromOptionallyAsyncTask(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
     }
 
     /**
@@ -206,4 +135,14 @@ public final class TestHelper {
         given(player.getAddress()).willReturn(inetSocketAddress);
     }
 
+    /**
+     * Configures the Settings mock to return the property's default value for any given property.
+     *
+     * @param settings the settings mock
+     */
+    @SuppressWarnings("unchecked")
+    public static void returnDefaultsForAllProperties(Settings settings) {
+        given(settings.getProperty(any(Property.class)))
+            .willAnswer(invocation -> ((Property<?>) invocation.getArgument(0)).getDefaultValue());
+    }
 }

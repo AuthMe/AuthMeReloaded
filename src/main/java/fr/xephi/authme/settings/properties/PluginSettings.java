@@ -63,6 +63,10 @@ public final class PluginSettings implements SettingsHolder {
     public static final Property<String> UNREGISTERED_GROUP =
         newProperty("GroupOptions.unregisteredPlayerGroup", "");
 
+    @Comment("Forces authme to hook into Vault instead of a specific permission handler system.")
+    public static final Property<Boolean> FORCE_VAULT_HOOK =
+        newProperty("settings.forceVaultHook", false);
+
     @Comment({
         "Log level: INFO, FINE, DEBUG. Use INFO for general messages,",
         "FINE for some additional detailed ones (like password failed),",
@@ -77,6 +81,14 @@ public final class PluginSettings implements SettingsHolder {
     })
     public static final Property<Boolean> USE_ASYNC_TASKS =
         newProperty("settings.useAsyncTasks", true);
+
+    @Comment({
+        "By default we handle the AsyncPlayerPreLoginEvent which makes the plugin faster",
+        "but it is incompatible with any permission plugin not included in our compatibility list.",
+        "If you have issues with permission checks on player join please disable this option."
+    })
+    public static final Property<Boolean> USE_ASYNC_PRE_LOGIN_EVENT =
+        newProperty("settings.useAsyncPreLoginEvent", true);
 
     private PluginSettings() {
     }

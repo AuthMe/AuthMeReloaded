@@ -6,6 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -27,9 +30,9 @@ public class LimboServiceHelperTest {
     public void shouldMergeLimboPlayers() {
         // given
         Location newLocation = mock(Location.class);
-        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, "grp-new", false, 0.0f, 0.0f);
+        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList("grp-new"), false, 0.0f, 0.0f);
         Location oldLocation = mock(Location.class);
-        LimboPlayer oldLimbo = new LimboPlayer(oldLocation, true, "grp-old", true, 0.1f, 0.8f);
+        LimboPlayer oldLimbo = new LimboPlayer(oldLocation, true, Collections.singletonList("grp-old"), true, 0.1f, 0.8f);
 
         // when
         LimboPlayer result = limboServiceHelper.merge(newLimbo, oldLimbo);
@@ -37,7 +40,7 @@ public class LimboServiceHelperTest {
         // then
         assertThat(result.getLocation(), equalTo(oldLocation));
         assertThat(result.isOperator(), equalTo(true));
-        assertThat(result.getGroup(), equalTo("grp-old"));
+        assertThat(result.getGroups(), contains("grp-old"));
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getWalkSpeed(), equalTo(0.1f));
         assertThat(result.getFlySpeed(), equalTo(0.8f));
@@ -47,8 +50,8 @@ public class LimboServiceHelperTest {
     public void shouldFallBackToNewLimboForMissingData() {
         // given
         Location newLocation = mock(Location.class);
-        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, "grp-new", true, 0.3f, 0.0f);
-        LimboPlayer oldLimbo = new LimboPlayer(null, false, "", false, 0.1f, 0.1f);
+        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList("grp-new"), true, 0.3f, 0.0f);
+        LimboPlayer oldLimbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.1f, 0.1f);
 
         // when
         LimboPlayer result = limboServiceHelper.merge(newLimbo, oldLimbo);
@@ -56,7 +59,7 @@ public class LimboServiceHelperTest {
         // then
         assertThat(result.getLocation(), equalTo(newLocation));
         assertThat(result.isOperator(), equalTo(false));
-        assertThat(result.getGroup(), equalTo("grp-new"));
+        assertThat(result.getGroups(), contains("grp-new"));
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getWalkSpeed(), equalTo(0.3f));
         assertThat(result.getFlySpeed(), equalTo(0.1f));

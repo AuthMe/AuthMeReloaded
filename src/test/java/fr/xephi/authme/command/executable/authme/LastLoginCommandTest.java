@@ -65,7 +65,7 @@ public class LastLoginCommandTest {
             (412 * DAY_IN_MSEC + 10 * HOUR_IN_MSEC - 9000);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getLastLogin()).willReturn(lastLogin);
-        given(auth.getIp()).willReturn("123.45.66.77");
+        given(auth.getLastIp()).willReturn("123.45.66.77");
         given(dataSource.getAuth(player)).willReturn(auth);
         CommandSender sender = mock(CommandSender.class);
 
@@ -94,7 +94,7 @@ public class LastLoginCommandTest {
             - (412 * DAY_IN_MSEC + 10 * HOUR_IN_MSEC - 9000);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getLastLogin()).willReturn(lastLogin);
-        given(auth.getIp()).willReturn("123.45.66.77");
+        given(auth.getLastIp()).willReturn("123.45.66.77");
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when
@@ -111,4 +111,25 @@ public class LastLoginCommandTest {
         assertThat(captor.getAllValues().get(2), containsString("123.45.66.77"));
     }
 
+    @Test
+    public void shouldHandleNullLastLoginDate() {
+        // given
+        String name = "player";
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .lastIp("123.45.67.89")
+            .build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(name));
+
+        // then
+        verify(dataSource).getAuth(name);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender, times(2)).sendMessage(captor.capture());
+        assertThat(captor.getAllValues().get(0), allOf(containsString(name), containsString("never")));
+        assertThat(captor.getAllValues().get(1), containsString("123.45.67.89"));
+    }
 }

@@ -29,7 +29,12 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * Permission to bypass the purging process.
      */
-    BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED);
+    BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED),
+
+    /**
+     * Permission to bypass the GeoIp country code check.
+     */
+    BYPASS_COUNTRY_CHECK("authme.bypasscountrycheck", DefaultPermission.NOT_ALLOWED);
 
     /**
      * The permission node.

@@ -7,9 +7,6 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
-import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.crypts.description.Recommendation;
-import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -17,7 +14,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.logging.log4j.LogManager;
-import org.bstats.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -53,19 +50,10 @@ public class OnStartupTasks {
     public static void sendMetrics(AuthMe plugin, Settings settings) {
         final Metrics metrics = new Metrics(plugin);
 
-        metrics.addCustomChart(new Metrics.SimplePie("messages_language") {
-            @Override
-            public String getValue() {
-                return settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
-            }
-        });
-
-        metrics.addCustomChart(new Metrics.SimplePie("database_backend") {
-            @Override
-            public String getValue() {
-                return settings.getProperty(DatabaseSettings.BACKEND).toString();
-            }
-        });
+        metrics.addCustomChart(new Metrics.SimplePie("messages_language",
+            () -> settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)));
+        metrics.addCustomChart(new Metrics.SimplePie("database_backend",
+            () -> settings.getProperty(DatabaseSettings.BACKEND).toString()));
     }
 
     /**
@@ -103,53 +91,13 @@ public class OnStartupTasks {
         if (!settings.getProperty(RECALL_PLAYERS)) {
             return;
         }
-        bukkitService.runTaskTimerAsynchronously(new Runnable() {
-            @Override
-            public void run() {
-                for (String playerWithoutMail : dataSource.getLoggedPlayersWithEmptyMail()) {
-                    Player player = bukkitService.getPlayerExact(playerWithoutMail);
-                    if (player != null) {
-                        messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
-                    }
+        bukkitService.runTaskTimerAsynchronously(() -> {
+            for (String playerWithoutMail : dataSource.getLoggedPlayersWithEmptyMail()) {
+                Player player = bukkitService.getPlayerExact(playerWithoutMail);
+                if (player != null) {
+                    messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
                 }
             }
         }, 1, TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));
-    }
-
-    /**
-     * Displays a hint to use the legacy AuthMe JAR if AuthMe could not be started
-     * because Gson or newer Guava classes were not found.
-     */
-    public static void verifyIfLegacyJarIsNeeded() {
-        try {
-            Class<?>[] classes = {
-                com.google.common.base.MoreObjects.class, // < 1.12 Minecraft
-                com.google.gson.Gson.class // < 1.7 Minecraft
-            };
-        } catch (NoClassDefFoundError e) {
-            ConsoleLogger.warning("YOU MUST DOWNLOAD THE LEGACY JAR TO USE AUTHME ON YOUR SERVER");
-            ConsoleLogger.warning("Get authme-legacy.jar from http://ci.xephi.fr/job/AuthMeReloaded/");
-            ConsoleLogger.warning("Reason: could not load class '" + e.getMessage() + "'");
-            throw e;
-        }
-    }
-
-    /**
-     * Returns whether the hash algorithm is deprecated and won't be able
-     * to be actively used anymore in 5.4.
-     *
-     * @param hash the hash algorithm to check
-     * @return true if the hash will be deprecated, false otherwise
-     * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/1016">#1016</a>
-     */
-    public static boolean isHashDeprecatedIn54(HashAlgorithm hash) {
-        if (hash.getClazz() == null || hash == HashAlgorithm.PLAINTEXT) {
-            // Exclude PLAINTEXT from this check because it already has a mandatory migration, which takes care of
-            // sending all the necessary messages and warnings.
-            return false;
-        }
-
-        Recommendation recommendation = hash.getClazz().getAnnotation(Recommendation.class);
-        return recommendation != null && recommendation.value() == Usage.DEPRECATED;
     }
 }

@@ -39,7 +39,7 @@ public class HelpMessagesService implements Reloadable {
      * @return the localized description
      */
     public CommandDescription buildLocalizedDescription(CommandDescription command) {
-        final String path = getCommandPath(command);
+        final String path = COMMAND_PREFIX + getCommandSubPath(command);
         if (!messageFileHandler.hasSection(path)) {
             // Messages file does not have a section for this command - return the provided command
             return command;
@@ -68,7 +68,7 @@ public class HelpMessagesService implements Reloadable {
     }
 
     public String getDescription(CommandDescription command) {
-        return getText(getCommandPath(command) + DESCRIPTION_SUFFIX, command::getDescription);
+        return getText(COMMAND_PREFIX + getCommandSubPath(command) + DESCRIPTION_SUFFIX, command::getDescription);
     }
 
     public String getMessage(HelpMessage message) {
@@ -81,9 +81,12 @@ public class HelpMessagesService implements Reloadable {
 
     public String getMessage(DefaultPermission defaultPermission) {
         // e.g. {default_permissions_path}.opOnly for DefaultPermission.OP_ONLY
-        String path = DEFAULT_PERMISSIONS_PATH
-            + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, defaultPermission.name());
+        String path = DEFAULT_PERMISSIONS_PATH + getDefaultPermissionsSubPath(defaultPermission);
         return messageFileHandler.getMessage(path);
+    }
+
+    public static String getDefaultPermissionsSubPath(DefaultPermission defaultPermission) {
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, defaultPermission.name());
     }
 
     @Override
@@ -99,8 +102,15 @@ public class HelpMessagesService implements Reloadable {
             : message;
     }
 
-    private static String getCommandPath(CommandDescription command) {
-        return COMMAND_PREFIX + CommandUtils.constructParentList(command)
+    /**
+     * Returns the command subpath for the given command (i.e. the path to the translations for the given
+     * command under "commands").
+     *
+     * @param command the command to process
+     * @return the subpath for the command's texts
+     */
+    public static String getCommandSubPath(CommandDescription command) {
+        return CommandUtils.constructParentList(command)
             .stream()
             .map(cmd -> cmd.getLabels().get(0))
             .collect(Collectors.joining("."));

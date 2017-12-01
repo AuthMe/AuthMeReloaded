@@ -1,0 +1,207 @@
+# AuthmeReloaded帮助文件汉化
+# Translated By CH1
+# -------------------------------------------------------
+common:
+    header: '==========[ AuthMeReloaded ]=========='
+    optional: '可选'
+    hasPermission: '您拥有权限去使用这个指令'
+    noPermission: '您没有权限使用这个指令'
+    default: '默认'
+    result: '您的权限'
+    defaultPermissions:
+        notAllowed: '任何人不能使用'
+        opOnly: 'OP拥有此权限'
+        allowed: '所有人都可以使用'
+
+
+section:
+    command: '指令'
+    description: '功能'
+    detailedDescription: '功能详情'
+    arguments: '参数'
+    permissions: '权限'
+    alternatives: '别名'
+    children: '子命令'
+
+
+commands:
+    authme.register:
+        description: '注册一个玩家'
+        detailedDescription: '注册一个玩家'
+        arg1:
+            label: '玩家'
+            description: '玩家名称'
+        arg2:
+            label: '密码'
+            description: '密码'
+    authme.unregister:
+        description: '注销一个玩家'
+        detailedDescription: '注销一个玩家'
+        arg1:
+            label: '玩家'
+            description: '玩家'
+    authme.forcelogin:
+        description: '强制玩家重新登录'
+        detailedDescription: '强制使指定玩家重新登录'
+        arg1:
+            label: '玩家'
+            description: '玩家'
+    authme.password:
+        description: '改变某个玩家的密码'
+        detailedDescription: '改变某个玩家的密码'
+        arg1:
+            label: '玩家'
+            description: '玩家'
+        arg2:
+            label: '新密码'
+            description: '新密码'
+    authme.lastlogin:
+        description: '查看玩家最后登录时间'
+        detailedDescription: '查看玩家最后登录时间'
+        arg1:
+            label: '玩家'
+            description: '玩家'
+    authme.accounts:
+        description: '查看玩家IP下的账户'
+        detailedDescription: '查看玩家IP下的账户'
+        arg1:
+            label: '玩家或IP'
+            description: '玩家或IP'
+    authme.email:
+        description: '查看玩家的邮箱'
+        detailedDescription: '查看玩家的邮箱'
+        arg1:
+            label: '玩家'
+            description: '玩家'
+    authme.setemail:
+        description: '改变玩家的邮箱'
+        detailedDescription: '改变玩家的邮箱'
+        arg1:
+            label: '玩家'
+            description: '玩家'
+        arg2:
+            label: '邮箱'
+            description: '邮箱'
+    authme.getip:
+        description: '获取玩家IP'
+        detailedDescription: '获取玩家IP'
+        arg1:
+            label: '玩家'
+            description: '玩家'
+    authme.spawn:
+        description: '传送到AuthMe出生点'
+        detailedDescription: '传送到AuthMe出生点'
+    authme.setspawn:
+        description: '改变AuthMe出生点'
+        detailedDescription: '改变AuthMe出生点'
+    authme.firstspawn:
+        description: '传送到第一次进入游戏出生点'
+        detailedDescription: '传送到第一次进入游戏出生点'
+    authme.setfirstspawn:
+        description: '设置第一次进入游戏的出生点'
+        detailedDescription: '设置第一次进入游戏的出生点'
+    authme.purge:
+        description: '删除指定天数之前没登录的玩家登陆数据'
+        detailedDescription: '删除指定天数之前没登录的玩家登陆数据'
+        arg1:
+            label: '天数'
+            description: '天数'
+    authme.resetpos:
+       description: '重置玩家登出位置'
+       detailedDescription: '重置玩家登出位置'
+       arg1:
+           label: '玩家/*'
+           description: '玩家名称或所有玩家'
+    authme.purgebannedplayers:
+        description: '删除已经被封禁的玩家数据'
+        detailedDescription: '删除已经被封禁的玩家数据'
+    authme.switchantibot:
+        description: '改变AntiBot的状态'
+        detailedDescription: '改变AntiBot的状态'
+        arg1:
+            label: '开关'
+            description: '选项: ON/OFF'
+    authme.reload:
+        description: '重载插件'
+        detailedDescription: '重载插件'
+    authme.version:
+        description: '查看版本信息'
+        detailedDescription: '查看AuthmeReload版本,开发者,贡献者和许可'
+    authme.converter:
+        description: '转换数据命令'
+        detailedDescription: '转换数据命令'
+        arg1:
+            label: '类型'
+            description: '转换类型:xauth/crazylogin/rakamak/royalauth/vauth/sqliteToSql/mysqlToSqlite'
+    authme.messages:
+        description: '添加信息'
+        detailedDescription: '在语言文件夹中添加缺少的信息'
+    authme.help:
+        description: '查看帮助'
+        detailedDescription: '查看帮助'
+        arg1:
+            label: '子命令'
+            description: '查看的指令'
+    unregister:
+        description: '注销您的账户'
+        detailedDescription: '注销您的账户'
+        arg1:
+            label: '密码'
+            description: '密码'
+    changepassword:
+        description: '更改您的密码'
+        detailedDescription: '更改您的密码'
+        arg1:
+            label: '旧的密码'
+            description: '旧的密码'
+        arg2:
+            label: '新的密码'
+            description: '新的密码'
+    email:
+        description: '绑定邮箱或更改密码'
+        detailedDescription: '绑定邮箱或更改密码'
+    email.show:
+        description: '查看邮箱'
+        detailedDescription: '查看您的邮箱地址'
+    email.add:
+        description: '绑定邮箱'
+        detailedDescription: '为您的账户绑定邮箱'
+        arg1:
+            label: '邮箱'
+            description: '邮箱地址'
+        arg2:
+            label: '邮箱'
+            description: '重新输入邮箱地址'
+    email.change:
+        description: '改变邮箱地址'
+        detailedDescription: '更改您账户的邮箱地址'
+        arg1:
+            label: '旧邮箱'
+            description: '旧的邮箱地址'
+        arg2:
+            label: '新邮箱'
+            description: '新的邮箱地址'
+    email.recover:
+        description: '通过邮箱改变密码'
+        detailedDescription: '通过邮箱改变密码'
+        arg1:
+            label: '邮箱'
+            description: '邮箱地址'
+    email.help:
+        description: '查看帮助'
+        detailedDescription: '查看邮箱帮助'
+        arg1:
+            label: '子命令'
+            description: '指令'
+    captcha:
+        description: '验证码'
+        detailedDescription: '验证码'
+        arg1:
+            label: '验证码'
+            description: '验证码'
+    captcha.help:
+        description: '查看验证码帮助'
+        detailedDescription: '查看验证码帮助'
+        arg1:
+            label: '子命令'
+            description: '指令'

@@ -4,8 +4,11 @@
 
 ##### Links and Contacts:
 
-- Contacts:
-  - [Discord](https://discord.gg/Vn9eCyE)
+ - Support:
+   - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
+   - [BukkitDev page](https://dev.bukkit.org/projects/authme-reloaded)
+   - [Spigot page](https://www.spigotmc.org/resources/authmereloaded.6269/)
+   - [Discord](https://discord.gg/Vn9eCyE)
 
 - CI Services:
   - [Official Jenkins](http://ci.xephi.fr/job/AuthMeReloaded) (**DEVELOPMENT BUILDS**)
@@ -13,7 +16,7 @@
   - CircleCI: [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 
 - Project status:
-  - Dependencies: [![Dependencies status](https://www.versioneye.com/user/projects/58e052a224ef3e003b526d78/badge.svg)](https://www.versioneye.com/user/projects/58e052a224ef3e003b526d78)
+  - Dependencies: [![Dependency Status](https://www.versioneye.com/user/projects/5957e09b0fb24f0070ba13c0/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5957e09b0fb24f0070ba13c0)
   - Test coverage: [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
   - Code climate: [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
 
@@ -63,17 +66,17 @@ You can also create your own translation file and, if you want, you can share it
 <ul>
   <li><strong>E-Mail Recovery System !!!</strong></li>
   <li>Username spoofing protection.</li>
-  <li>Countries Whitelist/Blacklist! <a href="http://dev.maxmind.com/geoip/legacy/codes/iso3166/">(countries codes)</a></li>
+  <li>Countries Whitelist/Blacklist! <a href="http://dev.maxmind.com/geoip/legacy/codes/iso3166/">(country codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
   <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
   <li>Session Login!</li>
   <li>Editable translations and messages!</li>
   <li><strong>MySQL and SQLite Backend support!</strong></li>
-  <li>Supported password encryption algorithms: MD5, SHA1, SHA256, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a>, <a href="http://en.wikipedia.org/wiki/Whirlpool_(cryptography)">Whirlpool</a></li>
+  <li>Supported password encryption algorithms: SHA256, BCRYPT, PBKDF2, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a></li>
   <li>Supported alternative registration methods:<br>
   <ul>
-    <li>PHPBB, VBulletin: MD5VB - PHPBB</li>
+    <li>PHPBB, VBulletin: PHPBB - MD5VB</li>
     <li>Xenforo: XFBCRYPT</li>
     <li>MyBB: MYBB</li>
     <li>IPB3: IPB3</li>
@@ -81,9 +84,10 @@ You can also create your own translation file and, if you want, you can share it
     <li>PhpFusion: PHPFUSION</li>
     <li>Joomla: JOOMLA</li>
     <li>WBB3: WBB3*</li>
-    <li>SHA512: SHA512</li>
+    <li>SHA512: SALTEDSHA512</li>
     <li>DoubleSaltedMD5: SALTED2MD5</li>
     <li>WordPress: WORDPRESS</li>
+    <li><a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md">List of all supported hashes</a></li>
   </ul></li>
   <li>Custom MySQL tables/columns names (useful with forum databases)</li>
   <li><strong>Cached database queries!</strong></li>
@@ -99,7 +103,7 @@ You can also create your own translation file and, if you want, you can share it
 </ul>
 
 #### Configuration
-<a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/config.md">How to configure Authme</a>
+[How to configure AuthMe](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/config.md)
 #### Commands
 [Command list and usage](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/commands.md)
 #### Permissions
@@ -121,7 +125,7 @@ GameHosting.it is leader in Italy as Game Server Provider. With its own DataCent
 [![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
 
 ##### Credits
-<p>Team members: look at the <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/team.txt">member list</a>
+<p>Contributors: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
 

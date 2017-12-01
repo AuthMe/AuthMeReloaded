@@ -1,0 +1,294 @@
+# Translated by MineSAT
+
+# -------------------------------------------------------
+# Lista de textos usados en la sección de ayuda.
+common:
+  header:                     ======[ AYUDA de AuthMeReloaded ]======
+  optional:                   Opcional
+  hasPermission:              Tienes permiso
+  noPermission:               No tienes permiso
+  default:                    Por defecto
+  result:                     Resultado
+  defaultPermissions:
+    notAllowed:               No tienes permiso
+    opOnly:                   Sólamente OPeradores(Owner's)
+    allowed:                  Todo permitido
+section:
+  command:                    Comando
+  description:                Descripción corta
+  detailedDescription:        Descripción detallada
+  arguments:                  Argumentos
+  alternatives:               Alternativas
+  permissions:                Permisos
+  children:                   Comandos
+commands:
+  authme:
+    description:              AuthMe comandos de OPerador
+    detailedDescription:      El comando principal de AuthMeReloaded. La raíz de todos los comandos de administración.
+  authme.register:
+    description:              Registrar un jugador
+    detailedDescription:      Registra un jugador específico con una contraseña específica.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador
+    arg2:
+      label:                  contraseña
+      description:            Contraseña del jugador
+  authme.unregister:
+    description:              Cancelar cuenta de un jugador
+    detailedDescription:      Elimina la cuenta registrada de un jugador.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador
+  authme.forcelogin:
+    description:              Obliga el inicio de sesión
+    detailedDescription:      Obliga a un jugador específico a iniciar sesión.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador en línea
+  authme.password:
+    description:              Cambiar contraseña del jugador
+    detailedDescription:      Cambia la contraseña de un jugador.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador
+    arg2:
+      label:                  contraseña
+      description:            Nueva contraseña
+  authme.lastlogin:
+    description:              Último inicio de sesión
+    detailedDescription:      Ver la fecha del último inicio de sesión de un jugador específico.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador
+  authme.accounts:
+    description:              Mostrar cuentas del jugador
+    detailedDescription:      Muestra todas las cuentas de un jugador por su Nombre de Jugador o IP.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador o dirección IP
+  authme.email:
+    description:              Mostrar correo del jugador
+    detailedDescription:      Muestra el correo electrónico de un jugador específico, si este lo ha configurado en su cuenta.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador
+  authme.setemail:
+    description:              Cambia el correo electrónico del jugador
+    detailedDescription:      Cambia la dirección correo electrónico de un jugador especificado.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador
+    arg2:
+      label:                  email
+      description:            Correo electrónico del jugador
+  authme.getip:
+    description:              Obtiene la IP del jugador
+    detailedDescription:      Obtiene la dirección IP de un jugador específico que esté en línea.
+    arg1:
+      label:                  jugador
+      description:            Nombre del jugador
+  authme.spawn:
+    description:              Teletransporte al Spawn
+    detailedDescription:      Teletranspórtate al Spawn del servidor.
+  authme.setspawn:
+    description:              Cambia el Spawn
+    detailedDescription:      Cambia la zona de aparición del jugador por tu posición actual.
+  authme.firstspawn:
+    description:              Teletransporte al primer Spawn
+    detailedDescription:      Teletranspórtate a la primera zona de aparición del servidor.
+  authme.setfirstspawn:
+    description:              Cambia el primer Spawn
+    detailedDescription:      Cambia la primera zona de aparición del jugador por tu posición actual.
+  authme.purge:
+    description:              Purgar(Limpiar) datos antiguos
+    detailedDescription:      Purgar o Limpiar datos de AuthMeReloaded anteriores a el número días especificados en la configuración.
+    arg1:
+      label:                  días
+      description:            Número de días
+  authme.purgeplayer:
+    description:              Purgar los datos de un jugador
+    detailedDescription:      Purgar los datos de un jugador seleccionado.
+    arg1:
+      label:                  jugador
+      description:            El jugador para purgar o limpiar
+    arg2:
+      label:                  opciones
+      description:            'Escribe ''force'' al final del comando para forzar sin comprobar que el jugador está registrado'
+  authme.backup:
+    description:              Realiza una copia de seguridad
+    detailedDescription:      Crea una copia de seguridad de los usuarios registrados.
+  authme.resetpos:
+    description:              Purgar o limpiar la última posición del jugador
+    detailedDescription:      Purgar o limpiar la última posición conocida de un jugador específico o todos los jugadores.
+    arg1:
+      label:                  jugador / *
+      description:            Nombre del jugador o escribe '*' para seleccionar todos los jugadores
+  authme.purgebannedplayers:
+    description:              Purgar datos de jugadores baneados
+    detailedDescription:      Purgar todos los datos de AuthMeReloaded de los jugadores baneados.
+  authme.switchantibot:
+    description:              Cambiar el modo AntiBot
+    detailedDescription:      Cambiar o alternar el modo AntiBot al estado especificado.
+    arg1:
+      label:                  modo
+      description:            ON / OFF
+  authme.reload:
+    description:              Recarga el plugin
+    detailedDescription:      Recarga el plugin AuthMeReloaded.
+  authme.version:
+    description:              Información de versión
+    detailedDescription:      Muestra información detallada sobre la versión instalada de AuthMeReloaded, los creadores, contribuyentes, y la licencia.
+  authme.converter:
+    description:              Comando conversor
+    detailedDescription:      Comando conversor de AuthMeReloaded.
+    arg1:
+      label:                  trabajo
+      description:            'Trabajo de conversión: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite / loginsecurity'
+  authme.messages:
+    description:              Añade mensajes faltantes
+    detailedDescription:      Añade los mensajes que faltan al archivo de mensajes actual.
+    arg1:
+      label:                  help
+      description:            Añade 'help' para actualizar to update the help messages file
+  authme.debug:
+    description:              Funciones de depuración
+    detailedDescription:      Permite varias operaciones de depuración.
+    arg1:
+      label:                  child
+      description:            El hijo(child) a ejecutar
+    arg2:
+      label:                  arg
+      description:            Argumento (depende de la sección de depuración)
+    arg3:
+      label:                  arg
+      description:            Argumento (depende de la sección de depuración)
+  authme.help:
+    description:              Muestra la ayuda
+    detailedDescription:      Muestra detalladamente la ayuda para los comandos /authme.
+    arg1:
+      label:                  consulta
+      description:            El comando o la consulta para ver su description.
+  email:
+    description:              Añade el correo electrónico o recupera la contraseña
+    detailedDescription:      La base del comando de correo electrónico de AuthMeReloaded.
+  email.show:
+    description:              Mostrar correo electrónico
+    detailedDescription:      Muestra you correo electrónico actual.
+  email.add:
+    description:              Añadir correo electrónico
+    detailedDescription:      Añade un nuevo correo electrónico a tu cuenta.
+    arg1:
+      label:                  email
+      description:            Dirección de correo electrónico
+    arg2:
+      label:                  repiteEmail
+      description:            Verificación de la dirección de correo electrónico
+  email.change:
+    description:              Cambiar correo electrónico
+    detailedDescription:      Cambia la dirección de correo electrónico de tu cuenta.
+    arg1:
+      label:                  anteriorEmail
+      description:            Anterior dirección de correo electrónico
+    arg2:
+      label:                  nuevoEmail
+      description:            Nueva dirección de correo electrónico
+  email.recover:
+    description:              Recuperar contraseña usando el correo electrónico
+    detailedDescription:      Recupera tu cuenta usando tu correo electrónico para enviarte una nueva contraseña.
+    arg1:
+      label:                  email
+      description:            Dirección de correo electrónico
+  email.code:
+    description:              Envía el código para recuperar tu contraseña
+    detailedDescription:      Recupera tu cuenta enviando el código recibido en tu correo electrónico.
+    arg1:
+      label:                  código
+      description:            Código de recuperación
+  email.setpassword:
+    description:              Establece una nueva contraseña después de recuperar
+    detailedDescription:      Establece una nueva contraseña después de recuperar completamente tu cuenta.
+    arg1:
+      label:                  contraseña
+      description:            Nueva contraseña
+  email.help:
+    description:              Muestra la ayuda
+    detailedDescription:      Muestra detalladamente la ayuda de los comandos de /email.
+    arg1:
+      label:                  consulta
+      description:            El comando o consulta para ver la ayuda de este.
+  login:
+    description:              Comando de inicio de sesión
+    detailedDescription:      Comando para iniciar sesión utilizado en AuthMeReloaded.
+    arg1:
+      label:                  contraseña
+      description:            Contraseña de inicio de sesión
+  login.help:
+    description:              Mostrar la ayuda
+    detailedDescription:      Mostrar la ayuda detallada del comando /login.
+    arg1:
+      label:                  consulta
+      description:            El comando o consulta para ver la ayuda de este.
+  logout:
+    description:              Comando de cierre de sesión
+    detailedDescription:      Comando de cierre de sesión usado por AuthMeReloaded.
+  logout.help:
+    description:              Mostrar la ayuda
+    detailedDescription:      Mostrar la ayuda detallada del comando /logout.
+    arg1:
+      label:                  consulta
+      description:            El comando o consulta para ver la ayuda de este.
+  register:
+    description:              Registrar una cuenta
+    detailedDescription:      Comando para registrar una cuenta usado por AuthMeReloaded.
+    arg1:
+      label:                  contraseña
+      description:            Contraseña
+    arg2:
+      label:                  repiteContraseña
+      description:            Repite la contraseña
+  register.help:
+    description:              Mostrar la ayuda
+    detailedDescription:      Mostrar la ayuda detallada del comando /register.
+    arg1:
+      label:                  consulta
+      description:            El comando o consulta para ver la ayuda de este.
+  unregister:
+    description:              Eliminar registro de una cuenta
+    detailedDescription:      Comando para eliminar una cuenta registrada usado por AuthMeReloaded.
+    arg1:
+      label:                  contraseña
+      description:            Contraseña
+  unregister.help:
+    description:              Mostrar la ayuda
+    detailedDescription:      Mostrar la ayuda detallada del comando /unregister.
+    arg1:
+      label:                  consulta
+      description:            El comando o consulta para ver la ayuda de este.
+  changepassword:
+    description:              Cambia la contraseña de una cuenta
+    detailedDescription:      Comando para cambiar tu contraseña usado por AuthMeReloaded.
+    arg1:
+      label:                  antiguaContraseña
+      description:            Antigua contraseña
+    arg2:
+      label:                  nuevaContraseña
+      description:            Nueva contraseña
+  changepassword.help:
+    description:              Mostrar la ayuda
+    detailedDescription:      Mostrar la ayuda detallada del comando /changepassword.
+    arg1:
+      label:                  consulta
+      description:            El comando o consulta para ver la ayuda de este.
+  captcha:
+    description:              Comando del Captcha
+    detailedDescription:      Comando del Captcha para AuthMeReloaded.
+    arg1:
+      label:                  captcha
+      description:            El Captcha
+  captcha.help:
+    description:              Mostrar la ayuda
+    detailedDescription:      Mostrar la ayuda detallada del comando /captcha.
+    arg1:
+      label:                  consulta
+      description:            El comando o consulta para ver la ayuda de este.

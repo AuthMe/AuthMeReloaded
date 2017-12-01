@@ -108,6 +108,21 @@ public class CommandManagerTest {
     }
 
     @Test
+    public void shouldExecuteCommandsOnFirstLogin() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnFirstLogin(player);
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("pay Bobby 30");
+        verifyNoMoreInteractions(bukkitService);
+        verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
     public void shouldExecuteCommandsOnJoin() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
@@ -176,6 +191,19 @@ public class CommandManagerTest {
 
         // then
         verifyZeroInteractions(bukkitService, geoIpService);
+    }
+
+    @Test
+    public void shouldExecuteCommandOnUnregister() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnUnregister(player);
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("msg Bobby sad to see you go!");
     }
 
     @Test
