@@ -4,8 +4,11 @@
 
 ##### Links and Contacts:
 
-- Contacts:
-  - [Discord](https://discord.gg/Vn9eCyE)
+ - Support:
+   - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
+   - [BukkitDev page](https://dev.bukkit.org/projects/authme-reloaded)
+   - [Spigot page](https://www.spigotmc.org/resources/authmereloaded.6269/)
+   - [Discord](https://discord.gg/Vn9eCyE)
 
 - CI Services:
   - [Official Jenkins](http://ci.xephi.fr/job/AuthMeReloaded) (**DEVELOPMENT BUILDS**)
