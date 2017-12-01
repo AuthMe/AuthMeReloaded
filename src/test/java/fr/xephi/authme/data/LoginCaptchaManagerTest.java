@@ -51,8 +51,8 @@ public class LoginCaptchaManagerTest {
         assertThat(captchaCode.length(), equalTo(4));
         assertThat(badResult, equalTo(false));
         assertThat(goodResult, equalTo(true));
-        // Supplying correct code should clear the entry, and any code should be valid if no entry is present
-        assertThat(manager.checkCode(player, "bogus"), equalTo(true));
+        // Supplying correct code should clear the entry, and a code should be invalid if no entry is present
+        assertThat(manager.checkCode(player, "bogus"), equalTo(false));
     }
 
     @Test

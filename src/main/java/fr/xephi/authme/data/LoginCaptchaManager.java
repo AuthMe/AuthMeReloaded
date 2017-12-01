@@ -1,33 +1,26 @@
 package fr.xephi.authme.data;
 
-import fr.xephi.authme.initialization.HasCleanup;
-import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.expiring.TimedCounter;
 
 import javax.inject.Inject;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Manager for the handling of captchas after too many failed login attempts.
  */
-public class LoginCaptchaManager implements SettingsDependent, HasCleanup {
+public class LoginCaptchaManager extends AbstractCaptchaManager {
 
-    private final TimedCounter<String> playerCounts;
-    private final ConcurrentHashMap<String, String> captchaCodes;
+    // Note: proper expiration is set in reload(), which is also called on initialization by the parent
+    private final TimedCounter<String> playerCounts = new TimedCounter<>(0, TimeUnit.MINUTES);
 
     private boolean isEnabled;
     private int threshold;
-    private int captchaLength;
 
     @Inject
     LoginCaptchaManager(Settings settings) {
-        this.captchaCodes = new ConcurrentHashMap<>();
-        long countTimeout = settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET);
-        this.playerCounts = new TimedCounter<>(countTimeout, TimeUnit.MINUTES);
+        super(settings);
         reload(settings);
     }
 
@@ -43,57 +36,9 @@ public class LoginCaptchaManager implements SettingsDependent, HasCleanup {
         }
     }
 
-    /**
-     * Returns whether the given player is required to solve a captcha before he can use /login again.
-     *
-     * @param name the name of the player to verify
-     * @return true if the player has to solve a captcha, false otherwise
-     */
-    public boolean isCaptchaRequired(String name) {
-        return isEnabled && playerCounts.get(name.toLowerCase()) >= threshold;
-    }
-
-    /**
-     * Returns the stored captcha for the player or generates and saves a new one.
-     *
-     * @param name the player's name
-     * @return the code the player is required to enter
-     */
-    public String getCaptchaCodeOrGenerateNew(String name) {
-        String code = captchaCodes.get(name.toLowerCase());
-        return code == null ? generateCode(name) : code;
-    }
-
-    /**
-     * Generates a code for the player and returns it.
-     *
-     * @param name the name of the player to generate a code for
-     * @return the generated code
-     */
-    public String generateCode(String name) {
-        String code = RandomStringUtils.generate(captchaLength);
-        captchaCodes.put(name.toLowerCase(), code);
-        return code;
-    }
-
-    /**
-     * Checks the given code against the existing one and resets the player's auth failure count upon success.
-     *
-     * @param name the name of the player to check
-     * @param code the supplied code
-     * @return true if the code matches or if no captcha is required for the player, false otherwise
-     */
-    public boolean checkCode(String name, String code) {
-        final String nameLowerCase = name.toLowerCase();
-        String savedCode = captchaCodes.get(nameLowerCase);
-        if (savedCode == null) {
-            return true;
-        } else if (savedCode.equalsIgnoreCase(code)) {
-            captchaCodes.remove(nameLowerCase);
-            playerCounts.remove(nameLowerCase);
-            return true;
-        }
-        return false;
+    @Override
+    public boolean isCaptchaRequired(String playerName) {
+        return isEnabled && playerCounts.get(playerName.toLowerCase()) >= threshold;
     }
 
     /**
@@ -103,23 +48,33 @@ public class LoginCaptchaManager implements SettingsDependent, HasCleanup {
      */
     public void resetLoginFailureCount(String name) {
         if (isEnabled) {
-            captchaCodes.remove(name.toLowerCase());
             playerCounts.remove(name.toLowerCase());
         }
     }
 
     @Override
     public void reload(Settings settings) {
+        super.reload(settings);
+
         this.isEnabled = settings.getProperty(SecuritySettings.ENABLE_LOGIN_FAILURE_CAPTCHA);
         this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TRIES_BEFORE_CAPTCHA);
-        this.captchaLength = settings.getProperty(SecuritySettings.CAPTCHA_LENGTH);
         long countTimeout = settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET);
         playerCounts.setExpiration(countTimeout, TimeUnit.MINUTES);
     }
 
     @Override
     public void performCleanup() {
+        super.performCleanup();
         playerCounts.removeExpiredEntries();
     }
 
+    @Override
+    protected void processSuccessfulCode(String nameLower) {
+        playerCounts.remove(nameLower);
+    }
+
+    @Override
+    protected int minutesBeforeCodeExpires(Settings settings) {
+        return settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET);
+    }
 }

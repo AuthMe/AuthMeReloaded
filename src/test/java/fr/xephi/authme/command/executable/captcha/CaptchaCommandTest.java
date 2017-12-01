@@ -17,6 +17,7 @@ import java.util.Collections;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -39,7 +40,7 @@ public class CaptchaCommandTest {
     private PlayerCache playerCache;
 
     @Mock
-    private CommonService commandService;
+    private CommonService commonService;
 
     @Mock
     private LimboService limboService;
@@ -55,7 +56,7 @@ public class CaptchaCommandTest {
         command.executeCommand(player, Collections.singletonList("123"));
 
         // then
-        verify(commandService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+        verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
     }
 
     @Test
@@ -65,14 +66,16 @@ public class CaptchaCommandTest {
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(false);
+        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList("1234"));
 
         // then
-        verify(commandService).send(player, MessageKey.USAGE_LOGIN);
+        verify(commonService).send(player, MessageKey.USAGE_LOGIN);
         verify(loginCaptchaManager).isCaptchaRequired(name);
-        verifyNoMoreInteractions(loginCaptchaManager);
+        verify(registrationCaptchaManager).isCaptchaRequired(name);
+        verifyNoMoreInteractions(loginCaptchaManager, registrationCaptchaManager);
     }
 
     @Test
@@ -92,10 +95,10 @@ public class CaptchaCommandTest {
         verify(loginCaptchaManager).isCaptchaRequired(name);
         verify(loginCaptchaManager).checkCode(name, captchaCode);
         verifyNoMoreInteractions(loginCaptchaManager);
-        verify(commandService).send(player, MessageKey.CAPTCHA_SUCCESS);
-        verify(commandService).send(player, MessageKey.LOGIN_MESSAGE);
+        verify(commonService).send(player, MessageKey.CAPTCHA_SUCCESS);
+        verify(commonService).send(player, MessageKey.LOGIN_MESSAGE);
         verify(limboService).unmuteMessageTask(player);
-        verifyNoMoreInteractions(commandService);
+        verifyNoMoreInteractions(commonService);
     }
 
     @Test
@@ -118,8 +121,47 @@ public class CaptchaCommandTest {
         verify(loginCaptchaManager).checkCode(name, captchaCode);
         verify(loginCaptchaManager).generateCode(name);
         verifyNoMoreInteractions(loginCaptchaManager);
-        verify(commandService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
-        verifyNoMoreInteractions(commandService);
+        verify(commonService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
+        verifyNoMoreInteractions(commonService);
+    }
+
+    @Test
+    public void shouldVerifyWithRegisterCaptchaManager() {
+        // given
+        String name = "john";
+        Player player = mockPlayerWithName(name);
+        given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(false);
+        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
+        String captchaCode = "A89Y3";
+        given(registrationCaptchaManager.checkCode(name, captchaCode)).willReturn(true);
+
+        // when
+        command.executeCommand(player, Collections.singletonList(captchaCode));
+
+        // then
+        verify(registrationCaptchaManager).checkCode(name, captchaCode);
+        verify(loginCaptchaManager, only()).isCaptchaRequired(name);
+        verify(commonService).send(player, MessageKey.CAPTCHA_SUCCESS);
+        verify(commonService).send(player, MessageKey.REGISTER_MESSAGE);
+    }
+
+    @Test
+    public void shouldHandleFailedRegisterCaptcha() {
+        // given
+        String name = "asfd";
+        Player player = mockPlayerWithName(name);
+        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
+        String captchaCode = "SFL3";
+        given(registrationCaptchaManager.checkCode(name, captchaCode)).willReturn(false);
+        given(registrationCaptchaManager.generateCode(name)).willReturn("new code");
+
+        // when
+        command.executeCommand(player, Collections.singletonList(captchaCode));
+
+        // then
+        verify(registrationCaptchaManager).checkCode(name, captchaCode);
+        verify(registrationCaptchaManager).generateCode(name);
+        verify(commonService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, "new code");
     }
 
     private static Player mockPlayerWithName(String name) {

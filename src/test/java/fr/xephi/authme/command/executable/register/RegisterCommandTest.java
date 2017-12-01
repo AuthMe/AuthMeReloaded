@@ -93,12 +93,13 @@ public class RegisterCommandTest {
     public void shouldForwardToManagementForTwoFactor() {
         // given
         given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.TWO_FACTOR);
-        Player player = mock(Player.class);
+        Player player = mockPlayerWithName("test2");
 
         // when
         command.executeCommand(player, Collections.emptyList());
 
         // then
+        verify(registrationCaptchaManager).isCaptchaRequired("test2");
         verify(management).performRegister(eq(RegistrationMethod.TWO_FACTOR_REGISTRATION),
             argThat(isEqualTo(TwoFactorRegisterParams.of(player))));
         verifyZeroInteractions(emailService);
@@ -210,12 +211,13 @@ public class RegisterCommandTest {
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
         given(emailService.hasAllInformation()).willReturn(true);
-        Player player = mock(Player.class);
+        Player player = mockPlayerWithName("brett");
 
         // when
         command.executeCommand(player, Arrays.asList(playerMail, playerMail));
 
         // then
+        verify(registrationCaptchaManager).isCaptchaRequired("brett");
         verify(validationService).validateEmail(playerMail);
         verify(emailService).hasAllInformation();
         verify(management).performRegister(eq(RegistrationMethod.EMAIL_REGISTRATION),
@@ -240,12 +242,13 @@ public class RegisterCommandTest {
     @Test
     public void shouldPerformPasswordRegistration() {
         // given
-        Player player = mock(Player.class);
+        Player player = mockPlayerWithName("newPlayer");
 
         // when
         command.executeCommand(player, Collections.singletonList("myPass"));
 
         // then
+        verify(registrationCaptchaManager).isCaptchaRequired("newPlayer");
         verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
             argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", null))));
     }
@@ -275,12 +278,13 @@ public class RegisterCommandTest {
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_OPTIONAL);
         String email = "email@example.org";
         given(validationService.validateEmail(email)).willReturn(false);
-        Player player = mock(Player.class);
+        Player player = mockPlayerWithName("Waaa");
 
         // when
         command.executeCommand(player, Arrays.asList("myPass", email));
 
         // then
+        verify(registrationCaptchaManager).isCaptchaRequired("Waaa");
         verify(validationService).validateEmail(email);
         verify(commonService).send(player, MessageKey.INVALID_EMAIL);
         verifyZeroInteractions(management);
@@ -291,13 +295,38 @@ public class RegisterCommandTest {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_OPTIONAL);
-        Player player = mock(Player.class);
+        Player player = mockPlayerWithName("Doa");
 
         // when
         command.executeCommand(player, Collections.singletonList("myPass"));
 
         // then
+        verify(registrationCaptchaManager).isCaptchaRequired("Doa");
         verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
             argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", null))));
+    }
+
+    @Test
+    public void shouldRequestCaptcha() {
+        // given
+        given(registrationCaptchaManager.isCaptchaRequired(anyString())).willReturn(true);
+        String name = "Brian";
+        Player player = mockPlayerWithName(name);
+        String captcha = "AB923C";
+        given(registrationCaptchaManager.getCaptchaCodeOrGenerateNew(name)).willReturn(captcha);
+
+        // when
+        command.executeCommand(player, Arrays.asList("myPass", "myPass"));
+
+        // then
+        verify(registrationCaptchaManager).isCaptchaRequired(name);
+        verify(commonService).send(player, MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha);
+        verifyZeroInteractions(management, validationService);
+    }
+
+    private static Player mockPlayerWithName(String name) {
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        return player;
     }
 }
