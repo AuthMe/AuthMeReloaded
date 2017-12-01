@@ -40,6 +40,10 @@ public class ServerListener implements Listener {
         if ("Essentials".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookEssentials();
             ConsoleLogger.info("Essentials has been disabled: unhooking");
+        } else if ("CMI".equalsIgnoreCase(pluginName)) {
+            pluginHookService.unhookCmi();
+            spawnLoader.unloadCmiSpawn();
+            ConsoleLogger.info("CMI has been disabled: unhooking");
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookMultiverse();
             ConsoleLogger.info("Multiverse-Core has been disabled: unhooking");
@@ -70,6 +74,9 @@ public class ServerListener implements Listener {
             pluginHookService.tryHookToMultiverse();
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.loadEssentialsSpawn();
+        } else if ("CMI".equalsIgnoreCase(pluginName)) {
+            pluginHookService.tryHookToCmi();
+            spawnLoader.loadCmiSpawn();
         } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
             protocolLibService.setup();
         }

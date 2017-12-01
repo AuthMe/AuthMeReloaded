@@ -108,6 +108,21 @@ public class CommandManagerTest {
     }
 
     @Test
+    public void shouldExecuteCommandsOnFirstLogin() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnFirstLogin(player);
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("pay Bobby 30");
+        verifyNoMoreInteractions(bukkitService);
+        verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
     public void shouldExecuteCommandsOnJoin() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");

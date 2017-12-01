@@ -22,6 +22,7 @@ public class PluginHookService {
 
     private final PluginManager pluginManager;
     private Essentials essentials;
+    private Plugin cmi;
     private MultiverseCore multiverse;
 
     /**
@@ -33,6 +34,7 @@ public class PluginHookService {
     public PluginHookService(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
         tryHookToEssentials();
+        tryHookToCmi();
         tryHookToMultiverse();
     }
 
@@ -61,6 +63,19 @@ public class PluginHookService {
     }
 
     /**
+     * If CMI is hooked into, return CMI' data folder.
+     *
+     * @return The CMI data folder, or null if unavailable
+     */
+    public File getCmiDataFolder() {
+        Plugin plugin = pluginManager.getPlugin("CMI");
+        if(plugin == null) {
+            return null;
+        }
+        return plugin.getDataFolder();
+    }
+
+    /**
      * Return the spawn of the given world as defined by Multiverse (if available).
      *
      * @param world The world to get the Multiverse spawn for
@@ -76,15 +91,22 @@ public class PluginHookService {
         return null;
     }
 
-
     // ------
     // "Is plugin available" methods
     // ------
+
     /**
      * @return true if we have a hook to Essentials, false otherwise
      */
     public boolean isEssentialsAvailable() {
         return essentials != null;
+    }
+
+    /**
+     * @return true if we have a hook to CMI, false otherwise
+     */
+    public boolean isCmiAvailable() {
+        return cmi != null;
     }
 
     /**
@@ -110,6 +132,17 @@ public class PluginHookService {
     }
 
     /**
+     * Attempts to create a hook into CMI.
+     */
+    public void tryHookToCmi() {
+        try {
+            cmi = getPlugin(pluginManager, "CMI", Plugin.class);
+        } catch (Exception | NoClassDefFoundError ignored) {
+            cmi = null;
+        }
+    }
+
+    /**
      * Attempts to create a hook into Multiverse.
      */
     public void tryHookToMultiverse() {
@@ -123,11 +156,19 @@ public class PluginHookService {
     // ------
     // Unhook methods
     // ------
+
     /**
      * Unhooks from Essentials.
      */
     public void unhookEssentials() {
         essentials = null;
+    }
+
+    /**
+     * Unhooks from CMI.
+     */
+    public void unhookCmi() {
+        cmi = null;
     }
 
     /**
@@ -140,6 +181,7 @@ public class PluginHookService {
     // ------
     // Helpers
     // ------
+
     private static <T extends Plugin> T getPlugin(PluginManager pluginManager, String name, Class<T> clazz)
         throws Exception, NoClassDefFoundError {
         if (pluginManager.isPluginEnabled(name)) {
@@ -149,6 +191,5 @@ public class PluginHookService {
         }
         return null;
     }
-
 
 }

@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.injector.factory.Factory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSortedMap;
 import fr.xephi.authme.ConsoleLogger;
@@ -13,7 +14,6 @@ import fr.xephi.authme.datasource.converter.RoyalAuthConverter;
 import fr.xephi.authme.datasource.converter.SqliteToSql;
 import fr.xephi.authme.datasource.converter.VAuthConverter;
 import fr.xephi.authme.datasource.converter.XAuthConverter;
-import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;

@@ -35,6 +35,7 @@ public class SpawnLoader implements Reloadable {
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
+    private Location cmiSpawn;
 
     /**
      * Constructor.
@@ -131,6 +132,31 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
+     * Load the spawn point defined in CMI.
+     */
+    public void loadCmiSpawn() {
+        File cmiFolder = pluginHookService.getCmiDataFolder();
+        if (cmiFolder == null) {
+            return;
+        }
+
+        File cmiConfig = new File(cmiFolder, "config.yml");
+        if (cmiConfig.exists()) {
+            cmiSpawn = getLocationFromCmiConfiguration(YamlConfiguration.loadConfiguration(cmiConfig));
+        } else {
+            cmiSpawn = null;
+            ConsoleLogger.info("CMI config file not found: '" + cmiConfig.getAbsolutePath() + "'");
+        }
+    }
+
+    /**
+     * Unset the spawn point defined in CMI.
+     */
+    public void unloadCmiSpawn() {
+        cmiSpawn = null;
+    }
+
+    /**
      * Return the spawn location for the given player. The source of the spawn location varies
      * depending on the spawn priority setting.
      *
@@ -161,6 +187,9 @@ public class SpawnLoader implements Reloadable {
                     break;
                 case "essentials":
                     spawnLoc = essentialsSpawn;
+                    break;
+                case "cmi":
+                    spawnLoc = cmiSpawn;
                     break;
                 case "authme":
                     spawnLoc = getSpawn();
@@ -243,6 +272,28 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
+     * Build a {@link Location} object based on the CMI configuration.
+     *
+     * @param configuration The CMI file configuration to read from
+     *
+     * @return Location corresponding to the values in the path
+     */
+    private static Location getLocationFromCmiConfiguration(FileConfiguration configuration) {
+        final String pathPrefix = "Spawn.Main";
+        if (isLocationCompleteInCmiConfig(configuration, pathPrefix)) {
+            String prefix = pathPrefix + ".";
+            String worldName = configuration.getString(prefix + "World");
+            World world = Bukkit.getWorld(worldName);
+            if (!StringUtils.isEmpty(worldName) && world != null) {
+                return new Location(world, configuration.getDouble(prefix + "X"),
+                    configuration.getDouble(prefix + "Y"), configuration.getDouble(prefix + "Z"),
+                    getFloat(configuration, prefix + "Yaw"), getFloat(configuration, prefix + "Pitch"));
+            }
+        }
+        return null;
+    }
+
+    /**
      * Return whether the file configuration contains all fields necessary to define a spawn
      * under the given path.
      *
@@ -262,6 +313,24 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
+     * Return whether the CMI file configuration contains all spawn fields under the given path.
+     *
+     * @param cmiConfiguration The file configuration from CMI
+     * @param pathPrefix       The path to verify
+     *
+     * @return True if all spawn fields are present, false otherwise
+     */
+    private static boolean isLocationCompleteInCmiConfig(FileConfiguration cmiConfiguration, String pathPrefix) {
+        String[] fields = {"World", "X", "Y", "Z", "Yaw", "Pitch"};
+        for (String field : fields) {
+            if (!cmiConfiguration.contains(pathPrefix + "." + field)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Retrieve a property as a float from the given file configuration.
      *
      * @param configuration The file configuration to use
@@ -274,4 +343,5 @@ public class SpawnLoader implements Reloadable {
         // This behavior is consistent with FileConfiguration#getDouble
         return (value instanceof Number) ? ((Number) value).floatValue() : 0;
     }
+
 }

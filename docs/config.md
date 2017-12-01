@@ -1,8 +1,8 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Oct 31 15:56:59 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Nov 28 12:49:57 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
-The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
+The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
 with which you can configure various settings. This following is the initial contents of
 the generated config.yml file.
 
@@ -131,7 +131,7 @@ settings:
         # Hide the chat log from players who are not authenticated?
         hideChat: false
         # Allowed commands for unauthenticated players
-        allowCommands:
+        allowCommands: 
         - '/login'
         - '/register'
         - '/l'
@@ -158,7 +158,7 @@ settings:
             enabled: false
             # WorldNames where we need to force the spawn location
             # Case-sensitive!
-            worlds:
+            worlds: 
             - 'world'
             - 'world_nether'
             - 'world_the_end'
@@ -202,8 +202,8 @@ settings:
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
-        # Spawn priority; values: authme, essentials, multiverse, default
-        spawnPriority: 'authme,essentials,multiverse,default'
+        # Spawn priority; values: authme, essentials, cmi, multiverse, default
+        spawnPriority: 'authme,essentials,cmi,multiverse,default'
         # Maximum Login authorized by IP
         maxLoginPerIp: 0
         # Maximum Join authorized by IP
@@ -258,7 +258,7 @@ settings:
         # - '123456'
         # - 'password'
         # - 'help'
-        unsafePasswords:
+        unsafePasswords: 
         - '123456'
         - 'password'
         - 'qwerty'
@@ -364,7 +364,7 @@ Email:
     # Delay in minute for the recall scheduler
     delayRecall: 5
     # Blacklist these domains for emails
-    emailBlacklisted:
+    emailBlacklisted: 
     - '10minutemail.com'
     # Whitelist ONLY these domains for emails
     emailWhitelisted: []
@@ -391,12 +391,12 @@ Protection:
     # Countries allowed to join the server and register. For country codes, see
     # http://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # PLEASE USE QUOTES!
-    countries:
+    countries: 
     - 'US'
     - 'GB'
     # Countries not allowed to join the server and register
     # PLEASE USE QUOTES!
-    countriesBlacklist:
+    countriesBlacklist: 
     - 'A1'
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
@@ -555,9 +555,9 @@ Converter:
             password: ''
 ```
 
-To change settings on a running server, save your changes to config.yml and use
+To change settings on a running server, save your changes to config.yml and use 
 `/authme reload`.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Oct 31 15:56:59 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Nov 28 12:49:57 CET 2017

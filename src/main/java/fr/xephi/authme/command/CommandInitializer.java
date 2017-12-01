@@ -17,6 +17,7 @@ import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
 import fr.xephi.authme.command.executable.authme.PurgeCommand;
 import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
 import fr.xephi.authme.command.executable.authme.PurgePlayerCommand;
+import fr.xephi.authme.command.executable.authme.RecentPlayersCommand;
 import fr.xephi.authme.command.executable.authme.RegisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.ReloadCommand;
 import fr.xephi.authme.command.executable.authme.SetEmailCommand;
@@ -431,6 +432,15 @@ public class CommandInitializer {
             .withArgument("help", "Add 'help' to update the help messages file", true)
             .permission(AdminPermission.UPDATE_MESSAGES)
             .executableCommand(MessagesCommand.class)
+            .register();
+
+        CommandDescription.builder()
+            .parent(authmeBase)
+            .labels("recent")
+            .description("See players who have recently logged in")
+            .detailedDescription("Shows the last players that have logged in.")
+            .permission(AdminPermission.SEE_RECENT_PLAYERS)
+            .executableCommand(RecentPlayersCommand.class)
             .register();
 
         CommandDescription.builder()

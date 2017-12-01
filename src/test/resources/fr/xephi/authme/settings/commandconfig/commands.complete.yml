@@ -25,6 +25,10 @@ onSessionLogin:
     welcome:
         command: 'msg %p Session login!'
         executor: CONSOLE
+onFirstLogin:
+    give_money:
+        command: 'pay %p 30'
+        executor: CONSOLE
 onUnregister: {}
 onLogout:
     announce:

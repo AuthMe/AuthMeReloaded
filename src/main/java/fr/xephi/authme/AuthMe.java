@@ -12,8 +12,6 @@ import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
 import fr.xephi.authme.initialization.OnStartupTasks;
 import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
-import fr.xephi.authme.initialization.factory.FactoryDependencyHandler;
-import fr.xephi.authme.initialization.factory.SingletonStoreDependencyHandler;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -201,7 +199,6 @@ public class AuthMe extends JavaPlugin {
 
         // Create injector, provide elements from the Bukkit environment and register providers
         injector = new InjectorBuilder()
-            .addHandlers(new FactoryDependencyHandler(), new SingletonStoreDependencyHandler())
             .addDefaultHandlers("fr.xephi.authme")
             .create();
         injector.register(AuthMe.class, this);

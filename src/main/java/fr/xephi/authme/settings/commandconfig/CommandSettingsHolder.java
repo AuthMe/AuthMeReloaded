@@ -22,7 +22,7 @@ public final class CommandSettingsHolder implements SettingsHolder {
 
     @SectionComments
     public static Map<String, String[]> sectionComments() {
-        String[] comments = {
+        String[] rootComments = {
             "This configuration file allows you to execute commands on various events.",
             "Supported placeholders in commands:",
             "  %p is replaced with the player name.",
@@ -48,10 +48,14 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "    command: 'broadcast %p has joined, welcome back!'",
             "    executor: CONSOLE",
             "",
-            "Supported command events: onLogin, onSessionLogin, onJoin, onLogout, onRegister, onUnregister"
+            "Supported command events: onLogin, onSessionLogin, onFirstLogin, onJoin, onLogout, onRegister, "
+                + "onUnregister"
         };
         Map<String, String[]> commentMap = new HashMap<>();
-        commentMap.put("", comments);
+        commentMap.put("", rootComments);
+        commentMap.put("onFirstLogin", new String[]{
+            "Commands to run for players logging in whose 'last login date' was empty"
+        });
         commentMap.put("onUnregister", new String[]{
             "Commands to run whenever a player is unregistered (by himself, or by an admin)"
         });

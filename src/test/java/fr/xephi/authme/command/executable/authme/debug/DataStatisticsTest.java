@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import ch.jalu.injector.factory.SingletonStore;
 import com.google.common.cache.LoadingCache;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -11,7 +12,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.initialization.factory.SingletonStore;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;

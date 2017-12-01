@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import ch.jalu.injector.factory.Factory;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.initialization.factory.Factory;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

@@ -1,7 +1,9 @@
 package tools.dependencygraph;
 
-import ch.jalu.injector.handlers.instantiation.DependencyDescription;
-import ch.jalu.injector.handlers.instantiation.Instantiation;
+import ch.jalu.injector.context.ObjectIdentifier;
+import ch.jalu.injector.factory.Factory;
+import ch.jalu.injector.factory.SingletonStore;
+import ch.jalu.injector.handlers.instantiation.Resolution;
 import ch.jalu.injector.handlers.instantiation.StandardInjectionProvider;
 import ch.jalu.injector.utils.ReflectionUtils;
 import com.google.common.collect.HashMultimap;
@@ -14,13 +16,12 @@ import fr.xephi.authme.command.executable.authme.debug.DebugCommand;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.initialization.factory.Factory;
-import fr.xephi.authme.initialization.factory.SingletonStore;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import org.bukkit.event.Listener;
+import tools.utils.InjectorUtils;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -124,21 +125,20 @@ public class DrawDependency implements ToolTask {
      * This is interesting so that a dependency in a class to {@code Factory<Foo>} is
      * rendered as a dependency to {@code Foo}, not to {@code Factory}.
      *
-     * @param clazz class of the dependency
      * @param genericType generic type of the dependency
      * @return the class to use to render the dependency
      */
-    private Class<?> unwrapGenericClass(Class<?> clazz, Type genericType) {
-        if (clazz == Factory.class || clazz == SingletonStore.class) {
+    private Class<?> unwrapGenericClass(Type genericType) {
+        if (genericType == Factory.class || genericType == SingletonStore.class) {
             Class<?> parameterType = ReflectionUtils.getGenericType(genericType);
-            Objects.requireNonNull(parameterType, "Parameter type for '" + clazz + "' should be a concrete class");
+            Objects.requireNonNull(parameterType, "Parameter type for '" + genericType + "' should be a concrete class");
             return parameterType;
         }
-        return clazz;
+        return InjectorUtils.convertToClass(genericType);
     }
 
     private List<String> getDependencies(Class<?> clazz) {
-        Instantiation<?> instantiation = new StandardInjectionProvider().safeGet(clazz);
+        Resolution<?> instantiation = new StandardInjectionProvider().safeGet(clazz);
         return instantiation == null ? null : formatInjectionDependencies(instantiation);
     }
 
@@ -150,22 +150,22 @@ public class DrawDependency implements ToolTask {
      * @param injection the injection whose dependencies should be formatted
      * @return list of dependencies in a friendly format
      */
-    private List<String> formatInjectionDependencies(Instantiation<?> injection) {
-        List<DependencyDescription> descriptions = injection.getDependencies();
-        List<String> result = new ArrayList<>(descriptions.size());
-        for (DependencyDescription dependency : descriptions) {
+    private List<String> formatInjectionDependencies(Resolution<?> injection) {
+        List<ObjectIdentifier> dependencies = injection.getDependencies();
+        List<String> result = new ArrayList<>(dependencies.size());
+        for (ObjectIdentifier dependency : dependencies) {
             Class<?> annotation = getRelevantAnnotationClass(dependency.getAnnotations());
             if (annotation != null) {
                 result.add("@" + annotation.getSimpleName());
             } else {
-                Class<?> clazz = unwrapGenericClass(dependency.getType(), dependency.getGenericType());
+                Class<?> clazz = unwrapGenericClass(dependency.getType());
                 result.add(mapToSuper(clazz).getSimpleName());
             }
         }
         return result;
     }
 
-    private static Class<? extends Annotation> getRelevantAnnotationClass(Annotation[] annotations) {
+    private static Class<? extends Annotation> getRelevantAnnotationClass(List<Annotation> annotations) {
         for (Annotation annotation : annotations) {
             if (ANNOTATION_TYPES.contains(annotation.annotationType())) {
                 return annotation.annotationType();
