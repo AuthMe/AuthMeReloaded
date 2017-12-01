@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Oct 28 10:39:36 CEST 2017. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Fri Dec 01 19:16:15 CET 2017. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -51,6 +51,8 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.admin.converter`
 - **/authme messages** [help]: Adds missing messages to the current messages file.
   <br />Requires `authme.admin.updatemessages`
+- **/authme recent**: Shows the last players that have logged in.
+  <br />Requires `authme.admin.seerecent`
 - **/authme debug** [child] [arg] [arg]: Allows various operations for debugging.
   <br />Requires `authme.debug.command`
 - **/authme help** [query]: View detailed help for /authme commands.
@@ -93,4 +95,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 28 10:39:36 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Dec 01 19:16:15 CET 2017

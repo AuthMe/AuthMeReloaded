@@ -2,6 +2,10 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.security.MessageDigestAlgorithm;
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -14,6 +18,8 @@ import java.security.MessageDigest;
  * successfully checks against phpBB's salted MD5 hashing algorithm (adaptation of phpass),
  * as well as plain MD5.
  */
+@Recommendation(Usage.ACCEPTABLE)
+@HasSalt(value = SaltType.TEXT, length = 22)
 public class PhpBB implements EncryptionMethod {
 
     private final BCrypt2y bCrypt2y = new BCrypt2y();

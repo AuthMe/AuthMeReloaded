@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Oct 28 12:12:40 CEST 2017. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Fri Dec 01 19:16:17 CET 2017. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -23,6 +23,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.admin.register** – Administrator command to register a new user.
 - **authme.admin.reload** – Administrator command to reload the plugin configuration.
 - **authme.admin.seeotheraccounts** – Permission to see the other accounts of the players that log in.
+- **authme.admin.seerecent** – Administrator command to see the last recently logged in players.
 - **authme.admin.setfirstspawn** – Administrator command to set the first AuthMe spawn.
 - **authme.admin.setspawn** – Administrator command to set the AuthMe spawn.
 - **authme.admin.spawn** – Administrator command to teleport to the AuthMe spawn.
@@ -65,4 +66,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Oct 28 12:12:40 CEST 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Dec 01 19:16:17 CET 2017
