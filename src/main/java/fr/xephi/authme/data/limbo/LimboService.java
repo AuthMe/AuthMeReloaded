@@ -18,7 +18,7 @@ import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_WALK_SPE
 
 /**
  * Service for managing players that are in "limbo," a temporary state players are
- * put in which have joined but not yet logged in yet.
+ * put in which have joined but not yet logged in.
  */
 public class LimboService {
 
