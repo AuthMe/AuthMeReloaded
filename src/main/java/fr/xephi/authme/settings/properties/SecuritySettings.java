@@ -29,7 +29,7 @@ public final class SecuritySettings implements SettingsHolder {
         newProperty("Security.console.logConsole", true);
 
     @Comment("Enable captcha when a player uses wrong password too many times")
-    public static final Property<Boolean> USE_CAPTCHA =
+    public static final Property<Boolean> ENABLE_LOGIN_FAILURE_CAPTCHA =
         newProperty("Security.captcha.useCaptcha", false);
 
     @Comment("Max allowed tries before a captcha is required")
@@ -43,6 +43,10 @@ public final class SecuritySettings implements SettingsHolder {
     @Comment("Minutes after which login attempts count is reset for a player")
     public static final Property<Integer> CAPTCHA_COUNT_MINUTES_BEFORE_RESET =
         newProperty("Security.captcha.captchaCountReset", 60);
+
+    @Comment("Require captcha before a player may register?")
+    public static final Property<Boolean> ENABLE_CAPTCHA_FOR_REGISTRATION =
+        newProperty("Security.captcha.requireForRegistration", false);
 
     @Comment("Minimum length of password")
     public static final Property<Integer> MIN_PASSWORD_LENGTH =

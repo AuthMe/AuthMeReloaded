@@ -5,52 +5,41 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.RandomStringUtils;
-import fr.xephi.authme.util.expiring.TimedCounter;
+import fr.xephi.authme.util.expiring.ExpiringSet;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Manager for the handling of captchas.
+ * Captcha handler for registration.
  */
-public class CaptchaManager implements SettingsDependent, HasCleanup {
+public class RegistrationCaptchaManager implements SettingsDependent, HasCleanup {
 
-    private final TimedCounter<String> playerCounts;
-    private final ConcurrentHashMap<String, String> captchaCodes;
+    private static final int MINUTES_VALID_FOR_REGISTRATION = 30;
 
-    private boolean isEnabled;
-    private int threshold;
+    private final Map<String, String> captchaCodes;
+    private final ExpiringSet<String> verifiedNamesForRegistration;
+
+    private boolean isEnabledForRegistration;
     private int captchaLength;
 
     @Inject
-    CaptchaManager(Settings settings) {
+    RegistrationCaptchaManager(Settings settings) {
         this.captchaCodes = new ConcurrentHashMap<>();
-        long countTimeout = settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET);
-        this.playerCounts = new TimedCounter<>(countTimeout, TimeUnit.MINUTES);
+        this.verifiedNamesForRegistration = new ExpiringSet<>(MINUTES_VALID_FOR_REGISTRATION, TimeUnit.MINUTES);
         reload(settings);
     }
 
     /**
-     * Increases the failure count for the given player.
-     *
-     * @param name the player's name
-     */
-    public void increaseCount(String name) {
-        if (isEnabled) {
-            String playerLower = name.toLowerCase();
-            playerCounts.increment(playerLower);
-        }
-    }
-
-    /**
-     * Returns whether the given player is required to solve a captcha.
+     * Returns whether the given player is required to solve a captcha before he can register.
      *
      * @param name the name of the player to verify
      * @return true if the player has to solve a captcha, false otherwise
      */
     public boolean isCaptchaRequired(String name) {
-        return isEnabled && playerCounts.get(name.toLowerCase()) >= threshold;
+        return isEnabledForRegistration && !verifiedNamesForRegistration.contains(name.toLowerCase());
     }
 
     /**
@@ -84,41 +73,26 @@ public class CaptchaManager implements SettingsDependent, HasCleanup {
      * @return true if the code matches or if no captcha is required for the player, false otherwise
      */
     public boolean checkCode(String name, String code) {
-        String savedCode = captchaCodes.get(name.toLowerCase());
+        final String nameLowerCase = name.toLowerCase();
+        String savedCode = captchaCodes.get(nameLowerCase);
         if (savedCode == null) {
             return true;
         } else if (savedCode.equalsIgnoreCase(code)) {
-            captchaCodes.remove(name.toLowerCase());
-            playerCounts.remove(name.toLowerCase());
+            captchaCodes.remove(nameLowerCase);
+            verifiedNamesForRegistration.add(nameLowerCase);
             return true;
         }
         return false;
     }
 
-    /**
-     * Resets the login count of the given player to 0.
-     *
-     * @param name the player's name
-     */
-    public void resetCounts(String name) {
-        if (isEnabled) {
-            captchaCodes.remove(name.toLowerCase());
-            playerCounts.remove(name.toLowerCase());
-        }
-    }
-
     @Override
     public void reload(Settings settings) {
-        this.isEnabled = settings.getProperty(SecuritySettings.USE_CAPTCHA);
-        this.threshold = settings.getProperty(SecuritySettings.MAX_LOGIN_TRIES_BEFORE_CAPTCHA);
+        this.isEnabledForRegistration = settings.getProperty(SecuritySettings.ENABLE_CAPTCHA_FOR_REGISTRATION);
         this.captchaLength = settings.getProperty(SecuritySettings.CAPTCHA_LENGTH);
-        long countTimeout = settings.getProperty(SecuritySettings.CAPTCHA_COUNT_MINUTES_BEFORE_RESET);
-        playerCounts.setExpiration(countTimeout, TimeUnit.MINUTES);
     }
 
     @Override
     public void performCleanup() {
-        playerCounts.removeExpiredEntries();
+        verifiedNamesForRegistration.removeExpiredEntries();
     }
-
 }

@@ -1,7 +1,8 @@
 package fr.xephi.authme.command.executable.captcha;
 
 import fr.xephi.authme.command.PlayerCommand;
-import fr.xephi.authme.data.CaptchaManager;
+import fr.xephi.authme.data.LoginCaptchaManager;
+import fr.xephi.authme.data.RegistrationCaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
@@ -17,7 +18,10 @@ public class CaptchaCommand extends PlayerCommand {
     private PlayerCache playerCache;
 
     @Inject
-    private CaptchaManager captchaManager;
+    private LoginCaptchaManager loginCaptchaManager;
+
+    @Inject
+    private RegistrationCaptchaManager registrationCaptchaManager;
 
     @Inject
     private CommonService commonService;
@@ -27,25 +31,40 @@ public class CaptchaCommand extends PlayerCommand {
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
-        final String playerName = player.getName().toLowerCase();
+        final String name = player.getName();
 
-        if (playerCache.isAuthenticated(playerName)) {
+        if (playerCache.isAuthenticated(name)) {
             commonService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-        } else if (!captchaManager.isCaptchaRequired(playerName)) {
-            commonService.send(player, MessageKey.USAGE_LOGIN);
+        } else if (loginCaptchaManager.isCaptchaRequired(name)) {
+            checkLoginCaptcha(player, arguments.get(0));
+        } else if (registrationCaptchaManager.isCaptchaRequired(name)) {
+            checkRegisterCaptcha(player, arguments.get(0));
         } else {
-            checkCaptcha(player, arguments.get(0));
+            MessageKey errorMessage = playerCache.isAuthenticated(name)
+                ? MessageKey.ALREADY_LOGGED_IN_ERROR : MessageKey.USAGE_LOGIN;
+            commonService.send(player, errorMessage);
         }
     }
 
-    private void checkCaptcha(Player player, String captchaCode) {
-        final boolean isCorrectCode = captchaManager.checkCode(player.getName(), captchaCode);
+    private void checkLoginCaptcha(Player player, String captchaCode) {
+        final boolean isCorrectCode = loginCaptchaManager.checkCode(player.getName(), captchaCode);
         if (isCorrectCode) {
             commonService.send(player, MessageKey.CAPTCHA_SUCCESS);
             commonService.send(player, MessageKey.LOGIN_MESSAGE);
             limboService.unmuteMessageTask(player);
         } else {
-            String newCode = captchaManager.generateCode(player.getName());
+            String newCode = loginCaptchaManager.generateCode(player.getName());
+            commonService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
+        }
+    }
+
+    private void checkRegisterCaptcha(Player player, String captchaCode) {
+        final boolean isCorrectCode = registrationCaptchaManager.checkCode(player.getName(), captchaCode);
+        if (isCorrectCode) {
+            commonService.send(player, MessageKey.CAPTCHA_SUCCESS);
+            commonService.send(player, MessageKey.REGISTER_MESSAGE);
+        } else {
+            String newCode = registrationCaptchaManager.generateCode(player.getName());
             commonService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
     }

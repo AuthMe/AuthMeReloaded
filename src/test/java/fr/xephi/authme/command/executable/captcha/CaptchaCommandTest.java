@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.captcha;
 
-import fr.xephi.authme.data.CaptchaManager;
+import fr.xephi.authme.data.LoginCaptchaManager;
+import fr.xephi.authme.data.RegistrationCaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
@@ -29,7 +30,10 @@ public class CaptchaCommandTest {
     private CaptchaCommand command;
 
     @Mock
-    private CaptchaManager captchaManager;
+    private LoginCaptchaManager loginCaptchaManager;
+
+    @Mock
+    private RegistrationCaptchaManager registrationCaptchaManager;
 
     @Mock
     private PlayerCache playerCache;
@@ -60,15 +64,15 @@ public class CaptchaCommandTest {
         String name = "bobby";
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(captchaManager.isCaptchaRequired(name)).willReturn(false);
+        given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList("1234"));
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_LOGIN);
-        verify(captchaManager).isCaptchaRequired(name);
-        verifyNoMoreInteractions(captchaManager);
+        verify(loginCaptchaManager).isCaptchaRequired(name);
+        verifyNoMoreInteractions(loginCaptchaManager);
     }
 
     @Test
@@ -77,17 +81,17 @@ public class CaptchaCommandTest {
         String name = "smith";
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(captchaManager.isCaptchaRequired(name)).willReturn(true);
+        given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "3991";
-        given(captchaManager.checkCode(name, captchaCode)).willReturn(true);
+        given(loginCaptchaManager.checkCode(name, captchaCode)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
-        verify(captchaManager).isCaptchaRequired(name);
-        verify(captchaManager).checkCode(name, captchaCode);
-        verifyNoMoreInteractions(captchaManager);
+        verify(loginCaptchaManager).isCaptchaRequired(name);
+        verify(loginCaptchaManager).checkCode(name, captchaCode);
+        verifyNoMoreInteractions(loginCaptchaManager);
         verify(commandService).send(player, MessageKey.CAPTCHA_SUCCESS);
         verify(commandService).send(player, MessageKey.LOGIN_MESSAGE);
         verify(limboService).unmuteMessageTask(player);
@@ -100,20 +104,20 @@ public class CaptchaCommandTest {
         String name = "smith";
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(captchaManager.isCaptchaRequired(name)).willReturn(true);
+        given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "2468";
-        given(captchaManager.checkCode(name, captchaCode)).willReturn(false);
+        given(loginCaptchaManager.checkCode(name, captchaCode)).willReturn(false);
         String newCode = "1337";
-        given(captchaManager.generateCode(name)).willReturn(newCode);
+        given(loginCaptchaManager.generateCode(name)).willReturn(newCode);
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
-        verify(captchaManager).isCaptchaRequired(name);
-        verify(captchaManager).checkCode(name, captchaCode);
-        verify(captchaManager).generateCode(name);
-        verifyNoMoreInteractions(captchaManager);
+        verify(loginCaptchaManager).isCaptchaRequired(name);
+        verify(loginCaptchaManager).checkCode(name, captchaCode);
+        verify(loginCaptchaManager).generateCode(name);
+        verifyNoMoreInteractions(loginCaptchaManager);
         verify(commandService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         verifyNoMoreInteractions(commandService);
     }

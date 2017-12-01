@@ -2,7 +2,7 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.CaptchaManager;
+import fr.xephi.authme.data.LoginCaptchaManager;
 import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -61,7 +61,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private PasswordSecurity passwordSecurity;
 
     @Inject
-    private CaptchaManager captchaManager;
+    private LoginCaptchaManager loginCaptchaManager;
 
     @Inject
     private TempbanManager tempbanManager;
@@ -163,15 +163,15 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
 
         // If captcha is required send a message to the player and deny to log in
-        if (captchaManager.isCaptchaRequired(name)) {
-            service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
+        if (loginCaptchaManager.isCaptchaRequired(name)) {
+            service.send(player, MessageKey.USAGE_CAPTCHA, loginCaptchaManager.getCaptchaCodeOrGenerateNew(name));
             return false;
         }
 
         final String ip = PlayerUtils.getPlayerIp(player);
 
         // Increase the counts here before knowing the result of the login.
-        captchaManager.increaseCount(name);
+        loginCaptchaManager.increaseLoginFailureCount(name);
         tempbanManager.increaseCount(ip, name);
 
         if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
@@ -202,10 +202,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
             service.send(player, MessageKey.WRONG_PASSWORD);
 
             // If the authentication fails check if Captcha is required and send a message to the player
-            if (captchaManager.isCaptchaRequired(player.getName())) {
+            if (loginCaptchaManager.isCaptchaRequired(player.getName())) {
                 limboService.muteMessageTask(player);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
-                    captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
+                    loginCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
             } else if (emailService.hasAllInformation() && !Utils.isEmailEmpty(auth.getEmail())) {
                 service.send(player, MessageKey.FORGOT_PASSWORD_MESSAGE);
             }
@@ -232,7 +232,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             // Successful login, so reset the captcha & temp ban count
             final String name = player.getName();
-            captchaManager.resetCounts(name);
+            loginCaptchaManager.resetLoginFailureCount(name);
             tempbanManager.resetCount(ip, name);
             player.setNoDamageTicks(0);
 

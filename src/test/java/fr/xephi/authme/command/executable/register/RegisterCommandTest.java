@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.data.RegistrationCaptchaManager;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -59,6 +60,9 @@ public class RegisterCommandTest {
 
     @Mock
     private ValidationService validationService;
+
+    @Mock
+    private RegistrationCaptchaManager registrationCaptchaManager;
 
     @BeforeClass
     public static void setup() {
