@@ -8,7 +8,7 @@ reg_msg: '&cPour vous inscrire, utilisez "/register <MotDePasse> <ConfirmerMotDe
 usage_reg: '&cUsage: /register <MotDePasse> <ConfirmerMotDePasse>'
 reg_only: 'Seul les joueurs enregistrés sont admis!%nl%Veuillez vous rendre sur http://example.com pour plus d''infos.'
 kicked_admin_registered: 'Un admin vient de vous inscrire, veuillez vous reconnecter.'
-registered: '&aInscription effectué !'
+registered: '&aInscription effectuée !'
 reg_disabled: '&cL''inscription est désactivée.'
 user_regged: '&cUtilisateur déjà inscrit.'
 
@@ -39,8 +39,8 @@ kick_forvip: 'Un joueur VIP a rejoint le serveur à votre place (serveur plein).
 
 # AntiBot
 kick_antibot: 'L''AntiBot est activé, veuillez attendre %m minutes avant de joindre le serveur.'
-antibot_auto_enabled: 'L''AntiBot activé automatiquement à cause de nombreuses connexions !'
-antibot_auto_disabled: 'L''AntiBot s''est désactivé automatiquement après %m minutes, espérons que l''invasion se soit arrêtée !'
+antibot_auto_enabled: 'L''AntiBot a été activé automatiquement à cause de nombreuses connexions !'
+antibot_auto_disabled: 'L''AntiBot a été désactivé automatiquement après %m minutes, espérons que l''invasion se soit arrêtée !'
 
 # Autres messages
 unregistered: '&aCompte supprimé !'
@@ -90,7 +90,7 @@ incomplete_email_settings: '&cErreur : Tous les paramètres requis ne sont pas p
 email_already_used: '&cCet email est déjà utilisé !'
 email_send_failure: '&cLe mail n''a pas pu être envoyé. Veuillez contacter un admin.'
 show_no_email: '&c&oVous n''avez aucun email enregistré sur votre compte.'
-add_email: '&cLier votre email à votre compte: /email add <Email> <ConfirmerEmail>'
+add_email: '&cLiez votre email à votre compte en faisant "/email add <Email> <ConfirmerEmail>"'
 recovery_email: '&cVous avez oublié votre Mot de Passe? Utilisez "/email recovery <votreEmail>"'
 change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cette commande.'
 email_cooldown_error: '&cUn mail de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
