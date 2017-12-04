@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -55,7 +57,7 @@ public class RecentPlayersCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("Recently logged in players")));
-        verify(sender).sendMessage("- Hannah (08:09 AM, 11 Nov with IP 11.11.11.11)");
-        verify(sender).sendMessage("- MATT (11:15 PM, 09 Nov with IP 22.11.22.33)");
+        verify(sender).sendMessage(argThat(equalToIgnoringCase("- Hannah (08:09 AM, 11 Nov with IP 11.11.11.11)")));
+        verify(sender).sendMessage(argThat(equalToIgnoringCase("- MATT (11:15 PM, 09 Nov with IP 22.11.22.33)")));
     }
 }

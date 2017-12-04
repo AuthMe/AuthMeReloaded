@@ -3,6 +3,7 @@ package fr.xephi.authme.service.bungeecord;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 
 import javax.inject.Inject;
+import java.io.Console;
 
 public class BungeeSender implements SettingsDependent {
 
@@ -76,6 +78,10 @@ public class BungeeSender implements SettingsDependent {
      */
     public void sendAuthMeBungeecordMessage(String type, String playerName) {
         if (isEnabled) {
+            if(!plugin.isEnabled()) {
+                ConsoleLogger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
+                return;
+            }
             sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
         }
     }
