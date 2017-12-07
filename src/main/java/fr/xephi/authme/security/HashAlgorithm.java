@@ -31,6 +31,7 @@ public enum HashAlgorithm {
     WORDPRESS(fr.xephi.authme.security.crypts.Wordpress.class),
     XAUTH(fr.xephi.authme.security.crypts.XAuth.class),
     XFBCRYPT(fr.xephi.authme.security.crypts.XfBCrypt.class),
+    CMW(fr.xephi.authme.security.crypts.MD5INSHA1.class),
     CUSTOM(null),
 
     @Deprecated DOUBLEMD5(fr.xephi.authme.security.crypts.DoubleMd5.class),
