@@ -10,6 +10,7 @@ public enum HashAlgorithm {
     ARGON2(fr.xephi.authme.security.crypts.Argon2.class),
     BCRYPT(fr.xephi.authme.security.crypts.BCrypt.class),
     BCRYPT2Y(fr.xephi.authme.security.crypts.BCrypt2y.class),
+    CMW(fr.xephi.authme.security.crypts.CMWCrypt.class),
     CRAZYCRYPT1(fr.xephi.authme.security.crypts.CrazyCrypt1.class),
     IPB3(fr.xephi.authme.security.crypts.Ipb3.class),
     IPB4(fr.xephi.authme.security.crypts.Ipb4.class),
@@ -31,7 +32,6 @@ public enum HashAlgorithm {
     WORDPRESS(fr.xephi.authme.security.crypts.Wordpress.class),
     XAUTH(fr.xephi.authme.security.crypts.XAuth.class),
     XFBCRYPT(fr.xephi.authme.security.crypts.XfBCrypt.class),
-    CMW(fr.xephi.authme.security.crypts.Md5InSha1.class),
     CUSTOM(null),
 
     @Deprecated DOUBLEMD5(fr.xephi.authme.security.crypts.DoubleMd5.class),
