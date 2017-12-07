@@ -10,7 +10,7 @@ public enum HashAlgorithm {
     ARGON2(fr.xephi.authme.security.crypts.Argon2.class),
     BCRYPT(fr.xephi.authme.security.crypts.BCrypt.class),
     BCRYPT2Y(fr.xephi.authme.security.crypts.BCrypt2y.class),
-    CMW(fr.xephi.authme.security.crypts.CMWCrypt.class),
+    CMW(fr.xephi.authme.security.crypts.CmwCrypt.class),
     CRAZYCRYPT1(fr.xephi.authme.security.crypts.CrazyCrypt1.class),
     IPB3(fr.xephi.authme.security.crypts.Ipb3.class),
     IPB4(fr.xephi.authme.security.crypts.Ipb4.class),
