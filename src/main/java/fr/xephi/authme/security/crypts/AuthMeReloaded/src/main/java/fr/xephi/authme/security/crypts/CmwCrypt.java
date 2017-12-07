@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
 
-public class CMWCrypt extends UnsaltedMethod {
+public class CmwCrypt extends UnsaltedMethod {
 
 @Override
 public String computeHash(String password) {
