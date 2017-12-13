@@ -118,12 +118,6 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldReturnCoreCount() {
-        // given / when / then
-        assertThat(Utils.getCoreCount(), greaterThan(0));
-    }
-
-    @Test
     public void shouldLogAndSendWarning() {
         // given
         Logger logger = TestHelper.setupLogger();

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Nov 28 12:49:57 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Wed Dec 13 23:12:29 CET 2017. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -63,8 +63,8 @@ DataSource:
     mySQLlastlocYaw: 'yaw'
     # Column for storing player LastLocation - Pitch
     mySQLlastlocPitch: 'pitch'
-    # Overrides the size of the DB Connection Pool, -1 = Auto
-    poolSize: -1
+    # Overrides the size of the DB Connection Pool, default = 10
+    poolSize: 10
     # The maximum lifetime of a connection in the pool, default = 1800 seconds
     # You should set this at least 30 seconds less than mysql server wait_timeout
     maxLifetime: 1800
@@ -560,4 +560,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Nov 28 12:49:57 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Dec 13 23:12:29 CET 2017
