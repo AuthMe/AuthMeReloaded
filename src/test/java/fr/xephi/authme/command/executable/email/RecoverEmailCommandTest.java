@@ -10,6 +10,7 @@ import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
@@ -22,6 +23,7 @@ import org.mockito.Mock;
 
 import java.util.Collections;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -62,6 +64,9 @@ public class RecoverEmailCommandTest {
     
     @Mock
     private RecoveryCodeService recoveryCodeService;
+
+    @Mock
+    private BukkitService bukkitService;
 
     @BeforeClass
     public static void initLogger() {
@@ -179,6 +184,7 @@ public class RecoverEmailCommandTest {
         String code = "a94f37";
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(true);
         given(recoveryCodeService.generateCode(name)).willReturn(code);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, Collections.singletonList(email.toUpperCase()));
@@ -201,6 +207,7 @@ public class RecoverEmailCommandTest {
         String email = "vulture@example.com";
         given(dataSource.getEmail(name)).willReturn(DataSourceResult.of(email));
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(false);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, Collections.singletonList(email));
