@@ -123,9 +123,9 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_GROUP =
         newProperty("ExternalBoardOptions.mySQLColumnGroup", "");
 
-    @Comment("Overrides the size of the DB Connection Pool, -1 = Auto")
+    @Comment("Overrides the size of the DB Connection Pool, default = 10")
     public static final Property<Integer> MYSQL_POOL_SIZE =
-        newProperty("DataSource.poolSize", -1);
+        newProperty("DataSource.poolSize", 10);
 
     @Comment({"The maximum lifetime of a connection in the pool, default = 1800 seconds",
         "You should set this at least 30 seconds less than mysql server wait_timeout"})

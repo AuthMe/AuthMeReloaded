@@ -70,6 +70,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | performMailTextToFileMigration(resource)
             | migrateJoinLeaveMessages(resource)
             | migrateForceSpawnSettings(resource)
+            | migratePoolSizeSetting(resource)
             | changeBooleanSettingToLogLevelProperty(resource)
             | hasOldHelpHeaderProperty(resource)
             | hasSupportOldPasswordProperty(resource)
@@ -192,6 +193,21 @@ public class SettingsMigrationService extends PlainMigrationService {
 
         return moveProperty(oldForceLocEnabled, FORCE_SPAWN_LOCATION_AFTER_LOGIN, resource)
             | moveProperty(oldForceWorlds, FORCE_SPAWN_ON_WORLDS, resource);
+    }
+
+    /**
+     * Detects the old auto poolSize value and replaces it with the default value.
+     *
+     * @param resource The property resource
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean migratePoolSizeSetting(PropertyResource resource) {
+        Integer oldValue = resource.getInt("DataSource.poolSize");
+        if(oldValue == null || oldValue > 0) {
+            return false;
+        }
+        resource.setValue("DataSource.poolSize", 10);
+        return true;
     }
 
     /**

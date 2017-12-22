@@ -107,14 +107,14 @@ public class LimboPersistenceTest {
         Player player = mock(Player.class);
         Logger logger = TestHelper.setupLogger();
         LimboPersistenceHandler handler = getHandler();
-        doThrow(IllegalAccessException.class).when(handler).getLimboPlayer(player);
+        doThrow(RuntimeException.class).when(handler).getLimboPlayer(player);
 
         // when
         LimboPlayer result = limboPersistence.getLimboPlayer(player);
 
         // then
         assertThat(result, nullValue());
-        verify(logger).warning(argThat(containsString("[IllegalAccessException]")));
+        verify(logger).warning(argThat(containsString("[RuntimeException]")));
     }
 
     @Test

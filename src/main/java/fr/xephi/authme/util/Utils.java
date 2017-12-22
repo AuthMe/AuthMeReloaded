@@ -97,15 +97,6 @@ public final class Utils {
     }
 
     /**
-     * Return the available core count of the JVM.
-     *
-     * @return the core count
-     */
-    public static int getCoreCount() {
-        return Runtime.getRuntime().availableProcessors();
-    }
-
-    /**
      * Returns whether the given email is empty or equal to the standard "undefined" email address.
      *
      * @param email the email to check

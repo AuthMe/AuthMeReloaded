@@ -102,7 +102,7 @@ public class LuckPermsHandler implements PermissionHandler {
         }
 
         Group permissionGroup = luckPermsApi.getGroup(group);
-        boolean result = permissionGroup != null && user.isInGroup(permissionGroup);
+        boolean result = permissionGroup != null && user.inheritsGroup(permissionGroup);
 
         luckPermsApi.cleanupUser(user);
         return result;
