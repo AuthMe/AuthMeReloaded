@@ -97,14 +97,14 @@ usage_captcha: '&3Per poterti autenticare devi risolvere un captcha, per favore 
 wrong_captcha: '&cCaptcha sbagliato, per favore riprova scrivendo: "/captcha THE_CAPTCHA" in chat!'
 valid_captcha: '&2Il captcha inserito è valido!'
 
-# Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+# Codice di verifica
+verification_code_required: '&3Questo comando va a modificare dati sensibili e richiede una verifica tramite email! Controlla la tua posta in arrivo e segui le istruzioni nell''email.'
+usage_verification_code: '&cUtilizzo: /verification <codice>'
+incorrect_verification_code: '&cCodice sbagliato, per favore riprova scrivendo: "/verification <codice>" in chat, usando il codice che hai ricevuto tramite email'
+verification_code_verified: '&2La tua identità è stata verificata! Ora puoi eseguire tutti i comandi che modificano dati sensibili per questa sessione!'
+verification_code_already_verified: '&2Puoi già eseguire tutti i comandi che modificano dati sensibili per questa sessione!'
+verification_code_expired: '&3Il tuo codice è scaduto! Esegui nuovamente un comando che modifica dati sensibili per ricevere uno nuovo codice!'
+verification_code_email_needed: '&3Per verificare la tua identità devi collegare un indirizzo email al tuo account!'
 
 # Unità di tempo
 second: 'secondo'
