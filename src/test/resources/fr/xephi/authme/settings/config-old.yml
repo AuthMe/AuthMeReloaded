@@ -315,8 +315,6 @@ Security:
     console:
         # Remove spam console
         noConsoleSpam: true
-        # Replace passwords in the console when player type a command like /login
-        removePassword: true
     captcha:
         # Player need to put a captcha when he fails too lot the password
         useCaptcha: false
