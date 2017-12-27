@@ -12,7 +12,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
