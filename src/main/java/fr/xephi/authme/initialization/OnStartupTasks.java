@@ -63,9 +63,6 @@ public class OnStartupTasks {
      * @param logger   the plugin logger
      */
     public static void setupConsoleFilter(Settings settings, Logger logger) {
-        if (!settings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
-            return;
-        }
         // Try to set the log4j filter
         try {
             Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
