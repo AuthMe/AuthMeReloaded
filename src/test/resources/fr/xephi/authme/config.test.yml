@@ -275,8 +275,6 @@ Security:
     console:
         # Remove spam console
         noConsoleSpam: false
-        # Replace passwords in the console when player type a command like /login
-        removePassword: true
         # Copy AuthMe log output in a separate file as well?
         logConsole: true
     captcha:
