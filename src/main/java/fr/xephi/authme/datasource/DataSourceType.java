@@ -7,6 +7,8 @@ public enum DataSourceType {
 
     MYSQL,
 
+    POSTGRESQL,
+
     SQLITE,
 
     @Deprecated

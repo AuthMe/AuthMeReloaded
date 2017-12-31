@@ -1,8 +1,8 @@
 package fr.xephi.authme.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
-import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.datasource.sqlextensions.SqlExtension;
+import fr.xephi.authme.datasource.sqlextensions.SqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 
 import java.io.File;
@@ -22,8 +22,8 @@ public final class SqlDataSourceTestUtil {
     }
 
     public static MySQL createMySql(Settings settings, HikariDataSource hikariDataSource) {
-        MySqlExtensionsFactory extensionsFactory = mock(MySqlExtensionsFactory.class);
-        given(extensionsFactory.buildExtension(any())).willReturn(mock(MySqlExtension.class));
+        SqlExtensionsFactory extensionsFactory = mock(SqlExtensionsFactory.class);
+        given(extensionsFactory.buildExtension(any())).willReturn(mock(SqlExtension.class));
         return new MySQL(settings, hikariDataSource, extensionsFactory);
     }
 

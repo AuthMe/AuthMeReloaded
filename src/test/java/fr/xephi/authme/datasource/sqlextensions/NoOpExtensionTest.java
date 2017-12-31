@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.mysqlextensions;
+package fr.xephi.authme.datasource.sqlextensions;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;

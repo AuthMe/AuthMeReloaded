@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource.mysqlextensions;
+package fr.xephi.authme.datasource.sqlextensions;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
@@ -16,12 +16,12 @@ import java.util.OptionalInt;
  * Extension for the MySQL data source for forums. For certain password hashes (e.g. phpBB), we want
  * to hook into the forum board and execute some actions specific to the forum software.
  */
-public abstract class MySqlExtension {
+public abstract class SqlExtension {
 
     protected final Columns col;
     protected final String tableName;
 
-    MySqlExtension(Settings settings, Columns col) {
+    SqlExtension(Settings settings, Columns col) {
         this.col = col;
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
     }

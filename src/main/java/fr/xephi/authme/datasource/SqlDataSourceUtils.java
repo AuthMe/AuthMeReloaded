@@ -83,4 +83,10 @@ public final class SqlDataSourceUtils {
             return rs.getObject("COLUMN_DEF");
         }
     }
+
+    public static boolean isColumnMissing(DatabaseMetaData metaData, String columnName, String tableName) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+            return !rs.next();
+        }
+    }
 }
