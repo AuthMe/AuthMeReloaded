@@ -72,6 +72,8 @@ public abstract class AbstractCaptchaManager implements SettingsDependent, HasCl
             captchaCodes.remove(nameLowerCase);
             processSuccessfulCode(nameLowerCase);
             return true;
+        } else {
+            processUnsuccessfulCode(nameLowerCase);
         }
         return false;
     }
@@ -105,6 +107,14 @@ public abstract class AbstractCaptchaManager implements SettingsDependent, HasCl
      * @param nameLower the player's name (all lowercase)
      */
     protected abstract void processSuccessfulCode(String nameLower);
+
+    /**
+     * Called when a player has failed the captcha code.
+     *
+     * @param nameLower the player's name (all lowercase)
+     */
+    protected void processUnsuccessfulCode(String nameLower) {
+    }
 
     /**
      * Returns the number of minutes a generated captcha code should live for before it may expire.

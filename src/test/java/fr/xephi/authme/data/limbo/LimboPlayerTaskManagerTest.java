@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.data.RegistrationCaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -56,6 +57,9 @@ public class LimboPlayerTaskManagerTest {
     @Mock
     private PlayerCache playerCache;
 
+    @Mock
+    private RegistrationCaptchaManager registrationCaptchaManager;
+
     @BeforeClass
     public static void setupLogger() {
         TestHelper.setupLogger();
@@ -67,7 +71,7 @@ public class LimboPlayerTaskManagerTest {
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
         MessageKey key = MessageKey.REGISTER_MESSAGE;
-        given(messages.retrieve(key)).willReturn(new String[]{"Please register!"});
+        given(messages.retrieveSingle(key)).willReturn("Please register!");
         int interval = 12;
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(interval);
 
@@ -76,7 +80,7 @@ public class LimboPlayerTaskManagerTest {
 
         // then
         verify(limboPlayer).setMessageTask(any(MessageTask.class));
-        verify(messages).retrieve(key);
+        verify(messages).retrieveSingle(key);
         verify(bukkitService).runTaskTimer(
             any(MessageTask.class), eq(2L * TICKS_PER_SECOND), eq((long) interval * TICKS_PER_SECOND));
     }
@@ -99,11 +103,14 @@ public class LimboPlayerTaskManagerTest {
     @Test
     public void shouldCancelExistingMessageTask() {
         // given
+        String name = "rats";
         Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
         LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList("grp"), false, 0.1f, 0.0f);
         MessageTask existingMessageTask = mock(MessageTask.class);
         limboPlayer.setMessageTask(existingMessageTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
+        given(messages.retrieveSingle(MessageKey.REGISTER_MESSAGE)).willReturn("Please register!");
 
         // when
         limboPlayerTaskManager.registerMessageTask(player, limboPlayer, false);
@@ -111,8 +118,30 @@ public class LimboPlayerTaskManagerTest {
         // then
         assertThat(limboPlayer.getMessageTask(), not(nullValue()));
         assertThat(limboPlayer.getMessageTask(), not(sameInstance(existingMessageTask)));
-        verify(messages).retrieve(MessageKey.REGISTER_MESSAGE);
+        verify(registrationCaptchaManager).isCaptchaRequired(name);
+        verify(messages).retrieveSingle(MessageKey.REGISTER_MESSAGE);
         verify(existingMessageTask).cancel();
+    }
+
+    @Test
+    public void shouldInitializeMessageTaskWithCaptchaMessage() {
+        // given
+        String name = "race";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList("grp"), false, 0.1f, 0.0f);
+        given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(12);
+        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
+        String captcha = "M032";
+        given(registrationCaptchaManager.getCaptchaCodeOrGenerateNew(name)).willReturn(captcha);
+        given(messages.retrieveSingle(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha)).willReturn("Need to use captcha");
+
+        // when
+        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, false);
+
+        // then
+        assertThat(limboPlayer.getMessageTask(), not(nullValue()));
+        verify(messages).retrieveSingle(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha);
     }
 
     @Test
