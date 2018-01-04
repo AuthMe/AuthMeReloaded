@@ -96,7 +96,7 @@ email_cooldown_error: '&c이메일을 이미 발송했습니다. %time 후에 �
 
 # 캡챠
 usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다. 이 명령어를 사용하세요: /captcha <theCaptcha>'
-wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha <캡챠 코드>"를 입력해주세요!'
+wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha THE_CAPTCHA" 형태로 입력해주세요!'
 valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
 
 # 인증 코드
