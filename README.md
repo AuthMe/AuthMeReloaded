@@ -16,7 +16,6 @@
   - CircleCI: [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 
 - Project status:
-  - Dependencies: [![Dependency Status](https://www.versioneye.com/user/projects/5957e09b0fb24f0070ba13c0/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5957e09b0fb24f0070ba13c0)
   - Test coverage: [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
   - Code climate: [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
 
@@ -121,8 +120,7 @@ You can also create your own translation file and, if you want, you can share it
 <hr>
 
 ##### Sponsor
-GameHosting.it is leader in Italy as Game Server Provider. With its own DataCenter offers Anti-DDoS solutions at affordable prices. Game Server of Minecraft based on Multicraft are equipped with the latest technology in hardware.
-[![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
+[GameHosting.it](http://www.gamehosting.it) is leader in Italy as Game Server Provider. With its own DataCenter offers Anti-DDoS solutions at affordable prices. Game Server of Minecraft based on Multicraft are equipped with the latest technology in hardware.
 
 ##### Credits
 <p>Contributors: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>

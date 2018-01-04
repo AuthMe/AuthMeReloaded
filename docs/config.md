@@ -433,8 +433,6 @@ Security:
         # AuthMe will automatically disable and the server won't be protected!
         stopServer: true
     console:
-        # Remove passwords from console?
-        removePassword: true
         # Copy AuthMe log output in a separate file as well?
         logConsole: true
     captcha:

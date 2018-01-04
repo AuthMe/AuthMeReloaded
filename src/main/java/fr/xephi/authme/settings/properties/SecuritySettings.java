@@ -20,10 +20,6 @@ public final class SecuritySettings implements SettingsHolder {
     public static final Property<Boolean> STOP_SERVER_ON_PROBLEM =
         newProperty("Security.SQLProblem.stopServer", true);
 
-    @Comment("Remove passwords from console?")
-    public static final Property<Boolean> REMOVE_PASSWORD_FROM_CONSOLE =
-        newProperty("Security.console.removePassword", true);
-
     @Comment("Copy AuthMe log output in a separate file as well?")
     public static final Property<Boolean> USE_LOGGING =
         newProperty("Security.console.logConsole", true);
