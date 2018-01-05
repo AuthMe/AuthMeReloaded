@@ -4,6 +4,7 @@ import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import fr.xephi.authme.data.captcha.CaptchaCodeStorage;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.initialization.HasCleanup;
@@ -42,7 +43,7 @@ public class ClassesConsistencyTest {
 
     /** Expiring structure types. */
     private static final Set<Class<?>> EXPIRING_STRUCTURES = ImmutableSet.of(
-        ExpiringSet.class, ExpiringMap.class, TimedCounter.class);
+        ExpiringSet.class, ExpiringMap.class, TimedCounter.class, CaptchaCodeStorage.class);
 
     /** Immutable types, which are allowed to be used in non-private constants. */
     private static final Set<Class<?>> IMMUTABLE_TYPES = ImmutableSet.of(
@@ -157,10 +158,9 @@ public class ClassesConsistencyTest {
     public void shouldImplementHasCleanup() {
         // given / when / then
         for (Class<?> clazz : ALL_CLASSES) {
-            if (hasExpiringCollectionAsField(clazz)) {
+            if (hasExpiringCollectionAsField(clazz) && !EXPIRING_STRUCTURES.contains(clazz)) {
                 assertThat("Class '" + clazz.getSimpleName() + "' has expiring collections, should implement HasCleanup",
                     HasCleanup.class.isAssignableFrom(clazz), equalTo(true));
-                // System.out.println("Successful check for " + clazz);
             }
         }
     }

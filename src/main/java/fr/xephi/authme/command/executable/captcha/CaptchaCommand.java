@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.executable.captcha;
 
 import fr.xephi.authme.command.PlayerCommand;
-import fr.xephi.authme.data.LoginCaptchaManager;
-import fr.xephi.authme.data.RegistrationCaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
+import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
@@ -47,7 +47,7 @@ public class CaptchaCommand extends PlayerCommand {
     }
 
     private void checkLoginCaptcha(Player player, String captchaCode) {
-        final boolean isCorrectCode = loginCaptchaManager.checkCode(player.getName(), captchaCode);
+        final boolean isCorrectCode = loginCaptchaManager.checkCode(player, captchaCode);
         if (isCorrectCode) {
             commonService.send(player, MessageKey.CAPTCHA_SUCCESS);
             commonService.send(player, MessageKey.LOGIN_MESSAGE);
@@ -59,7 +59,7 @@ public class CaptchaCommand extends PlayerCommand {
     }
 
     private void checkRegisterCaptcha(Player player, String captchaCode) {
-        final boolean isCorrectCode = registrationCaptchaManager.checkCode(player.getName(), captchaCode);
+        final boolean isCorrectCode = registrationCaptchaManager.checkCode(player, captchaCode);
         if (isCorrectCode) {
             commonService.send(player, MessageKey.CAPTCHA_SUCCESS);
             commonService.send(player, MessageKey.REGISTER_MESSAGE);

@@ -6,7 +6,7 @@ import ch.jalu.injector.InjectorBuilder;
 import com.google.common.io.Files;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
-import fr.xephi.authme.data.RegistrationCaptchaManager;
+import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;

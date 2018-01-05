@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.captcha;
 
-import fr.xephi.authme.data.LoginCaptchaManager;
-import fr.xephi.authme.data.RegistrationCaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
+import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
@@ -86,14 +86,14 @@ public class CaptchaCommandTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "3991";
-        given(loginCaptchaManager.checkCode(name, captchaCode)).willReturn(true);
+        given(loginCaptchaManager.checkCode(player, captchaCode)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
         verify(loginCaptchaManager).isCaptchaRequired(name);
-        verify(loginCaptchaManager).checkCode(name, captchaCode);
+        verify(loginCaptchaManager).checkCode(player, captchaCode);
         verifyNoMoreInteractions(loginCaptchaManager);
         verify(commonService).send(player, MessageKey.CAPTCHA_SUCCESS);
         verify(commonService).send(player, MessageKey.LOGIN_MESSAGE);
@@ -109,7 +109,7 @@ public class CaptchaCommandTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "2468";
-        given(loginCaptchaManager.checkCode(name, captchaCode)).willReturn(false);
+        given(loginCaptchaManager.checkCode(player, captchaCode)).willReturn(false);
         String newCode = "1337";
         given(loginCaptchaManager.generateCode(name)).willReturn(newCode);
 
@@ -118,7 +118,7 @@ public class CaptchaCommandTest {
 
         // then
         verify(loginCaptchaManager).isCaptchaRequired(name);
-        verify(loginCaptchaManager).checkCode(name, captchaCode);
+        verify(loginCaptchaManager).checkCode(player, captchaCode);
         verify(loginCaptchaManager).generateCode(name);
         verifyNoMoreInteractions(loginCaptchaManager);
         verify(commonService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
@@ -133,13 +133,13 @@ public class CaptchaCommandTest {
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(false);
         given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "A89Y3";
-        given(registrationCaptchaManager.checkCode(name, captchaCode)).willReturn(true);
+        given(registrationCaptchaManager.checkCode(player, captchaCode)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
-        verify(registrationCaptchaManager).checkCode(name, captchaCode);
+        verify(registrationCaptchaManager).checkCode(player, captchaCode);
         verify(loginCaptchaManager, only()).isCaptchaRequired(name);
         verify(commonService).send(player, MessageKey.CAPTCHA_SUCCESS);
         verify(commonService).send(player, MessageKey.REGISTER_MESSAGE);
@@ -152,14 +152,14 @@ public class CaptchaCommandTest {
         Player player = mockPlayerWithName(name);
         given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "SFL3";
-        given(registrationCaptchaManager.checkCode(name, captchaCode)).willReturn(false);
+        given(registrationCaptchaManager.checkCode(player, captchaCode)).willReturn(false);
         given(registrationCaptchaManager.generateCode(name)).willReturn("new code");
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
-        verify(registrationCaptchaManager).checkCode(name, captchaCode);
+        verify(registrationCaptchaManager).checkCode(player, captchaCode);
         verify(registrationCaptchaManager).generateCode(name);
         verify(commonService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, "new code");
     }

@@ -1,9 +1,10 @@
-package fr.xephi.authme.data;
+package fr.xephi.authme.data.captcha;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.TimedCounter;
+import org.bukkit.entity.Player;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -38,10 +39,12 @@ public class LoginCaptchaManagerTest {
     @Test
     public void shouldCreateAndCheckCaptcha() {
         // given
-        String player = "Miner";
+        String name = "Miner";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
         Settings settings = mockSettings(1, 4);
         LoginCaptchaManager manager = new LoginCaptchaManager(settings);
-        String captchaCode = manager.getCaptchaCodeOrGenerateNew(player);
+        String captchaCode = manager.getCaptchaCodeOrGenerateNew(name);
 
         // when
         boolean badResult = manager.checkCode(player, "wrong_code");

@@ -2,7 +2,7 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.LoginCaptchaManager;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;

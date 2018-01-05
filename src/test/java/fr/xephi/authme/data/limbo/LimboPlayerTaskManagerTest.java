@@ -1,8 +1,8 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.data.RegistrationCaptchaManager;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;

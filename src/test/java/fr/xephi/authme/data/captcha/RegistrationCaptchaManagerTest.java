@@ -1,9 +1,10 @@
-package fr.xephi.authme.data;
+package fr.xephi.authme.data.captcha;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.ExpiringMap;
+import org.bukkit.entity.Player;
 import org.junit.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
@@ -46,8 +47,11 @@ public class RegistrationCaptchaManagerTest {
         RegistrationCaptchaManager captchaManager = new RegistrationCaptchaManager(settings);
         getCodeMap(captchaManager).put("test", captcha);
 
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("TeSt");
+
         // when
-        boolean isSuccessful = captchaManager.checkCode("TeSt", captcha);
+        boolean isSuccessful = captchaManager.checkCode(player, captcha);
 
         // then
         assertThat(isSuccessful, equalTo(true));
@@ -72,11 +76,18 @@ public class RegistrationCaptchaManagerTest {
         assertThat(captcha1, equalTo(captcha2));
         assertThat(captcha1, stringWithLength(captchaLength));
 
+        // given (2)
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("toast");
+
         // when (2) / then (2)
-        assertThat(captchaManager.checkCode("toast", captcha1), equalTo(true));
+        assertThat(captchaManager.checkCode(player, captcha1), equalTo(true));
     }
 
-    private static ExpiringMap<String, String> getCodeMap(AbstractCaptchaManager captchaManager) {
-        return ReflectionTestUtils.getFieldValue(AbstractCaptchaManager.class, captchaManager, "captchaCodes");
+    @SuppressWarnings("unchecked")
+    private static ExpiringMap<String, String> getCodeMap(RegistrationCaptchaManager captchaManager) {
+        CaptchaCodeStorage captchaStorage = ReflectionTestUtils.getFieldValue(
+            RegistrationCaptchaManager.class, captchaManager, "captchaCodeStorage");
+        return ReflectionTestUtils.getFieldValue(CaptchaCodeStorage.class, captchaStorage, "captchaCodes");
     }
 }
