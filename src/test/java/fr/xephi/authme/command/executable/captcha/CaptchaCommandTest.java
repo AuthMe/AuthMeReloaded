@@ -4,6 +4,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
@@ -45,6 +46,9 @@ public class CaptchaCommandTest {
     @Mock
     private LimboService limboService;
 
+    @Mock
+    private DataSource dataSource;
+
     @Test
     public void shouldDetectIfPlayerIsLoggedIn() {
         // given
@@ -66,7 +70,8 @@ public class CaptchaCommandTest {
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(false);
-        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(false);
+        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
+        given(dataSource.isAuthAvailable(name)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList("1234"));
@@ -74,7 +79,6 @@ public class CaptchaCommandTest {
         // then
         verify(commonService).send(player, MessageKey.USAGE_LOGIN);
         verify(loginCaptchaManager).isCaptchaRequired(name);
-        verify(registrationCaptchaManager).isCaptchaRequired(name);
         verifyNoMoreInteractions(loginCaptchaManager, registrationCaptchaManager);
     }
 
@@ -162,6 +166,21 @@ public class CaptchaCommandTest {
         verify(registrationCaptchaManager).checkCode(player, captchaCode);
         verify(registrationCaptchaManager).getCaptchaCodeOrGenerateNew(name);
         verify(commonService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, "new code");
+    }
+
+    @Test
+    public void shouldShowRegisterUsageWhenRegistrationCaptchaIsSolved() {
+        // given
+        String name = "alice";
+        Player player = mockPlayerWithName(name);
+        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(false);
+
+        // when
+        command.executeCommand(player, Collections.singletonList("test"));
+
+        // then
+        verify(registrationCaptchaManager, only()).isCaptchaRequired(name);
+        verify(commonService).send(player, MessageKey.USAGE_REGISTER);
     }
 
     private static Player mockPlayerWithName(String name) {

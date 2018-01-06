@@ -12,7 +12,6 @@ import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
 import fr.xephi.authme.initialization.OnStartupTasks;
 import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
-import fr.xephi.authme.initialization.circulardependency.CircularDependencyInitializer;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -217,7 +216,6 @@ public class AuthMe extends JavaPlugin {
 
         // Set all service fields on the AuthMe class
         instantiateServices(injector);
-        injector.newInstance(CircularDependencyInitializer.class).initializeCircularDependencies();
 
         // Convert deprecated PLAINTEXT hash entries
         MigrationService.changePlainTextToSha256(settings, database, new Sha256());

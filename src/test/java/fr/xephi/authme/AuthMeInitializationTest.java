@@ -6,11 +6,8 @@ import ch.jalu.injector.InjectorBuilder;
 import com.google.common.io.Files;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
-import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
-import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.initialization.circulardependency.CircularDependencyInitializer;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
@@ -42,7 +39,6 @@ import java.util.logging.Logger;
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -112,7 +108,6 @@ public class AuthMeInitializationTest {
         // when
         authMe.instantiateServices(injector);
         authMe.registerEventListeners(injector);
-        injector.newInstance(CircularDependencyInitializer.class).initializeCircularDependencies();
 
         // then
         // Take a few samples and ensure that they are not null
@@ -126,17 +121,5 @@ public class AuthMeInitializationTest {
         assertThat(injector.getIfAvailable(PermissionsManager.class), not(nullValue()));
         assertThat(injector.getIfAvailable(ProcessSyncPlayerLogin.class), not(nullValue()));
         assertThat(injector.getIfAvailable(PurgeService.class), not(nullValue()));
-
-        assertCircularDependencyWasSet(injector);
-    }
-
-    private void assertCircularDependencyWasSet(Injector injector) {
-        RegistrationCaptchaManager registrationCaptchaManager = injector.getIfAvailable(RegistrationCaptchaManager.class);
-        LimboService limboServiceOnCaptchaManager = ReflectionTestUtils.getFieldValue(
-            RegistrationCaptchaManager.class, registrationCaptchaManager, "limboService");
-        LimboService limboServiceFromInjector = injector.getIfAvailable(LimboService.class);
-
-        assertThat(limboServiceOnCaptchaManager, not(nullValue()));
-        assertThat(limboServiceOnCaptchaManager, sameInstance(limboServiceFromInjector));
     }
 }

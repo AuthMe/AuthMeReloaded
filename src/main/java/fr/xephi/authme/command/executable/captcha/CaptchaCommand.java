@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
@@ -12,6 +13,9 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * Captcha command, allowing a player to solve a captcha.
+ */
 public class CaptchaCommand extends PlayerCommand {
 
     @Inject
@@ -29,20 +33,29 @@ public class CaptchaCommand extends PlayerCommand {
     @Inject
     private LimboService limboService;
 
+    @Inject
+    private DataSource dataSource;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
         final String name = player.getName();
 
         if (playerCache.isAuthenticated(name)) {
+            // No captcha is relevant if the player is logged in
             commonService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-        } else if (loginCaptchaManager.isCaptchaRequired(name)) {
+            return;
+        }
+
+        if (loginCaptchaManager.isCaptchaRequired(name)) {
             checkLoginCaptcha(player, arguments.get(0));
-        } else if (registrationCaptchaManager.isCaptchaRequired(name)) {
-            checkRegisterCaptcha(player, arguments.get(0));
         } else {
-            MessageKey errorMessage = playerCache.isAuthenticated(name)
-                ? MessageKey.ALREADY_LOGGED_IN_ERROR : MessageKey.USAGE_LOGIN;
-            commonService.send(player, errorMessage);
+            final boolean isPlayerRegistered = dataSource.isAuthAvailable(name);
+            if (!isPlayerRegistered && registrationCaptchaManager.isCaptchaRequired(name)) {
+                checkRegisterCaptcha(player, arguments.get(0));
+            } else {
+                MessageKey errorMessage = isPlayerRegistered ? MessageKey.USAGE_LOGIN : MessageKey.USAGE_REGISTER;
+                commonService.send(player, errorMessage);
+            }
         }
     }
 
@@ -67,5 +80,6 @@ public class CaptchaCommand extends PlayerCommand {
             String newCode = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName());
             commonService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
+        limboService.resetMessageTask(player, false);
     }
 }

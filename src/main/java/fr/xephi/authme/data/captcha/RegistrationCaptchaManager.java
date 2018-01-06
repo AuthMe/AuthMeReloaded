@@ -1,10 +1,7 @@
 package fr.xephi.authme.data.captcha;
 
-import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
-import fr.xephi.authme.initialization.circulardependency.HasCircularDependency;
-import fr.xephi.authme.initialization.circulardependency.InjectAfterInitialization;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.ExpiringSet;
@@ -16,12 +13,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Captcha manager for registration.
  */
-public class RegistrationCaptchaManager
-    implements CaptchaManager, SettingsDependent, HasCleanup, HasCircularDependency {
+public class RegistrationCaptchaManager implements CaptchaManager, SettingsDependent, HasCleanup {
 
     private static final int MINUTES_VALID_FOR_REGISTRATION = 30;
-
-    private LimboService limboService;
 
     private final ExpiringSet<String> verifiedNamesForRegistration;
     private final CaptchaCodeStorage captchaCodeStorage;
@@ -52,7 +46,6 @@ public class RegistrationCaptchaManager
         if (isCodeCorrect) {
             verifiedNamesForRegistration.add(nameLower);
         }
-        limboService.resetMessageTask(player, false);
         return isCodeCorrect;
     }
 
@@ -68,10 +61,5 @@ public class RegistrationCaptchaManager
     public void performCleanup() {
         verifiedNamesForRegistration.removeExpiredEntries();
         captchaCodeStorage.removeExpiredEntries();
-    }
-
-    @InjectAfterInitialization
-    public void setLimboService(LimboService limboService) {
-        this.limboService = limboService;
     }
 }
