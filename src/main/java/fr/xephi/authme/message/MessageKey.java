@@ -137,6 +137,9 @@ public enum MessageKey {
     /** To register you have to solve a captcha code first, please use the command: /captcha &lt;theCaptcha&gt; */
     CAPTCHA_FOR_REGISTRATION_REQUIRED("captcha_for_registration", "<theCaptcha>"),
 
+    /** Valid captcha! You may now register with /register */
+    REGISTER_CAPTCHA_SUCCESS("register_captcha_valid"),
+
     /** A VIP player has joined the server when it was full! */
     KICK_FOR_VIP("kick_forvip"),
 

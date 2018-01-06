@@ -94,6 +94,8 @@ email_cooldown_error: '&cПисьмо было отправлено недавн
 usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha <theCaptcha>»'
 wrong_captcha: '&cНеверно! Используйте «/captcha THE_CAPTCHA».'
 valid_captcha: '&2Вы успешно решили каптчу!'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Код подтверждения
 verification_code_required: '&3Эта команда чувствительна и требует подтверждения электронной почты! Проверьте свою почту и следуйте инструкциям в письме.'

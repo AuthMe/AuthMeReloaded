@@ -95,6 +95,7 @@ usage_captcha: '&3To log in you have to solve a captcha code, please use the com
 wrong_captcha: '&cWrong captcha, please type "/captcha THE_CAPTCHA" into the chat!'
 valid_captcha: '&2Captcha code solved correctly!'
 captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'

@@ -70,7 +70,6 @@ public class CaptchaCommandTest {
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(false);
-        given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         given(dataSource.isAuthAvailable(name)).willReturn(true);
 
         // when
@@ -145,7 +144,7 @@ public class CaptchaCommandTest {
         // then
         verify(registrationCaptchaManager).checkCode(player, captchaCode);
         verify(loginCaptchaManager, only()).isCaptchaRequired(name);
-        verify(commonService).send(player, MessageKey.CAPTCHA_SUCCESS);
+        verify(commonService).send(player, MessageKey.REGISTER_CAPTCHA_SUCCESS);
         verify(commonService).send(player, MessageKey.REGISTER_MESSAGE);
     }
 

@@ -98,6 +98,8 @@ email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar 
 usage_captcha: '&cUso: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha incorrecto, por favor usa: /captcha THE_CAPTCHA'
 valid_captcha: '&c¡ Captcha ingresado correctamente !'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification_code_required: '&3¡Este comando es privado y requiere una verificación por correo electrónico! Revisa tu bandeja de entrada y sigue las instrucciones del correo electrónico.'

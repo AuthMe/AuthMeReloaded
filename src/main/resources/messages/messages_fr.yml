@@ -99,6 +99,8 @@ email_cooldown_error: '&cUn mail de récupération a déjà été envoyé récem
 usage_captcha: '&cTrop de tentatives de connexion échouées, utilisez: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha incorrect, écrivez de nouveau: /captcha THE_CAPTCHA'
 valid_captcha: '&aCaptcha validé! Veuillez maintenant vous connecter.'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Vérification par code
 verification_code_required: '&cCette commande est sensible, elle nécessite donc une confirmation par email.%nl%&cVeuillez suivre les instructions qui viennent de vous être envoyées par email.'

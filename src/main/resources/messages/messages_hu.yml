@@ -94,6 +94,8 @@ email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldé
 usage_captcha: '&3A bejelentkezéshez CAPTCHA szükséges, kérlek, használd a következő parancsot: "&7/captcha <theCaptcha>&3".'
 wrong_captcha: '&cHibás CAPTCHA, kérlek, írd be a következő parancsot: "&7/captcha THE_CAPTCHA&c"!'
 valid_captcha: '&2A CAPTCHA sikeresen feloldva!'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification_code_required: '&3Ez a parancs érzékeny, és e-mailes igazolást igényel! Ellenőrizze a bejövő postafiókot, és kövesse az e-mail utasításait.'

@@ -96,6 +96,8 @@ email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentem
 usage_captcha: '&3Per poterti autenticare devi risolvere un captcha, per favore scrivi: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha sbagliato, per favore riprova scrivendo: "/captcha THE_CAPTCHA" in chat!'
 valid_captcha: '&2Il captcha inserito è valido!'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Codice di verifica
 verification_code_required: '&3Questo comando va a modificare dati sensibili e richiede una verifica tramite email! Controlla la tua posta in arrivo e segui le istruzioni nell''email.'

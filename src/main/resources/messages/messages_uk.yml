@@ -94,6 +94,8 @@ recovery_email: 'Забули пароль? Можете скористатис�
 usage_captcha: '&3Для продовження доведеться ввести капчу — "/captcha <theCaptcha>"'
 wrong_captcha: '&cНевірно введена капча! Спробуйте ще раз — "/captcha THE_CAPTCHA"'
 valid_captcha: '&2Капчу прийнято.'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 # TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
@@ -101,7 +103,7 @@ valid_captcha: '&2Капчу прийнято.'
 # TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
 # TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
 # TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
+# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
 # TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units

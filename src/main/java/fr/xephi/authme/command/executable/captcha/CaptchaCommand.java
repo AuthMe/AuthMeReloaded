@@ -74,7 +74,7 @@ public class CaptchaCommand extends PlayerCommand {
     private void checkRegisterCaptcha(Player player, String captchaCode) {
         final boolean isCorrectCode = registrationCaptchaManager.checkCode(player, captchaCode);
         if (isCorrectCode) {
-            commonService.send(player, MessageKey.CAPTCHA_SUCCESS);
+            commonService.send(player, MessageKey.REGISTER_CAPTCHA_SUCCESS);
             commonService.send(player, MessageKey.REGISTER_MESSAGE);
         } else {
             String newCode = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName());

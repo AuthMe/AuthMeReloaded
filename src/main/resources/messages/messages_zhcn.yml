@@ -96,6 +96,8 @@ email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 
 usage_captcha: '&8[&6玩家系统&8] &c正确用法：/captcha <theCaptcha>'
 wrong_captcha: '&8[&6玩家系统&8] &c错误的验证码，请输入：“/captcha THE_CAPTCHA”'
 valid_captcha: '&8[&6玩家系统&8] &c你的验证码是有效的！'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # 验证码
 verification_code_required: '&3这个命令非常敏感，需要电子邮件验证！请检查您的收件箱，并遵循邮件的指导。'

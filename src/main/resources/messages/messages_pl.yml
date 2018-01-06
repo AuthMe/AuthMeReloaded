@@ -94,6 +94,8 @@ email_cooldown_error: '&cE-mail został wysłany, musisz poczekać %time przed w
 usage_captcha: '&cWpisz: /captcha <theCaptcha>'
 wrong_captcha: '&cZły kod, proszę wpisać: /captcha THE_CAPTCHA'
 valid_captcha: '&cTwój kod jest nieprawidłowy!'
+# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
+# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification_code_required: '&3Ta komenda wymaga weryfikacji przez e-mail! Sprawdź swoją skrzynkę odbiorczą i postępuj zgodnie z instrukcjami w wiadomości.'
