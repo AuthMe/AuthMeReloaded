@@ -46,19 +46,13 @@ public class RegistrationCaptchaManager
     }
 
     @Override
-    public String generateCode(String name) {
-        return captchaCodeStorage.generateCode(name);
-    }
-
-    @Override
     public boolean checkCode(Player player, String code) {
         String nameLower = player.getName().toLowerCase();
         boolean isCodeCorrect = captchaCodeStorage.checkCode(nameLower, code);
         if (isCodeCorrect) {
             verifiedNamesForRegistration.add(nameLower);
-        } else {
-            limboService.resetMessageTask(player, false);
         }
+        limboService.resetMessageTask(player, false);
         return isCodeCorrect;
     }
 

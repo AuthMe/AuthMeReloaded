@@ -53,7 +53,7 @@ public class CaptchaCommand extends PlayerCommand {
             commonService.send(player, MessageKey.LOGIN_MESSAGE);
             limboService.unmuteMessageTask(player);
         } else {
-            String newCode = loginCaptchaManager.generateCode(player.getName());
+            String newCode = loginCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName());
             commonService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
     }
@@ -64,7 +64,7 @@ public class CaptchaCommand extends PlayerCommand {
             commonService.send(player, MessageKey.CAPTCHA_SUCCESS);
             commonService.send(player, MessageKey.REGISTER_MESSAGE);
         } else {
-            String newCode = registrationCaptchaManager.generateCode(player.getName());
+            String newCode = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName());
             commonService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
     }

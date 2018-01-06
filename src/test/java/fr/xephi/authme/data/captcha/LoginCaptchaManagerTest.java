@@ -7,7 +7,9 @@ import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 
+import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -47,15 +49,32 @@ public class LoginCaptchaManagerTest {
         String captchaCode = manager.getCaptchaCodeOrGenerateNew(name);
 
         // when
-        boolean badResult = manager.checkCode(player, "wrong_code");
-        boolean goodResult = manager.checkCode(player, captchaCode);
+        boolean result = manager.checkCode(player, captchaCode);
 
         // then
-        assertThat(captchaCode.length(), equalTo(4));
-        assertThat(badResult, equalTo(false));
-        assertThat(goodResult, equalTo(true));
+        assertThat(captchaCode, stringWithLength(4));
+        assertThat(result, equalTo(true));
         // Supplying correct code should clear the entry, and a code should be invalid if no entry is present
         assertThat(manager.checkCode(player, "bogus"), equalTo(false));
+    }
+
+    @Test
+    public void shouldGenerateNewCodeOnFailure() {
+        // given
+        String name = "Tarheel";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        Settings settings = mockSettings(1, 9);
+        LoginCaptchaManager manager = new LoginCaptchaManager(settings);
+        String captchaCode = manager.getCaptchaCodeOrGenerateNew(name);
+
+        // when
+        boolean result = manager.checkCode(player, "wrongcode");
+
+        // then
+        assertThat(captchaCode, stringWithLength(9));
+        assertThat(result, equalTo(false));
+        assertThat(manager.getCaptchaCodeOrGenerateNew(name), not(equalTo(captchaCode)));
     }
 
     @Test

@@ -52,11 +52,6 @@ public class LoginCaptchaManager implements CaptchaManager, SettingsDependent, H
     }
 
     @Override
-    public String generateCode(String name) {
-        return captchaCodeStorage.generateCode(name);
-    }
-
-    @Override
     public boolean checkCode(Player player, String code) {
         String nameLower = player.getName().toLowerCase();
         boolean isCodeCorrect = captchaCodeStorage.checkCode(nameLower, code);

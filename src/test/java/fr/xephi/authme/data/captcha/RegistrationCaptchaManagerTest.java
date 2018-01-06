@@ -1,22 +1,27 @@
 package fr.xephi.authme.data.captcha;
 
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import org.bukkit.entity.Player;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link RegistrationCaptchaManager}.
  */
 public class RegistrationCaptchaManagerTest {
+
+    private LimboService limboService = Mockito.mock(LimboService.class);
 
     @Test
     public void shouldBeDisabled() {
@@ -45,6 +50,7 @@ public class RegistrationCaptchaManagerTest {
 
         String captcha = "abc3";
         RegistrationCaptchaManager captchaManager = new RegistrationCaptchaManager(settings);
+        captchaManager.setLimboService(limboService);
         getCodeMap(captchaManager).put("test", captcha);
 
         Player player = mock(Player.class);
@@ -57,6 +63,7 @@ public class RegistrationCaptchaManagerTest {
         assertThat(isSuccessful, equalTo(true));
         assertThat(getCodeMap(captchaManager).isEmpty(), equalTo(true));
         assertThat(captchaManager.isCaptchaRequired("test"), equalTo(false));
+        verify(limboService).resetMessageTask(player, false);
     }
 
     @Test
@@ -67,6 +74,7 @@ public class RegistrationCaptchaManagerTest {
         int captchaLength = 9;
         given(settings.getProperty(SecuritySettings.CAPTCHA_LENGTH)).willReturn(captchaLength);
         RegistrationCaptchaManager captchaManager = new RegistrationCaptchaManager(settings);
+        captchaManager.setLimboService(limboService);
 
         // when
         String captcha1 = captchaManager.getCaptchaCodeOrGenerateNew("toast");
@@ -82,6 +90,7 @@ public class RegistrationCaptchaManagerTest {
 
         // when (2) / then (2)
         assertThat(captchaManager.checkCode(player, captcha1), equalTo(true));
+        verify(limboService).resetMessageTask(player, false);
     }
 
     @SuppressWarnings("unchecked")

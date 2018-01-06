@@ -61,7 +61,7 @@ public class CaptchaCodeStorage {
      * @param name the name of the player to generate a code for
      * @return the generated code
      */
-    public String generateCode(String name) {
+    private String generateCode(String name) {
         String code = RandomStringUtils.generate(captchaLength);
         captchaCodes.put(name.toLowerCase(), code);
         return code;
@@ -69,6 +69,7 @@ public class CaptchaCodeStorage {
 
     /**
      * Checks the given code against the existing one. Upon success, the saved captcha code is removed from storage.
+     * Upon failure, a new code is generated.
      *
      * @param name the name of the player to check
      * @param code the supplied code
@@ -80,6 +81,8 @@ public class CaptchaCodeStorage {
         if (savedCode != null && savedCode.equalsIgnoreCase(code)) {
             captchaCodes.remove(nameLowerCase);
             return true;
+        } else {
+            generateCode(name);
         }
         return false;
     }

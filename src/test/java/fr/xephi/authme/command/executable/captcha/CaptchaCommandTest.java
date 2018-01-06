@@ -111,7 +111,7 @@ public class CaptchaCommandTest {
         String captchaCode = "2468";
         given(loginCaptchaManager.checkCode(player, captchaCode)).willReturn(false);
         String newCode = "1337";
-        given(loginCaptchaManager.generateCode(name)).willReturn(newCode);
+        given(loginCaptchaManager.getCaptchaCodeOrGenerateNew(name)).willReturn(newCode);
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
@@ -119,7 +119,7 @@ public class CaptchaCommandTest {
         // then
         verify(loginCaptchaManager).isCaptchaRequired(name);
         verify(loginCaptchaManager).checkCode(player, captchaCode);
-        verify(loginCaptchaManager).generateCode(name);
+        verify(loginCaptchaManager).getCaptchaCodeOrGenerateNew(name);
         verifyNoMoreInteractions(loginCaptchaManager);
         verify(commonService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         verifyNoMoreInteractions(commonService);
@@ -153,14 +153,14 @@ public class CaptchaCommandTest {
         given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "SFL3";
         given(registrationCaptchaManager.checkCode(player, captchaCode)).willReturn(false);
-        given(registrationCaptchaManager.generateCode(name)).willReturn("new code");
+        given(registrationCaptchaManager.getCaptchaCodeOrGenerateNew(name)).willReturn("new code");
 
         // when
         command.executeCommand(player, Collections.singletonList(captchaCode));
 
         // then
         verify(registrationCaptchaManager).checkCode(player, captchaCode);
-        verify(registrationCaptchaManager).generateCode(name);
+        verify(registrationCaptchaManager).getCaptchaCodeOrGenerateNew(name);
         verify(commonService).send(player, MessageKey.CAPTCHA_WRONG_ERROR, "new code");
     }
 

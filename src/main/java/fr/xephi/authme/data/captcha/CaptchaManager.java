@@ -24,16 +24,10 @@ public interface CaptchaManager {
     String getCaptchaCodeOrGenerateNew(String name);
 
     /**
-     * Generates a code for the player and returns it.
-     *
-     * @param name the name of the player to generate a code for
-     * @return the generated code
-     */
-    String generateCode(String name);
-
-    /**
-     * Checks the given code against the existing one. This method may perform additional state changes
-     * on success or failure, such as modifying some counter or setting a player as verified.
+     * Checks the given code against the existing one. This method is not reentrant, i.e. it performs additional
+     * state changes on success or failure, such as modifying some counter or setting a player as verified.
+     * <p>
+     * On success, the code associated with the player is cleared; on failure, a new code is generated.
      *
      * @param player the player to check
      * @param code the supplied code
