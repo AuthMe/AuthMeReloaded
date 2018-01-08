@@ -6,7 +6,7 @@
 # Inscription
 reg_msg: '&cPour vous inscrire, utilisez "/register <MotDePasse> <ConfirmerMotDePasse>"'
 usage_reg: '&cUsage: /register <MotDePasse> <ConfirmerMotDePasse>'
-reg_only: 'Seul les joueurs enregistrés sont admis!%nl%Veuillez vous rendre sur http://example.com pour plus d''infos.'
+reg_only: 'Seul les joueurs enregistrés sont admis!%nl%Veuillez vous rendre sur https://www.example.com pour plus d''infos.'
 kicked_admin_registered: 'Un admin vient de vous inscrire, veuillez vous reconnecter.'
 registered: '&aInscription effectuée !'
 reg_disabled: '&cL''inscription est désactivée.'
@@ -96,11 +96,11 @@ change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cet
 email_cooldown_error: '&cUn mail de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
 
 # Captcha
-usage_captcha: '&cTrop de tentatives de connexion échouées, utilisez: /captcha <theCaptcha>'
+usage_captcha: '&cTrop de tentatives de connexion ont échoué, faites: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha incorrect, écrivez de nouveau: /captcha THE_CAPTCHA'
-valid_captcha: '&aCaptcha validé! Veuillez maintenant vous connecter.'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+valid_captcha: '&aCaptcha validé! Vous pouvez maintenant réessayer de vous connecter.'
+captcha_for_registration: 'Avant de vous inscrire veuillez rentrer un captcha en faisant "/captcha <theCaptcha>"'
+register_captcha_valid: '&aCaptcha validé! Vous pouvez maintenant vous inscrire.'
 
 # Vérification par code
 verification_code_required: '&cCette commande est sensible, elle nécessite donc une confirmation par email.%nl%&cVeuillez suivre les instructions qui viennent de vous être envoyées par email.'
