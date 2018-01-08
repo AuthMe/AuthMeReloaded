@@ -2,10 +2,10 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
@@ -240,7 +240,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             // Other auths
             List<String> auths = dataSource.getAllAuthsByIp(auth.getLastIp());
-            runCommandOtherAccounts(auths, player, auth.getLastIp());
             displayOtherAccounts(auths, player);
 
             final String email = auth.getEmail();
@@ -260,28 +259,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            syncProcessManager.processSyncPlayerLogin(player, isFirstLogin);
+            syncProcessManager.processSyncPlayerLogin(player, isFirstLogin, auths);
         } else {
             ConsoleLogger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");
         }
-    }
-
-    private void runCommandOtherAccounts(List<String> auths, Player player, String ip) {
-        int threshold = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD_THRESHOLD);
-        String command = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD);
-
-        if (threshold < 2 || command.isEmpty()) {
-            return;
-        }
-
-        if (auths.size() < threshold) {
-            return;
-        }
-
-        bukkitService.dispatchConsoleCommand(command
-            .replace("%playername%", player.getName())
-            .replace("%playerip%", ip)
-        );
     }
 
     /**

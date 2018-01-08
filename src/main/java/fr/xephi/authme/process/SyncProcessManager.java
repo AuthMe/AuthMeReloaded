@@ -9,6 +9,7 @@ import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Manager for scheduling synchronous processes internally from the asynchronous processes.
@@ -47,8 +48,8 @@ public class SyncProcessManager {
         runTask(() -> processSyncPlayerLogout.processSyncLogout(player));
     }
 
-    public void processSyncPlayerLogin(Player player, boolean isFirstLogin) {
-        runTask(() -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin));
+    public void processSyncPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
+        runTask(() -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin, authsWithSameIp));
     }
 
     public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {

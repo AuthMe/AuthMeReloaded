@@ -15,10 +15,13 @@ import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
@@ -67,8 +70,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
      *
      * @param player the player that was logged in
      * @param isFirstLogin true if this is the first time the player logged in
+     * @param authsWithSameIp registered names with the same IP address as the player's
      */
-    public void processPlayerLogin(Player player, boolean isFirstLogin) {
+    public void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
         final String name = player.getName().toLowerCase();
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
@@ -95,6 +99,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
 
+        // Run command if player has other accounts
+        runCommandOtherAccounts(authsWithSameIp, player);
+
         // Login is done, display welcome message
         welcomeMessageConfiguration.sendWelcomeMessage(player);
 
@@ -106,5 +113,17 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         // Send Bungee stuff. The service will check if it is enabled or not.
         bungeeSender.connectPlayerOnLogin(player);
+    }
+
+    private void runCommandOtherAccounts(List<String> auths, Player player) {
+        int threshold = commonService.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD_THRESHOLD);
+        String command = commonService.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD);
+
+        if (threshold >= 2 && !command.isEmpty() && auths.size() >= threshold) {
+            bukkitService.dispatchConsoleCommand(command
+                .replace("%playername%", player.getName())
+                .replace("%playerip%", PlayerUtils.getPlayerIp(player))
+            );
+        }
     }
 }
