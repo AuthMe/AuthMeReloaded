@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static fr.xephi.authme.settings.commandconfig.CommandConfigTestHelper.isCommand;
 import static java.util.Collections.emptyList;
@@ -85,8 +86,10 @@ public class CommandMigrationServiceTest {
         List<String> onRegisterConsole = Arrays.asList("log %p registered", "whois %p");
         given(settingsMigrationService.getOnRegisterConsoleCommands()).willReturn(onRegisterConsole);
 
-        Map<String, Command> onLoginCommands = new LinkedHashMap<>();
-        onLoginCommands.put("bcast", new Command("bcast %p returned", Executor.CONSOLE));
+        Map<String, OnLoginCommand> onLoginCommands = new LinkedHashMap<>();
+        OnLoginCommand existingCommand = new OnLoginCommand("helpop %p has many alts", Executor.CONSOLE);
+        existingCommand.setNumberOfOtherAccountsAtLeast(Optional.of(2));
+        onLoginCommands.put("alert_on_alts", existingCommand);
         commandConfig.setOnLogin(onLoginCommands);
         Map<String, Command> onRegisterCommands = new LinkedHashMap<>();
         onRegisterCommands.put("ex_cmd", new Command("existing", Executor.CONSOLE));
@@ -99,9 +102,9 @@ public class CommandMigrationServiceTest {
         // then
         assertThat(result, equalTo(true));
         assertThat(commandConfig.getOnLogin(), sameInstance(onLoginCommands));
-        Collection<Command> loginCmdList = onLoginCommands.values();
+        Collection<OnLoginCommand> loginCmdList = onLoginCommands.values();
         assertThat(loginCmdList, contains(
-            equalTo(onLoginCommands.get("bcast")),
+            equalTo(existingCommand),
             isCommand("on login command", Executor.PLAYER),
             isCommand("cmd1", Executor.CONSOLE),
             isCommand("cmd2 %p", Executor.CONSOLE),

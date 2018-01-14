@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link CommandManager}.
  */
+// TODO #1035: Tests currently fail because ConfigMe can't handle Optional fields
 @RunWith(MockitoJUnitRunner.class)
 public class CommandManagerTest {
 
@@ -66,7 +68,7 @@ public class CommandManagerTest {
         initManager();
 
         // when
-        manager.runCommandsOnLogin(player);
+        manager.runCommandsOnLogin(player, Collections.emptyList());
 
         // then
         verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
@@ -83,7 +85,7 @@ public class CommandManagerTest {
         initManager();
 
         // when
-        manager.runCommandsOnLogin(player);
+        manager.runCommandsOnLogin(player, Collections.emptyList());
 
         // then
         verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back, bob");
@@ -114,7 +116,7 @@ public class CommandManagerTest {
         initManager();
 
         // when
-        manager.runCommandsOnFirstLogin(player);
+        manager.runCommandsOnFirstLogin(player, Collections.emptyList());
 
         // then
         verify(bukkitService).dispatchConsoleCommand("pay Bobby 30");

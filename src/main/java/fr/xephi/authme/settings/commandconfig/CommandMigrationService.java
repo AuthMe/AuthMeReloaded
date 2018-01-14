@@ -12,6 +12,7 @@ import fr.xephi.authme.util.RandomStringUtils;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -70,12 +71,14 @@ class CommandMigrationService implements MigrationService {
         ON_JOIN(
             SettingsMigrationService::getOnLoginCommands,
             Executor.PLAYER,
-            CommandConfig::getOnLogin),
+            CommandConfig::getOnLogin,
+            OnLoginCommand::new),
 
         ON_JOIN_CONSOLE(
             SettingsMigrationService::getOnLoginConsoleCommands,
             Executor.CONSOLE,
-            CommandConfig::getOnLogin),
+            CommandConfig::getOnLogin,
+            OnLoginCommand::new),
 
         ON_REGISTER(
             SettingsMigrationService::getOnRegisterCommands,
@@ -90,6 +93,7 @@ class CommandMigrationService implements MigrationService {
         private final Function<SettingsMigrationService, List<String>> legacyCommandsGetter;
         private final Executor executor;
         private final Function<CommandConfig, Map<String, Command>> commandMapGetter;
+        private final BiFunction<String, Executor, Command> commandConstructor;
 
         /**
          * Constructor.
@@ -102,9 +106,29 @@ class CommandMigrationService implements MigrationService {
         MigratableCommandSection(Function<SettingsMigrationService, List<String>> legacyCommandsGetter,
                                  Executor executor,
                                  Function<CommandConfig, Map<String, Command>> commandMapGetter) {
+            this(legacyCommandsGetter, executor, commandMapGetter, Command::new);
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param legacyCommandsGetter getter on MigrationService to get the deprecated command entries
+         * @param executor the executor of the commands
+         * @param commandMapGetter the getter for the commands map in the new settings structure to add the old
+         *                         settings to after conversion
+         * @param commandConstructor constructor for creating a command object
+         */
+        <T extends Command> MigratableCommandSection(
+            Function<SettingsMigrationService, List<String>> legacyCommandsGetter,
+            Executor executor,
+            Function<CommandConfig, Map<String, T>> commandMapGetter,
+            BiFunction<String, Executor, T> commandConstructor) {
+
             this.legacyCommandsGetter = legacyCommandsGetter;
             this.executor = executor;
-            this.commandMapGetter = commandMapGetter;
+            // This is horrible to be doing but this way we don't need to cast in convertCommands()
+            this.commandMapGetter = (Function) commandMapGetter;
+            this.commandConstructor = (BiFunction) commandConstructor;
         }
 
         /**
@@ -117,7 +141,7 @@ class CommandMigrationService implements MigrationService {
          */
         boolean convertCommands(SettingsMigrationService settingsMigrationService, CommandConfig commandConfig) {
             List<Command> commands = legacyCommandsGetter.apply(settingsMigrationService).stream()
-                .map(cmd -> new Command(cmd, executor)).collect(Collectors.toList());
+                .map(cmd -> commandConstructor.apply(cmd, executor)).collect(Collectors.toList());
 
             if (commands.isEmpty()) {
                 return false;

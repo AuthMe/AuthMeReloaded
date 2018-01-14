@@ -21,6 +21,10 @@ onLogin:
     display_list:
         command: 'list'
         executor: PLAYER
+    warn_for_alts:
+        command: 'helpop Player %p has more than 1 account'
+        exeuctor: CONSOLE
+        numberOfOtherAccountsAtLeast: 2
 onSessionLogin:
     welcome:
         command: 'msg %p Session login!'

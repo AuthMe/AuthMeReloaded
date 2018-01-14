@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static fr.xephi.authme.util.lazytags.TagBuilder.createTag;
 
@@ -32,9 +33,9 @@ public class CommandManager implements Reloadable {
     private final List<Tag<Player>> availableTags = buildAvailableTags();
 
     private WrappedTagReplacer<Command, Player> onJoinCommands;
-    private WrappedTagReplacer<Command, Player> onLoginCommands;
+    private WrappedTagReplacer<OnLoginCommand, Player> onLoginCommands;
     private WrappedTagReplacer<Command, Player> onSessionLoginCommands;
-    private WrappedTagReplacer<Command, Player> onFirstLoginCommands;
+    private WrappedTagReplacer<OnLoginCommand, Player> onFirstLoginCommands;
     private WrappedTagReplacer<Command, Player> onRegisterCommands;
     private WrappedTagReplacer<Command, Player> onUnregisterCommands;
     private WrappedTagReplacer<Command, Player> onLogoutCommands;
@@ -72,8 +73,10 @@ public class CommandManager implements Reloadable {
      *
      * @param player the player that logged in
      */
-    public void runCommandsOnLogin(Player player) {
-        executeCommands(player, onLoginCommands.getAdaptedItems(player));
+    public void runCommandsOnLogin(Player player, List<String> otherAccounts) {
+        final int numberOfOtherAccounts = otherAccounts.size();
+        executeCommands(player, onLoginCommands.getAdaptedItems(player),
+            cmd -> shouldCommandBeRun(cmd, numberOfOtherAccounts));
     }
 
     /**
@@ -90,8 +93,10 @@ public class CommandManager implements Reloadable {
      *
      * @param player the player that has logged in for the first time
      */
-    public void runCommandsOnFirstLogin(Player player) {
-        executeCommands(player, onFirstLoginCommands.getAdaptedItems(player));
+    public void runCommandsOnFirstLogin(Player player, List<String> otherAccounts) {
+        final int numberOfOtherAccounts = otherAccounts.size();
+        executeCommands(player, onFirstLoginCommands.getAdaptedItems(player),
+            cmd -> shouldCommandBeRun(cmd, numberOfOtherAccounts));
     }
 
     /**
@@ -113,14 +118,27 @@ public class CommandManager implements Reloadable {
     }
 
     private void executeCommands(Player player, List<Command> commands) {
-        for (Command command : commands) {
-            final String execution = command.getCommand();
-            if (Executor.CONSOLE.equals(command.getExecutor())) {
-                bukkitService.dispatchConsoleCommand(execution);
-            } else {
-                bukkitService.dispatchCommand(player, execution);
+        executeCommands(player, commands, c -> true);
+    }
+
+    private <T extends Command> void executeCommands(Player player, List<T> commands, Predicate<T> predicate) {
+        for (T command : commands) {
+            if (predicate.test(command)) {
+                final String execution = command.getCommand();
+                if (Executor.CONSOLE.equals(command.getExecutor())) {
+                    bukkitService.dispatchConsoleCommand(execution);
+                } else {
+                    bukkitService.dispatchCommand(player, execution);
+                }
             }
         }
+    }
+
+    private static boolean shouldCommandBeRun(OnLoginCommand command, int numberOfOtherAccounts) {
+        return (!command.getNumberOfOtherAccountsAtLeast().isPresent()
+                || command.getNumberOfOtherAccountsAtLeast().get() >= numberOfOtherAccounts)
+            && (!command.getNumberOfOtherAccountsLessThan().isPresent()
+                || command.getNumberOfOtherAccountsLessThan().get() <= numberOfOtherAccounts);
     }
 
     @Override
@@ -132,8 +150,8 @@ public class CommandManager implements Reloadable {
             new YamlFileResource(file), commandMigrationService, CommandSettingsHolder.class);
         CommandConfig commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
         onJoinCommands = newReplacer(commandConfig.getOnJoin());
-        onLoginCommands = newReplacer(commandConfig.getOnLogin());
-        onFirstLoginCommands = newReplacer(commandConfig.getOnFirstLogin());
+        onLoginCommands = newOnLoginCmdReplacer(commandConfig.getOnLogin());
+        onFirstLoginCommands = newOnLoginCmdReplacer(commandConfig.getOnFirstLogin());
         onSessionLoginCommands = newReplacer(commandConfig.getOnSessionLogin());
         onRegisterCommands = newReplacer(commandConfig.getOnRegister());
         onUnregisterCommands = newReplacer(commandConfig.getOnUnregister());
@@ -143,6 +161,13 @@ public class CommandManager implements Reloadable {
     private WrappedTagReplacer<Command, Player> newReplacer(Map<String, Command> commands) {
         return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
             (cmd, text) -> new Command(text, cmd.getExecutor()));
+    }
+
+    private WrappedTagReplacer<OnLoginCommand, Player> newOnLoginCmdReplacer(
+        Map<String, OnLoginCommand> commands) {
+
+        return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
+            (cmd, text) -> new OnLoginCommand(text, cmd.getExecutor()));
     }
 
     private List<Tag<Player>> buildAvailableTags() {
