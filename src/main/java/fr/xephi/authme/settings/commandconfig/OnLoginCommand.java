@@ -26,6 +26,21 @@ public class OnLoginCommand extends Command {
         super(command, executor);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param command the command to execute
+     * @param executor the executor of the command
+     * @param numberOfOtherAccountsAtLeast required number of accounts for the command to run
+     * @param numberOfOtherAccountsLessThan max threshold of accounts, from which the command will not be run
+     */
+    public OnLoginCommand(String command, Executor executor, Optional<Integer> numberOfOtherAccountsAtLeast,
+                          Optional<Integer> numberOfOtherAccountsLessThan) {
+        super(command, executor);
+        this.numberOfOtherAccountsAtLeast = numberOfOtherAccountsAtLeast;
+        this.numberOfOtherAccountsLessThan = numberOfOtherAccountsLessThan;
+    }
+
     public Optional<Integer> getNumberOfOtherAccountsAtLeast() {
         return numberOfOtherAccountsAtLeast;
     }

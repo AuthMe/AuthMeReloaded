@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link CommandManager}.
  */
-// TODO #1035: Tests currently fail because ConfigMe can't handle Optional fields
 @RunWith(MockitoJUnitRunner.class)
 public class CommandManagerTest {
 
