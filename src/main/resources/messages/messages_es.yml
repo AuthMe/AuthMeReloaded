@@ -98,7 +98,7 @@ email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar 
 usage_captcha: '&cUso: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha incorrecto, por favor usa: /captcha THE_CAPTCHA'
 valid_captcha: '&c¡Captcha ingresado correctamente!'
-captcha_for_registration: 'Para registrarse primero debes resolver el captcha, por favor usa el comando: /captcha <elCaptcha>'
+captcha_for_registration: 'Para registrarse primero debes resolver el captcha, por favor usa el comando: /captcha <theCaptcha>'
 register_captcha_valid: '&2¡Captcha validado! Ahora puedes registrarte usando /register'
 
 # Verification code
