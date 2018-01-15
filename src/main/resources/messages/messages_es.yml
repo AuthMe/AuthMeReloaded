@@ -85,7 +85,7 @@ email_confirm: '[AuthMe] Confirma tu Email !'
 email_changed: '[AuthMe] Email cambiado !'
 email_send: '[AuthMe] Correo de recuperación enviado !'
 email_show: '&2Tu dirección de E-Mail actual es: &f%email'
-incomplete_email_settings: 'Error: no todos los ajustes necesarios se han configurado para enviar correos. Por favor, contacta con un administrador.'
+incomplete_email_settings: 'Error: no todos los ajustes necesarios se han configurado para poder enviar correos. Por favor, contacta con un administrador.'
 email_already_used: '&4La dirección Email ya está siendo usada'
 email_send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
 show_no_email: '&2No tienes ningun E-Mail asociado en esta cuenta.'
@@ -97,9 +97,9 @@ email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar 
 # Captcha
 usage_captcha: '&cUso: /captcha <theCaptcha>'
 wrong_captcha: '&cCaptcha incorrecto, por favor usa: /captcha THE_CAPTCHA'
-valid_captcha: '&c¡ Captcha ingresado correctamente !'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+valid_captcha: '&c¡Captcha ingresado correctamente!'
+captcha_for_registration: 'Para registrarse primero debes resolver el captcha, por favor usa el comando: /captcha <elCaptcha>'
+register_captcha_valid: '&2¡Captcha validado! Ahora puedes registrarte usando /register'
 
 # Verification code
 verification_code_required: '&3¡Este comando es privado y requiere una verificación por correo electrónico! Revisa tu bandeja de entrada y sigue las instrucciones del correo electrónico.'
