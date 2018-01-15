@@ -91,11 +91,11 @@ change_password_expired: 'Nie zmienisz już hasła przy użyciu tej komendy.'
 email_cooldown_error: '&cE-mail został wysłany, musisz poczekać %time przed wysłaniem następnego.'
 
 # Captcha
-usage_captcha: '&cWpisz: /captcha <theCaptcha>'
-wrong_captcha: '&cZły kod, proszę wpisać: /captcha THE_CAPTCHA'
+usage_captcha: '&cWpisz: /captcha <kod_captcha_z_chatu>'
+wrong_captcha: '&cZły kod, proszę wpisać: /captcha <kod_captcha_z_chatu>'
 valid_captcha: '&cTwój kod jest nieprawidłowy!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha_for_registration: '&cAby się zarejestrować, musisz przepisać kod captacha. Użyj komendy: /captcha <kod_captcha_z_chatu>'
+register_captcha_valid: '&2Prawidłowy kod captacha! Teraz możesz się zarejestrować komendą /register'
 
 # Verification code
 verification_code_required: '&3Ta komenda wymaga weryfikacji przez e-mail! Sprawdź swoją skrzynkę odbiorczą i postępuj zgodnie z instrukcjami w wiadomości.'
