@@ -72,6 +72,7 @@ public class CommandManager implements Reloadable {
      * Runs the configured commands for when a player has logged in successfully.
      *
      * @param player the player that logged in
+     * @param otherAccounts account names whose IP is the same as the player's
      */
     public void runCommandsOnLogin(Player player, List<String> otherAccounts) {
         final int numberOfOtherAccounts = otherAccounts.size();
@@ -92,6 +93,7 @@ public class CommandManager implements Reloadable {
      * Runs the configured commands for when a player logs in the first time.
      *
      * @param player the player that has logged in for the first time
+     * @param otherAccounts account names whose IP is the same as the player's
      */
     public void runCommandsOnFirstLogin(Player player, List<String> otherAccounts) {
         final int numberOfOtherAccounts = otherAccounts.size();
