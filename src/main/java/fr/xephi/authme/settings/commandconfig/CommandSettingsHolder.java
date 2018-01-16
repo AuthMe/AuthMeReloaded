@@ -49,8 +49,17 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "    executor: CONSOLE",
             "",
             "Supported command events: onLogin, onSessionLogin, onFirstLogin, onJoin, onLogout, onRegister, "
-                + "onUnregister"
+                + "onUnregister",
+            "",
+            "For onLogin and onFirstLogin, you can use 'ifNumberOfAccountsLessThan' and 'ifNumberOfAccountsAtLeast'",
+            "to specify limits to how many accounts a player can have (matched by IP) for a command to be run:",
+            "onLogin:",
+            "  warnOnManyAccounts:",
+            "    command: 'say Uh oh! %p has many alt accounts!'",
+            "    executor: CONSOLE",
+            "    ifNumberOfAccountsAtLeast: 5"
         };
+
         Map<String, String[]> commentMap = new HashMap<>();
         commentMap.put("", rootComments);
         commentMap.put("onFirstLogin", new String[]{

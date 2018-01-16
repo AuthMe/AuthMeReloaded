@@ -88,7 +88,7 @@ public class CommandMigrationServiceTest {
 
         Map<String, OnLoginCommand> onLoginCommands = new LinkedHashMap<>();
         OnLoginCommand existingCommand = new OnLoginCommand("helpop %p has many alts", Executor.CONSOLE);
-        existingCommand.setNumberOfOtherAccountsAtLeast(Optional.of(2));
+        existingCommand.setIfNumberOfAccountsAtLeast(Optional.of(2));
         onLoginCommands.put("alert_on_alts", existingCommand);
         commandConfig.setOnLogin(onLoginCommands);
         Map<String, Command> onRegisterCommands = new LinkedHashMap<>();

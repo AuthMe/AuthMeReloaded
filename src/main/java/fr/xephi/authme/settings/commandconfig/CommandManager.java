@@ -135,10 +135,10 @@ public class CommandManager implements Reloadable {
     }
 
     private static boolean shouldCommandBeRun(OnLoginCommand command, int numberOfOtherAccounts) {
-        return (!command.getNumberOfOtherAccountsAtLeast().isPresent()
-                || command.getNumberOfOtherAccountsAtLeast().get() <= numberOfOtherAccounts)
-            && (!command.getNumberOfOtherAccountsLessThan().isPresent()
-                || command.getNumberOfOtherAccountsLessThan().get() >= numberOfOtherAccounts);
+        return (!command.getIfNumberOfAccountsAtLeast().isPresent()
+                || command.getIfNumberOfAccountsAtLeast().get() <= numberOfOtherAccounts)
+            && (!command.getIfNumberOfAccountsLessThan().isPresent()
+                || command.getIfNumberOfAccountsLessThan().get() > numberOfOtherAccounts);
     }
 
     @Override
@@ -167,8 +167,8 @@ public class CommandManager implements Reloadable {
         Map<String, OnLoginCommand> commands) {
 
         return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
-            (cmd, text) -> new OnLoginCommand(text, cmd.getExecutor(), cmd.getNumberOfOtherAccountsAtLeast(),
-                cmd.getNumberOfOtherAccountsLessThan()));
+            (cmd, text) -> new OnLoginCommand(text, cmd.getExecutor(), cmd.getIfNumberOfAccountsAtLeast(),
+                cmd.getIfNumberOfAccountsLessThan()));
     }
 
     private List<Tag<Player>> buildAvailableTags() {

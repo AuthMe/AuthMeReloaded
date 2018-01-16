@@ -7,8 +7,8 @@ import java.util.Optional;
  */
 public class OnLoginCommand extends Command {
 
-    private Optional<Integer> numberOfOtherAccountsAtLeast;
-    private Optional<Integer> numberOfOtherAccountsLessThan;
+    private Optional<Integer> ifNumberOfAccountsAtLeast;
+    private Optional<Integer> ifNumberOfAccountsLessThan;
 
     /**
      * Default constructor (for bean mapping).
@@ -31,29 +31,29 @@ public class OnLoginCommand extends Command {
      *
      * @param command the command to execute
      * @param executor the executor of the command
-     * @param numberOfOtherAccountsAtLeast required number of accounts for the command to run
-     * @param numberOfOtherAccountsLessThan max threshold of accounts, from which the command will not be run
+     * @param ifNumberOfAccountsAtLeast required number of accounts for the command to run
+     * @param ifNumberOfAccountsLessThan max threshold of accounts, from which the command will not be run
      */
-    public OnLoginCommand(String command, Executor executor, Optional<Integer> numberOfOtherAccountsAtLeast,
-                          Optional<Integer> numberOfOtherAccountsLessThan) {
+    public OnLoginCommand(String command, Executor executor, Optional<Integer> ifNumberOfAccountsAtLeast,
+                          Optional<Integer> ifNumberOfAccountsLessThan) {
         super(command, executor);
-        this.numberOfOtherAccountsAtLeast = numberOfOtherAccountsAtLeast;
-        this.numberOfOtherAccountsLessThan = numberOfOtherAccountsLessThan;
+        this.ifNumberOfAccountsAtLeast = ifNumberOfAccountsAtLeast;
+        this.ifNumberOfAccountsLessThan = ifNumberOfAccountsLessThan;
     }
 
-    public Optional<Integer> getNumberOfOtherAccountsAtLeast() {
-        return numberOfOtherAccountsAtLeast;
+    public Optional<Integer> getIfNumberOfAccountsAtLeast() {
+        return ifNumberOfAccountsAtLeast;
     }
 
-    public void setNumberOfOtherAccountsAtLeast(Optional<Integer> numberOfOtherAccountsAtLeast) {
-        this.numberOfOtherAccountsAtLeast = numberOfOtherAccountsAtLeast;
+    public void setIfNumberOfAccountsAtLeast(Optional<Integer> ifNumberOfAccountsAtLeast) {
+        this.ifNumberOfAccountsAtLeast = ifNumberOfAccountsAtLeast;
     }
 
-    public Optional<Integer> getNumberOfOtherAccountsLessThan() {
-        return numberOfOtherAccountsLessThan;
+    public Optional<Integer> getIfNumberOfAccountsLessThan() {
+        return ifNumberOfAccountsLessThan;
     }
 
-    public void setNumberOfOtherAccountsLessThan(Optional<Integer> numberOfOtherAccountsLessThan) {
-        this.numberOfOtherAccountsLessThan = numberOfOtherAccountsLessThan;
+    public void setIfNumberOfAccountsLessThan(Optional<Integer> ifNumberOfAccountsLessThan) {
+        this.ifNumberOfAccountsLessThan = ifNumberOfAccountsLessThan;
     }
 }

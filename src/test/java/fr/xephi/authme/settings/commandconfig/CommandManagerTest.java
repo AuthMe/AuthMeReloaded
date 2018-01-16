@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -78,6 +79,61 @@ public class CommandManagerTest {
     }
 
     @Test
+    public void shouldExecuteCommandsOnLoginWithTwoAlts() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnLogin(player, Arrays.asList("willy", "nilly", "billy", "silly"));
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
+        verify(bukkitService).dispatchCommand(player, "motd");
+        verify(bukkitService).dispatchCommand(player, "list");
+        verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
+        verifyNoMoreInteractions(bukkitService);
+        verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
+    public void shouldExecuteCommandsOnLoginWithFifteenAlts() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnLogin(player, Collections.nCopies(15, "swag"));
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
+        verify(bukkitService).dispatchCommand(player, "motd");
+        verify(bukkitService).dispatchCommand(player, "list");
+        verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
+        verify(bukkitService).dispatchConsoleCommand("log Bobby 127.0.0.3 many accounts");
+        verifyNoMoreInteractions(bukkitService);
+        verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
+    public void shouldExecuteCommandsOnLoginWithTwentyFiveAlts() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnLogin(player, Collections.nCopies(25, "yolo"));
+
+        // then
+        verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
+        verify(bukkitService).dispatchCommand(player, "motd");
+        verify(bukkitService).dispatchCommand(player, "list");
+        verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
+        verifyNoMoreInteractions(bukkitService);
+        verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
     public void shouldExecuteCommandsOnLoginWithIncompleteConfig() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
@@ -121,6 +177,19 @@ public class CommandManagerTest {
         verify(bukkitService).dispatchConsoleCommand("pay Bobby 30");
         verifyNoMoreInteractions(bukkitService);
         verifyZeroInteractions(geoIpService);
+    }
+
+    @Test
+    public void shouldNotExecuteFirstLoginCommandWhoseThresholdIsNotMet() {
+        // given
+        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+        initManager();
+
+        // when
+        manager.runCommandsOnFirstLogin(player, Arrays.asList("u", "wot", "m8"));
+
+        // then
+        verifyZeroInteractions(bukkitService, geoIpService);
     }
 
     @Test
