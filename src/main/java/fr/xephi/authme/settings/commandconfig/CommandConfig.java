@@ -11,9 +11,9 @@ import java.util.Map;
 public class CommandConfig {
 
     private Map<String, Command> onJoin = new LinkedHashMap<>();
-    private Map<String, Command> onLogin = new LinkedHashMap<>();
+    private Map<String, OnLoginCommand> onLogin = new LinkedHashMap<>();
     private Map<String, Command> onSessionLogin = new LinkedHashMap<>();
-    private Map<String, Command> onFirstLogin = new LinkedHashMap<>();
+    private Map<String, OnLoginCommand> onFirstLogin = new LinkedHashMap<>();
     private Map<String, Command> onRegister = new LinkedHashMap<>();
     private Map<String, Command> onUnregister = new LinkedHashMap<>();
     private Map<String, Command> onLogout = new LinkedHashMap<>();
@@ -26,11 +26,11 @@ public class CommandConfig {
         this.onJoin = onJoin;
     }
 
-    public Map<String, Command> getOnLogin() {
+    public Map<String, OnLoginCommand> getOnLogin() {
         return onLogin;
     }
 
-    public void setOnLogin(Map<String, Command> onLogin) {
+    public void setOnLogin(Map<String, OnLoginCommand> onLogin) {
         this.onLogin = onLogin;
     }
 
@@ -42,11 +42,11 @@ public class CommandConfig {
         this.onSessionLogin = onSessionLogin;
     }
 
-    public Map<String, Command> getOnFirstLogin() {
+    public Map<String, OnLoginCommand> getOnFirstLogin() {
         return onFirstLogin;
     }
 
-    public void setOnFirstLogin(Map<String, Command> onFirstLogin) {
+    public void setOnFirstLogin(Map<String, OnLoginCommand> onFirstLogin) {
         this.onFirstLogin = onFirstLogin;
     }
 

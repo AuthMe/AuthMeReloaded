@@ -107,9 +107,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         // Login is now finished; we can force all commands
         if (isFirstLogin) {
-            commandManager.runCommandsOnFirstLogin(player);
+            commandManager.runCommandsOnFirstLogin(player, authsWithSameIp);
         }
-        commandManager.runCommandsOnLogin(player);
+        commandManager.runCommandsOnLogin(player, authsWithSameIp);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
         bungeeSender.connectPlayerOnLogin(player);

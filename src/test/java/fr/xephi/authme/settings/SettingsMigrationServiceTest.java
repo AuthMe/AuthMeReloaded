@@ -97,25 +97,6 @@ public class SettingsMigrationServiceTest {
         assertThat(migrationService.returnedValues, contains(true, false));
     }
 
-    @Test
-    public void shouldKeepOldForceCommandSettings() throws IOException {
-        // given
-        File dataFolder = temporaryFolder.newFolder();
-        File configFile = new File(dataFolder, "config.yml");
-        Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
-        PropertyResource resource = new YamlFileResource(configFile);
-        SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
-
-        // when
-        migrationService.performMigrations(resource, AuthMeSettingsRetriever.buildConfigurationData().getProperties());
-
-        // then
-        assertThat(migrationService.getOnLoginCommands(), contains("spawn"));
-        assertThat(migrationService.getOnLoginConsoleCommands(), contains("sethome %p:lastloc", "msg %p Welcome back"));
-        assertThat(migrationService.getOnRegisterCommands(), contains("me registers", "msg CONSOLE hi"));
-        assertThat(migrationService.getOnRegisterConsoleCommands(), contains("sethome %p:regloc"));
-    }
-
     private void verifyHasUpToDateSettings(Settings settings, File dataFolder) throws IOException {
         assertThat(settings.getProperty(ALLOWED_NICKNAME_CHARACTERS), equalTo(ALLOWED_NICKNAME_CHARACTERS.getDefaultValue()));
         assertThat(settings.getProperty(DELAY_JOIN_MESSAGE), equalTo(true));
