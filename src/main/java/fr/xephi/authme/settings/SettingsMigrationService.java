@@ -2,7 +2,6 @@ package fr.xephi.authme.settings;
 
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.Property;
-import ch.jalu.configme.properties.StringListProperty;
 import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.base.MoreObjects;
 import fr.xephi.authme.ConsoleLogger;
@@ -19,7 +18,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -39,15 +37,6 @@ public class SettingsMigrationService extends PlainMigrationService {
 
     private final File pluginFolder;
 
-    // Stores old commands that need to be migrated to the new commands configuration
-    // We need to store it in here for retrieval when we build the CommandConfig. Retrieving it from the config.yml is
-    // not possible since this migration service may trigger config.yml to be resaved. As the old command settings
-    // don't exist in the code anymore, as soon as config.yml is resaved we lose this information.
-    private List<String> onLoginCommands = Collections.emptyList();
-    private List<String> onLoginConsoleCommands = Collections.emptyList();
-    private List<String> onRegisterCommands = Collections.emptyList();
-    private List<String> onRegisterConsoleCommands = Collections.emptyList();
-
     @Inject
     SettingsMigrationService(@DataFolder File pluginFolder) {
         this.pluginFolder = pluginFolder;
@@ -61,8 +50,6 @@ public class SettingsMigrationService extends PlainMigrationService {
             resource.setValue(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
             changes = true;
         }
-
-        gatherOldCommandSettings(resource);
 
         // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
         // ensures that all migrations will be performed
@@ -97,35 +84,6 @@ public class SettingsMigrationService extends PlainMigrationService {
         return false;
     }
 
-    // ----------------
-    // Forced commands relocation (from config.yml to commands.yml)
-    // ----------------
-    private void gatherOldCommandSettings(PropertyResource resource) {
-        onLoginCommands = getStringList(resource, "settings.forceCommands");
-        onLoginConsoleCommands = getStringList(resource, "settings.forceCommandsAsConsole");
-        onRegisterCommands = getStringList(resource, "settings.forceRegisterCommands");
-        onRegisterConsoleCommands = getStringList(resource, "settings.forceRegisterCommandsAsConsole");
-    }
-
-    private List<String> getStringList(PropertyResource resource, String path) {
-        return new StringListProperty(path).getValue(resource);
-    }
-
-    public List<String> getOnLoginCommands() {
-        return onLoginCommands;
-    }
-
-    public List<String> getOnLoginConsoleCommands() {
-        return onLoginConsoleCommands;
-    }
-
-    public List<String> getOnRegisterCommands() {
-        return onRegisterCommands;
-    }
-
-    public List<String> getOnRegisterConsoleCommands() {
-        return onRegisterConsoleCommands;
-    }
 
     // --------
     // Specific migrations
