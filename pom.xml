@@ -35,6 +35,17 @@
         <url>https://github.com/AuthMe/AuthMeReloaded/issues</url>
     </issueManagement>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>https://nexus.authme.eu/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>https://nexus.authme.eu/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
     <licenses>
         <license>
             <name>The GNU General Public Licence version 3 (GPLv3)</name>
