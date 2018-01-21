@@ -28,7 +28,8 @@ public class LogFilterHelperTest {
         // given
         List<CommandDescription> sensitiveCommands = Arrays.asList(
             getCommand("register"), getCommand("login"), getCommand("changepassword"), getCommand("unregister"),
-            getCommand("authme", "register"), getCommand("authme", "changepassword")
+            getCommand("authme", "register"), getCommand("authme", "changepassword"),
+            getCommand("email", "setpassword")
         );
         // Build array with entries like "/register ", "/authme cp ", "/authme changepass "
         String[] expectedEntries = sensitiveCommands.stream()

@@ -16,7 +16,7 @@ final class LogFilterHelper {
     static final List<String> COMMANDS_TO_SKIP = withAndWithoutAuthMePrefix(
         "/login ", "/l ", "/log ", "/register ", "/reg ", "/unregister ", "/unreg ",
         "/changepassword ", "/cp ", "/changepass ", "/authme register ",  "/authme reg ", "/authme r ",
-        "/authme changepassword ", "/authme password ", "/authme changepass ", "/authme cp ");
+        "/authme changepassword ", "/authme password ", "/authme changepass ", "/authme cp ", "/email setpassword ");
 
     private static final String ISSUED_COMMAND_TEXT = "issued server command:";
 
