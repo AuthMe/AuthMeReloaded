@@ -13,6 +13,7 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.StringUtils;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -37,6 +38,13 @@ public class SettingsMigrationService extends PlainMigrationService {
 
     private final File pluginFolder;
 
+    // Stores old "other accounts command" config if present.
+    // We need to store it in here for retrieval when we build the CommandConfig. Retrieving it from the config.yml is
+    // not possible since this migration service may trigger the config.yml to be resaved. As the old command settings
+    // don't exist in the code anymore, as soon as config.yml is resaved we lose this information.
+    private String oldOtherAccountsCommand;
+    private int oldOtherAccountsCommandThreshold;
+
     @Inject
     SettingsMigrationService(@DataFolder File pluginFolder) {
         this.pluginFolder = pluginFolder;
@@ -50,6 +58,8 @@ public class SettingsMigrationService extends PlainMigrationService {
             resource.setValue(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
             changes = true;
         }
+
+        setOldOtherAccountsCommandFieldsIfSet(resource);
 
         // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
         // ensures that all migrations will be performed
@@ -75,7 +85,8 @@ public class SettingsMigrationService extends PlainMigrationService {
             "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping",
             "settings.restrictions.keepCollisionsDisabled", "settings.forceCommands", "settings.forceCommandsAsConsole",
             "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole",
-            "settings.sessions.sessionExpireOnIpChange"};
+            "settings.sessions.sessionExpireOnIpChange", "settings.restrictions.otherAccountsCmd",
+            "settings.restrictions.otherAccountsCmdThreshold"};
         for (String deprecatedPath : deprecatedProperties) {
             if (resource.contains(deprecatedPath)) {
                 return true;
@@ -84,6 +95,20 @@ public class SettingsMigrationService extends PlainMigrationService {
         return false;
     }
 
+    // --------
+    // Old other accounts
+    // --------
+    public boolean hasOldOtherAccountsCommand() {
+        return !StringUtils.isEmpty(oldOtherAccountsCommand);
+    }
+
+    public String getOldOtherAccountsCommand() {
+        return oldOtherAccountsCommand;
+    }
+
+    public int getOldOtherAccountsCommandThreshold() {
+        return oldOtherAccountsCommandThreshold;
+    }
 
     // --------
     // Specific migrations
@@ -286,6 +311,22 @@ public class SettingsMigrationService extends PlainMigrationService {
             }
         }
         return false;
+    }
+
+    /**
+     * Retrieves the old config to run a command when alt accounts are detected and sets them to this instance
+     * for further processing.
+     *
+     * @param resource The property resource
+     */
+    private void setOldOtherAccountsCommandFieldsIfSet(PropertyResource resource) {
+        Property<String> commandProperty = newProperty("settings.restrictions.otherAccountsCmd", "");
+        Property<Integer> commandThresholdProperty = newProperty("settings.restrictions.otherAccountsCmdThreshold", 0);
+
+        if (commandProperty.isPresent(resource) && commandThresholdProperty.getValue(resource) >= 2) {
+            oldOtherAccountsCommand = commandProperty.getValue(resource);
+            oldOtherAccountsCommandThreshold = commandThresholdProperty.getValue(resource);
+        }
     }
 
     /**

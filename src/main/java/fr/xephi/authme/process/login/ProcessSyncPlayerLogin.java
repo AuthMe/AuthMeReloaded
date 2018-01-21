@@ -15,8 +15,6 @@ import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -99,9 +97,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         bukkitService.callEvent(new LoginEvent(player));
         player.saveData();
 
-        // Run command if player has other accounts
-        runCommandOtherAccounts(authsWithSameIp, player);
-
         // Login is done, display welcome message
         welcomeMessageConfiguration.sendWelcomeMessage(player);
 
@@ -113,17 +108,5 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         // Send Bungee stuff. The service will check if it is enabled or not.
         bungeeSender.connectPlayerOnLogin(player);
-    }
-
-    private void runCommandOtherAccounts(List<String> auths, Player player) {
-        int threshold = commonService.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD_THRESHOLD);
-        String command = commonService.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD);
-
-        if (threshold >= 2 && !command.isEmpty() && auths.size() >= threshold) {
-            bukkitService.dispatchConsoleCommand(command
-                .replace("%playername%", player.getName())
-                .replace("%playerip%", PlayerUtils.getPlayerIp(player))
-            );
-        }
     }
 }

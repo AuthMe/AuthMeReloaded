@@ -7,8 +7,8 @@ import java.util.Optional;
  */
 public class OnLoginCommand extends Command {
 
-    private Optional<Integer> ifNumberOfAccountsAtLeast;
-    private Optional<Integer> ifNumberOfAccountsLessThan;
+    private Optional<Integer> ifNumberOfAccountsAtLeast = Optional.empty();
+    private Optional<Integer> ifNumberOfAccountsLessThan = Optional.empty();
 
     /**
      * Default constructor (for bean mapping).

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Dec 13 23:12:29 CET 2017. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Jan 21 18:49:44 CET 2018. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -214,11 +214,6 @@ settings:
         # characters, which is what we recommend. See also http://asciitable.com
         # You can test your regex with https://regex101.com
         allowedPasswordCharacters: '[!-~]*'
-        # Threshold of the other accounts command, a value less than 2 means disabled.
-        otherAccountsCmdThreshold: 0
-        # Command to run when a user has more accounts than the configured threshold.
-        # Available variables: %playername%, %playerip%
-        otherAccountsCmd: 'say The player %playername% with ip %playerip% has multiple accounts!'
     GameMode:
         # Force survival gamemode when player joins?
         ForceSurvivalMode: false
@@ -444,6 +439,8 @@ Security:
         captchaLength: 5
         # Minutes after which login attempts count is reset for a player
         captchaCountReset: 60
+        # Require captcha before a player may register?
+        requireForRegistration: false
     tempban:
         # Tempban a user's IP address if they enter the wrong password too many times
         enableTempban: false
@@ -558,4 +555,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Dec 13 23:12:29 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Jan 21 18:49:44 CET 2018
