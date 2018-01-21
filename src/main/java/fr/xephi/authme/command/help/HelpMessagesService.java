@@ -4,9 +4,7 @@ import com.google.common.base.CaseFormat;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandUtils;
-import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.message.MessageFileHandlerProvider;
-import fr.xephi.authme.message.MessageFileHandler;
+import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.permission.DefaultPermission;
 
 import javax.inject.Inject;
@@ -16,20 +14,18 @@ import java.util.stream.Collectors;
 /**
  * Manages translatable help messages.
  */
-public class HelpMessagesService implements Reloadable {
+public class HelpMessagesService {
 
     private static final String COMMAND_PREFIX = "commands.";
     private static final String DESCRIPTION_SUFFIX = ".description";
     private static final String DETAILED_DESCRIPTION_SUFFIX = ".detailedDescription";
     private static final String DEFAULT_PERMISSIONS_PATH = "common.defaultPermissions.";
 
-    private final MessageFileHandlerProvider messageFileHandlerProvider;
-    private MessageFileHandler messageFileHandler;
+    private final HelpMessagesFileHandler helpMessagesFileHandler;
 
     @Inject
-    HelpMessagesService(MessageFileHandlerProvider messageFileHandlerProvider) {
-        this.messageFileHandlerProvider = messageFileHandlerProvider;
-        reload();
+    HelpMessagesService(HelpMessagesFileHandler helpMessagesFileHandler) {
+        this.helpMessagesFileHandler = helpMessagesFileHandler;
     }
 
     /**
@@ -40,7 +36,7 @@ public class HelpMessagesService implements Reloadable {
      */
     public CommandDescription buildLocalizedDescription(CommandDescription command) {
         final String path = COMMAND_PREFIX + getCommandSubPath(command);
-        if (!messageFileHandler.hasSection(path)) {
+        if (!helpMessagesFileHandler.hasSection(path)) {
             // Messages file does not have a section for this command - return the provided command
             return command;
         }
@@ -72,34 +68,37 @@ public class HelpMessagesService implements Reloadable {
     }
 
     public String getMessage(HelpMessage message) {
-        return messageFileHandler.getMessage(message.getKey());
+        return helpMessagesFileHandler.getMessage(message.getKey());
     }
 
     public String getMessage(HelpSection section) {
-        return messageFileHandler.getMessage(section.getKey());
+        return helpMessagesFileHandler.getMessage(section.getKey());
     }
 
     public String getMessage(DefaultPermission defaultPermission) {
         // e.g. {default_permissions_path}.opOnly for DefaultPermission.OP_ONLY
         String path = DEFAULT_PERMISSIONS_PATH + getDefaultPermissionsSubPath(defaultPermission);
-        return messageFileHandler.getMessage(path);
+        return helpMessagesFileHandler.getMessage(path);
     }
 
     public static String getDefaultPermissionsSubPath(DefaultPermission defaultPermission) {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, defaultPermission.name());
     }
 
-    @Override
-    public void reload() {
-        messageFileHandler = messageFileHandlerProvider.initializeHandler(
-            lang -> "messages/help_" + lang + ".yml");
-    }
-
     private String getText(String path, Supplier<String> defaultTextGetter) {
-        String message = messageFileHandler.getMessageIfExists(path);
+        String message = helpMessagesFileHandler.getMessageIfExists(path);
         return message == null
             ? defaultTextGetter.get()
             : message;
+    }
+
+
+    /**
+     * Triggers a reload of the help messages file. Note that this method is not needed
+     * to be called for /authme reload.
+     */
+    public void reloadMessagesFile() {
+        helpMessagesFileHandler.reload();
     }
 
     /**

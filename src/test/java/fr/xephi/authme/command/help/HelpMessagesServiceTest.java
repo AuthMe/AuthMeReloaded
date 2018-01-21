@@ -1,64 +1,55 @@
 package fr.xephi.authme.command.help;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
+import com.google.common.io.Files;
+import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.TestCommandsUtil;
-import fr.xephi.authme.message.MessageFileHandler;
-import fr.xephi.authme.message.MessageFileHandlerProvider;
+import fr.xephi.authme.message.AbstractMessageFileHandler;
+import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.permission.DefaultPermission;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
-import java.util.function.Function;
 
-import static fr.xephi.authme.TestHelper.getJarFile;
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link HelpMessagesService}.
  */
-@RunWith(DelayedInjectionRunner.class)
 public class HelpMessagesServiceTest {
 
     private static final String TEST_FILE = "/fr/xephi/authme/command/help/help_test.yml";
     private static final Collection<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
 
-    @InjectDelayed
     private HelpMessagesService helpMessagesService;
 
-    @Mock
-    private MessageFileHandlerProvider messageFileHandlerProvider;
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    private File dataFolder;
 
-    @BeforeInjecting
-    @SuppressWarnings("unchecked")
-    public void initializeHandler() {
-        MessageFileHandler handler = new MessageFileHandler(getJarFile(TEST_FILE), "messages/messages_en.yml", null);
-        given(messageFileHandlerProvider.initializeHandler(any(Function.class))).willReturn(handler);
-    }
+    @Before
+    public void initializeHandler() throws IOException, InstantiationException, IllegalAccessException {
+        dataFolder = temporaryFolder.newFolder();
+        new File(dataFolder, "messages").mkdirs();
+        File messagesFile = new File(dataFolder, "messages/help_test.yml");
+        Files.copy(TestHelper.getJarFile(TEST_FILE), messagesFile);
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldUseExistingFileAsTextFile() {
-        // given / when / then
-        ArgumentCaptor<Function<String, String>> functionCaptor = ArgumentCaptor.forClass(Function.class);
-        verify(messageFileHandlerProvider).initializeHandler(functionCaptor.capture());
-        Function<String, String> helpFilePathBuilder = functionCaptor.getValue();
-        String defaultFilePath = helpFilePathBuilder.apply("en");
-        assertThat(getClass().getClassLoader().getResource(defaultFilePath), not(nullValue()));
+        HelpMessagesFileHandler helpMessagesFileHandler = createMessagesFileHandler();
+        helpMessagesService = new HelpMessagesService(helpMessagesFileHandler);
     }
 
     @Test
@@ -153,5 +144,16 @@ public class HelpMessagesServiceTest {
 
         // then
         assertThat(description, equalTo(command.getDescription()));
+    }
+
+    private HelpMessagesFileHandler createMessagesFileHandler() throws IllegalAccessException, InstantiationException {
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
+
+        HelpMessagesFileHandler messagesFileHandler = ReflectionTestUtils.newInstance(HelpMessagesFileHandler.class);
+        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
+        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
+        ReflectionTestUtils.invokePostConstructMethods(messagesFileHandler);
+        return messagesFileHandler;
     }
 }

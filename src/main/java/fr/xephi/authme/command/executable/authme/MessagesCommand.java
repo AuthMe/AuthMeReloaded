@@ -49,7 +49,7 @@ public class MessagesCommand implements ExecutableCommand {
         try {
             helpTranslationGenerator.updateHelpFile();
             sender.sendMessage("Successfully updated the help file");
-            helpMessagesService.reload();
+            helpMessagesService.reloadMessagesFile();
         } catch (IOException e) {
             sender.sendMessage("Could not update help file: " + e.getMessage());
             ConsoleLogger.logException("Could not update help file:", e);
@@ -65,7 +65,7 @@ public class MessagesCommand implements ExecutableCommand {
                 getMessagePath(DEFAULT_LANGUAGE))
             .executeCopy(sender);
             if (isFileUpdated) {
-                messages.reload();
+                messages.reloadMessagesFile();
             }
         } catch (Exception e) {
             sender.sendMessage("Could not update messages: " + e.getMessage());

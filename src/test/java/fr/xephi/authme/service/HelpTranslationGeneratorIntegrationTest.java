@@ -10,7 +10,7 @@ import fr.xephi.authme.command.help.HelpMessage;
 import fr.xephi.authme.command.help.HelpMessagesService;
 import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.message.MessageFileHandlerProvider;
+import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.configuration.MemorySection;
@@ -44,7 +44,7 @@ public class HelpTranslationGeneratorIntegrationTest {
     @InjectDelayed
     private HelpMessagesService helpMessagesService;
     @InjectDelayed
-    private MessageFileHandlerProvider messageFileHandlerProvider;
+    private HelpMessagesFileHandler helpMessagesFileHandler;
     @InjectDelayed
     private CommandInitializer commandInitializer;
 

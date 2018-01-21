@@ -2,7 +2,6 @@ package fr.xephi.authme.message;
 
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class for retrieving and sending translatable messages to players.
  */
-public class Messages implements Reloadable {
+public class Messages {
 
     // Custom Authme tag replaced to new line
     private static final String NEWLINE_TAG = "%nl%";
@@ -33,16 +32,14 @@ public class Messages implements Reloadable {
         .put(TimeUnit.HOURS, MessageKey.HOURS)
         .put(TimeUnit.DAYS, MessageKey.DAYS).build();
 
-    private final MessageFileHandlerProvider messageFileHandlerProvider;
-    private MessageFileHandler messageFileHandler;
+    private MessagesFileHandler messagesFileHandler;
 
     /*
      * Constructor.
      */
     @Inject
-    Messages(MessageFileHandlerProvider messageFileHandlerProvider) {
-        this.messageFileHandlerProvider = messageFileHandlerProvider;
-        reload();
+    Messages(MessagesFileHandler messagesFileHandler) {
+        this.messagesFileHandler = messagesFileHandler;
     }
 
     /**
@@ -113,7 +110,7 @@ public class Messages implements Reloadable {
      */
     private String retrieveMessage(MessageKey key) {
         return formatMessage(
-            messageFileHandler.getMessage(key.getKey()));
+            messagesFileHandler.getMessage(key.getKey()));
     }
 
     /**
@@ -138,10 +135,12 @@ public class Messages implements Reloadable {
         return message;
     }
 
-    @Override
-    public void reload() {
-        this.messageFileHandler = messageFileHandlerProvider
-            .initializeHandler(lang -> "messages/messages_" + lang + ".yml", "/authme messages");
+    /**
+     * Triggers a reload of the messages file. Note that this method is not necessary
+     * to be called for /authme reload.
+     */
+    public void reloadMessagesFile() {
+        messagesFileHandler.reload();
     }
 
     private static String formatMessage(String message) {

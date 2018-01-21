@@ -1,21 +1,28 @@
 package fr.xephi.authme.message;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.arrayWithSize;
@@ -23,7 +30,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -38,8 +44,11 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 public class MessagesIntegrationTest {
 
     private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + "message/messages_test.yml";
-    private static final String YML_DEFAULT_TEST_FILE = "messages/messages_en.yml";
     private Messages messages;
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    private File dataFolder;
 
     @BeforeClass
     public static void setup() {
@@ -55,10 +64,15 @@ public class MessagesIntegrationTest {
      * file that should contain all messages, but again, for testing, it just contains a few.
      */
     @Before
-    public void setUpMessages() {
-        File testFile = TestHelper.getJarFile(YML_TEST_FILE);
-        MessageFileHandlerProvider provider = providerReturning(testFile, YML_DEFAULT_TEST_FILE);
-        messages = new Messages(provider);
+    public void setUpMessages() throws IOException {
+        dataFolder = temporaryFolder.newFolder();
+        File testFile = new File(dataFolder, "messages/messages_test.yml");
+        new File(dataFolder, "messages").mkdirs();
+        FileUtils.create(testFile);
+        Files.copy(TestHelper.getJarFile(YML_TEST_FILE), testFile);
+
+        MessagesFileHandler fileHandler = createMessagesFileHandler();
+        messages = new Messages(fileHandler);
     }
 
     @Test
@@ -254,11 +268,14 @@ public class MessagesIntegrationTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static MessageFileHandlerProvider providerReturning(File file, String defaultFile) {
-        MessageFileHandlerProvider handler = mock(MessageFileHandlerProvider.class);
-        given(handler.initializeHandler(any(Function.class), anyString()))
-            .willReturn(new MessageFileHandler(file, defaultFile, "/authme messages"));
-        return handler;
+    private MessagesFileHandler createMessagesFileHandler() {
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
+
+        MessagesFileHandler messagesFileHandler = new MessagesFileHandler();
+        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
+        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
+        ReflectionTestUtils.invokePostConstructMethods(messagesFileHandler);
+        return messagesFileHandler;
     }
 }

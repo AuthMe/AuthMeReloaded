@@ -1,5 +1,8 @@
 package fr.xephi.authme;
 
+import ch.jalu.injector.handlers.postconstruct.PostConstructMethodInvoker;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -100,6 +103,34 @@ public final class ReflectionTestUtils {
             return (V) method.invoke(instance, parameters);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new UnsupportedOperationException("Could not invoke method '" + method + "'", e);
+        }
+    }
+
+    /**
+     * Runs all methods annotated with {@link javax.annotation.PostConstruct} on the given instance
+     * (including such methods on superclasses).
+     *
+     * @param instance the instance to process
+     */
+    public static void invokePostConstructMethods(Object instance) {
+        // Use the implementation of the injector to invoke all @PostConstruct methods the same way
+        new PostConstructMethodInvoker().postProcess(instance, null, null);
+    }
+
+    /**
+     * Creates a new instance of the given class, using a no-args constructor (which may be hidden).
+     *
+     * @param clazz the class to instantiate
+     * @param <T> the class' type
+     * @return the created instance
+     */
+    public static <T> T newInstance(Class<T> clazz) {
+        try {
+            Constructor<T> constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new UnsupportedOperationException("Could not invoke no-args constructor of class " + clazz, e);
         }
     }
 }
