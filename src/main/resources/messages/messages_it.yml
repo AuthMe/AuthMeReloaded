@@ -68,7 +68,7 @@ country_banned: '&4Il tuo paese è bandito da questo server!'
 not_owner_error: 'Non sei il proprietario di questo account. Per favore scegli un altro nome!'
 kick_fullserver: '&4Il server è attualmente pieno, riprova più tardi!'
 same_nick: '&4Un giocatore con il tuo stesso nome utente è già connesso sul server!'
-invalid_name_case: 'Dovresti entrare con questo nome utente: "%valid", al posto di: "%invalid".'
+invalid_name_case: 'Dovresti entrare con questo nome utente "%valid", al posto di "%invalid".'
 same_ip_online: 'Un giocatore con il tuo stesso IP è già connesso sul server!'
 
 # Email
@@ -94,15 +94,15 @@ email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentem
 
 # Captcha
 usage_captcha: '&3Per poterti autenticare devi risolvere un captcha, per favore scrivi: /captcha <theCaptcha>'
-wrong_captcha: '&cCaptcha sbagliato, per favore riprova scrivendo: "/captcha THE_CAPTCHA" in chat!'
+wrong_captcha: '&cCaptcha sbagliato, per favore riprova scrivendo "/captcha THE_CAPTCHA" in chat!'
 valid_captcha: '&2Il captcha inserito è valido!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha_for_registration: 'Per poterti registrare devi prima risolvere un captcha, per favore scrivi: /captcha <theCaptcha>'
+register_captcha_valid: '&2Il captcha inserito è valido! Ora puoi eseguire la registrazione con: /register <password> <confermaPassword>'
 
 # Codice di verifica
 verification_code_required: '&3Questo comando va a modificare dati sensibili e richiede una verifica tramite email! Controlla la tua posta in arrivo e segui le istruzioni nell''email.'
 usage_verification_code: '&cUtilizzo: /verification <codice>'
-incorrect_verification_code: '&cCodice sbagliato, per favore riprova scrivendo: "/verification <codice>" in chat, usando il codice che hai ricevuto tramite email'
+incorrect_verification_code: '&cCodice sbagliato, per favore riprova scrivendo "/verification <codice>" in chat, usando il codice che hai ricevuto tramite email'
 verification_code_verified: '&2La tua identità è stata verificata! Ora puoi eseguire tutti i comandi che modificano dati sensibili per questa sessione!'
 verification_code_already_verified: '&2Puoi già eseguire tutti i comandi che modificano dati sensibili per questa sessione!'
 verification_code_expired: '&3Il tuo codice è scaduto! Esegui nuovamente un comando che modifica dati sensibili per ricevere uno nuovo codice!'
