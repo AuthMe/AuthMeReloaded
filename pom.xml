@@ -38,11 +38,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>nexus-snapshots</id>
-            <url>https://nexus.authme.eu/repository/maven-snapshots/</url>
+            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>nexus-releases</id>
-            <url>https://nexus.authme.eu/repository/maven-releases/</url>
+            <url>https://repo.codemc.org/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
