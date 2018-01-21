@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.listener.JoiningPlayer;
@@ -41,8 +42,7 @@ public class PermissionsManager implements Reloadable {
 
     private final Server server;
     private final PluginManager pluginManager;
-
-    private Settings settings;
+    private final Settings settings;
 
     /**
      * The permission handler that is currently in use.
@@ -76,7 +76,8 @@ public class PermissionsManager implements Reloadable {
      * Setup and hook into the permissions systems.
      */
     @PostConstruct
-    private void setup() {
+    @VisibleForTesting
+    void setup() {
         if (settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)) {
             try {
                 PermissionHandler handler = createPermissionHandler(PermissionsSystemType.VAULT);

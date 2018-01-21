@@ -36,8 +36,7 @@ public class LuckPermsHandler implements PermissionHandler {
         try {
             luckPermsApi = LuckPerms.getApi();
         } catch (IllegalStateException e) {
-            e.printStackTrace();
-            throw new PermissionHandlerException("Could not get api of LuckPerms");
+            throw new PermissionHandlerException("Could not get api of LuckPerms", e);
         }
     }
 
