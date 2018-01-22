@@ -123,29 +123,13 @@ public class ClassesConsistencyTest {
     }
 
     /**
-     * Prints out the field with (most of) its modifiers.
+     * Prints out the field with its modifiers.
      *
      * @param field the field to format
      * @return description of the field
      */
     private static String formatField(Field field) {
-        String modifiersText = "";
-        int modifiers = field.getModifiers();
-        if (Modifier.isPublic(modifiers)) {
-            modifiersText += "public ";
-        } else if (Modifier.isProtected(modifiers)) {
-            modifiersText += "protected ";
-        } else if (Modifier.isPrivate(modifiers)) {
-            modifiersText += "private ";
-        }
-
-        if (Modifier.isStatic(modifiers)) {
-            modifiersText += "static ";
-        }
-        if (Modifier.isFinal(modifiers)) {
-            modifiersText += "final ";
-        }
-
+        String modifiersText = Modifier.toString(field.getModifiers());
         return String.format("[%s] %s %s %s", field.getDeclaringClass().getSimpleName(), modifiersText.trim(),
             field.getType().getSimpleName(), field.getName());
     }
