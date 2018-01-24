@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
  */
 public abstract class AbstractMessageFileHandler implements Reloadable {
 
-    private static final String DEFAULT_LANGUAGE = "en";
+    protected static final String DEFAULT_LANGUAGE = "en";
 
     @DataFolder
     @Inject
@@ -34,18 +34,31 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
     private FileConfiguration configuration;
     private final String defaultFile;
     private FileConfiguration defaultConfiguration;
+    private final String updateCommandAddition;
 
     protected AbstractMessageFileHandler() {
         this.defaultFile = createFilePath(DEFAULT_LANGUAGE);
+        String updateCommand = getUpdateCommand();
+        this.updateCommandAddition = updateCommand == null
+            ? ""
+            : " or run " + updateCommand;
     }
 
     @Override
     @PostConstruct
     public void reload() {
-        String language = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
+        String language = getLanguage();
         filename = createFilePath(language);
         File messagesFile = initializeFile(filename);
         configuration = YamlConfiguration.loadConfiguration(messagesFile);
+    }
+
+    protected String getLanguage() {
+        return settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
+    }
+
+    protected File getUserLanguageFile() {
+        return new File(dataFolder, filename);
     }
 
     /**
@@ -69,7 +82,7 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
 
         if (message == null) {
             ConsoleLogger.warning("Error getting message with key '" + key + "'. "
-                + "Please update your config file '" + filename + "' or run " + getUpdateCommand());
+                + "Please update your config file '" + filename + "'" + updateCommandAddition);
             return getDefault(key);
         }
         return message;

@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.message.updater.MessageUpdater;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.FileUtils;
@@ -275,6 +276,7 @@ public class MessagesIntegrationTest {
         MessagesFileHandler messagesFileHandler = new MessagesFileHandler();
         ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
         ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
+        ReflectionTestUtils.setField(MessagesFileHandler.class, messagesFileHandler, "messageUpdater", mock(MessageUpdater.class));
         ReflectionTestUtils.invokePostConstructMethods(messagesFileHandler);
         return messagesFileHandler;
     }
