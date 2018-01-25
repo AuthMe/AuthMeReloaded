@@ -135,14 +135,6 @@ public class Messages {
         return message;
     }
 
-    /**
-     * Triggers a reload of the messages file. Note that this method is not necessary
-     * to be called for /authme reload.
-     */
-    public void reloadMessagesFile() {
-        messagesFileHandler.reload();
-    }
-
     private static String formatMessage(String message) {
         return ChatColor.translateAlternateColorCodes('&', message)
             .replace(NEWLINE_TAG, "\n");

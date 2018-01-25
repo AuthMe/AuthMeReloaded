@@ -46,6 +46,7 @@ public class MessagesIntegrationTest {
 
     private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + "message/messages_test.yml";
     private Messages messages;
+    private MessagesFileHandler messagesFileHandler;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -72,8 +73,8 @@ public class MessagesIntegrationTest {
         FileUtils.create(testFile);
         Files.copy(TestHelper.getJarFile(YML_TEST_FILE), testFile);
 
-        MessagesFileHandler fileHandler = createMessagesFileHandler();
-        messages = new Messages(fileHandler);
+        messagesFileHandler = createMessagesFileHandler();
+        messages = new Messages(messagesFileHandler);
     }
 
     @Test
@@ -211,20 +212,6 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldGetMessageFromDefaultFile() {
-        // given
-        // Key is only present in default file
-        MessageKey key = MessageKey.MUST_REGISTER_MESSAGE;
-
-        // when
-        String message = messages.retrieveSingle(key);
-
-        // then
-        assertThat(message,
-            equalTo("§4Only registered users can join the server! Please visit http://example.com to register yourself!"));
-    }
-
-    @Test
     public void shouldNotUseMessageFromDefaultFile() {
         // given
         // Key is present in both files
@@ -250,8 +237,13 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldFormatDurationObjects() {
+    public void shouldFormatDurationObjects() throws IOException {
         // given
+        // Use the JAR's messages_en.yml file for this, so copy to the file we're using and reload the file handler
+        File testFile = new File(dataFolder, "messages/messages_test.yml");
+        Files.copy(TestHelper.getJarFile("/messages/messages_en.yml"), testFile);
+        messagesFileHandler.reload();
+
         Map<Duration, String> expectedTexts = ImmutableMap.<Duration, String>builder()
             .put(new Duration(1, TimeUnit.SECONDS), "1 second")
             .put(new Duration(12, TimeUnit.SECONDS), "12 seconds")

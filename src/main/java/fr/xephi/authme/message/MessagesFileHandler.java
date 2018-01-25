@@ -10,9 +10,6 @@ import javax.inject.Inject;
  */
 public class MessagesFileHandler extends AbstractMessageFileHandler {
 
-    // TODO #1467: With the migration the messages handler has become so different that it would be worth
-    // to remove the extension and extract common features into a helper class instead
-
     @Inject
     private MessageUpdater messageUpdater;
 
@@ -42,10 +39,5 @@ public class MessagesFileHandler extends AbstractMessageFileHandler {
     @Override
     protected String createFilePath(String language) {
         return "messages/messages_" + language + ".yml";
-    }
-
-    @Override
-    protected String getUpdateCommand() {
-        return "/authme messages";
     }
 }

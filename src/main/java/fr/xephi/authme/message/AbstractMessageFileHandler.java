@@ -13,8 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Handles a YAML message file with a default file fallback.
@@ -33,21 +31,15 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
     private String filename;
     private FileConfiguration configuration;
     private final String defaultFile;
-    private FileConfiguration defaultConfiguration;
-    private final String updateCommandAddition;
 
     protected AbstractMessageFileHandler() {
         this.defaultFile = createFilePath(DEFAULT_LANGUAGE);
-        String updateCommand = getUpdateCommand();
-        this.updateCommandAddition = updateCommand == null
-            ? ""
-            : " or run " + updateCommand;
     }
 
     @Override
     @PostConstruct
     public void reload() {
-        String language = getLanguage();
+        String language = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
         filename = createFilePath(language);
         File messagesFile = initializeFile(filename);
         configuration = YamlConfiguration.loadConfiguration(messagesFile);
@@ -59,6 +51,10 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
 
     protected File getUserLanguageFile() {
         return new File(dataFolder, filename);
+    }
+
+    protected String getFilename() {
+        return filename;
     }
 
     /**
@@ -79,13 +75,9 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
      */
     public String getMessage(String key) {
         String message = configuration.getString(key);
-
-        if (message == null) {
-            ConsoleLogger.warning("Error getting message with key '" + key + "'. "
-                + "Please update your config file '" + filename + "'" + updateCommandAddition);
-            return getDefault(key);
-        }
-        return message;
+        return message == null
+            ? "Error retrieving message '" + key + "'"
+            : message;
     }
 
     /**
@@ -100,34 +92,12 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
     }
 
     /**
-     * Gets the message from the default file.
-     *
-     * @param key the key to retrieve the message for
-     * @return the message from the default file
-     */
-    private String getDefault(String key) {
-        if (defaultConfiguration == null) {
-            InputStream stream = FileUtils.getResourceFromJar(defaultFile);
-            defaultConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
-        }
-        String message = defaultConfiguration.getString(key);
-        return message == null
-            ? "Error retrieving message '" + key + "'"
-            : message;
-    }
-
-    /**
      * Creates the path to the messages file for the given language code.
      *
      * @param language the language code
      * @return path to the message file for the given language
      */
     protected abstract String createFilePath(String language);
-
-    /**
-     * @return command with which the messages file can be updated; output when a message is missing from the file
-     */
-    protected abstract String getUpdateCommand();
 
     /**
      * Copies the messages file from the JAR to the local messages/ folder if it doesn't exist.
