@@ -48,6 +48,13 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "    command: 'broadcast %p has joined, welcome back!'",
             "    executor: CONSOLE",
             "",
+            "You can also add delay to command. It will run after the specified ticks. Example:",
+            "onLogin:",
+            "  rules:",
+            "    command: 'rules'",
+            "    executor: PLAYER",
+            "    delay: 200",
+            "",
             "Supported command events: onLogin, onSessionLogin, onFirstLogin, onJoin, onLogout, onRegister, "
                 + "onUnregister",
             "",

@@ -9,6 +9,8 @@ public class Command {
     private String command;
     /** The executor of the command. */
     private Executor executor = Executor.PLAYER;
+    /** Delay before executing the command (in ticks) */
+    private long delay = 0;
 
     /**
      * Default constructor (for bean mapping).
@@ -27,6 +29,19 @@ public class Command {
         this.executor = executor;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param command the command
+     * @param executor the executor of the command
+     * @param delay the delay (in ticks) before executing command
+     */
+    public Command(String command, Executor executor, long delay) {
+        this.command = command;
+        this.executor = executor;
+        this.delay = delay;
+    }
+
     public String getCommand() {
         return command;
     }
@@ -41,6 +56,14 @@ public class Command {
 
     public void setExecutor(Executor executor) {
         this.executor = executor;
+    }
+
+    public long getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 
     @Override

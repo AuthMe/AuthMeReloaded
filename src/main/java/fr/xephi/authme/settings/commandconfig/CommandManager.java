@@ -127,11 +127,13 @@ public class CommandManager implements Reloadable {
         for (T command : commands) {
             if (predicate.test(command)) {
                 final String execution = command.getCommand();
-                if (Executor.CONSOLE.equals(command.getExecutor())) {
-                    bukkitService.dispatchConsoleCommand(execution);
-                } else {
-                    bukkitService.dispatchCommand(player, execution);
-                }
+                bukkitService.scheduleSyncDelayedTask(() -> {
+                    if (Executor.CONSOLE.equals(command.getExecutor())) {
+                        bukkitService.dispatchConsoleCommand(execution);
+                    } else {
+                        bukkitService.dispatchCommand(player, execution);
+                    }
+                }, command.getDelay());
             }
         }
     }
@@ -175,9 +177,9 @@ public class CommandManager implements Reloadable {
 
     private List<Tag<Player>> buildAvailableTags() {
         return Arrays.asList(
-            createTag("%p",       pl -> pl.getName()),
-            createTag("%nick",    pl -> pl.getDisplayName()),
-            createTag("%ip",      pl -> PlayerUtils.getPlayerIp(pl)),
+            createTag("%p",       Player::getName),
+            createTag("%nick",    Player::getDisplayName),
+            createTag("%ip",      PlayerUtils::getPlayerIp),
             createTag("%country", pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
     }
 }
