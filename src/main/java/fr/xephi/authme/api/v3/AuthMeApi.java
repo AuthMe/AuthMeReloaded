@@ -167,7 +167,7 @@ public class AuthMeApi {
      * @param playerName The name of the player to process
      *
      * @return The date of the last login, or null if the player doesn't exist or has never logged in
-     * @Deprecated Use Java 8's Instant method {@link #getLastLoginTime(String)}
+     * @deprecated Use Java 8's Instant method {@link #getLastLoginTime(String)}
      */
     @Deprecated
     public Date getLastLogin(String playerName) {
