@@ -41,6 +41,7 @@ public class SQLite implements DataSource {
      * Constructor for SQLite.
      *
      * @param settings The settings instance
+     * @param dataFolder The data folder
      *
      * @throws SQLException when initialization of a SQL datasource failed
      */
