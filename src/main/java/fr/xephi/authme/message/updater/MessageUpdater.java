@@ -1,12 +1,16 @@
 package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.beanmapper.leafproperties.LeafPropertiesGenerator;
+import ch.jalu.configme.configurationdata.PropertyListBuilder;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.message.MessageKey;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.util.List;
@@ -40,7 +44,7 @@ public class MessageUpdater {
      */
     boolean migrateAndSave(File userFile, JarMessageSource jarMessageSource) {
         // YamlConfiguration escapes all special characters when saving, making the file hard to use, so use ConfigMe
-        YamlFileResource userResource = new YamlFileResource(userFile);
+        YamlFileResource userResource = new MigraterYamlFileResource(userFile);
         SettingsManager settingsManager = SettingsManager.createWithProperties(userResource, null, TEXT_PROPERTIES);
 
         // Step 1: Migrate any old keys in the file to the new paths
@@ -81,10 +85,53 @@ public class MessageUpdater {
     }
 
     private static List<Property<String>> buildPropertyEntriesForMessageKeys() {
-        ImmutableList.Builder<Property<String>> listBuilder = ImmutableList.builder();
+        StringPropertyListBuilder builder = new StringPropertyListBuilder();
         for (MessageKey messageKey : MessageKey.values()) {
-            listBuilder.add(new StringProperty(messageKey.getKey(), ""));
+            builder.add(messageKey.getKey());
         }
-        return listBuilder.build();
+        return ImmutableList.copyOf(builder.create());
+    }
+
+    /**
+     * Wraps a {@link PropertyListBuilder} for easier construction of string properties.
+     * ConfigMe's property list builder ensures that properties are grouped together by path.
+     */
+    private static final class StringPropertyListBuilder {
+        private PropertyListBuilder propertyListBuilder = new PropertyListBuilder();
+
+        void add(String path) {
+            propertyListBuilder.add(new StringProperty(path, ""));
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Property<String>> create() {
+            return (List) propertyListBuilder.create();
+        }
+    }
+
+    /**
+     * Extension of {@link YamlFileResource} to fine-tune the export style.
+     */
+    private static final class MigraterYamlFileResource extends YamlFileResource {
+
+        private Yaml singleQuoteYaml;
+
+        MigraterYamlFileResource(File file) {
+            super(file, new MessageMigraterPropertyReader(file), new LeafPropertiesGenerator());
+        }
+
+        @Override
+        protected Yaml getSingleQuoteYaml() {
+            if (singleQuoteYaml == null) {
+                DumperOptions options = new DumperOptions();
+                options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+                options.setAllowUnicode(true);
+                options.setDefaultScalarStyle(DumperOptions.ScalarStyle.SINGLE_QUOTED);
+                // Overridden setting: don't split lines
+                options.setSplitLines(false);
+                singleQuoteYaml = new Yaml(options);
+            }
+            return singleQuoteYaml;
+        }
     }
 }
