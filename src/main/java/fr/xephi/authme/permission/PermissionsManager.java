@@ -50,14 +50,8 @@ public class PermissionsManager implements Reloadable {
      */
     private PermissionHandler handler = null;
 
-    /**
-     * Constructor.
-     *
-     * @param server Server instance
-     * @param pluginManager Bukkit plugin manager
-     */
     @Inject
-    public PermissionsManager(Server server, PluginManager pluginManager, Settings settings) {
+    PermissionsManager(Server server, PluginManager pluginManager, Settings settings) {
         this.server = server;
         this.pluginManager = pluginManager;
         this.settings = settings;
