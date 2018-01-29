@@ -6,12 +6,23 @@ import fr.xephi.authme.message.MessageKey;
 
 import java.util.Map;
 
+import static com.google.common.collect.ImmutableMap.of;
+
 /**
  * Migrates message files from the old keys (before 5.5) to the new ones.
  *
  * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/1467">Issue #1467</a>
  */
 final class OldMessageKeysMigrater {
+
+    private static final Map<MessageKey, Map<String, String>> PLACEHOLDER_REPLACEMENTS =
+        ImmutableMap.<MessageKey, Map<String, String>>builder()
+        .put(MessageKey.PASSWORD_CHARACTERS_ERROR, of("REG_EX", "%valid_chars"))
+        .put(MessageKey.INVALID_NAME_CHARACTERS, of("REG_EX", "%valid_chars"))
+        .put(MessageKey.USAGE_CAPTCHA, of("<theCaptcha>", "%captcha_code"))
+        .put(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, of("<theCaptcha>", "%captcha_code"))
+        .put(MessageKey.CAPTCHA_WRONG_ERROR, of("THE_CAPTCHA", "%captcha_code"))
+        .build();
 
     private static final Map<MessageKey, String> KEYS_TO_OLD_PATH = ImmutableMap.<MessageKey, String>builder()
         .put(MessageKey.DENIED_COMMAND, "denied_command")
@@ -122,19 +133,33 @@ final class OldMessageKeysMigrater {
     static boolean migrateOldPaths(PropertyResource resource) {
         boolean wasPropertyMoved = false;
         for (Map.Entry<MessageKey, String> migrationEntry : KEYS_TO_OLD_PATH.entrySet()) {
-            wasPropertyMoved |= moveIfApplicable(resource, migrationEntry.getKey().getKey(), migrationEntry.getValue());
+            wasPropertyMoved |= moveIfApplicable(resource, migrationEntry.getKey(), migrationEntry.getValue());
         }
         return wasPropertyMoved;
     }
 
-    private static boolean moveIfApplicable(PropertyResource resource, String newPath, String oldPath) {
-        if (resource.getString(newPath) == null) {
+    private static boolean moveIfApplicable(PropertyResource resource, MessageKey messageKey, String oldPath) {
+        if (resource.getString(messageKey.getKey()) == null) {
             String textAtOldPath = resource.getString(oldPath);
             if (textAtOldPath != null) {
-                resource.setValue(newPath, textAtOldPath);
+                textAtOldPath = replaceOldPlaceholders(messageKey, textAtOldPath);
+                resource.setValue(messageKey.getKey(), textAtOldPath);
                 return true;
             }
         }
         return false;
+    }
+
+    private static String replaceOldPlaceholders(MessageKey key, String text) {
+        Map<String, String> replacements = PLACEHOLDER_REPLACEMENTS.get(key);
+        if (replacements == null) {
+            return text;
+        }
+
+        String newText = text;
+        for (Map.Entry<String, String> replacement : replacements.entrySet()) {
+            text = text.replace(replacement.getKey(), replacement.getValue());
+        }
+        return newText;
     }
 }
