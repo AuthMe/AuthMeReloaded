@@ -60,13 +60,12 @@
         <jdk.version>1.8</jdk.version>
 
         <!-- Output properties -->
-        <project.outputName>AuthMe</project.outputName>
         <project.buildNumber>CUSTOM</project.buildNumber>
         <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
         <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
 
         <!-- BukkitPlugin properties -->
-        <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
+        <bukkitplugin.name>AuthMe</bukkitplugin.name>
         <bukkitplugin.version>${project.versionCode}</bukkitplugin.version>
         <bukkitplugin.main>${project.groupId}.${project.artifactId}.${bukkitplugin.name}</bukkitplugin.main>
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</bukkitplugin.authors>
@@ -104,8 +103,6 @@
     </profiles>
 
     <build>
-        <finalName>original-${project.outputName}-${project.version}</finalName>
-
         <resources>
             <resource>
                 <directory>.</directory>
@@ -166,7 +163,6 @@
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <finalName>${project.outputName}-${project.version}</finalName>
 
                     <!--
                     Relocate all lib we use in order to fix class loading errors if we use different versions
