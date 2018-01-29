@@ -199,8 +199,6 @@
                 <configuration>
                     <show>public</show>
                     <failOnError>false</failOnError>
-                    <minmemory>512m</minmemory>
-                    <maxmemory>512m</maxmemory>
                 </configuration>
             </plugin>
             <plugin>
@@ -327,13 +325,15 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- TODO: find a better solution -->
+                    <!-- TODO: find a solution to detect release/snapshot -->
                     <repositoryId>${project.distributionManagement.snapshotRepository.id}</repositoryId>
                     <url>${project.distributionManagement.snapshotRepository.url}</url>
                     <pomFile>pom.xml</pomFile>
                     <file>target/original-${project.build.finalName}.jar</file>
+                    <!-- Already included by the plugin
                     <javadoc>target/${project.build.finalName}-javadoc.jar</javadoc>
                     <sources>target/${project.build.finalName}-sources.jar</sources>
+                    -->
                 </configuration>
             </plugin>
             <plugin>
