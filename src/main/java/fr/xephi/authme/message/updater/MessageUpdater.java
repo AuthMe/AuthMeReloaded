@@ -2,25 +2,26 @@ package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.beanmapper.leafproperties.LeafPropertiesGenerator;
+import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.PropertyListBuilder;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.resource.YamlFileResource;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.message.MessageKey;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Migrates the used messages file to a complete, up-to-date version when necessary.
  */
 public class MessageUpdater {
 
-    private static final List<Property<String>> TEXT_PROPERTIES = buildPropertyEntriesForMessageKeys();
+    private static final ConfigurationData CONFIGURATION_DATA = buildConfigurationData();
 
     /**
      * Applies any necessary migrations to the user's messages file and saves it if it has been modified.
@@ -42,10 +43,10 @@ public class MessageUpdater {
      * @param jarMessageSource jar message source to get texts from if missing
      * @return true if the file has been migrated and saved, false if it is up-to-date
      */
-    boolean migrateAndSave(File userFile, JarMessageSource jarMessageSource) {
+    private boolean migrateAndSave(File userFile, JarMessageSource jarMessageSource) {
         // YamlConfiguration escapes all special characters when saving, making the file hard to use, so use ConfigMe
         YamlFileResource userResource = new MigraterYamlFileResource(userFile);
-        SettingsManager settingsManager = SettingsManager.createWithProperties(userResource, null, TEXT_PROPERTIES);
+        SettingsManager settingsManager = new SettingsManager(userResource, null, CONFIGURATION_DATA);
 
         // Step 1: Migrate any old keys in the file to the new paths
         boolean movedOldKeys = migrateOldKeys(userResource);
@@ -71,9 +72,9 @@ public class MessageUpdater {
     private boolean addMissingKeys(JarMessageSource jarMessageSource, YamlFileResource userResource,
                                    SettingsManager settingsManager) {
         int addedKeys = 0;
-        for (Property<String> property : TEXT_PROPERTIES) {
+        for (Property<?> property : CONFIGURATION_DATA.getProperties()) {
             if (!property.isPresent(userResource)) {
-                settingsManager.setProperty(property, jarMessageSource.getMessageFromJar(property));
+                settingsManager.setProperty((Property) property, jarMessageSource.getMessageFromJar(property));
                 ++addedKeys;
             }
         }
@@ -84,29 +85,33 @@ public class MessageUpdater {
         return false;
     }
 
-    private static List<Property<String>> buildPropertyEntriesForMessageKeys() {
-        StringPropertyListBuilder builder = new StringPropertyListBuilder();
-        for (MessageKey messageKey : MessageKey.values()) {
-            builder.add(messageKey.getKey());
-        }
-        return ImmutableList.copyOf(builder.create());
-    }
-
     /**
-     * Wraps a {@link PropertyListBuilder} for easier construction of string properties.
-     * ConfigMe's property list builder ensures that properties are grouped together by path.
+     * Constructs the {@link ConfigurationData} for exporting a messages file in its entirety.
+     *
+     * @return the configuration data to export with
      */
-    private static final class StringPropertyListBuilder {
-        private PropertyListBuilder propertyListBuilder = new PropertyListBuilder();
-
-        void add(String path) {
-            propertyListBuilder.add(new StringProperty(path, ""));
+    private static ConfigurationData buildConfigurationData() {
+        PropertyListBuilder builder = new PropertyListBuilder();
+        for (MessageKey messageKey : MessageKey.values()) {
+            builder.add(new StringProperty(messageKey.getKey(), ""));
         }
-
-        @SuppressWarnings("unchecked")
-        List<Property<String>> create() {
-            return (List) propertyListBuilder.create();
-        }
+        Map<String, String[]> comments = ImmutableMap.<String, String[]>builder()
+            .put("registration", new String[]{"Registration"})
+            .put("password", new String[]{"Password errors on registration"})
+            .put("login", new String[]{"Login"})
+            .put("error", new String[]{"Errors"})
+            .put("antibot", new String[]{"AntiBot"})
+            .put("unregister", new String[]{"Unregister"})
+            .put("misc", new String[]{"Other messages"})
+            .put("session", new String[]{"Session messages"})
+            .put("on_join_validation", new String[]{"Error messages when joining"})
+            .put("email", new String[]{"Email"})
+            .put("recovery", new String[]{"Password recovery by email"})
+            .put("captcha", new String[]{"Captcha"})
+            .put("verification", new String[]{"Verification code"})
+            .put("time", new String[]{"Time units"})
+            .build();
+        return new ConfigurationData(builder.create(), comments);
     }
 
     /**

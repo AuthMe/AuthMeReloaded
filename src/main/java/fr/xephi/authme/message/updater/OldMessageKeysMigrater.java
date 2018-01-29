@@ -158,7 +158,7 @@ final class OldMessageKeysMigrater {
 
         String newText = text;
         for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-            text = text.replace(replacement.getKey(), replacement.getValue());
+            newText = newText.replace(replacement.getKey(), replacement.getValue());
         }
         return newText;
     }

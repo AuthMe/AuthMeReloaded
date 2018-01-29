@@ -67,5 +67,29 @@ public class MessageUpdaterTest {
         assertThat(configuration.getString(MessageKey.ERROR.getKey()), equalTo("&4An unexpected error occurred, please contact an administrator!"));
     }
 
-    // TODO #1467: Check migration of old keys
+    @Test
+    public void shouldMigrateOldEntries() throws IOException {
+        // given
+        File messagesFile = temporaryFolder.newFile();
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_en_old.yml"), messagesFile);
+
+        // when
+        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "messages/messages_en.yml", "messages/messages_en.yml");
+
+        // then
+        assertThat(wasChanged, equalTo(true));
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(messagesFile);
+        assertThat(configuration.getString(MessageKey.PASSWORD_MATCH_ERROR.getKey()),
+            equalTo("Password error message"));
+        assertThat(configuration.getString(MessageKey.INVALID_NAME_CHARACTERS.getKey()),
+            equalTo("not valid username: Allowed chars are %valid_chars"));
+        assertThat(configuration.getString(MessageKey.INVALID_OLD_EMAIL.getKey()),
+            equalTo("Email (old) is not valid!!"));
+        assertThat(configuration.getString(MessageKey.CAPTCHA_WRONG_ERROR.getKey()),
+            equalTo("The captcha code is %captcha_code for you"));
+        assertThat(configuration.getString(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED.getKey()),
+            equalTo("Now type /captcha %captcha_code"));
+        assertThat(configuration.getString(MessageKey.SECONDS.getKey()),
+            equalTo("seconds in plural"));
+    }
 }

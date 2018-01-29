@@ -180,7 +180,7 @@ public class MessagesIntegrationTest {
         messages.send(sender, key);
 
         // then
-        verify(sender).sendMessage("Use /captcha THE_CAPTCHA to solve the captcha");
+        verify(sender).sendMessage("Use /captcha %captcha_code to solve the captcha");
     }
 
     @Test

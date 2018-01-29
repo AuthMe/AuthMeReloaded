@@ -34,7 +34,7 @@ public class JarMessageSource {
         }
     }
 
-    public String getMessageFromJar(Property<String> property) {
+    public String getMessageFromJar(Property<?> property) {
         String key = property.getPath();
         String message = localJarConfiguration == null ? null : localJarConfiguration.getString(key);
         return message == null ? defaultJarConfiguration.getString(key) : message;
