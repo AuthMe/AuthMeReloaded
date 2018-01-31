@@ -27,7 +27,7 @@
 
     <ciManagement>
         <system>jenkins</system>
-        <url>http://ci.xephi.fr/job/AuthMeReloaded/</url>
+        <url>http://ci.codemc.org/job/AuthMeReloaded/</url>
     </ciManagement>
 
     <issueManagement>
