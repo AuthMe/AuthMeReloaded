@@ -9,7 +9,9 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: authmereloaded-{{ checksum "pom.xml" }}
+          keys:
+          - authmereloaded-{{ checksum "pom.xml" }}
+          - authmereloaded-
      - run: mvn -T 2 dependency:go-offline
       - save_cache:
           paths:
