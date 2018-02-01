@@ -5,7 +5,6 @@ import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -14,8 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static tools.utils.FileIoUtils.listFilesOrThrow;
 import static org.junit.Assert.fail;
+import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
  * Tests that all YML text files can be loaded.
@@ -34,7 +33,6 @@ public class YamlTextFileCheckerTest {
     }
 
     @Test
-    @Ignore // TODO #1467: Migrate all files to new keys
     public void testAllMessagesYmlFiles() {
         checkFiles(
             Pattern.compile("messages_\\w+\\.yml"),

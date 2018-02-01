@@ -14,7 +14,10 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Migrates the used messages file to a complete, up-to-date version when necessary.
@@ -91,10 +94,6 @@ public class MessageUpdater {
      * @return the configuration data to export with
      */
     private static ConfigurationData buildConfigurationData() {
-        PropertyListBuilder builder = new PropertyListBuilder();
-        for (MessageKey messageKey : MessageKey.values()) {
-            builder.add(new StringProperty(messageKey.getKey(), ""));
-        }
         Map<String, String[]> comments = ImmutableMap.<String, String[]>builder()
             .put("registration", new String[]{"Registration"})
             .put("password", new String[]{"Password errors on registration"})
@@ -111,6 +110,21 @@ public class MessageUpdater {
             .put("verification", new String[]{"Verification code"})
             .put("time", new String[]{"Time units"})
             .build();
+
+        Set<String> addedKeys = new HashSet<>();
+        PropertyListBuilder builder = new PropertyListBuilder();
+        // Add one key per section based on the comments map above so that the order is clear
+        for (String path : comments.keySet()) {
+            MessageKey key = Arrays.stream(MessageKey.values()).filter(p -> p.getKey().startsWith(path + "."))
+                .findFirst().orElseThrow(() -> new IllegalStateException(path));
+            builder.add(new StringProperty(key.getKey(), ""));
+            addedKeys.add(key.getKey());
+        }
+        // Add all remaining keys to the property list builder
+        Arrays.stream(MessageKey.values())
+            .filter(key -> !addedKeys.contains(key.getKey()))
+            .forEach(key -> builder.add(new StringProperty(key.getKey(), "")));
+
         return new ConfigurationData(builder.create(), comments);
     }
 
