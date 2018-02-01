@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cСинтаксис: /login <пароль>'
     wrong_password: '&cНевірний пароль!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cДля авторизації, введіть команду "/login <пароль>"'
     timeout_error: '&4Час для авторизації сплинув. Будь ласка, спробуйте ще раз!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cЦей гравець не є зареєстрованим.'
     not_logged_in: '&cВи не авторизовані!'
     no_permission: '&4У вас недостатньо прав, щоб застосувати цю команду!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cВичерпано ліміт реєстрацій (%reg_count/%max_acc %reg_names) для вашого підключення!'
     logged_in: '&cВи вже авторизовані!'
     kick_for_vip: '&3Вас кікнуто, внаслідок того, що VIP гравець зайшов на сервер коли небуло вільних місць.'
@@ -86,13 +86,13 @@ email:
     added: '&2Електронну пошту успішно прив’язано до вашого акаунта.'
     request_confirmation: '&cАдреси не співпадають.'
     changed: '&2E-mail успішно змінено.'
-    email_show: ''
-    no_email_for_account: ''
+    # TODO email_show: '&2Your current email address is: &f%email'
+    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
     already_used: '&4До цієї електронної пошти прив’язано забагато акаунтів!'
     incomplete_settings: '&4[AuthMe] Error: Не всі необхідні налаштування є встановленими, щоб надсилати електронну пошту. Будь ласка, повідомте адміністратора!'
-    send_failure: ''
-    change_password_expired: ''
-    email_cooldown_error: ''
+    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Password recovery by email
 recovery:
@@ -100,37 +100,37 @@ recovery:
     command_usage: '&cСинтаксис: /email recovery <e-mail>'
     email_sent: '&2Лист для відновлення доступу надіслано. Будь ласка, провірте свою пошту!'
     code:
-        code_sent: ''
-        incorrect: ''
-        tries_exceeded: ''
-        correct: ''
-        change_password: ''
+        # TODO code_sent: 'A recovery code to reset your password has been sent to your email.'
+        # TODO incorrect: 'The recovery code is not correct! You have %count tries remaining.'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
 captcha:
     usage_captcha: '&3Для продовження доведеться ввести капчу — "/captcha %captcha_code"'
     wrong_captcha: '&cНевірно введена капча! Спробуйте ще раз — "/captcha %captcha_code"'
     valid_captcha: '&2Капчу прийнято.'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:
-    code_required: ''
-    command_usage: ''
-    incorrect_code: ''
-    success: ''
-    already_verified: ''
-    code_expired: ''
-    email_needed: ''
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
 time:
-    second: ''
-    seconds: ''
-    minute: ''
-    minutes: ''
-    hour: ''
-    hours: ''
-    day: ''
-    days: ''
+    # TODO second: 'second'
+    # TODO seconds: 'seconds'
+    # TODO minute: 'minute'
+    # TODO minutes: 'minutes'
+    # TODO hour: 'hour'
+    # TODO hours: 'hours'
+    # TODO day: 'day'
+    # TODO days: 'days'

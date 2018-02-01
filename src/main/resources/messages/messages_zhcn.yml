@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&8[&6玩家系统&8] &c正确用法：“/login <密码>”'
     wrong_password: '&8[&6玩家系统&8] &c错误的密码'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&8[&6玩家系统&8] &c请输入“/login <密码>”以登录'
     timeout_error: '&8[&6玩家系统&8] &f给你登录的时间已经过了'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&8[&6玩家系统&8] &c此用户名还未注册过'
     not_logged_in: '&8[&6玩家系统&8] &c你还未登录！'
     no_permission: '&8[&6玩家系统&8] &c没有权限'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&8[&6玩家系统&8] &f你不允许再为你的IP在服务器注册更多用户了！'
     logged_in: '&8[&6玩家系统&8] &c你已经登陆过了！'
     kick_for_vip: '&8[&6玩家系统&8] &cA VIP玩家加入了已满的服务器!'

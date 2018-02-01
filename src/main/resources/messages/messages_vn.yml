@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cSử dụng: /login <mật khẩu>'
     wrong_password: '&cSai mật khẩu!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cXin vui lòng đăng nhập bằng lệnh "/login <mật khẩu>"'
     timeout_error: '&4Thời gian đăng nhập đã hết, bạn đã bị văng khỏi máy chủ. Xin vui lòng thử lại!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cNgười dùng này đã được đăng ký!'
     not_logged_in: '&cBạn chưa đăng nhập!'
     no_permission: '&4Bạn không có quyền truy cập lệnh này!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
     logged_in: '&cBạn đã đăng nhập!'
     kick_for_vip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
@@ -102,27 +102,27 @@ recovery:
     code:
         code_sent: 'Một mã khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn.'
         incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
-        tries_exceeded: ''
-        correct: ''
-        change_password: ''
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
 captcha:
     usage_captcha: '&eĐể đăng nhập vui lòng hãy nhập mã Captcha, gõ lệnh "/captcha %captcha_code"'
     wrong_captcha: '&cSai mã captcha, Vui lòng gõ lệnh "/captcha %captcha_code"!'
     valid_captcha: '&2Mã captcha đã được xác nhận!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:
-    code_required: ''
-    command_usage: ''
-    incorrect_code: ''
-    success: ''
-    already_verified: ''
-    code_expired: ''
-    email_needed: ''
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
 time:

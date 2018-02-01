@@ -23,7 +23,7 @@ password:
 login:
     command_usage: '&c사용법: /login <비밀번호>'
     wrong_password: '&c비밀번호가 잘못되었습니다!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&c다음 명령어로 로그인 해주세요: /login <비밀번호>'
     timeout_error: '&4로그인 시간이 초과 되어 서버에서 추방당했습니다. 다시 시도하세요!'
 
@@ -34,7 +34,7 @@ error:
     unregistered_user: '&c이 유저는 등록되지 않았습니다!'
     not_logged_in: '&c로그인이 되어있지 않습니다!'
     no_permission: '&4이 작업을 수행할 수 있는 권한이 없습니다!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&c당신은 가입할 수 있는 계정 한도를 초과했습니다 (%reg_count/%max_acc %reg_names)!'
     logged_in: '&c이미 로그인되어 있습니다!'
     kick_for_vip: '&3서버가 꽉 차있을땐 VIP 플레이어만 접속이 가능합니다!'
@@ -114,8 +114,8 @@ captcha:
     usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다. 이 명령어를 사용하세요: /captcha %captcha_code'
     wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha %captcha_code" 형태로 입력해주세요!'
     valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:

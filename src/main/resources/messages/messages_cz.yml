@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cPoužij: "/login TvojeHeslo".'
     wrong_password: '&cŠpatné heslo.'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cProsím přihlaš se pomocí "/login TvojeHeslo".'
     timeout_error: '&cČas pro přihlášení vypršel!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cUživatelské jméno není zaregistrováno.'
     not_logged_in: '&cNejsi přihlášený!'
     no_permission: '&cNa tento příkaz nemáš dostatečné pravomoce.'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cPřekročil(a) jsi limit pro počet účtů (%reg_count/%max_acc %reg_names) z jedné IP adresy.'
     logged_in: '&cJsi již přihlášen!'
     kick_for_vip: '&cOmlouváme se, ale VIP hráč se připojil na plný server!'
@@ -111,18 +111,18 @@ captcha:
     usage_captcha: '&cPoužij: /captcha %captcha_code'
     wrong_captcha: '&cŠpatné opsana Captcha, pouzij prosim: /captcha %captcha_code'
     valid_captcha: '&cZadaná captcha je v pořádku!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:
-    code_required: ''
-    command_usage: ''
-    incorrect_code: ''
-    success: ''
-    already_verified: ''
-    code_expired: ''
-    email_needed: ''
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
 time:

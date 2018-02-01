@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cGebruik: /login <wachtwoord>'
     wrong_password: '&cFout wachtwoord'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cLog in met: /login <wachtwoord>'
     timeout_error: 'Login time-out: het duurde te lang tot je inlogde.'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cDeze gebruikersnaam is niet geregistreerd!'
     not_logged_in: '&cNiet ingelogd!'
     no_permission: '&cJe hebt geen rechten om deze actie uit te voeren!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
     logged_in: '&cJe bent al ingelogd!'
     kick_for_vip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
@@ -111,18 +111,18 @@ captcha:
     usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha %captcha_code'
     wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha %captcha_code" in de chat!'
     valid_captcha: '&2De captcha-code is geldig!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:
-    code_required: ''
-    command_usage: ''
-    incorrect_code: ''
-    success: ''
-    already_verified: ''
-    code_expired: ''
-    email_needed: ''
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
 time:

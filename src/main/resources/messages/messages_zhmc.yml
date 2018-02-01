@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&b使用方法: 輸入"/login [你的密碼]" 來登入'
     wrong_password: '&c密碼錯誤!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&c [請先登入] 請按T , 然後輸入 "/login [你的密碼]" 。'
     timeout_error: '&4超過登錄超時，您已從伺服器中踢出，請重試!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&c此用戶尚未注冊!'
     not_logged_in: '&c你尚未登入!'
     no_permission: '&4您沒有執行此操作的權限!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&c您已超過註冊的最大數量(%reg_count/%max_acc %reg_names)!'
     logged_in: '&c您已經登錄!'
     kick_for_vip: '&3一名VIP玩家在服務器已滿時已加入伺服器!'
@@ -86,13 +86,13 @@ email:
     added: '&2電子郵件地址已成功添加到您的帳戶!'
     request_confirmation: '&c請確認你的電郵地址!'
     changed: '&2已正確地更改電子郵件地址!'
-    email_show: ''
-    no_email_for_account: ''
+    # TODO email_show: '&2Your current email address is: &f%email'
+    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
     already_used: '&4此電子郵件地址已被使用'
     incomplete_settings: '缺少必要的配置來為發送電子郵件。請聯繫管理員。'
-    send_failure: ''
-    change_password_expired: ''
-    email_cooldown_error: ''
+    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
 
 # Password recovery by email
 recovery:
@@ -102,35 +102,35 @@ recovery:
     code:
         code_sent: '已將重設密碼的恢復代碼發送到您的電子郵件。'
         incorrect: '恢復代碼錯誤!使用指令: "/email recovery [電郵地址]" 生成新的一個恢復代碼。'
-        tries_exceeded: ''
-        correct: ''
-        change_password: ''
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
 captcha:
     usage_captcha: '&3T要登錄您必須使用captcha驗證碼,請使用命令: "/captcha %captcha_code"'
     wrong_captcha: '&c驗證碼錯誤!請按T在聊天中輸入 "/captcha %captcha_code"'
     valid_captcha: '&2驗證碼正確!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:
-    code_required: ''
-    command_usage: ''
-    incorrect_code: ''
-    success: ''
-    already_verified: ''
-    code_expired: ''
-    email_needed: ''
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
 time:
-    second: ''
-    seconds: ''
-    minute: ''
-    minutes: ''
-    hour: ''
-    hours: ''
-    day: ''
-    days: ''
+    # TODO second: 'second'
+    # TODO seconds: 'seconds'
+    # TODO minute: 'minute'
+    # TODO minutes: 'minutes'
+    # TODO hour: 'hour'
+    # TODO hours: 'hours'
+    # TODO day: 'day'
+    # TODO days: 'days'

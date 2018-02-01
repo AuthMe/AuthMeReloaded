@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cИспользование: /login <пароль>'
     wrong_password: '&cНеправильный пароль!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&3Авторизация: /login <Пароль>'
     timeout_error: '&4Время авторизации истекло.'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cИгрок с таким именем не зарегистрирован.'
     not_logged_in: '&cВы ещё не вошли!'
     no_permission: '&4Недостаточно прав.'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cПревышено максимальное количество регистраций на сервере! (%reg_count/%max_acc %reg_names)'
     logged_in: '&cВы уже авторизированы!'
     kick_for_vip: '&3VIP-игрок зашёл на переполненный сервер.'
@@ -111,8 +111,8 @@ captcha:
     usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha %captcha_code»'
     wrong_captcha: '&cНеверно! Используйте «/captcha %captcha_code».'
     valid_captcha: '&2Вы успешно решили каптчу!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:

@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cKullanim: /login <sifre>'
     wrong_password: '&cYanlis sifre!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cLutfen giris komutunu kullanin "/login <sifre>"'
     timeout_error: '&4Giris izni icin verilen zaman suresini astigin icin sunucudan atildin, tekrar deneyin!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cBu oyuncu kayitli degil!'
     not_logged_in: '&cGiris yapmadin!'
     no_permission: '&4Bunu yapmak icin iznin yok!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
     logged_in: '&cZaten giris yaptin!'
     kick_for_vip: '&3Bir VIP oyuna giris yaptigi icin atildin!'
@@ -91,7 +91,7 @@ email:
     already_used: '&4Eposta adresi zaten kullaniliyor.'
     incomplete_settings: 'Hata: Gonderilen epostada bazi ayarlar tamamlanmis degil. Yetkili ile iletisime gec.'
     send_failure: 'Eposta gonderilemedi. Yetkili ile iletisime gec.'
-    change_password_expired: ''
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
     email_cooldown_error: '&cKisa bir sure once eposta gonderildi. Yeni bir eposta almak icin %time beklemelisin.'
 
 # Password recovery by email
@@ -102,27 +102,27 @@ recovery:
     code:
         code_sent: 'Sifre sifirlama kodu eposta adresinize gonderildi.'
         incorrect: 'Kod dogru degil! Kullanim "/email recovery [eposta]" ile yeni bir kod olustur'
-        tries_exceeded: ''
-        correct: ''
-        change_password: ''
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
 captcha:
     usage_captcha: '&3Giris yapmak icin guvenlik kodunu komut yazarak girin "/captcha %captcha_code"'
     wrong_captcha: '&cYanlis guvenlik kodu, kullanim sekli "/captcha %captcha_code" sohbete yazin!'
     valid_captcha: '&2Guvenlik kodu dogrulandi!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:
-    code_required: ''
-    command_usage: ''
-    incorrect_code: ''
-    success: ''
-    already_verified: ''
-    code_expired: ''
-    email_needed: ''
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
 time:

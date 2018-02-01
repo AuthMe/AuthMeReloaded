@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.message.MessageKey;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -62,6 +63,13 @@ public class MessageFileVerifier {
         return missingTags;
     }
 
+    /**
+     * @return true if the verifier has found an issue with the analyzed file, false otherwise
+     */
+    public boolean hasErrors() {
+        return !missingKeys.isEmpty() || !missingTags.isEmpty() || !unknownKeys.isEmpty();
+    }
+
     private void verifyKeys() {
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(messagesFile);
 
@@ -77,10 +85,14 @@ public class MessageFileVerifier {
 
         // Check FileConfiguration for all of its keys to find unknown keys
         for (String key : configuration.getValues(true).keySet()) {
-            if (!messageKeyExists(key)) {
+            if (isNotInnerNode(key, configuration) && !messageKeyExists(key)) {
                 unknownKeys.add(key);
             }
         }
+    }
+
+    private static boolean isNotInnerNode(String key, FileConfiguration configuration) {
+        return !(configuration.get(key) instanceof MemorySection);
     }
 
     private void checkTagsInMessage(MessageKey messageKey, String message) {

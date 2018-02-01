@@ -1,6 +1,9 @@
 package fr.xephi.authme.message.updater;
 
+import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.properties.Property;
 import com.google.common.io.Files;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,6 +15,10 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -91,5 +98,36 @@ public class MessageUpdaterTest {
             equalTo("Now type /captcha %captcha_code"));
         assertThat(configuration.getString(MessageKey.SECONDS.getKey()),
             equalTo("seconds in plural"));
+    }
+
+    @Test
+    public void shouldHaveAllKeysInConfigurationData() {
+        // given
+        Set<String> messageKeysFromEnum = Arrays.stream(MessageKey.values())
+            .map(MessageKey::getKey)
+            .collect(Collectors.toSet());
+
+        // when
+        Set<String> messageKeysFromConfigData = MessageUpdater.CONFIGURATION_DATA.getProperties().stream()
+            .map(Property::getPath)
+            .collect(Collectors.toSet());
+
+        // then
+        assertThat(messageKeysFromConfigData, equalTo(messageKeysFromEnum));
+    }
+
+    @Test
+    public void shouldHaveCommentForAllRootPathsInConfigurationData() {
+        // given
+        Set<String> rootPaths = Arrays.stream(MessageKey.values())
+            .map(key -> key.getKey().split("\\.")[0])
+            .collect(Collectors.toSet());
+
+        // when
+        Map<String, String[]> comments = ReflectionTestUtils.getFieldValue(
+            ConfigurationData.class, MessageUpdater.CONFIGURATION_DATA, "sectionComments");
+
+        // then
+        assertThat(comments.keySet(), equalTo(rootPaths));
     }
 }

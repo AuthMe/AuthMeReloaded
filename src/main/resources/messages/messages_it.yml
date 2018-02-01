@@ -22,7 +22,7 @@ password:
 login:
     command_usage: '&cUtilizzo: /login <password>'
     wrong_password: '&cPassword non corretta!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cPer favore, esegui l''autenticazione con il comando: /login <password>'
     timeout_error: '&4Tempo scaduto per eseguire l''autenticazione, sei stato espulso dal server, per favore riprova!'
 
@@ -33,7 +33,7 @@ error:
     unregistered_user: '&cL''utente non ha ancora eseguito la registrazione.'
     not_logged_in: '&cNon hai ancora eseguito l''autenticazione!'
     no_permission: '&4Non hai il permesso di eseguire questa operazione.'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cHai raggiunto il numero massimo di registrazioni (%reg_count/%max_acc %reg_names) per questo indirizzo IP!'
     logged_in: '&cHai già eseguito l''autenticazione, non è necessario eseguirla nuovamente!'
     kick_for_vip: '&3Un utente VIP è entrato mentre il server era pieno e ha preso il tuo posto!'

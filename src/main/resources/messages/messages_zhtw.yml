@@ -23,7 +23,7 @@ password:
 login:
     command_usage: '&b【AuthMe】&6用法: &c"/login <密碼>"'
     wrong_password: '&b【AuthMe】&6密碼錯誤!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&b【AuthMe】&6請使用 &c"/login <密碼>" &6來登入。'
     timeout_error: '&b【AuthMe】&6超過登入時間，請稍後再試一次'
 
@@ -34,7 +34,7 @@ error:
     unregistered_user: '&b【AuthMe】&6這個帳號還沒有註冊過'
     not_logged_in: '&b【AuthMe】&6您還沒有登入!'
     no_permission: '&b【AuthMe】&6您沒有使用該指令的權限。'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&b【AuthMe】&6您的 IP 位置所註冊的帳號數量已經達到最大。'
     logged_in: '&b【AuthMe】&6您已經登入了!'
     kick_for_vip: '&b【AuthMe】&6您已經被請出。&c原因 : 有 VIP 玩家登入伺服器'
@@ -114,8 +114,8 @@ captcha:
     usage_captcha: '&b【AuthMe】&6請用 &c"/captcha %captcha_code" &6來輸入您的驗證碼.'
     wrong_captcha: '&b【AuthMe】&6錯誤的驗證碼，請使用 "/captcha %captcha_code" 再試一次.'
     valid_captcha: '&b【AuthMe】&6驗證碼無效!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:

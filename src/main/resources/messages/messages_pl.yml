@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cUżycie: /login hasło'
     wrong_password: '&cNiepoprawne hasło.'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&2Proszę się zalogować przy użyciu &6/login <hasło>'
     timeout_error: '&cUpłynął limit czasu zalogowania'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&fGracz nie jest zarejestrowany.'
     not_logged_in: '&4Nie jesteś zalogowany!'
     no_permission: '&4Nie posiadasz wymaganych uprawnień.'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cPrzekroczyłeś limit zarejestrowanych kont na serwerze &8(&e%reg_count/%max_acc %reg_names&8) &cdla twojego połączenia.'
     logged_in: '&fJesteś już zalogowany!'
     kick_for_vip: '&cGracz VIP dołączył do gry!'

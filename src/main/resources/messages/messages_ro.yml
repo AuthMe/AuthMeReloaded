@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cFoloseste comanda "/login <parola>" pentru a te autentifica.'
     wrong_password: '&cParola gresita!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cTe rugam sa te autentifici folosind comanda "/login <parola>"'
     timeout_error: '&4A expirat timpul de autentificare si ai fost dat afara de server, te rugam incearca din nou!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cAcest jucator nu este inregistrat!'
     not_logged_in: '&cNu te-ai autentificat!'
     no_permission: '&4Nu ai permisiunea!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cTe-ai inregistrat cu prea multe conturi pe acelasi ip! (%reg_count/%max_acc %reg_names)'
     logged_in: '&cEsti deja autentificat!'
     kick_for_vip: '&3Un V.I.P a intrat pe server cand era plin!'
@@ -111,18 +111,18 @@ captcha:
     usage_captcha: '&3Pentru a te autentifica, te rugam sa folosesti comanda "/captcha %captcha_code"'
     wrong_captcha: '&cCodul de verificare este gresit, te rugam foloseste comanda "/captcha %captcha_code"!'
     valid_captcha: '&2Codul de verificare a fost scris corect!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:
-    code_required: ''
-    command_usage: ''
-    incorrect_code: ''
-    success: ''
-    already_verified: ''
-    code_expired: ''
-    email_needed: ''
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
 time:

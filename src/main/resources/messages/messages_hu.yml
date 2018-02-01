@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cBejelentkezés: "&7/login <jelszó>&c".'
     wrong_password: '&4A jelszó helytelen!'
-    success: ''
+    # TODO success: '&2Successful login!'
     login_request: '&cKérlek, jelentkezz be: "&7/login <jelszó>&c"!'
     timeout_error: 'Bejelentkezési időtúllépés!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cEz a felhasználó nincs regisztrálva!'
     not_logged_in: '&cNem vagy bejelentkezve!'
     no_permission: '&cNincs jogosultságod a használatára!'
-    unexpected_error: ''
+    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
     max_registration: '&cElérted a maximálisan beregisztrálható karakterek számát. (%reg_count/%max_acc %reg_names)'
     logged_in: '&cMár be vagy jelentkezve!'
     kick_for_vip: '&3VIP játékos csatlakozott a szerverhez!'
@@ -111,8 +111,8 @@ captcha:
     usage_captcha: '&3A bejelentkezéshez CAPTCHA szükséges, kérlek, használd a következő parancsot: "&7/captcha %captcha_code&3".'
     wrong_captcha: '&cHibás CAPTCHA, kérlek, írd be a következő parancsot: "&7/captcha %captcha_code&c"!'
     valid_captcha: '&2A CAPTCHA sikeresen feloldva!'
-    captcha_for_registration: ''
-    register_captcha_valid: ''
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
 verification:

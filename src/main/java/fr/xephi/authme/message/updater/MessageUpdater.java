@@ -24,7 +24,10 @@ import java.util.Set;
  */
 public class MessageUpdater {
 
-    private static final ConfigurationData CONFIGURATION_DATA = buildConfigurationData();
+    /**
+     * Configuration data object for all message keys incl. comments associated to sections.
+     */
+    public static final ConfigurationData CONFIGURATION_DATA = buildConfigurationData();
 
     /**
      * Applies any necessary migrations to the user's messages file and saves it if it has been modified.
@@ -49,14 +52,14 @@ public class MessageUpdater {
     private boolean migrateAndSave(File userFile, JarMessageSource jarMessageSource) {
         // YamlConfiguration escapes all special characters when saving, making the file hard to use, so use ConfigMe
         YamlFileResource userResource = new MigraterYamlFileResource(userFile);
-        SettingsManager settingsManager = new SettingsManager(userResource, null, CONFIGURATION_DATA);
 
         // Step 1: Migrate any old keys in the file to the new paths
         boolean movedOldKeys = migrateOldKeys(userResource);
         // Step 2: Take any missing messages from the message files shipped in the AuthMe JAR
-        boolean addedMissingKeys = addMissingKeys(jarMessageSource, userResource, settingsManager);
+        boolean addedMissingKeys = addMissingKeys(jarMessageSource, userResource);
 
         if (movedOldKeys || addedMissingKeys) {
+            SettingsManager settingsManager = new SettingsManager(userResource, null, CONFIGURATION_DATA);
             settingsManager.save();
             ConsoleLogger.debug("Successfully saved {0}", userFile);
             return true;
@@ -72,12 +75,11 @@ public class MessageUpdater {
         return hasChange;
     }
 
-    private boolean addMissingKeys(JarMessageSource jarMessageSource, YamlFileResource userResource,
-                                   SettingsManager settingsManager) {
+    private boolean addMissingKeys(JarMessageSource jarMessageSource, YamlFileResource userResource) {
         int addedKeys = 0;
         for (Property<?> property : CONFIGURATION_DATA.getProperties()) {
-            if (!property.isPresent(userResource)) {
-                settingsManager.setProperty((Property) property, jarMessageSource.getMessageFromJar(property));
+            if (userResource.getString(property.getPath()) == null) {
+                userResource.setValue(property.getPath(), jarMessageSource.getMessageFromJar(property));
                 ++addedKeys;
             }
         }
@@ -131,11 +133,11 @@ public class MessageUpdater {
     /**
      * Extension of {@link YamlFileResource} to fine-tune the export style.
      */
-    private static final class MigraterYamlFileResource extends YamlFileResource {
+    public static final class MigraterYamlFileResource extends YamlFileResource {
 
         private Yaml singleQuoteYaml;
 
-        MigraterYamlFileResource(File file) {
+        public MigraterYamlFileResource(File file) {
             super(file, new MessageMigraterPropertyReader(file), new LeafPropertiesGenerator());
         }
 

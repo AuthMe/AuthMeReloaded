@@ -1,9 +1,10 @@
 package tools.messages;
 
 import com.google.common.collect.Multimap;
+import de.bananaco.bpermissions.imp.YamlConfiguration;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.StringUtils;
-import tools.utils.FileIoUtils;
+import org.bukkit.configuration.file.FileConfiguration;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
@@ -54,9 +54,9 @@ public final class VerifyMessagesTask implements ToolTask {
             messageFiles = Collections.singletonList(customFile);
         }
 
-        List<MessageFileElement> defaultFileElements = null;
+        FileConfiguration defaultFileConfiguration = null;
         if (addMissingKeys) {
-            defaultFileElements = MessageFileElementReader.readFileIntoElements(new File(DEFAULT_MESSAGES_FILE));
+            defaultFileConfiguration = YamlConfiguration.loadConfiguration(new File(DEFAULT_MESSAGES_FILE));
         }
 
         // Verify the given files
@@ -65,7 +65,7 @@ public final class VerifyMessagesTask implements ToolTask {
             MessageFileVerifier verifier = new MessageFileVerifier(file);
             if (addMissingKeys) {
                 outputVerificationResults(verifier);
-                updateMessagesFile(file, verifier, defaultFileElements);
+                updateMessagesFile(file, verifier, defaultFileConfiguration);
             } else {
                 outputVerificationResults(verifier);
             }
@@ -104,18 +104,13 @@ public final class VerifyMessagesTask implements ToolTask {
      *
      * @param file the file to update
      * @param verifier the verifier whose results should be used
-     * @param defaultFileElements default file elements to base the new file structure on
+     * @param defaultConfiguration default file configuration to retrieve missing texts from
      */
     private static void updateMessagesFile(File file, MessageFileVerifier verifier,
-                                           List<MessageFileElement> defaultFileElements) {
-        List<MessageFileElement> messageFileElements = MessageFileElementReader.readFileIntoElements(file);
-        String newMessageFileContents = MessageFileElementMerger
-            .mergeElements(messageFileElements, defaultFileElements, verifier.getMissingTags().asMap())
-            .stream()
-            .map(MessageFileElement::getLines)
-            .flatMap(List::stream)
-            .collect(Collectors.joining("\n"));
-        FileIoUtils.writeToFile(file.toPath(), newMessageFileContents + "\n");
+                                           FileConfiguration defaultConfiguration) {
+        if (verifier.hasErrors()) {
+            MessagesFileWriter.writeToFileWithCommentsFromDefault(file, defaultConfiguration);
+        }
     }
 
 
