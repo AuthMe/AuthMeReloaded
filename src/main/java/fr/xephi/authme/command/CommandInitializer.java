@@ -12,7 +12,6 @@ import fr.xephi.authme.command.executable.authme.ForceLoginCommand;
 import fr.xephi.authme.command.executable.authme.GetEmailCommand;
 import fr.xephi.authme.command.executable.authme.GetIpCommand;
 import fr.xephi.authme.command.executable.authme.LastLoginCommand;
-import fr.xephi.authme.command.executable.authme.MessagesCommand;
 import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
 import fr.xephi.authme.command.executable.authme.PurgeCommand;
 import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
@@ -26,6 +25,7 @@ import fr.xephi.authme.command.executable.authme.SetSpawnCommand;
 import fr.xephi.authme.command.executable.authme.SpawnCommand;
 import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
 import fr.xephi.authme.command.executable.authme.UnregisterAdminCommand;
+import fr.xephi.authme.command.executable.authme.UpdateHelpMessagesCommand;
 import fr.xephi.authme.command.executable.authme.VersionCommand;
 import fr.xephi.authme.command.executable.authme.debug.DebugCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
@@ -427,11 +427,10 @@ public class CommandInitializer {
         CommandDescription.builder()
             .parent(authmeBase)
             .labels("messages", "msg")
-            .description("Add missing messages")
-            .detailedDescription("Adds missing messages to the current messages file.")
-            .withArgument("help", "Add 'help' to update the help messages file", true)
+            .description("Add missing help messages")
+            .detailedDescription("Adds missing texts to the current help messages file.")
             .permission(AdminPermission.UPDATE_MESSAGES)
-            .executableCommand(MessagesCommand.class)
+            .executableCommand(UpdateHelpMessagesCommand.class)
             .register();
 
         CommandDescription.builder()

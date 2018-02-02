@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Messages command, updates the user's messages file with any missing files
+ * Messages command, updates the user's help messages file with any missing files
  * from the provided file in the JAR.
  */
-public class MessagesCommand implements ExecutableCommand {
+public class UpdateHelpMessagesCommand implements ExecutableCommand {
 
     @Inject
     private HelpTranslationGenerator helpTranslationGenerator;
@@ -23,12 +23,6 @@ public class MessagesCommand implements ExecutableCommand {
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
-        if (!arguments.isEmpty() && "help".equalsIgnoreCase(arguments.get(0))) {
-            updateHelpFile(sender);
-        }
-    }
-
-    private void updateHelpFile(CommandSender sender) {
         try {
             helpTranslationGenerator.updateHelpFile();
             sender.sendMessage("Successfully updated the help file");
