@@ -22,7 +22,7 @@ password:
 login:
     command_usage: '&cUso: /login contraseña'
     wrong_password: '&cContraseña incorrecta'
-    # TODO success: '&2Successful login!'
+    success: '&c¡Sesión iniciada!'
     login_request: '&cInicia sesión con "/login contraseña"'
     timeout_error: '&fTiempo de espera para inicio de sesión excedido'
 
@@ -33,7 +33,7 @@ error:
     unregistered_user: '&cUsuario no registrado'
     not_logged_in: '&c¡No has iniciado sesión!'
     no_permission: '&cNo tienes permiso'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&fHa ocurrido un error. Por favor contacta al administrador.'
     max_registration: '&fHas excedido la cantidad máxima de registros para tu cuenta'
     logged_in: '&c¡Ya has iniciado sesión!'
     kick_for_vip: '&c¡Un jugador VIP ha ingresado al servidor lleno!'

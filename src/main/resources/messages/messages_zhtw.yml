@@ -23,7 +23,7 @@ password:
 login:
     command_usage: '&b【AuthMe】&6用法: &c"/login <密碼>"'
     wrong_password: '&b【AuthMe】&6密碼錯誤!'
-    # TODO success: '&2Successful login!'
+    success: '&b【AuthMe】&6密碼正確，您已成功登入!'
     login_request: '&b【AuthMe】&6請使用 &c"/login <密碼>" &6來登入。'
     timeout_error: '&b【AuthMe】&6超過登入時間，請稍後再試一次'
 
@@ -34,7 +34,7 @@ error:
     unregistered_user: '&b【AuthMe】&6這個帳號還沒有註冊過'
     not_logged_in: '&b【AuthMe】&6您還沒有登入!'
     no_permission: '&b【AuthMe】&6您沒有使用該指令的權限。'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&b【AuthMe】&6發生錯誤，請聯繫管理員'
     max_registration: '&b【AuthMe】&6您的 IP 位置所註冊的帳號數量已經達到最大。'
     logged_in: '&b【AuthMe】&6您已經登入了!'
     kick_for_vip: '&b【AuthMe】&6您已經被請出。&c原因 : 有 VIP 玩家登入伺服器'

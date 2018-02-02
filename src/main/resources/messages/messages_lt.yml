@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&eKomandos panaudojimas: /login slaptazodis'
     wrong_password: '&cNeteisingas slaptazosdis'
-    # TODO success: '&2Successful login!'
+    success: '&aSekmingai prisijungete'
     login_request: '&ePrasome prisijungti: /login slaptazodis'
     timeout_error: '&cNespejote prisijungti'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cVartotojas neprisiregistraves'
     not_logged_in: '&cTu neprisijunges!'
     no_permission: '&cNera leidimo'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&cAtsirado klaida, praneskite adminstratoriui.'
     max_registration: '&cJus pasiekete maksimalu registraciju skaiciu.'
     logged_in: '&cTu aju prisijunges!'
     kick_for_vip: '&cA VIP prisijunge i pilna serveri!'

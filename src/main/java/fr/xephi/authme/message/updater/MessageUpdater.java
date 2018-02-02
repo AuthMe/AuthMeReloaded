@@ -27,7 +27,11 @@ public class MessageUpdater {
     /**
      * Configuration data object for all message keys incl. comments associated to sections.
      */
-    public static final ConfigurationData CONFIGURATION_DATA = buildConfigurationData();
+    private static final ConfigurationData CONFIGURATION_DATA = buildConfigurationData();
+
+    public static ConfigurationData getConfigurationData() {
+        return CONFIGURATION_DATA;
+    }
 
     /**
      * Applies any necessary migrations to the user's messages file and saves it if it has been modified.

@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cИспользование: /login <пароль>'
     wrong_password: '&cНеправильный пароль!'
-    # TODO success: '&2Successful login!'
+    success: '&2Вы успешно вошли!'
     login_request: '&3Авторизация: /login <Пароль>'
     timeout_error: '&4Время авторизации истекло.'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cИгрок с таким именем не зарегистрирован.'
     not_logged_in: '&cВы ещё не вошли!'
     no_permission: '&4Недостаточно прав.'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&cПроизошла ошибка. Свяжитесь с администратором.'
     max_registration: '&cПревышено максимальное количество регистраций на сервере! (%reg_count/%max_acc %reg_names)'
     logged_in: '&cВы уже авторизированы!'
     kick_for_vip: '&3VIP-игрок зашёл на переполненный сервер.'

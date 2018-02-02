@@ -1,6 +1,7 @@
 package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.resource.PropertyResource;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.message.MessageKey;
 
@@ -15,16 +16,11 @@ import static com.google.common.collect.ImmutableMap.of;
  */
 final class OldMessageKeysMigrater {
 
-    private static final Map<MessageKey, Map<String, String>> PLACEHOLDER_REPLACEMENTS =
-        ImmutableMap.<MessageKey, Map<String, String>>builder()
-        .put(MessageKey.PASSWORD_CHARACTERS_ERROR, of("REG_EX", "%valid_chars"))
-        .put(MessageKey.INVALID_NAME_CHARACTERS, of("REG_EX", "%valid_chars"))
-        .put(MessageKey.USAGE_CAPTCHA, of("<theCaptcha>", "%captcha_code"))
-        .put(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, of("<theCaptcha>", "%captcha_code"))
-        .put(MessageKey.CAPTCHA_WRONG_ERROR, of("THE_CAPTCHA", "%captcha_code"))
-        .build();
 
-    private static final Map<MessageKey, String> KEYS_TO_OLD_PATH = ImmutableMap.<MessageKey, String>builder()
+    @VisibleForTesting
+    static final Map<MessageKey, String> KEYS_TO_OLD_PATH = ImmutableMap.<MessageKey, String>builder()
+        .put(MessageKey.LOGIN_SUCCESS, "login")
+        .put(MessageKey.ERROR, "error")
         .put(MessageKey.DENIED_COMMAND, "denied_command")
         .put(MessageKey.SAME_IP_ONLINE, "same_ip_online")
         .put(MessageKey.DENIED_CHAT, "denied_chat")
@@ -36,11 +32,9 @@ final class OldMessageKeysMigrater {
         .put(MessageKey.UNREGISTERED_SUCCESS, "unregistered")
         .put(MessageKey.REGISTRATION_DISABLED, "reg_disabled")
         .put(MessageKey.SESSION_RECONNECTION, "valid_session")
-        .put(MessageKey.LOGIN_SUCCESS, "login")
         .put(MessageKey.ACCOUNT_NOT_ACTIVATED, "vb_nonActiv")
         .put(MessageKey.NAME_ALREADY_REGISTERED, "user_regged")
         .put(MessageKey.NO_PERMISSION, "no_perm")
-        .put(MessageKey.ERROR, "error")
         .put(MessageKey.LOGIN_MESSAGE, "login_msg")
         .put(MessageKey.REGISTER_MESSAGE, "reg_msg")
         .put(MessageKey.MAX_REGISTER_EXCEEDED, "max_reg")
@@ -120,6 +114,15 @@ final class OldMessageKeysMigrater {
         .put(MessageKey.DAY, "day")
         .put(MessageKey.DAYS, "days")
         .build();
+
+    private static final Map<MessageKey, Map<String, String>> PLACEHOLDER_REPLACEMENTS =
+        ImmutableMap.<MessageKey, Map<String, String>>builder()
+            .put(MessageKey.PASSWORD_CHARACTERS_ERROR, of("REG_EX", "%valid_chars"))
+            .put(MessageKey.INVALID_NAME_CHARACTERS, of("REG_EX", "%valid_chars"))
+            .put(MessageKey.USAGE_CAPTCHA, of("<theCaptcha>", "%captcha_code"))
+            .put(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, of("<theCaptcha>", "%captcha_code"))
+            .put(MessageKey.CAPTCHA_WRONG_ERROR, of("THE_CAPTCHA", "%captcha_code"))
+            .build();
 
     private OldMessageKeysMigrater() {
     }

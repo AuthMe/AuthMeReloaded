@@ -24,7 +24,7 @@ password:
 login:
     command_usage: '&cUse: /login <senha>'
     wrong_password: '&cSenha incorreta!'
-    # TODO success: '&2Successful login!'
+    success: '&2Login realizado com sucesso!'
     login_request: '&cPor favor, faça o login com o comando "/login <senha>"'
     timeout_error: '&4Tempo limite de sessão excedido, você foi expulso do servidor, por favor, tente novamente!'
 
@@ -35,7 +35,7 @@ error:
     unregistered_user: '&cEste usuário não está registrado!'
     not_logged_in: '&cVocê não está logado!'
     no_permission: '&4Você não tem permissão para executar esta ação!'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&4Ocorreu um erro inesperado, por favor contacte um administrador!'
     max_registration: '&cVocê excedeu o número máximo de inscrições (%reg_count/%max_acc %reg_names) do seu IP!'
     logged_in: '&cVocê já está logado!'
     kick_for_vip: '&3Um jogador VIP juntou-se ao servidor enquanto ele estava cheio!'

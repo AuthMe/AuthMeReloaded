@@ -108,7 +108,7 @@ public class MessageUpdaterTest {
             .collect(Collectors.toSet());
 
         // when
-        Set<String> messageKeysFromConfigData = MessageUpdater.CONFIGURATION_DATA.getProperties().stream()
+        Set<String> messageKeysFromConfigData = MessageUpdater.getConfigurationData().getProperties().stream()
             .map(Property::getPath)
             .collect(Collectors.toSet());
 
@@ -125,7 +125,7 @@ public class MessageUpdaterTest {
 
         // when
         Map<String, String[]> comments = ReflectionTestUtils.getFieldValue(
-            ConfigurationData.class, MessageUpdater.CONFIGURATION_DATA, "sectionComments");
+            ConfigurationData.class, MessageUpdater.getConfigurationData(), "sectionComments");
 
         // then
         assertThat(comments.keySet(), equalTo(rootPaths));

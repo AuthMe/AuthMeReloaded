@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cErabili: /login pasahitza'
     wrong_password: '&cPasahitz okerra'
-    # TODO success: '&2Successful login!'
+    success: '&cOngi etorri!'
     login_request: '&cMesedez erabili "/login pasahitza" saioa hasteko'
     timeout_error: '&fDenbora gehiegi egon zara saioa hasi gabe'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cErabiltzailea ez dago erregistratuta'
     not_logged_in: '&cSaioa hasi gabe!'
     no_permission: '&cBaimenik ez'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&fErrorea; Mesedez jarri kontaktuan administratzaile batekin'
     max_registration: '&fKontuko 2 erabiltzaile bakarrik izan ditzakezu'
     logged_in: '&cDagoeneko saioa hasita!'
     kick_for_vip: '&cVIP erabiltzaile bat sartu da zerbitzaria beteta zegoenean!'

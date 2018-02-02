@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cUzado: /login <pasvorto>'
     wrong_password: '&cErara pasvorto!'
-    # TODO success: '&2Successful login!'
+    success: '&2Sukcesa ensaluto!'
     login_request: '&cBonvolu ensaluti per la komando: /login <pasvorto>'
     timeout_error: '&4Salutnomo tempolimo superis, vi estis piedbatita el la servilo, bonvolu provi denove!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cTiu uzanto ne estas registrita!'
     not_logged_in: '&cVi ne estas ensalutita!'
     no_permission: '&4Vi ne havas la permeson por fari ĉi tiun funkcion!'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&4Neatendita eraro, bonvolu kontakti administranto!'
     max_registration: 'Vi superis la maksimuman nombron de enregistroj (%reg_count/%max_acc %reg_names) pro via ligo!'
     logged_in: '&cVi jam estas ensalutinta!'
     kick_for_vip: '&3VIP ludanto aliĝis al la servilo kiam ĝi pleniĝis!'

@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cUso: /login <contrasinal>'
     wrong_password: '&cContrasinal equivocado'
-    # TODO success: '&2Successful login!'
+    success: '&cIdentificación con éxito!'
     login_request: '&cPor favor, identifícate con "/login <password>"'
     timeout_error: '&fRematou o tempo da autentificación'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cEse nome de usuario non está rexistrado'
     not_logged_in: '&cNon te identificaches!'
     no_permission: '&cNon tes o permiso'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&fOcurriu un erro; contacta cun administrador'
     max_registration: '&fExcediches o máximo de rexistros para a túa Conta'
     logged_in: '&cXa estás identificado!'
     kick_for_vip: '&cUn xogador VIP uniuse ao servidor cheo!'

@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cUsage: /login <password>'
     wrong_password: '&cPassword salah!'
-    # TODO success: '&2Successful login!'
+    success: '&2Login berhasil!'
     login_request: '&cSilahkan login menggunakan command "/login <password>"'
     timeout_error: '&4Jangka waktu login telah habis, kamu di keluarkan dari server. Silahkan coba lagi!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cUser ini belum terdaftar!'
     not_logged_in: '&cKamu belum login!'
     no_permission: '&4Kamu tidak mempunyai izin melakukan ini!'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&4Terjadi kesalahan tak dikenal, silahkan hubungi Administrator!'
     max_registration: '&Kamu telah mencapai batas maksimum pendaftaran di server ini!'
     logged_in: '&cKamu telah login!'
     kick_for_vip: '&3Player VIP mencoba masuk pada saat server sedang penuh!'

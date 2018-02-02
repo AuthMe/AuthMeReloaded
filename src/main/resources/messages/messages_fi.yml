@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cKäyttötapa: /login salasana'
     wrong_password: '&cVäärä salasana'
-    # TODO success: '&2Successful login!'
+    success: '&cKirjauduit onnistuneesti'
     login_request: '&cKirjaudu palvelimmelle komennolla "/login salasana"'
     timeout_error: '&fKirjautumisaika meni umpeen.'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cSalasanat eivät täsmää'
     not_logged_in: '&cEt ole kirjautunut sisään!'
     no_permission: '&cEi oikeuksia'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&fVirhe: Ota yhteys palveluntarjoojaan!'
     max_registration: '&fSinulla ei ole oikeuksia tehdä enempää pelaajatilejä!'
     logged_in: '&cOlet jo kirjautunut!'
     kick_for_vip: '&cVIP pelaaja liittyi täyteen palvelimeen!'

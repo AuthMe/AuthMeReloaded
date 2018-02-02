@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&b使用方法: 輸入"/login [你的密碼]" 來登入'
     wrong_password: '&c密碼錯誤!'
-    # TODO success: '&2Successful login!'
+    success: '&2你已成功登入!'
     login_request: '&c [請先登入] 請按T , 然後輸入 "/login [你的密碼]" 。'
     timeout_error: '&4超過登錄超時，您已從伺服器中踢出，請重試!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&c此用戶尚未注冊!'
     not_logged_in: '&c你尚未登入!'
     no_permission: '&4您沒有執行此操作的權限!'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&4發生錯誤!請聯繫伺服器管理員!'
     max_registration: '&c您已超過註冊的最大數量(%reg_count/%max_acc %reg_names)!'
     logged_in: '&c您已經登錄!'
     kick_for_vip: '&3一名VIP玩家在服務器已滿時已加入伺服器!'

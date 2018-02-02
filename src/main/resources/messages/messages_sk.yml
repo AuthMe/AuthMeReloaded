@@ -27,7 +27,7 @@ password:
 login:
     command_usage: '&cPoužitie: /login <heslo>'
     wrong_password: '&cZadal si zlé heslo.'
-    # TODO success: '&2Successful login!'
+    success: '&cBol si úspešne prihlásený!'
     login_request: '&cPrihlás sa príkazom "/login <heslo>".'
     timeout_error: '&fVypršal čas na prihlásenie, pripoj sa a skús to znovu.'
 
@@ -38,7 +38,7 @@ error:
     unregistered_user: '&cZadané meno nie je zaregistrované!'
     not_logged_in: '&cNie si ešte prihlásený!'
     no_permission: '&cNemáš dostatočné práva na vykonanie tejto činnosti.'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&fNastala chyba, prosím kontaktuj Administrátora.'
     max_registration: '&fPrekročil si maximum registrovaných účtov(%reg_count/%max_acc|%reg_names).'
     logged_in: '&cAktuálne si už prihlásený!'
     kick_for_vip: '&3Uvoľnil si miesto pre VIP hráča!'

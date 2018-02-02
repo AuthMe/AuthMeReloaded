@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cKasutus: /login <Parool>'
     wrong_password: '&cVale salasõna!'
-    # TODO success: '&2Successful login!'
+    success: '&2Edukalt sisselogitud!'
     login_request: '&cPalun logi sisse kasutades käsklust: /login <Parool>'
     timeout_error: '&4Sisselogimise taimer täis, palun logi sisse ja proovi uuesti!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cSee kasutaja ei ole registreeritud.'
     not_logged_in: '&cSa ei ole sisse loginud!'
     no_permission: '&4Sul ei ole selle käskluse kasutamiseks õigust.'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&4Süsteemi viga, teata sellest serveri meeskonda.'
     max_registration: '&cSu IP peal (%reg_count/%max_acc %reg_names) on liiga palju kontosid!'
     logged_in: '&cJuba sisselogitud!'
     kick_for_vip: '&3VIP kasutaja liitus serveriga, kui see oli täis. Sind visati välja, et talle ruumi teha.'

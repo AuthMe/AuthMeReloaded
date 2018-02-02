@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cFoloseste comanda "/login <parola>" pentru a te autentifica.'
     wrong_password: '&cParola gresita!'
-    # TODO success: '&2Successful login!'
+    success: '&2Te-ai autentificat cu succes!'
     login_request: '&cTe rugam sa te autentifici folosind comanda "/login <parola>"'
     timeout_error: '&4A expirat timpul de autentificare si ai fost dat afara de server, te rugam incearca din nou!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cAcest jucator nu este inregistrat!'
     not_logged_in: '&cNu te-ai autentificat!'
     no_permission: '&4Nu ai permisiunea!'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&4A aparut o eroare, te rugam contacteaza un administrator!'
     max_registration: '&cTe-ai inregistrat cu prea multe conturi pe acelasi ip! (%reg_count/%max_acc %reg_names)'
     logged_in: '&cEsti deja autentificat!'
     kick_for_vip: '&3Un V.I.P a intrat pe server cand era plin!'

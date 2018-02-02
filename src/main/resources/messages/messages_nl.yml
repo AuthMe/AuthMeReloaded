@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cGebruik: /login <wachtwoord>'
     wrong_password: '&cFout wachtwoord'
-    # TODO success: '&2Successful login!'
+    success: '&cSuccesvol ingelogd!'
     login_request: '&cLog in met: /login <wachtwoord>'
     timeout_error: 'Login time-out: het duurde te lang tot je inlogde.'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cDeze gebruikersnaam is niet geregistreerd!'
     not_logged_in: '&cNiet ingelogd!'
     no_permission: '&cJe hebt geen rechten om deze actie uit te voeren!'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: 'Er is een onverwachte fout opgetreden, neem contact op met een administrator!'
     max_registration: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
     logged_in: '&cJe bent al ingelogd!'
     kick_for_vip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'

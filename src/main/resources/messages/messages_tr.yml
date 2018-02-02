@@ -20,7 +20,7 @@ password:
 login:
     command_usage: '&cKullanim: /login <sifre>'
     wrong_password: '&cYanlis sifre!'
-    # TODO success: '&2Successful login!'
+    success: '&2Giris basarili!'
     login_request: '&cLutfen giris komutunu kullanin "/login <sifre>"'
     timeout_error: '&4Giris izni icin verilen zaman suresini astigin icin sunucudan atildin, tekrar deneyin!'
 
@@ -31,7 +31,7 @@ error:
     unregistered_user: '&cBu oyuncu kayitli degil!'
     not_logged_in: '&cGiris yapmadin!'
     no_permission: '&4Bunu yapmak icin iznin yok!'
-    # TODO unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
+    unexpected_error: '&4Beklenmedik bir hata olustu, yetkili ile iletisime gecin!'
     max_registration: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
     logged_in: '&cZaten giris yaptin!'
     kick_for_vip: '&3Bir VIP oyuna giris yaptigi icin atildin!'
