@@ -98,8 +98,8 @@ email_cooldown_error: '&c이메일을 이미 발송했습니다. %time 후에 �
 usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다. 이 명령어를 사용하세요: /captcha <theCaptcha>'
 wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha THE_CAPTCHA" 형태로 입력해주세요!'
 valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
-captcha_for_registration: '회원가입을 하기 위해서는 먼저 자동가입방지문자를 입력해야합니다. 이 명령어를 이 명령어를 사용하세요: /captcha <자동가입방지문자>'
-register_captcha_valid: '&2올바른 자동가입방지문자입니다! 이제 /register 명령어를 이용하여 회원가입할 수 있습니다.'
+captcha_for_registration: '회원가입을 하기 위해서는 먼저 CAPTCHA 코드를 입력해야합니다. 이 명령어를 이 명령어를 사용하세요: /captcha <CAPTCHA 코드>'
+register_captcha_valid: '&2올바른 CAPTCHA 코드입니다! 이제 /register 명령어를 이용하여 회원가입할 수 있습니다.'
 
 # 인증 코드
 verification_code_required: '&3이 명령어는 매우 민감하게 작동되며, 이메일 인증을 필요로 합니다. 이메일을 확인하고 지시에 따르십시오.'
