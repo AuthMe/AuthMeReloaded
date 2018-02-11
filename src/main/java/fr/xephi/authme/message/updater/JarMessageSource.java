@@ -1,14 +1,12 @@
 package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.resource.PropertyReader;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.util.FileUtils;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Returns messages from the JAR's message files. Favors a local JAR (e.g. messages_nl.yml)
@@ -16,8 +14,8 @@ import java.io.InputStreamReader;
  */
 public class JarMessageSource {
 
-    private final FileConfiguration localJarConfiguration;
-    private final FileConfiguration defaultJarConfiguration;
+    private final PropertyReader localJarMessages;
+    private final PropertyReader defaultJarMessages;
 
     /**
      * Constructor.
@@ -26,29 +24,31 @@ public class JarMessageSource {
      * @param defaultJarPath path to the default messages file in the JAR (must exist)
      */
     public JarMessageSource(String localJarPath, String defaultJarPath) {
-        localJarConfiguration = localJarPath.equals(defaultJarPath) ? null : loadJarFile(localJarPath);
-        defaultJarConfiguration = loadJarFile(defaultJarPath);
+        localJarMessages = localJarPath.equals(defaultJarPath) ? null : loadJarFile(localJarPath);
+        defaultJarMessages = loadJarFile(defaultJarPath);
 
-        if (defaultJarConfiguration == null) {
+        if (defaultJarMessages == null) {
             throw new IllegalStateException("Default JAR file '" + defaultJarPath + "' could not be loaded");
         }
     }
 
     public String getMessageFromJar(Property<?> property) {
         String key = property.getPath();
-        String message = localJarConfiguration == null ? null : localJarConfiguration.getString(key);
-        return message == null ? defaultJarConfiguration.getString(key) : message;
+        String message = getString(key, localJarMessages);
+        return message == null ? getString(key, defaultJarMessages) : message;
     }
 
-    private static YamlConfiguration loadJarFile(String jarPath) {
+    private static String getString(String path, PropertyReader reader) {
+        return reader == null ? null : reader.getTypedObject(path, String.class);
+    }
+
+    private static MessageMigraterPropertyReader loadJarFile(String jarPath) {
         try (InputStream stream = FileUtils.getResourceFromJar(jarPath)) {
             if (stream == null) {
                 ConsoleLogger.debug("Could not load '" + jarPath + "' from JAR");
                 return null;
             }
-            try (InputStreamReader isr = new InputStreamReader(stream)) {
-                return YamlConfiguration.loadConfiguration(isr);
-            }
+            return MessageMigraterPropertyReader.loadFromStream(stream);
         } catch (IOException e) {
             ConsoleLogger.logException("Exception while handling JAR path '" + jarPath + "'", e);
         }

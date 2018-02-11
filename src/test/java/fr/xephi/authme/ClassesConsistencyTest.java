@@ -18,6 +18,7 @@ import org.junit.Test;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,6 +50,7 @@ public class ClassesConsistencyTest {
     private static final Set<Class<?>> IMMUTABLE_TYPES = ImmutableSet.of(
         /* JDK */
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
+        Charset.class,
         /* AuthMe */
         Property.class, RegistrationMethod.class,
         /* Guava */

@@ -1,7 +1,6 @@
 package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.SettingsManager;
-import ch.jalu.configme.beanmapper.leafproperties.LeafPropertiesGenerator;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.PropertyListBuilder;
 import ch.jalu.configme.properties.Property;
@@ -10,8 +9,6 @@ import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.message.MessageKey;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.util.Arrays;
@@ -134,29 +131,4 @@ public class MessageUpdater {
         return new ConfigurationData(builder.create(), comments);
     }
 
-    /**
-     * Extension of {@link YamlFileResource} to fine-tune the export style.
-     */
-    public static final class MigraterYamlFileResource extends YamlFileResource {
-
-        private Yaml singleQuoteYaml;
-
-        public MigraterYamlFileResource(File file) {
-            super(file, new MessageMigraterPropertyReader(file), new LeafPropertiesGenerator());
-        }
-
-        @Override
-        protected Yaml getSingleQuoteYaml() {
-            if (singleQuoteYaml == null) {
-                DumperOptions options = new DumperOptions();
-                options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-                options.setAllowUnicode(true);
-                options.setDefaultScalarStyle(DumperOptions.ScalarStyle.SINGLE_QUOTED);
-                // Overridden setting: don't split lines
-                options.setSplitLines(false);
-                singleQuoteYaml = new Yaml(options);
-            }
-            return singleQuoteYaml;
-        }
-    }
 }

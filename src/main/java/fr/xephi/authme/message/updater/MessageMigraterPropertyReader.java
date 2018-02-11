@@ -7,31 +7,44 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Duplication of ConfigMe's {@link ch.jalu.configme.resource.YamlFileReader} with a character encoding
- * fix in {@link #reload}.
+ * Implementation of {@link PropertyReader} which can read a file or a stream with
+ * a specified charset.
  */
 public class MessageMigraterPropertyReader implements PropertyReader {
 
-    private final File file;
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
+
     private Map<String, Object> root;
     /** See same field in {@link ch.jalu.configme.resource.YamlFileReader} for details. */
     private boolean hasObjectAsRoot = false;
 
-    /**
-     * Constructor.
-     *
-     * @param file the file to load
-     */
-    public MessageMigraterPropertyReader(File file) {
-        this.file = file;
-        reload();
+    private MessageMigraterPropertyReader(Map<String, Object> valuesMap) {
+        root = valuesMap;
+    }
+
+    public static MessageMigraterPropertyReader loadFromFile(File file) {
+        Map<String, Object> valuesMap;
+        try (InputStream is = new FileInputStream(file)) {
+            valuesMap = readStreamToMap(is);
+        } catch (IOException e) {
+            throw new IllegalStateException("Error while reading file '" + file + "'", e);
+        }
+
+        return new MessageMigraterPropertyReader(valuesMap);
+    }
+
+    public static MessageMigraterPropertyReader loadFromStream(InputStream inputStream) {
+        Map<String, Object> valuesMap = readStreamToMap(inputStream);
+        return new MessageMigraterPropertyReader(valuesMap);
     }
 
     @Override
@@ -110,15 +123,17 @@ public class MessageMigraterPropertyReader implements PropertyReader {
 
     @Override
     public void reload() {
-        try (FileInputStream fis = new FileInputStream(file);
-             InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
+        throw new UnsupportedOperationException("Reload not supported by this implementation");
+    }
 
+    private static Map<String, Object> readStreamToMap(InputStream inputStream) {
+        try (InputStreamReader isr = new InputStreamReader(inputStream, CHARSET)) {
             Object obj = new Yaml().load(isr);
-            root = obj == null ? new HashMap<>() : (Map<String, Object>) obj;
+            return obj == null ? new HashMap<>() : (Map<String, Object>) obj;
         } catch (IOException e) {
-            throw new ConfigMeException("Could not read file '" + file + "'", e);
+            throw new ConfigMeException("Could not read stream", e);
         } catch (ClassCastException e) {
-            throw new ConfigMeException("Top-level is not a map in '" + file + "'", e);
+            throw new ConfigMeException("Top-level is not a map", e);
         }
     }
 

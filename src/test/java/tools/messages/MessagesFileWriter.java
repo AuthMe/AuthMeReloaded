@@ -6,7 +6,7 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.message.updater.MessageUpdater;
-import fr.xephi.authme.message.updater.MessageUpdater.MigraterYamlFileResource;
+import fr.xephi.authme.message.updater.MigraterYamlFileResource;
 import org.bukkit.configuration.file.FileConfiguration;
 import tools.utils.FileIoUtils;
 
