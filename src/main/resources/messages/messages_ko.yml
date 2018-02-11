@@ -1,4 +1,4 @@
-#Translated by Kirito (kds123321@naver.com), System32(me@syst32.com)
+#Translated by Kirito (kds123321@naver.com), System32(me@syst32.com), Adeuran(adeuran@tistory.com)
 #14.05.2017 Thanks for use
 
 # Registration
@@ -114,8 +114,8 @@ captcha:
     usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다. 이 명령어를 사용하세요: /captcha %captcha_code'
     wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha %captcha_code" 형태로 입력해주세요!'
     valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: '회원가입을 하기 위해서는 먼저 CAPTCHA 코드를 입력해야합니다. 이 명령어를 이 명령어를 사용하세요: /captcha %captcha_code'
+    register_captcha_valid: '&2올바른 CAPTCHA 코드입니다! 이제 /register 명령어를 이용하여 회원가입할 수 있습니다.'
 
 # Verification code
 verification:

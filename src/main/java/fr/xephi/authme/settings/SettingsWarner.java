@@ -5,9 +5,12 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
 
 import javax.inject.Inject;
 
@@ -48,6 +51,14 @@ public class SettingsWarner {
         if (settings.getProperty(PluginSettings.SESSIONS_ENABLED)
             && settings.getProperty(PluginSettings.SESSIONS_TIMEOUT) <= 0) {
             ConsoleLogger.warning("Warning: Session timeout needs to be positive in order to work!");
+        }
+
+        // Warn if spigot.yml has settings.bungeecord set to true but config.yml has Hooks.bungeecord set to false
+        if (Utils.isSpigot() && Bukkit.spigot().getConfig().getBoolean("settings.bungeecord")
+            && !settings.getProperty(HooksSettings.BUNGEECORD)) {
+            ConsoleLogger.warning("Note: Hooks.bungeecord is set to false but your server appears to be running in" +
+                " bungeecord mode (see your spigot.yml). In order to allow the datasource caching and the AuthMeBungee" +
+                " add-on to work properly you have to enable this option!");
         }
 
         // Check if argon2 library is present and can be loaded

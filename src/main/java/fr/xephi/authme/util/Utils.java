@@ -23,6 +23,20 @@ public final class Utils {
     }
 
     /**
+     * Returns if the running server instance is craftbukkit or spigot based.
+     *
+     * @return true if the running server instance is spigot-based.
+     */
+    public static boolean isSpigot() {
+        try {
+            Class.forName("org.spigotmc.SpigotConfig");
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Compile Pattern sneaky without throwing Exception.
      *
      * @param pattern pattern string to compile
