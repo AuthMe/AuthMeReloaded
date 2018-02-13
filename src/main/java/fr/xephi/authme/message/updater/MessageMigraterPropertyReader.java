@@ -19,7 +19,7 @@ import java.util.Objects;
  * Implementation of {@link PropertyReader} which can read a file or a stream with
  * a specified charset.
  */
-public class MessageMigraterPropertyReader implements PropertyReader {
+public final class MessageMigraterPropertyReader implements PropertyReader {
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
 
@@ -31,6 +31,12 @@ public class MessageMigraterPropertyReader implements PropertyReader {
         root = valuesMap;
     }
 
+    /**
+     * Creates a new property reader for the given file.
+     *
+     * @param file the file to load
+     * @return the created property reader
+     */
     public static MessageMigraterPropertyReader loadFromFile(File file) {
         Map<String, Object> valuesMap;
         try (InputStream is = new FileInputStream(file)) {

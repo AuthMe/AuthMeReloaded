@@ -7,12 +7,17 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,6 +65,8 @@ public class MessageUpdater {
         boolean addedMissingKeys = addMissingKeys(jarMessageSource, userResource);
 
         if (movedOldKeys || addedMissingKeys) {
+            backupMessagesFile(userFile);
+
             SettingsManager settingsManager = new SettingsManager(userResource, null, CONFIGURATION_DATA);
             settingsManager.save();
             ConsoleLogger.debug("Successfully saved {0}", userFile);
@@ -77,18 +84,30 @@ public class MessageUpdater {
     }
 
     private boolean addMissingKeys(JarMessageSource jarMessageSource, YamlFileResource userResource) {
-        int addedKeys = 0;
+        List<String> addedKeys = new ArrayList<>();
         for (Property<?> property : CONFIGURATION_DATA.getProperties()) {
-            if (userResource.getString(property.getPath()) == null) {
-                userResource.setValue(property.getPath(), jarMessageSource.getMessageFromJar(property));
-                ++addedKeys;
+            final String key = property.getPath();
+            if (userResource.getString(key) == null) {
+                userResource.setValue(key, jarMessageSource.getMessageFromJar(property));
+                addedKeys.add(key);
             }
         }
-        if (addedKeys > 0) {
-            ConsoleLogger.info("Added " + addedKeys + " missing keys to your messages_xx.yml file");
+        if (!addedKeys.isEmpty()) {
+            ConsoleLogger.info(
+                "Added " + addedKeys.size() + " missing keys to your messages_xx.yml file: " + addedKeys);
             return true;
         }
         return false;
+    }
+
+    private static void backupMessagesFile(File messagesFile) {
+        String backupName = FileUtils.createBackupFilePath(messagesFile);
+        File backupFile = new File(backupName);
+        try {
+            Files.copy(messagesFile, backupFile);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not back up '" + messagesFile + "' to '" + backupFile + "'", e);
+        }
     }
 
     /**

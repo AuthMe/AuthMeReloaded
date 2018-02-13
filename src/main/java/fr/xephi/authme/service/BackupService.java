@@ -16,8 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static fr.xephi.authme.util.Utils.logAndSendMessage;
 import static fr.xephi.authme.util.Utils.logAndSendWarning;
@@ -27,7 +25,6 @@ import static fr.xephi.authme.util.Utils.logAndSendWarning;
  */
 public class BackupService {
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
     private final File dataFolder;
     private final File backupFolder;
     private final Settings settings;
@@ -181,7 +178,7 @@ public class BackupService {
      * @return the file to back up the data to
      */
     private File constructBackupFile(String fileExtension) {
-        String dateString = dateFormat.format(new Date());
+        String dateString = FileUtils.createCurrentTimeString();
         return new File(backupFolder, "backup" + dateString + "." + fileExtension);
     }
 

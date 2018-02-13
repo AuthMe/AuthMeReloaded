@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -19,6 +20,9 @@ import static org.junit.Assert.assertThat;
  * Test for {@link FileUtils}.
  */
 public class FileUtilsTest {
+
+    /** Regex that matches timestamps such as 20180211_1048. */
+    private static final String BACKUP_TIMESTAMP_PATTERN = "20\\d{6}_\\d{4}";
 
     @BeforeClass
     public static void initLogger() {
@@ -184,6 +188,29 @@ public class FileUtilsTest {
     @Test
     public void shouldHaveHiddenConstructor() {
         TestHelper.validateHasOnlyPrivateEmptyConstructor(FileUtils.class);
+    }
+
+
+    @Test
+    public void shouldCreateCurrentTimestampString() {
+        // given / when
+        String currentTimeString = FileUtils.createCurrentTimeString();
+
+        // then
+        assertThat(currentTimeString, matchesPattern(BACKUP_TIMESTAMP_PATTERN));
+    }
+
+    @Test
+    public void shouldCreateBackupFile() {
+        // given
+        File file = new File("some/folders/config.yml");
+
+        // when
+        String backupFile = FileUtils.createBackupFilePath(file);
+
+        // then
+        String folders = String.join(File.separator,"some", "folders", "").replace("\\", "\\\\");
+        assertThat(backupFile, matchesPattern(folders + "backup_config_" + BACKUP_TIMESTAMP_PATTERN + "\\.yml"));
     }
 
     private static void createFiles(File... files) throws IOException {

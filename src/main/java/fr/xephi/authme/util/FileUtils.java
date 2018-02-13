@@ -1,12 +1,14 @@
 package fr.xephi.authme.util;
 
+import com.google.common.io.Files;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static java.lang.String.format;
 
@@ -14,6 +16,9 @@ import static java.lang.String.format;
  * File utilities.
  */
 public final class FileUtils {
+
+    private static final DateTimeFormatter CURRENT_DATE_STRING_FORMATTER =
+        DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
 
     // Utility class
     private FileUtils() {
@@ -40,7 +45,7 @@ public final class FileUtils {
                 ConsoleLogger.warning(format("Cannot copy resource '%s' to file '%s': cannot load resource",
                     resourcePath, destinationFile.getPath()));
             } else {
-                Files.copy(is, destinationFile.toPath());
+                java.nio.file.Files.copy(is, destinationFile.toPath());
                 return true;
             }
         } catch (IOException e) {
@@ -137,5 +142,29 @@ public final class FileUtils {
      */
     public static String makePath(String... elements) {
         return String.join(File.separator, elements);
+    }
+
+    /**
+     * Creates a textual representation of the current time (including minutes), e.g. useful for
+     * automatically generated backup files.
+     *
+     * @return string of the current time for use in file names
+     */
+    public static String createCurrentTimeString() {
+        return LocalDateTime.now().format(CURRENT_DATE_STRING_FORMATTER);
+    }
+
+    /**
+     * Returns a path to a new file (which doesn't exist yet) with a timestamp in the name in the same
+     * folder as the given file and containing the given file's filename.
+     *
+     * @param file the file based on which a new file path should be created
+     * @return path to a file suitably named for storing a backup
+     */
+    public static String createBackupFilePath(File file) {
+        String filename = "backup_" + Files.getNameWithoutExtension(file.getName())
+            + "_" + createCurrentTimeString()
+            + "." + Files.getFileExtension(file.getName());
+        return makePath(file.getParent(), filename);
     }
 }
