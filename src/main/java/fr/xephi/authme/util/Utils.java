@@ -28,12 +28,7 @@ public final class Utils {
      * @return true if the running server instance is spigot-based.
      */
     public static boolean isSpigot() {
-        try {
-            Class.forName("org.spigotmc.SpigotConfig");
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-        return true;
+        return isClassLoaded("org.spigotmc.SpigotConfig");
     }
 
     /**
