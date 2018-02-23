@@ -6,7 +6,7 @@ import org.yaml.snakeyaml.parser.ParserException;
 import java.io.File;
 
 /**
- * Extension of {@link YamlFileResource}, which throws a specific exception if a file cannot be loaded.
+ * Creates {@link YamlFileResource} objects.
  */
 public final class YamlFileResourceProvider {
 
