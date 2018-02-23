@@ -5,7 +5,6 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
@@ -34,8 +33,6 @@ public class AsyncRegister implements AsynchronousProcess {
     private PlayerCache playerCache;
     @Inject
     private CommonService service;
-    @Inject
-    private PermissionsManager permissionsManager;
     @Inject
     private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
     @Inject
@@ -106,7 +103,7 @@ public class AsyncRegister implements AsynchronousProcess {
         if (maxRegPerIp > 0
             && !"127.0.0.1".equalsIgnoreCase(ip)
             && !"localhost".equalsIgnoreCase(ip)
-            && !permissionsManager.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
+            && !service.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
             if (otherAccounts.size() >= maxRegPerIp) {
                 service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerIp),

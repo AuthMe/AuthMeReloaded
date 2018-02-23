@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.time.Instant;
 
-import static fr.xephi.authme.IsEqualByReflectionMatcher.isEqualTo;
+import static fr.xephi.authme.IsEqualByReflectionMatcher.hasEqualValuesOnAllFields;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -427,7 +427,7 @@ public class AuthMeApiTest {
 
         // then
         verify(management).performRegister(eq(RegistrationMethod.API_REGISTRATION),
-            argThat(isEqualTo(ApiPasswordRegisterParams.of(player, pass, true))));
+            argThat(hasEqualValuesOnAllFields(ApiPasswordRegisterParams.of(player, pass, true))));
     }
 
     @Test
@@ -441,7 +441,7 @@ public class AuthMeApiTest {
 
         // then
         verify(management).performRegister(eq(RegistrationMethod.API_REGISTRATION),
-            argThat(isEqualTo(ApiPasswordRegisterParams.of(player, pass, false))));
+            argThat(hasEqualValuesOnAllFields(ApiPasswordRegisterParams.of(player, pass, false))));
     }
 
     @Test

@@ -5,7 +5,6 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
@@ -38,8 +37,6 @@ public class AsyncRegisterTest {
 
     @Mock
     private PlayerCache playerCache;
-    @Mock
-    private PermissionsManager permissionsManager;
     @Mock
     private CommonService commonService;
     @Mock

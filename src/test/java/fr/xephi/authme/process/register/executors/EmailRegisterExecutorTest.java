@@ -5,7 +5,6 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -35,13 +34,11 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Test for {@link EmailRegisterExecutor}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class EmailRegisterExecutorProviderTest {
+public class EmailRegisterExecutorTest {
 
     @InjectMocks
     private EmailRegisterExecutor executor;
 
-    @Mock
-    private PermissionsManager permissionsManager;
     @Mock
     private DataSource dataSource;
     @Mock
@@ -68,7 +65,7 @@ public class EmailRegisterExecutorProviderTest {
         // then
         assertThat(result, equalTo(false));
         verify(dataSource).countAuthsByEmail(email);
-        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
         verify(commonService).send(player, MessageKey.MAX_REGISTER_EXCEEDED, "3", "4", "@");
     }
 
@@ -77,7 +74,7 @@ public class EmailRegisterExecutorProviderTest {
         // given
         given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         Player player = mock(Player.class);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
+        given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
         EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
 
         // when
@@ -85,7 +82,7 @@ public class EmailRegisterExecutorProviderTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
     }
 
     @Test
@@ -102,7 +99,7 @@ public class EmailRegisterExecutorProviderTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(permissionsManager).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
+        verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
         verify(dataSource).countAuthsByEmail(email);
     }
 

@@ -30,7 +30,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static fr.xephi.authme.IsEqualByReflectionMatcher.isEqualTo;
+import static fr.xephi.authme.IsEqualByReflectionMatcher.hasEqualValuesOnAllFields;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -101,7 +101,7 @@ public class RegisterCommandTest {
         // then
         verify(registrationCaptchaManager).isCaptchaRequired("test2");
         verify(management).performRegister(eq(RegistrationMethod.TWO_FACTOR_REGISTRATION),
-            argThat(isEqualTo(TwoFactorRegisterParams.of(player))));
+            argThat(hasEqualValuesOnAllFields(TwoFactorRegisterParams.of(player))));
         verifyZeroInteractions(emailService);
     }
 
@@ -221,7 +221,7 @@ public class RegisterCommandTest {
         verify(validationService).validateEmail(playerMail);
         verify(emailService).hasAllInformation();
         verify(management).performRegister(eq(RegistrationMethod.EMAIL_REGISTRATION),
-            argThat(isEqualTo(EmailRegisterParams.of(player, playerMail))));
+            argThat(hasEqualValuesOnAllFields(EmailRegisterParams.of(player, playerMail))));
     }
 
     @Test
@@ -250,7 +250,7 @@ public class RegisterCommandTest {
         // then
         verify(registrationCaptchaManager).isCaptchaRequired("newPlayer");
         verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
-            argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", null))));
+            argThat(hasEqualValuesOnAllFields(PasswordRegisterParams.of(player, "myPass", null))));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class RegisterCommandTest {
         // then
         verify(validationService).validateEmail(email);
         verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
-            argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", email))));
+            argThat(hasEqualValuesOnAllFields(PasswordRegisterParams.of(player, "myPass", email))));
     }
 
     @Test
@@ -303,7 +303,7 @@ public class RegisterCommandTest {
         // then
         verify(registrationCaptchaManager).isCaptchaRequired("Doa");
         verify(management).performRegister(eq(RegistrationMethod.PASSWORD_REGISTRATION),
-            argThat(isEqualTo(PasswordRegisterParams.of(player, "myPass", null))));
+            argThat(hasEqualValuesOnAllFields(PasswordRegisterParams.of(player, "myPass", null))));
     }
 
     @Test
