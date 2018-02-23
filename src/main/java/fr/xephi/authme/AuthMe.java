@@ -26,11 +26,13 @@ import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
 import fr.xephi.authme.service.bungeecord.BungeeReceiver;
+import fr.xephi.authme.service.yaml.YamlParseException;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
+import fr.xephi.authme.util.ExceptionUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -133,7 +135,13 @@ public class AuthMe extends JavaPlugin {
         try {
             initialize();
         } catch (Throwable th) {
-            ConsoleLogger.logException("Aborting initialization of AuthMe:", th);
+            YamlParseException yamlParseException = ExceptionUtils.findThrowableInCause(YamlParseException.class, th);
+            if (yamlParseException == null) {
+                ConsoleLogger.logException("Aborting initialization of AuthMe:", th);
+            } else {
+                ConsoleLogger.logException("File '" + yamlParseException.getFile() + "' contains invalid YAML. "
+                    + "Please run its contents through http://yamllint.com", yamlParseException);
+            }
             stopOrUnload();
             return;
         }
