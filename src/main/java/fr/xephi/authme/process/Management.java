@@ -12,7 +12,6 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
 import fr.xephi.authme.service.BukkitService;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

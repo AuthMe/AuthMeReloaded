@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 
 import javax.inject.Inject;
-import java.io.Console;
 
 public class BungeeSender implements SettingsDependent {
 

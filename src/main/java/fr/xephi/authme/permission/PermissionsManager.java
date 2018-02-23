@@ -258,6 +258,15 @@ public class PermissionsManager implements Reloadable {
         return handler.hasPermissionOffline(player.getName(), permissionNode);
     }
 
+    /**
+     * Check whether the offline player with the given name has permission for the given permission node.
+     * This method is used as a last resort when nothing besides the name is known.
+     *
+     * @param name The name of the player
+     * @param permissionNode The permission node to verify
+     *
+     * @return true if the player has permission, false otherwise
+     */
     public boolean hasPermissionOffline(String name, PermissionNode permissionNode) {
         if (permissionNode == null) {
             return true;

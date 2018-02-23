@@ -98,6 +98,9 @@ public class AntiBotService implements SettingsDependent {
         disableTask = bukkitService.runTaskLater(this::stopProtection, duration * TICKS_PER_MINUTE);
     }
 
+    /**
+     * Transitions the anti bot service from active status back to listening.
+     */
     private void stopProtection() {
         if (antiBotStatus != AntiBotStatus.ACTIVE) {
             return;

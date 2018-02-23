@@ -12,7 +12,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.Utils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -344,7 +343,8 @@ public class MySQL implements DataSource {
 
             if (!columnOthers.isEmpty()) {
                 for (String column : columnOthers) {
-                    try (PreparedStatement pst = con.prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + col.NAME + "=?;")) {
+                    try (PreparedStatement pst = con.prepareStatement(
+                        "UPDATE " + tableName + " SET " + column + "=? WHERE " + col.NAME + "=?;")) {
                         pst.setString(1, auth.getRealName());
                         pst.setString(2, auth.getNickname());
                         pst.executeUpdate();

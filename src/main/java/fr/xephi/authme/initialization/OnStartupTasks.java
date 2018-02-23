@@ -83,6 +83,10 @@ public class OnStartupTasks {
         logger.addFilter(new Log4JFilter());
     }
 
+    /**
+     * Starts a task that regularly reminds players without a defined email to set their email,
+     * if enabled.
+     */
     public void scheduleRecallEmailTask() {
         if (!settings.getProperty(RECALL_PLAYERS)) {
             return;

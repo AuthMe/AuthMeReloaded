@@ -79,7 +79,8 @@ public class TeleportationService implements Reloadable {
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             final Location location = spawnLoader.getSpawnLocation(player);
 
-            SpawnTeleportEvent event = new SpawnTeleportEvent(player, location, playerCache.isAuthenticated(player.getName()));
+            SpawnTeleportEvent event = new SpawnTeleportEvent(player, location,
+                playerCache.isAuthenticated(player.getName()));
             bukkitService.callEvent(event);
             if(!isEventValid(event)) {
                 return null;
