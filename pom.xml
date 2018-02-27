@@ -344,8 +344,8 @@
 
         <!-- Our Repo (Many libs) -->
         <repository>
-            <id>xephi-repo</id>
-            <url>http://ci.xephi.fr/plugin/repository/everything/</url>
+            <id>codemc-repo</id>
+            <url>http://ci.codemc.org/plugin/repository/maven-public/</url>
         </repository>
 
         <!-- bStats Repo -->
