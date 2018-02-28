@@ -345,7 +345,7 @@
         <!-- Our Repo (Many libs) -->
         <repository>
             <id>codemc-repo</id>
-            <url>http://ci.codemc.org/plugin/repository/maven-public/</url>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
 
         <!-- bStats Repo -->
