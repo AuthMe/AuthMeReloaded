@@ -18,6 +18,8 @@ public class Messages {
     // Custom Authme tag replaced to new line
     private static final String NEWLINE_TAG = "%nl%";
 
+    private static final String PLAYER_TAG = "%username%";
+
     /** Contains the keys of the singular messages for time units. */
     private static final Map<TimeUnit, MessageKey> TIME_UNIT_SINGULARS = ImmutableMap.<TimeUnit, MessageKey>builder()
         .put(TimeUnit.SECONDS, MessageKey.SECOND)
@@ -51,7 +53,7 @@ public class Messages {
     public void send(CommandSender sender, MessageKey key) {
         String[] lines = retrieve(key);
         for (String line : lines) {
-            sender.sendMessage(line);
+            sender.sendMessage(line.replace(PLAYER_TAG, sender.getName()));
         }
     }
 
@@ -65,7 +67,7 @@ public class Messages {
      * @param replacements The replacements to apply for the tags
      */
     public void send(CommandSender sender, MessageKey key, String... replacements) {
-        String message = retrieveSingle(key, replacements);
+        String message = retrieveSingle(key, replacements).replace(PLAYER_TAG, sender.getName());
         for (String line : message.split("\n")) {
             sender.sendMessage(line);
         }
