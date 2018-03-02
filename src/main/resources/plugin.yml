@@ -283,4 +283,4 @@ permissions:
   authme.vip:
     description: When the server is full and someone with this permission joins the
       server, someone will be kicked.
-    default: op
+    default: false
