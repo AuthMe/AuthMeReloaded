@@ -19,7 +19,7 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * When the server is full and someone with this permission joins the server, someone will be kicked.
      */
-    IS_VIP("authme.vip", DefaultPermission.OP_ONLY),
+    IS_VIP("authme.vip", DefaultPermission.NOT_ALLOWED),
 
     /**
      * Permission to be able to register multiple accounts.
