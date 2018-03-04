@@ -45,6 +45,7 @@ public class SessionService implements Reloadable {
             database.setUnlogged(name);
             database.revokeSession(name);
             PlayerAuth auth = database.getAuth(name);
+
             SessionState state = hasValidSessionData(auth, player);
             if(state.equals(SessionState.VALID)) {
                 RestoreSessionEvent event = bukkitService.createAndCallEvent(
