@@ -46,7 +46,7 @@ public class SessionService implements Reloadable {
             database.revokeSession(name);
             PlayerAuth auth = database.getAuth(name);
 
-            SessionState state = hasValidSessionData(auth, player);
+            SessionState state = fetchSessionStatus(auth, player);
             if(state.equals(SessionState.VALID)) {
                 RestoreSessionEvent event = bukkitService.createAndCallEvent(
                     isAsync -> new RestoreSessionEvent(player, isAsync));
@@ -66,8 +66,9 @@ public class SessionService implements Reloadable {
      * @param player the associated player
      * @return SessionState based on the state of the session (VALID, NOT_VALID, OUTDATED, IP_CHANGED)
      */
-    private SessionState hasValidSessionData(PlayerAuth auth, Player player) {
+    private SessionState fetchSessionStatus(PlayerAuth auth, Player player) {
         if (auth == null) {
+
             ConsoleLogger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
             return SessionState.NOT_VALID;
         } else if (auth.getLastLogin() == null) {
