@@ -5,9 +5,9 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -46,7 +46,7 @@ public class ProtocolLibService implements SettingsDependent {
             if (protectInvBeforeLogin) {
                 ConsoleLogger.warning("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
             }
-            
+
             if (denyTabCompleteBeforeLogin) {
                 ConsoleLogger.warning("WARNING! The denyTabComplete feature requires ProtocolLib! Disabling it...");
             }
@@ -56,16 +56,21 @@ public class ProtocolLibService implements SettingsDependent {
         }
 
         // Set up packet adapters
-        if (protectInvBeforeLogin && inventoryPacketAdapter == null) {
-            inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache);
-            inventoryPacketAdapter.register();
+        if (protectInvBeforeLogin) {
+            if (inventoryPacketAdapter == null) {
+                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache);
+                inventoryPacketAdapter.register();
+            }
         } else if (inventoryPacketAdapter != null) {
             inventoryPacketAdapter.unregister();
             inventoryPacketAdapter = null;
         }
-        if (denyTabCompleteBeforeLogin && tabCompletePacketAdapter == null) {
-            tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, playerCache);
-            tabCompletePacketAdapter.register();
+
+        if (denyTabCompleteBeforeLogin) {
+            if (tabCompletePacketAdapter == null) {
+                tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, playerCache);
+                tabCompletePacketAdapter.register();
+            }
         } else if (tabCompletePacketAdapter != null) {
             tabCompletePacketAdapter.unregister();
             tabCompletePacketAdapter = null;
@@ -106,7 +111,7 @@ public class ProtocolLibService implements SettingsDependent {
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
 
         //it was true and will be deactivated now, so we need to restore the inventory for every player
-        if (oldProtectInventory && !protectInvBeforeLogin) {
+        if (oldProtectInventory && !protectInvBeforeLogin && inventoryPacketAdapter != null) {
             inventoryPacketAdapter.unregister();
             for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
                 if (!playerCache.isAuthenticated(onlinePlayer.getName())) {
