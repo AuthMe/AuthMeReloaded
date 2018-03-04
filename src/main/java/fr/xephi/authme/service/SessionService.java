@@ -63,7 +63,7 @@ public class SessionService implements Reloadable {
      *
      * @param auth the player auth
      * @param player the associated player
-     * @return true if the player may resume his login session, false otherwise
+     * @return SessionState based on the state of the session (VALID, NOT_VALID, OUTDATED, IP_CHANGED)
      */
     private SessionState hasValidSessionData(PlayerAuth auth, Player player) {
         if (auth == null) {
