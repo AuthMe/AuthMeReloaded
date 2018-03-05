@@ -47,11 +47,11 @@ public class SessionService implements Reloadable {
             PlayerAuth auth = database.getAuth(name);
 
             SessionState state = fetchSessionStatus(auth, player);
-            if(state.equals(SessionState.VALID)) {
+            if (state.equals(SessionState.VALID)) {
                 RestoreSessionEvent event = bukkitService.createAndCallEvent(
                     isAsync -> new RestoreSessionEvent(player, isAsync));
                 return !event.isCancelled();
-            } else if(state.equals(SessionState.IP_CHANGED)) {
+            } else if (state.equals(SessionState.IP_CHANGED)) {
                 service.send(player, MessageKey.SESSION_EXPIRED);
             }
         }
@@ -68,7 +68,6 @@ public class SessionService implements Reloadable {
      */
     private SessionState fetchSessionStatus(PlayerAuth auth, Player player) {
         if (auth == null) {
-
             ConsoleLogger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
             return SessionState.NOT_VALID;
         } else if (auth.getLastLogin() == null) {
@@ -76,9 +75,9 @@ public class SessionService implements Reloadable {
         }
         long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
 
-        if(timeSinceLastLogin > 0
+        if (timeSinceLastLogin > 0
             && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * MILLIS_PER_MINUTE) {
-            if(PlayerUtils.getPlayerIp(player).equals(auth.getLastIp())) {
+            if (PlayerUtils.getPlayerIp(player).equals(auth.getLastIp())) {
                 return SessionState.VALID;
             } else {
                 return SessionState.IP_CHANGED;
