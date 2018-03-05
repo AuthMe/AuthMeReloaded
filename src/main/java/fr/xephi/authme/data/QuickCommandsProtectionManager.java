@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class QuickCommandsProtectionManager implements SettingsDependent, HasCleanup {
 
-    private PermissionsManager permissionsManager;
+    private final PermissionsManager permissionsManager;
 
     private final ExpiringSet<String> latestLogin;
 
