@@ -66,8 +66,8 @@ public class CommonService {
      * @param key the key of the message
      * @return the message
      */
-    public String retrieveSingleMessage(MessageKey key) {
-        return messages.retrieveSingle(key);
+    public String retrieveSingleMessage(MessageKey key, CommandSender sender) {
+        return messages.retrieveSingle(key, sender);
     }
 
     /**

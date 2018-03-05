@@ -596,7 +596,7 @@ public class PlayerListenerTest {
             MessageKey.INVALID_NAME_CHARACTERS, "[a-z]");
         doThrow(exception).when(onJoinVerifier).checkIsValidName(name);
         String message = "Invalid characters!";
-        given(messages.retrieveSingle(exception.getReason(), exception.getArgs())).willReturn(message);
+        given(messages.retrieveSingle(exception.getReason(), player, exception.getArgs())).willReturn(message);
 
         // when
         listener.onPlayerLogin(event);

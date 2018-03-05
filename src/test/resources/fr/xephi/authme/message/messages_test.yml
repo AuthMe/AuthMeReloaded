@@ -2,6 +2,8 @@
 
 error:
   unregistered_user: 'We''ve got%nl%new lines%nl%and '' apostrophes'
+registration:
+  register_request: '&3Please %username%, register to the server with the command: /register <password> <ConfirmPassword>'
 login:
   success: '&cHere we have&bdefined some colors &dand some other &lthings'
   wrong_password: '&cWrong password!'
