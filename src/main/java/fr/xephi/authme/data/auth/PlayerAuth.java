@@ -26,6 +26,7 @@ public class PlayerAuth {
     /** The player's name in the correct casing, e.g. "Xephi". */
     private String realName;
     private HashedPassword password;
+    private String totpKey;
     private String email;
     private String lastIp;
     private int groupId;
@@ -160,6 +161,10 @@ public class PlayerAuth {
         this.registrationDate = registrationDate;
     }
 
+    public String getTotpKey() {
+        return totpKey;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerAuth)) {
@@ -195,6 +200,7 @@ public class PlayerAuth {
         private String name;
         private String realName;
         private HashedPassword password;
+        private String totpKey;
         private String lastIp;
         private String email;
         private int groupId = -1;
@@ -219,6 +225,7 @@ public class PlayerAuth {
             auth.nickname = checkNotNull(name).toLowerCase();
             auth.realName = firstNonNull(realName, "Player");
             auth.password = firstNonNull(password, new HashedPassword(""));
+            auth.totpKey = totpKey;
             auth.email = DB_EMAIL_DEFAULT.equals(email) ? null : email;
             auth.lastIp = lastIp; // Don't check against default value 127.0.0.1 as it may be a legit value
             auth.groupId = groupId;
@@ -256,6 +263,11 @@ public class PlayerAuth {
 
         public Builder password(String hash, String salt) {
             return password(new HashedPassword(hash, salt));
+        }
+
+        public Builder totpKey(String totpKey) {
+            this.totpKey = totpKey;
+            return this;
         }
 
         public Builder lastIp(String lastIp) {

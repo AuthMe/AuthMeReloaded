@@ -269,6 +269,15 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public boolean setTotpKey(String user, String totpKey) {
+        boolean result = source.setTotpKey(user, totpKey);
+        if (result) {
+            cachedAuths.refresh(user);
+        }
+        return result;
+    }
+
+    @Override
     public void invalidateCache(String playerName) {
         cachedAuths.invalidate(playerName);
     }

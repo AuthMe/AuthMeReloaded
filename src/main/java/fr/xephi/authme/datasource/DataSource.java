@@ -233,6 +233,25 @@ public interface DataSource extends Reloadable {
     List<PlayerAuth> getRecentlyLoggedInPlayers();
 
     /**
+     * Sets the given TOTP key to the player's account.
+     *
+     * @param user the name of the player to modify
+     * @param totpKey the totp key to set
+     * @return True upon success, false upon failure
+     */
+    boolean setTotpKey(String user, String totpKey);
+
+    /**
+     * Removes the TOTP key if present of the given player's account.
+     *
+     * @param user the name of the player to modify
+     * @return True upon success, false upon failure
+     */
+    default boolean removeTotpKey(String user) {
+        return setTotpKey(user, null);
+    }
+
+    /**
      * Reload the data source.
      */
     @Override

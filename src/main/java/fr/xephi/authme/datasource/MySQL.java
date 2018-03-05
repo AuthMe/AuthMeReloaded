@@ -248,6 +248,11 @@ public class MySQL implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.HAS_SESSION + " SMALLINT NOT NULL DEFAULT '0' AFTER " + col.IS_LOGGED);
             }
+
+            if (isColumnMissing(md, col.TOTP_KEY)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
+            }
         }
         ConsoleLogger.info("MySQL setup finished");
     }
@@ -728,6 +733,20 @@ public class MySQL implements DataSource {
         return players;
     }
 
+    @Override
+    public boolean setTotpKey(String user, String totpKey) {
+        String sql = "UPDATE " + tableName + " SET " + col.TOTP_KEY + " = ? WHERE " + col.NAME + " = ?";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, totpKey);
+            pst.setString(2, user.toLowerCase());
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return false;
+    }
+
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);
@@ -735,6 +754,7 @@ public class MySQL implements DataSource {
             .name(row.getString(col.NAME))
             .realName(row.getString(col.REAL_NAME))
             .password(row.getString(col.PASSWORD), salt)
+            .totpKey(row.getString(col.TOTP_KEY))
             .lastLogin(getNullableLong(row, col.LAST_LOGIN))
             .lastIp(row.getString(col.LAST_IP))
             .email(row.getString(col.EMAIL))

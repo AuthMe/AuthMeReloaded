@@ -398,6 +398,11 @@ public class FlatFile implements DataSource {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
+    @Override
+    public boolean setTotpKey(String user, String totpKey) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
     /**
      * Creates a PlayerAuth object from the read data.
      *

@@ -171,6 +171,11 @@ public class SQLite implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.HAS_SESSION + " INT NOT NULL DEFAULT '0';");
             }
+
+            if (isColumnMissing(md, col.TOTP_KEY)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
+            }
         }
         ConsoleLogger.info("SQLite Setup finished");
     }
@@ -654,6 +659,21 @@ public class SQLite implements DataSource {
         return players;
     }
 
+
+    @Override
+    public boolean setTotpKey(String user, String totpKey) {
+        String sql = "UPDATE " + tableName + " SET " + col.TOTP_KEY + " = ? WHERE " + col.NAME + " = ?";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, totpKey);
+            pst.setString(2, user.toLowerCase());
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return false;
+    }
+
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = !col.SALT.isEmpty() ? row.getString(col.SALT) : null;
 
@@ -662,6 +682,7 @@ public class SQLite implements DataSource {
             .email(row.getString(col.EMAIL))
             .realName(row.getString(col.REAL_NAME))
             .password(row.getString(col.PASSWORD), salt)
+            .totpKey(row.getString(col.TOTP_KEY))
             .lastLogin(getNullableLong(row, col.LAST_LOGIN))
             .lastIp(row.getString(col.LAST_IP))
             .registrationDate(row.getLong(col.REGISTRATION_DATE))

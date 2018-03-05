@@ -79,6 +79,10 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_HASSESSION =
         newProperty("DataSource.mySQLColumnHasSession", "hasSession");
 
+    @Comment("Column for storing a player's TOTP key (for two-factor authentication)")
+    public static final Property<String> MYSQL_COL_TOTP_KEY =
+        newProperty("DataSource.mySQLtotpKey", "totp");
+
     @Comment("Column for storing the player's last IP")
     public static final Property<String> MYSQL_COL_LAST_IP =
         newProperty("DataSource.mySQLColumnIp", "ip");
