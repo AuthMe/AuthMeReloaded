@@ -191,7 +191,7 @@
                     <execution>
                         <id>attach-javadocs</id>
                         <goals>
-                            <goal>aggregate</goal>
+                            <goal>javadoc</goal>
                             <goal>jar</goal>
                         </goals>
                     </execution>
