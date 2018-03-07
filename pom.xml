@@ -286,6 +286,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.warrenstrange</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.warrenstrange</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
             </plugin>
@@ -459,6 +463,13 @@
             <version>2.3</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+
+        <!-- TOTP client -->
+        <dependency>
+            <groupId>com.warrenstrange</groupId>
+            <artifactId>googleauth</artifactId>
+            <version>1.1.2</version>
         </dependency>
 
         <!-- Spigot API, http://www.spigotmc.org/ -->

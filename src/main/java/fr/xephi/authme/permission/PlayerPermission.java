@@ -68,7 +68,12 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission to use the email verification codes feature.
      */
-    VERIFICATION_CODE("authme.player.security.verificationcode");
+    VERIFICATION_CODE("authme.player.security.verificationcode"),
+
+    /**
+     * Permission to enable and disable TOTP.
+     */
+    TOGGLE_TOTP_STATUS("authme.player.totp");
 
     /**
      * The permission node.

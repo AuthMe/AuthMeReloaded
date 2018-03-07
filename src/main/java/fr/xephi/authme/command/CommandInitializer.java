@@ -40,6 +40,10 @@ import fr.xephi.authme.command.executable.email.ShowEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.command.executable.register.RegisterCommand;
+import fr.xephi.authme.command.executable.totp.AddTotpCommand;
+import fr.xephi.authme.command.executable.totp.ConfirmTotpCommand;
+import fr.xephi.authme.command.executable.totp.RemoveTotpCommand;
+import fr.xephi.authme.command.executable.totp.TotpBaseCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.command.executable.verification.VerificationCommand;
 import fr.xephi.authme.permission.AdminPermission;
@@ -134,6 +138,9 @@ public class CommandInitializer {
             .executableCommand(ChangePasswordCommand.class)
             .register();
 
+        // Create totp base command
+        CommandDescription totpBase = buildTotpBaseCommand();
+
         // Register the base captcha command
         CommandDescription captchaBase = CommandDescription.builder()
             .parent(null)
@@ -156,16 +163,8 @@ public class CommandInitializer {
             .executableCommand(VerificationCommand.class)
             .register();
 
-        List<CommandDescription> baseCommands = ImmutableList.of(
-            authMeBase,
-            emailBase,
-            loginBase,
-            logoutBase,
-            registerBase,
-            unregisterBase,
-            changePasswordBase,
-            captchaBase,
-            verificationBase);
+        List<CommandDescription> baseCommands = ImmutableList.of(authMeBase, emailBase, loginBase, logoutBase,
+            registerBase, unregisterBase, changePasswordBase, totpBase, captchaBase, verificationBase);
 
         setHelpOnAllBases(baseCommands);
         commands = baseCommands;
@@ -541,6 +540,56 @@ public class CommandInitializer {
             .register();
 
         return emailBase;
+    }
+
+    /**
+     * Creates a command description object for {@code /totp} including its children.
+     *
+     * @return the totp base command description
+     */
+    private CommandDescription buildTotpBaseCommand() {
+        // Register the base totp command
+        CommandDescription totpBase = CommandDescription.builder()
+            .parent(null)
+            .labels("totp", "2fa")
+            .description("TOTP commands")
+            .detailedDescription("Performs actions related to two-factor authentication.")
+            .executableCommand(TotpBaseCommand.class)
+            .register();
+
+        // Register totp add
+        CommandDescription.builder()
+            .parent(totpBase)
+            .labels("add")
+            .description("Enables TOTP")
+            .detailedDescription("Enables two-factor authentication for your account.")
+            .permission(PlayerPermission.TOGGLE_TOTP_STATUS)
+            .executableCommand(AddTotpCommand.class)
+            .register();
+
+        // Register totp confirm
+        CommandDescription.builder()
+            .parent(totpBase)
+            .labels("confirm")
+            .description("Enables TOTP after successful code")
+            .detailedDescription("Saves the generated TOTP secret after confirmation.")
+            .withArgument("code", "Code from the given secret from /totp add", false)
+            .permission(PlayerPermission.TOGGLE_TOTP_STATUS)
+            .executableCommand(ConfirmTotpCommand.class)
+            .register();
+
+        // Register totp remove
+        CommandDescription.builder()
+            .parent(totpBase)
+            .labels("remove")
+            .description("Removes TOTP")
+            .detailedDescription("Disables two-factor authentication for your account.")
+            .withArgument("code", "Current 2FA code", false)
+            .permission(PlayerPermission.TOGGLE_TOTP_STATUS)
+            .executableCommand(RemoveTotpCommand.class)
+            .register();
+
+        return totpBase;
     }
 
     /**

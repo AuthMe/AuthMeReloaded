@@ -376,4 +376,11 @@ public class BukkitService implements SettingsDependent {
     public BanEntry banIp(String ip, String reason, Date expires, String source) {
         return Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, source);
     }
+
+    /**
+     * @return the IP string that this server is bound to, otherwise empty string
+     */
+    public String getIp() {
+        return Bukkit.getServer().getIp();
+    }
 }
