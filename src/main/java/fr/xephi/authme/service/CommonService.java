@@ -64,6 +64,7 @@ public class CommonService {
      * Retrieves a message in one piece.
      *
      * @param key the key of the message
+     * @param sender The entity to send the message to
      * @return the message
      */
     public String retrieveSingleMessage(MessageKey key, CommandSender sender) {

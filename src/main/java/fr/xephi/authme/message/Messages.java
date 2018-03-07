@@ -116,7 +116,7 @@ public class Messages {
      * @return The message from the file
      */
     private String retrieveMessage(MessageKey key, CommandSender sender) {
-    	String message = messagesFileHandler.getMessage(key.getKey());
+        String message = messagesFileHandler.getMessage(key.getKey());
     	String displayName = sender.getName();
     	if (sender instanceof Player) {
     		displayName = ((Player) sender).getDisplayName();

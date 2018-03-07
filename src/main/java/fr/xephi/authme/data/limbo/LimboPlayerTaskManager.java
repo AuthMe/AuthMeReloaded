@@ -49,9 +49,9 @@ class LimboPlayerTaskManager {
      */
     void registerMessageTask(Player player, LimboPlayer limbo, boolean isRegistered) {
         int interval = settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-        MessageResult messageResult = getMessageKey(player.getName(), isRegistered);
+        MessageResult result = getMessageKey(player.getName(), isRegistered);
         if (interval > 0) {
-            String[] joinMessage = messages.retrieveSingle(messageResult.messageKey, player, messageResult.args).split("\n");
+            String[] joinMessage = messages.retrieveSingle(result.messageKey, player, result.args).split("\n");
             MessageTask messageTask = new MessageTask(player, joinMessage);
             bukkitService.runTaskTimer(messageTask, 2 * TICKS_PER_SECOND, interval * TICKS_PER_SECOND);
             limbo.setMessageTask(messageTask);

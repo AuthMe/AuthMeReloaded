@@ -141,6 +141,7 @@ public class MessagesIntegrationTest {
         MessageKey key = MessageKey.LOGIN_SUCCESS;
         Player player = Mockito.mock(Player.class);
         given(player.getName()).willReturn("Tester");
+        given(player.getDisplayName()).willReturn("§cTesty");
 
         // when
         messages.send(player, key);
@@ -155,6 +156,7 @@ public class MessagesIntegrationTest {
         MessageKey key = MessageKey.UNKNOWN_USER;
         Player player = Mockito.mock(Player.class);
         given(player.getName()).willReturn("Tester");
+        given(player.getDisplayName()).willReturn("§cTesty");
 
         // when
         messages.send(player, key);
@@ -172,12 +174,13 @@ public class MessagesIntegrationTest {
         MessageKey key = MessageKey.REGISTER_MESSAGE;
         Player player = Mockito.mock(Player.class);
         given(player.getName()).willReturn("Tester");
+        given(player.getDisplayName()).willReturn("§cTesty");
 
         // when
         messages.send(player, key);
 
         // then
-        verify(player).sendMessage("§3Please Tester, register to the server with the command: /register <password> <ConfirmPassword>");
+        verify(player).sendMessage("§3Please Tester, register to the §cTesty§3.");
     }
 
     @Test
