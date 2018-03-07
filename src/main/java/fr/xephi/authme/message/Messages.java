@@ -117,15 +117,15 @@ public class Messages {
      */
     private String retrieveMessage(MessageKey key, CommandSender sender) {
         String message = messagesFileHandler.getMessage(key.getKey());
-    	String displayName = sender.getName();
-    	if (sender instanceof Player) {
-    		displayName = ((Player) sender).getDisplayName();
-    	}
-    	
-    	return ChatColor.translateAlternateColorCodes('&', message)
-    			.replace(NEWLINE_TAG, "\n")
-    			.replace(USERNAME_TAG, sender.getName())
-    			.replace(DISPLAYNAME_TAG, displayName);
+        String displayName = sender.getName();
+        if (sender instanceof Player) {
+            displayName = ((Player) sender).getDisplayName();
+        }
+        
+        return ChatColor.translateAlternateColorCodes('&', message)
+                .replace(NEWLINE_TAG, "\n")
+                .replace(USERNAME_TAG, sender.getName())
+                .replace(DISPLAYNAME_TAG, displayName);
     }
 
     /**
@@ -136,12 +136,12 @@ public class Messages {
      * @return The message from the file
      */
     private String retrieveMessage(MessageKey key, String name) {
-    	String message = messagesFileHandler.getMessage(key.getKey());
-    	
-    	return ChatColor.translateAlternateColorCodes('&', message)
-    			.replace(NEWLINE_TAG, "\n")
-    			.replace(USERNAME_TAG, name)
-    			.replace(DISPLAYNAME_TAG, name);
+        String message = messagesFileHandler.getMessage(key.getKey());
+        
+        return ChatColor.translateAlternateColorCodes('&', message)
+                .replace(NEWLINE_TAG, "\n")
+                .replace(USERNAME_TAG, name)
+                .replace(DISPLAYNAME_TAG, name);
     }
 
     /**
