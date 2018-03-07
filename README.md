@@ -11,7 +11,7 @@
    - [Discord](https://discord.gg/Vn9eCyE)
 
 - CI Services:
-  - Jenkins: [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/AuthMeReloaded) (**DEVELOPMENT BUILDS**)
+  - Jenkins: [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/AuthMeReloaded) (**DEVELOPMENT BUILDS**)
   - CircleCI: [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
 
 - Project status:
@@ -19,8 +19,8 @@
   - Code climate: [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
 
 - Development resources:
-  - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
-  - <a href="http://repo.codemc.org/repository/maven-public/">Maven Repository</a>
+  - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
+  - <a href="http://repo.codemc.org/repository/maven-public/">Maven Repository</a>
 
 - Statistics:
   - bStats: [AuthMe on bstats.org](https://bstats.org/plugin/bukkit/AuthMe)
