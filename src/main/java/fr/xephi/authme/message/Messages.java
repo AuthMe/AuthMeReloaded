@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -18,7 +19,9 @@ public class Messages {
     // Custom Authme tag replaced to new line
     private static final String NEWLINE_TAG = "%nl%";
 
+    // Global tag replacements
     private static final String USERNAME_TAG = "%username%";
+    private static final String DISPLAYNAME_TAG = "%displayname%";
 
     /** Contains the keys of the singular messages for time units. */
     private static final Map<TimeUnit, MessageKey> TIME_UNIT_SINGULARS = ImmutableMap.<TimeUnit, MessageKey>builder()
@@ -114,10 +117,15 @@ public class Messages {
      */
     private String retrieveMessage(MessageKey key, CommandSender sender) {
     	String message = messagesFileHandler.getMessage(key.getKey());
+    	String displayName = sender.getName();
+    	if (sender instanceof Player) {
+    		displayName = ((Player) sender).getDisplayName();
+    	}
     	
     	return ChatColor.translateAlternateColorCodes('&', message)
     			.replace(NEWLINE_TAG, "\n")
-    			.replace(USERNAME_TAG, sender.getName());
+    			.replace(USERNAME_TAG, sender.getName())
+    			.replace(DISPLAYNAME_TAG, displayName);
     }
 
     /**
@@ -132,7 +140,8 @@ public class Messages {
     	
     	return ChatColor.translateAlternateColorCodes('&', message)
     			.replace(NEWLINE_TAG, "\n")
-    			.replace(USERNAME_TAG, name);
+    			.replace(USERNAME_TAG, name)
+    			.replace(DISPLAYNAME_TAG, name);
     }
 
     /**
