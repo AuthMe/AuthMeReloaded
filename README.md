@@ -24,6 +24,7 @@
 
 - Statistics:
   - bStats: [AuthMe on bstats.org](https://bstats.org/plugin/bukkit/AuthMe)
+    ![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)
 
 <hr>
 
