@@ -11,12 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -57,7 +57,19 @@ public class LoginCommandTest {
         command.executeCommand(sender, Collections.singletonList("password"));
 
         // then
-        verify(management).performLogin(eq(sender), eq("password"));
+        verify(management).performLogin(sender, "password", null);
+    }
+
+    @Test
+    public void shouldCallManagementForPasswordAndTotpCode() {
+        // given
+        Player sender = mock(Player.class);
+
+        // when
+        command.executeCommand(sender, Arrays.asList("pwd", "12345"));
+
+        // then
+        verify(management).performLogin(sender, "pwd", "12345");
     }
 
     @Test

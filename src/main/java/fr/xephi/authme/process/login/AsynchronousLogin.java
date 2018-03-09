@@ -18,6 +18,7 @@ import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.TotpService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
@@ -78,6 +79,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
     @Inject
     private BungeeSender bungeeSender;
 
+    @Inject
+    private TotpService totpService;
+
     AsynchronousLogin() {
     }
 
@@ -86,10 +90,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *
      * @param player the player to log in
      * @param password the password to log in with
+     * @param totpCode the totp code (nullable)
      */
-    public void login(Player player, String password) {
+    public void login(Player player, String password, String totpCode) {
         PlayerAuth auth = getPlayerAuth(player);
-        if (auth != null && checkPlayerInfo(player, auth, password)) {
+        if (auth != null && checkPlayerInfo(player, auth, password, totpCode)) {
             performLogin(player, auth);
         }
     }
@@ -156,10 +161,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param player the player requesting to log in
      * @param auth the PlayerAuth object of the player
      * @param password the password supplied by the player
+     * @param totpCode the input totp code (nullable)
      * @return true if the password matches and all other conditions are met (e.g. no captcha required),
      *         false otherwise
      */
-    private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password) {
+    private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password, String totpCode) {
         final String name = player.getName().toLowerCase();
 
         // If captcha is required send a message to the player and deny to log in
@@ -173,6 +179,17 @@ public class AsynchronousLogin implements AsynchronousProcess {
         // Increase the counts here before knowing the result of the login.
         loginCaptchaManager.increaseLoginFailureCount(name);
         tempbanManager.increaseCount(ip, name);
+
+        if (auth.getTotpKey() != null) {
+            if (totpCode == null) {
+                player.sendMessage(
+                    "You have two-factor authentication enabled. Please provide it: /login <password> <2faCode>");
+                return false;
+            } else if (!totpService.verifyCode(auth, totpCode)) {
+                player.sendMessage("Invalid code for two-factor authentication. Please try again");
+                return false;
+            }
+        }
 
         if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
             return true;

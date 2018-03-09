@@ -77,6 +77,7 @@ class PlayerAuthViewer implements DebugSection {
         HashedPassword hashedPass = auth.getPassword();
         sender.sendMessage("Hash / salt (partial): '" + safeSubstring(hashedPass.getHash(), 6)
             + "' / '" + safeSubstring(hashedPass.getSalt(), 4) + "'");
+        sender.sendMessage("TOTP code (partial): '" + safeSubstring(auth.getTotpKey(), 3) + "'");
     }
 
     /**

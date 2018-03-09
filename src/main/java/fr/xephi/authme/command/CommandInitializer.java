@@ -89,6 +89,7 @@ public class CommandInitializer {
             .description("Login command")
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .withArgument("password", "Login password", false)
+            .withArgument("2facode", "TOTP code", true)
             .permission(PlayerPermission.LOGIN)
             .executableCommand(LoginCommand.class)
             .register();
