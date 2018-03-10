@@ -71,9 +71,14 @@ public enum PlayerPermission implements PermissionNode {
     VERIFICATION_CODE("authme.player.security.verificationcode"),
 
     /**
-     * Permission to enable and disable TOTP.
+     * Permission to enable two-factor authentication.
      */
-    TOGGLE_TOTP_STATUS("authme.player.totp");
+    ENABLE_TWO_FACTOR_AUTH("authme.player.totpadd"),
+
+    /**
+     * Permission to disable two-factor authentication.
+     */
+    DISABLE_TWO_FACTOR_AUTH("authme.player.totpremove");
 
     /**
      * The permission node.

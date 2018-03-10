@@ -65,6 +65,9 @@ commands:
     arg1:
       label: loginArg
       nonExistent: does not exist
+    arg2:
+      label: 2faArg
+      rhetorical: false
     someProp:
       label: '''someProp'' does not exist'
       description: idk

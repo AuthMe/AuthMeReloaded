@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.totp;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.security.TotpService;
+import fr.xephi.authme.security.totp.TotpService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;

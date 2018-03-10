@@ -23,7 +23,7 @@ commands:
     usage: /email show|add|change|recover|code|setpassword
   login:
     description: Login command
-    usage: /login <password>
+    usage: /login <password> [2facode]
     aliases:
     - l
     - log
@@ -48,7 +48,7 @@ commands:
     - cp
   totp:
     description: TOTP commands
-    usage: /totp add|remove
+    usage: /totp add|confirm|remove
     aliases:
     - 2fa
   captcha:
@@ -238,7 +238,8 @@ permissions:
       authme.player.register: true
       authme.player.security.verificationcode: true
       authme.player.seeownaccounts: true
-      authme.player.totp: true
+      authme.player.totpadd: true
+      authme.player.totpremove: true
       authme.player.unregister: true
   authme.player.canbeforced:
     description: Permission for users a login can be forced to.
@@ -283,8 +284,11 @@ permissions:
   authme.player.seeownaccounts:
     description: Permission to use to see own other accounts.
     default: true
-  authme.player.totp:
-    description: Permission to enable and disable TOTP.
+  authme.player.totpadd:
+    description: Permission to enable two-factor authentication.
+    default: true
+  authme.player.totpremove:
+    description: Permission to disable two-factor authentication.
     default: true
   authme.player.unregister:
     description: Command permission to unregister.

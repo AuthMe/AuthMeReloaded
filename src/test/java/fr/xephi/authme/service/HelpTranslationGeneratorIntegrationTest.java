@@ -126,7 +126,7 @@ public class HelpTranslationGeneratorIntegrationTest {
 
         // Check /login
         checkDescription(configuration.get("commands.login"), "Login command", "/login detailed desc.");
-        checkArgs(configuration.get("commands.login"), arg("loginArg", "Login password"));
+        checkArgs(configuration.get("commands.login"), arg("loginArg", "Login password"), arg("2faArg", "TOTP code"));
 
         // Check /unregister
         checkDescription(configuration.get("commands.unregister"), "unreg_desc", "unreg_detail_desc");
