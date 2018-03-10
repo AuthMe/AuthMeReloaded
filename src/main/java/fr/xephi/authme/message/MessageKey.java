@@ -275,6 +275,9 @@ public enum MessageKey {
     /** To verify your identity you need to link an email address with your account! */
     VERIFICATION_CODE_EMAIL_NEEDED("verification.email_needed"),
 
+    /** You used a command too fast! Please, join the server again and wait more before using any command. */
+    QUICK_COMMAND_PROTECTION_KICK("quick_command.kick"),
+
     /** second */
     SECOND("time.second"),
 
