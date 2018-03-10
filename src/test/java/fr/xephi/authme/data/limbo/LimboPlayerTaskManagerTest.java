@@ -71,7 +71,7 @@ public class LimboPlayerTaskManagerTest {
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
         MessageKey key = MessageKey.REGISTER_MESSAGE;
-        given(messages.retrieveSingle(key, player)).willReturn("Please register!");
+        given(messages.retrieveSingle(player, key)).willReturn("Please register!");
         int interval = 12;
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(interval);
 
@@ -80,7 +80,7 @@ public class LimboPlayerTaskManagerTest {
 
         // then
         verify(limboPlayer).setMessageTask(any(MessageTask.class));
-        verify(messages).retrieveSingle(key, player);
+        verify(messages).retrieveSingle(player, key);
         verify(bukkitService).runTaskTimer(
             any(MessageTask.class), eq(2L * TICKS_PER_SECOND), eq((long) interval * TICKS_PER_SECOND));
     }
@@ -110,7 +110,7 @@ public class LimboPlayerTaskManagerTest {
         MessageTask existingMessageTask = mock(MessageTask.class);
         limboPlayer.setMessageTask(existingMessageTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
-        given(messages.retrieveSingle(MessageKey.REGISTER_MESSAGE, player)).willReturn("Please register!");
+        given(messages.retrieveSingle(player, MessageKey.REGISTER_MESSAGE)).willReturn("Please register!");
 
         // when
         limboPlayerTaskManager.registerMessageTask(player, limboPlayer, false);
@@ -119,7 +119,7 @@ public class LimboPlayerTaskManagerTest {
         assertThat(limboPlayer.getMessageTask(), not(nullValue()));
         assertThat(limboPlayer.getMessageTask(), not(sameInstance(existingMessageTask)));
         verify(registrationCaptchaManager).isCaptchaRequired(name);
-        verify(messages).retrieveSingle(MessageKey.REGISTER_MESSAGE, player);
+        verify(messages).retrieveSingle(player, MessageKey.REGISTER_MESSAGE);
         verify(existingMessageTask).cancel();
     }
 
@@ -134,14 +134,14 @@ public class LimboPlayerTaskManagerTest {
         given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captcha = "M032";
         given(registrationCaptchaManager.getCaptchaCodeOrGenerateNew(name)).willReturn(captcha);
-        given(messages.retrieveSingle(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, player, captcha)).willReturn("Need to use captcha");
+        given(messages.retrieveSingle(player, MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha)).willReturn("Need to use captcha");
 
         // when
         limboPlayerTaskManager.registerMessageTask(player, limboPlayer, false);
 
         // then
         assertThat(limboPlayer.getMessageTask(), not(nullValue()));
-        verify(messages).retrieveSingle(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, player, captcha);
+        verify(messages).retrieveSingle(player, MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha);
     }
 
     @Test
@@ -159,7 +159,7 @@ public class LimboPlayerTaskManagerTest {
         // then
         verify(limboPlayer).setTimeoutTask(bukkitTask);
         verify(bukkitService).runTaskLater(any(TimeoutTask.class), eq(600L)); // 30 * TICKS_PER_SECOND
-        verify(messages).retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR, player);
+        verify(messages).retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
     }
 
     @Test
@@ -194,7 +194,7 @@ public class LimboPlayerTaskManagerTest {
         verify(existingTask).cancel();
         assertThat(limboPlayer.getTimeoutTask(), equalTo(bukkitTask));
         verify(bukkitService).runTaskLater(any(TimeoutTask.class), eq(360L)); // 18 * TICKS_PER_SECOND
-        verify(messages).retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR, player);
+        verify(messages).retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
     }
 
 }

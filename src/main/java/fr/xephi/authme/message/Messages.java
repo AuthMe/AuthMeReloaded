@@ -70,7 +70,7 @@ public class Messages {
      * @param replacements The replacements to apply for the tags
      */
     public void send(CommandSender sender, MessageKey key, String... replacements) {
-        String message = retrieveSingle(key, sender, replacements);
+        String message = retrieveSingle(sender, key, replacements);
         for (String line : message.split("\n")) {
             sender.sendMessage(line);
         }
@@ -149,12 +149,12 @@ public class Messages {
      * logs an error if the number of supplied replacements doesn't correspond to the number of tags
      * the message key contains.
      *
-     * @param key The key of the message to send
      * @param sender The entity to send the message to
+     * @param key The key of the message to send
      * @param replacements The replacements to apply for the tags
      * @return The message from the file with replacements
      */
-    public String retrieveSingle(MessageKey key, CommandSender sender, String... replacements) {
+    public String retrieveSingle(CommandSender sender, MessageKey key, String... replacements) {
         String message = retrieveMessage(key, sender);
         String[] tags = key.getTags();
         if (replacements.length == tags.length) {
@@ -172,12 +172,12 @@ public class Messages {
      * logs an error if the number of supplied replacements doesn't correspond to the number of tags
      * the message key contains.
      *
-     * @param key The key of the message to send
      * @param name The name of the entity to send the message to
+     * @param key The key of the message to send
      * @param replacements The replacements to apply for the tags
      * @return The message from the file with replacements
      */
-    public String retrieveSingle(MessageKey key, String name, String... replacements) {
+    public String retrieveSingle(String name, MessageKey key, String... replacements) {
         String message = retrieveMessage(key, name);
         String[] tags = key.getTags();
         if (replacements.length == tags.length) {

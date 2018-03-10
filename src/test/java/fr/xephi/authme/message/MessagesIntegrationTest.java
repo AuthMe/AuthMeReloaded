@@ -100,7 +100,7 @@ public class MessagesIntegrationTest {
         given(sender.getName()).willReturn("Tester");
 
         // when
-        String message = messages.retrieveSingle(key, sender);
+        String message = messages.retrieveSingle(sender, key);
 
         // then
         assertThat(message, equalTo("We've got\nnew lines\nand ' apostrophes"));
@@ -252,7 +252,7 @@ public class MessagesIntegrationTest {
         given(sender.getName()).willReturn("Tester");
 
         // when
-        String message = messages.retrieveSingle(key, sender);
+        String message = messages.retrieveSingle(sender, key);
 
         // then
         assertThat(message, equalTo("§cWrong password!"));
@@ -266,7 +266,7 @@ public class MessagesIntegrationTest {
         given(sender.getName()).willReturn("Tester");
 
         // when
-        String result = messages.retrieveSingle(key, sender.getName(), "24680");
+        String result = messages.retrieveSingle(sender.getName(), key, "24680");
 
         // then
         assertThat(result, equalTo("Use /captcha 24680 to solve the captcha"));

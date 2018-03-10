@@ -101,7 +101,7 @@ public class OnJoinVerifierTest {
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(false);
         String serverFullMessage = "server is full";
-        given(messages.retrieveSingle(MessageKey.KICK_FULL_SERVER, player)).willReturn(serverFullMessage);
+        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn(serverFullMessage);
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -125,7 +125,7 @@ public class OnJoinVerifierTest {
         given(permissionsManager.hasPermission(onlinePlayers.get(1), PlayerStatePermission.IS_VIP)).willReturn(false);
         returnOnlineListFromBukkitServer(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(MessageKey.KICK_FOR_VIP, player)).willReturn("kick for vip");
+        given(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -149,7 +149,7 @@ public class OnJoinVerifierTest {
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
         returnOnlineListFromBukkitServer(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(MessageKey.KICK_FULL_SERVER, player)).willReturn("kick full server");
+        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);

@@ -51,7 +51,7 @@ class LimboPlayerTaskManager {
         int interval = settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         MessageResult result = getMessageKey(player.getName(), isRegistered);
         if (interval > 0) {
-            String[] joinMessage = messages.retrieveSingle(result.messageKey, player, result.args).split("\n");
+            String[] joinMessage = messages.retrieveSingle(player, result.messageKey, result.args).split("\n");
             MessageTask messageTask = new MessageTask(player, joinMessage);
             bukkitService.runTaskTimer(messageTask, 2 * TICKS_PER_SECOND, interval * TICKS_PER_SECOND);
             limbo.setMessageTask(messageTask);
@@ -67,7 +67,7 @@ class LimboPlayerTaskManager {
     void registerTimeoutTask(Player player, LimboPlayer limbo) {
         final int timeout = settings.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (timeout > 0) {
-            String message = messages.retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR, player);
+            String message = messages.retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
             BukkitTask task = bukkitService.runTaskLater(new TimeoutTask(player, message, playerCache), timeout);
             limbo.setTimeoutTask(task);
         }
