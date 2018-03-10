@@ -1,3 +1,8 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
 registration:
     disabled: '&cO rexistro está deshabilitado'

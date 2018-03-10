@@ -149,7 +149,7 @@ public class TempbanManagerTest {
         String ip = "123.45.67.89";
         TestHelper.mockPlayerIp(player, ip);
         String banReason = "IP ban too many logins";
-        given(messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
+        given(messages.retrieveSingle(player, MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
         Settings settings = mockSettings(2, 100, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         setBukkitServiceToScheduleSyncDelayedTask(bukkitService);
@@ -195,7 +195,7 @@ public class TempbanManagerTest {
         String ip = "22.44.66.88";
         TestHelper.mockPlayerIp(player, ip);
         String banReason = "kick msg";
-        given(messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
+        given(messages.retrieveSingle(player, MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
         Settings settings = mockSettings(10, 60, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         manager.increaseCount(ip, "user");

@@ -1,5 +1,9 @@
 #Translated by Kirito (kds123321@naver.com), System32(me@syst32.com), Adeuran(adeuran@tistory.com)
 #14.05.2017 Thanks for use
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
 registration:
