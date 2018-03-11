@@ -117,10 +117,10 @@ You can also create your own translation file and, if you want, you can share it
 ##### Sponsor:
 [GameHosting.it](http://www.gamehosting.it) is leader in Italy as Game Server Provider. With its own DataCenter offers Anti-DDoS solutions at affordable prices. Game Server of Minecraft based on Multicraft are equipped with the latest technology in hardware.
 
-##### Developers:
-<p>Contributors: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>
-<p>Credit for old version of the plugin to: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
-<p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
+##### Contributors:
+Team members: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>
+Credits for the old version of the plugin: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
+Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex
 
 ##### GeoIP License:
 This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com
