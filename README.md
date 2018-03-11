@@ -119,7 +119,9 @@ You can also create your own translation file and, if you want, you can share it
 
 ##### Contributors:
 Team members: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>
-Credits for the old version of the plugin: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
+
+Credits for the old version of the plugin: d4rkwarriors, fabe1337, Whoami2 and pomo4ka
+
 Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex
 
 ##### GeoIP License:
