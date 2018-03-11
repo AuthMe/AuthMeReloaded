@@ -1,71 +1,15 @@
 # AuthMeReloaded
 The best authentication plugin for the Bukkit modding API!
+<img src="http://i63.tinypic.com/rtp06o.png" alt="AuthMeLogo" style="width: 250px;"/>
 
-![AuthMeLogo](http://i63.tinypic.com/rtp06o.png)
-
-## Badges
-
-| Type              |                                                                                                                                                                                                                                                                                                                                                                                       |
+| Type              | Badges                                                                                                                                                                                                                                                                                                                                                                                |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **General:**      | ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=code) ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=files)                                                                                                                                                                                                                                              |
 | **Code quality:** | [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded) [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)                                                 |
 | **Jenkins CI:**   | [![Jenkins Status](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=ci.codemc.org)](https://ci.codemc.org/) [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded) ![Build Tests](https://img.shields.io/jenkins/t/https/ci.codemc.org/job/AuthMe/job/AuthMeReloaded.svg) |
 | **Other CIs:**    | [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
 
-## Features:
-
-**Prevent username stealing:**
-AuthMe Reloaded prevents players who aren't logged in from actions like placing blocks, moving, typing commands or seeing the inventory of the current player.
-
-**Anti-Spoof:**
-The possibility to set up name spoof protection kicks players with uncommon long or short player names before they could actually join.
-
-**Sessions:**
-Login Sessions make it possible that you don't have to login within a given time period.
-
-**Configurable:**
-Each command and every setting can be enabled or disabled by a easy structured config file.
-
-**Translatable:**
-If you don't like English or don't like our default translations you can easily edit almost every message sent by the plugin!
-
-## Links and Contacts:
-
- - Support:
-   - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
-   - [BukkitDev page](https://dev.bukkit.org/projects/authme-reloaded)
-   - [Spigot page](https://www.spigotmc.org/resources/authmereloaded.6269/)
-   - [Discord](https://discord.gg/Vn9eCyE)
-
-- Development resources:
-  - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
-  - <a href="http://repo.codemc.org/repository/maven-public/">Maven Repository</a>
-
-- Statistics:
-  - bStats: [AuthMe on bstats.org](https://bstats.org/plugin/bukkit/AuthMe)
-    ![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)
-
-<hr>
-
-##### Compiling requirements:
->- JDK 1.8
->- Maven
->- Git/Github (Optional)
-
-##### How to compile the project:
->- Clone the project with Git/Github
->- Execute command "mvn clean package"
-
-##### Running requirements:
->- Java 1.8
->- TacoSpigot, PaperSpigot or Spigot (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X, 1.12.X)<br>
-   (In case you use Thermos, Cauldron or similar, you have to update the SpecialSource library to support Java 8 plugins.
-   HowTo: https://github.com/games647/FastLogin/issues/111#issuecomment-272331347)
->- ProtocolLib (optional, required by some features)
-
-<hr>
-
-### Plugin Description:
+## Description
 
 ##### "The best authentication plugin for the Bukkit/Spigot API!"
 
@@ -136,15 +80,49 @@ You can also create your own translation file and, if you want, you can share it
 - [How to convert from Rakamak](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-rakamak)
 - Convert between database types (e.g. SQLite to MySQL): /authme converter
 
-<hr>
 
-##### Sponsor
+## Links and Contacts
+
+ - **Support:**
+   - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
+   - [BukkitDev page](https://dev.bukkit.org/projects/authme-reloaded)
+   - [Spigot page](https://www.spigotmc.org/resources/authmereloaded.6269/)
+   - [Discord](https://discord.gg/Vn9eCyE)
+
+- **Dev resources:**
+  - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
+  - <a href="http://repo.codemc.org/repository/maven-public/">Maven Repository</a>
+
+- **Statistics:**
+    ![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)
+
+## Requirements
+
+##### Compiling requirements:
+>- JDK 1.8
+>- Maven
+>- Git/Github (Optional)
+
+##### How to compile the project:
+>- Clone the project with Git/Github
+>- Execute command "mvn clean package"
+
+##### Running requirements:
+>- Java 1.8
+>- TacoSpigot, PaperSpigot or Spigot (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X, 1.12.X)<br>
+   (In case you use Thermos, Cauldron or similar, you have to update the SpecialSource library to support Java 8 plugins.
+   HowTo: https://github.com/games647/FastLogin/issues/111#issuecomment-272331347)
+>- ProtocolLib (optional, required by some features)
+
+## Credits
+
+##### Sponsor:
 [GameHosting.it](http://www.gamehosting.it) is leader in Italy as Game Server Provider. With its own DataCenter offers Anti-DDoS solutions at affordable prices. Game Server of Minecraft based on Multicraft are equipped with the latest technology in hardware.
 
-##### Credits
+##### Developers:
 <p>Contributors: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
 
-##### GeoIP License
+##### GeoIP License:
 This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com
