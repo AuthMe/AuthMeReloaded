@@ -1,5 +1,5 @@
 # AuthMeReloaded
-The best authentication plugin for the Bukkit modding API!
+**"The best authentication plugin for the Bukkit modding API!"**
 <img src="http://i63.tinypic.com/rtp06o.png" alt="AuthMeLogo" style="width: 250px;"/>
 
 | Type              | Badges                                                                                                                                                                                                                                                                                                                                                                                |
@@ -10,8 +10,6 @@ The best authentication plugin for the Bukkit modding API!
 | **Other CIs:**    | [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
 
 ## Description
-
-##### "The best authentication plugin for the Bukkit/Spigot API!"
 
 Prevent username stealing on your server!<br>
 Use it to secure your Offline mode server or to increase your Online mode server's protection!
