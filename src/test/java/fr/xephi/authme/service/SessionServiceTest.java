@@ -218,6 +218,7 @@ public class SessionServiceTest {
         String name = "Charles";
         Player player = mockPlayerWithNameAndIp(name, "144.117.118.145");
         given(dataSource.hasSession(name)).willReturn(true);
+        given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .lastIp(null)
