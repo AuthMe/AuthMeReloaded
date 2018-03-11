@@ -1,33 +1,35 @@
 # AuthMeReloaded
-**The best authentication plugin for the Bukkit modding API!**
+The best authentication plugin for the Bukkit modding API!
+
+![AuthMeLogo](http://i63.tinypic.com/rtp06o.png)
 
 ## Badges
 
 | Type              |                                                                                                                                                                                                                                                                                                                                                                                       |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **General:**      | [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded) [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)                                                 |
+| **General:**      | ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=code) ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=files)                                                                                                                                                                                                                                              |
 | **Code quality:** | [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded) [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)                                                 |
 | **Jenkins CI:**   | [![Jenkins Status](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=ci.codemc.org)](https://ci.codemc.org/) [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded) ![Build Tests](https://img.shields.io/jenkins/t/https/ci.codemc.org/job/AuthMe/job/AuthMeReloaded.svg) |
 | **Other CIs:**    | [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
 
 ## Features:
 
-#### Prevent username stealing:
+**Prevent username stealing:**
 AuthMe Reloaded prevents players who aren't logged in from actions like placing blocks, moving, typing commands or seeing the inventory of the current player.
 
-#### Anti-Spoof:
+**Anti-Spoof:**
 The possibility to set up name spoof protection kicks players with uncommon long or short player names before they could actually join.
 
-#### Sessions:
+**Sessions:**
 Login Sessions make it possible that you don't have to login within a given time period.
 
-#### Configurable:
+**Configurable:**
 Each command and every setting can be enabled or disabled by a easy structured config file.
 
-#### Translatable:
+**Translatable:**
 If you don't like English or don't like our default translations you can easily edit almost every message sent by the plugin!
 
-### Links and Contacts:
+## Links and Contacts:
 
  - Support:
    - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
