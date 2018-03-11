@@ -12,10 +12,11 @@ import javax.inject.Inject;
 
 public class PlayerListener19Spigot implements Listener {
 
+    private static boolean isPlayerSpawnLocationEventCalled = false;
+
     @Inject
     private TeleportationService teleportationService;
 
-    private static boolean isPlayerSpawnLocationEventCalled = false;
 
     public static boolean isPlayerSpawnLocationEventCalled() {
         return isPlayerSpawnLocationEventCalled;

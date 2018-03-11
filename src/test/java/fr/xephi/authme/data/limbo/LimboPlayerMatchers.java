@@ -14,6 +14,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 /**
  * Contains matchers for LimboPlayer.
  */
+@SuppressWarnings("checkstyle:JavadocMethod") // Justification: Javadoc would be huge because of the many parameters
 public final class LimboPlayerMatchers {
 
     private LimboPlayerMatchers() {
@@ -45,7 +46,8 @@ public final class LimboPlayerMatchers {
             @Override
             public void describeMismatchSafely(LimboPlayer item, Description description) {
                 description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s, walkSpeed=%f, flySpeed=%f",
-                    item.isOperator(), String.join(" ,", item.getGroups()), item.isCanFly(), item.getWalkSpeed(), item.getFlySpeed()));
+                    item.isOperator(), String.join(" ,", item.getGroups()), item.isCanFly(),
+                    item.getWalkSpeed(), item.getFlySpeed()));
             }
         };
     }

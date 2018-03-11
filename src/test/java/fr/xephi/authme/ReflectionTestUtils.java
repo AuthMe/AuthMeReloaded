@@ -82,7 +82,6 @@ public final class ReflectionTestUtils {
      * @param clazz the class to retrieve a method from
      * @param methodName the name of the method
      * @param parameterTypes the parameter types the method to retrieve has
-     *
      * @return the method of the class, set to be accessible
      */
     public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
@@ -96,6 +95,15 @@ public final class ReflectionTestUtils {
         }
     }
 
+    /**
+     * Invokes the given method on the provided instance with the given parameters.
+     *
+     * @param method the method to invoke
+     * @param instance the instance to invoke the method on (null for static methods)
+     * @param parameters the parameters to pass to the method
+     * @param <V> return value of the method
+     * @return method return value
+     */
     @SuppressWarnings("unchecked")
     public static <V> V invokeMethod(Method method, Object instance, Object... parameters) {
         method.setAccessible(true);

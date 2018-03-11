@@ -61,6 +61,11 @@ public class PurgeExecutor {
         purgePermissions(players);
     }
 
+    /**
+     * Purges data from the AntiXray plugin.
+     *
+     * @param cleared the players whose data should be cleared
+     */
     synchronized void purgeAntiXray(Collection<String> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE)) {
             return;
@@ -95,6 +100,11 @@ public class PurgeExecutor {
         ConsoleLogger.info(ChatColor.GOLD + "Deleted " + names.size() + " user accounts");
     }
 
+    /**
+     * Purges data from the LimitedCreative plugin.
+     *
+     * @param cleared the players whose data should be cleared
+     */
     synchronized void purgeLimitedCreative(Collection<String> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES)) {
             return;
@@ -191,6 +201,11 @@ public class PurgeExecutor {
         ConsoleLogger.info("AutoPurge: Removed " + deletedFiles + " EssentialsFiles");
     }
 
+    /**
+     * Removes permission data (groups a user belongs to) for the given players.
+     *
+     * @param cleared the players to remove data for
+     */
     synchronized void purgePermissions(Collection<OfflinePlayer> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_PERMISSIONS)) {
             return;

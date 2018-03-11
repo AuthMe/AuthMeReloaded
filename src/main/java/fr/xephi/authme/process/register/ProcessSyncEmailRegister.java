@@ -10,7 +10,9 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-
+/**
+ * Performs synchronous tasks after a successful {@link RegistrationType#EMAIL email registration}.
+ */
 public class ProcessSyncEmailRegister implements SynchronousProcess {
 
     @Inject
@@ -22,6 +24,11 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
     ProcessSyncEmailRegister() {
     }
 
+    /**
+     * Performs sync tasks for a player which has just registered by email.
+     *
+     * @param player the recently registered player
+     */
     public void processEmailRegister(Player player) {
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
         limboService.replaceTasksAfterRegistration(player);

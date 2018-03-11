@@ -67,7 +67,7 @@ public class ClassCollector {
     public List<Class<?>> collectClasses(Predicate<Class<?>> filter) {
         File rootFolder = new File(root);
         List<Class<?>> collection = new ArrayList<>();
-        collectClasses(rootFolder, filter, collection);
+        gatherClassesFromFile(rootFolder, filter, collection);
         return collection;
     }
 
@@ -124,14 +124,14 @@ public class ClassCollector {
      * @param filter the class predicate
      * @param collection collection to add classes to
      */
-    private void collectClasses(File folder, Predicate<Class<?>> filter, List<Class<?>> collection) {
+    private void gatherClassesFromFile(File folder, Predicate<Class<?>> filter, List<Class<?>> collection) {
         File[] files = folder.listFiles();
         if (files == null) {
             throw new IllegalStateException("Could not read files from '" + folder + "'");
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                collectClasses(file, filter, collection);
+                gatherClassesFromFile(file, filter, collection);
             } else if (file.isFile()) {
                 Class<?> clazz = loadTaskClassFromFile(file);
                 if (clazz != null && filter.test(clazz)) {

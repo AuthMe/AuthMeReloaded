@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 
 /**
+ * Performs synchronous tasks after a successful {@link RegistrationType#PASSWORD password registration}.
  */
 public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
@@ -46,6 +47,11 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
     }
 
+    /**
+     * Processes a player having registered with a password.
+     *
+     * @param player the newly registered player
+     */
     public void processPasswordRegister(Player player) {
         service.send(player, MessageKey.REGISTER_SUCCESS);
 

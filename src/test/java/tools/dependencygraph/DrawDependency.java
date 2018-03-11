@@ -131,7 +131,8 @@ public class DrawDependency implements ToolTask {
     private Class<?> unwrapGenericClass(Type genericType) {
         if (genericType == Factory.class || genericType == SingletonStore.class) {
             Class<?> parameterType = ReflectionUtils.getGenericType(genericType);
-            Objects.requireNonNull(parameterType, "Parameter type for '" + genericType + "' should be a concrete class");
+            Objects.requireNonNull(parameterType,
+                "Parameter type for '" + genericType + "' should be a concrete class");
             return parameterType;
         }
         return InjectorUtils.convertToClass(genericType);

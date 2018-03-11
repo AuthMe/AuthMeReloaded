@@ -62,7 +62,8 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        DataMutateResult result = user.setPermissionUnchecked(luckPermsApi.getNodeFactory().makeGroupNode(newGroup).build());
+        DataMutateResult result = user.setPermissionUnchecked(
+            luckPermsApi.getNodeFactory().makeGroupNode(newGroup).build());
         if (result == DataMutateResult.FAIL) {
             return false;
         }

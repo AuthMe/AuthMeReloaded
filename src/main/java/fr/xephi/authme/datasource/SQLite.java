@@ -28,6 +28,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 /**
  * SQLite data source.
  */
+@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class SQLite implements DataSource {
 
     private final Settings settings;

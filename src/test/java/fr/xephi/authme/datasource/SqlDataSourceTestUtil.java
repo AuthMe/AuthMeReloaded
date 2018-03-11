@@ -27,6 +27,15 @@ public final class SqlDataSourceTestUtil {
         return new MySQL(settings, hikariDataSource, extensionsFactory);
     }
 
+    /**
+     * Creates a SQLite implementation for testing purposes. Methods are overridden so the
+     * provided connection is never overridden.
+     *
+     * @param settings settings instance
+     * @param dataFolder data folder
+     * @param connection connection to use
+     * @return the created SQLite instance
+     */
     public static SQLite createSqlite(Settings settings, File dataFolder, Connection connection) {
         return new SQLite(settings, dataFolder, connection) {
             // Override reload() so it doesn't run SQLite#connect, since we're given a specific Connection to use
