@@ -1,23 +1,39 @@
-<p align="center"><img src="http://i63.tinypic.com/rtp06o.png"></p>
-<p align="center"><strong>The most used authentication plugin for the Spigot and derivates!</strong></p>
-<hr>
+# AuthMeReloaded
+**The best authentication plugin for the Bukkit modding API!**
 
-##### Links and Contacts:
+![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=code)
+![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=files)
+
+[![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
+[![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
+
+[![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/AuthMeReloaded)
+[![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
+
+## Features:
+
+#### Prevent username stealing:
+AuthMe Reloaded prevents players who aren't logged in from actions like placing blocks, moving, typing commands or seeing the inventory of the current player.
+
+#### Anti-Spoof:
+The possibility to set up name spoof protection kicks players with uncommon long or short player names before they could actually join.
+
+#### Sessions:
+Login Sessions make it possible that you don't have to login within a given time period.
+
+#### Configurable:
+Each command and every setting can be enabled or disabled by a easy structured config file.
+
+#### Translatable:
+If you don't like English or don't like our default translations you can easily edit almost every message sent by the plugin!
+
+### Links and Contacts:
 
  - Support:
    - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
    - [BukkitDev page](https://dev.bukkit.org/projects/authme-reloaded)
    - [Spigot page](https://www.spigotmc.org/resources/authmereloaded.6269/)
    - [Discord](https://discord.gg/Vn9eCyE)
-
-- CI Services:
-  - Jenkins: [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/AuthMeReloaded) (**DEVELOPMENT BUILDS**)
-  - CircleCI: [![CircleCI](https://circleci.com/gh/AuthMe/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe/AuthMeReloaded)
-
-- Project status:
-  - Lines of code: [![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded)](https://github.com/AuthMe/AuthMeReloaded)
-  - Test coverage: [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
-  - Code climate: [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded)
 
 - Development resources:
   - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
