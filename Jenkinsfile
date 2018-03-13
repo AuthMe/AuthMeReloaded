@@ -5,7 +5,7 @@ pipeline {
         jdk 'OracleJDK 8'
     }
     stages {
-        stage ('prepare') {
+        stage ('check-commit') {
             steps {
                 script {
                     env.CI_SKIP = "false"
@@ -19,55 +19,26 @@ pipeline {
         }
         stage ('clean') {
             steps {
-                echo 'Cleaning the maven workspace...'
                 sh 'mvn clean'
             }
         }
         stage ('dependencies') {
             steps {
-                echo 'Downloading dependencies...'
-                sh 'mvn dependency:go-offline'
-            }
-        }
-        stage ('validate') {
-            steps {
-                echo 'Validating the maven project...'
-                sh 'mvn -o validate'
+                sh 'mvn dependency:resolve-plugins dependency:go-offline'
             }
         }
         stage ('compile') {
             steps {
-                echo 'Compiling source classes...'
-                sh 'mvn -o compile'
-            }
-        }
-        stage ('compile-test') {
-            steps {
-                echo 'Compiling test classes...'
-                sh 'mvn -o test-compile'
+                sh 'mvn -o -DskipTests install'
             }
         }
         stage ('test') {
             steps {
-                echo 'Performing unit testing...'
-                sh 'mvn -o test'
+                sh 'mvn -o surefire:test'
             }
             post {
                 success {
-                    echo 'Archiving test results...'
                     junit 'target/surefire-reports/**/*.xml'
-                }
-            }
-        }
-        stage ('package') {
-            steps {
-                echo 'Preparing the final package...'
-                sh 'mvn -o package'
-            }
-            post {
-                success {
-                    echo 'Archiving the final package...'
-                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
             }
         }
@@ -76,12 +47,10 @@ pipeline {
                 branch "master"
             }
             steps {
-                echo 'Generating sources...'
                 sh 'mvn -o source:jar'
             }
             post {
                 success {
-                    echo 'Archiving sources...'
                     archiveArtifacts artifacts: 'target/*-souces.jar', fingerprint: true
                 }
             }
@@ -91,12 +60,10 @@ pipeline {
                 branch "master"
             }
             steps {
-                echo 'Generaing javadocs...'
                 sh 'mvn -o javadoc:javadoc javadoc:jar'
             }
             post {
                 success {
-                    echo 'Archiving javadocs...'
                     step([
                         $class: 'JavadocArchiver',
                         javadocDir: 'target/site/apidocs',
@@ -106,25 +73,12 @@ pipeline {
                 }
             }
         }
-        stage ('verify') {
-            steps {
-                echo 'Performing integration testing...'
-                sh 'mvn -o verify'
-            }
-        }
-        stage ('install') {
-            steps {
-                echo 'Installing artifacts to the local repository...'
-                sh 'mvn -o install'
-            }
-        }
         stage ('deploy') {
             when {
                 branch "master"
             }
             steps {
-                echo 'Deploying to repository...'
-                sh 'mvn -o deploy'
+                sh 'mvn -DskipTests deploy'
             }
         }
     }    
