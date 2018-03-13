@@ -172,7 +172,7 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- Force the right file encoding during unit testing -->
-                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{argLine}</argLine>
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
                     <systemPropertyVariables>
                         <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
                     </systemPropertyVariables>
