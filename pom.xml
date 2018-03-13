@@ -189,10 +189,15 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <id>attach-javadoc</id>
                         <goals>
-                            <goal>javadoc</goal>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>aggregate-javadoc</id>
+                        <goals>
+                            <goal>aggregate</goal>
                         </goals>
                     </execution>
                 </executions>
