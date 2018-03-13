@@ -29,17 +29,7 @@ pipeline {
         }
         stage ('compile') {
             steps {
-                sh 'mvn -o -DskipTests install'
-            }
-        }
-        stage ('test') {
-            steps {
-                sh 'mvn -o surefire:test'
-            }
-            post {
-                success {
-                    junit 'target/surefire-reports/**/*.xml'
-                }
+                sh 'mvn -o -DskipTests package'
             }
         }
         stage ('sources') {
@@ -70,6 +60,16 @@ pipeline {
                         keepAll: true
                     ])
                     archiveArtifacts artifacts: 'target/*-javadoc.jar', fingerprint: true
+                }
+            }
+        }
+        stage ('test') {
+            steps {
+                sh 'mvn -o surefire:test'
+            }
+            post {
+                success {
+                    junit 'target/surefire-reports/**/*.xml'
                 }
             }
         }
