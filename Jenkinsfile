@@ -1,3 +1,7 @@
+def silentsh(cmd) {
+    sh('#!/bin/sh -e\n' + cmd)
+}
+
 pipeline {
     agent any
     tools {
@@ -9,7 +13,7 @@ pipeline {
             steps {
                 script {
                     env.CI_SKIP = "false"
-                    result = sh (script: "git log -1 | grep '(?s).[CI[-\\s]SKIP].*'", returnStatus: true)
+                    result = silentsh(script: "git log -1 | grep '(?s).[CI[-\\s]SKIP].*'", returnStatus: true)
                     if (result == 0) {
                         env.CI_SKIP = "true"
                         error "'[CI-SKIP]' found in git commit message. Aborting."
@@ -20,37 +24,37 @@ pipeline {
         stage ('clean') {
             steps {
                 echo 'Cleaning the maven workspace...'
-                sh 'mvn clean'
+                silentsh 'mvn clean'
             }
         }
         stage ('dependencies') {
             steps {
                 echo 'Downloading dependencies...'
-                sh 'mvn dependency:go-offline'
+                silentsh 'mvn dependency:go-offline'
             }
         }
         stage ('validate') {
             steps {
                 echo 'Validating the maven project...'
-                sh 'mvn -o validate'
+                silentsh 'mvn -o validate'
             }
         }
         stage ('compile') {
             steps {
                 echo 'Compiling source classes...'
-                sh 'mvn -o compile'
+                silentsh 'mvn -o compile'
             }
         }
         stage ('compile-test') {
             steps {
                 echo 'Compiling test classes...'
-                sh 'mvn -o test-compile'
+                silentsh 'mvn -o test-compile'
             }
         }
         stage ('test') {
             steps {
                 echo 'Performing unit testing...'
-                sh 'mvn -o test'
+                silentsh 'mvn -o test'
             }
             post {
                 success {
@@ -62,7 +66,7 @@ pipeline {
         stage ('package') {
             steps {
                 echo 'Preparing the final package...'
-                sh 'mvn -o package'
+                silentsh 'mvn -o package'
             }
             post {
                 success {
@@ -77,7 +81,7 @@ pipeline {
             }
             steps {
                 echo 'Generating sources...'
-                sh 'mvn -o source:jar'
+                silentsh 'mvn -o source:jar'
             }
             post {
                 success {
@@ -92,7 +96,7 @@ pipeline {
             }
             steps {
                 echo 'Generaing javadocs...'
-                sh 'mvn -o javadoc:javadoc javadoc:jar'
+                silentsh 'mvn -o javadoc:javadoc javadoc:jar'
             }
             post {
                 success {
@@ -109,13 +113,13 @@ pipeline {
         stage ('verify') {
             steps {
                 echo 'Performing integration testing...'
-                sh 'mvn -o verify'
+                silentsh 'mvn -o verify'
             }
         }
         stage ('install') {
             steps {
                 echo 'Installing artifacts to the local repository...'
-                sh 'mvn -o install'
+                silentsh 'mvn -o install'
             }
         }
         stage ('deploy') {
@@ -124,7 +128,7 @@ pipeline {
             }
             steps {
                 echo 'Deploying to repository...'
-                sh 'mvn -o deploy'
+                silentsh 'mvn -o deploy'
             }
         }
     }    
