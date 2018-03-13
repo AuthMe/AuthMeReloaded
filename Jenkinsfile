@@ -8,7 +8,7 @@ pipeline {
         stage ('prepare') {
             steps {
                 env.CI_SKIP = "false"
-                result = sh (script: "git log -1 | grep '(?s).[CI[-\s]SKIP].*'", returnStatus: true)
+                result = sh (script: "git log -1 | grep '(?s).[CI[-\\s]SKIP].*'", returnStatus: true)
                 if (result == 0) {
                     env.CI_SKIP = "true"
                     error "'[CI-SKIP]' found in git commit message. Aborting."
