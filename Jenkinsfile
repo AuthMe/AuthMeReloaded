@@ -132,12 +132,12 @@ pipeline {
                 sh 'mvn -o deploy'
             }
         }
-        post {
-            always {
-                script {
-                    if (env.CI_SKIP == "true") {
-                        currentBuild.result = 'NOT_BUILT'
-                    }
+    }    
+    post {
+        always {
+            script {
+                if (env.CI_SKIP == "true") {
+                    currentBuild.result = 'NOT_BUILT'
                 }
             }
         }
