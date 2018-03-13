@@ -28,11 +28,6 @@ pipeline {
                 echo 'Downloading dependencies...'
                 sh 'mvn dependency:go-offline'
             }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/nukkit-*-SNAPSHOT.jar', fingerprint: true
-                }
-            }
         }
         stage ('validate') {
             steps {
