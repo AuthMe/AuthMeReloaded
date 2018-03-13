@@ -5,43 +5,52 @@ pipeline {
         jdk 'OracleJDK 8'
     }
     stages {
-        stage ('Clean') {
+        stage ('prepare') {
+            steps {
+                env.CI_SKIP = "false"
+                result = sh (script: "git log -1 | grep '(?s).[CI[-\s]SKIP].*'", returnStatus: true)
+                if (result == 0) {
+                    env.CI_SKIP = "true"
+                    error "'[CI-SKIP]' found in git commit message. Aborting."
+                }
+            }
+        }
+        stage ('clean') {
             steps {
                 echo 'Cleaning the maven workspace...'
                 sh 'mvn clean'
             }
         }
-        stage ('Dependencies') {
+        stage ('dependencies') {
             steps {
                 echo 'Downloading dependencies...'
                 sh 'mvn dependency:go-offline'
             }
             post {
                 success {
-                    junit 'target/surefire-reports/**/*.xml'
                     archiveArtifacts artifacts: 'target/nukkit-*-SNAPSHOT.jar', fingerprint: true
                 }
             }
         }
-        stage ('Validate') {
+        stage ('validate') {
             steps {
                 echo 'Validating the maven project...'
                 sh 'mvn -o validate'
             }
         }
-        stage ('Compile') {
+        stage ('compile') {
             steps {
                 echo 'Compiling source classes...'
                 sh 'mvn -o compile'
             }
         }
-        stage ('Compile-Test') {
+        stage ('compile-test') {
             steps {
                 echo 'Compiling test classes...'
                 sh 'mvn -o test-compile'
             }
         }
-        stage ('Test') {
+        stage ('test') {
             steps {
                 echo 'Performing unit testing...'
                 sh 'mvn -o test'
@@ -53,7 +62,7 @@ pipeline {
                 }
             }
         }
-        stage ('Package') {
+        stage ('package') {
             steps {
                 echo 'Preparing the final package...'
                 sh 'mvn -o package'
@@ -65,7 +74,7 @@ pipeline {
                 }
             }
         }
-        stage ('Sources') {
+        stage ('sources') {
             when {
                 branch "master"
             }
@@ -80,7 +89,7 @@ pipeline {
                 }
             }
         }
-        stage ('Javadoc') {
+        stage ('javadoc') {
             when {
                 branch "master"
             }
@@ -100,25 +109,32 @@ pipeline {
                 }
             }
         }
-        stage ('Verify') {
+        stage ('verify') {
             steps {
                 echo 'Performing integration testing...'
                 sh 'mvn -o verify'
             }
         }
-        stage ('Install') {
+        stage ('install') {
             steps {
                 echo 'Installing artifacts to the local repository...'
                 sh 'mvn -o install'
             }
         }
-        stage ('Deploy') {
+        stage ('deploy') {
             when {
                 branch "master"
             }
             steps {
                 echo 'Deploying to repository...'
                 sh 'mvn -o deploy'
+            }
+        }
+        post {
+            always {
+                if (env.CI_SKIP == "true") {
+                    currentBuild.result = 'NOT_BUILT'
+                }   
             }
         }
     }
