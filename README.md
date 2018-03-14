@@ -126,4 +126,4 @@ Credits for the old version of the plugin: d4rkwarriors, fabe1337, Whoami2 and p
 Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex
 
 ##### GeoIP License:
-This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com
+This product uses data from the GeoLite API created by MaxMind, available at https://www.maxmind.com
