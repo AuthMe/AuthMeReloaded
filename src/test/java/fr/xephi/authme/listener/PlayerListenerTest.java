@@ -254,7 +254,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelCommandFastCommandEvent() {
+    public void shouldCancelFastCommandEvent() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Arrays.asList("/spawn", "/help"));
