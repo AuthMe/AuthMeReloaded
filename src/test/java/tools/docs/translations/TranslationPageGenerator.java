@@ -45,10 +45,10 @@ public class TranslationPageGenerator implements AutoToolTask {
         NestedTagValue translationValuesHolder = new NestedTagValue();
 
         for (TranslationInfo translation : gatherer.getTranslationInfo()) {
-            int percentage = (int) Math.round(translation.percentTranslated * 100);
-            String name = firstNonNull(LANGUAGE_NAMES.get(translation.code), "?");
+            int percentage = (int) Math.round(translation.getPercentTranslated() * 100);
+            String name = firstNonNull(LANGUAGE_NAMES.get(translation.getCode()), "?");
             TagValueHolder valueHolder = TagValueHolder.create()
-                .put("code", translation.code)
+                .put("code", translation.getCode())
                 .put("name", name)
                 .put("percentage", Integer.toString(percentage))
                 .put("color", computeColor(percentage));

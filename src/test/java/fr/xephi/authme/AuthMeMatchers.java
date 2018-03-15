@@ -11,6 +11,7 @@ import java.util.Objects;
 /**
  * Custom matchers for AuthMe entities.
  */
+@SuppressWarnings("checkstyle:JavadocMethod") // Justification: Javadoc would be huge because of the many parameters
 public final class AuthMeMatchers {
 
     private AuthMeMatchers() {

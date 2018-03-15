@@ -1,4 +1,8 @@
 # This file must be in ANSI if win, or UTF-8 if linux.
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
 registration:

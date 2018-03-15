@@ -63,11 +63,12 @@ public class CommonService {
     /**
      * Retrieves a message in one piece.
      *
+     * @param sender The entity to send the message to
      * @param key the key of the message
      * @return the message
      */
-    public String retrieveSingleMessage(MessageKey key) {
-        return messages.retrieveSingle(key);
+    public String retrieveSingleMessage(CommandSender sender, MessageKey key) {
+        return messages.retrieveSingle(sender, key);
     }
 
     /**

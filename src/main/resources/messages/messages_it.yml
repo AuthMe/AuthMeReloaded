@@ -1,6 +1,10 @@
-# Lingua Italiana creata da Maxetto e sgdc3.
+# Lingua Italiana creata da Maxetto.
+# Tag globali disponibili:
+# %nl% - Vai a capo.
+# %username% - Sostituisce il nome dell'utente che riceve il messaggio.
+# %displayname% - Sostituisce il nickname (e i colori) dell'utente che riceve il messaggio.
 
-# Registration
+# Registrazione
 registration:
     disabled: '&cLa registrazione tramite i comandi di gioco è disabilitata.'
     name_taken: '&cHai già eseguito la registrazione, non puoi eseguirla nuovamente.'
@@ -10,7 +14,7 @@ registration:
     success: '&2Registrato correttamente!'
     kicked_admin_registered: 'Un amministratore ti ha appena registrato, per favore rientra nel server'
 
-# Password errors on registration
+# Errori della password durante la registrazione
 password:
     match_error: '&cLe password non corrispondono!'
     name_in_password: '&cNon puoi usare il tuo nome utente come password, per favore scegline un''altra...'
@@ -18,7 +22,7 @@ password:
     forbidden_characters: '&4La tua password contiene caratteri non consentiti. I caratteri consentiti sono: %valid_chars'
     wrong_length: '&cLa password che hai inserito è troppo corta o troppo lunga, per favore scegline un''altra...'
 
-# Login
+# Autenticazione
 login:
     command_usage: '&cUtilizzo: /login <password>'
     wrong_password: '&cPassword non corretta!'
@@ -26,7 +30,7 @@ login:
     login_request: '&cPer favore, esegui l''autenticazione con il comando: /login <password>'
     timeout_error: '&4Tempo scaduto per eseguire l''autenticazione, sei stato espulso dal server, per favore riprova!'
 
-# Errors
+# Errori
 error:
     denied_command: '&cPer poter usare questo comando devi essere autenticato!'
     denied_chat: '&cPer poter scrivere messaggi in chat devi essere autenticato!'
@@ -45,12 +49,12 @@ antibot:
     auto_enabled: '&4Il servizio di AntiBot è stato automaticamente abilitato a seguito delle numerose connessioni!'
     auto_disabled: '&2Il servizio di AntiBot è stato automaticamente disabilitato dopo %m minuti!'
 
-# Unregister
+# Rimozione dal Database
 unregister:
     success: '&2Sei stato correttamente rimosso dal database!'
     command_usage: '&cUtilizzo: /unregister <password>'
 
-# Other messages
+# Altri messaggi
 misc:
     account_not_activated: '&cIl tuo account non è stato ancora verificato, controlla fra le tue email per scoprire come attivarlo!'
     password_changed: '&2Password cambiata correttamente!'
@@ -61,12 +65,12 @@ misc:
     accounts_owned_self: 'Possiedi %count account:'
     accounts_owned_other: 'Il giocatore %name possiede %count account:'
 
-# Session messages
+# Messaggi della sessione
 session:
     valid_session: '&2Autenticato automaticamente attraverso la precedente sessione!'
     invalid_session: '&cIl tuo indirizzo IP è cambiato e la tua sessione è stata terminata!'
 
-# Error messages when joining
+# Messaggi di errore durante l'accesso
 on_join_validation:
     same_ip_online: 'Un giocatore con il tuo stesso IP è già connesso sul server!'
     same_nick_online: '&4Un giocatore con il tuo stesso nome utente è già connesso sul server!'
@@ -96,7 +100,7 @@ email:
     change_password_expired: 'Non puoi più cambiare la tua password con questo comando.'
     email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentemente. Devi attendere %time prima di poterne richiedere una nuova.'
 
-# Password recovery by email
+# Recupero password via Email
 recovery:
     forgot_password_hint: '&3Hai dimenticato la tua password? Puoi recuperarla eseguendo il comando: /email recovery <email>'
     command_usage: '&cUtilizzo: /email recovery <email>'
@@ -116,7 +120,7 @@ captcha:
     captcha_for_registration: 'Per poterti registrare devi prima risolvere un captcha, per favore scrivi: /captcha %captcha_code'
     register_captcha_valid: '&2Il captcha inserito è valido! Ora puoi eseguire la registrazione con: /register <password> <confermaPassword>'
 
-# Verification code
+# Codice di verifica
 verification:
     code_required: '&3Questo comando va a modificare dati sensibili e richiede una verifica tramite email! Controlla la tua posta in arrivo e segui le istruzioni nell''email.'
     command_usage: '&cUtilizzo: /verification <codice>'
@@ -126,7 +130,7 @@ verification:
     code_expired: '&3Il tuo codice è scaduto! Esegui nuovamente un comando che modifica dati sensibili per ricevere uno nuovo codice!'
     email_needed: '&3Per verificare la tua identità devi collegare un indirizzo email al tuo account!'
 
-# Time units
+# Unità di tempo
 time:
     second: 'secondo'
     seconds: 'secondi'

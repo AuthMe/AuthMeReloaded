@@ -4,6 +4,10 @@
 #   in future there can be more translators   #
 #         if they are not listed here         #
 #      check Translators on GitHub Wiki.      #
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
 registration:

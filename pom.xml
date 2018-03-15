@@ -189,10 +189,15 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <id>attach-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>aggregate-javadoc</id>
                         <goals>
                             <goal>aggregate</goal>
-                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -456,7 +461,7 @@
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
-            <version>2.3</version>
+            <version>2.4</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -539,7 +544,7 @@
         <dependency>
             <groupId>me.lucko.luckperms</groupId>
             <artifactId>luckperms-api</artifactId>
-            <version>4.0</version>
+            <version>4.1</version>
             <scope>provided</scope>
         </dependency>
 

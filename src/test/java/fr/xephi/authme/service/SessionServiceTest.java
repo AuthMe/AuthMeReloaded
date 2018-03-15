@@ -106,7 +106,6 @@ public class SessionServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
-        verify(commonService).send(player, MessageKey.SESSION_EXPIRED);
         verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
@@ -132,7 +131,6 @@ public class SessionServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
-        verify(commonService).send(player, MessageKey.SESSION_EXPIRED);
         verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
@@ -145,9 +143,10 @@ public class SessionServiceTest {
         String ip = "127.3.12.15";
         Player player = mockPlayerWithNameAndIp(name, ip);
         given(dataSource.hasSession(name)).willReturn(true);
+        given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
-            .lastLogin(System.currentTimeMillis())
+            .lastLogin(System.currentTimeMillis() - 7 * 60 * 1000)
             .lastIp("8.8.8.8").build();
         given(dataSource.getAuth(name)).willReturn(auth);
 
@@ -219,6 +218,7 @@ public class SessionServiceTest {
         String name = "Charles";
         Player player = mockPlayerWithNameAndIp(name, "144.117.118.145");
         given(dataSource.hasSession(name)).willReturn(true);
+        given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .lastIp(null)

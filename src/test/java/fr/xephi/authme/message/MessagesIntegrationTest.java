@@ -81,9 +81,11 @@ public class MessagesIntegrationTest {
     public void shouldLoadMessageAndSplitAtNewLines() {
         // given
         MessageKey key = MessageKey.UNKNOWN_USER;
+        CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
-        String[] message = messages.retrieve(key);
+        String[] message = messages.retrieve(key, sender);
 
         // then
         String[] lines = new String[]{"We've got", "new lines", "and ' apostrophes"};
@@ -94,9 +96,11 @@ public class MessagesIntegrationTest {
     public void shouldLoadMessageAsStringWithNewLines() {
         // given
         MessageKey key = MessageKey.UNKNOWN_USER;
+        CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
-        String message = messages.retrieveSingle(key);
+        String message = messages.retrieveSingle(sender, key);
 
         // then
         assertThat(message, equalTo("We've got\nnew lines\nand ' apostrophes"));
@@ -106,9 +110,11 @@ public class MessagesIntegrationTest {
     public void shouldFormatColorCodes() {
         // given
         MessageKey key = MessageKey.LOGIN_SUCCESS;
+        CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
-        String[] message = messages.retrieve(key);
+        String[] message = messages.retrieve(key, sender);
 
         // then
         assertThat(message, arrayWithSize(1));
@@ -120,6 +126,7 @@ public class MessagesIntegrationTest {
         // given
         MessageKey key = MessageKey.EMAIL_ALREADY_USED_ERROR;
         CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
         messages.send(sender, key);
@@ -133,6 +140,8 @@ public class MessagesIntegrationTest {
         // given
         MessageKey key = MessageKey.LOGIN_SUCCESS;
         Player player = Mockito.mock(Player.class);
+        given(player.getName()).willReturn("Tester");
+        given(player.getDisplayName()).willReturn("§cTesty");
 
         // when
         messages.send(player, key);
@@ -146,6 +155,8 @@ public class MessagesIntegrationTest {
         // given
         MessageKey key = MessageKey.UNKNOWN_USER;
         Player player = Mockito.mock(Player.class);
+        given(player.getName()).willReturn("Tester");
+        given(player.getDisplayName()).willReturn("§cTesty");
 
         // when
         messages.send(player, key);
@@ -158,10 +169,26 @@ public class MessagesIntegrationTest {
     }
 
     @Test
+    public void shouldSendMessageToPlayerWithNameReplacement() {
+        // given
+        MessageKey key = MessageKey.REGISTER_MESSAGE;
+        Player player = Mockito.mock(Player.class);
+        given(player.getName()).willReturn("Tester");
+        given(player.getDisplayName()).willReturn("§cTesty");
+
+        // when
+        messages.send(player, key);
+
+        // then
+        verify(player).sendMessage("§3Please Tester, register to the §cTesty§3.");
+    }
+
+    @Test
     public void shouldSendMessageToPlayerWithTagReplacement() {
         // given
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = Mockito.mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
         messages.send(sender, key, "1234");
@@ -175,6 +202,7 @@ public class MessagesIntegrationTest {
         // given
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
         messages.send(sender, key);
@@ -189,9 +217,11 @@ public class MessagesIntegrationTest {
         Logger logger = mock(Logger.class);
         ConsoleLogger.setLogger(logger);
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
+        CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
-        messages.send(mock(CommandSender.class), key, "rep", "rep2");
+        messages.send(sender, key, "rep", "rep2");
 
         // then
         verify(logger).warning(argThat(containsString("Invalid number of replacements")));
@@ -203,9 +233,11 @@ public class MessagesIntegrationTest {
         Logger logger = mock(Logger.class);
         ConsoleLogger.setLogger(logger);
         MessageKey key = MessageKey.UNKNOWN_USER;
+        CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
-        messages.send(mock(CommandSender.class), key, "Replacement");
+        messages.send(sender, key, "Replacement");
 
         // then
         verify(logger).warning(argThat(containsString("Invalid number of replacements")));
@@ -216,9 +248,11 @@ public class MessagesIntegrationTest {
         // given
         // Key is present in both files
         MessageKey key = MessageKey.WRONG_PASSWORD;
+        CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
-        String message = messages.retrieveSingle(key);
+        String message = messages.retrieveSingle(sender, key);
 
         // then
         assertThat(message, equalTo("§cWrong password!"));
@@ -228,9 +262,11 @@ public class MessagesIntegrationTest {
     public void shouldRetrieveMessageWithReplacements() {
         // given
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
+        CommandSender sender = mock(CommandSender.class);
+        given(sender.getName()).willReturn("Tester");
 
         // when
-        String result = messages.retrieveSingle(key, "24680");
+        String result = messages.retrieveSingle(sender.getName(), key, "24680");
 
         // then
         assertThat(result, equalTo("Use /captcha 24680 to solve the captcha"));

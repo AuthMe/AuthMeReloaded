@@ -33,8 +33,8 @@ public class CheckMessageKeyUsages implements AutoToolTask {
         if (unusedKeys.isEmpty()) {
             System.out.println("No unused MessageKey entries found :)");
         } else {
-            System.out.println("Did not find usages for keys:\n- " +
-                String.join("\n- ", Lists.transform(unusedKeys, MessageKey::name)));
+            System.out.println("Did not find usages for keys:\n- "
+                + String.join("\n- ", Lists.transform(unusedKeys, MessageKey::name)));
         }
     }
 
@@ -49,21 +49,6 @@ public class CheckMessageKeyUsages implements AutoToolTask {
 
         walkJavaFileTree(sourceFolder, fileProcessor);
         return keys;
-    }
-
-    private List<File> findUsagesOfKey(MessageKey key) {
-        List<File> filesUsingKey = new ArrayList<>();
-        File sourceFolder = new File(ToolsConstants.MAIN_SOURCE_ROOT);
-
-        Consumer<File> usagesCollector = file -> {
-            String source = FileIoUtils.readFromFile(file.toPath());
-            if (source.contains(key.name())) {
-                filesUsingKey.add(file);
-            }
-        };
-
-        walkJavaFileTree(sourceFolder, usagesCollector);
-        return filesUsingKey;
     }
 
     private static void walkJavaFileTree(File folder, Consumer<File> javaFileConsumer) {
