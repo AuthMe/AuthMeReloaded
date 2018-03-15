@@ -243,7 +243,8 @@ public class GeoIpService {
             //Reader.getCountry() can be null for unknown addresses
             return Optional.ofNullable(databaseReader.getCountry(address)).map(CountryResponse::getCountry);
         } catch (UnknownHostException e) {
-            //ignore invalid ip addresses
+            // Ignore invalid ip addresses
+            // Legacy GEO IP Database returned a unknown country object with Country-Code: '--' and Country-Name: 'N/A'
         } catch (IOException ioEx) {
             ConsoleLogger.logException("Cannot lookup country for " + ip + " at GEO IP database", ioEx);
         }
