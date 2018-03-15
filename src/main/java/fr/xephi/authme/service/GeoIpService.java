@@ -187,6 +187,9 @@ public class GeoIpService {
                     if (filename.endsWith(DATABASE_EXT)) {
                         // found the database file
                         Files.copy(tarIn, outputFile, StandardCopyOption.REPLACE_EXISTING);
+
+                        // update the last modification date to be same as in the archive
+                        Files.setLastModifiedTime(outputFile, FileTime.from(entry.getModTime().toInstant()));
                         return true;
                     }
                 }
