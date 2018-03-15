@@ -151,6 +151,7 @@ public class GeoIpService {
     /**
      * Verify if the expected checksum is equal to the checksum of the given file.
      *
+     * @param function the checksum function like MD5, SHA256 used to generate the checksum from the file
      * @param file the file we want to calculate the checksum from
      * @param expectedChecksum the expected checksum
      * @return true if equal, false otherwise
