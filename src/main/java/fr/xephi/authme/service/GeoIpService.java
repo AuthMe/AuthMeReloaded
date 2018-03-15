@@ -16,6 +16,7 @@ import com.maxmind.db.model.CountryResponse;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.InternetProtocolUtils;
 
 import java.io.BufferedInputStream;
@@ -126,9 +127,10 @@ public class GeoIpService {
         bukkitService.runTaskAsynchronously(() -> {
             ConsoleLogger.info("Downloading GEO IP database, because the old database is outdated or doesn't exist");
 
+            Path tempFile = null;
             try {
                 // download database to temporarily location
-                Path tempFile = Files.createTempFile(ARCHIVE_FILE, null);
+                tempFile = Files.createTempFile(ARCHIVE_FILE, null);
                 try (OutputStream out = Files.newOutputStream(tempFile)) {
                     Resources.copy(new URL(ARCHIVE_URL), out);
                 }
@@ -151,6 +153,11 @@ public class GeoIpService {
                 downloading = false;
             } catch (IOException ioEx) {
                 ConsoleLogger.logException("Could not download GeoLiteAPI database", ioEx);
+            } finally {
+                // clean up
+                if (tempFile != null) {
+                    FileUtils.delete(tempFile.toFile());
+                }
             }
         });
     }
