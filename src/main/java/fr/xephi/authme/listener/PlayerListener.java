@@ -105,7 +105,7 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (!quickCommandsProtectionManager.isAllowed(player.getName())) {
             event.setCancelled(true);
-            player.kickPlayer(m.retrieveSingle(MessageKey.QUICK_COMMAND_PROTECTION_KICK));
+            player.kickPlayer(m.retrieveSingle(player, MessageKey.QUICK_COMMAND_PROTECTION_KICK));
             return;
         }
         if (listenerService.shouldCancelEvent(player)) {
