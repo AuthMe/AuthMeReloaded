@@ -52,7 +52,7 @@ public class GeoIpService {
     private static final String ARCHIVE_URL = "https://geolite.maxmind.com/download/geoip/database/" + ARCHIVE_FILE;
     private static final String CHECKSUM_URL = ARCHIVE_URL + ".md5";
 
-    private static final int UPDATE_INTERVAL = 30;
+    private static final int UPDATE_INTERVAL_DAYS = 30;
 
     private final Path dataFile;
     private final BukkitService bukkitService;
@@ -96,7 +96,7 @@ public class GeoIpService {
         if (Files.exists(dataFile)) {
             try {
                 FileTime lastModifiedTime = Files.getLastModifiedTime(dataFile);
-                if (Duration.between(lastModifiedTime.toInstant(), Instant.now()).toDays() <= UPDATE_INTERVAL) {
+                if (Duration.between(lastModifiedTime.toInstant(), Instant.now()).toDays() <= UPDATE_INTERVAL_DAYS) {
                     databaseReader = new Reader(dataFile.toFile(), FileMode.MEMORY, new CHMCache());
                     ConsoleLogger.info(LICENSE);
 
