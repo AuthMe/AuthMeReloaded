@@ -26,14 +26,28 @@ public class QuickCommandsProtectionManager implements SettingsDependent, HasCle
         reload(settings);
     }
 
+    /**
+     * Save the player in the set
+     * @param name the player's name
+     */
     public void setLogin(String name) {
         latestLogin.add(name);
     }
 
+    /**
+     * Returns whether the given player has the permission and should be saved in the set
+     * @param player the player to check
+     * @return true if the player has the permission, false otherwise
+     */
     public boolean shouldSaveLogin(Player player) {
         return permissionsManager.hasPermission(player, PlayerPermission.QUICK_COMMANDS_PROTECTION);
     }
 
+    /**
+     * Returns whether the given player is able to perform the command
+     * @param name the name of the player to check
+     * @return true if the player is not in the set (so it's allowed to perform the command), false otherwise
+     */
     public boolean isAllowed(String name) {
         return !latestLogin.contains(name);
     }
