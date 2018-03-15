@@ -2,6 +2,7 @@ package fr.xephi.authme.service;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import com.ice.tar.TarEntry;
@@ -47,8 +48,8 @@ public class GeoIpService {
 
     private static final String ARCHIVE_FILE = DATABASE_NAME + ".tar.gz";
 
-    private static final String DATABASE_URL = "https://geolite.maxmind.com/download/geoip/database/" + ARCHIVE_FILE;
-    private static final String CHECKSUM_URL = DATABASE_URL + ".md5";
+    private static final String ARCHIVE_URL = "https://geolite.maxmind.com/download/geoip/database/" + ARCHIVE_FILE;
+    private static final String CHECKSUM_URL = ARCHIVE_URL + ".md5";
 
     private static final int UPDATE_INTERVAL = 30;
 
@@ -122,19 +123,19 @@ public class GeoIpService {
         bukkitService.runTaskAsynchronously(() -> {
             try {
                 // download database to temporarily location
-                Path tempFile = Files.createTempFile(DATABASE_FILE, null);
+                Path tempFile = Files.createTempFile(ARCHIVE_FILE, null);
                 try (OutputStream out = Files.newOutputStream(tempFile)) {
-                    Resources.copy(new URL(DATABASE_URL), out);
+                    Resources.copy(new URL(ARCHIVE_URL), out);
                 }
 
                 // MD5 checksum verification
                 String targetChecksum = Resources.toString(new URL(CHECKSUM_URL), StandardCharsets.UTF_8);
-                if (!verifyChecksum(tempFile, targetChecksum)) {
+                if (!verifyChecksum(Hashing.md5(), tempFile, targetChecksum)) {
                     return;
                 }
 
                 // tar extract database and copy to target destination
-                if (!extractFile(tempFile, dataFile)) {
+                if (!extractDatabase(tempFile, dataFile)) {
                     ConsoleLogger.warning("Cannot find database inside downloaded GEO IP file at " + tempFile);
                 }
 
@@ -146,9 +147,16 @@ public class GeoIpService {
         });
     }
 
-    //todo: add doc
-    private boolean verifyChecksum(Path tempFile, String expectedChecksum) throws IOException {
-        HashCode actualHash = Hashing.md5().hashBytes(Files.readAllBytes(tempFile));
+    /**
+     * Verify if the expected checksum is equal to the checksum of the given file.
+     *
+     * @param file the file we want to calculate the checksum from
+     * @param expectedChecksum the expected checksum
+     * @return true if equal, false otherwise
+     * @throws IOException on I/O error reading the file
+     */
+    private boolean verifyChecksum(HashFunction function, Path file, String expectedChecksum) throws IOException {
+        HashCode actualHash = function.hashBytes(Files.readAllBytes(file));
         HashCode expectedHash = HashCode.fromString(expectedChecksum);
         if (!Objects.equals(actualHash, expectedHash)) {
             ConsoleLogger.warning("GEO IP checksum verification failed");
@@ -159,8 +167,15 @@ public class GeoIpService {
         return true;
     }
 
-    //todo: add doc
-    private boolean extractFile(Path tarInputFile, Path outputFile) throws IOException {
+    /**
+     * Extract the database from the tar archive.
+     *
+     * @param tarInputFile gzipped tar input file where the database is
+     * @param outputFile destination file for the database
+     * @return true if the database was found, false otherwise
+     * @throws IOException on I/O error reading the tar archive or writing the output
+     */
+    private boolean extractDatabase(Path tarInputFile, Path outputFile) throws IOException {
         // .gz -> gzipped file
         try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(tarInputFile));
              TarInputStream tarIn = new TarInputStream(new GZIPInputStream(in))) {
@@ -201,7 +216,18 @@ public class GeoIpService {
         return getCountry(ip).map(Country::getName).orElse("N/A");
     }
 
-    //todo: add doc
+    /**
+     * Get the country of the given IP address
+     *
+     * @param ip textual IP address to lookup
+     * @return the wrapped Country model or {@link Optional#empty()} if
+     * <ul>
+     *     <li>Database reader isn't initialized</li>
+     *     <li>MaxMind has no record about this IP address</li>
+     *     <li>IP address is local</li>
+     *     <li>Textual representation is not a valid IP address</li>
+     * </ul>
+     */
     private Optional<Country> getCountry(String ip) {
         if (ip == null || ip.isEmpty() || InternetProtocolUtils.isLocalAddress(ip) || !isDataAvailable()) {
             return Optional.empty();
