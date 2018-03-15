@@ -1,8 +1,6 @@
 package fr.xephi.authme.util;
 
 import com.google.common.io.Files;
-import com.google.common.io.MoreFiles;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 
@@ -164,8 +162,6 @@ public final class FileUtils {
      * @return path to a file suitably named for storing a backup
      */
     public static String createBackupFilePath(File file) {
-        MoreFiles.getNameWithoutExtension(file.toPath());
-
         String filename = "backup_" + Files.getNameWithoutExtension(file.getName())
             + "_" + createCurrentTimeString()
             + "." + Files.getFileExtension(file.getName());
