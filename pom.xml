@@ -403,13 +403,15 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Maxmind GeoIp API -->
+        <!-- MaxMind GEO IP with our modifications to use GSON in replacement of the big Jackson dependency -->
+        <!-- GSON is already included and therefore it reduces the file size in comparison to the original version -->
         <dependency>
             <groupId>com.maxmind.db</groupId>
             <artifactId>maxmind-db-gson</artifactId>
             <version>2.0.2-SNAPSHOT</version>
         </dependency>
 
+        <!-- Library for tar archives -->
         <dependency>
             <groupId>javatar</groupId>
             <artifactId>javatar</artifactId>
