@@ -102,6 +102,8 @@ public class GeoIpService {
 
                     // don't fire the update task - we are up to date
                     return true;
+                } else {
+                    ConsoleLogger.debug("GEO Ip database is older than " + UPDATE_INTERVAL_DAYS + " Days");
                 }
             } catch (IOException ioEx) {
                 ConsoleLogger.logException("Failed to load GeoLiteAPI database", ioEx);
@@ -122,6 +124,8 @@ public class GeoIpService {
 
         // use bukkit's cached threads
         bukkitService.runTaskAsynchronously(() -> {
+            ConsoleLogger.info("Downloading GEO IP database, because the old database is outdated or doesn't exist");
+
             try {
                 // download database to temporarily location
                 Path tempFile = Files.createTempFile(ARCHIVE_FILE, null);
@@ -139,6 +143,8 @@ public class GeoIpService {
                 if (!extractDatabase(tempFile, dataFile)) {
                     ConsoleLogger.warning("Cannot find database inside downloaded GEO IP file at " + tempFile);
                 }
+
+                ConsoleLogger.info("Successfully downloaded new GEO IP database to " + dataFile);
 
                 //only set this value to false on success otherwise errors could lead to endless download triggers
                 downloading = false;
@@ -160,17 +166,17 @@ public class GeoIpService {
     private boolean verifyChecksum(HashFunction function, Path file, String expectedChecksum) throws IOException {
         HashCode actualHash = function.hashBytes(Files.readAllBytes(file));
         HashCode expectedHash = HashCode.fromString(expectedChecksum);
-        if (!Objects.equals(actualHash, expectedHash)) {
-            ConsoleLogger.warning("GEO IP checksum verification failed");
-            ConsoleLogger.warning("Expected: " + expectedHash + " Actual: " + actualHash);
-            return false;
+        if (Objects.equals(actualHash, expectedHash)) {
+            return true;
         }
 
-        return true;
+        ConsoleLogger.warning("GEO IP checksum verification failed");
+        ConsoleLogger.warning("Expected: " + expectedHash + " Actual: " + actualHash);
+        return false;
     }
 
     /**
-     * Extract the database from the tar archive.
+     * Extract the database from the tar archive. Existing outputFile will be replaced if it already exists.
      *
      * @param tarInputFile gzipped tar input file where the database is
      * @param outputFile destination file for the database
