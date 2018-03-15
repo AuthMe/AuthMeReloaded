@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '&4Tara ta este interzisa pe acest server!'
     not_owner_error: 'Tu nu esti detinatorul acestui cont. Te rugam alege alt nume!'
     invalid_name_case: 'Ar trebui sa intri cu numele %valid, nu %invalid'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '[AuthMe] Zure herrialdea blokeatuta dago zerbitzari honetan'
     # TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
     # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

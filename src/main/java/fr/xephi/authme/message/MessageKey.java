@@ -276,7 +276,7 @@ public enum MessageKey {
     VERIFICATION_CODE_EMAIL_NEEDED("verification.email_needed"),
 
     /** You used a command too fast! Please, join the server again and wait more before using any command. */
-    QUICK_COMMAND_PROTECTION_KICK("quick_command.kick"),
+    QUICK_COMMAND_PROTECTION_KICK("on_join_validation.quick_command"),
 
     /** second */
     SECOND("time.second"),

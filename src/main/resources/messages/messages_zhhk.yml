@@ -82,6 +82,7 @@ on_join_validation:
     country_banned: '&8[&6用戶系統&8] &4本伺服器已停止對你的國家提供遊戲服務。'
     not_owner_error: '&8[&6用戶系統&8] &4警告！&c你並不是此帳戶持有人，請立即登出。'
     invalid_name_case: '&8[&6用戶系統&8] &4警告！&c你應該使用「%valid」而並非「%invalid」登入遊戲。'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

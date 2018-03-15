@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: 'O seu país está banido deste servidor'
     not_owner_error: 'Não é o proprietário da conta. Por favor, escolha outro nome!'
     invalid_name_case: 'Deve se juntar usando nome de usuário %valid, não %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:
