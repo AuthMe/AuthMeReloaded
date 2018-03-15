@@ -142,6 +142,7 @@ public class GeoIpService {
                 // tar extract database and copy to target destination
                 if (!extractDatabase(tempFile, dataFile)) {
                     ConsoleLogger.warning("Cannot find database inside downloaded GEO IP file at " + tempFile);
+                    return;
                 }
 
                 ConsoleLogger.info("Successfully downloaded new GEO IP database to " + dataFile);
