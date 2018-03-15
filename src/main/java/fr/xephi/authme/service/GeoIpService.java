@@ -7,6 +7,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import com.ice.tar.TarEntry;
 import com.ice.tar.TarInputStream;
+import com.maxmind.db.GeoIp2Provider;
 import com.maxmind.db.Reader;
 import com.maxmind.db.Reader.FileMode;
 import com.maxmind.db.cache.CHMCache;
@@ -56,7 +57,7 @@ public class GeoIpService {
     private final Path dataFile;
     private final BukkitService bukkitService;
 
-    private Reader databaseReader;
+    private GeoIp2Provider databaseReader;
     private volatile boolean downloading;
 
     @Inject
@@ -69,7 +70,7 @@ public class GeoIpService {
     }
 
     @VisibleForTesting
-    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Reader reader) {
+    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, GeoIp2Provider reader) {
         this.bukkitService = bukkitService;
         this.dataFile = dataFolder.toPath().resolve(DATABASE_FILE);
 

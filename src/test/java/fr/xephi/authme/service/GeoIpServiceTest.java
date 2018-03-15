@@ -1,8 +1,13 @@
 package fr.xephi.authme.service;
 
-import com.maxmind.db.Reader;
+import com.maxmind.db.GeoIp2Provider;
 import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,14 +16,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -32,9 +34,8 @@ public class GeoIpServiceTest {
     private GeoIpService geoIpService;
     private File dataFolder;
 
-    //todo: find solution for mocking final class
     @Mock
-    private Reader lookupService;
+    private GeoIp2Provider lookupService;
 
     @Mock
     private BukkitService bukkitService;
