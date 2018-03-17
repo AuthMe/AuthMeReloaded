@@ -27,7 +27,7 @@ You can also create your own translation file and, if you want, you can share it
 <ul>
   <li><strong>E-Mail Recovery System !!!</strong></li>
   <li>Username spoofing protection.</li>
-  <li>Countries Whitelist/Blacklist! <a href="http://dev.maxmind.com/geoip/legacy/codes/iso3166/">(country codes)</a></li>
+  <li>Countries Whitelist/Blacklist! <a href="https://dev.maxmind.com/geoip/legacy/codes/iso3166/">(country codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
   <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
@@ -126,4 +126,4 @@ Credits for the old version of the plugin: d4rkwarriors, fabe1337, Whoami2 and p
 Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex
 
 ##### GeoIP License:
-This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com
+This product uses data from the GeoLite API created by MaxMind, available at https://www.maxmind.com
