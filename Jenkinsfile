@@ -1,9 +1,21 @@
 pipeline {
-    agent any
     tools {
         maven 'Maven 3'
         jdk 'OracleJDK 8'
     }
+
+    agent any
+
+    options {
+        timestamps()
+        timeout(time: 5, unit: 'MINUTES')
+    }
+
+    environment {
+        COVERALLS_TOKEN = credentials('coveralls-token')
+        DISCORD_WEBHOOK_URL = credentials('discord-webhook-url')
+    }
+
     stages {
         stage ('check-commit') {
             steps {
@@ -22,14 +34,20 @@ pipeline {
                 sh 'mvn clean'
             }
         }
-        stage ('dependencies') {
-            steps {
-                sh 'mvn dependency:resolve-plugins dependency:go-offline'
-            }
-        }
         stage ('compile') {
             steps {
-                sh 'mvn -o -DskipTests package'
+                sh 'mvn compile'
+            }
+        }
+        stage ('test') {
+            steps {
+                sh 'mvn test coveralls:report -DrepoToken=$COVERALLS_TOKEN -Dmaven.test.failure.ignore=true'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                    jacoco(execPattern: '**/*.exec')
+                }
             }
         }
         stage ('sources') {
@@ -37,7 +55,7 @@ pipeline {
                 branch "master"
             }
             steps {
-                sh 'mvn -o source:jar'
+                sh 'mvn source:jar'
             }
             post {
                 success {
@@ -50,7 +68,7 @@ pipeline {
                 branch "master"
             }
             steps {
-                sh 'mvn -o javadoc:javadoc javadoc:jar'
+                sh 'mvn javadoc:javadoc javadoc:jar'
             }
             post {
                 success {
@@ -63,16 +81,6 @@ pipeline {
                 }
             }
         }
-        stage ('test') {
-            steps {
-                sh 'mvn -o surefire:test'
-            }
-            post {
-                success {
-                    junit 'target/surefire-reports/**/*.xml'
-                }
-            }
-        }
         stage ('deploy') {
             when {
                 branch "master"
@@ -81,7 +89,8 @@ pipeline {
                 sh 'mvn -DskipTests deploy'
             }
         }
-    }    
+    }
+
     post {
         always {
             script {
@@ -89,6 +98,13 @@ pipeline {
                     currentBuild.result = 'NOT_BUILT'
                 }
             }
+            discordSend webhookURL: '$DISCORD_WEBHOOK_URL'
+        }
+        success {
+            githubNotify description: 'The jenkins build was successful',  status: 'SUCCESS'
+        }
+        failure {
+            githubNotify description: 'The jenkins build failed',  status: 'FAILURE'
         }
     }
 }
