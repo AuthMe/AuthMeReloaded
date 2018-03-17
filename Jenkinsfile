@@ -11,10 +11,16 @@ pipeline {
         timeout(time: 5, unit: 'MINUTES')
     }
 
+    triggers {
+        githubPush()
+    }
+
+/*
     environment {
         COVERALLS_TOKEN = credentials('coveralls-token')
         DISCORD_WEBHOOK_URL = credentials('discord-webhook-url')
     }
+*/
 
     stages {
         stage ('check-commit') {
@@ -41,7 +47,7 @@ pipeline {
         }
         stage ('test') {
             steps {
-                sh 'mvn test coveralls:report -DrepoToken=$COVERALLS_TOKEN -Dmaven.test.failure.ignore=true'
+                sh 'mvn test -Dmaven.test.failure.ignore=true'
             }
             post {
                 always {
@@ -98,7 +104,7 @@ pipeline {
                     currentBuild.result = 'NOT_BUILT'
                 }
             }
-            discordSend webhookURL: '$DISCORD_WEBHOOK_URL'
+            //discordSend webhookURL: '$DISCORD_WEBHOOK_URL'
         }
         success {
             githubNotify description: 'The jenkins build was successful',  status: 'SUCCESS'
