@@ -267,8 +267,12 @@
                             <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.maxmind.geoip</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
+                            <pattern>com.maxmind.db</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.maxmind</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.ice.tar</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.tar</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>net.ricecode.similarity</pattern>
@@ -399,13 +403,19 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Maxmind GeoIp API -->
+        <!-- MaxMind GEO IP with our modifications to use GSON in replacement of the big Jackson dependency -->
+        <!-- GSON is already included and therefore it reduces the file size in comparison to the original version -->
         <dependency>
-            <groupId>com.maxmind.geoip</groupId>
-            <artifactId>geoip-api</artifactId>
-            <version>1.3.1</version>
-            <scope>compile</scope>
-            <optional>true</optional>
+            <groupId>com.maxmind.db</groupId>
+            <artifactId>maxmind-db-gson</artifactId>
+            <version>2.0.2-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Library for tar archives -->
+        <dependency>
+            <groupId>javatar</groupId>
+            <artifactId>javatar</artifactId>
+            <version>2.5</version>
         </dependency>
 
         <!-- Java Email Library -->
@@ -526,7 +536,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
-            <version>4.4.0-SNAPSHOT</version>
+            <version>4.3.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
