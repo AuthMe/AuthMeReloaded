@@ -31,7 +31,7 @@ pipeline {
         stage ('compile') {
             steps {
                 withCredentials([string(credentialsId: 'authme-coveralls-token', variable: 'COVERALLS_TOKEN')]) {
-                    sh 'mvn clean verify coveralls:report -DrepoToken=${COVERALLS_TOKEN}'
+                    sh 'mvn clean verify coveralls:report -DrepoToken=$COVERALLS_TOKEN'
                 }
             }
             post {
@@ -90,7 +90,7 @@ pipeline {
                 }
             }
             withCredentials([string(credentialsId: 'authme-discord-webhook', variable: 'DISCORD_WEBHOOK')]) {
-                discordSend webhookURL: '${DISCORD_WEBHOOK}'
+                discordSend webhookURL: '$DISCORD_WEBHOOK'
             }
         }
         success {
