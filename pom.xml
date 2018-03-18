@@ -87,7 +87,7 @@
                 </property>
             </activation>
             <properties>
-                <project.buildNumber>${env.BUILD_NUMBER}N${env.GIT_BRANCH}</project.buildNumber>
+                <project.buildNumber>${env.GIT_BRANCH}N${env.BUILD_NUMBER}</project.buildNumber>
             </properties>
         </profile>
         <!-- Skip long hash tests, reduce the test time of 20-30 seconds -->
