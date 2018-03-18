@@ -90,7 +90,7 @@ pipeline {
                 }
             }
             withCredentials([string(credentialsId: 'authme-discord-webhook', variable: 'DISCORD_WEBHOOK')]) {
-                discordSend webhookURL: '$DISCORD_WEBHOOK'
+                discordSend webhookURL: env.DISCORD_WEBHOOK
             }
         }
         success {
