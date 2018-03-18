@@ -38,37 +38,7 @@ pipeline {
                 always {
                     junit 'target/surefire-reports/*.xml'
                     jacoco(execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java')
-                }
-            }
-        }
-        stage ('sources') {
-            when {
-                branch "master"
-            }
-            steps {
-                sh 'mvn source:jar'
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/*-souces.jar', fingerprint: true
-                }
-            }
-        }
-        stage ('javadoc') {
-            when {
-                branch "master"
-            }
-            steps {
-                sh 'mvn javadoc:javadoc javadoc:jar'
-            }
-            post {
-                success {
-                    step([
-                        $class: 'JavadocArchiver',
-                        javadocDir: 'target/site/apidocs',
-                        keepAll: true
-                    ])
-                    archiveArtifacts artifacts: 'target/*-javadoc.jar', fingerprint: true
+                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
             }
         }
