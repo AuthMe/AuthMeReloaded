@@ -38,6 +38,11 @@ pipeline {
                 always {
                     junit 'target/surefire-reports/*.xml'
                     jacoco(execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java')
+                    step([
+                        $class: 'JavadocArchiver',
+                        javadocDir: 'target/site/apidocs',
+                        keepAll: true
+                    ])
                     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
             }
