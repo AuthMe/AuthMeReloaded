@@ -30,14 +30,18 @@ pipeline {
         }
         stage ('compile') {
             steps {
+                echo 'Compiling...'
                 withCredentials([string(credentialsId: 'authme-coveralls-token', variable: 'COVERALLS_TOKEN')]) {
                     sh 'mvn clean verify coveralls:report -DrepoToken=$COVERALLS_TOKEN'
                 }
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    echo 'Archiving coverage results...'
                     jacoco(execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java')
+                    echo 'Archiving test results...'
+                    junit 'target/surefire-reports/*.xml'
+                    echo 'Archiving artifacts...'
                     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
             }
@@ -47,6 +51,7 @@ pipeline {
                 branch "master"
             }
             steps {
+                echo 'Master branch detected, deploying to maven repository...'
                 sh 'mvn -DskipTests deploy'
             }
         }
