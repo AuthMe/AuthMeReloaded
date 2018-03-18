@@ -28,20 +28,10 @@ pipeline {
                 }
             }
         }
-        stage ('clean') {
-            steps {
-                sh 'mvn clean'
-            }
-        }
         stage ('compile') {
             steps {
-                sh 'mvn compile'
-            }
-        }
-        stage ('test') {
-            steps {
                 withCredentials([string(credentialsId: 'authme-coveralls-token', variable: 'COVERALLS_TOKEN')]) {
-                    sh 'mvn test coveralls:report -DrepoToken=${COVERALLS_TOKEN}'
+                    sh 'mvn verify coveralls:report -DrepoToken=${COVERALLS_TOKEN}'
                 }
             }
             post {
