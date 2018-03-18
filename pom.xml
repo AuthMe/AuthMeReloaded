@@ -64,7 +64,7 @@
         <project.outputName>AuthMe</project.outputName>
         <project.buildNumber>CUSTOM</project.buildNumber>
         <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
-        <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
+        <project.versionCode>${project.version}-B${project.buildNumber}</project.versionCode>
 
         <!-- BukkitPlugin properties -->
         <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
@@ -87,7 +87,7 @@
                 </property>
             </activation>
             <properties>
-                <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
+                <project.buildNumber>${env.GIT_BRANCH}${env.BUILD_NUMBER}</project.buildNumber>
             </properties>
         </profile>
         <!-- Skip long hash tests, reduce the test time of 20-30 seconds -->

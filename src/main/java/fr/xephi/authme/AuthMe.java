@@ -186,7 +186,7 @@ public class AuthMe extends JavaPlugin {
         if (index != -1) {
             pluginVersion = versionRaw.substring(0, index);
             pluginBuildNumber = versionRaw.substring(index + 1);
-            if (pluginBuildNumber.startsWith("b")) {
+            if (pluginBuildNumber.startsWith("B")) {
                 pluginBuildNumber = pluginBuildNumber.substring(1);
             }
         }
