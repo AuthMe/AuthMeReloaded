@@ -31,7 +31,7 @@ pipeline {
         stage ('compile') {
             steps {
                 withCredentials([string(credentialsId: 'authme-coveralls-token', variable: 'COVERALLS_TOKEN')]) {
-                    sh 'mvn clean verify jacoco:report coveralls:report -DrepoToken=${COVERALLS_TOKEN}'
+                    sh 'mvn clean verify coveralls:report -DrepoToken=${COVERALLS_TOKEN}'
                 }
             }
             post {
