@@ -15,13 +15,6 @@ pipeline {
         githubPush()
     }
 
-/*
-    environment {
-        COVERALLS_TOKEN = credentials('coveralls-token')
-        DISCORD_WEBHOOK_URL = credentials('discord-webhook-url')
-    }
-*/
-
     stages {
         stage ('check-commit') {
             steps {
@@ -47,12 +40,14 @@ pipeline {
         }
         stage ('test') {
             steps {
-                sh 'mvn test -Dmaven.test.failure.ignore=true'
+                withCredentials([string(credentialsId: 'authme-coveralls-token', variable: 'COVERALLS_TOKEN')]) {
+                    sh 'mvn test coveralls:report -DrepoToken=${COVERALLS_TOKEN}'
+                }
             }
             post {
                 always {
                     junit 'target/surefire-reports/*.xml'
-                    jacoco(execPattern: '**/*.exec')
+                    jacoco(execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java')
                 }
             }
         }
@@ -104,7 +99,9 @@ pipeline {
                     currentBuild.result = 'NOT_BUILT'
                 }
             }
-            //discordSend webhookURL: '$DISCORD_WEBHOOK_URL'
+            withCredentials([string(credentialsId: 'authme-discord-webhook', variable: 'DISCORD_WEBHOOK')]) {
+                discordSend webhookURL: '${DISCORD_WEBHOOK}'
+            }
         }
         success {
             githubNotify description: 'The jenkins build was successful',  status: 'SUCCESS'
