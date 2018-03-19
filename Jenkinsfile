@@ -65,7 +65,7 @@ pipeline {
                 }
             }
             withCredentials([string(credentialsId: 'authme-discord-webhook', variable: 'DISCORD_WEBHOOK')]) {
-                discordSend webhookURL: env.DISCORD_WEBHOOK
+                discordSend description: 'Jenkins Pipeline Build', footer: 'Build provided by ci.codemc.org', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
             }
         }
         success {
