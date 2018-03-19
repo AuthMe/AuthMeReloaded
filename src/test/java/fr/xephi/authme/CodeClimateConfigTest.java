@@ -24,7 +24,7 @@ public class CodeClimateConfigTest {
     public void shouldHaveExistingClassesInExclusions() {
         // given / when
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(new File(CONFIG_FILE));
-        List<String> excludePaths = configuration.getStringList("exclude_paths");
+        List<String> excludePaths = configuration.getStringList("exclude_patterns");
 
         // then
         assertThat(excludePaths, not(empty()));
@@ -43,13 +43,13 @@ public class CodeClimateConfigTest {
             fail("Expected path '" + path + "' to end with '.java'");
         }
 
-        if (new File("/" + path).exists()) {
+        if (!new File(path).exists()) {
             fail("Path '" + path + "' does not exist!");
         }
     }
 
     private static void removeTestsExclusionOrThrow(List<String> excludePaths) {
-        boolean wasRemoved = excludePaths.removeIf("src/test/java/**Test.java"::equals);
+        boolean wasRemoved = excludePaths.removeIf("src/test/java/**/*Test.java"::equals);
         assertThat("Expected an exclusion for test classes",
             wasRemoved, equalTo(true));
     }

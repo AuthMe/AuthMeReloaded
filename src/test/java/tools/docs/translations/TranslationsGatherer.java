@@ -25,7 +25,7 @@ public class TranslationsGatherer {
 
     public TranslationsGatherer() {
         gatherTranslations();
-        translationInfo.sort((e1, e2) -> getCode(e1).compareTo(getCode(e2)));
+        translationInfo.sort((e1, e2) -> getSortCode(e1).compareTo(getSortCode(e2)));
     }
 
     public List<TranslationInfo> getTranslationInfo() {
@@ -61,16 +61,6 @@ public class TranslationsGatherer {
         return null;
     }
 
-    public static final class TranslationInfo {
-        public final String code;
-        public final double percentTranslated;
-
-        TranslationInfo(String code, double percentTranslated) {
-            this.code = code;
-            this.percentTranslated = percentTranslated;
-        }
-    }
-
     /**
      * Returns the language code from the translation info for sorting purposes.
      * Returns "a" for "en" language code to sort English on top.
@@ -78,8 +68,26 @@ public class TranslationsGatherer {
      * @param info the translation info
      * @return the language code for sorting
      */
-    private static String getCode(TranslationInfo info) {
+    private static String getSortCode(TranslationInfo info) {
         return "en".equals(info.code) ? "a" : info.code;
+    }
+
+    public static final class TranslationInfo {
+        private final String code;
+        private final double percentTranslated;
+
+        TranslationInfo(String code, double percentTranslated) {
+            this.code = code;
+            this.percentTranslated = percentTranslated;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public double getPercentTranslated() {
+            return percentTranslated;
+        }
     }
 
 }

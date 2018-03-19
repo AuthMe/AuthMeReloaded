@@ -12,11 +12,14 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.util.PlayerUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -159,18 +162,38 @@ public class AuthMeApi {
     }
 
     /**
-     * Get the last login date of a player.
+     * Get the last (AuthMe) login date of a player.
      *
      * @param playerName The name of the player to process
+     *
      * @return The date of the last login, or null if the player doesn't exist or has never logged in
+     * @deprecated Use Java 8's Instant method {@link #getLastLoginTime(String)}
      */
+    @Deprecated
     public Date getLastLogin(String playerName) {
+        Long lastLogin = getLastLoginMillis(playerName);
+        return lastLogin == null ? null : new Date(lastLogin);
+    }
+
+    /**
+     * Get the last (AuthMe) login timestamp of a player.
+     *
+     * @param playerName The name of the player to process
+     *
+     * @return The timestamp of the last login, or null if the player doesn't exist or has never logged in
+     */
+    public Instant getLastLoginTime(String playerName) {
+        Long lastLogin = getLastLoginMillis(playerName);
+        return lastLogin == null ? null : Instant.ofEpochMilli(lastLogin);
+    }
+
+    private Long getLastLoginMillis(String playerName) {
         PlayerAuth auth = playerCache.getAuth(playerName);
         if (auth == null) {
             auth = dataSource.getAuth(playerName);
         }
-        if (auth != null && auth.getLastLogin() != null) {
-            return new Date(auth.getLastLogin());
+        if (auth != null) {
+            return auth.getLastLogin();
         }
         return null;
     }

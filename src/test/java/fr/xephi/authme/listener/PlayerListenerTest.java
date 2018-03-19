@@ -55,6 +55,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -595,7 +596,7 @@ public class PlayerListenerTest {
             MessageKey.INVALID_NAME_CHARACTERS, "[a-z]");
         doThrow(exception).when(onJoinVerifier).checkIsValidName(name);
         String message = "Invalid characters!";
-        given(messages.retrieveSingle(exception.getReason(), exception.getArgs())).willReturn(message);
+        given(messages.retrieveSingle(player, exception.getReason(), exception.getArgs())).willReturn(message);
 
         // when
         listener.onPlayerLogin(event);
@@ -755,13 +756,13 @@ public class PlayerListenerTest {
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
 
         // when
         listener.onPlayerInventoryOpen(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(true));
-        TestHelper.runSyncDelayedTaskWithDelay(bukkitService);
         verify(player).closeInventory();
     }
 

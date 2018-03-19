@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -8,14 +9,10 @@ import fr.xephi.authme.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Migrates the SQLite database when necessary.
@@ -70,11 +67,10 @@ class SqLiteMigrater {
         File backupDirectory = new File(dataFolder, "backups");
         FileUtils.createDirectory(backupDirectory);
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-        String backupName = "backup-" + databaseName + dateFormat.format(new Date()) + ".db";
+        String backupName = "backup-" + databaseName + FileUtils.createCurrentTimeString() + ".db";
         File backup = new File(backupDirectory, backupName);
         try {
-            Files.copy(sqLite.toPath(), backup.toPath());
+            Files.copy(sqLite, backup);
             return backupName;
         } catch (IOException e) {
             throw new IllegalStateException("Failed to create SQLite backup before migration", e);

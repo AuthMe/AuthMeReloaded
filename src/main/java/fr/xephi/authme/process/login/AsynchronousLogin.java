@@ -2,10 +2,10 @@ package fr.xephi.authme.process.login;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.CaptchaManager;
 import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
@@ -19,9 +19,9 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
@@ -61,7 +61,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private PasswordSecurity passwordSecurity;
 
     @Inject
-    private CaptchaManager captchaManager;
+    private LoginCaptchaManager loginCaptchaManager;
 
     @Inject
     private TempbanManager tempbanManager;
@@ -76,7 +76,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private SessionService sessionService;
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     AsynchronousLogin() {
     }
@@ -163,15 +163,15 @@ public class AsynchronousLogin implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
 
         // If captcha is required send a message to the player and deny to log in
-        if (captchaManager.isCaptchaRequired(name)) {
-            service.send(player, MessageKey.USAGE_CAPTCHA, captchaManager.getCaptchaCodeOrGenerateNew(name));
+        if (loginCaptchaManager.isCaptchaRequired(name)) {
+            service.send(player, MessageKey.USAGE_CAPTCHA, loginCaptchaManager.getCaptchaCodeOrGenerateNew(name));
             return false;
         }
 
         final String ip = PlayerUtils.getPlayerIp(player);
 
         // Increase the counts here before knowing the result of the login.
-        captchaManager.increaseCount(name);
+        loginCaptchaManager.increaseLoginFailureCount(name);
         tempbanManager.increaseCount(ip, name);
 
         if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
@@ -197,15 +197,15 @@ public class AsynchronousLogin implements AsynchronousProcess {
             tempbanManager.tempbanPlayer(player);
         } else if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
-                () -> player.kickPlayer(service.retrieveSingleMessage(MessageKey.WRONG_PASSWORD)));
+                () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.WRONG_PASSWORD)));
         } else {
             service.send(player, MessageKey.WRONG_PASSWORD);
 
             // If the authentication fails check if Captcha is required and send a message to the player
-            if (captchaManager.isCaptchaRequired(player.getName())) {
+            if (loginCaptchaManager.isCaptchaRequired(player.getName())) {
                 limboService.muteMessageTask(player);
                 service.send(player, MessageKey.USAGE_CAPTCHA,
-                    captchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
+                    loginCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName()));
             } else if (emailService.hasAllInformation() && !Utils.isEmailEmpty(auth.getEmail())) {
                 service.send(player, MessageKey.FORGOT_PASSWORD_MESSAGE);
             }
@@ -220,17 +220,19 @@ public class AsynchronousLogin implements AsynchronousProcess {
      */
     private void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
+            final boolean isFirstLogin = (auth.getLastLogin() == null);
+
             // Update auth to reflect this new login
             final String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
             auth.setLastIp(ip);
             dataSource.updateSession(auth);
-            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
 
             // Successful login, so reset the captcha & temp ban count
             final String name = player.getName();
-            captchaManager.resetCounts(name);
+            loginCaptchaManager.resetLoginFailureCount(name);
             tempbanManager.resetCount(ip, name);
             player.setNoDamageTicks(0);
 
@@ -238,7 +240,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
             // Other auths
             List<String> auths = dataSource.getAllAuthsByIp(auth.getLastIp());
-            runCommandOtherAccounts(auths, player, auth.getLastIp());
             displayOtherAccounts(auths, player);
 
             final String email = auth.getEmail();
@@ -252,34 +253,16 @@ public class AsynchronousLogin implements AsynchronousProcess {
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
             sessionService.grantSession(name);
-            bungeeService.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            syncProcessManager.processSyncPlayerLogin(player);
+            syncProcessManager.processSyncPlayerLogin(player, isFirstLogin, auths);
         } else {
             ConsoleLogger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");
         }
-    }
-
-    private void runCommandOtherAccounts(List<String> auths, Player player, String ip) {
-        int threshold = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD_THRESHOLD);
-        String command = service.getProperty(RestrictionSettings.OTHER_ACCOUNTS_CMD);
-
-        if (threshold < 2 || command.isEmpty()) {
-            return;
-        }
-
-        if (auths.size() < threshold) {
-            return;
-        }
-
-        bukkitService.dispatchConsoleCommand(command
-            .replace("%playername%", player.getName())
-            .replace("%playerip%", ip)
-        );
     }
 
     /**

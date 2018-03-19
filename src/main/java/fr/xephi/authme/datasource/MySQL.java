@@ -12,7 +12,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.Utils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -29,6 +28,10 @@ import java.util.Set;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
+/**
+ * MySQL data source.
+ */
+@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class MySQL implements DataSource {
 
     private boolean useSsl;
@@ -98,9 +101,6 @@ public class MySQL implements DataSource {
         this.col = new Columns(settings);
         this.sqlExtension = extensionsFactory.buildExtension(col);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
-        if (poolSize == -1) {
-            poolSize = Utils.getCoreCount() * 3;
-        }
         this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
@@ -115,7 +115,6 @@ public class MySQL implements DataSource {
         // Pool Settings
         ds.setMaximumPoolSize(poolSize);
         ds.setMaxLifetime(maxLifetime * 1000);
-
 
         // Database URL
         ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
@@ -348,7 +347,8 @@ public class MySQL implements DataSource {
 
             if (!columnOthers.isEmpty()) {
                 for (String column : columnOthers) {
-                    try (PreparedStatement pst = con.prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + col.NAME + "=?;")) {
+                    try (PreparedStatement pst = con.prepareStatement(
+                        "UPDATE " + tableName + " SET " + column + "=? WHERE " + col.NAME + "=?;")) {
                         pst.setString(1, auth.getRealName());
                         pst.setString(2, auth.getNickname());
                         pst.executeUpdate();
@@ -716,6 +716,29 @@ public class MySQL implements DataSource {
         return players;
     }
 
+    @Override
+    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        List<PlayerAuth> players = new ArrayList<>();
+        String sql = "SELECT * FROM " + tableName + " ORDER BY " + col.LAST_LOGIN + " DESC LIMIT 10;";
+        try (Connection con = getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                players.add(buildAuthFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return players;
+    }
+
+    /**
+     * Creates a {@link PlayerAuth} object with the data from the provided result set.
+     *
+     * @param row the result set to read from
+     * @return generated player auth object with the data from the result set
+     * @throws SQLException .
+     */
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);

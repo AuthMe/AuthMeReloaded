@@ -13,12 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.xephi.authme.TestHelper.runSyncDelayedTaskWithDelay;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,14 +56,12 @@ public class AntiBotServiceTest {
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(true);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DELAY)).willReturn(8);
+        setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
     }
 
     @Test
     public void shouldStartListenerOnStartup() {
-        // given / when
-        runSyncDelayedTaskWithDelay(bukkitService);
-
-        // then
+        // given / when / then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
@@ -83,7 +82,8 @@ public class AntiBotServiceTest {
     @Test
     public void shouldActivateAntibot() {
         // given - listening antibot
-        runSyncDelayedTaskWithDelay(bukkitService);
+        BukkitTask task = mock(BukkitTask.class);
+        given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(task);
 
         // when
         antiBotService.overrideAntiBotStatus(true);
@@ -91,23 +91,23 @@ public class AntiBotServiceTest {
         // then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.ACTIVE));
         // Check that a task is scheduled to disable again
-        runSyncDelayedTaskWithDelay(bukkitService);
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(bukkitService).runTaskLater(runnableCaptor.capture(), anyLong());
+        runnableCaptor.getValue().run();
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
     @Test
     public void shouldNotActivateAntibotForDisabledSetting() {
         // given - disabled antibot
-        reset(bukkitService);
-        assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.DISABLED));
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(false);
+        AntiBotService antiBotService = new AntiBotService(settings, messages, permissionsManager, bukkitService);
 
         // when
         antiBotService.overrideAntiBotStatus(true);
 
         // then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.DISABLED));
-        verifyZeroInteractions(bukkitService);
     }
 
     @Test
@@ -127,10 +127,7 @@ public class AntiBotServiceTest {
 
     @Test
     public void shouldAcceptPlayerToJoin() {
-        // given - listening antibot
-        runSyncDelayedTaskWithDelay(bukkitService);
-
-        // when
+        // given / when
         boolean result = antiBotService.shouldKick();
 
         // then
@@ -142,9 +139,7 @@ public class AntiBotServiceTest {
         // given
         int sensitivity = 10;
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(sensitivity);
-        reset(bukkitService);
         AntiBotService antiBotService = new AntiBotService(settings, messages, permissionsManager, bukkitService);
-        runSyncDelayedTaskWithDelay(bukkitService);
 
         for (int i = 0; i < sensitivity; ++i) {
             antiBotService.shouldKick();
@@ -162,7 +157,6 @@ public class AntiBotServiceTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void shouldInformPlayersOnActivation() {
         // given - listening antibot
-        runSyncDelayedTaskWithDelay(bukkitService);
         List<Player> players = Arrays.asList(mock(Player.class), mock(Player.class));
         given(bukkitService.getOnlinePlayers()).willReturn((List) players);
         given(permissionsManager.hasPermission(players.get(0), AdminPermission.ANTIBOT_MESSAGES)).willReturn(false);
@@ -180,7 +174,6 @@ public class AntiBotServiceTest {
     @Test
     public void shouldImmediatelyStartAfterFirstStartup() {
         // given - listening antibot
-        runSyncDelayedTaskWithDelay(bukkitService);
         given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(mock(BukkitTask.class));
         antiBotService.overrideAntiBotStatus(true);
 

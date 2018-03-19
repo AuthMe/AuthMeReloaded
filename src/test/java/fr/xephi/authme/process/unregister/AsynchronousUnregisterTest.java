@@ -10,13 +10,17 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.function.Function;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,7 +68,7 @@ public class AsynchronousUnregisterTest {
     @Mock
     private CommandManager commandManager;
     @Mock
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     @BeforeClass
     public static void initLogger() {
@@ -89,7 +94,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(service).send(player, MessageKey.WRONG_PASSWORD);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
-        verifyZeroInteractions(dataSource, limboService, teleportationService, bukkitService);
+        verifyZeroInteractions(dataSource, limboService, teleportationService, bukkitService, bungeeSender);
         verify(player, only()).getName();
     }
 
@@ -108,6 +113,9 @@ public class AsynchronousUnregisterTest {
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
+        given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(21);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -118,9 +126,10 @@ public class AsynchronousUnregisterTest {
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
         verify(teleportationService).teleportOnJoin(player);
-        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
+        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
+        verify(player).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 21 * 20, 2));
     }
 
     @Test
@@ -138,6 +147,8 @@ public class AsynchronousUnregisterTest {
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(false);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -148,9 +159,10 @@ public class AsynchronousUnregisterTest {
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
         verify(teleportationService).teleportOnJoin(player);
-        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
+        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
+        verify(player, never()).addPotionEffect(any(PotionEffect.class));
     }
 
     @Test
@@ -167,6 +179,7 @@ public class AsynchronousUnregisterTest {
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(false);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -177,8 +190,8 @@ public class AsynchronousUnregisterTest {
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
         verifyZeroInteractions(teleportationService, limboService);
-        verify(bukkitService, never()).runTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
+        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(commandManager).runCommandsOnUnregister(player);
     }
 
@@ -203,7 +216,7 @@ public class AsynchronousUnregisterTest {
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
         verify(service).send(player, MessageKey.ERROR);
-        verifyZeroInteractions(teleportationService, bukkitService);
+        verifyZeroInteractions(teleportationService, bukkitService, bungeeSender);
     }
 
     @Test
@@ -230,6 +243,7 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyZeroInteractions(teleportationService);
         verifyCalledUnregisterEventFor(player);
+        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     // Initiator known and Player object available
@@ -241,7 +255,9 @@ public class AsynchronousUnregisterTest {
         given(player.isOnline()).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(false);
         CommandSender initiator = mock(CommandSender.class);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         asynchronousUnregister.adminUnregister(initiator, name, player);
@@ -252,9 +268,9 @@ public class AsynchronousUnregisterTest {
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
         verify(teleportationService).teleportOnJoin(player);
-        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
+        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     @Test
@@ -271,6 +287,7 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyZeroInteractions(teleportationService);
         verifyCalledUnregisterEventFor(null);
+        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     @Test
@@ -286,7 +303,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(dataSource).removeAuth(name);
         verify(service).send(initiator, MessageKey.ERROR);
-        verifyZeroInteractions(playerCache, teleportationService, bukkitService);
+        verifyZeroInteractions(playerCache, teleportationService, bukkitService, bungeeSender);
     }
 
     @SuppressWarnings("unchecked")

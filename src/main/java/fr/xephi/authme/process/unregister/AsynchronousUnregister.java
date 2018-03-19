@@ -11,9 +11,9 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -54,7 +54,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     private CommandManager commandManager;
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     AsynchronousUnregister() {
     }
@@ -115,12 +115,13 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      */
     private void performPostUnregisterActions(String name, Player player) {
         playerCache.removePlayer(name);
-        bungeeService.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
+        bungeeSender.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
 
         if (player == null || !player.isOnline()) {
             return;
         }
-        commandManager.runCommandsOnUnregister(player);
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
+            commandManager.runCommandsOnUnregister(player));
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
             teleportationService.teleportOnJoin(player);

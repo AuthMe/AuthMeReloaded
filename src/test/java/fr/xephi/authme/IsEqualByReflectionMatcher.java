@@ -31,7 +31,7 @@ public final class IsEqualByReflectionMatcher<T> extends TypeSafeMatcher<T> {
      * @param <T> the object's type
      * @return the matcher for the expected object
      */
-    public static <T> Matcher<T> isEqualTo(T expected) {
+    public static <T> Matcher<T> hasEqualValuesOnAllFields(T expected) {
         return new IsEqualByReflectionMatcher<>(expected);
     }
 
@@ -70,7 +70,7 @@ public final class IsEqualByReflectionMatcher<T> extends TypeSafeMatcher<T> {
         Class<?> currentClass = object.getClass();
         while (currentClass != null) {
             for (Field f : currentClass.getDeclaredFields()) {
-                if (!Modifier.isStatic(f.getModifiers())) {
+                if (!Modifier.isStatic(f.getModifiers()) && !f.isSynthetic()) {
                     fields.add(f);
                 }
             }

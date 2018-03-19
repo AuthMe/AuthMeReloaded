@@ -12,7 +12,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -63,9 +62,6 @@ public class OnStartupTasks {
      * @param logger   the plugin logger
      */
     public static void setupConsoleFilter(Settings settings, Logger logger) {
-        if (!settings.getProperty(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE)) {
-            return;
-        }
         // Try to set the log4j filter
         try {
             Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
@@ -87,6 +83,10 @@ public class OnStartupTasks {
         logger.addFilter(new Log4JFilter());
     }
 
+    /**
+     * Starts a task that regularly reminds players without a defined email to set their email,
+     * if enabled.
+     */
     public void scheduleRecallEmailTask() {
         if (!settings.getProperty(RECALL_PLAYERS)) {
             return;

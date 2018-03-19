@@ -4,6 +4,7 @@ import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import fr.xephi.authme.data.captcha.CaptchaCodeStorage;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.initialization.HasCleanup;
@@ -19,6 +20,7 @@ import org.junit.Test;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,12 +46,13 @@ public class ClassesConsistencyTest {
 
     /** Expiring structure types. */
     private static final Set<Class<?>> EXPIRING_STRUCTURES = ImmutableSet.of(
-        ExpiringSet.class, ExpiringMap.class, TimedCounter.class);
+        ExpiringSet.class, ExpiringMap.class, TimedCounter.class, CaptchaCodeStorage.class);
 
     /** Immutable types, which are allowed to be used in non-private constants. */
     private static final Set<Class<?>> IMMUTABLE_TYPES = ImmutableSet.of(
         /* JDK */
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
+        Charset.class,
         /* AuthMe */
         Property.class, RegistrationMethod.class, Column.class, ColumnType.class,
         /* Guava */
@@ -124,29 +127,13 @@ public class ClassesConsistencyTest {
     }
 
     /**
-     * Prints out the field with (most of) its modifiers.
+     * Prints out the field with its modifiers.
      *
      * @param field the field to format
      * @return description of the field
      */
     private static String formatField(Field field) {
-        String modifiersText = "";
-        int modifiers = field.getModifiers();
-        if (Modifier.isPublic(modifiers)) {
-            modifiersText += "public ";
-        } else if (Modifier.isProtected(modifiers)) {
-            modifiersText += "protected ";
-        } else if (Modifier.isPrivate(modifiers)) {
-            modifiersText += "private ";
-        }
-
-        if (Modifier.isStatic(modifiers)) {
-            modifiersText += "static ";
-        }
-        if (Modifier.isFinal(modifiers)) {
-            modifiersText += "final ";
-        }
-
+        String modifiersText = Modifier.toString(field.getModifiers());
         return String.format("[%s] %s %s %s", field.getDeclaringClass().getSimpleName(), modifiersText.trim(),
             field.getType().getSimpleName(), field.getName());
     }
@@ -159,10 +146,9 @@ public class ClassesConsistencyTest {
     public void shouldImplementHasCleanup() {
         // given / when / then
         for (Class<?> clazz : ALL_CLASSES) {
-            if (hasExpiringCollectionAsField(clazz)) {
+            if (hasExpiringCollectionAsField(clazz) && !EXPIRING_STRUCTURES.contains(clazz)) {
                 assertThat("Class '" + clazz.getSimpleName() + "' has expiring collections, should implement HasCleanup",
                     HasCleanup.class.isAssignableFrom(clazz), equalTo(true));
-                // System.out.println("Successful check for " + clazz);
             }
         }
     }

@@ -4,7 +4,6 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -26,9 +25,6 @@ import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWOR
 class EmailRegisterExecutor implements RegistrationExecutor<EmailRegisterParams> {
 
     @Inject
-    private PermissionsManager permissionsManager;
-
-    @Inject
     private DataSource dataSource;
 
     @Inject
@@ -46,7 +42,7 @@ class EmailRegisterExecutor implements RegistrationExecutor<EmailRegisterParams>
     @Override
     public boolean isRegistrationAdmitted(EmailRegisterParams params) {
         final int maxRegPerEmail = commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL);
-        if (maxRegPerEmail > 0 && !permissionsManager.hasPermission(params.getPlayer(), ALLOW_MULTIPLE_ACCOUNTS)) {
+        if (maxRegPerEmail > 0 && !commonService.hasPermission(params.getPlayer(), ALLOW_MULTIPLE_ACCOUNTS)) {
             int otherAccounts = dataSource.countAuthsByEmail(params.getEmail());
             if (otherAccounts >= maxRegPerEmail) {
                 commonService.send(params.getPlayer(), MessageKey.MAX_REGISTER_EXCEEDED,

@@ -8,11 +8,11 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.MessageType;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -86,7 +86,7 @@ public class PlayerListener implements Listener {
     @Inject
     private PermissionsManager permissionsManager;
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
 
@@ -178,6 +178,7 @@ public class PlayerListener implements Listener {
 
         String customJoinMessage = settings.getProperty(RegistrationSettings.CUSTOM_JOIN_MESSAGE);
         if (!customJoinMessage.isEmpty()) {
+            customJoinMessage = ChatColor.translateAlternateColorCodes('&', customJoinMessage);
             event.setJoinMessage(customJoinMessage
                 .replace("{PLAYERNAME}", player.getName())
                 .replace("{DISPLAYNAME}", player.getDisplayName())
@@ -256,7 +257,7 @@ public class PlayerListener implements Listener {
         try {
             runOnJoinChecks(JoiningPlayer.fromName(name), event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setKickMessage(m.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
         }
     }
@@ -284,7 +285,7 @@ public class PlayerListener implements Listener {
             try {
                 runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
-                event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+                event.setKickMessage(m.retrieveSingle(player, e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             }
         }
@@ -430,7 +431,7 @@ public class PlayerListener implements Listener {
                 .location(spawn)
                 .build();
             dataSource.updateQuitLoc(auth);
-            bungeeService.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);

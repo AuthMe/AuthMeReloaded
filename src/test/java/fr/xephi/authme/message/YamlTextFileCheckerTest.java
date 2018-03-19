@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static tools.utils.FileIoUtils.listFilesOrThrow;
 import static org.junit.Assert.fail;
+import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
  * Tests that all YML text files can be loaded.

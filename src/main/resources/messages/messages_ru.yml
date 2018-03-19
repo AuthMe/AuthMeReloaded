@@ -1,115 +1,141 @@
-# Регистрация
-reg_msg: '&3Регистрация: /reg <пароль> <повтор пароля>'
-usage_reg: '&cИспользование: /reg <пароль> <повтор пароля>'
-reg_only: '&4Вход только для зарегистрированных! Посетите http://сайт_сервера.ru для регистрации.'
-kicked_admin_registered: 'Администратор зарегистрировал вас. Авторизируйтесь снова.'
-registered: '&2Вы успешно зарегистрировались!'
-reg_disabled: '&cРегистрация отключена.'
-user_regged: '&cИгрок с таким именем уже зарегистрирован.'
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
-# Ошибки с паролем при регистрации
-password_error: '&cПароли не совпадают.'
-password_error_nick: '&cНельзя использовать своё имя в качестве пароля.'
-password_error_unsafe: '&cТакой пароль небезопасен.'
-password_error_chars: '&4Пароль содержит запрещённые символы. Разрешённые: REG_EX'
-pass_len: '&cПароль слишком длинный/короткий.'
+# Registration
+registration:
+    disabled: '&cРегистрация отключена.'
+    name_taken: '&cИгрок с таким именем уже зарегистрирован.'
+    register_request: '&3Регистрация: /reg <пароль> <повтор пароля>'
+    command_usage: '&cИспользование: /reg <пароль> <повтор пароля>'
+    reg_only: '&4Вход только для зарегистрированных! Посетите http://сайт_сервера.ru для регистрации.'
+    success: '&2Вы успешно зарегистрировались!'
+    kicked_admin_registered: 'Администратор зарегистрировал вас. Авторизируйтесь снова.'
 
-# Вход
-usage_log: '&cИспользование: /login <пароль>'
-wrong_pwd: '&cНеправильный пароль!'
-login: '&2Вы успешно вошли!'
-login_msg: '&3Авторизация: /login <Пароль>'
-timeout: '&4Время авторизации истекло.'
+# Password errors on registration
+password:
+    match_error: '&cПароли не совпадают.'
+    name_in_password: '&cНельзя использовать своё имя в качестве пароля.'
+    unsafe_password: '&cТакой пароль небезопасен.'
+    forbidden_characters: '&4Пароль содержит запрещённые символы. Разрешённые: %valid_chars'
+    wrong_length: '&cПароль слишком длинный/короткий.'
 
-# Ошибки
-unknown_user: '&cИгрок с таким именем не зарегистрирован.'
-denied_command: '&cНеобходимо авторизоваться для использования этой команды!'
-denied_chat: '&cНеобходимо авторизоваться, чтобы писать в чат!'
-not_logged_in: '&cВы ещё не вошли!'
-tempban_max_logins: '&cВы временно заблокированы из-за большого количества неудачных попыток авторизоваться.'
-max_reg: '&cПревышено максимальное количество регистраций на сервере! (%reg_count/%max_acc %reg_names)'
-no_perm: '&4Недостаточно прав.'
-error: '&cПроизошла ошибка. Свяжитесь с администратором.'
-kick_forvip: '&3VIP-игрок зашёл на переполненный сервер.'
+# Login
+login:
+    command_usage: '&cИспользование: /login <пароль>'
+    wrong_password: '&cНеправильный пароль!'
+    success: '&2Вы успешно вошли!'
+    login_request: '&3Авторизация: /login <Пароль>'
+    timeout_error: '&4Время авторизации истекло.'
 
-# АнтиБот (Защита от ботов)
-kick_antibot: 'Сработала защита против ботов! Необходимо подождать перед следующим входом на сервер.'
-antibot_auto_enabled: '&4[AuthMe] AntiBot-режим включился из-за большого количества входов!'
-antibot_auto_disabled: '&2[AuthMe] AntiBot-режим отключился спустя %m мин.'
+# Errors
+error:
+    denied_command: '&cНеобходимо авторизоваться для использования этой команды!'
+    denied_chat: '&cНеобходимо авторизоваться, чтобы писать в чат!'
+    unregistered_user: '&cИгрок с таким именем не зарегистрирован.'
+    not_logged_in: '&cВы ещё не вошли!'
+    no_permission: '&4Недостаточно прав.'
+    unexpected_error: '&cПроизошла ошибка. Свяжитесь с администратором.'
+    max_registration: '&cПревышено максимальное количество регистраций на сервере! (%reg_count/%max_acc %reg_names)'
+    logged_in: '&cВы уже авторизированы!'
+    kick_for_vip: '&3VIP-игрок зашёл на переполненный сервер.'
+    tempban_max_logins: '&cВы временно заблокированы из-за большого количества неудачных попыток авторизоваться.'
 
-# Другие сообщения
-unregistered: '&cУчётная запись успешно удалена!'
-accounts_owned_self: 'У вас %count уч. записей:'
-accounts_owned_other: 'У игрока %name %count уч. записей:'
-two_factor_create: '&2Ваш секретный код — %code. Просканируйте его здесь: %url'
-recovery_code_sent: 'Код восстановления для сброса пароля был отправлен на электронную почт.'
-recovery_code_incorrect: 'Неверный код восстановления! Попыток осталось: %count.'
-recovery_tries_exceeded: 'Вы слишком много раз неверно ввели код восстановления. Используйте «/email recovery [эл. почта]», чтобы получить новый код.'
-recovery_code_correct: 'Код восстановления введён верно!'
-recovery_change_password: 'Используйте «/email setpassword <новый пароль>», чтобы сменить свой пароль.'
-vb_nonActiv: '&cВаша уч. запись ещё не активирована. Проверьте электронную почту!'
-usage_unreg: '&cИспользование: /unregister <пароль>'
-pwd_changed: '&2Пароль изменён!'
-logged_in: '&cВы уже авторизированы!'
-logout: '&2Вы успешно вышли.'
-reload: '&6Конфигурация и база данных перезагружены.'
-usage_changepassword: '&cИспользование: /changepassword <пароль> <новый пароль>'
+# AntiBot
+antibot:
+    kick_antibot: 'Сработала защита против ботов! Необходимо подождать перед следующим входом на сервер.'
+    auto_enabled: '&4[AuthMe] AntiBot-режим включился из-за большого количества входов!'
+    auto_disabled: '&2[AuthMe] AntiBot-режим отключился спустя %m мин.'
 
-# Сообщения сессии
-invalid_session: '&cСессия некорректна. Дождитесь, пока она закончится.'
-valid_session: '&2Вы автоматически авторизовались!'
+# Unregister
+unregister:
+    success: '&cУчётная запись успешно удалена!'
+    command_usage: '&cИспользование: /unregister <пароль>'
 
-# Ошибки при входе
-name_len: '&4Ваше имя слишком длинное/короткое.'
-regex: '&4Пароль содержит запрещённые символы. Разрешённые: REG_EX'
-country_banned: '&4Вход с IP-адресов вашей страны запрещён на этом сервере.'
-not_owner_error: 'Вы не являетесь владельцем данной уч. записи. Выберите себе другое имя!'
-kick_fullserver: '&4Сервер полон. Попробуйте зайти позже!'
-same_nick: '&4Игрок с данным именем уже играет на сервере!'
-invalid_name_case: 'Неверное имя! Зайдите под именем %valid, а не %invalid.'
-same_ip_online: 'Игрок с данным IP-адресом уже играет на сервере!'
+# Other messages
+misc:
+    account_not_activated: '&cВаша уч. запись ещё не активирована. Проверьте электронную почту!'
+    password_changed: '&2Пароль изменён!'
+    logout: '&2Вы успешно вышли.'
+    reload: '&6Конфигурация и база данных перезагружены.'
+    usage_change_password: '&cИспользование: /changepassword <пароль> <новый пароль>'
+    two_factor_create: '&2Ваш секретный код — %code. Просканируйте его здесь: %url'
+    accounts_owned_self: 'У вас %count уч. записей:'
+    accounts_owned_other: 'У игрока %name %count уч. записей:'
 
-# Почта
-usage_email_add: '&cИспользование: /email add <эл. почта> <повтор эл. почты>'
-usage_email_change: '&cИспользование: /email change <эл. почта> <новая эл. почта>'
-usage_email_recovery: '&cИспользование: /email recovery <эл. почта>'
-new_email_invalid: '&cНедействительная новая электронная почта!'
-old_email_invalid: '&cНедействительная старая электронная почта!'
-email_invalid: '&cНедействительный адрес электронной почты!'
-email_added: '&2Электронная почта успешно добавлена!'
-email_confirm: '&cПодтвердите свою электронную почту!'
-email_changed: '&2Адрес электронной почты изменён!'
-email_send: '&2Письмо с инструкциями для восстановления было отправлено на вашу электронную почту!'
-email_show: '&2Текущий адрес электронной почты — &f%email'
-incomplete_email_settings: 'Ошибка: не все необходимые параметры установлены для отправки электронной почты. Свяжитесь с администратором.'
-email_already_used: '&4Эта электронная почта уже используется.'
-email_send_failure: 'Письмо не может быть отправлено. Свяжитесь в администратором.'
-show_no_email: '&2К вашей уч. записи не привязана электронная почта.'
-add_email: '&3Добавьте электронную почту: /email add <эл. почта> <повтор эл. почты>'
-recovery_email: '&Забыли пароль? Используйте «/email recovery <эл. почта>».'
-change_password_expired: 'Больше нельзя сменить свой пароль, используя эту команду.'
-email_cooldown_error: '&cПисьмо было отправлено недавно. Подождите %time, прежде чем отправить новое.'
+# Session messages
+session:
+    valid_session: '&2Вы автоматически авторизовались!'
+    invalid_session: '&cСессия некорректна. Дождитесь, пока она закончится.'
 
-# Каптча
-usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha <theCaptcha>»'
-wrong_captcha: '&cНеверно! Используйте «/captcha THE_CAPTCHA».'
-valid_captcha: '&2Вы успешно решили каптчу!'
+# Error messages when joining
+on_join_validation:
+    same_ip_online: 'Игрок с данным IP-адресом уже играет на сервере!'
+    same_nick_online: '&4Игрок с данным именем уже играет на сервере!'
+    name_length: '&4Ваше имя слишком длинное/короткое.'
+    characters_in_name: '&4Пароль содержит запрещённые символы. Разрешённые: %valid_chars'
+    kick_full_server: '&4Сервер полон. Попробуйте зайти позже!'
+    country_banned: '&4Вход с IP-адресов вашей страны запрещён на этом сервере.'
+    not_owner_error: 'Вы не являетесь владельцем данной уч. записи. Выберите себе другое имя!'
+    invalid_name_case: 'Неверное имя! Зайдите под именем %valid, а не %invalid.'
+
+# Email
+email:
+    add_email_request: '&3Добавьте электронную почту: /email add <эл. почта> <повтор эл. почты>'
+    usage_email_add: '&cИспользование: /email add <эл. почта> <повтор эл. почты>'
+    usage_email_change: '&cИспользование: /email change <эл. почта> <новая эл. почта>'
+    new_email_invalid: '&cНедействительная новая электронная почта!'
+    old_email_invalid: '&cНедействительная старая электронная почта!'
+    invalid: '&cНедействительный адрес электронной почты!'
+    added: '&2Электронная почта успешно добавлена!'
+    request_confirmation: '&cПодтвердите свою электронную почту!'
+    changed: '&2Адрес электронной почты изменён!'
+    email_show: '&2Текущий адрес электронной почты — &f%email'
+    no_email_for_account: '&2К вашей уч. записи не привязана электронная почта.'
+    already_used: '&4Эта электронная почта уже используется.'
+    incomplete_settings: 'Ошибка: не все необходимые параметры установлены для отправки электронной почты. Свяжитесь с администратором.'
+    send_failure: 'Письмо не может быть отправлено. Свяжитесь в администратором.'
+    change_password_expired: 'Больше нельзя сменить свой пароль, используя эту команду.'
+    email_cooldown_error: '&cПисьмо было отправлено недавно. Подождите %time, прежде чем отправить новое.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&Забыли пароль? Используйте «/email recovery <эл. почта>».'
+    command_usage: '&cИспользование: /email recovery <эл. почта>'
+    email_sent: '&2Письмо с инструкциями для восстановления было отправлено на вашу электронную почту!'
+    code:
+        code_sent: 'Код восстановления для сброса пароля был отправлен на электронную почт.'
+        incorrect: 'Неверный код восстановления! Попыток осталось: %count.'
+        tries_exceeded: 'Вы слишком много раз неверно ввели код восстановления. Используйте «/email recovery [эл. почта]», чтобы получить новый код.'
+        correct: 'Код восстановления введён верно!'
+        change_password: 'Используйте «/email setpassword <новый пароль>», чтобы сменить свой пароль.'
+
+# Captcha
+captcha:
+    usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha %captcha_code»'
+    wrong_captcha: '&cНеверно! Используйте «/captcha %captcha_code».'
+    valid_captcha: '&2Вы успешно решили каптчу!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute an other sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    code_required: '&3Эта команда чувствительна и требует подтверждения электронной почты! Проверьте свою почту и следуйте инструкциям в письме.'
+    command_usage: '&cИспользование: /verification <код>'
+    incorrect_code: '&cНеверный код, используйте «/verification <код>», подставив код из полученного письма.'
+    success: '&2Ваша личность подтверждена! Теперь можно выполнять все чувствительные команды в текущем сеансе!'
+    already_verified: '&2Вы уже можете выполнять все чувствительные команды в текущем сеансе!'
+    code_expired: '&3Срок действия кода истёк! Выполните чувствительную команду, чтобы получить новый код!'
+    email_needed: '&3Чтобы подтвердить вашу личность, необходимо привязать электронную почту к учётной записи!!'
 
-# Единицы времени
-second: 'с.'
-seconds: 'с.'
-minute: 'мин.'
-minutes: 'мин.'
-hour: 'ч.'
-hours: 'ч.'
-day: 'дн.'
-days: 'дн.'
+# Time units
+time:
+    second: 'с.'
+    seconds: 'с.'
+    minute: 'мин.'
+    minutes: 'мин.'
+    hour: 'ч.'
+    hours: 'ч.'
+    day: 'дн.'
+    days: 'дн.'

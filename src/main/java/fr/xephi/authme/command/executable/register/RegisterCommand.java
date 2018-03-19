@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -45,8 +46,15 @@ public class RegisterCommand extends PlayerCommand {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private RegistrationCaptchaManager registrationCaptchaManager;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
+        if (!isCaptchaFulfilled(player)) {
+            return; // isCaptchaFulfilled handles informing the player on failure
+        }
+
         if (commonService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
             management.performRegister(RegistrationMethod.TWO_FACTOR_REGISTRATION,
@@ -74,7 +82,16 @@ public class RegisterCommand extends PlayerCommand {
 
     @Override
     public MessageKey getArgumentsMismatchMessage() {
-        return MessageKey.USAGE_LOGIN;
+        return MessageKey.USAGE_REGISTER;
+    }
+
+    private boolean isCaptchaFulfilled(Player player) {
+        if (registrationCaptchaManager.isCaptchaRequired(player.getName())) {
+            String code = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName());
+            commonService.send(player, MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, code);
+            return false;
+        }
+        return true;
     }
 
     private void handlePasswordRegistration(Player player, List<String> arguments) {

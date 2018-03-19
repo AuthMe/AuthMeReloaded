@@ -36,8 +36,7 @@ public class LuckPermsHandler implements PermissionHandler {
         try {
             luckPermsApi = LuckPerms.getApi();
         } catch (IllegalStateException e) {
-            e.printStackTrace();
-            throw new PermissionHandlerException("Could not get api of LuckPerms");
+            throw new PermissionHandlerException("Could not get api of LuckPerms", e);
         }
     }
 
@@ -63,7 +62,8 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        DataMutateResult result = user.setPermissionUnchecked(luckPermsApi.getNodeFactory().makeGroupNode(newGroup).build());
+        DataMutateResult result = user.setPermissionUnchecked(
+            luckPermsApi.getNodeFactory().makeGroupNode(newGroup).build());
         if (result == DataMutateResult.FAIL) {
             return false;
         }
@@ -102,7 +102,7 @@ public class LuckPermsHandler implements PermissionHandler {
         }
 
         Group permissionGroup = luckPermsApi.getGroup(group);
-        boolean result = permissionGroup != null && user.isInGroup(permissionGroup);
+        boolean result = permissionGroup != null && user.inheritsGroup(permissionGroup);
 
         luckPermsApi.cleanupUser(user);
         return result;

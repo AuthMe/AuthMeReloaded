@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import fr.xephi.authme.initialization.factory.Factory;
+import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;

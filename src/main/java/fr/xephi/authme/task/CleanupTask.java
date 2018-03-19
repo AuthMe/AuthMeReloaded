@@ -1,7 +1,7 @@
 package fr.xephi.authme.task;
 
+import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.initialization.HasCleanup;
-import fr.xephi.authme.initialization.factory.SingletonStore;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.inject.Inject;

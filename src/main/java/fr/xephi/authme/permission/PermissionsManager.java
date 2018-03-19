@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.listener.JoiningPlayer;
@@ -41,8 +42,7 @@ public class PermissionsManager implements Reloadable {
 
     private final Server server;
     private final PluginManager pluginManager;
-
-    private Settings settings;
+    private final Settings settings;
 
     /**
      * The permission handler that is currently in use.
@@ -50,14 +50,8 @@ public class PermissionsManager implements Reloadable {
      */
     private PermissionHandler handler = null;
 
-    /**
-     * Constructor.
-     *
-     * @param server Server instance
-     * @param pluginManager Bukkit plugin manager
-     */
     @Inject
-    public PermissionsManager(Server server, PluginManager pluginManager, Settings settings) {
+    PermissionsManager(Server server, PluginManager pluginManager, Settings settings) {
         this.server = server;
         this.pluginManager = pluginManager;
         this.settings = settings;
@@ -76,7 +70,8 @@ public class PermissionsManager implements Reloadable {
      * Setup and hook into the permissions systems.
      */
     @PostConstruct
-    private void setup() {
+    @VisibleForTesting
+    void setup() {
         if (settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)) {
             try {
                 PermissionHandler handler = createPermissionHandler(PermissionsSystemType.VAULT);
@@ -263,6 +258,15 @@ public class PermissionsManager implements Reloadable {
         return handler.hasPermissionOffline(player.getName(), permissionNode);
     }
 
+    /**
+     * Check whether the offline player with the given name has permission for the given permission node.
+     * This method is used as a last resort when nothing besides the name is known.
+     *
+     * @param name The name of the player
+     * @param permissionNode The permission node to verify
+     *
+     * @return true if the player has permission, false otherwise
+     */
     public boolean hasPermissionOffline(String name, PermissionNode permissionNode) {
         if (permissionNode == null) {
             return true;

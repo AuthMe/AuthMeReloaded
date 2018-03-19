@@ -1,0 +1,5 @@
+# File with invalid YAML
+test:
+  abc: 'test'
+  def: 'Going to forget a quote here
+  jkl: 'Test test'

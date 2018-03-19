@@ -7,6 +7,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
@@ -39,6 +40,9 @@ public class RecoverEmailCommand extends PlayerCommand {
     @Inject
     private RecoveryCodeService recoveryCodeService;
 
+    @Inject
+    private BukkitService bukkitService;
+
     @Override
     protected void runCommand(Player player, List<String> arguments) {
         final String playerMail = arguments.get(0);
@@ -66,13 +70,15 @@ public class RecoverEmailCommand extends PlayerCommand {
             return;
         }
 
-        if (recoveryCodeService.isRecoveryCodeNeeded()) {
-            // Recovery code is needed; generate and send one
-            recoveryService.createAndSendRecoveryCode(player, email);
-        } else {
-            // Code not needed, just send them a new password
-            recoveryService.generateAndSendNewPassword(player, email);
-        }
+        bukkitService.runTaskAsynchronously(() -> {
+            if (recoveryCodeService.isRecoveryCodeNeeded()) {
+                // Recovery code is needed; generate and send one
+                recoveryService.createAndSendRecoveryCode(player, email);
+            } else {
+                // Code not needed, just send them a new password
+                recoveryService.generateAndSendNewPassword(player, email);
+            }
+        });
     }
 
     @Override

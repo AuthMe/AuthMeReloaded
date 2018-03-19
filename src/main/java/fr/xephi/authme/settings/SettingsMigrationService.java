@@ -2,7 +2,6 @@ package fr.xephi.authme.settings;
 
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.Property;
-import ch.jalu.configme.properties.StringListProperty;
 import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.base.MoreObjects;
 import fr.xephi.authme.ConsoleLogger;
@@ -14,12 +13,12 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.StringUtils;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -39,14 +38,12 @@ public class SettingsMigrationService extends PlainMigrationService {
 
     private final File pluginFolder;
 
-    // Stores old commands that need to be migrated to the new commands configuration
+    // Stores old "other accounts command" config if present.
     // We need to store it in here for retrieval when we build the CommandConfig. Retrieving it from the config.yml is
-    // not possible since this migration service may trigger config.yml to be resaved. As the old command settings
+    // not possible since this migration service may trigger the config.yml to be resaved. As the old command settings
     // don't exist in the code anymore, as soon as config.yml is resaved we lose this information.
-    private List<String> onLoginCommands = Collections.emptyList();
-    private List<String> onLoginConsoleCommands = Collections.emptyList();
-    private List<String> onRegisterCommands = Collections.emptyList();
-    private List<String> onRegisterConsoleCommands = Collections.emptyList();
+    private String oldOtherAccountsCommand;
+    private int oldOtherAccountsCommandThreshold;
 
     @Inject
     SettingsMigrationService(@DataFolder File pluginFolder) {
@@ -62,7 +59,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             changes = true;
         }
 
-        gatherOldCommandSettings(resource);
+        setOldOtherAccountsCommandFieldsIfSet(resource);
 
         // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
         // ensures that all migrations will be performed
@@ -70,6 +67,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | performMailTextToFileMigration(resource)
             | migrateJoinLeaveMessages(resource)
             | migrateForceSpawnSettings(resource)
+            | migratePoolSizeSetting(resource)
             | changeBooleanSettingToLogLevelProperty(resource)
             | hasOldHelpHeaderProperty(resource)
             | hasSupportOldPasswordProperty(resource)
@@ -87,7 +85,8 @@ public class SettingsMigrationService extends PlainMigrationService {
             "Hooks.customAttributes", "Security.stop.kickPlayersBeforeStopping",
             "settings.restrictions.keepCollisionsDisabled", "settings.forceCommands", "settings.forceCommandsAsConsole",
             "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole",
-            "settings.sessions.sessionExpireOnIpChange"};
+            "settings.sessions.sessionExpireOnIpChange", "settings.restrictions.otherAccountsCmd",
+            "settings.restrictions.otherAccountsCmdThreshold"};
         for (String deprecatedPath : deprecatedProperties) {
             if (resource.contains(deprecatedPath)) {
                 return true;
@@ -96,34 +95,19 @@ public class SettingsMigrationService extends PlainMigrationService {
         return false;
     }
 
-    // ----------------
-    // Forced commands relocation (from config.yml to commands.yml)
-    // ----------------
-    private void gatherOldCommandSettings(PropertyResource resource) {
-        onLoginCommands = getStringList(resource, "settings.forceCommands");
-        onLoginConsoleCommands = getStringList(resource, "settings.forceCommandsAsConsole");
-        onRegisterCommands = getStringList(resource, "settings.forceRegisterCommands");
-        onRegisterConsoleCommands = getStringList(resource, "settings.forceRegisterCommandsAsConsole");
+    // --------
+    // Old other accounts
+    // --------
+    public boolean hasOldOtherAccountsCommand() {
+        return !StringUtils.isEmpty(oldOtherAccountsCommand);
     }
 
-    private List<String> getStringList(PropertyResource resource, String path) {
-        return new StringListProperty(path).getValue(resource);
+    public String getOldOtherAccountsCommand() {
+        return oldOtherAccountsCommand;
     }
 
-    public List<String> getOnLoginCommands() {
-        return onLoginCommands;
-    }
-
-    public List<String> getOnLoginConsoleCommands() {
-        return onLoginConsoleCommands;
-    }
-
-    public List<String> getOnRegisterCommands() {
-        return onRegisterCommands;
-    }
-
-    public List<String> getOnRegisterConsoleCommands() {
-        return onRegisterConsoleCommands;
+    public int getOldOtherAccountsCommandThreshold() {
+        return oldOtherAccountsCommandThreshold;
     }
 
     // --------
@@ -192,6 +176,21 @@ public class SettingsMigrationService extends PlainMigrationService {
 
         return moveProperty(oldForceLocEnabled, FORCE_SPAWN_LOCATION_AFTER_LOGIN, resource)
             | moveProperty(oldForceWorlds, FORCE_SPAWN_ON_WORLDS, resource);
+    }
+
+    /**
+     * Detects the old auto poolSize value and replaces it with the default value.
+     *
+     * @param resource The property resource
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean migratePoolSizeSetting(PropertyResource resource) {
+        Integer oldValue = resource.getInt("DataSource.poolSize");
+        if(oldValue == null || oldValue > 0) {
+            return false;
+        }
+        resource.setValue("DataSource.poolSize", 10);
+        return true;
     }
 
     /**
@@ -312,6 +311,22 @@ public class SettingsMigrationService extends PlainMigrationService {
             }
         }
         return false;
+    }
+
+    /**
+     * Retrieves the old config to run a command when alt accounts are detected and sets them to this instance
+     * for further processing.
+     *
+     * @param resource The property resource
+     */
+    private void setOldOtherAccountsCommandFieldsIfSet(PropertyResource resource) {
+        Property<String> commandProperty = newProperty("settings.restrictions.otherAccountsCmd", "");
+        Property<Integer> commandThresholdProperty = newProperty("settings.restrictions.otherAccountsCmdThreshold", 0);
+
+        if (commandProperty.isPresent(resource) && commandThresholdProperty.getValue(resource) >= 2) {
+            oldOtherAccountsCommand = commandProperty.getValue(resource);
+            oldOtherAccountsCommandThreshold = commandThresholdProperty.getValue(resource);
+        }
     }
 
     /**

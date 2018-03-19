@@ -2,7 +2,9 @@ package fr.xephi.authme;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+
 import com.google.common.annotations.VisibleForTesting;
+
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
@@ -12,8 +14,6 @@ import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
 import fr.xephi.authme.initialization.OnStartupTasks;
 import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
-import fr.xephi.authme.initialization.factory.FactoryDependencyHandler;
-import fr.xephi.authme.initialization.factory.SingletonStoreDependencyHandler;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -27,11 +27,17 @@ import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
+import fr.xephi.authme.service.bungeecord.BungeeReceiver;
+import fr.xephi.authme.service.yaml.YamlParseException;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
+import fr.xephi.authme.util.ExceptionUtils;
+
+import java.io.File;
+
 import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -41,8 +47,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
-
-import java.io.File;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.util.Utils.isClassLoaded;
@@ -134,7 +138,13 @@ public class AuthMe extends JavaPlugin {
         try {
             initialize();
         } catch (Throwable th) {
-            ConsoleLogger.logException("Aborting initialization of AuthMe:", th);
+            YamlParseException yamlParseException = ExceptionUtils.findThrowableInCause(YamlParseException.class, th);
+            if (yamlParseException == null) {
+                ConsoleLogger.logException("Aborting initialization of AuthMe:", th);
+            } else {
+                ConsoleLogger.logException("File '" + yamlParseException.getFile() + "' contains invalid YAML. "
+                    + "Please run its contents through http://yamllint.com", yamlParseException);
+            }
             stopOrUnload();
             return;
         }
@@ -200,7 +210,6 @@ public class AuthMe extends JavaPlugin {
 
         // Create injector, provide elements from the Bukkit environment and register providers
         injector = new InjectorBuilder()
-            .addHandlers(new FactoryDependencyHandler(), new SingletonStoreDependencyHandler())
             .addDefaultHandlers("fr.xephi.authme")
             .create();
         injector.register(AuthMe.class, this);
@@ -246,6 +255,9 @@ public class AuthMe extends JavaPlugin {
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         backupService = injector.getSingleton(BackupService.class);
+
+        // Trigger instantiation (class not used elsewhere)
+        injector.getSingleton(BungeeReceiver.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(fr.xephi.authme.api.v3.AuthMeApi.class);

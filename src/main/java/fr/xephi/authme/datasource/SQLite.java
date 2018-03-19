@@ -28,6 +28,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 /**
  * SQLite data source.
  */
+@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class SQLite implements DataSource {
 
     private final Settings settings;
@@ -41,6 +42,7 @@ public class SQLite implements DataSource {
      * Constructor for SQLite.
      *
      * @param settings The settings instance
+     * @param dataFolder The data folder
      *
      * @throws SQLException when initialization of a SQL datasource failed
      */
@@ -635,6 +637,20 @@ public class SQLite implements DataSource {
             }
         } catch (SQLException ex) {
             logSqlException(ex);
+        }
+        return players;
+    }
+
+    @Override
+    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        List<PlayerAuth> players = new ArrayList<>();
+        String sql = "SELECT * FROM " + tableName + " ORDER BY " + col.LAST_LOGIN + " DESC LIMIT 10;";
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                players.add(buildAuthFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            logSqlException(e);
         }
         return players;
     }

@@ -21,10 +21,24 @@ onLogin:
     display_list:
         command: 'list'
         executor: PLAYER
+    warn_for_alts:
+        command: 'helpop Player %p has more than 1 account'
+        executor: CONSOLE
+        ifNumberOfAccountsAtLeast: 2
+    log_suspicious_user:
+        command: 'log %p %ip many accounts'
+        executor: CONSOLE
+        ifNumberOfAccountsAtLeast: 5
+        ifNumberOfAccountsLessThan: 20
 onSessionLogin:
     welcome:
         command: 'msg %p Session login!'
         executor: CONSOLE
+onFirstLogin:
+    give_money:
+        command: 'pay %p 30'
+        executor: CONSOLE
+        ifNumberOfAccountsLessThan: 3
 onUnregister: {}
 onLogout:
     announce:

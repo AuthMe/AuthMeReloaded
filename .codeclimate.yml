@@ -1,31 +1,45 @@
-engines:
-  duplication:
-    enabled: true
-    config:
-        languages:
-        - java
-        - php
+version: '2' # required to adjust maintainability checks
+
+plugins:
   checkstyle:
     enabled: true
-    channel: beta
-    config: '.checkstyle.xml'
-  pmd:
-    enabled: true
-    channel: beta
-    checks:
-      AvoidUsingHardCodedIP:
-        enabled: false
-ratings:
-  paths:
-  # Check only production files
-  - 'src/main/java/**'
-exclude_paths:
-# Exclude code from third-party sources
-- 'src/main/java/fr/xephi/authme/mail/OAuth2Provider.java'
-- 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClient.java'
-- 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClientFactory.java'
-- 'src/main/java/fr/xephi/authme/security/crypts/BCryptService.java'
-- 'src/main/java/fr/xephi/authme/security/crypts/PhpBB.java'
-- 'src/main/java/fr/xephi/authme/security/crypts/Whirlpool.java'
-- 'src/main/java/fr/xephi/authme/security/crypts/Wordpress.java'
-- 'src/test/java/**Test.java'
+    config:
+      file: '.checkstyle.xml'
+
+checks:
+  # We disable all the following CodeClimate checks: Checkstyle already checks for these things and has the advantage
+  # that the Checkstyle config can also be used in one's IDE.
+  argument-count:
+    enabled: false
+  complex-logic:
+    enabled: false
+  file-lines:
+    enabled: false
+  method-complexity:
+    enabled: false
+  method-count:
+    enabled: false
+  method-lines:
+    enabled: false
+  nested-control-flow:
+    enabled: false
+  return-statements:
+    enabled: false
+  similar-code:
+    enabled: false
+  # The "identical-code" check would be cool to enable since Checkstyle offers no such functionality, but it is
+  # too aggressive and we'd have to suppress many reported warnings.
+  identical-code:
+    enabled: false
+
+exclude_patterns:
+  # Exclude code from third-party sources
+  - 'src/main/java/fr/xephi/authme/mail/OAuth2Provider.java'
+  - 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClient.java'
+  - 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClientFactory.java'
+  - 'src/main/java/fr/xephi/authme/security/crypts/BCryptService.java'
+  - 'src/main/java/fr/xephi/authme/security/crypts/PhpBB.java'
+  - 'src/main/java/fr/xephi/authme/security/crypts/Whirlpool.java'
+  - 'src/main/java/fr/xephi/authme/security/crypts/Wordpress.java'
+  # Don't check test classes
+  - 'src/test/java/**/*Test.java'

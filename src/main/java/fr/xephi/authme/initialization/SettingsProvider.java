@@ -2,7 +2,7 @@ package fr.xephi.authme.initialization;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.resource.PropertyResource;
-import ch.jalu.configme.resource.YamlFileResource;
+import fr.xephi.authme.service.yaml.YamlFileResourceProvider;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
@@ -37,7 +37,7 @@ public class SettingsProvider implements Provider<Settings> {
         if (!configFile.exists()) {
             FileUtils.create(configFile);
         }
-        PropertyResource resource = new YamlFileResource(configFile);
+        PropertyResource resource = YamlFileResourceProvider.loadFromFile(configFile);
         ConfigurationData configurationData = AuthMeSettingsRetriever.buildConfigurationData();
         return new Settings(dataFolder, resource, migrationService, configurationData);
     }

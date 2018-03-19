@@ -15,24 +15,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static fr.xephi.authme.settings.commandconfig.CommandConfigTestHelper.isCommand;
-import static java.util.Collections.emptyList;
-import static org.hamcrest.Matchers.anEmptyMap;
-import static org.hamcrest.Matchers.contains;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link CommandMigrationService}.
@@ -46,74 +39,9 @@ public class CommandMigrationServiceTest {
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
-    private CommandConfig commandConfig = new CommandConfig();
-
     @BeforeClass
     public static void setUpLogger() {
         TestHelper.setupLogger();
-    }
-
-    @Test
-    public void shouldNotPerformAnyMigration() {
-        // given
-        given(settingsMigrationService.getOnLoginCommands()).willReturn(emptyList());
-        given(settingsMigrationService.getOnLoginConsoleCommands()).willReturn(emptyList());
-        given(settingsMigrationService.getOnRegisterCommands()).willReturn(emptyList());
-        given(settingsMigrationService.getOnRegisterConsoleCommands()).willReturn(emptyList());
-        commandConfig.getOnRegister().put("existing", new Command("existing cmd", Executor.PLAYER));
-        CommandConfig configSpy = spy(commandConfig);
-
-        // when
-        boolean result = commandMigrationService.transformOldCommands(configSpy);
-
-        // then
-        assertThat(result, equalTo(false));
-        verifyZeroInteractions(configSpy);
-        assertThat(configSpy.getOnRegister().keySet(), contains("existing"));
-        assertThat(configSpy.getOnLogin(), anEmptyMap());
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldPerformMigration() {
-        // given
-        List<String> onLogin = Collections.singletonList("on login command");
-        given(settingsMigrationService.getOnLoginCommands()).willReturn(onLogin);
-        List<String> onLoginConsole = Arrays.asList("cmd1", "cmd2 %p", "cmd3");
-        given(settingsMigrationService.getOnLoginConsoleCommands()).willReturn(onLoginConsole);
-        given(settingsMigrationService.getOnRegisterCommands()).willReturn(emptyList());
-        List<String> onRegisterConsole = Arrays.asList("log %p registered", "whois %p");
-        given(settingsMigrationService.getOnRegisterConsoleCommands()).willReturn(onRegisterConsole);
-
-        Map<String, Command> onLoginCommands = new LinkedHashMap<>();
-        onLoginCommands.put("bcast", new Command("bcast %p returned", Executor.CONSOLE));
-        commandConfig.setOnLogin(onLoginCommands);
-        Map<String, Command> onRegisterCommands = new LinkedHashMap<>();
-        onRegisterCommands.put("ex_cmd", new Command("existing", Executor.CONSOLE));
-        onRegisterCommands.put("ex_cmd2", new Command("existing2", Executor.PLAYER));
-        commandConfig.setOnRegister(onRegisterCommands);
-
-        // when
-        boolean result = commandMigrationService.transformOldCommands(commandConfig);
-
-        // then
-        assertThat(result, equalTo(true));
-        assertThat(commandConfig.getOnLogin(), sameInstance(onLoginCommands));
-        Collection<Command> loginCmdList = onLoginCommands.values();
-        assertThat(loginCmdList, contains(
-            equalTo(onLoginCommands.get("bcast")),
-            isCommand("on login command", Executor.PLAYER),
-            isCommand("cmd1", Executor.CONSOLE),
-            isCommand("cmd2 %p", Executor.CONSOLE),
-            isCommand("cmd3", Executor.CONSOLE)));
-
-        assertThat(commandConfig.getOnRegister(), sameInstance(onRegisterCommands));
-        Collection<Command> registerCmdList = onRegisterCommands.values();
-        assertThat(registerCmdList, contains(
-            isCommand("existing", Executor.CONSOLE),
-            isCommand("existing2", Executor.PLAYER),
-            isCommand("log %p registered", Executor.CONSOLE),
-            isCommand("whois %p", Executor.CONSOLE)));
     }
 
     @Test
@@ -173,5 +101,44 @@ public class CommandMigrationServiceTest {
 
         // when / then
         assertThat(CommandMigrationService.COMMAND_CONFIG_PROPERTIES, containsInAnyOrder(properties));
+    }
+
+    @Test
+    public void shouldMigrateOldOtherAccountsCommand() {
+        // given
+        given(settingsMigrationService.hasOldOtherAccountsCommand()).willReturn(true);
+        given(settingsMigrationService.getOldOtherAccountsCommand())
+            .willReturn("helpop %playername% (%playerip%) has other accounts!");
+        given(settingsMigrationService.getOldOtherAccountsCommandThreshold()).willReturn(3);
+        File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.complete.yml");
+        PropertyResource resource = new YamlFileResource(commandFile);
+
+        // when
+        commandMigrationService.checkAndMigrate(
+            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+
+        // then
+        Map<String, OnLoginCommand> onLoginCommands = CommandSettingsHolder.COMMANDS.getValue(resource).getOnLogin();
+        assertThat(onLoginCommands, aMapWithSize(6)); // 5 in the file + the newly migrated on
+        OnLoginCommand newCommand = getUnknownOnLoginCommand(onLoginCommands);
+        assertThat(newCommand.getCommand(), equalTo("helpop %p (%ip) has other accounts!"));
+        assertThat(newCommand.getExecutor(), equalTo(Executor.CONSOLE));
+        assertThat(newCommand.getIfNumberOfAccountsAtLeast().get(), equalTo(3));
+        assertThat(newCommand.getIfNumberOfAccountsLessThan().isPresent(), equalTo(false));
+    }
+
+    /*
+     * Returns the command under onLogin from commands.complete.yml that isn't present in the beginning.
+     */
+    private static OnLoginCommand getUnknownOnLoginCommand(Map<String, OnLoginCommand> onLoginCommands) {
+        Set<String> knownKeys = newHashSet("welcome", "show_motd", "display_list", "warn_for_alts", "log_suspicious_user");
+        List<String> unknownKeys = onLoginCommands.keySet().stream()
+            .filter(key -> !knownKeys.contains(key))
+            .collect(Collectors.toList());
+        if (unknownKeys.size() == 1) {
+            return onLoginCommands.get(unknownKeys.get(0));
+        } else {
+            throw new IllegalStateException("Expected 1 unknown key but found " + unknownKeys.size() + ": " + unknownKeys);
+        }
     }
 }

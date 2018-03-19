@@ -154,6 +154,11 @@ settings:
         noTeleport: false
         # Regex sintax for allowed Chars in passwords.
         allowedPasswordCharacters: '[\x21-\x7E]*'
+        # Command to run when a user has more accounts than the configured threshold.
+        # Available variables: %playername%, %playerip%
+        otherAccountsCmd: 'msg admin %playername% has a lot of accounts!'
+        # Threshold of the other accounts command, a value less than 2 means disabled.
+        otherAccountsCmdThreshold: 5
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false

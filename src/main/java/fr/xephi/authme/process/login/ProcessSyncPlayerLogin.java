@@ -8,10 +8,10 @@ import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -19,13 +19,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     @Inject
     private LimboService limboService;
@@ -62,7 +63,14 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
     }
 
-    public void processPlayerLogin(Player player) {
+    /**
+     * Performs operations in sync mode for a player that has just logged in.
+     *
+     * @param player the player that was logged in
+     * @param isFirstLogin true if this is the first time the player logged in
+     * @param authsWithSameIp registered names with the same IP address as the player's
+     */
+    public void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
         final String name = player.getName().toLowerCase();
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
@@ -93,9 +101,12 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         welcomeMessageConfiguration.sendWelcomeMessage(player);
 
         // Login is now finished; we can force all commands
-        commandManager.runCommandsOnLogin(player);
+        if (isFirstLogin) {
+            commandManager.runCommandsOnFirstLogin(player, authsWithSameIp);
+        }
+        commandManager.runCommandsOnLogin(player, authsWithSameIp);
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.connectPlayerOnLogin(player);
+        bungeeSender.connectPlayerOnLogin(player);
     }
 }

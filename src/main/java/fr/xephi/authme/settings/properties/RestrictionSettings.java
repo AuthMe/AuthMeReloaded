@@ -140,9 +140,9 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Boolean> DISPLAY_OTHER_ACCOUNTS =
         newProperty("settings.restrictions.displayOtherAccounts", true);
 
-    @Comment("Spawn priority; values: authme, essentials, multiverse, default")
+    @Comment("Spawn priority; values: authme, essentials, cmi, multiverse, default")
     public static final Property<String> SPAWN_PRIORITY =
-        newProperty("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+        newProperty("settings.restrictions.spawnPriority", "authme,essentials,cmi,multiverse,default");
 
     @Comment("Maximum Login authorized by IP")
     public static final Property<Integer> MAX_LOGIN_PER_IP =
@@ -179,18 +179,6 @@ public final class RestrictionSettings implements SettingsHolder {
     })
     public static final Property<List<String>> UNRESTRICTED_NAMES =
         newLowercaseListProperty("settings.unrestrictions.UnrestrictedName");
-
-    @Comment("Threshold of the other accounts command, a value less than 2 means disabled.")
-    public static final Property<Integer> OTHER_ACCOUNTS_CMD_THRESHOLD =
-        newProperty("settings.restrictions.otherAccountsCmdThreshold", 0);
-
-    @Comment({
-        "Command to run when a user has more accounts than the configured threshold.",
-        "Available variables: %playername%, %playerip%"
-    })
-    public static final Property<String> OTHER_ACCOUNTS_CMD =
-        newProperty("settings.restrictions.otherAccountsCmd",
-            "say The player %playername% with ip %playerip% has multiple accounts!");
 
     private RestrictionSettings() {
     }

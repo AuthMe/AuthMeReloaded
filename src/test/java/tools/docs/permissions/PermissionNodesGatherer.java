@@ -37,6 +37,7 @@ public class PermissionNodesGatherer {
     /**
      * Return a sorted collection of all permission nodes, including its JavaDoc description.
      *
+     * @param <T> permission node enum type
      * @return Ordered map whose keys are the permission nodes and the values the associated JavaDoc
      */
     @SuppressWarnings("unchecked")

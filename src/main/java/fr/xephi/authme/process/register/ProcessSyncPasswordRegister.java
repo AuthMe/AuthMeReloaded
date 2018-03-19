@@ -4,8 +4,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.SynchronousProcess;
-import fr.xephi.authme.service.bungeecord.BungeeService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -15,11 +15,12 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 
 /**
+ * Performs synchronous tasks after a successful {@link RegistrationType#PASSWORD password registration}.
  */
 public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
-    private BungeeService bungeeService;
+    private BungeeSender bungeeSender;
 
     @Inject
     private CommonService service;
@@ -46,6 +47,11 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
     }
 
+    /**
+     * Processes a player having registered with a password.
+     *
+     * @param player the newly registered player
+     */
     public void processPasswordRegister(Player player) {
         service.send(player, MessageKey.REGISTER_SUCCESS);
 
@@ -58,7 +64,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
         // Kick Player after Registration is enabled, kick the player
         if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {
-            player.kickPlayer(service.retrieveSingleMessage(MessageKey.REGISTER_SUCCESS));
+            player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.REGISTER_SUCCESS));
             return;
         }
 
@@ -72,6 +78,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeService.connectPlayerOnLogin(player);
+        bungeeSender.connectPlayerOnLogin(player);
     }
 }

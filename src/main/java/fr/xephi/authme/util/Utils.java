@@ -23,6 +23,15 @@ public final class Utils {
     }
 
     /**
+     * Returns if the running server instance is craftbukkit or spigot based.
+     *
+     * @return true if the running server instance is spigot-based.
+     */
+    public static boolean isSpigot() {
+        return isClassLoaded("org.spigotmc.SpigotConfig");
+    }
+
+    /**
      * Compile Pattern sneaky without throwing Exception.
      *
      * @param pattern pattern string to compile
@@ -94,15 +103,6 @@ public final class Utils {
      */
     public static boolean isCollectionEmpty(Collection<?> coll) {
         return coll == null || coll.isEmpty();
-    }
-
-    /**
-     * Return the available core count of the JVM.
-     *
-     * @return the core count
-     */
-    public static int getCoreCount() {
-        return Runtime.getRuntime().availableProcessors();
     }
 
     /**
