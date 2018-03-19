@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '&4Твоята държава е забранена в този сървър!'
     not_owner_error: 'Ти не си собственика на този акаунт. Моля избери друго потребителско име!'
     invalid_name_case: 'Трябва да влезеш с %valid, а не с %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

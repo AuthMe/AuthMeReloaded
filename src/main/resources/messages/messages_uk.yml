@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '&4Your country is banned from this server!'
     not_owner_error: 'Цей акаунт вам не належить! Будь ласка, оберіть інакший нікнейм!'
     invalid_name_case: 'Регістр у вашому нікнеймі відрізняється від регістру при реєстрації.%nl%Поточний регістр: &c%invalid&f.  Валідний регістр: &a%valid&f.%nl%Будь ласка, перезайдіть з валідним регістром!'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

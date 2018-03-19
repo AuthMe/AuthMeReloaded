@@ -85,6 +85,7 @@ on_join_validation:
     country_banned: '&4Tvoja krajina je zabanovaná na tomto serveri!'
     not_owner_error: 'Niesi majiteľ tohto účtu. Prosím zvoľ si iné meno!'
     invalid_name_case: 'Mal by si sa pripojiť s nickom %valid, nie %invalid -pozor na veľké a malé písmená.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

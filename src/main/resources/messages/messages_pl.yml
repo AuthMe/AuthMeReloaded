@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '&4Ten kraj jest zbanowany na tym serwerze'
     not_owner_error: '&cNie jesteś właścicielem tego konta, wybierz inny nick!'
     invalid_name_case: '&cPowinieneś dołączyć do serwera z nicku %valid, a nie %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

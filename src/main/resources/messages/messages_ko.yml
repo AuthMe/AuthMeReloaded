@@ -81,6 +81,7 @@ on_join_validation:
     country_banned: '&4당신의 국가에서는 이 서버를 이용하실 수 없습니다!'
     not_owner_error: '이 계정의 소유자가 아닙니다. 다른 닉네임을 선택하세요!'
     invalid_name_case: '%invalid가 아닌, %valid 사용하여 접속해야 합니다.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

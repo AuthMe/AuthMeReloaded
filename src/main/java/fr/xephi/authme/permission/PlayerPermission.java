@@ -68,7 +68,12 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission to use the email verification codes feature.
      */
-    VERIFICATION_CODE("authme.player.security.verificationcode");
+    VERIFICATION_CODE("authme.player.security.verificationcode"),
+
+    /**
+     * Permission that enables on join quick commands checks for the player.
+     */
+    QUICK_COMMANDS_PROTECTION("authme.player.protection.quickcommandsprotection");
 
     /**
      * The permission node.

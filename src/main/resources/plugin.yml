@@ -230,6 +230,7 @@ permissions:
       authme.player.email.see: true
       authme.player.login: true
       authme.player.logout: true
+      authme.player.protection.quickcommandsprotection: true
       authme.player.register: true
       authme.player.security.verificationcode: true
       authme.player.seeownaccounts: true
@@ -267,6 +268,9 @@ permissions:
     default: true
   authme.player.logout:
     description: Command permission to logout.
+    default: true
+  authme.player.protection.quickcommandsprotection:
+    description: Permission that enables on join quick commands checks for the player.
     default: true
   authme.player.register:
     description: Command permission to register.

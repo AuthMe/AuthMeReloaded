@@ -81,6 +81,7 @@ on_join_validation:
     country_banned: '&b【AuthMe】&6您所在的地區無法進入此伺服器'
     not_owner_error: '&b【AuthMe】&4警告！&c您並不是此帳戶持有人，請立即登出。'
     invalid_name_case: '&b【AuthMe】&4警告！&c您應該使用「%valid」而並非「%invalid」登入遊戲。'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:
