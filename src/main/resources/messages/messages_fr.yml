@@ -1,7 +1,10 @@
 # Traduction par: André & Twonox
 
 # Pour afficher une apostrophe, vous devez en mettre deux consécutivement (ex: «J''ai» au lieu de «J'ai»)
-# Pour passer à la ligne, utilisez: %nl%
+# List of global tags:
+# %nl% - Pour passer à la ligne.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
 registration:

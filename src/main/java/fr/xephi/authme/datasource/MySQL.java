@@ -28,6 +28,10 @@ import java.util.Set;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
+/**
+ * MySQL data source.
+ */
+@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class MySQL implements DataSource {
 
     private boolean useSsl;
@@ -747,6 +751,13 @@ public class MySQL implements DataSource {
         return false;
     }
 
+    /**
+     * Creates a {@link PlayerAuth} object with the data from the provided result set.
+     *
+     * @param row the result set to read from
+     * @return generated player auth object with the data from the result set
+     * @throws SQLException .
+     */
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);

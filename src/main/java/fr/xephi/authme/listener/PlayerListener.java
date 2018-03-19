@@ -257,7 +257,7 @@ public class PlayerListener implements Listener {
         try {
             runOnJoinChecks(JoiningPlayer.fromName(name), event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+            event.setKickMessage(m.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
         }
     }
@@ -285,7 +285,7 @@ public class PlayerListener implements Listener {
             try {
                 runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
-                event.setKickMessage(m.retrieveSingle(e.getReason(), e.getArgs()));
+                event.setKickMessage(m.retrieveSingle(player, e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             }
         }

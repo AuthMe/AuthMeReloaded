@@ -67,7 +67,7 @@ public class GeneratePluginYml implements AutoToolTask {
         List<String> pluginYmlLines = FileIoUtils.readLinesFromFile(Paths.get(PLUGIN_YML_FILE));
         int lineNr = 0;
         for (String line : pluginYmlLines) {
-            if (line.equals("commands:")) {
+            if ("commands:".equals(line)) {
                 break;
             }
             ++lineNr;

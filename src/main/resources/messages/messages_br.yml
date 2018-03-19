@@ -1,6 +1,10 @@
 #Tradução pt/br Authme Reloaded
 #Feito por GabrielDev(DeathRush) e Frani (PotterCraft_)
 # http://gamersboard.com.br/ | www.magitechserver.com
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
 registration:

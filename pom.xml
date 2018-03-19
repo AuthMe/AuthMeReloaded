@@ -189,10 +189,15 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <id>attach-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>aggregate-javadoc</id>
                         <goals>
                             <goal>aggregate</goal>
-                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -243,7 +248,7 @@
                         <!-- Include all google libraries, because they are not available before 1.12 -->
                         <relocation>
                             <pattern>com.google</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.google</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>ch.jalu.injector</pattern>
@@ -251,23 +256,27 @@
                         </relocation>
                         <relocation>
                             <pattern>ch.jalu.configme</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.jalu.configme</shadedPattern>
+                            <shadedPattern>fr.xephi.authme.libs.ch.jalu.configme</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.zaxxer.hikari</shadedPattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.zaxxer.hikari</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.slf4j</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.slf4j.slf4j</shadedPattern>
+                            <shadedPattern>fr.xephi.authme.libs.org.slf4j</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.maxmind.geoip</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.maxmind.geoip</shadedPattern>
+                            <pattern>com.maxmind.db</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.maxmind.db</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.ice.tar</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.icetar.tar</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>net.ricecode.similarity</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.ricecode.similarity</shadedPattern>
+                            <shadedPattern>fr.xephi.authme.libs.ricecode.net.ricecode.similarity</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>de.rtner</pattern>
@@ -367,7 +376,6 @@
             <groupId>ch.jalu</groupId>
             <artifactId>injector</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -376,7 +384,6 @@
             <groupId>net.ricecode</groupId>
             <artifactId>string-similarity</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -385,7 +392,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.2</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -394,16 +400,23 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>24.0-jre</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
-        <!-- Maxmind GeoIp API -->
+        <!-- MaxMind GEO IP with our modifications to use GSON in replacement of the big Jackson dependency -->
+        <!-- GSON is already included and therefore it reduces the file size in comparison to the original version -->
         <dependency>
-            <groupId>com.maxmind.geoip</groupId>
-            <artifactId>geoip-api</artifactId>
-            <version>1.3.1</version>
-            <scope>compile</scope>
+            <groupId>com.maxmind.db</groupId>
+            <artifactId>maxmind-db-gson</artifactId>
+            <version>2.0.2-SNAPSHOT</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Library for tar archives -->
+        <dependency>
+            <groupId>javatar</groupId>
+            <artifactId>javatar</artifactId>
+            <version>2.5</version>
             <optional>true</optional>
         </dependency>
 
@@ -412,7 +425,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>1.5</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -429,7 +441,6 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>2.7.8</version>
-            <scope>compile</scope>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -443,7 +454,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.25</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -452,7 +462,6 @@
             <groupId>de.rtner</groupId>
             <artifactId>PBKDF2</artifactId>
             <version>1.1.2</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -460,8 +469,7 @@
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
-            <version>2.3</version>
-            <scope>compile</scope>
+            <version>2.4</version>
             <optional>true</optional>
         </dependency>
 
@@ -509,7 +517,6 @@
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
             <version>0.4.1</version>
-            <scope>compile</scope>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -524,7 +531,6 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.2</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -532,7 +538,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
-            <version>4.4.0-SNAPSHOT</version>
+            <version>4.3.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -550,7 +556,7 @@
         <dependency>
             <groupId>me.lucko.luckperms</groupId>
             <artifactId>luckperms-api</artifactId>
-            <version>4.0</version>
+            <version>4.1</version>
             <scope>provided</scope>
         </dependency>
 

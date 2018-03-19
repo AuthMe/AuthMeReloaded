@@ -83,15 +83,16 @@ public class CommonServiceTest {
     public void shouldRetrieveSingleMessage() {
         // given
         MessageKey key = MessageKey.ACCOUNT_NOT_ACTIVATED;
+        Player player = mock(Player.class);
         String text = "Test text";
-        given(messages.retrieveSingle(key)).willReturn(text);
+        given(messages.retrieveSingle(player, key)).willReturn(text);
 
         // when
-        String result = commonService.retrieveSingleMessage(key);
+        String result = commonService.retrieveSingleMessage(player, key);
 
         // then
         assertThat(result, equalTo(text));
-        verify(messages).retrieveSingle(key);
+        verify(messages).retrieveSingle(player, key);
     }
 
     @Test

@@ -160,7 +160,7 @@ public class RegisterAdminCommandTest {
         Player player = mock(Player.class);
         given(bukkitService.getPlayerExact(user)).willReturn(player);
         String kickForAdminRegister = "Admin registered you -- log in again";
-        given(commandService.retrieveSingleMessage(MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
+        given(commandService.retrieveSingleMessage(player, MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
         CommandSender sender = mock(CommandSender.class);
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
         setBukkitServiceToRunTaskOptionallyAsync(bukkitService);

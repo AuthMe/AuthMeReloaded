@@ -4,9 +4,11 @@ import tools.utils.AutoToolTask;
 import tools.utils.FileIoUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
-import tools.utils.ToolsConstants;
 
 import java.util.Map;
+
+import static tools.utils.ToolsConstants.DOCS_FOLDER;
+import static tools.utils.ToolsConstants.TOOLS_SOURCE_ROOT;
 
 /**
  * Task responsible for formatting a permissions node list and
@@ -14,8 +16,8 @@ import java.util.Map;
  */
 public class PermissionsListWriter implements AutoToolTask {
 
-    private static final String TEMPLATE_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/permissions/permission_nodes.tpl.md";
-    private static final String PERMISSIONS_OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "permission_nodes.md";
+    private static final String TEMPLATE_FILE = TOOLS_SOURCE_ROOT + "docs/permissions/permission_nodes.tpl.md";
+    private static final String PERMISSIONS_OUTPUT_FILE = DOCS_FOLDER + "permission_nodes.md";
 
     @Override
     public String getTaskName() {
