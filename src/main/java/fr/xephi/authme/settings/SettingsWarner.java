@@ -4,15 +4,15 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Argon2;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 /**
  * Logs warning messages in cases where the configured values suggest a misconfiguration.
@@ -28,6 +28,9 @@ public class SettingsWarner {
 
     @Inject
     private AuthMe authMe;
+
+    @Inject
+    private BukkitService bukkitService;
 
     SettingsWarner() {
     }
@@ -54,7 +57,7 @@ public class SettingsWarner {
         }
 
         // Warn if spigot.yml has settings.bungeecord set to true but config.yml has Hooks.bungeecord set to false
-        if (Utils.isSpigot() && Bukkit.spigot().getConfig().getBoolean("settings.bungeecord")
+        if (isTrue(bukkitService.isBungeeCordConfiguredForSpigot())
             && !settings.getProperty(HooksSettings.BUNGEECORD)) {
             ConsoleLogger.warning("Note: Hooks.bungeecord is set to false but your server appears to be running in"
                 + " bungeecord mode (see your spigot.yml). In order to allow the datasource caching and the"
@@ -68,5 +71,9 @@ public class SettingsWarner {
                 + "library on your system! See https://github.com/AuthMe/AuthMeReloaded/wiki/Argon2-as-Password-Hash");
             authMe.stopOrUnload();
         }
+    }
+
+    private static boolean isTrue(Optional<Boolean> value) {
+        return value.isPresent() && value.get();
     }
 }
