@@ -216,9 +216,7 @@ public class PlayerListener implements Listener {
             teleportationService.teleportOnJoin(player);
         }
 
-        if (quickCommandsProtectionManager.shouldSaveLogin(player)) {
-            quickCommandsProtectionManager.setLogin(player.getName());
-        }
+        quickCommandsProtectionManager.processJoin(player);
 
         management.performJoin(player);
 

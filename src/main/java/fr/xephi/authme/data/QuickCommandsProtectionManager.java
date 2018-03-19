@@ -16,13 +16,13 @@ public class QuickCommandsProtectionManager implements SettingsDependent, HasCle
 
     private final PermissionsManager permissionsManager;
 
-    private final ExpiringSet<String> latestLogin;
+    private final ExpiringSet<String> latestJoin;
 
     @Inject
     public QuickCommandsProtectionManager(Settings settings, PermissionsManager permissionsManager) {
         this.permissionsManager = permissionsManager;
         long countTimeout = settings.getProperty(ProtectionSettings.QUICK_COMMANDS_DENIED_BEFORE_MILLISECONDS);
-        latestLogin = new ExpiringSet<>(countTimeout, TimeUnit.MILLISECONDS);
+        latestJoin = new ExpiringSet<>(countTimeout, TimeUnit.MILLISECONDS);
         reload(settings);
     }
 
@@ -30,8 +30,8 @@ public class QuickCommandsProtectionManager implements SettingsDependent, HasCle
      * Save the player in the set
      * @param name the player's name
      */
-    public void setLogin(String name) {
-        latestLogin.add(name);
+    private void setJoin(String name) {
+        latestJoin.add(name);
     }
 
     /**
@@ -39,8 +39,18 @@ public class QuickCommandsProtectionManager implements SettingsDependent, HasCle
      * @param player the player to check
      * @return true if the player has the permission, false otherwise
      */
-    public boolean shouldSaveLogin(Player player) {
+    private boolean shouldSavePlayer(Player player) {
         return permissionsManager.hasPermission(player, PlayerPermission.QUICK_COMMANDS_PROTECTION);
+    }
+
+    /**
+     * Process the player join
+     * @param player the player to process
+     */
+    public void processJoin(Player player) {
+        if(shouldSavePlayer(player)) {
+            setJoin(player.getName());
+        }
     }
 
     /**
@@ -49,17 +59,17 @@ public class QuickCommandsProtectionManager implements SettingsDependent, HasCle
      * @return true if the player is not in the set (so it's allowed to perform the command), false otherwise
      */
     public boolean isAllowed(String name) {
-        return !latestLogin.contains(name);
+        return !latestJoin.contains(name);
     }
 
     @Override
     public void reload(Settings settings) {
         long countTimeout = settings.getProperty(ProtectionSettings.QUICK_COMMANDS_DENIED_BEFORE_MILLISECONDS);
-        latestLogin.setExpiration(countTimeout, TimeUnit.MILLISECONDS);
+        latestJoin.setExpiration(countTimeout, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void performCleanup() {
-        latestLogin.removeExpiredEntries();
+        latestJoin.removeExpiredEntries();
     }
 }
