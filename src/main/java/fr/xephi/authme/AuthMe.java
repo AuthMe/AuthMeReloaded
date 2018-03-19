@@ -159,9 +159,9 @@ public class AuthMe extends JavaPlugin {
         OnStartupTasks.sendMetrics(this, settings);
 
         // Sponsor messages
-        ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
-        ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader "
-            + "in Italy as Game Server Provider!");
+        ConsoleLogger.info("Development builds are available on our jenkins, thanks to FastVM.io");
+        ConsoleLogger.info("Do you want a good vps for your  game server? Look at our sponsor FastVM.io leader "
+            + "as virtual server provider!");
 
         // Successful message
         ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber()
