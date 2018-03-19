@@ -65,7 +65,7 @@ public class BungeeSender implements SettingsDependent {
     public void connectPlayerOnLogin(Player player) {
         if (isEnabled && !destinationServerOnLogin.isEmpty()) {
             bukkitService.scheduleSyncDelayedTask(() ->
-                sendBungeecordMessage("ConnectOther", player.getName(), destinationServerOnLogin), 20L);
+                sendBungeecordMessage("ConnectOther", player.getName(), destinationServerOnLogin), 5L);
         }
     }
 
