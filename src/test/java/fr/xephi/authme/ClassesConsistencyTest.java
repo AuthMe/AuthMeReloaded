@@ -10,6 +10,8 @@ import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.security.crypts.Whirlpool;
+import fr.xephi.authme.util.datacolumns.Column;
+import fr.xephi.authme.util.datacolumns.ColumnType;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import fr.xephi.authme.util.expiring.ExpiringSet;
 import fr.xephi.authme.util.expiring.TimedCounter;
@@ -52,7 +54,7 @@ public class ClassesConsistencyTest {
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
         Charset.class,
         /* AuthMe */
-        Property.class, RegistrationMethod.class,
+        Property.class, RegistrationMethod.class, Column.class, ColumnType.class,
         /* Guava */
         ImmutableMap.class, ImmutableList.class);
 
