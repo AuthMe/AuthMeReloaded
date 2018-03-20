@@ -78,6 +78,7 @@ on_join_validation:
   same_nick_online: '&4The same username is already playing on the server!'
   invalid_name_case: 'You should join using username %valid, not %invalid.'
   same_ip_online: 'A player with the same IP is already in game!'
+  quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

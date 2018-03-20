@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '&4Via lando estas malpermesitaj de tiu servilo!'
     not_owner_error: 'Vi ne estas la posedanto de tiu konto. Bonvolu elekti alian nomon!'
     invalid_name_case: 'Vi devus aliĝi uzante uzantnomon %valid, ne %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

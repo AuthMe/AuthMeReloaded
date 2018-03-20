@@ -55,6 +55,10 @@ public final class ProtectionSettings implements SettingsHolder {
     public static final Property<Integer> ANTIBOT_DELAY =
         newProperty("Protection.antiBotDelay", 60);
 
+    @Comment("Kicks the player that issued a command before the defined time after the join process")
+    public static final Property<Integer> QUICK_COMMANDS_DENIED_BEFORE_MILLISECONDS =
+        newProperty("Protection.quickCommands.denyCommandsBeforeMilliseconds", 1000);
+
     private ProtectionSettings() {
     }
 

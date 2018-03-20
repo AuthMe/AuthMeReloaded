@@ -71,6 +71,11 @@ public enum PlayerPermission implements PermissionNode {
     VERIFICATION_CODE("authme.player.security.verificationcode"),
 
     /**
+     * Permission that enables on join quick commands checks for the player.
+     */
+    QUICK_COMMANDS_PROTECTION("authme.player.protection.quickcommandsprotection"),
+
+    /**
      * Permission to enable two-factor authentication.
      */
     ENABLE_TWO_FACTOR_AUTH("authme.player.totpadd"),

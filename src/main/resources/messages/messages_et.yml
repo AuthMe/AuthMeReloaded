@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '&4Su riik on siin serveris keelatud!'
     not_owner_error: 'Sa ei ole selle konto omanik. Vali teine nimi.'
     invalid_name_case: 'Logi sisse kasutajanimega %valid, mitte kasutajanimega %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

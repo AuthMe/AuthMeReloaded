@@ -79,6 +79,7 @@ on_join_validation:
     country_banned: '&4Dein Land ist gesperrt!'
     not_owner_error: 'Du bist nicht der Besitzer dieses Accounts. Bitte wähle einen anderen Namen!'
     invalid_name_case: 'Dein registrierter Benutzername ist &2%valid&f - nicht &4%invalid&f.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
 email:

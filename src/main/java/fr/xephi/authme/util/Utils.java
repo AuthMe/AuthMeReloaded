@@ -1,7 +1,6 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -21,20 +20,6 @@ public final class Utils {
 
     // Utility class
     private Utils() {
-    }
-
-    /**
-     * Returns if the running server instance is craftbukkit or spigot based.
-     *
-     * @return true if the running server instance is spigot-based.
-     */
-    public static boolean isSpigot() {
-        try {
-            Bukkit.spigot();
-            return true;
-        } catch (NoSuchMethodError e) {
-            return false;
-        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -110,6 +111,8 @@ public class PlayerListenerTest {
     private ValidationService validationService;
     @Mock
     private JoinMessageService joinMessageService;
+    @Mock
+    private QuickCommandsProtectionManager quickCommandsProtectionManager;
 
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
@@ -219,6 +222,7 @@ public class PlayerListenerTest {
         // PlayerCommandPreprocessEvent#getPlayer is final, so create a spy instead of a mock
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
         given(listenerService.shouldCancelEvent(player)).willReturn(false);
+        given(quickCommandsProtectionManager.isAllowed(player.getName())).willReturn(true);
 
         // when
         listener.onPlayerCommandPreprocess(event);
@@ -238,6 +242,7 @@ public class PlayerListenerTest {
         Player player = playerWithMockedServer();
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        given(quickCommandsProtectionManager.isAllowed(player.getName())).willReturn(true);
 
         // when
         listener.onPlayerCommandPreprocess(event);
@@ -246,6 +251,23 @@ public class PlayerListenerTest {
         verify(listenerService).shouldCancelEvent(player);
         verify(event).setCancelled(true);
         verify(messages).send(player, MessageKey.DENIED_COMMAND);
+    }
+
+    @Test
+    public void shouldCancelFastCommandEvent() {
+        // given
+        given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Arrays.asList("/spawn", "/help"));
+        Player player = playerWithMockedServer();
+        PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
+        given(quickCommandsProtectionManager.isAllowed(player.getName())).willReturn(false);
+
+        // when
+        listener.onPlayerCommandPreprocess(event);
+
+        // then
+        verify(event).setCancelled(true);
+        verify(player).kickPlayer(messages.retrieveSingle(player, MessageKey.QUICK_COMMAND_PROTECTION_KICK));
     }
 
     @Test

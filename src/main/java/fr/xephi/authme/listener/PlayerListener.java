@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -86,6 +87,8 @@ public class PlayerListener implements Listener {
     @Inject
     private PermissionsManager permissionsManager;
     @Inject
+    private QuickCommandsProtectionManager quickCommandsProtectionManager;
+    @Inject
     private BungeeSender bungeeSender;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
@@ -100,6 +103,11 @@ public class PlayerListener implements Listener {
             return;
         }
         final Player player = event.getPlayer();
+        if (!quickCommandsProtectionManager.isAllowed(player.getName())) {
+            event.setCancelled(true);
+            player.kickPlayer(m.retrieveSingle(player, MessageKey.QUICK_COMMAND_PROTECTION_KICK));
+            return;
+        }
         if (listenerService.shouldCancelEvent(player)) {
             event.setCancelled(true);
             m.send(player, MessageKey.DENIED_COMMAND);
@@ -207,6 +215,9 @@ public class PlayerListener implements Listener {
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
         }
+
+        quickCommandsProtectionManager.processJoin(player);
+
         management.performJoin(player);
 
         teleportationService.teleportNewPlayerToFirstSpawn(player);
