@@ -4,6 +4,7 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
+import fr.xephi.authme.data.limbo.LimboMessageType;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -80,6 +81,6 @@ public class CaptchaCommand extends PlayerCommand {
             String newCode = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(player.getName());
             commonService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, newCode);
         }
-        limboService.resetMessageTask(player, false);
+        limboService.resetMessageTask(player, LimboMessageType.REGISTER);
     }
 }

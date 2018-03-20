@@ -44,6 +44,7 @@ import fr.xephi.authme.command.executable.totp.AddTotpCommand;
 import fr.xephi.authme.command.executable.totp.ConfirmTotpCommand;
 import fr.xephi.authme.command.executable.totp.RemoveTotpCommand;
 import fr.xephi.authme.command.executable.totp.TotpBaseCommand;
+import fr.xephi.authme.command.executable.totp.TotpCodeCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.command.executable.verification.VerificationCommand;
 import fr.xephi.authme.permission.AdminPermission;
@@ -92,7 +93,6 @@ public class CommandInitializer {
             .description("Login command")
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .withArgument("password", "Login password", MANDATORY)
-            .withArgument("2facode", "TOTP code", OPTIONAL)
             .permission(PlayerPermission.LOGIN)
             .executableCommand(LoginCommand.class)
             .register();
@@ -559,6 +559,15 @@ public class CommandInitializer {
             .description("TOTP commands")
             .detailedDescription("Performs actions related to two-factor authentication.")
             .executableCommand(TotpBaseCommand.class)
+            .register();
+
+        // Register the base totp code
+        CommandDescription.builder()
+            .parent(null)
+            .labels("code", "c")
+            .description("Command for logging in")
+            .detailedDescription("Processes the two-factor authentication code during login.")
+            .executableCommand(TotpCodeCommand.class)
             .register();
 
         // Register totp add

@@ -197,6 +197,9 @@ public enum MessageKey {
     /** Your secret code is %code. You can scan it from here %url */
     TWO_FACTOR_CREATE("misc.two_factor_create", "%code", "%url"),
 
+    /** Please submit your two-factor authentication code with /2fa code &ltcode&gt;. */
+    TWO_FACTOR_CODE_REQUIRED("two_factor.code_required"),
+
     /** You are not the owner of this account. Please choose another name! */
     NOT_OWNER_ERROR("on_join_validation.not_owner_error"),
 

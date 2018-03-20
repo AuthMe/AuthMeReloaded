@@ -69,7 +69,8 @@ public class LimboService {
         LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
         limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered, location), limboPlayer);
 
-        taskManager.registerMessageTask(player, limboPlayer, isRegistered);
+        taskManager.registerMessageTask(player, limboPlayer,
+            isRegistered ? LimboMessageType.LOG_IN : LimboMessageType.REGISTER);
         taskManager.registerTimeoutTask(player, limboPlayer);
         helper.revokeLimboStates(player);
         authGroupHandler.setGroup(player, limboPlayer,
@@ -134,7 +135,7 @@ public class LimboService {
         Optional<LimboPlayer> limboPlayer = getLimboOrLogError(player, "reset tasks");
         limboPlayer.ifPresent(limbo -> {
             taskManager.registerTimeoutTask(player, limbo);
-            taskManager.registerMessageTask(player, limbo, true);
+            taskManager.registerMessageTask(player, limbo, LimboMessageType.LOG_IN);
         });
         authGroupHandler.setGroup(player, limboPlayer.orElse(null), AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
@@ -143,11 +144,11 @@ public class LimboService {
      * Resets the message task associated with the player's LimboPlayer.
      *
      * @param player the player to set a new message task for
-     * @param isRegistered whether or not the player is registered
+     * @param messageType the message to show for the limbo player
      */
-    public void resetMessageTask(Player player, boolean isRegistered) {
+    public void resetMessageTask(Player player, LimboMessageType messageType) {
         getLimboOrLogError(player, "reset message task")
-            .ifPresent(limbo -> taskManager.registerMessageTask(player, limbo, isRegistered));
+            .ifPresent(limbo -> taskManager.registerMessageTask(player, limbo, messageType));
     }
 
     /**

@@ -128,6 +128,9 @@ verification:
   code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
   email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
+two_factor:
+  code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+
 # Time units
 time:
   second: 'second'

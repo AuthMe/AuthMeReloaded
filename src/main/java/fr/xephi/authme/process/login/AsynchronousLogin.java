@@ -6,6 +6,8 @@ import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.LoginCaptchaManager;
+import fr.xephi.authme.data.limbo.LimboMessageType;
+import fr.xephi.authme.data.limbo.LimboPlayerState;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
@@ -18,7 +20,6 @@ import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.totp.TotpService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
@@ -79,9 +80,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
     @Inject
     private BungeeSender bungeeSender;
 
-    @Inject
-    private TotpService totpService;
-
     AsynchronousLogin() {
     }
 
@@ -90,12 +88,17 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *
      * @param player the player to log in
      * @param password the password to log in with
-     * @param totpCode the totp code (nullable)
      */
-    public void login(Player player, String password, String totpCode) {
+    public void login(Player player, String password) {
         PlayerAuth auth = getPlayerAuth(player);
-        if (auth != null && checkPlayerInfo(player, auth, password, totpCode)) {
-            performLogin(player, auth);
+        if (auth != null && checkPlayerInfo(player, auth, password)) {
+            if (auth.getTotpKey() != null) {
+                limboService.resetMessageTask(player, LimboMessageType.TOTP_CODE);
+                limboService.getLimboPlayer(player.getName()).setState(LimboPlayerState.TOTP_REQUIRED);
+                // TODO #1141: Check if we should check limbo state before processing password
+            } else {
+                performLogin(player, auth);
+            }
         }
     }
 
@@ -130,7 +133,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (auth == null) {
             service.send(player, MessageKey.UNKNOWN_USER);
             // Recreate the message task to immediately send the message again as response
-            limboService.resetMessageTask(player, false);
+            limboService.resetMessageTask(player, LimboMessageType.REGISTER);
             return null;
         }
 
@@ -161,11 +164,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param player the player requesting to log in
      * @param auth the PlayerAuth object of the player
      * @param password the password supplied by the player
-     * @param totpCode the input totp code (nullable)
      * @return true if the password matches and all other conditions are met (e.g. no captcha required),
      *         false otherwise
      */
-    private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password, String totpCode) {
+    private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password) {
         final String name = player.getName().toLowerCase();
 
         // If captcha is required send a message to the player and deny to log in
@@ -179,17 +181,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
         // Increase the counts here before knowing the result of the login.
         loginCaptchaManager.increaseLoginFailureCount(name);
         tempbanManager.increaseCount(ip, name);
-
-        if (auth.getTotpKey() != null) {
-            if (totpCode == null) {
-                player.sendMessage(
-                    "You have two-factor authentication enabled. Please provide it: /login <password> <2faCode>");
-                return false;
-            } else if (!totpService.verifyCode(auth, totpCode)) {
-                player.sendMessage("Invalid code for two-factor authentication. Please try again");
-                return false;
-            }
-        }
 
         if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
             return true;
@@ -235,7 +226,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param player the player to log in
      * @param auth the associated PlayerAuth object
      */
-    private void performLogin(Player player, PlayerAuth auth) {
+    public void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
             final boolean isFirstLogin = (auth.getLastLogin() == null);
 
