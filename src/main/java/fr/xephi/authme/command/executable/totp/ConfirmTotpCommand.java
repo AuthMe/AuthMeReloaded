@@ -1,7 +1,10 @@
 package fr.xephi.authme.command.executable.totp;
 
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.totp.GenerateTotpService;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import org.bukkit.entity.Player;
@@ -20,21 +23,29 @@ public class ConfirmTotpCommand extends PlayerCommand {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private Messages messages;
+
     @Override
     protected void runCommand(Player player, List<String> arguments) {
-        // TODO #1141: Check if player already has TOTP
+        PlayerAuth auth = dataSource.getAuth(player.getName());
+        if (auth == null) {
+            messages.send(player, MessageKey.REGISTER_MESSAGE);
+        } else if (auth.getTotpKey() != null) {
+            messages.send(player, MessageKey.TWO_FACTOR_ALREADY_ENABLED);
+        }
 
         final TotpGenerationResult totpDetails = generateTotpService.getGeneratedTotpKey(player);
         if (totpDetails == null) {
-            player.sendMessage("No TOTP key has been generated for you or it has expired. Please run /totp add");
+            messages.send(player, MessageKey.TWO_FACTOR_ENABLE_ERROR_NO_CODE);
         } else {
             boolean isCodeValid = generateTotpService.isTotpCodeCorrectForGeneratedTotpKey(player, arguments.get(0));
             if (isCodeValid) {
                 generateTotpService.removeGenerateTotpKey(player);
                 dataSource.setTotpKey(player.getName(), totpDetails.getTotpKey());
-                player.sendMessage("Successfully enabled two-factor authentication for your account");
+                messages.send(player, MessageKey.TWO_FACTOR_ENABLE_SUCCESS);
             } else {
-                player.sendMessage("Wrong code or code has expired. Please use /totp add again");
+                messages.send(player, MessageKey.TWO_FACTOR_ENABLE_ERROR_WRONG_CODE);
             }
         }
     }

@@ -30,6 +30,13 @@ public class TotpAuthenticator {
         this.bukkitService = bukkitService;
     }
 
+    /**
+     * Returns whether the given input code matches for the provided TOTP key.
+     *
+     * @param totpKey the key to check with
+     * @param inputCode the input code to verify
+     * @return true if code is valid, false otherwise
+     */
     public boolean checkCode(String totpKey, String inputCode) {
         try {
             Integer totpCode = Integer.valueOf(inputCode);

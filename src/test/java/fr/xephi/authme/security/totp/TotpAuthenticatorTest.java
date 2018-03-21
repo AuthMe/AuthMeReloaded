@@ -4,9 +4,9 @@ import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class TotpAuthenticatorTest {
 
-    @InjectMocks
     private TotpAuthenticator totpAuthenticator;
 
     @Mock
@@ -34,6 +33,11 @@ public class TotpAuthenticatorTest {
 
     @Mock
     private IGoogleAuthenticator googleAuthenticator;
+
+    @Before
+    public void initializeTotpAuthenticator() {
+        totpAuthenticator = new TotpAuthenticator(googleAuthenticator, bukkitService);
+    }
 
     @Test
     public void shouldGenerateTotpKey() {

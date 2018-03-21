@@ -53,20 +53,19 @@ public class TotpCodeCommand extends PlayerCommand {
         }
 
         LimboPlayer limbo = limboService.getLimboPlayer(player.getName());
-        if (limbo.getState() == LimboPlayerState.TOTP_REQUIRED) {
-            processCode(player, limbo, auth, arguments.get(0));
+        if (limbo != null && limbo.getState() == LimboPlayerState.TOTP_REQUIRED) {
+            processCode(player, auth, arguments.get(0));
         } else {
             messages.send(player, MessageKey.LOGIN_MESSAGE);
         }
     }
 
-    private void processCode(Player player, LimboPlayer limbo, PlayerAuth auth, String inputCode) {
+    private void processCode(Player player, PlayerAuth auth, String inputCode) {
         boolean isCodeValid = totpService.verifyCode(auth, inputCode);
         if (isCodeValid) {
-            limbo.setState(LimboPlayerState.FINISHED);
             asynchronousLogin.performLogin(player, auth);
         } else {
-            player.sendMessage("Invalid code!");
+            messages.send(player, MessageKey.TWO_FACTOR_INVALID_CODE);
         }
     }
 }

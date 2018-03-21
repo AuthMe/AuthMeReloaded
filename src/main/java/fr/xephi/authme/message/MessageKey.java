@@ -195,10 +195,31 @@ public enum MessageKey {
     EMAIL_ALREADY_USED_ERROR("email.already_used"),
 
     /** Your secret code is %code. You can scan it from here %url */
-    TWO_FACTOR_CREATE("misc.two_factor_create", "%code", "%url"),
+    TWO_FACTOR_CREATE("two_factor.code_created", "%code", "%url"),
 
     /** Please submit your two-factor authentication code with /2fa code &ltcode&gt;. */
     TWO_FACTOR_CODE_REQUIRED("two_factor.code_required"),
+
+    /** Two-factor authentication is already enabled for your account! */
+    TWO_FACTOR_ALREADY_ENABLED("two_factor.already_enabled"),
+
+    /** No 2fa key has been generated for you or it has expired. Please run /2fa add */
+    TWO_FACTOR_ENABLE_ERROR_NO_CODE("two_factor.enable_error_no_code"),
+
+    /** Successfully enabled two-factor authentication for your account */
+    TWO_FACTOR_ENABLE_SUCCESS("two_factor.enable_success"),
+
+    /** Wrong code or code has expired. Please run /2fa add */
+    TWO_FACTOR_ENABLE_ERROR_WRONG_CODE("two_factor.enable_error_wrong_code"),
+
+    /** Two-factor authentication is not enabled for your account. Run /2fa add */
+    TWO_FACTOR_NOT_ENABLED_ERROR("two_factor.not_enabled_error"),
+
+    /** Successfully removed two-factor auth from your account */
+    TWO_FACTOR_REMOVED_SUCCESS("two_factor.removed_success"),
+
+    /** Invalid code! */
+    TWO_FACTOR_INVALID_CODE("two_factor.invalid_code"),
 
     /** You are not the owner of this account. Please choose another name! */
     NOT_OWNER_ERROR("on_join_validation.not_owner_error"),

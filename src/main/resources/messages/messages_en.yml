@@ -56,7 +56,6 @@ unregister:
 misc:
   accounts_owned_self: 'You own %count accounts:'
   accounts_owned_other: 'The player %name has %count accounts:'
-  two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
   account_not_activated: '&cYour account isn''t activated yet, please check your emails!'
   password_changed: '&2Password changed successfully!'
   logout: '&2Logged out successfully!'
@@ -130,7 +129,15 @@ verification:
   email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 two_factor:
+  code_created: '&2Your secret code is %code. You can scan it from here %url'
   code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+  already_enabled: 'Two-factor authentication is already enabled for your account!'
+  enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+  enable_success: 'Successfully enabled two-factor authentication for your account'
+  enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+  not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+  removed_success: 'Successfully removed two-factor auth from your account'
+  invalid_code: 'Invalid code!'
 
 # Time units
 time:
