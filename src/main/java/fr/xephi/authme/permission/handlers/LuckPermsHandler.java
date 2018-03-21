@@ -1,6 +1,6 @@
 package fr.xephi.authme.permission.handlers;
 
-import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.OfflinePlayerWrapper;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import me.lucko.luckperms.LuckPerms;
@@ -14,14 +14,13 @@ import me.lucko.luckperms.api.caching.PermissionData;
 import me.lucko.luckperms.api.caching.UserData;
 import org.bukkit.OfflinePlayer;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import static fr.xephi.authme.util.OptionalUtils.handleOptional;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * Handler for LuckPerms.
@@ -41,33 +40,9 @@ public class LuckPermsHandler implements PermissionHandler {
         }
     }
 
-    private void saveUser(User user) {
-        luckPermsApi.getUserManager().saveUser(user)
-            .thenAcceptAsync(wasSuccessful -> user.refreshCachedData());
-    }
-
     @Override
-    public boolean addToGroup(OfflinePlayer player, String group) {
-        Group newGroup = luckPermsApi.getGroup(group);
-        if (newGroup == null) {
-            return false;
-        }
-
-        User user = luckPermsApi.getUser(player.getName());
-        if (user == null) {
-            return false;
-        }
-
-        DataMutateResult result = user.setPermission(
-            luckPermsApi.getNodeFactory().makeGroupNode(newGroup).build());
-        if (result == DataMutateResult.FAIL) {
-            return false;
-        }
-
-        saveUser(user);
-        luckPermsApi.cleanupUser(user);
-
-        return true;
+    public PermissionsSystemType getPermissionSystem() {
+        return PermissionsSystemType.LUCK_PERMS;
     }
 
     @Override
@@ -75,94 +50,88 @@ public class LuckPermsHandler implements PermissionHandler {
         return true;
     }
 
-    @Override
-    public boolean hasPermissionOffline(String name, PermissionNode node) {
-        User user = luckPermsApi.getUser(name);
-        if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to check permission for offline user "
-                + name + " but it isn't loaded!");
-            return false;
+    private CompletableFuture<User> getUser(OfflinePlayerWrapper player) {
+        if (player.isOnline()) { //FIXME: how to get this? :/
+            return completedFuture(luckPermsApi.getUser(player.getUniqueId()));
         }
+        return luckPermsApi.getUserManager().loadUser(player.getUniqueId(), player.getName());
+    }
 
-        UserData userData = user.getCachedData();
-        PermissionData permissionData = userData.getPermissionData(Contexts.allowAll());
-        boolean result = permissionData.getPermissionValue(node.getNode()).asBoolean();
+    private Optional<Group> getGroup(String groupName) {
+        return luckPermsApi.getGroupSafe(groupName);
+    }
 
-        luckPermsApi.cleanupUser(user);
-        return result;
+    private Node getGroupNode(Group group) {
+        return luckPermsApi.getNodeFactory().makeGroupNode(group).build();
+    }
+
+    private void saveUser(User user) {
+        luckPermsApi.getUserManager().saveUser(user); // Async, handled by LuckPerms
     }
 
     @Override
-    public boolean isInGroup(OfflinePlayer player, String group) {
-        User user = luckPermsApi.getUser(player.getName());
-        if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to check group for offline user "
-                + player.getName() + " but it isn't loaded!");
-            return false;
-        }
-
-        Group permissionGroup = luckPermsApi.getGroup(group);
-        boolean result = permissionGroup != null && user.inheritsGroup(permissionGroup);
-
-        luckPermsApi.cleanupUser(user);
-        return result;
+    public CompletableFuture<Boolean> addToGroup(OfflinePlayerWrapper player, String groupName) {
+        return handleOptional(getGroup(groupName),
+            group -> getUser(player).thenApply(user -> {
+                if (user.setPermission(getGroupNode(group)).wasFailure()) {
+                    return false;
+                }
+                saveUser(user);
+                return true;
+            }),
+            () -> completedFuture(false)
+        );
     }
 
     @Override
-    public boolean removeFromGroup(OfflinePlayer player, String group) {
-        User user = luckPermsApi.getUser(player.getName());
-        if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to remove group for offline user "
-                + player.getName() + " but it isn't loaded!");
-            return false;
-        }
-
-        Group permissionGroup = luckPermsApi.getGroup(group);
-        if (permissionGroup == null) {
-            return false;
-        }
-
-        Node groupNode = luckPermsApi.getNodeFactory().makeGroupNode(permissionGroup).build();
-        boolean result = user.unsetPermission(groupNode) != DataMutateResult.FAIL;
-
-        luckPermsApi.cleanupUser(user);
-        return result;
+    public CompletableFuture<Boolean> hasPermissionOffline(OfflinePlayerWrapper player, PermissionNode node) {
+        return getUser(player).thenApply(user -> {
+            UserData userData = user.getCachedData();
+            PermissionData permissionData = userData.getPermissionData(Contexts.allowAll());
+            return permissionData.getPermissionValue(node.getNode()).asBoolean();
+        });
     }
 
     @Override
-    public boolean setGroup(OfflinePlayer player, String group) {
-        User user = luckPermsApi.getUser(player.getName());
-        if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to set group for offline user "
-                + player.getName() + " but it isn't loaded!");
-            return false;
-        }
-        Group permissionGroup = luckPermsApi.getGroup(group);
-        if (permissionGroup == null) {
-            return false;
-        }
-        Node groupNode = luckPermsApi.getNodeFactory().makeGroupNode(permissionGroup).build();
-        DataMutateResult result = user.setPermission(groupNode);
-        if (result == DataMutateResult.FAIL) {
-            return false;
-        }
-        user.clearMatching(node -> node.isGroupNode() && !node.getGroupName().equals(permissionGroup.getName()));
-
-        saveUser(user);
-        luckPermsApi.cleanupUser(user);
-        return true;
+    public CompletableFuture<Boolean> isInGroup(OfflinePlayerWrapper player, String groupName) {
+        return handleOptional(luckPermsApi.getGroupSafe(groupName),
+            group -> getUser(player).thenApply(user -> user.inheritsGroup(group)),
+            () -> completedFuture(false)
+        );
     }
 
     @Override
-    public List<String> getGroups(OfflinePlayer player) {
-        User user = luckPermsApi.getUser(player.getName());
-        if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to get groups for offline user "
-                + player.getName() + " but it isn't loaded!");
-            return Collections.emptyList();
-        }
+    public CompletableFuture<Boolean> removeFromGroup(OfflinePlayerWrapper player, String groupName) {
+        return handleOptional(getGroup(groupName),
+            group -> getUser(player).thenApply(user -> {
+                if (user.unsetPermission(getGroupNode(group)).wasFailure()) {
+                    return false;
+                }
+                saveUser(user);
+                return true;
+            }),
+            () -> completedFuture(false)
+        );
+    }
 
-        List<String> result = user.getOwnNodes().stream()
+    @Override
+    public CompletableFuture<Boolean> setGroup(OfflinePlayerWrapper player, String groupName) {
+        return handleOptional(getGroup(groupName),
+            group -> getUser(player).thenApply(user -> {
+                if (user.setPermission(getGroupNode(group)) == DataMutateResult.FAIL) {
+                    return false;
+                }
+                user.clearMatching(node -> node.isGroupNode() && !node.getGroupName().equals(group.getName()));
+                saveUser(user);
+                return true;
+            }),
+            () -> completedFuture(false)
+        );
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getGroups(OfflinePlayerWrapper player) {
+        return getUser(player).thenApply(user -> user.getOwnNodes().stream()
             .filter(Node::isGroupNode)
             .map(n -> luckPermsApi.getGroupSafe(n.getGroupName()))
             .filter(Optional::isPresent)
@@ -177,34 +146,7 @@ public class LuckPermsHandler implements PermissionHandler {
                 return i != 0 ? i : o1.getName().compareToIgnoreCase(o2.getName());
             })
             .map(Group::getName)
-            .collect(Collectors.toList());
-
-        luckPermsApi.cleanupUser(user);
-        return result;
-    }
-
-    @Override
-    public PermissionsSystemType getPermissionSystem() {
-        return PermissionsSystemType.LUCK_PERMS;
-    }
-
-    @Override
-    public void loadUserData(UUID uuid) {
-        try {
-            luckPermsApi.getUserManager().loadUser(uuid).get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void loadUserData(String name) {
-        try {
-            UUID uuid = luckPermsApi.getStorage().getUUID(name).get(5, TimeUnit.SECONDS);
-            loadUserData(uuid);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
-        }
+            .collect(Collectors.toList()));
     }
 
 }

@@ -21,11 +21,6 @@ public enum PermissionsSystemType {
     B_PERMISSIONS("bPermissions", "bPermissions"),
 
     /**
-     * zPermissions.
-     */
-    Z_PERMISSIONS("zPermissions", "zPermissions"),
-
-    /**
      * Vault.
      */
     VAULT("Vault", "Vault");

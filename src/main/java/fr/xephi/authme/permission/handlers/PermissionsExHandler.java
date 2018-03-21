@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission.handlers;
 
+import fr.xephi.authme.OfflinePlayerWrapper;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.OfflinePlayer;
@@ -9,6 +10,9 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * Handler for PermissionsEx.
@@ -27,15 +31,21 @@ public class PermissionsExHandler implements PermissionHandler {
         }
     }
 
-    @Override
-    public boolean addToGroup(OfflinePlayer player, String group) {
-        if (!PermissionsEx.getPermissionManager().getGroupNames().contains(group)) {
-            return false;
+    private PermissionUser getUser(OfflinePlayerWrapper player) {
+        try {
+            return permissionManager.getUser(player.getUniqueId());
+        } catch (NoSuchMethodError e) {
+            return permissionManager.getUser(player.getName());
         }
+    }
 
-        PermissionUser user = PermissionsEx.getUser(player.getName());
-        user.addGroup(group);
-        return true;
+    @Override
+    public CompletableFuture<Boolean> addToGroup(OfflinePlayerWrapper player, String groupName) {
+        if (!permissionManager.getGroupNames().contains(groupName)) {
+            return completedFuture(false);
+        }
+        permissionManager.getUser(player.getName()).addGroup(groupName);
+        return completedFuture(true);
     }
 
     @Override
@@ -44,38 +54,33 @@ public class PermissionsExHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermissionOffline(String name, PermissionNode node) {
-        PermissionUser user = permissionManager.getUser(name);
-        return user.has(node.getNode());
+    public CompletableFuture<Boolean> hasPermissionOffline(OfflinePlayerWrapper player, PermissionNode node) {
+        return completedFuture(getUser(player).has(node.getNode()));
     }
 
     @Override
-    public boolean isInGroup(OfflinePlayer player, String group) {
-        PermissionUser user = permissionManager.getUser(player.getName());
-        return user.inGroup(group);
+    public CompletableFuture<Boolean> isInGroup(OfflinePlayerWrapper player, String groupName) {
+        return completedFuture(getUser(player).inGroup(groupName));
     }
 
     @Override
-    public boolean removeFromGroup(OfflinePlayer player, String group) {
-        PermissionUser user = permissionManager.getUser(player.getName());
-        user.removeGroup(group);
-        return true;
+    public CompletableFuture<Boolean> removeFromGroup(OfflinePlayerWrapper player, String groupName) {
+        getUser(player).removeGroup(groupName);
+        return completedFuture(true);
     }
 
     @Override
-    public boolean setGroup(OfflinePlayer player, String group) {
+    public CompletableFuture<Boolean> setGroup(OfflinePlayerWrapper player, String group) {
         List<String> groups = new ArrayList<>();
         groups.add(group);
 
-        PermissionUser user = permissionManager.getUser(player.getName());
-        user.setParentsIdentifier(groups);
-        return true;
+        getUser(player).setParentsIdentifier(groups);
+        return completedFuture(true);
     }
 
     @Override
-    public List<String> getGroups(OfflinePlayer player) {
-        PermissionUser user = permissionManager.getUser(player.getName());
-        return user.getParentIdentifiers(null);
+    public CompletableFuture<List<String>> getGroups(OfflinePlayerWrapper player) {
+        return completedFuture(getUser(player).getParentIdentifiers(null));
     }
 
     @Override

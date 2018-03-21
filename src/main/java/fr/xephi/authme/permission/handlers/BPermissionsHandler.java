@@ -2,12 +2,15 @@ package fr.xephi.authme.permission.handlers;
 
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.CalculableType;
+import fr.xephi.authme.OfflinePlayerWrapper;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
-import org.bukkit.OfflinePlayer;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * Handler for bPermissions.
@@ -18,9 +21,9 @@ import java.util.List;
 public class BPermissionsHandler implements PermissionHandler {
 
     @Override
-    public boolean addToGroup(OfflinePlayer player, String group) {
-        ApiLayer.addGroup(null, CalculableType.USER, player.getName(), group);
-        return true;
+    public CompletableFuture<Boolean> addToGroup(OfflinePlayerWrapper player, String groupName) {
+        ApiLayer.addGroup(null, CalculableType.USER, player.getName(), groupName);
+        return completedFuture(true);
     }
 
     @Override
@@ -29,30 +32,30 @@ public class BPermissionsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean hasPermissionOffline(String name, PermissionNode node) {
-        return ApiLayer.hasPermission(null, CalculableType.USER, name, node.getNode());
+    public CompletableFuture<Boolean> hasPermissionOffline(OfflinePlayerWrapper player, PermissionNode node) {
+        return completedFuture(ApiLayer.hasPermission(null, CalculableType.USER, player.getName(), node.getNode()));
     }
 
     @Override
-    public boolean isInGroup(OfflinePlayer player, String group) {
-        return ApiLayer.hasGroup(null, CalculableType.USER, player.getName(), group);
+    public CompletableFuture<Boolean> isInGroup(OfflinePlayerWrapper player, String groupName) {
+        return completedFuture(ApiLayer.hasGroup(null, CalculableType.USER, player.getName(), groupName));
     }
 
     @Override
-    public boolean removeFromGroup(OfflinePlayer player, String group) {
-        ApiLayer.removeGroup(null, CalculableType.USER, player.getName(), group);
-        return true;
+    public CompletableFuture<Boolean> removeFromGroup(OfflinePlayerWrapper player, String groupName) {
+        ApiLayer.removeGroup(null, CalculableType.USER, player.getName(), groupName);
+        return completedFuture(true);
     }
 
     @Override
-    public boolean setGroup(OfflinePlayer player, String group) {
+    public CompletableFuture setGroup(OfflinePlayerWrapper player, String group) {
         ApiLayer.setGroup(null, CalculableType.USER, player.getName(), group);
-        return true;
+        return completedFuture(true);
     }
 
     @Override
-    public List<String> getGroups(OfflinePlayer player) {
-        return Arrays.asList(ApiLayer.getGroups(null, CalculableType.USER, player.getName()));
+    public CompletableFuture<List<String>> getGroups(OfflinePlayerWrapper player) {
+        return completedFuture(Arrays.asList(ApiLayer.getGroups(null, CalculableType.USER, player.getName())));
     }
 
     @Override

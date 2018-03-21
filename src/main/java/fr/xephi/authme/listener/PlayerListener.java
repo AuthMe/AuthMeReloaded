@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.OfflinePlayerWrapper;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -20,6 +21,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -51,6 +53,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
+
+import java.util.UUID;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
@@ -252,21 +256,17 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        final UUID uuid = event.getUniqueId();
         final String name = event.getName();
 
         if (validationService.isUnrestricted(name)) {
             return;
         }
 
-        // Keep pre-UUID compatibility
-        try {
-            permissionsManager.loadUserData(event.getUniqueId());
-        } catch (NoSuchMethodError e) {
-            permissionsManager.loadUserData(name);
-        }
+        final OfflinePlayerWrapper player = new OfflinePlayerWrapper(uuid, name);
 
         try {
-            runOnJoinChecks(JoiningPlayer.fromName(name), event.getAddress().getHostAddress());
+            runOnJoinChecks(JoiningPlayer.fromOfflinePlayer(player), event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
             event.setKickMessage(m.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);

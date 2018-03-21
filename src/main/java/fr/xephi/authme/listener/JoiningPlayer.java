@@ -1,10 +1,15 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.OfflinePlayerWrapper;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * Represents a player joining the server, which depending on the available
@@ -13,7 +18,7 @@ import java.util.function.BiFunction;
 public final class JoiningPlayer {
 
     private final String name;
-    private final BiFunction<PermissionsManager, PermissionNode, Boolean> permissionLookupFunction;
+    private final BiFunction<PermissionsManager, PermissionNode, CompletableFuture<Boolean>> permissionLookupFunction;
 
     /**
      * Hidden constructor.
@@ -21,7 +26,7 @@ public final class JoiningPlayer {
      * @param name the player's name
      * @param permFunction the function to use for permission lookups
      */
-    private JoiningPlayer(String name, BiFunction<PermissionsManager, PermissionNode, Boolean> permFunction) {
+    private JoiningPlayer(String name, BiFunction<PermissionsManager, PermissionNode, CompletableFuture<Boolean>> permFunction) {
         this.name = name;
         this.permissionLookupFunction = permFunction;
     }
@@ -29,11 +34,11 @@ public final class JoiningPlayer {
     /**
      * Creates a {@link JoiningPlayer} instance from the given name.
      *
-     * @param name the player's name
+     * @param player the offline player
      * @return the created instance
      */
-    public static JoiningPlayer fromName(String name) {
-        return new JoiningPlayer(name, (manager, perm) -> manager.hasPermissionOffline(name, perm));
+    public static JoiningPlayer fromOfflinePlayer(OfflinePlayerWrapper player) {
+        return new JoiningPlayer(player.getName(), (manager, perm) -> manager.hasPermissionOffline(player, perm));
     }
 
     /**
@@ -43,7 +48,8 @@ public final class JoiningPlayer {
      * @return the created instance
      */
     public static JoiningPlayer fromPlayerObject(Player player) {
-        return new JoiningPlayer(player.getName(), (manager, perm) -> manager.hasPermission(player, perm));
+        return new JoiningPlayer(player.getName(), (manager, perm) ->
+            completedFuture(manager.hasPermission(player, perm)));
     }
 
     /**
@@ -60,7 +66,7 @@ public final class JoiningPlayer {
      *
      * @return the permissions lookup function to use
      */
-    public BiFunction<PermissionsManager, PermissionNode, Boolean> getPermissionLookupFunction() {
+    public BiFunction<PermissionsManager, PermissionNode, CompletableFuture<Boolean>> getPermissionLookupFunction() {
         return permissionLookupFunction;
     }
 }

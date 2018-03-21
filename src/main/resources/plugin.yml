@@ -9,7 +9,6 @@ softdepend:
     - LuckPerms
     - PermissionsEx
     - bPermissions
-    - zPermissions
     - Multiverse-Core
     - Essentials
     - EssentialsSpawn
