@@ -1,9 +1,8 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.OfflinePlayerWrapper;
+import fr.xephi.authme.OfflinePlayerInfo;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.CompletableFuture;
@@ -34,11 +33,12 @@ public final class JoiningPlayer {
     /**
      * Creates a {@link JoiningPlayer} instance from the given name.
      *
-     * @param player the offline player
+     * @param offline the offline player information
      * @return the created instance
      */
-    public static JoiningPlayer fromOfflinePlayer(OfflinePlayerWrapper player) {
-        return new JoiningPlayer(player.getName(), (manager, perm) -> manager.hasPermissionOffline(player, perm));
+    public static JoiningPlayer fromOfflinePlayerInfo(OfflinePlayerInfo offline) {
+        return new JoiningPlayer(offline.getName(), (manager, perm) ->
+            manager.hasPermissionOffline(offline, perm));
     }
 
     /**
