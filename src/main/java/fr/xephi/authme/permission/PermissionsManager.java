@@ -2,7 +2,7 @@ package fr.xephi.authme.permission;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.OfflinePlayerWrapper;
+import fr.xephi.authme.listener.OfflinePlayerInfo;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.listener.JoiningPlayer;
 import fr.xephi.authme.permission.handlers.BPermissionsHandler;
@@ -14,7 +14,6 @@ import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -114,7 +113,9 @@ public class PermissionsManager implements Reloadable {
      * Creates a permission handler for the provided permission systems if possible.
      *
      * @param type the permission systems type for which to create a corresponding permission handler
+     *
      * @return the permission handler, or {@code null} if not possible
+     *
      * @throws PermissionHandlerException during initialization of the permission handler
      */
     private PermissionHandler createPermissionHandler(PermissionsSystemType type) throws PermissionHandlerException {
@@ -230,11 +231,12 @@ public class PermissionsManager implements Reloadable {
     /**
      * Check if the given player has permission for the given permission node.
      *
-     * @param joiningPlayer The player to check
+     * @param joiningPlayer  The player to check
      * @param permissionNode The permission node to verify
+     *
      * @return true if the player has permission, false otherwise
      */
-    public boolean hasPermission(JoiningPlayer joiningPlayer, PermissionNode permissionNode) {
+    public CompletableFuture<Boolean> hasPermission(JoiningPlayer joiningPlayer, PermissionNode permissionNode) {
         return joiningPlayer.getPermissionLookupFunction().apply(this, permissionNode);
     }
 
@@ -242,22 +244,22 @@ public class PermissionsManager implements Reloadable {
      * Check if a player has permission for the given permission node. This is for offline player checks.
      * If no permissions system is used, then the player will not have permission.
      *
-     * @param player         The offline player
+     * @param offlineInfo    The offline player
      * @param permissionNode The permission node to verify
      *
      * @return true if the player has permission, false otherwise
      */
-    public CompletableFuture<Boolean> hasPermissionOffline(OfflinePlayerWrapper player, PermissionNode permissionNode) {
+    public CompletableFuture<Boolean> hasPermissionOffline(OfflinePlayerInfo offlineInfo, PermissionNode permissionNode) {
         // Check if the permission node is null
         if (permissionNode == null) {
             return completedFuture(true);
         }
 
         if (!isEnabled()) {
-            return completedFuture(permissionNode.getDefaultPermission().evaluate(player)); //FIXME: find a way to use the bukkitService to access Bukkit.getOperators and check the uuid
+            return completedFuture(permissionNode.getDefaultPermission().evaluate(offlineInfo)); //FIXME: find a way to use the bukkitService to access Bukkit.getOperators and check the uuid
         }
 
-        return handler.hasPermissionOffline(player, permissionNode);
+        return handler.hasPermissionOffline(offlineInfo, permissionNode);
     }
 
     /**
@@ -277,8 +279,19 @@ public class PermissionsManager implements Reloadable {
      *
      * @return Permission groups, or an empty collection if this feature is not supported.
      */
-    public CompletableFuture<List<String>> getGroups(OfflinePlayer player) {
-        return isEnabled() ? handler.getGroups(player) : completedFuture(Collections.emptyList());
+    public List<String> getGroups(Player player) {
+        return isEnabled() ? handler.getGroups(player) : Collections.emptyList();
+    }
+
+    /**
+     * Get the permission groups of an offline player, if available.
+     *
+     * @param offlineInfo The offline player info.
+     *
+     * @return Permission groups, or an empty collection if this feature is not supported.
+     */
+    public CompletableFuture<List<String>> getGroupsOffline(OfflinePlayerInfo offlineInfo) {
+        return isEnabled() ? handler.getGroupsOffline(offlineInfo) : completedFuture(Collections.emptyList());
     }
 
     /**
@@ -288,8 +301,19 @@ public class PermissionsManager implements Reloadable {
      *
      * @return The name of the primary permission group.
      */
-    public CompletableFuture<Optional<String>> getPrimaryGroup(OfflinePlayer player) {
-        return isEnabled() ? handler.getPrimaryGroup(player) : completedFuture(Optional.empty());
+    public Optional<String> getPrimaryGroup(Player player) {
+        return isEnabled() ? handler.getPrimaryGroup(player) : Optional.empty();
+    }
+
+    /**
+     * Get the primary group of an offline player, if available.
+     *
+     * @param offlineInfo The offline player info.
+     *
+     * @return The name of the primary permission group.
+     */
+    public CompletableFuture<Optional<String>> getPrimaryGroupOffline(OfflinePlayerInfo offlineInfo) {
+        return isEnabled() ? handler.getPrimaryGroupOffline(offlineInfo) : completedFuture(Optional.empty());
     }
 
     /**
@@ -299,29 +323,55 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The group name.
      *
      * @return True if the player is in the specified group, false otherwise.
-     *         False is also returned if groups aren't supported by the used permissions system.
+     * False is also returned if groups aren't supported by the used permissions system.
      */
-    public CompletableFuture<Boolean> isInGroup(OfflinePlayer player, String groupName) {
-        if(!isEnabled()) {
+    public boolean isInGroup(Player player, String groupName) {
+        return isEnabled() && handler.isInGroup(player, groupName);
+    }
+
+    /**
+     * Check whether the offline player is in the specified group.
+     *
+     * @param offlineInfo The offline player info.
+     * @param groupName   The group name.
+     *
+     * @return True if the player is in the specified group, false otherwise.
+     * False is also returned if groups aren't supported by the used permissions system.
+     */
+    public CompletableFuture<Boolean> isInGroup(OfflinePlayerInfo offlineInfo, String groupName) {
+        if (!isEnabled()) {
             return completedFuture(false);
         }
-        return handler.isInGroup(player, groupName);
+        return handler.isInGroupOffline(offlineInfo, groupName);
     }
 
     /**
      * Add the permission group of a player, if supported.
      *
-     * @param player    The player
+     * @param player    The player.
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
-    public CompletableFuture<Boolean> addGroup(OfflinePlayer player, String groupName) {
+    public boolean addGroup(Player player, String groupName) {
+        return isEnabled() && !StringUtils.isEmpty(groupName) && handler.addToGroup(player, groupName);
+    }
+
+    /**
+     * Add the permission group of an offline player, if supported.
+     *
+     * @param offlineInfo The offline player info.
+     * @param groupName   The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    public CompletableFuture<Boolean> addGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
         if (!isEnabled() || StringUtils.isEmpty(groupName)) {
             return completedFuture(false);
         }
-        return handler.addToGroup(player, groupName);
+        return handler.addToGroupOffline(offlineInfo, groupName);
     }
 
     /**
@@ -331,12 +381,12 @@ public class PermissionsManager implements Reloadable {
      * @param groupNames The name of the groups to add.
      *
      * @return True if at least one group was added, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
-    public CompletableFuture<Boolean> addGroups(OfflinePlayer player, Collection<String> groupNames) {
+    public boolean addGroups(Player player, Collection<String> groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
-            return completedFuture(false);
+            return false;
         }
 
         // Add each group to the user
@@ -352,35 +402,74 @@ public class PermissionsManager implements Reloadable {
     }
 
     /**
+     * Add the permission groups of an offline player, if supported.
      *
+     * @param offlineInfo The offline player info.
+     * @param groupNames  The name of the groups to add.
+     *
+     * @return True if at least one group was added, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    public CompletableFuture<Boolean> addGroupsOffline(OfflinePlayerInfo offlineInfo, Collection<String> groupNames) {
+        // If no permissions system is used, return false
+        if (!isEnabled()) {
+            return completedFuture(false);
+        }
+
+        // Add each group to the user
+        boolean result = false;
+        for (String groupName : groupNames) {
+            if (!groupName.isEmpty()) {
+                result |= handler.addToGroupOffline(offlineInfo, groupName).join();
+            }
+        }
+
+        // Return the result
+        return completedFuture(result);
+    }
+
+    /**
      * Remove the permission group of a player, if supported.
      *
      * @param player    The player
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
-    public CompletableFuture<Boolean> removeGroup(OfflinePlayer player, String groupName) {
-        if(!isEnabled()) {
+    public boolean removeGroup(Player player, String groupName) {
+        return isEnabled() && handler.removeFromGroup(player, groupName);
+    }
+
+    /**
+     * Remove the permission group of an offline player, if supported.
+     *
+     * @param offlineInfo The offline player info.
+     * @param groupName   The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    public CompletableFuture<Boolean> removeGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
+        if (!isEnabled()) {
             return completedFuture(false);
         }
-        return handler.removeFromGroup(player, groupName);
+        return handler.removeFromGroupOffline(offlineInfo, groupName);
     }
 
     /**
      * Remove the permission groups of a player, if supported.
      *
-     * @param player     The player
+     * @param player     The player.
      * @param groupNames The name of the groups to remove.
      *
      * @return True if at least one group was removed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
-    public CompletableFuture<Boolean> removeGroups(OfflinePlayer player, Collection<String> groupNames) {
+    public boolean removeGroups(Player player, Collection<String> groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
-            return completedFuture(false);
+            return false;
         }
 
         // Add each group to the user
@@ -396,6 +485,33 @@ public class PermissionsManager implements Reloadable {
     }
 
     /**
+     * Remove the permission groups of an offline player, if supported.
+     *
+     * @param offlineInfo The offline player info.
+     * @param groups      The name of the groups to remove.
+     *
+     * @return True if at least one group was removed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    public CompletableFuture<Boolean> removeGroupsOffline(OfflinePlayerInfo offlineInfo, Collection<String> groups) {
+        // If no permissions system is used, return false
+        if (!isEnabled()) {
+            return completedFuture(false);
+        }
+
+        // Add each group to the user
+        boolean result = false;
+        for (String groupName : groups) {
+            if (!groupName.isEmpty()) {
+                result |= handler.removeFromGroupOffline(offlineInfo, groupName).join();
+            }
+        }
+
+        // Return the result
+        return completedFuture(result);
+    }
+
+    /**
      * Set the permission group of a player, if supported.
      * This clears the current groups of the player.
      *
@@ -403,13 +519,27 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
-    public CompletableFuture<Boolean> setGroup(OfflinePlayer player, String groupName) {
-        if(!isEnabled()) {
+    public boolean setGroup(Player player, String groupName) {
+        return isEnabled() && handler.setGroup(player, groupName);
+    }
+
+    /**
+     * Set the permission group of an offline player, if supported.
+     * This clears the current groups of the player.
+     *
+     * @param offlineInfo The offline player info.
+     * @param groupName   The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    public CompletableFuture<Boolean> setGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
+        if (!isEnabled()) {
             return completedFuture(false);
         }
-        return handler.setGroup(player, groupName);
+        return handler.setGroupOffline(offlineInfo, groupName);
     }
 
     /**
@@ -420,16 +550,30 @@ public class PermissionsManager implements Reloadable {
      * @param player The player to remove all groups from.
      *
      * @return True if succeed, false otherwise.
-     *         False will also be returned if this feature isn't supported for the used permissions system.
+     * False will also be returned if this feature isn't supported for the used permissions system.
      */
-    public CompletableFuture<Boolean> removeAllGroups(OfflinePlayer player) {
+    public boolean removeAllGroups(Player player) {
+        return isEnabled() && removeGroups(player, getGroups(player));
+    }
+
+    /**
+     * Remove all groups of the specified offline player, if supported.
+     * Systems like Essentials GroupManager don't allow all groups to be removed from a player, thus the user will stay
+     * in its primary group. All the subgroups are removed just fine.
+     *
+     * @param offlineInfo The offline player info to remove all groups from.
+     *
+     * @return True if succeed, false otherwise.
+     * False will also be returned if this feature isn't supported for the used permissions system.
+     */
+    public CompletableFuture<Boolean> removeAllGroupsOffline(OfflinePlayerInfo offlineInfo) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
             return completedFuture(false);
         }
 
         // Get a list of current groups and remove them
-        return getGroups(player).thenApply(groups -> removeGroups(player, groups).join());
+        return getGroupsOffline(offlineInfo).thenApply(groups -> removeGroupsOffline(offlineInfo, groups).join());
     }
 
 }

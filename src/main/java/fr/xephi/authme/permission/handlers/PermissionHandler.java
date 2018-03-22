@@ -1,6 +1,6 @@
 package fr.xephi.authme.permission.handlers;
 
-import fr.xephi.authme.OfflinePlayerInfo;
+import fr.xephi.authme.listener.OfflinePlayerInfo;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import org.bukkit.entity.Player;

@@ -1,6 +1,7 @@
 package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.listener.OfflinePlayerInfo;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
@@ -211,16 +212,10 @@ public class PurgeExecutor {
             return;
         }
 
-        for (OfflinePlayer offlinePlayer : cleared) {
-            try {
-                permissionsManager.loadUserData(offlinePlayer.getUniqueId());
-            } catch (NoSuchMethodError e) {
-                permissionsManager.loadUserData(offlinePlayer.getName());
-            }
-            permissionsManager.removeAllGroups(offlinePlayer);
-        }
+        cleared.stream().map(OfflinePlayerInfo::fromPlayer)
+            .forEach(offlineInfo -> permissionsManager.removeAllGroupsOffline(offlineInfo));
 
-        ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
+        ConsoleLogger.info("AutoPurge: Removing permissions from " + cleared.size() + " player(s).");
     }
     
 }

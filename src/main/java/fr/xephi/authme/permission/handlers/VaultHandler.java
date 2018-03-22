@@ -1,11 +1,11 @@
 package fr.xephi.authme.permission.handlers;
 
-import fr.xephi.authme.OfflinePlayerWrapper;
+import fr.xephi.authme.listener.OfflinePlayerInfo;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.Arrays;
@@ -46,47 +46,77 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
-    @SuppressWarnings("deprecated")
-    public CompletableFuture<Boolean> addToGroup(OfflinePlayerWrapper player, String groupName) {
-        return completedFuture(vaultProvider.playerAddGroup((String)null, player.getName(), groupName));
-    }
-
-    @Override
     public boolean hasGroupSupport() {
         return vaultProvider.hasGroupSupport();
     }
 
     @Override
-    public CompletableFuture<Boolean> hasPermissionOffline(OfflinePlayerWrapper player, PermissionNode node) {
-        return completedFuture(vaultProvider.playerHas((String)null, player.getName(), node.getNode()));
+    public CompletableFuture<Boolean> hasPermissionOffline(OfflinePlayerInfo offlineInfo, PermissionNode node) {
+        return completedFuture(vaultProvider.playerHas((String) null, offlineInfo.getName(), node.getNode()));
     }
 
     @Override
-    public CompletableFuture<Boolean> isInGroup(OfflinePlayerWrapper player, String groupName) {
-        return completedFuture(vaultProvider.playerInGroup(null, player, groupName));
+    public boolean isInGroup(Player player, String groupName) {
+        return vaultProvider.playerInGroup(null, player, groupName);
     }
 
     @Override
-    public CompletableFuture<Boolean> removeFromGroup(OfflinePlayerWrapper player, String groupName) {
-        return completedFuture(vaultProvider.playerRemoveGroup(null, player, groupName));
+    public CompletableFuture<Boolean> isInGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
+        return completedFuture(vaultProvider.playerInGroup((String) null, offlineInfo.getName(), groupName));
     }
 
     @Override
-    public CompletableFuture<Boolean> setGroup(OfflinePlayerWrapper player, String groupName) {
-        return getGroups(player).thenApply(groups -> {
-            groups.forEach(group -> removeFromGroup(player, group));
-            return vaultProvider.playerAddGroup(null, player, groupName);
+    public boolean removeFromGroup(Player player, String groupName) {
+        return vaultProvider.playerRemoveGroup(null, player, groupName);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> removeFromGroupOffline(OfflinePlayerInfo offlinePlayerInfo, String groupName) {
+        return completedFuture(vaultProvider.playerRemoveGroup((String) null, offlinePlayerInfo.getName(), groupName));
+    }
+
+    @Override
+    public boolean setGroup(Player player, String groupName) {
+        getGroups(player).forEach(group -> removeFromGroup(player, group));
+        return addToGroup(player, groupName);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> setGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
+        return getGroupsOffline(offlineInfo).thenApply(groups -> {
+            groups.forEach(group -> removeFromGroupOffline(offlineInfo, group));
+            return addToGroupOffline(offlineInfo, groupName).join();
         });
     }
 
     @Override
-    public CompletableFuture<List<String>> getGroups(OfflinePlayerWrapper player) {
-        return completedFuture(Arrays.asList(vaultProvider.getPlayerGroups(null, player)));
+    public List<String> getGroups(Player player) {
+        return Arrays.asList(vaultProvider.getPlayerGroups((String) null, player));
     }
 
     @Override
-    public CompletableFuture<Optional<String>> getPrimaryGroup(OfflinePlayerWrapper player) {
-        return completedFuture(Optional.ofNullable(vaultProvider.getPrimaryGroup(null, player)));
+    public CompletableFuture<List<String>> getGroupsOffline(OfflinePlayerInfo offlineInfo) {
+        return completedFuture(Arrays.asList(vaultProvider.getPlayerGroups((String) null, offlineInfo.getName())));
+    }
+
+    @Override
+    public Optional<String> getPrimaryGroup(Player player) {
+        return Optional.ofNullable(vaultProvider.getPrimaryGroup(null, player));
+    }
+
+    @Override
+    public CompletableFuture<Optional<String>> getPrimaryGroupOffline(OfflinePlayerInfo offlineInfo) {
+        return completedFuture(Optional.ofNullable(vaultProvider.getPrimaryGroup((String) null, offlineInfo.getName())));
+    }
+
+    @Override
+    public boolean addToGroup(Player player, String groupName) {
+        return vaultProvider.playerAddGroup(null, player, groupName);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> addToGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
+        return completedFuture(vaultProvider.playerAddGroup((String) null, offlineInfo.getName(), groupName));
     }
 
     @Override

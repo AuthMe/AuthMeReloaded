@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
@@ -106,4 +107,19 @@ public final class Utils {
     public static boolean isEmailEmpty(String email) {
         return StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email);
     }
+
+    /**
+     * Returns whether the running server instance supports player UUIDs.
+     *
+     * @return true if the server supports player UUIDs
+     */
+    public static boolean hasUniqueIdSupport() {
+        try {
+            Player.class.getMethod("getUniqueId");
+            return true;
+        } catch (NoSuchMethodException ignored) {
+        }
+        return false;
+    }
+
 }

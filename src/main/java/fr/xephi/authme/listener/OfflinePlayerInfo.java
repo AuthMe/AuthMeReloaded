@@ -1,4 +1,7 @@
-package fr.xephi.authme;
+package fr.xephi.authme.listener;
+
+import fr.xephi.authme.util.Utils;
+import org.bukkit.OfflinePlayer;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +22,12 @@ public class OfflinePlayerInfo {
 
     public Optional<UUID> getUniqueId() {
         return uniqueId;
+    }
+
+    public static OfflinePlayerInfo fromPlayer(OfflinePlayer player) {
+        return new OfflinePlayerInfo(player.getName(),
+            Utils.hasUniqueIdSupport() ? Optional.of(player.getUniqueId()) : Optional.empty()
+        );
     }
 
 }

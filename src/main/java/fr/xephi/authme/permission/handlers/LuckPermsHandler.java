@@ -1,9 +1,10 @@
 package fr.xephi.authme.permission.handlers;
 
-import fr.xephi.authme.OfflinePlayerInfo;
+import fr.xephi.authme.listener.OfflinePlayerInfo;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import fr.xephi.authme.util.OptionalUtils;
+import fr.xephi.authme.util.Utils;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.DataMutateResult;
@@ -37,6 +38,9 @@ public class LuckPermsHandler implements PermissionHandler {
     private LuckPermsApi luckPermsApi;
 
     public LuckPermsHandler() throws PermissionHandlerException {
+        if(!Utils.hasUniqueIdSupport()) {
+            throw new PermissionHandlerException("LuckPerms handler can't be used on server instances that doesn't support UUIDs.");
+        }
         try {
             luckPermsApi = LuckPerms.getApi();
         } catch (IllegalStateException e) {
@@ -59,11 +63,10 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     private CompletableFuture<User> getUserOffline(OfflinePlayerInfo offlineInfo) {
-        if (!offlineInfo.getUniqueId().isPresent()) {
-            throw new IllegalStateException("Tried to obtain an offline LuckPerms User but the" +
-                "server doesn't support UUIDs!");
-        }
-        return luckPermsApi.getUserManager().loadUser(offlineInfo.getUniqueId().get(), offlineInfo.getName());
+        return luckPermsApi.getUserManager().loadUser(
+            offlineInfo.getUniqueId().orElseThrow(() -> new IllegalStateException("OfflinePlayerInfo UUID was empty")),
+            offlineInfo.getName()
+        );
     }
 
     private Optional<Group> getGroup(String groupName) {
@@ -74,23 +77,20 @@ public class LuckPermsHandler implements PermissionHandler {
         return luckPermsApi.getNodeFactory().makeGroupNode(group).build();
     }
 
-    private <T> T processUser(Player player, String groupName, BiFunction<User, Group, T> action, T failed) {
+    private boolean processUser(Player player, String groupName, BiFunction<User, Group, Boolean> action) {
         return handleOptional(getGroup(groupName),
             group -> OptionalUtils.handleOptional(getUser(player),
                 user -> action.apply(user, group),
-                () -> failed
+                false
             ),
-            () -> failed
+            false
         );
     }
 
-    private <T> CompletableFuture<T> processUser(OfflinePlayerInfo offlineInfo, String groupName, BiFunction<User, Group, T> action, T failed) {
+    private CompletableFuture<Boolean> processUserOffline(OfflinePlayerInfo offlineInfo, String groupName, BiFunction<User, Group, Boolean> action) {
         return handleOptional(getGroup(groupName),
-            group -> OptionalUtils.handleOptional(getUser(player),
-                user -> action.apply(user, group),
-                () -> failed
-            ),
-            () -> failed
+            group -> getUserOffline(offlineInfo).thenApply(user -> action.apply(user, group)),
+            completedFuture(false)
         );
     }
 
@@ -134,34 +134,28 @@ public class LuckPermsHandler implements PermissionHandler {
             }
             saveUser(user);
             return true;
-        }), false);
+        }));
     }
 
     @Override
     public CompletableFuture<Boolean> addToGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
-        return handleOptional(getGroup(groupName),
-            group -> getUserOffline(offlineInfo).thenApply(user -> {
-                if (user.setPermission(getGroupNode(group)).wasFailure()) {
-                    return false;
-                }
-                saveUser(user);
-                return true;
-            }),
-            () -> completedFuture(false)
-        );
+        return processUserOffline(offlineInfo, groupName, (user, group) -> {
+            if (user.setPermission(getGroupNode(group)).wasFailure()) {
+                return false;
+            }
+            saveUser(user);
+            return true;
+        });
     }
 
     @Override
     public boolean isInGroup(Player player, String groupName) {
-        return processUser(player, groupName, (PermissionHolder::inheritsGroup), false);
+        return processUser(player, groupName, (PermissionHolder::inheritsGroup));
     }
 
     @Override
     public CompletableFuture<Boolean> isInGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
-        return handleOptional(luckPermsApi.getGroupSafe(groupName),
-            group -> getUserOffline(offlineInfo).thenApply(user -> user.inheritsGroup(group)),
-            () -> completedFuture(false)
-        );
+        return processUserOffline(offlineInfo, groupName, PermissionHolder::inheritsGroup);
     }
 
     @Override
@@ -172,21 +166,18 @@ public class LuckPermsHandler implements PermissionHandler {
             }
             saveUser(user);
             return true;
-        }), false);
+        }));
     }
 
     @Override
     public CompletableFuture<Boolean> removeFromGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
-        return handleOptional(getGroup(groupName),
-            group -> getUserOffline(offlineInfo).thenApply(user -> {
-                if (user.unsetPermission(getGroupNode(group)).wasFailure()) {
-                    return false;
-                }
-                saveUser(user);
-                return true;
-            }),
-            () -> completedFuture(false)
-        );
+        return processUserOffline(offlineInfo, groupName, (user, group) -> {
+            if (user.unsetPermission(getGroupNode(group)).wasFailure()) {
+                return false;
+            }
+            saveUser(user);
+            return true;
+        });
     }
 
     @Override
@@ -198,27 +189,24 @@ public class LuckPermsHandler implements PermissionHandler {
             user.clearMatching(node -> node.isGroupNode() && !node.getGroupName().equals(group.getName()));
             saveUser(user);
             return true;
-        }, false);
+        });
     }
 
     @Override
     public CompletableFuture<Boolean> setGroupOffline(OfflinePlayerInfo offlineInfo, String groupName) {
-        return handleOptional(getGroup(groupName),
-            group -> getUserOffline(offlineInfo).thenApply(user -> {
-                if (user.setPermission(getGroupNode(group)) == DataMutateResult.FAIL) {
-                    return false;
-                }
-                user.clearMatching(node -> node.isGroupNode() && !node.getGroupName().equals(group.getName()));
-                saveUser(user);
-                return true;
-            }),
-            () -> completedFuture(false)
-        );
+        return processUserOffline(offlineInfo, groupName, (user, group) -> {
+            if (user.setPermission(getGroupNode(group)) == DataMutateResult.FAIL) {
+                return false;
+            }
+            user.clearMatching(node -> node.isGroupNode() && !node.getGroupName().equals(group.getName()));
+            saveUser(user);
+            return true;
+        });
     }
 
     @Override
     public List<String> getGroups(Player player) {
-        return handleOptional(getUser(player), this::getGroupsOrdered, Collections::emptyList);
+        return handleOptional(getUser(player), this::getGroupsOrdered, Collections.emptyList());
     }
 
     @Override

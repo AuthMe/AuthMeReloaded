@@ -68,7 +68,7 @@ class HasPermissionChecker implements DebugSection {
                 performPermissionCheck(offlinePlayer, permissionNode, permissionsManager::hasPermissionOffline, sender);
             }
         } else {
-            performPermissionCheck(player, permissionNode, permissionsManager::hasPermission, sender);
+            performPermissionCheck(player, permissionNode, permissionsManager.hasPermission(player, permissionNode), sender);
         }
     }
 
