@@ -4,12 +4,9 @@ import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import ch.jalu.datasourcecolumns.data.UpdateValues;
 import ch.jalu.datasourcecolumns.sqlimplementation.PredicateSqlGenerator;
-import ch.jalu.datasourcecolumns.sqlimplementation.PreparedStatementGenerator;
 import ch.jalu.datasourcecolumns.sqlimplementation.ResultSetValueRetriever;
 import ch.jalu.datasourcecolumns.sqlimplementation.SqlColumnsHandler;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.AuthMeColumns;
-import fr.xephi.authme.datasource.ColumnContext;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
@@ -38,7 +35,7 @@ public final class AuthMeColumnsHandler {
      * @return created column handler
      */
     public static AuthMeColumnsHandler createForSqlite(Connection connection, Settings settings) {
-        ColumnContext columnContext = new ColumnContext(settings);
+        ColumnContext columnContext = new ColumnContext(settings, false);
         String tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         String nameColumn = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
 
@@ -50,19 +47,18 @@ public final class AuthMeColumnsHandler {
     /**
      * Creates a column handler for MySQL.
      *
-     * @param preparedStatementGenerator supplier of SQL prepared statements with a connection to the database
+     * @param connectionSupplier supplier of connections from the connection pool
      * @param settings plugin settings
      * @return created column handler
      */
-    public static AuthMeColumnsHandler createForMySql(PreparedStatementGenerator preparedStatementGenerator,
-                                                      Settings settings) {
-        ColumnContext columnContext = new ColumnContext(settings);
+    public static AuthMeColumnsHandler createForMySql(ConnectionSupplier connectionSupplier, Settings settings) {
+        ColumnContext columnContext = new ColumnContext(settings, true);
         String tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         String nameColumn = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
 
-        SqlColumnsHandler<ColumnContext, String> sqlColHandler = new SqlColumnsHandler<>(preparedStatementGenerator,
-            columnContext, tableName, nameColumn, new ResultSetValueRetriever<>(columnContext),
-            new PredicateSqlGenerator<>(columnContext));
+        SqlColumnsHandler<ColumnContext, String> sqlColHandler = new SqlColumnsHandler<>(
+            new MySqlPreparedStatementGenerator(connectionSupplier), columnContext, tableName, nameColumn,
+            new ResultSetValueRetriever<>(columnContext), new PredicateSqlGenerator<>(columnContext));
         return new AuthMeColumnsHandler(sqlColHandler);
     }
 
@@ -137,5 +133,21 @@ public final class AuthMeColumnsHandler {
      */
     public DataSourceValues retrieve(String name, AuthMeColumns<?>... columns) throws SQLException {
         return internalHandler.retrieve(name.toLowerCase(), columns);
+    }
+
+    /**
+     * Inserts the given values into a new row, as taken from the player auth.
+     *
+     * @param auth the player auth to get values from
+     * @param columns the columns to insert
+     * @return true upon success, false otherwise
+     */
+    public boolean insert(PlayerAuth auth, AuthMeColumns<?>... columns) {
+        try {
+            return internalHandler.insert(auth, columns);
+        } catch (SQLException e) {
+            logSqlException(e);
+            return false;
+        }
     }
 }

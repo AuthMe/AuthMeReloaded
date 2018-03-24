@@ -4,11 +4,11 @@ import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.columnshandler.AuthMeColumns;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
 
 import java.io.File;
 import java.sql.Connection;
@@ -254,46 +254,9 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean saveAuth(PlayerAuth auth) {
-        PreparedStatement pst = null;
-        try {
-            HashedPassword password = auth.getPassword();
-            if (col.SALT.isEmpty()) {
-                if (!StringUtils.isEmpty(auth.getPassword().getSalt())) {
-                    ConsoleLogger.warning("Warning! Detected hashed password with separate salt but the salt column "
-                        + "is not set in the config!");
-                }
-
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD
-                    + "," + col.REAL_NAME + "," + col.EMAIL
-                    + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP
-                    + ") VALUES (?,?,?,?,?,?);");
-                pst.setString(1, auth.getNickname());
-                pst.setString(2, password.getHash());
-                pst.setString(3, auth.getRealName());
-                pst.setString(4, auth.getEmail());
-                pst.setLong(5, auth.getRegistrationDate());
-                pst.setString(6, auth.getRegistrationIp());
-                pst.executeUpdate();
-            } else {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD
-                    + "," + col.REAL_NAME + "," + col.EMAIL
-                    + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP + "," + col.SALT
-                    + ") VALUES (?,?,?,?,?,?,?);");
-                pst.setString(1, auth.getNickname());
-                pst.setString(2, password.getHash());
-                pst.setString(3, auth.getRealName());
-                pst.setString(4, auth.getEmail());
-                pst.setLong(5, auth.getRegistrationDate());
-                pst.setString(6, auth.getRegistrationIp());
-                pst.setString(7, password.getSalt());
-                pst.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        } finally {
-            close(pst);
-        }
-        return true;
+        return columnsHandler.insert(auth,
+            AuthMeColumns.NAME, AuthMeColumns.NICK_NAME, AuthMeColumns.PASSWORD, AuthMeColumns.SALT,
+            AuthMeColumns.EMAIL, AuthMeColumns.REGISTRATION_DATE, AuthMeColumns.REGISTRATION_IP);
     }
 
     @Override

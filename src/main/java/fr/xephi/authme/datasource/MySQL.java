@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.columnshandler.AuthMeColumns;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
@@ -13,7 +14,6 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.util.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -103,8 +103,7 @@ public class MySQL implements DataSource {
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
         this.col = new Columns(settings);
-        this.columnsHandler =
-            AuthMeColumnsHandler.createForMySql(sql -> getConnection().prepareStatement(sql), settings);
+        this.columnsHandler = AuthMeColumnsHandler.createForMySql(this::getConnection, settings);
         this.sqlExtension = extensionsFactory.buildExtension(col);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
@@ -317,33 +316,11 @@ public class MySQL implements DataSource {
 
     @Override
     public boolean saveAuth(PlayerAuth auth) {
+        columnsHandler.insert(auth,
+            AuthMeColumns.NAME, AuthMeColumns.NICK_NAME, AuthMeColumns.PASSWORD, AuthMeColumns.SALT,
+            AuthMeColumns.EMAIL, AuthMeColumns.REGISTRATION_DATE, AuthMeColumns.REGISTRATION_IP);
+
         try (Connection con = getConnection()) {
-            // TODO ljacqu 20171104: Replace with generic columns util to clean this up
-            boolean useSalt = !col.SALT.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
-            boolean hasEmail = auth.getEmail() != null;
-            String emailPlaceholder = hasEmail ? "?" : "DEFAULT";
-
-            String sql = "INSERT INTO " + tableName + "("
-                + col.NAME + "," + col.PASSWORD + "," + col.REAL_NAME
-                + "," + col.EMAIL + "," + col.REGISTRATION_DATE + "," + col.REGISTRATION_IP
-                + (useSalt ? "," + col.SALT : "")
-                + ") VALUES (?,?,?," + emailPlaceholder + ",?,?" + (useSalt ? ",?" : "") + ");";
-            try (PreparedStatement pst = con.prepareStatement(sql)) {
-                int index = 1;
-                pst.setString(index++, auth.getNickname());
-                pst.setString(index++, auth.getPassword().getHash());
-                pst.setString(index++, auth.getRealName());
-                if (hasEmail) {
-                    pst.setString(index++, auth.getEmail());
-                }
-                pst.setObject(index++, auth.getRegistrationDate());
-                pst.setString(index++, auth.getRegistrationIp());
-                if (useSalt) {
-                    pst.setString(index++, auth.getPassword().getSalt());
-                }
-                pst.executeUpdate();
-            }
-
             if (!columnOthers.isEmpty()) {
                 for (String column : columnOthers) {
                     try (PreparedStatement pst = con.prepareStatement(

@@ -1,0 +1,17 @@
+package fr.xephi.authme.datasource.columnshandler;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+/**
+ * Supplier of connections to a database.
+ */
+@FunctionalInterface
+public interface ConnectionSupplier {
+
+    /**
+     * @return connection object to the database
+     */
+    Connection get() throws SQLException;
+
+}

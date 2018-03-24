@@ -1,14 +1,27 @@
-package fr.xephi.authme.datasource;
+package fr.xephi.authme.datasource.columnshandler;
 
 import ch.jalu.configme.properties.Property;
 import ch.jalu.datasourcecolumns.ColumnType;
 import ch.jalu.datasourcecolumns.DependentColumn;
-import ch.jalu.datasourcecolumns.StandardTypes;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
 import java.util.function.Function;
 
+import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.ColumnOptions.DEFAULT_FOR_NULL;
+import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.ColumnOptions.OPTIONAL;
+import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.createDouble;
+import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.createFloat;
+import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.createInteger;
+import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.createLong;
+import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.createString;
+
+/**
+ * Column definitions for the AuthMe table.
+ *
+ * @param <T> the column type
+ * @see PlayerAuth
+ */
 public final class AuthMeColumns<T> implements DependentColumn<T, ColumnContext, PlayerAuth> {
 
     public static final AuthMeColumns<String> NAME = createString(
@@ -20,14 +33,23 @@ public final class AuthMeColumns<T> implements DependentColumn<T, ColumnContext,
     public static final AuthMeColumns<String> PASSWORD = createString(
         DatabaseSettings.MYSQL_COL_PASSWORD, auth -> auth.getPassword().getHash());
 
-    public static final AuthMeColumns<String> SALT = new AuthMeColumns<>(
-        StandardTypes.STRING, DatabaseSettings.MYSQL_COL_SALT, auth -> auth.getPassword().getSalt(), true);
+    public static final AuthMeColumns<String> SALT = createString(
+        DatabaseSettings.MYSQL_COL_SALT, auth -> auth.getPassword().getSalt(), OPTIONAL);
 
     public static final AuthMeColumns<String> EMAIL = createString(
-        DatabaseSettings.MYSQL_COL_EMAIL, PlayerAuth::getEmail);
+        DatabaseSettings.MYSQL_COL_EMAIL, PlayerAuth::getEmail, DEFAULT_FOR_NULL);
 
     public static final AuthMeColumns<String> LAST_IP = createString(
         DatabaseSettings.MYSQL_COL_LAST_IP, PlayerAuth::getLastIp);
+
+    public static final AuthMeColumns<Integer> GROUP_ID = createInteger(
+        DatabaseSettings.MYSQL_COL_GROUP, PlayerAuth::getGroupId, OPTIONAL);
+
+    public static final AuthMeColumns<String> REGISTRATION_IP = createString(
+        DatabaseSettings.MYSQL_COL_REGISTER_IP, PlayerAuth::getRegistrationIp);
+
+    public static final AuthMeColumns<Long> REGISTRATION_DATE = createLong(
+        DatabaseSettings.MYSQL_COL_REGISTER_DATE, PlayerAuth::getRegistrationDate);
 
     public static final AuthMeColumns<Double> LOCATION_X = createDouble(
         DatabaseSettings.MYSQL_COL_LASTLOC_X, PlayerAuth::getQuitLocX);
@@ -52,28 +74,15 @@ public final class AuthMeColumns<T> implements DependentColumn<T, ColumnContext,
     private final Property<String> nameProperty;
     private final Function<PlayerAuth, T> playerAuthGetter;
     private final boolean isOptional;
+    private final boolean useDefaultForNull;
 
-    private AuthMeColumns(ColumnType<T> type, Property<String> nameProperty, Function<PlayerAuth, T> playerAuthGetter,
-                          boolean isOptional) {
+    AuthMeColumns(ColumnType<T> type, Property<String> nameProperty, Function<PlayerAuth, T> playerAuthGetter,
+                  boolean isOptional, boolean useDefaultForNull) {
         this.columnType = type;
         this.nameProperty = nameProperty;
         this.playerAuthGetter = playerAuthGetter;
         this.isOptional = isOptional;
-    }
-
-    private static AuthMeColumns<String> createString(Property<String> nameProperty,
-                                                      Function<PlayerAuth, String> getter) {
-        return new AuthMeColumns<>(StandardTypes.STRING, nameProperty, getter, false);
-    }
-
-    private static AuthMeColumns<Double> createDouble(Property<String> nameProperty,
-                                                      Function<PlayerAuth, Double> getter) {
-        return new AuthMeColumns<>(new DoubleType(), nameProperty, getter, false);
-    }
-
-    private static AuthMeColumns<Float> createFloat(Property<String> nameProperty,
-                                                    Function<PlayerAuth, Float> getter) {
-        return new AuthMeColumns<>(new FloatType(), nameProperty, getter, false);
+        this.useDefaultForNull = useDefaultForNull;
     }
 
 
@@ -103,23 +112,6 @@ public final class AuthMeColumns<T> implements DependentColumn<T, ColumnContext,
 
     @Override
     public boolean useDefaultForNullValue(ColumnContext columnContext) {
-        return false;
-    }
-
-    // TODO: Move this to the project...
-    private static final class DoubleType implements ColumnType<Double> {
-
-        @Override
-        public Class<Double> getClazz() {
-            return Double.class;
-        }
-    }
-
-    private static final class FloatType implements ColumnType<Float> {
-
-        @Override
-        public Class<Float> getClazz() {
-            return Float.class;
-        }
+        return useDefaultForNull && columnContext.hasDefaultSupport();
     }
 }
