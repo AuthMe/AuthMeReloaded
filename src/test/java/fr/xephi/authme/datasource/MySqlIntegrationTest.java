@@ -55,7 +55,9 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
         config.setConnectionTestQuery("VALUES 1");
-        config.addDataSourceProperty("URL", "jdbc:h2:mem:test");
+        // Note "ignorecase=true": H2 does not support `COLLATE NOCASE` for case-insensitive equals queries.
+        // MySQL is by default case-insensitive so this is OK to make as an assumption.
+        config.addDataSourceProperty("URL", "jdbc:h2:mem:test;ignorecase=true");
         config.addDataSourceProperty("user", "sa");
         config.addDataSourceProperty("password", "sa");
         HikariDataSource ds = new HikariDataSource(config);

@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import ch.jalu.datasourcecolumns.data.DataSourceValues;
+import ch.jalu.datasourcecolumns.predicate.AlwaysTruePredicate;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -20,11 +21,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static ch.jalu.datasourcecolumns.data.UpdateValues.with;
+import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.eq;
+import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.eqIgnoreCase;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
@@ -211,14 +215,10 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean isAuthAvailable(String user) {
-        String sql = "SELECT 1 FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
-            try (ResultSet rs = pst.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException ex) {
-            ConsoleLogger.warning(ex.getMessage());
+        try {
+            return columnsHandler.retrieve(user, AuthMeColumns.NAME).rowExists();
+        } catch (SQLException e) {
+            logSqlException(e);
             return false;
         }
     }
@@ -273,19 +273,7 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean updateSession(PlayerAuth auth) {
-        String sql = "UPDATE " + tableName + " SET " + col.LAST_IP + "=?, " + col.LAST_LOGIN + "=?, "
-            + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)){
-            pst.setString(1, auth.getLastIp());
-            pst.setObject(2, auth.getLastLogin());
-            pst.setString(3, auth.getRealName());
-            pst.setString(4, auth.getNickname());
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(auth, AuthMeColumns.LAST_IP, AuthMeColumns.LAST_LOGIN, AuthMeColumns.NICK_NAME);
     }
 
     @Override
@@ -360,36 +348,17 @@ public class SQLite implements DataSource {
 
     @Override
     public List<String> getAllAuthsByIp(String ip) {
-        List<String> countIp = new ArrayList<>();
-        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_IP + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, ip);
-            try (ResultSet rs = pst.executeQuery()) {
-                while (rs.next()) {
-                    countIp.add(rs.getString(col.NAME));
-                }
-                return countIp;
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
+        try {
+            return columnsHandler.retrieve(eq(AuthMeColumns.LAST_IP, ip), AuthMeColumns.NAME);
+        } catch (SQLException e) {
+            logSqlException(e);
+            return Collections.emptyList();
         }
-        return new ArrayList<>();
     }
 
     @Override
     public int countAuthsByEmail(String email) {
-        String sql = "SELECT COUNT(1) FROM " + tableName + " WHERE " + col.EMAIL + " = ? COLLATE NOCASE;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, email);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return 0;
+        return columnsHandler.count(eqIgnoreCase(AuthMeColumns.EMAIL, email));
     }
 
     @Override
@@ -491,15 +460,7 @@ public class SQLite implements DataSource {
 
     @Override
     public int getAccountsRegistered() {
-        String sql = "SELECT COUNT(*) FROM " + tableName + ";";
-        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return 0;
+        return columnsHandler.count(new AlwaysTruePredicate<>());
     }
 
     @Override
@@ -605,16 +566,6 @@ public class SQLite implements DataSource {
             tableName, col.REGISTRATION_DATE, currentTimestamp));
         ConsoleLogger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
             + currentTimestamp + ", to all " + updatedRows + " rows");
-    }
-
-    private static void close(Statement st) {
-        if (st != null) {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                logSqlException(ex);
-            }
-        }
     }
 
     private static void close(Connection con) {

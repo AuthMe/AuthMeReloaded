@@ -3,7 +3,9 @@ package fr.xephi.authme.datasource.columnshandler;
 import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import ch.jalu.datasourcecolumns.data.UpdateValues;
+import ch.jalu.datasourcecolumns.predicate.Predicate;
 import ch.jalu.datasourcecolumns.sqlimplementation.PredicateSqlGenerator;
+import ch.jalu.datasourcecolumns.sqlimplementation.PreparedStatementGenerator;
 import ch.jalu.datasourcecolumns.sqlimplementation.ResultSetValueRetriever;
 import ch.jalu.datasourcecolumns.sqlimplementation.SqlColumnsHandler;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -12,6 +14,7 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
@@ -39,8 +42,9 @@ public final class AuthMeColumnsHandler {
         String tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         String nameColumn = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
 
-        SqlColumnsHandler<ColumnContext, String> sqlColHandler =
-            new SqlColumnsHandler<>(connection, columnContext, tableName, nameColumn);
+        SqlColumnsHandler<ColumnContext, String> sqlColHandler = new SqlColumnsHandler<>(
+            PreparedStatementGenerator.fromConnection(connection), columnContext, tableName, nameColumn,
+            new ResultSetValueRetriever<>(columnContext), new PredicateSqlGenerator<>(columnContext, true));
         return new AuthMeColumnsHandler(sqlColHandler);
     }
 
@@ -136,6 +140,18 @@ public final class AuthMeColumnsHandler {
     }
 
     /**
+     * Retrieves a column's value for all rows that satisfy the given predicate.
+     *
+     * @param predicate the predicate to fulfill
+     * @param column the column to retrieve from the matching rows
+     * @param <T> the column's value type
+     * @return the values of the matching rows
+     */
+    public <T> List<T> retrieve(Predicate<ColumnContext> predicate, AuthMeColumns<T> column) throws SQLException {
+        return internalHandler.retrieve(predicate, column);
+    }
+
+    /**
      * Inserts the given values into a new row, as taken from the player auth.
      *
      * @param auth the player auth to get values from
@@ -148,6 +164,21 @@ public final class AuthMeColumnsHandler {
         } catch (SQLException e) {
             logSqlException(e);
             return false;
+        }
+    }
+
+    /**
+     * Returns the number of rows that match the provided predicate.
+     *
+     * @param predicate the predicate to test the rows for
+     * @return number of rows fulfilling the predicate
+     */
+    public int count(Predicate<ColumnContext> predicate) {
+        try {
+            return internalHandler.count(predicate);
+        } catch (SQLException e) {
+            logSqlException(e);
+            return 0;
         }
     }
 }

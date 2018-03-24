@@ -45,6 +45,9 @@ public final class AuthMeColumns<T> implements DependentColumn<T, ColumnContext,
     public static final AuthMeColumns<Integer> GROUP_ID = createInteger(
         DatabaseSettings.MYSQL_COL_GROUP, PlayerAuth::getGroupId, OPTIONAL);
 
+    public static final AuthMeColumns<Long> LAST_LOGIN = createLong(
+        DatabaseSettings.MYSQL_COL_LASTLOGIN, PlayerAuth::getLastLogin);
+
     public static final AuthMeColumns<String> REGISTRATION_IP = createString(
         DatabaseSettings.MYSQL_COL_REGISTER_IP, PlayerAuth::getRegistrationIp);
 
