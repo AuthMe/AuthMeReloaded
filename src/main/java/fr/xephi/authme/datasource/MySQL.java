@@ -1,10 +1,12 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -25,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ch.jalu.datasourcecolumns.data.UpdateValues.with;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
@@ -45,6 +48,7 @@ public class MySQL implements DataSource {
     private int maxLifetime;
     private List<String> columnOthers;
     private Columns col;
+    private AuthMeColumnsHandler columnsHandler;
     private MySqlExtension sqlExtension;
     private HikariDataSource ds;
 
@@ -99,6 +103,8 @@ public class MySQL implements DataSource {
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
         this.col = new Columns(settings);
+        this.columnsHandler =
+            AuthMeColumnsHandler.createForMySql(sql -> getConnection().prepareStatement(sql), settings);
         this.sqlExtension = extensionsFactory.buildExtension(col);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
@@ -278,20 +284,13 @@ public class MySQL implements DataSource {
 
     @Override
     public HashedPassword getPassword(String user) {
-        boolean useSalt = !col.SALT.isEmpty();
-        String sql = "SELECT " + col.PASSWORD
-            + (useSalt ? ", " + col.SALT : "")
-            + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user.toLowerCase());
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return new HashedPassword(rs.getString(col.PASSWORD),
-                        useSalt ? rs.getString(col.SALT) : null);
-                }
+        try {
+            DataSourceValues passwordResult = columnsHandler.retrieve(user, AuthMeColumns.PASSWORD, AuthMeColumns.SALT);
+            if (passwordResult.rowExists()) {
+                return new HashedPassword(passwordResult.get(AuthMeColumns.PASSWORD), passwordResult.get(AuthMeColumns.SALT));
             }
-        } catch (SQLException ex) {
-            logSqlException(ex);
+        } catch (SQLException e) {
+            logSqlException(e);
         }
         return null;
     }
@@ -371,33 +370,9 @@ public class MySQL implements DataSource {
 
     @Override
     public boolean updatePassword(String user, HashedPassword password) {
-        user = user.toLowerCase();
-        try (Connection con = getConnection()) {
-            boolean useSalt = !col.SALT.isEmpty();
-            if (useSalt) {
-                String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?;",
-                    tableName, col.PASSWORD, col.SALT, col.NAME);
-                try (PreparedStatement pst = con.prepareStatement(sql)) {
-                    pst.setString(1, password.getHash());
-                    pst.setString(2, password.getSalt());
-                    pst.setString(3, user);
-                    pst.executeUpdate();
-                }
-            } else {
-                String sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?;",
-                    tableName, col.PASSWORD, col.NAME);
-                try (PreparedStatement pst = con.prepareStatement(sql)) {
-                    pst.setString(1, password.getHash());
-                    pst.setString(2, user);
-                    pst.executeUpdate();
-                }
-            }
-            sqlExtension.changePassword(user, password, con);
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(user,
+            with(AuthMeColumns.PASSWORD, password.getHash())
+            .and(AuthMeColumns.SALT, password.getSalt()).build());
     }
 
     @Override
@@ -456,38 +431,14 @@ public class MySQL implements DataSource {
 
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
-        String sql = "UPDATE " + tableName
-            + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, "
-            + col.LASTLOC_WORLD + "=?, " + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=?"
-            + " WHERE " + col.NAME + "=?;";
-        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setDouble(1, auth.getQuitLocX());
-            pst.setDouble(2, auth.getQuitLocY());
-            pst.setDouble(3, auth.getQuitLocZ());
-            pst.setString(4, auth.getWorld());
-            pst.setFloat(5, auth.getYaw());
-            pst.setFloat(6, auth.getPitch());
-            pst.setString(7, auth.getNickname());
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(auth,
+            AuthMeColumns.LOCATION_X, AuthMeColumns.LOCATION_Y, AuthMeColumns.LOCATION_Z,
+            AuthMeColumns.LOCATION_WORLD, AuthMeColumns.LOCATION_YAW, AuthMeColumns.LOCATION_PITCH);
     }
 
     @Override
     public boolean updateEmail(PlayerAuth auth) {
-        String sql = "UPDATE " + tableName + " SET " + col.EMAIL + " =? WHERE " + col.NAME + "=?;";
-        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, auth.getEmail());
-            pst.setString(2, auth.getNickname());
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(auth, AuthMeColumns.EMAIL);
     }
 
     @Override
@@ -654,16 +605,7 @@ public class MySQL implements DataSource {
 
     @Override
     public boolean updateRealName(String user, String realName) {
-        String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
-        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, realName);
-            pst.setString(2, user);
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(user, AuthMeColumns.NICK_NAME, realName);
     }
 
     @Override

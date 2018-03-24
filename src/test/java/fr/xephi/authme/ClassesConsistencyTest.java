@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.data.captcha.CaptchaCodeStorage;
+import fr.xephi.authme.datasource.AuthMeColumns;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.initialization.HasCleanup;
@@ -52,7 +53,7 @@ public class ClassesConsistencyTest {
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
         Charset.class,
         /* AuthMe */
-        Property.class, RegistrationMethod.class,
+        Property.class, RegistrationMethod.class, AuthMeColumns.class,
         /* Guava */
         ImmutableMap.class, ImmutableList.class);
 

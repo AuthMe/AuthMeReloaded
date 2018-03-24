@@ -788,6 +788,14 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>datasourcecolumns</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Unit Testing Libraries -->
 
         <dependency>

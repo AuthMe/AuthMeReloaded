@@ -61,7 +61,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         // when
         HashedPassword bobbyPassword = dataSource.getPassword("bobby");
         HashedPassword invalidPassword = dataSource.getPassword("doesNotExist");
-        HashedPassword userPassword = dataSource.getPassword("user");
+        HashedPassword userPassword = dataSource.getPassword("User");
 
         // then
         assertThat(bobbyPassword, equalToHash("$SHA$11aa0706173d7272$dbba966"));
@@ -160,7 +160,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updatePassword("non-existent-name", new HashedPassword("sd"));
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getPassword("user"), equalToHash(newHash));
     }
 
@@ -175,7 +176,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updatePassword("non-existent-name", new HashedPassword("asdfasdf", "a1f34ec"));
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getPassword("user"), equalToHash("new_hash"));
     }
 
@@ -191,7 +193,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updatePassword(invalidAuth);
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getPassword("bobby"), equalToHash("tt", "cc"));
     }
 
@@ -273,7 +276,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updateEmail(invalidAuth);
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getAllAuths(), hasItem(hasAuthBasicData("user", "user", email, "34.56.78.90")));
     }
 
@@ -328,7 +332,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updateRealName("notExists", "NOTEXISTS");
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getAuth("bobby"), hasAuthBasicData("bobby", "BOBBY", null, "123.45.67.89"));
     }
 

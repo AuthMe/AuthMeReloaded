@@ -1,8 +1,10 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -22,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ch.jalu.datasourcecolumns.data.UpdateValues.with;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
@@ -37,6 +40,7 @@ public class SQLite implements DataSource {
     private final String tableName;
     private final Columns col;
     private Connection con;
+    private AuthMeColumnsHandler columnsHandler;
 
     /**
      * Constructor for SQLite.
@@ -71,6 +75,7 @@ public class SQLite implements DataSource {
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
         this.con = connection;
+        this.columnsHandler = AuthMeColumnsHandler.createForSqlite(con, settings);
     }
 
     /**
@@ -220,20 +225,13 @@ public class SQLite implements DataSource {
 
     @Override
     public HashedPassword getPassword(String user) {
-        boolean useSalt = !col.SALT.isEmpty();
-        String sql = "SELECT " + col.PASSWORD
-            + (useSalt ? ", " + col.SALT : "")
-            + " FROM " + tableName + " WHERE " + col.NAME + "=?";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return new HashedPassword(rs.getString(col.PASSWORD),
-                        useSalt ? rs.getString(col.SALT) : null);
-                }
+        try {
+            DataSourceValues values = columnsHandler.retrieve(user, AuthMeColumns.PASSWORD, AuthMeColumns.SALT);
+            if (values.rowExists()) {
+                return new HashedPassword(values.get(AuthMeColumns.PASSWORD), values.get(AuthMeColumns.SALT));
             }
-        } catch (SQLException ex) {
-            logSqlException(ex);
+        } catch (SQLException e) {
+            logSqlException(e);
         }
         return null;
     }
@@ -305,25 +303,9 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean updatePassword(String user, HashedPassword password) {
-        user = user.toLowerCase();
-        boolean useSalt = !col.SALT.isEmpty();
-        String sql = "UPDATE " + tableName + " SET " + col.PASSWORD + " = ?"
-            + (useSalt ? ", " + col.SALT + " = ?" : "")
-            + " WHERE " + col.NAME + " = ?";
-        try (PreparedStatement pst = con.prepareStatement(sql)){
-            pst.setString(1, password.getHash());
-            if (useSalt) {
-                pst.setString(2, password.getSalt());
-                pst.setString(3, user);
-            } else {
-                pst.setString(2, user);
-            }
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(user,
+            with(AuthMeColumns.PASSWORD, password.getHash())
+            .and(AuthMeColumns.SALT, password.getSalt()).build());
     }
 
     @Override
@@ -392,38 +374,14 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
-        String sql = "UPDATE " + tableName + " SET "
-            + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, "
-            + col.LASTLOC_WORLD + "=?, " + col.LASTLOC_YAW + "=?, " + col.LASTLOC_PITCH + "=? "
-            + "WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setDouble(1, auth.getQuitLocX());
-            pst.setDouble(2, auth.getQuitLocY());
-            pst.setDouble(3, auth.getQuitLocZ());
-            pst.setString(4, auth.getWorld());
-            pst.setFloat(5, auth.getYaw());
-            pst.setFloat(6, auth.getPitch());
-            pst.setString(7, auth.getNickname());
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(auth,
+            AuthMeColumns.LOCATION_X, AuthMeColumns.LOCATION_Y, AuthMeColumns.LOCATION_Z,
+            AuthMeColumns.LOCATION_WORLD, AuthMeColumns.LOCATION_YAW, AuthMeColumns.LOCATION_PITCH);
     }
 
     @Override
     public boolean updateEmail(PlayerAuth auth) {
-        String sql = "UPDATE " + tableName + " SET " + col.EMAIL + "=? WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, auth.getEmail());
-            pst.setString(2, auth.getNickname());
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(auth, AuthMeColumns.EMAIL);
     }
 
     @Override
@@ -583,16 +541,7 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean updateRealName(String user, String realName) {
-        String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, realName);
-            pst.setString(2, user);
-            pst.executeUpdate();
-            return true;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
+        return columnsHandler.update(user, AuthMeColumns.NICK_NAME, realName);
     }
 
     @Override
