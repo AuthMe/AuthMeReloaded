@@ -1,15 +1,9 @@
 package fr.xephi.authme.datasource;
 
-import ch.jalu.datasourcecolumns.data.DataSourceValue;
-import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
-import ch.jalu.datasourcecolumns.data.DataSourceValues;
-import ch.jalu.datasourcecolumns.predicate.AlwaysTruePredicate;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.columnshandler.AuthMeColumns;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
-import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
@@ -23,14 +17,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static ch.jalu.datasourcecolumns.data.UpdateValues.with;
-import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.eq;
-import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.eqIgnoreCase;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
@@ -38,7 +28,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
  * SQLite data source.
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
-public class SQLite implements DataSource {
+public class SQLite extends AbstractSqlDataSource {
 
     private final Settings settings;
     private final File dataFolder;
@@ -46,7 +36,6 @@ public class SQLite implements DataSource {
     private final String tableName;
     private final Columns col;
     private Connection con;
-    private AuthMeColumnsHandler columnsHandler;
 
     /**
      * Constructor for SQLite.
@@ -71,6 +60,7 @@ public class SQLite implements DataSource {
             ConsoleLogger.logException("Error during SQLite initialization:", ex);
             throw ex;
         }
+        this.columnsHandler = AuthMeColumnsHandler.createForSqlite(con, settings);
     }
 
     @VisibleForTesting
@@ -216,29 +206,6 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean isAuthAvailable(String user) {
-        try {
-            return columnsHandler.retrieve(user, AuthMeColumns.NAME).rowExists();
-        } catch (SQLException e) {
-            logSqlException(e);
-            return false;
-        }
-    }
-
-    @Override
-    public HashedPassword getPassword(String user) {
-        try {
-            DataSourceValues values = columnsHandler.retrieve(user, AuthMeColumns.PASSWORD, AuthMeColumns.SALT);
-            if (values.rowExists()) {
-                return new HashedPassword(values.get(AuthMeColumns.PASSWORD), values.get(AuthMeColumns.SALT));
-            }
-        } catch (SQLException e) {
-            logSqlException(e);
-        }
-        return null;
-    }
-
-    @Override
     public PlayerAuth getAuth(String user) {
         String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
@@ -252,30 +219,6 @@ public class SQLite implements DataSource {
             logSqlException(ex);
         }
         return null;
-    }
-
-    @Override
-    public boolean saveAuth(PlayerAuth auth) {
-        return columnsHandler.insert(auth,
-            AuthMeColumns.NAME, AuthMeColumns.NICK_NAME, AuthMeColumns.PASSWORD, AuthMeColumns.SALT,
-            AuthMeColumns.EMAIL, AuthMeColumns.REGISTRATION_DATE, AuthMeColumns.REGISTRATION_IP);
-    }
-
-    @Override
-    public boolean updatePassword(PlayerAuth auth) {
-        return updatePassword(auth.getNickname(), auth.getPassword());
-    }
-
-    @Override
-    public boolean updatePassword(String user, HashedPassword password) {
-        return columnsHandler.update(user,
-            with(AuthMeColumns.PASSWORD, password.getHash())
-            .and(AuthMeColumns.SALT, password.getSalt()).build());
-    }
-
-    @Override
-    public boolean updateSession(PlayerAuth auth) {
-        return columnsHandler.update(auth, AuthMeColumns.LAST_IP, AuthMeColumns.LAST_LOGIN, AuthMeColumns.NICK_NAME);
     }
 
     @Override
@@ -326,18 +269,6 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean updateQuitLoc(PlayerAuth auth) {
-        return columnsHandler.update(auth,
-            AuthMeColumns.LOCATION_X, AuthMeColumns.LOCATION_Y, AuthMeColumns.LOCATION_Z,
-            AuthMeColumns.LOCATION_WORLD, AuthMeColumns.LOCATION_YAW, AuthMeColumns.LOCATION_PITCH);
-    }
-
-    @Override
-    public boolean updateEmail(PlayerAuth auth) {
-        return columnsHandler.update(auth, AuthMeColumns.EMAIL);
-    }
-
-    @Override
     public void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {
@@ -349,109 +280,8 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByIp(String ip) {
-        try {
-            return columnsHandler.retrieve(eq(AuthMeColumns.LAST_IP, ip), AuthMeColumns.NAME);
-        } catch (SQLException e) {
-            logSqlException(e);
-            return Collections.emptyList();
-        }
-    }
-
-    @Override
-    public int countAuthsByEmail(String email) {
-        return columnsHandler.count(eqIgnoreCase(AuthMeColumns.EMAIL, email));
-    }
-
-    @Override
     public DataSourceType getType() {
         return DataSourceType.SQLITE;
-    }
-
-    @Override
-    public boolean isLogged(String user) {
-        String sql = "SELECT " + col.IS_LOGGED + " FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(col.IS_LOGGED) == 1;
-                }
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return false;
-    }
-
-    @Override
-    public void setLogged(String user) {
-        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setInt(1, 1);
-            pst.setString(2, user);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-    }
-
-    @Override
-    public void setUnlogged(String user) {
-        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setInt(1, 0);
-            pst.setString(2, user);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-    }
-
-    @Override
-    public boolean hasSession(String user) {
-        try {
-            DataSourceValue<Integer> result = columnsHandler.retrieve(user, AuthMeColumns.HAS_SESSION);
-            return result.rowExists() && Integer.valueOf(1).equals(result.getValue());
-        } catch (SQLException e) {
-            logSqlException(e);
-            return false;
-        }
-    }
-
-    @Override
-    public void grantSession(String user) {
-        columnsHandler.update(user, AuthMeColumns.HAS_SESSION, 1);
-    }
-
-    @Override
-    public void revokeSession(String user) {
-        columnsHandler.update(user, AuthMeColumns.HAS_SESSION, 0);
-    }
-
-    @Override
-    public void purgeLogged() {
-        columnsHandler.update(eq(AuthMeColumns.IS_LOGGED, 1), AuthMeColumns.IS_LOGGED, 0);
-    }
-
-    @Override
-    public int getAccountsRegistered() {
-        return columnsHandler.count(new AlwaysTruePredicate<>());
-    }
-
-    @Override
-    public boolean updateRealName(String user, String realName) {
-        return columnsHandler.update(user, AuthMeColumns.NICK_NAME, realName);
-    }
-
-    @Override
-    public DataSourceValue<String> getEmail(String user) {
-        try {
-            return columnsHandler.retrieve(user, AuthMeColumns.EMAIL);
-        } catch (SQLException e) {
-            logSqlException(e);
-            return DataSourceValueImpl.unknownRow();
-        }
     }
 
     @Override
