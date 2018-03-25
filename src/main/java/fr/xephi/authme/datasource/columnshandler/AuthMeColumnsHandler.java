@@ -75,7 +75,7 @@ public final class AuthMeColumnsHandler {
      * @param <T> the column type
      * @return true upon success, false otherwise
      */
-    public <T> boolean update(String name, AuthMeColumns<T> column, T value) {
+    public <T> boolean update(String name, DataSourceColumn<T> column, T value) {
         try {
             return internalHandler.update(name, column, value);
         } catch (SQLException e) {
@@ -91,7 +91,7 @@ public final class AuthMeColumnsHandler {
      * @param columns the columns to update in the row
      * @return true upon success, false otherwise
      */
-    public boolean update(PlayerAuth auth, AuthMeColumns<?>... columns) {
+    public boolean update(PlayerAuth auth, PlayerAuthColumn<?>... columns) {
         try {
             return internalHandler.update(auth.getNickname(), auth, columns);
         } catch (SQLException e) {
@@ -117,6 +117,24 @@ public final class AuthMeColumnsHandler {
     }
 
     /**
+     * Sets the given value to the provided column for all rows which match the predicate.
+     *
+     * @param predicate the predicate to filter rows by
+     * @param column the column to modify on the matched rows
+     * @param value the new value to set
+     * @param <T> the column type
+     * @return number of modified rows
+     */
+    public <T> int update(Predicate<ColumnContext> predicate, DataSourceColumn<T> column, T value) {
+        try {
+            return internalHandler.update(predicate, column, value);
+        } catch (SQLException e) {
+            logSqlException(e);
+            return 0;
+        }
+    }
+
+    /**
      * Retrieves the given column from a given row.
      *
      * @param name the account name to look up
@@ -124,7 +142,7 @@ public final class AuthMeColumnsHandler {
      * @param <T> the column type
      * @return the result of the lookup
      */
-    public <T> DataSourceValue<T> retrieve(String name, AuthMeColumns<T> column) throws SQLException {
+    public <T> DataSourceValue<T> retrieve(String name, DataSourceColumn<T> column) throws SQLException {
         return internalHandler.retrieve(name.toLowerCase(), column);
     }
 
@@ -135,7 +153,7 @@ public final class AuthMeColumnsHandler {
      * @param columns the columns to retrieve
      * @return map-like object with the requested values
      */
-    public DataSourceValues retrieve(String name, AuthMeColumns<?>... columns) throws SQLException {
+    public DataSourceValues retrieve(String name, DataSourceColumn<?>... columns) throws SQLException {
         return internalHandler.retrieve(name.toLowerCase(), columns);
     }
 
@@ -147,7 +165,7 @@ public final class AuthMeColumnsHandler {
      * @param <T> the column's value type
      * @return the values of the matching rows
      */
-    public <T> List<T> retrieve(Predicate<ColumnContext> predicate, AuthMeColumns<T> column) throws SQLException {
+    public <T> List<T> retrieve(Predicate<ColumnContext> predicate, DataSourceColumn<T> column) throws SQLException {
         return internalHandler.retrieve(predicate, column);
     }
 
@@ -158,7 +176,7 @@ public final class AuthMeColumnsHandler {
      * @param columns the columns to insert
      * @return true upon success, false otherwise
      */
-    public boolean insert(PlayerAuth auth, AuthMeColumns<?>... columns) {
+    public boolean insert(PlayerAuth auth, PlayerAuthColumn<?>... columns) {
         try {
             return internalHandler.insert(auth, columns);
         } catch (SQLException e) {

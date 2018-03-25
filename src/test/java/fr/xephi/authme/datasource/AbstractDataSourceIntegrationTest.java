@@ -1,5 +1,7 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
+import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -420,12 +422,12 @@ public abstract class AbstractDataSourceIntegrationTest {
         DataSource dataSource = getDataSource();
 
         // when
-        DataSourceResult<String> email1 = dataSource.getEmail(user1);
-        DataSourceResult<String> email2 = dataSource.getEmail(user2);
+        DataSourceValue<String> email1 = dataSource.getEmail(user1);
+        DataSourceValue<String> email2 = dataSource.getEmail(user2);
 
         // then
         assertThat(email1.getValue(), equalTo("user@example.org"));
-        assertThat(email2, is(DataSourceResult.unknownPlayer()));
+        assertThat(email2, is(DataSourceValueImpl.unknownRow()));
     }
 
     @Test

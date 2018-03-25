@@ -8,46 +8,53 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import java.util.function.Function;
 
 /**
- * Util class for initializing {@link AuthMeColumns} constants.
+ * Util class for initializing {@link DataSourceColumn} objects.
  */
 final class AuthMeColumnsFactory {
 
     private AuthMeColumnsFactory() {
     }
 
-    static AuthMeColumns<Integer> createInteger(Property<String> nameProperty,
-                                                Function<PlayerAuth, Integer> playerAuthGetter,
-                                                ColumnOptions... options) {
+    static DataSourceColumn<Integer> createInteger(Property<String> nameProperty,
+                                                   ColumnOptions... options) {
+        return new DataSourceColumn<>(StandardTypes.INTEGER, nameProperty,
+            isOptional(options), hasDefaultForNull(options));
+    }
+
+    static PlayerAuthColumn<Integer> createInteger(Property<String> nameProperty,
+                                                   Function<PlayerAuth, Integer> playerAuthGetter,
+                                                   ColumnOptions... options) {
         return createInternal(StandardTypes.INTEGER, nameProperty, playerAuthGetter, options);
     }
 
-    static AuthMeColumns<Long> createLong(Property<String> nameProperty,
-                                          Function<PlayerAuth, Long> playerAuthGetter,
-                                          ColumnOptions... options) {
+    static PlayerAuthColumn<Long> createLong(Property<String> nameProperty,
+                                             Function<PlayerAuth, Long> playerAuthGetter,
+                                             ColumnOptions... options) {
         return createInternal(StandardTypes.LONG, nameProperty, playerAuthGetter, options);
     }
 
-    static AuthMeColumns<String> createString(Property<String> nameProperty,
-                                              Function<PlayerAuth, String> playerAuthGetter,
-                                              ColumnOptions... options) {
+    static PlayerAuthColumn<String> createString(Property<String> nameProperty,
+                                                 Function<PlayerAuth, String> playerAuthGetter,
+                                                 ColumnOptions... options) {
         return createInternal(StandardTypes.STRING, nameProperty, playerAuthGetter, options);
     }
 
-    static AuthMeColumns<Double> createDouble(Property<String> nameProperty,
-                                              Function<PlayerAuth, Double> playerAuthGetter,
-                                              ColumnOptions... options) {
+    static PlayerAuthColumn<Double> createDouble(Property<String> nameProperty,
+                                                 Function<PlayerAuth, Double> playerAuthGetter,
+                                                 ColumnOptions... options) {
         return createInternal(StandardTypes.DOUBLE, nameProperty, playerAuthGetter, options);
     }
 
-    static AuthMeColumns<Float> createFloat(Property<String> nameProperty,
-                                            Function<PlayerAuth, Float> playerAuthGetter,
-                                            ColumnOptions... options) {
+    static PlayerAuthColumn<Float> createFloat(Property<String> nameProperty,
+                                               Function<PlayerAuth, Float> playerAuthGetter,
+                                               ColumnOptions... options) {
         return createInternal(StandardTypes.FLOAT, nameProperty, playerAuthGetter, options);
     }
 
-    private static <T> AuthMeColumns<T> createInternal(ColumnType<T> type, Property<String> nameProperty,
-                                                       Function<PlayerAuth, T> authGetter, ColumnOptions... options) {
-        return new AuthMeColumns<>(type, nameProperty, authGetter, isOptional(options), hasDefaultForNull(options));
+    private static <T> PlayerAuthColumn<T> createInternal(ColumnType<T> type, Property<String> nameProperty,
+                                                          Function<PlayerAuth, T> authGetter,
+                                                          ColumnOptions... options) {
+        return new PlayerAuthColumn<>(type, nameProperty, isOptional(options), hasDefaultForNull(options), authGetter);
     }
 
     private static boolean isOptional(ColumnOptions[] options) {

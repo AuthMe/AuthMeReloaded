@@ -1,5 +1,7 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
+import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import ch.jalu.datasourcecolumns.predicate.AlwaysTruePredicate;
 import com.google.common.annotations.VisibleForTesting;
@@ -408,54 +410,28 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean hasSession(String user) {
-        String sql = "SELECT " + col.HAS_SESSION + " FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user.toLowerCase());
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(col.HAS_SESSION) == 1;
-                }
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
+        try {
+            DataSourceValue<Integer> result = columnsHandler.retrieve(user, AuthMeColumns.HAS_SESSION);
+            return result.rowExists() && Integer.valueOf(1).equals(result.getValue());
+        } catch (SQLException e) {
+            logSqlException(e);
+            return false;
         }
-        return false;
     }
 
     @Override
     public void grantSession(String user) {
-        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setInt(1, 1);
-            pst.setString(2, user.toLowerCase());
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
+        columnsHandler.update(user, AuthMeColumns.HAS_SESSION, 1);
     }
 
     @Override
     public void revokeSession(String user) {
-        String sql = "UPDATE " + tableName + " SET " + col.HAS_SESSION + "=? WHERE LOWER(" + col.NAME + ")=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setInt(1, 0);
-            pst.setString(2, user.toLowerCase());
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
+        columnsHandler.update(user, AuthMeColumns.HAS_SESSION, 0);
     }
 
     @Override
     public void purgeLogged() {
-        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setInt(1, 0);
-            pst.setInt(2, 1);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
+        columnsHandler.update(eq(AuthMeColumns.IS_LOGGED, 1), AuthMeColumns.IS_LOGGED, 0);
     }
 
     @Override
@@ -469,19 +445,13 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public DataSourceResult<String> getEmail(String user) {
-        String sql = "SELECT " + col.EMAIL + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return DataSourceResult.of(rs.getString(1));
-                }
-            }
-        } catch (SQLException ex) {
-            logSqlException(ex);
+    public DataSourceValue<String> getEmail(String user) {
+        try {
+            return columnsHandler.retrieve(user, AuthMeColumns.EMAIL);
+        } catch (SQLException e) {
+            logSqlException(e);
+            return DataSourceValueImpl.unknownRow();
         }
-        return DataSourceResult.unknownPlayer();
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.Map;
 public class ColumnContext {
 
     private final Settings settings;
-    private final Map<AuthMeColumns<?>, String> columnNames = new HashMap<>();
+    private final Map<DataSourceColumn<?>, String> columnNames = new HashMap<>();
     private final boolean hasDefaultSupport;
 
     /**
@@ -25,7 +25,7 @@ public class ColumnContext {
         this.hasDefaultSupport = hasDefaultSupport;
     }
 
-    public String getName(AuthMeColumns<?> column) {
+    public String getName(DataSourceColumn<?> column) {
         return columnNames.computeIfAbsent(column, k -> settings.getProperty(k.getNameProperty()));
     }
 
