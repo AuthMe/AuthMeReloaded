@@ -5,6 +5,8 @@ import ch.jalu.injector.InjectorBuilder;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import eu.mikroskeem.picomaven.Dependency;
+import eu.mikroskeem.picomaven.PicoMaven;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
@@ -37,8 +39,22 @@ import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.util.ExceptionUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -60,6 +76,9 @@ public class AuthMe extends JavaPlugin {
     private static final String PLUGIN_NAME = "AuthMeReloaded";
     private static final String LOG_FILENAME = "authme.log";
     private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
+
+    private static final URI MAVEN_CENTRAL_REPOSITORY = URI.create("https://repo.maven.apache.org/maven2");
+    private static final URI MAVEN_CODEMC_REPOSITORY = URI.create("https://repo.codemc.org/repository/maven-public");
 
     // Default version and build number values
     private static String pluginVersion = "N/D";
@@ -126,14 +145,73 @@ public class AuthMe extends JavaPlugin {
         return NewAPI.getInstance();
     }
 
+    @Override
+    public void onLoad() {
+        // Load the plugin version data from the plugin description file
+        loadPluginInfo(getDescription().getVersion());
+
+        // Download libraries
+        List<Dependency> dependencies = Arrays.asList(
+            // Injector
+            new Dependency("ch.jalu", "injector", "1.0"),
+            new Dependency("javax.annotation", "javax.annotation", "1.3.2"),
+            new Dependency("javax.inject", "javax.inject", "1"),
+            // String similarity
+            new Dependency("net.ricecode", "string-similarity", "1.0.0"),
+            // Gson
+            new Dependency("com.google.code.gson", "gson", "2.8.2"),
+            // Guava
+            new Dependency("com.google.guava", "guava", "24.1-jre"),
+            new Dependency("com.google.code.findbugs", "jsr305", "3.0.2"),
+            new Dependency("com.google.errorprone", "error_prone_annotations", "2.2.0"),
+            new Dependency("com.google.j2objc", "j2objc-annotations", "1.3"),
+            new Dependency("org.checkerframework", "checker-compat-qual", "2.4.0"),
+            new Dependency("org.codehaus.mojo", "animal-sniffer-annotations", "1.16"),
+            // Maxmind
+            new Dependency("com.maxmind.db", "maxmind-db-gson", "2.0.2-SNAPSHOT"),
+            new Dependency("javatar", "javatar", "2.5"),
+            // Commons email
+            new Dependency("org.apache.commons", "commons-email", "1.5"),
+            new Dependency("com.sun.mail", "javax.mail", "1.6.1"),
+            new Dependency("javax.activation", "activation", "1.1.1"),
+            // HikariCP
+            new Dependency("com.zaxxer", "HikariCP", "2.7.8"),
+            new Dependency("org.slf4j", "slf4j-simple", "1.7.25"),
+            // PBKDF2
+            new Dependency("de.rtner", "PBKDF2", "1.1.2"),
+            new Dependency("org.picketbox", "picketbox", "5.0.3.Final"),
+            // Argon2
+            new Dependency("de.mkammerer", "argon2-jvm-nolibs", "2.4"),
+            new Dependency("net.java.dev.jna", "jna", "4.5.1"),
+            // ConfigMe
+            new Dependency("ch.jalu", "configme", "0.4.1")
+        );
+        PicoMaven.Builder picoMavenBase = new PicoMaven.Builder()
+            .withDownloadPath(getDataFolder().toPath().resolve("libraries"))
+            .withRepositories(Arrays.asList(MAVEN_CENTRAL_REPOSITORY, MAVEN_CODEMC_REPOSITORY))
+            .withDependencies(dependencies);
+        try(PicoMaven picoMaven = picoMavenBase.build()) {
+            URLClassLoader classLoader = (URLClassLoader)getClassLoader();
+            Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+            method.setAccessible(true);
+
+            picoMaven.downloadAll().forEach(downloaded -> {
+                try {
+                    method.invoke(classLoader, downloaded.toUri().toURL());
+                } catch (IllegalAccessException | InvocationTargetException | MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (InterruptedException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Method called when the server enables the plugin.
      */
     @Override
     public void onEnable() {
-        // Load the plugin version data from the plugin description file
-        loadPluginInfo(getDescription().getVersion());
-
         // Initialize the plugin
         try {
             initialize();
