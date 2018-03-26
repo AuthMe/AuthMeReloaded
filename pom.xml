@@ -27,7 +27,7 @@
 
     <ciManagement>
         <system>jenkins</system>
-        <url>http://ci.codemc.org/job/AuthMeReloaded/</url>
+        <url>http://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/</url>
     </ciManagement>
 
     <issueManagement>
