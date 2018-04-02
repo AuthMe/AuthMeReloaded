@@ -243,7 +243,7 @@ public class AsyncChangeEmailTest {
         PlayerAuth auth = authWithMail(oldEmail);
         given(playerCache.getAuth("username")).willReturn(auth);
         given(validationService.validateEmail(newEmail)).willReturn(true);
-        given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(false);
+        given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
         EmailChangedEvent event = spy(new EmailChangedEvent(player, oldEmail, newEmail, false));
         event.setCancelled(true);
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
