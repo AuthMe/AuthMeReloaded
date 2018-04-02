@@ -251,16 +251,8 @@
                             <shadedPattern>fr.xephi.authme.libs.com.google</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>ch.jalu.injector</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>ch.jalu.configme</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.ch.jalu.configme</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>ch.jalu.datasourcecolumns</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.ch.jalu.datasourcecolumns</shadedPattern>
+                            <pattern>ch.jalu</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
@@ -289,6 +281,10 @@
                         <relocation>
                             <pattern>de.mkammerer</pattern>
                             <shadedPattern>fr.xephi.authme.libs.de.mkammerer</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.warrenstrange</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.warrenstrange</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>javax.inject</pattern>
@@ -482,6 +478,7 @@
             <groupId>com.warrenstrange</groupId>
             <artifactId>googleauth</artifactId>
             <version>1.1.2</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Spigot API, http://www.spigotmc.org/ -->

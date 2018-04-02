@@ -197,7 +197,7 @@ public enum MessageKey {
     /** Your secret code is %code. You can scan it from here %url */
     TWO_FACTOR_CREATE("two_factor.code_created", "%code", "%url"),
 
-    /** Please submit your two-factor authentication code with /2fa code &ltcode&gt;. */
+    /** Please submit your two-factor authentication code with /2fa code &lt;code&gt;. */
     TWO_FACTOR_CODE_REQUIRED("two_factor.code_required"),
 
     /** Two-factor authentication is already enabled for your account! */

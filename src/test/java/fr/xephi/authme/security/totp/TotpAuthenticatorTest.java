@@ -36,7 +36,7 @@ public class TotpAuthenticatorTest {
 
     @Before
     public void initializeTotpAuthenticator() {
-        totpAuthenticator = new TotpAuthenticator(googleAuthenticator, bukkitService);
+        totpAuthenticator = new TotpAuthenticatorTestImpl(bukkitService);
     }
 
     @Test
@@ -84,5 +84,17 @@ public class TotpAuthenticatorTest {
         // then
         assertThat(result, equalTo(false));
         verifyZeroInteractions(googleAuthenticator);
+    }
+
+    private final class TotpAuthenticatorTestImpl extends TotpAuthenticator {
+
+        TotpAuthenticatorTestImpl(BukkitService bukkitService) {
+            super(bukkitService);
+        }
+
+        @Override
+        protected IGoogleAuthenticator createGoogleAuthenticator() {
+            return googleAuthenticator;
+        }
     }
 }
