@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
@@ -25,8 +25,8 @@ public class GetEmailCommand implements ExecutableCommand {
     public void executeCommand(CommandSender sender, List<String> arguments) {
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
-        DataSourceResult<String> email = dataSource.getEmail(playerName);
-        if (email.playerExists()) {
+        DataSourceValue<String> email = dataSource.getEmail(playerName);
+        if (email.rowExists()) {
             sender.sendMessage("[AuthMe] " + playerName + "'s email: " + email.getValue());
         } else {
             commonService.send(sender, MessageKey.UNKNOWN_USER);

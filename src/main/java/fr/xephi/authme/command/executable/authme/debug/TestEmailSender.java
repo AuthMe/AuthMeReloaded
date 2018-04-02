@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.SendMailSsl;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
@@ -82,8 +82,8 @@ class TestEmailSender implements DebugSection {
      */
     private String getEmail(CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) {
-            DataSourceResult<String> emailResult = dataSource.getEmail(sender.getName());
-            if (!emailResult.playerExists()) {
+            DataSourceValue<String> emailResult = dataSource.getEmail(sender.getName());
+            if (!emailResult.rowExists()) {
                 sender.sendMessage(ChatColor.RED + "Please provide an email address, "
                     + "e.g. /authme debug mail test@example.com");
                 return null;
