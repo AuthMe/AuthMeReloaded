@@ -3,8 +3,10 @@ package fr.xephi.authme.process.email;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.EmailChangedEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
@@ -32,6 +34,9 @@ public class AsyncChangeEmail implements AsynchronousProcess {
 
     @Inject
     private BungeeSender bungeeSender;
+    
+    @Inject
+    private BukkitService bukkitService;
 
     AsyncChangeEmail() { }
 
@@ -57,14 +62,21 @@ public class AsyncChangeEmail implements AsynchronousProcess {
             } else if (!validationService.isEmailFreeForRegistration(newEmail, player)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
-                saveNewEmail(auth, player, newEmail);
+                saveNewEmail(auth, player, oldEmail, newEmail);
             }
         } else {
             outputUnloggedMessage(player);
         }
     }
 
-    private void saveNewEmail(PlayerAuth auth, Player player, String newEmail) {
+    private void saveNewEmail(PlayerAuth auth, Player player, String oldEmail, String newEmail) {
+        EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
+            -> new EmailChangedEvent(player, oldEmail, newEmail, isAsync));
+        if (event.isCancelled()) {
+            service.send(player, MessageKey.ERROR);
+            return;
+        }
+
         auth.setEmail(newEmail);
         if (dataSource.updateEmail(auth)) {
             playerCache.updatePlayer(auth);
