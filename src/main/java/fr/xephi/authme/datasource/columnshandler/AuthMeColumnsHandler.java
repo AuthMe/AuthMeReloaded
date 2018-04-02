@@ -141,6 +141,7 @@ public final class AuthMeColumnsHandler {
      * @param column the column whose value should be retrieved
      * @param <T> the column type
      * @return the result of the lookup
+     * @throws SQLException .
      */
     public <T> DataSourceValue<T> retrieve(String name, DataSourceColumn<T> column) throws SQLException {
         return internalHandler.retrieve(name.toLowerCase(), column);
@@ -152,6 +153,7 @@ public final class AuthMeColumnsHandler {
      * @param name the account name to look up
      * @param columns the columns to retrieve
      * @return map-like object with the requested values
+     * @throws SQLException .
      */
     public DataSourceValues retrieve(String name, DataSourceColumn<?>... columns) throws SQLException {
         return internalHandler.retrieve(name.toLowerCase(), columns);
@@ -164,6 +166,7 @@ public final class AuthMeColumnsHandler {
      * @param column the column to retrieve from the matching rows
      * @param <T> the column's value type
      * @return the values of the matching rows
+     * @throws SQLException .
      */
     public <T> List<T> retrieve(Predicate<ColumnContext> predicate, DataSourceColumn<T> column) throws SQLException {
         return internalHandler.retrieve(predicate, column);

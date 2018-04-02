@@ -10,7 +10,10 @@ import java.sql.SQLException;
 public interface ConnectionSupplier {
 
     /**
-     * @return connection object to the database
+     * Returns a connection to the database.
+     *
+     * @return the connection
+     * @throws SQLException .
      */
     Connection get() throws SQLException;
 
