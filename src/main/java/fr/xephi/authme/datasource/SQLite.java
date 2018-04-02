@@ -60,7 +60,6 @@ public class SQLite extends AbstractSqlDataSource {
             ConsoleLogger.logException("Error during SQLite initialization:", ex);
             throw ex;
         }
-        this.columnsHandler = AuthMeColumnsHandler.createForSqlite(con, settings);
     }
 
     @VisibleForTesting
@@ -86,6 +85,7 @@ public class SQLite extends AbstractSqlDataSource {
 
         ConsoleLogger.debug("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
+        this.columnsHandler = AuthMeColumnsHandler.createForSqlite(con, settings);
     }
 
     /**

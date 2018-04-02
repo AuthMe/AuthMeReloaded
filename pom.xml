@@ -259,6 +259,10 @@
                             <shadedPattern>fr.xephi.authme.libs.ch.jalu.configme</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>ch.jalu.datasourcecolumns</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.ch.jalu.datasourcecolumns</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
                             <shadedPattern>fr.xephi.authme.libs.com.zaxxer.hikari</shadedPattern>
                         </relocation>
@@ -792,7 +796,6 @@
             <groupId>ch.jalu</groupId>
             <artifactId>datasourcecolumns</artifactId>
             <version>0.1-SNAPSHOT</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
