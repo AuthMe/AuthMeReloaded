@@ -99,6 +99,8 @@ email:
     send_failure: '邮件发送失败，请联系管理员'
     change_password_expired: '您不能使用此命令更改密码'
     email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

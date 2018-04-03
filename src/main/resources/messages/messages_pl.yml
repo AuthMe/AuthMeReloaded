@@ -99,6 +99,8 @@ email:
     send_failure: 'Nie można wysłać e-maila. Skontaktuj się z administracją.'
     change_password_expired: 'Nie zmienisz już hasła przy użyciu tej komendy.'
     email_cooldown_error: '&cE-mail został wysłany, musisz poczekać %time przed wysłaniem następnego.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

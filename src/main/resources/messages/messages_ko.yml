@@ -101,6 +101,8 @@ email:
     send_failure: '이메일을 보낼 수 없습니다. 관리자에게 알려주세요.'
     change_password_expired: '더 이상 이 명령어를 통해 비밀번호를 변경할 수 없습니다.'
     email_cooldown_error: '&c이메일을 이미 발송했습니다. %time 후에 다시 발송할 수 있습니다.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

@@ -102,6 +102,8 @@ email:
     send_failure: '&8[&6用戶系統&8] &c電郵系統錯誤，請聯絡伺服器管理員。 &7(err: smtperr)'
     change_password_expired: '&8[&6用戶系統&8] 此指令已過期，請重新辦理。'
     email_cooldown_error: '&8[&6用戶系統&8] &c你已經辦理過重寄郵件，請等待 %time 後再嘗試吧。'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

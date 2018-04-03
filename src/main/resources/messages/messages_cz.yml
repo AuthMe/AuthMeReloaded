@@ -99,6 +99,8 @@ email:
     send_failure: 'Email nemohl být odeslán. Kontaktujte prosím admina.'
     change_password_expired: 'Nemůžeš si změnit heslo pomocí toho příkazu.'
     email_cooldown_error: '&cEmail už byl nedávno odeslán. Musíš čekat %time před odesláním nového.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

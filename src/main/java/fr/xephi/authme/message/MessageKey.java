@@ -167,11 +167,17 @@ public enum MessageKey {
     /** Email address successfully added to your account! */
     EMAIL_ADDED_SUCCESS("email.added"),
 
+    /** Adding email was not allowed */
+    EMAIL_ADD_NOT_ALLOWED("email.add_not_allowed"),
+
     /** Please confirm your email address! */
     CONFIRM_EMAIL_MESSAGE("email.request_confirmation"),
 
     /** Email address changed correctly! */
     EMAIL_CHANGED_SUCCESS("email.changed"),
+
+    /** Changing email was not allowed */
+    EMAIL_CHANGE_NOT_ALLOWED("email.change_not_allowed"),
 
     /** Your current email address is: %email */
     EMAIL_SHOW("email.email_show", "%email"),
