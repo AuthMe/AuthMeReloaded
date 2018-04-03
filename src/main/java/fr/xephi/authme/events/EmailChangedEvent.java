@@ -60,7 +60,7 @@ public class EmailChangedEvent extends CustomEvent implements Cancellable {
      * Gets the new email.
      *
      * @return the email user is trying to set. If user adds email and never had one before,
-     * this is where such email can be found.
+     *        this is where such email can be found.
      */
     public String getNewEmail() {
         return this.newEmail;
