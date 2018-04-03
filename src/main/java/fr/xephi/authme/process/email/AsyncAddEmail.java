@@ -65,7 +65,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
                     -> new EmailChangedEvent(player, null, email, isAsync));
                 if (event.isCancelled()) {
-                    ConsoleLogger.warning("Could not add email to player '" + player + "' – event was cancelled");
+                    ConsoleLogger.info("Could not add email to player '" + player + "' – event was cancelled");
                     service.send(player, MessageKey.EMAIL_ADD_NOT_ALLOWED);
                     return;
                 }

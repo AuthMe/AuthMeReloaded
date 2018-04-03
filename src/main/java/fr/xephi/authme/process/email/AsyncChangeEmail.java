@@ -74,7 +74,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
             -> new EmailChangedEvent(player, oldEmail, newEmail, isAsync));
         if (event.isCancelled()) {
-            ConsoleLogger.warning("Could not change email for player '" + player + "' – event was cancelled");
+            ConsoleLogger.info("Could not change email for player '" + player + "' – event was cancelled");
             service.send(player, MessageKey.EMAIL_CHANGE_NOT_ALLOWED);
             return;
         }
