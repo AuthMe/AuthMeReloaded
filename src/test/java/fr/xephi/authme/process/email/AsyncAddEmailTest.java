@@ -214,7 +214,7 @@ public class AsyncAddEmailTest {
         asyncAddEmail.addEmail(player, email);
 
         // then
-        verify(service).send(player, MessageKey.ERROR);
+        verify(service).send(player, MessageKey.EMAIL_ADD_NOT_ALLOWED);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 

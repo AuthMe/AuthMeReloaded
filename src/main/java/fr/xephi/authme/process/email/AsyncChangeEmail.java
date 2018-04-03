@@ -1,5 +1,6 @@
 package fr.xephi.authme.process.email;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -73,7 +74,8 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
             -> new EmailChangedEvent(player, oldEmail, newEmail, isAsync));
         if (event.isCancelled()) {
-            service.send(player, MessageKey.ERROR);
+            ConsoleLogger.warning("Could not change email for player '" + player + "' – event was cancelled");
+            service.send(player, MessageKey.EMAIL_CHANGE_NOT_ALLOWED);
             return;
         }
 

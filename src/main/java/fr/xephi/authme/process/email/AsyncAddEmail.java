@@ -65,7 +65,8 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
                     -> new EmailChangedEvent(player, null, email, isAsync));
                 if (event.isCancelled()) {
-                    sendFailedMessage(player);
+                    ConsoleLogger.warning("Could not add email to player '" + player + "' – event was cancelled");
+                    service.send(player, MessageKey.EMAIL_ADD_NOT_ALLOWED);
                     return;
                 }
                 auth.setEmail(email);
@@ -74,7 +75,8 @@ public class AsyncAddEmail implements AsynchronousProcess {
                     bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
                     service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
-                    sendFailedMessage(player);
+                    ConsoleLogger.warning("Could not save email for player '" + player + "'");
+                    service.send(player, MessageKey.ERROR);
                 }
             }
         } else {
@@ -88,11 +90,6 @@ public class AsyncAddEmail implements AsynchronousProcess {
         } else {
             service.send(player, MessageKey.REGISTER_MESSAGE);
         }
-    }
-
-    private void sendFailedMessage(Player player) {
-        ConsoleLogger.warning("Could not save email for player '" + player + "'");
-        service.send(player, MessageKey.ERROR);
     }
 
 }

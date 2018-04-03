@@ -254,7 +254,7 @@ public class AsyncChangeEmailTest {
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
-        verify(service).send(player, MessageKey.ERROR);
+        verify(service).send(player, MessageKey.EMAIL_CHANGE_NOT_ALLOWED);
     }
 
     private static PlayerAuth authWithMail(String email) {
