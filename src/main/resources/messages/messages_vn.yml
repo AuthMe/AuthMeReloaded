@@ -99,6 +99,8 @@ email:
     send_failure: 'Không thể gửi thư. Vui lòng liên hệ với ban quản trị.'
     change_password_expired: '&cBạn không thể thay đổi mật khẩu bằng lệnh này từ nay.'
     email_cooldown_error: '&cMột bức thư đã được gửi gần đây. Bạn phải chờ %time trước khi có thể gửi một bức thư mới.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

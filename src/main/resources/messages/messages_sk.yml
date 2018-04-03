@@ -105,6 +105,8 @@ email:
     send_failure: 'Email nemohol byť poslaný. Prosím kontaktuj Administrátora.'
     change_password_expired: 'Už nemôžeš zmeniť svoje heslo týmto príkazom.'
     email_cooldown_error: '&cEmail bol nedávno poslaný. Musíš počkať %time predtým ako ti pošleme nový.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

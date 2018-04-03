@@ -95,10 +95,12 @@ email:
     # TODO email_show: '&2Your current email address is: &f%email'
     # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
     already_used: '&4До цієї електронної пошти прив’язано забагато акаунтів!'
-    incomplete_settings: '&4[AuthMe] Error: Не всі необхідні налаштування є встановленими, щоб надсилати електронну пошту. Будь ласка, повідомте адміністратора!'
+    incomplete_settings: '&4Не всі необхідні налаштування є встановленими, щоб надсилати електронну пошту. Будь ласка, повідомте адміністратора!'
     # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
     # TODO change_password_expired: 'You cannot change your password using this command anymore.'
     # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

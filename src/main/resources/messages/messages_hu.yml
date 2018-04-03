@@ -99,6 +99,8 @@ email:
     send_failure: 'Nem sikerült elküldeni az emailt. Lépj kapcsolatba egy adminnal.'
     change_password_expired: 'Ezzel a paranccsal már nem módosíthatja jelszavát.'
     email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldése előtt várnod kell: %time.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

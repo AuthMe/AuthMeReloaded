@@ -99,6 +99,8 @@ email:
     send_failure: 'La retpoŝto ne estis sendita. Bonvolu kontakti administranto.'
     change_password_expired: 'Vi ne povas ŝanĝi vian pasvorton per tiu ĉi komando plu.'
     email_cooldown_error: '&cRetmesaĝon jam sendita lastatempe. Vi devas atendi %time antaŭ vi povas sendi novan.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

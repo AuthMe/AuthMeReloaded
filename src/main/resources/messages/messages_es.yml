@@ -100,6 +100,8 @@ email:
     send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
     change_password_expired: 'No puedes cambiar la contraseña utilizando este comando.'
     email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar %time antes de volver a enviar uno nuevo.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

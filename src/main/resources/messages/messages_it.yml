@@ -102,6 +102,8 @@ email:
     send_failure: 'Non è stato possibile inviare l''email di recupero. Per favore contatta un amministratore.'
     change_password_expired: 'Non puoi più cambiare la tua password con questo comando.'
     email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentemente. Devi attendere %time prima di poterne richiedere una nuova.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

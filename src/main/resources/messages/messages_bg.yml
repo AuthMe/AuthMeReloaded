@@ -99,6 +99,8 @@ email:
     send_failure: 'Съобщението не беше изпратено. Моля свържете се с администратора.'
     # TODO change_password_expired: 'You cannot change your password using this command anymore.'
     email_cooldown_error: '&cВече е бил изпратен имейл адрес. Трябва а изчакаш %time преди да пратиш нов.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

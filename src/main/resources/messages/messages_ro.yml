@@ -99,6 +99,8 @@ email:
     send_failure: 'Email-ul nu a putut fi trimis. Ta rugam contactatezi un administrator.'
     change_password_expired: 'Nu mai iti poti schimba parola folosind aceasta comanda.'
     email_cooldown_error: '&cAi primit deja un mail pentru schimbarea parolei. Trebuie sa astepti %time inainte de a trimite unul nou.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

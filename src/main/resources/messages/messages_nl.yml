@@ -99,6 +99,8 @@ email:
     send_failure: 'De e-mail kon niet verzonden worden. Neem contact op met een administrator.'
     change_password_expired: 'Je kunt je wachtwoord niet meer veranderen met dit commando.'
     email_cooldown_error: '&cEr is recent al een e-mail verzonden. Je moet %time wachten voordat je een nieuw bericht kunt versturen.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

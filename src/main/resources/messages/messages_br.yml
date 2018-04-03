@@ -102,6 +102,8 @@ email:
     send_failure: '&cO e-mail não pôde ser enviado, reporte isso a um administrador!'
     change_password_expired: 'Você não pode mais usar esse comando de recuperação de senha!'
     email_cooldown_error: '&cUm e-mail já foi enviado, espere mais %time antes de enviar novamente!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:
