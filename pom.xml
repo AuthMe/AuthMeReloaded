@@ -172,7 +172,8 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- Force the right file encoding during unit testing -->
-                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{argLine}</argLine>
+                    <!-- Set language to English in order to get consistent results for localized time formatting -->
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
                     <systemPropertyVariables>
                         <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
                     </systemPropertyVariables>
