@@ -4,8 +4,6 @@
 # %username% - Sostituisce il nome dell'utente che riceve il messaggio.
 # %displayname% - Sostituisce il nickname (e i colori) dell'utente che riceve il messaggio.
 
-# Registrazione
-
 # Registration
 registration:
     disabled: '&cLa registrazione tramite i comandi di gioco è disabilitata.'
@@ -82,7 +80,7 @@ on_join_validation:
     country_banned: '&4Il tuo paese è bandito da questo server!'
     not_owner_error: 'Non sei il proprietario di questo account. Per favore scegli un altro nome!'
     invalid_name_case: 'Dovresti entrare con questo nome utente "%valid", al posto di "%invalid".'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Hai usato un comando troppo velocemente dal tuo accesso! Per favore, rientra nel server e aspetta un po'' di più prima di usare un qualsiasi comando.'
 
 # Email
 email:
@@ -102,12 +100,12 @@ email:
     send_failure: 'Non è stato possibile inviare l''email di recupero. Per favore contatta un amministratore.'
     change_password_expired: 'Non puoi più cambiare la tua password con questo comando.'
     email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentemente. Devi attendere %time prima di poterne richiedere una nuova.'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    add_not_allowed: '&cNon hai il permesso di aggiungere un indirizzo email'
+    change_not_allowed: '&cNon hai il permesso di cambiare l''indirizzo email'
 
 # Password recovery by email
 recovery:
-    forgot_password_hint: '&3Hai dimenticato la tua password? Puoi recuperarla eseguendo il comando: /email recovery <email>'
+    forgot_password_hint: '&3Hai dimenticato la tua password? Puoi recuperarla usando il comando: /email recovery <email>'
     command_usage: '&cUtilizzo: /email recovery <email>'
     email_sent: '&2Una email di recupero è stata appena inviata al tuo indirizzo email!'
     code:
