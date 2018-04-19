@@ -216,18 +216,16 @@ public class PurgeTaskTest {
 
     private void setPermissionsBehavior() {
         given(permissionsManager.hasPermissionOffline(any(OfflinePlayer.class), eq(BYPASS_NODE)))
-            .willAnswer(new Answer<Boolean>() {
-                @Override
-                public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
-                    OfflinePlayer player = invocationOnMock.getArgument(0);
-                    Boolean hasPermission = playerBypassAssignments.get(player);
-                    if (hasPermission == null) {
-                        throw new IllegalStateException("Unexpected check of '" + BYPASS_NODE
-                            + "' with player = " + player);
-                    }
-                    return hasPermission;
+            .willAnswer((Answer<Boolean>) invocationOnMock -> {
+                OfflinePlayer player = invocationOnMock.getArgument(0);
+                Boolean hasPermission = playerBypassAssignments.get(player);
+                if (hasPermission == null) {
+                    throw new IllegalStateException("Unexpected check of '" + BYPASS_NODE
+                        + "' with player = " + player);
                 }
+                return hasPermission;
             });
+        given(permissionsManager.loadUserData(any(OfflinePlayer.class))).willReturn(true);
     }
 
     private void assertRanPurgeWithPlayers(OfflinePlayer... players) {
