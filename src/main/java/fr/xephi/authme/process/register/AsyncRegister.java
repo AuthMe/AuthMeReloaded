@@ -62,6 +62,13 @@ public class AsyncRegister implements AsynchronousProcess {
         }
     }
 
+    /**
+     * Checks if the player is able to register, in that case the {@link AuthMeAsyncPreRegisterEvent} is invoked.
+     *
+     * @param player the player which is trying to register.
+     *
+     * @return true if the checks are successful and the event hasn't marked the action as denied, false otherwise.
+     */
     private boolean preRegisterCheck(Player player) {
         final String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
