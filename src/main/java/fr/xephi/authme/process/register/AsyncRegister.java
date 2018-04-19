@@ -4,14 +4,17 @@ import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.AuthMeAsyncPreRegisterEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -32,6 +35,8 @@ public class AsyncRegister implements AsynchronousProcess {
     @Inject
     private PlayerCache playerCache;
     @Inject
+    private BukkitService bukkitService;
+    @Inject
     private CommonService service;
     @Inject
     private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
@@ -44,9 +49,9 @@ public class AsyncRegister implements AsynchronousProcess {
     /**
      * Performs the registration process for the given player.
      *
-     * @param variant the registration method
+     * @param variant    the registration method
      * @param parameters the parameters
-     * @param <P> parameters type
+     * @param <P>        parameters type
      */
     public <P extends RegistrationParameters> void register(RegistrationMethod<P> variant, P parameters) {
         if (preRegisterCheck(parameters.getPlayer())) {
@@ -70,6 +75,13 @@ public class AsyncRegister implements AsynchronousProcess {
             return false;
         }
 
+        boolean isAsync = service.getProperty(PluginSettings.USE_ASYNC_TASKS);
+        AuthMeAsyncPreRegisterEvent event = new AuthMeAsyncPreRegisterEvent(player, isAsync);
+        bukkitService.callEvent(event);
+        if (!event.canRegister()) {
+            return false;
+        }
+
         return isPlayerIpAllowedToRegister(player);
     }
 
@@ -77,11 +89,11 @@ public class AsyncRegister implements AsynchronousProcess {
      * Executes the registration.
      *
      * @param parameters the registration parameters
-     * @param executor the executor to perform the registration process with
-     * @param <P> registration params type
+     * @param executor   the executor to perform the registration process with
+     * @param <P>        registration params type
      */
     private <P extends RegistrationParameters>
-            void executeRegistration(P parameters, RegistrationExecutor<P> executor) {
+    void executeRegistration(P parameters, RegistrationExecutor<P> executor) {
         PlayerAuth auth = executor.buildPlayerAuth(parameters);
         if (database.saveAuth(auth)) {
             executor.executePostPersistAction(parameters);
@@ -95,6 +107,7 @@ public class AsyncRegister implements AsynchronousProcess {
      * Checks whether the registration threshold has been exceeded for the given player's IP address.
      *
      * @param player the player to check
+     *
      * @return true if registration may take place, false otherwise (IP check failed)
      */
     private boolean isPlayerIpAllowedToRegister(Player player) {
