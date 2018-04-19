@@ -1,11 +1,13 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.handlers.PermissionLoadUserException;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
@@ -260,9 +262,13 @@ public class PlayerListener implements Listener {
 
         // Keep pre-UUID compatibility
         try {
-            permissionsManager.loadUserData(event.getUniqueId());
-        } catch (NoSuchMethodError e) {
-            permissionsManager.loadUserData(name);
+            try {
+                permissionsManager.loadUserData(event.getUniqueId());
+            } catch (NoSuchMethodError e) {
+                permissionsManager.loadUserData(name);
+            }
+        } catch (PermissionLoadUserException e) {
+            ConsoleLogger.logException("Unable to load the permission data of user " + name, e);
         }
 
         try {

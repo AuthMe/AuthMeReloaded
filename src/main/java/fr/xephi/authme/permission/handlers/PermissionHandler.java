@@ -107,10 +107,9 @@ public interface PermissionHandler {
      */
     PermissionsSystemType getPermissionSystem();
 
-    default void loadUserData(UUID uuid) {
+    default void loadUserData(UUID uuid) throws PermissionLoadUserException {
     }
 
-    default void loadUserData(String name) {
+    default void loadUserData(String name) throws PermissionLoadUserException {
     }
-
 }
