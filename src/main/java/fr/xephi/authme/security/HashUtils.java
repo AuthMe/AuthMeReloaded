@@ -1,6 +1,7 @@
 package fr.xephi.authme.security;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -76,6 +77,20 @@ public final class HashUtils {
      */
     public static boolean isValidBcryptHash(String hash) {
         return hash.length() > 3 && hash.substring(0, 2).equals("$2");
+    }
+
+    /**
+     * Checks whether the two strings are equal to each other in a time-constant manner.
+     * This helps to avoid timing side channel attacks,
+     * cf. <a href="https://github.com/AuthMe/AuthMeReloaded/issues/1561">issue #1561</a>.
+     *
+     * @param string1 first string
+     * @param string2 second string
+     * @return true if the strings are equal to each other, false otherwise
+     */
+    public static boolean isEqual(String string1, String string2) {
+        return MessageDigest.isEqual(
+            string1.getBytes(StandardCharsets.UTF_8), string2.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
