@@ -12,6 +12,8 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
+
 @Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 9)
 // Note ljacqu 20151228: Wordpress is actually a salted algorithm but salt generation is handled internally
@@ -115,7 +117,7 @@ public class Wordpress extends UnsaltedMethod {
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
         String hash = hashedPassword.getHash();
         String comparedHash = crypt(password, hash);
-        return comparedHash.equals(hash);
+        return isEqual(hash, comparedHash);
     }
 
 }

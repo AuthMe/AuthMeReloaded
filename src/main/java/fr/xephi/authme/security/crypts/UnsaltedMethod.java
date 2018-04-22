@@ -5,6 +5,8 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
+
 /**
  * Common type for encryption methods which do not use any salt whatsoever.
  */
@@ -26,7 +28,7 @@ public abstract class UnsaltedMethod implements EncryptionMethod {
 
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
-        return hashedPassword.getHash().equals(computeHash(password));
+        return isEqual(hashedPassword.getHash(), computeHash(password));
     }
 
     @Override
