@@ -156,12 +156,9 @@ public class AsynchronousLoginTest {
         given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         doReturn(false).when(asynchronousLogin).hasReachedMaxLoggedInPlayersForIp(any(Player.class), anyString());
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                ((AuthMeAsyncPreLoginEvent) invocation.getArgument(0)).setCanLogin(false);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            ((AuthMeAsyncPreLoginEvent) invocation.getArgument(0)).setCanLogin(false);
+            return null;
         }).when(bukkitService).callEvent(any(AuthMeAsyncPreLoginEvent.class));
 
         // when

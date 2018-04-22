@@ -3,7 +3,9 @@ package fr.xephi.authme.process.email;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.EmailChangedEvent;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
@@ -14,10 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.function.Function;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +53,9 @@ public class AsyncChangeEmailTest {
     @Mock
     private BungeeSender bungeeSender;
 
+    @Mock
+    private BukkitService bukkitService;
+
     @Test
     public void shouldChangeEmail() {
         // given
@@ -59,7 +67,9 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(validationService.validateEmail(newEmail)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
-
+        EmailChangedEvent event = spy(new EmailChangedEvent(player, "old@mail.tld", newEmail, false));
+        given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
+        
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
 
@@ -81,6 +91,8 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(validationService.validateEmail(newEmail)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        EmailChangedEvent event = spy(new EmailChangedEvent(player, oldEmail, newEmail, false));
+        given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
 
         // when
         process.changeEmail(player, "old-mail@example.org", newEmail);
@@ -102,6 +114,8 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(false);
         given(validationService.validateEmail(newEmail)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        EmailChangedEvent event = spy(new EmailChangedEvent(player, "old@mail.tld", newEmail, false));
+        given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
 
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
@@ -217,6 +231,30 @@ public class AsyncChangeEmailTest {
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.REGISTER_MESSAGE);
+    }
+
+    @Test
+    public void shouldNotChangeOnCancelledEvent() {
+        // given
+        String newEmail = "new@example.com";
+        String oldEmail = "old@example.com";
+        given(player.getName()).willReturn("Username");
+        given(playerCache.isAuthenticated("username")).willReturn(true);
+        PlayerAuth auth = authWithMail(oldEmail);
+        given(playerCache.getAuth("username")).willReturn(auth);
+        given(validationService.validateEmail(newEmail)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        EmailChangedEvent event = spy(new EmailChangedEvent(player, oldEmail, newEmail, false));
+        event.setCancelled(true);
+        given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
+
+        // when
+        process.changeEmail(player, oldEmail, newEmail);
+
+        // then
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(service).send(player, MessageKey.EMAIL_CHANGE_NOT_ALLOWED);
     }
 
     private static PlayerAuth authWithMail(String email) {

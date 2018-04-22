@@ -99,6 +99,8 @@ email:
     send_failure: 'Eposta gonderilemedi. Yetkili ile iletisime gec.'
     # TODO change_password_expired: 'You cannot change your password using this command anymore.'
     email_cooldown_error: '&cKisa bir sure once eposta gonderildi. Yeni bir eposta almak icin %time beklemelisin.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

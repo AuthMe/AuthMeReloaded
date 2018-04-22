@@ -162,7 +162,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      *
      * @param name the name of the player to generate a code for
      */
-    public void verify(String name){
+    public void verify(String name) {
         verifiedPlayers.add(name.toLowerCase());
     }
 

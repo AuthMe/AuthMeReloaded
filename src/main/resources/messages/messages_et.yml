@@ -99,6 +99,8 @@ email:
     send_failure: 'Meili ei õnnestunud saata. Kontakteeru meeskonnaga.'
     change_password_expired: '&3Enam ei saa vahetada oma parooli kasutades seda käsklust.'
     email_cooldown_error: '&cEmail juba saadeti. Sa pead ootama %time ennem, kui saad uuesti saata.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

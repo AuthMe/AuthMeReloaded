@@ -49,7 +49,7 @@ public class PurgeExecutor {
      * players and names.
      *
      * @param players the players to purge
-     * @param names names to purge
+     * @param names   names to purge
      */
     public void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
         // Purge other data
@@ -212,15 +212,13 @@ public class PurgeExecutor {
         }
 
         for (OfflinePlayer offlinePlayer : cleared) {
-            try {
-                permissionsManager.loadUserData(offlinePlayer.getUniqueId());
-            } catch (NoSuchMethodError e) {
-                permissionsManager.loadUserData(offlinePlayer.getName());
+            if (!permissionsManager.loadUserData(offlinePlayer)) {
+                ConsoleLogger.warning("Unable to purge the permissions of user " + offlinePlayer + "!");
+                continue;
             }
             permissionsManager.removeAllGroups(offlinePlayer);
         }
 
         ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }
-    
 }

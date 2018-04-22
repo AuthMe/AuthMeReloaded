@@ -101,6 +101,8 @@ email:
     send_failure: '&b【AuthMe】&4無法傳送電子郵件，請聯絡管理員.'
     change_password_expired: '&b【AuthMe】&6您現在不能使用這個指令變更密碼了.'
     email_cooldown_error: '&b【AuthMe】&c電子郵件已經寄出了. 您只能在 %time 後才能傳送.'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

@@ -97,6 +97,8 @@ email:
   add_email_request: '&3Please add your email to your account with the command: /email add <yourEmail> <confirmEmail>'
   change_password_expired: 'You cannot change your password using this command anymore.'
   email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+  add_not_allowed: '&cAdding email was not allowed'
+  change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:

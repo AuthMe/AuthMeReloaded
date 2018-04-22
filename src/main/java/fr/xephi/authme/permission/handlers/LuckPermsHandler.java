@@ -189,22 +189,21 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     @Override
-    public void loadUserData(UUID uuid) {
+    public void loadUserData(UUID uuid) throws PermissionLoadUserException {
         try {
             luckPermsApi.getUserManager().loadUser(uuid).get(5, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            throw new PermissionLoadUserException("Unable to load the permission data of the user " + uuid, e);
         }
     }
 
     @Override
-    public void loadUserData(String name) {
+    public void loadUserData(String name) throws PermissionLoadUserException {
         try {
             UUID uuid = luckPermsApi.getStorage().getUUID(name).get(5, TimeUnit.SECONDS);
             loadUserData(uuid);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            throw new PermissionLoadUserException("Unable to load the permission data of the user " + name, e);
         }
     }
-
 }

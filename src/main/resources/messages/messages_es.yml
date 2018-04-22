@@ -80,7 +80,7 @@ on_join_validation:
     country_banned: '¡Tu país ha sido baneado de este servidor!'
     not_owner_error: 'No eres el propietario de esta cuenta. ¡Por favor, elije otro nombre!'
     invalid_name_case: 'Solo puedes unirte mediante el nombre de usuario %valid, no %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Has usado el comando demasiado rápido! Porfavor, entra al servidor de nuevo y espera un poco antes de usar cualquier comando.'
 
 # Email
 email:
@@ -100,6 +100,8 @@ email:
     send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
     change_password_expired: 'No puedes cambiar la contraseña utilizando este comando.'
     email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar %time antes de volver a enviar uno nuevo.'
+    add_not_allowed: '&cNo se permite añadir un Email'
+    change_not_allowed: '&cNo se permite el cambio de Email'
 
 # Password recovery by email
 recovery:

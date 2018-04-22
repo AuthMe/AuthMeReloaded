@@ -8,6 +8,7 @@ import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandlerException;
+import fr.xephi.authme.permission.handlers.PermissionLoadUserException;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
@@ -110,7 +111,9 @@ public class PermissionsManager implements Reloadable {
      * Creates a permission handler for the provided permission systems if possible.
      *
      * @param type the permission systems type for which to create a corresponding permission handler
+     *
      * @return the permission handler, or {@code null} if not possible
+     *
      * @throws PermissionHandlerException during initialization of the permission handler
      */
     private PermissionHandler createPermissionHandler(PermissionsSystemType type) throws PermissionHandlerException {
@@ -228,8 +231,9 @@ public class PermissionsManager implements Reloadable {
     /**
      * Check if the given player has permission for the given permission node.
      *
-     * @param joiningPlayer The player to check
+     * @param joiningPlayer  The player to check
      * @param permissionNode The permission node to verify
+     *
      * @return true if the player has permission, false otherwise
      */
     public boolean hasPermission(JoiningPlayer joiningPlayer, PermissionNode permissionNode) {
@@ -262,7 +266,7 @@ public class PermissionsManager implements Reloadable {
      * Check whether the offline player with the given name has permission for the given permission node.
      * This method is used as a last resort when nothing besides the name is known.
      *
-     * @param name The name of the player
+     * @param name           The name of the player
      * @param permissionNode The permission node to verify
      *
      * @return true if the player has permission, false otherwise
@@ -317,7 +321,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The group name.
      *
      * @return True if the player is in the specified group, false otherwise.
-     *         False is also returned if groups aren't supported by the used permissions system.
+     * False is also returned if groups aren't supported by the used permissions system.
      */
     public boolean isInGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.isInGroup(player, groupName);
@@ -330,7 +334,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroup(OfflinePlayer player, String groupName) {
         if (!isEnabled() || StringUtils.isEmpty(groupName)) {
@@ -346,7 +350,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupNames The name of the groups to add.
      *
      * @return True if at least one group was added, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroups(OfflinePlayer player, Collection<String> groupNames) {
         // If no permissions system is used, return false
@@ -373,7 +377,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean removeGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.removeFromGroup(player, groupName);
@@ -386,7 +390,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupNames The name of the groups to remove.
      *
      * @return True if at least one group was removed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean removeGroups(OfflinePlayer player, Collection<String> groupNames) {
         // If no permissions system is used, return false
@@ -414,7 +418,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean setGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.setGroup(player, groupName);
@@ -428,7 +432,7 @@ public class PermissionsManager implements Reloadable {
      * @param player The player to remove all groups from.
      *
      * @return True if succeed, false otherwise.
-     *         False will also be returned if this feature isn't supported for the used permissions system.
+     * False will also be returned if this feature isn't supported for the used permissions system.
      */
     public boolean removeAllGroups(OfflinePlayer player) {
         // If no permissions system is used, return false
@@ -443,15 +447,47 @@ public class PermissionsManager implements Reloadable {
         return removeGroups(player, groupNames);
     }
 
-    public void loadUserData(UUID uuid) {
-        if(!isEnabled()) {
+    /**
+     * Loads the permission data of the given player.
+     *
+     * @param offlinePlayer the offline player.
+     * @return true if the load was successful.
+     */
+    public boolean loadUserData(OfflinePlayer offlinePlayer) {
+        try {
+            try {
+                loadUserData(offlinePlayer.getUniqueId());
+            } catch (NoSuchMethodError e) {
+                loadUserData(offlinePlayer.getName());
+            }
+        } catch (PermissionLoadUserException e) {
+            ConsoleLogger.logException("Unable to load the permission data of user " + offlinePlayer.getName(), e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Loads the permission data of the given player unique identifier.
+     *
+     * @param uuid the {@link UUID} of the player.
+     * @throws PermissionLoadUserException if the action failed.
+     */
+    public void loadUserData(UUID uuid) throws PermissionLoadUserException {
+        if (!isEnabled()) {
             return;
         }
         handler.loadUserData(uuid);
     }
 
-    public void loadUserData(String name) {
-        if(!isEnabled()) {
+    /**
+     * Loads the permission data of the given player name.
+     *
+     * @param name the name of the player.
+     * @throws PermissionLoadUserException if the action failed.
+     */
+    public void loadUserData(String name) throws PermissionLoadUserException {
+        if (!isEnabled()) {
             return;
         }
         handler.loadUserData(name);
