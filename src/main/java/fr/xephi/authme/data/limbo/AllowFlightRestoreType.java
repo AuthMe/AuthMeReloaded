@@ -32,7 +32,7 @@ public enum AllowFlightRestoreType {
         }
     },
 
-    /** Always set flight enabled to false. */
+    /** The user's flight handling is not modified. */
     NOTHING {
         @Override
         public void restoreAllowFlight(Player player, LimboPlayer limbo) {

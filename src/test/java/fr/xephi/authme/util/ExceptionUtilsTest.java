@@ -4,8 +4,10 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
+import java.net.MalformedURLException;
 import java.util.ConcurrentModificationException;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
@@ -57,5 +59,17 @@ public class ExceptionUtilsTest {
     public void shouldHaveHiddenConstructor() {
         // given / when / then
         TestHelper.validateHasOnlyPrivateEmptyConstructor(ExceptionUtils.class);
+    }
+
+    @Test
+    public void shouldFormatException() {
+        // given
+        MalformedURLException ex = new MalformedURLException("Unrecognized URL format");
+
+        // when
+        String result = ExceptionUtils.formatException(ex);
+
+        // then
+        assertThat(result, equalTo("[MalformedURLException]: Unrecognized URL format"));
     }
 }

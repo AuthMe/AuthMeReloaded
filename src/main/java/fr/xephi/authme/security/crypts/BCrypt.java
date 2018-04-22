@@ -8,7 +8,7 @@ import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.ExceptionUtils;
 
 import javax.inject.Inject;
 
@@ -39,7 +39,7 @@ public class BCrypt implements EncryptionMethod {
         try {
             return HashUtils.isValidBcryptHash(hash.getHash()) && BCryptService.checkpw(password, hash.getHash());
         } catch (IllegalArgumentException e) {
-            ConsoleLogger.warning("Bcrypt checkpw() returned " + StringUtils.formatException(e));
+            ConsoleLogger.warning("Bcrypt checkpw() returned " + ExceptionUtils.formatException(e));
         }
         return false;
     }

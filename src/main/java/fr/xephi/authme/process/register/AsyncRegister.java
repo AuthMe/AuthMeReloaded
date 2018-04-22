@@ -14,7 +14,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -82,9 +81,8 @@ public class AsyncRegister implements AsynchronousProcess {
             return false;
         }
 
-        boolean isAsync = service.getProperty(PluginSettings.USE_ASYNC_TASKS);
-        AuthMeAsyncPreRegisterEvent event = new AuthMeAsyncPreRegisterEvent(player, isAsync);
-        bukkitService.callEvent(event);
+        AuthMeAsyncPreRegisterEvent event = bukkitService.createAndCallEvent(
+            isAsync -> new AuthMeAsyncPreRegisterEvent(player, isAsync));
         if (!event.canRegister()) {
             return false;
         }
