@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Dec 01 19:16:17 CET 2017. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sun Apr 22 11:00:13 CEST 2018. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -57,13 +57,16 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.player.email.see** – Command permission to see the own email address.
 - **authme.player.login** – Command permission to login.
 - **authme.player.logout** – Command permission to logout.
+- **authme.player.protection.quickcommandsprotection** – Permission that enables on join quick commands checks for the player.
 - **authme.player.register** – Command permission to register.
 - **authme.player.security.verificationcode** – Permission to use the email verification codes feature.
 - **authme.player.seeownaccounts** – Permission to use to see own other accounts.
+- **authme.player.totpadd** – Permission to enable two-factor authentication.
+- **authme.player.totpremove** – Permission to disable two-factor authentication.
 - **authme.player.unregister** – Command permission to unregister.
 - **authme.vip** – When the server is full and someone with this permission joins the server, someone will be kicked.
 
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Dec 01 19:16:17 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 22 11:00:13 CEST 2018

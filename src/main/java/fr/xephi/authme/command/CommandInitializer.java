@@ -563,10 +563,11 @@ public class CommandInitializer {
 
         // Register the base totp code
         CommandDescription.builder()
-            .parent(null)
+            .parent(totpBase)
             .labels("code", "c")
             .description("Command for logging in")
             .detailedDescription("Processes the two-factor authentication code during login.")
+            .withArgument("code", "The TOTP code to use to log in", MANDATORY)
             .executableCommand(TotpCodeCommand.class)
             .register();
 

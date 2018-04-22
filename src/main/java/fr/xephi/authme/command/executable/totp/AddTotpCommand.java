@@ -35,6 +35,7 @@ public class AddTotpCommand extends PlayerCommand {
             TotpGenerationResult createdTotpInfo = generateTotpService.generateTotpKey(player);
             messages.send(player, MessageKey.TWO_FACTOR_CREATE,
                 createdTotpInfo.getTotpKey(), createdTotpInfo.getAuthenticatorQrCodeUrl());
+            messages.send(player, MessageKey.TWO_FACTOR_CREATE_CONFIRMATION_REQUIRED);
         } else {
             messages.send(player, MessageKey.TWO_FACTOR_ALREADY_ENABLED);
         }

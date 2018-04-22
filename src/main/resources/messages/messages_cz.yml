@@ -60,7 +60,6 @@ misc:
     logout: '&cÚspěšně jsi se odhlásil.'
     reload: '&cZnovu načtení nastavení AuthMe proběhlo úspěšně.'
     usage_change_password: '&cPoužij: "/changepassword StaréHeslo NovéHeslo".'
-    two_factor_create: '&2Tvůj tajný kód je %code. Můžeš ho oskenovat zde %url'
     accounts_owned_self: 'Vlastníš tyto účty (%count):'
     accounts_owned_other: 'Hráč %name vlastní tyto účty (%count):'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '[AuthMe] Starý email je chybně zadán!'
     invalid: '[AuthMe] Nesprávný email'
     added: '[AuthMe] Email přidán!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '[AuthMe] Potvrď prosím svůj email!'
     changed: '[AuthMe] Email změněn!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2Váš aktuální email je: &f%email'
     no_email_for_account: '&2K tomuto účtu nemáte přidanou žádnou emailovou adresu.'
     already_used: '&4Tato emailová adresa je již používána'
@@ -99,8 +100,6 @@ email:
     send_failure: 'Email nemohl být odeslán. Kontaktujte prosím admina.'
     change_password_expired: 'Nemůžeš si změnit heslo pomocí toho příkazu.'
     email_cooldown_error: '&cEmail už byl nedávno odeslán. Musíš čekat %time před odesláním nového.'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:
@@ -142,3 +141,16 @@ time:
     hours: 'hodin'
     day: 'dny'
     days: 'dnu'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Tvůj tajný kód je %code. Můžeš ho oskenovat zde %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

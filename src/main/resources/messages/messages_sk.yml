@@ -66,7 +66,6 @@ misc:
     logout: '&cBol si úspešne odhlásený.'
     reload: '&fZnovu načítanie konfigurácie a databázy bolo úspešné.'
     usage_change_password: '&fPoužitie: /changepassword <staréHeslo> <novéHeslo>'
-    two_factor_create: '&2Tvoj tajný kód je %code. Môžeš ho oskenovať tu: %url'
     accounts_owned_self: 'Vlastníš tieto účty(%count): '
     accounts_owned_other: 'Hráč %name vlastní tieto účty(%count): '
 
@@ -96,8 +95,10 @@ email:
     old_email_invalid: '&cNeplatný starý email, skús to znovu!'
     invalid: '&cNeplatná emailová adresa, skús to znovu!'
     added: '&2Emailová adresa bola úspešne pridaná k tvojmu účtu!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&cProsím potvrď svoju emailovú adresu!'
     changed: '&2Emailová adresa bola úspešne zmenená!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2Tvoja súčastná emailová adresa je: &f%email'
     no_email_for_account: '&2Momentálne nemáš emailovú adresu spojenú s týmto účtom.'
     already_used: '&4Túto emailovú adresu už niekto používa.'
@@ -105,8 +106,6 @@ email:
     send_failure: 'Email nemohol byť poslaný. Prosím kontaktuj Administrátora.'
     change_password_expired: 'Už nemôžeš zmeniť svoje heslo týmto príkazom.'
     email_cooldown_error: '&cEmail bol nedávno poslaný. Musíš počkať %time predtým ako ti pošleme nový.'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:
@@ -148,3 +147,16 @@ time:
     hours: 'hod.'
     day: 'd.'
     days: 'd.'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Tvoj tajný kód je %code. Môžeš ho oskenovať tu: %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

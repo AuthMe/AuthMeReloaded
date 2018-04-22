@@ -1,11 +1,8 @@
 package fr.xephi.authme.security.totp;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
-import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
-import com.warrenstrange.googleauth.GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
-import com.warrenstrange.googleauth.HmacHashFunction;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
@@ -30,10 +27,7 @@ public class TotpAuthenticator {
      * @return new Google Authenticator instance
      */
     protected IGoogleAuthenticator createGoogleAuthenticator() {
-        GoogleAuthenticatorConfig config = new GoogleAuthenticatorConfigBuilder()
-            .setHmacHashFunction(HmacHashFunction.HmacSHA512)
-            .build();
-        return new GoogleAuthenticator(config);
+        return new GoogleAuthenticator();
     }
 
     /**

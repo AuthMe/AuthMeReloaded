@@ -61,7 +61,6 @@ misc:
     logout: '&2Disconnessione avvenuta correttamente!'
     reload: '&2La configurazione e il database sono stati ricaricati correttamente!'
     usage_change_password: '&cUtilizzo: /changepassword <vecchiaPassword> <nuovaPassword>'
-    two_factor_create: '&2Il tuo codice segreto è: &f%code%%nl%&2Puoi anche scannerizzare il codice QR da qui: &f%url'
     accounts_owned_self: 'Possiedi %count account:'
     accounts_owned_other: 'Il giocatore %name possiede %count account:'
 
@@ -91,8 +90,10 @@ email:
     old_email_invalid: '&cIl vecchio indirizzo email inserito non è valido, riprova!'
     invalid: '&cL''indirizzo email inserito non è valido, riprova!'
     added: '&2Indirizzo email aggiunto correttamente al tuo account!'
+    add_not_allowed: '&cNon hai il permesso di aggiungere un indirizzo email'
     request_confirmation: '&cPer favore, conferma il tuo indirizzo email!'
     changed: '&2Indirizzo email cambiato correttamente!'
+    change_not_allowed: '&cNon hai il permesso di cambiare l''indirizzo email'
     email_show: '&2Il tuo indirizzo email al momento è: &f%email'
     no_email_for_account: '&2Al momento non hai nessun indirizzo email associato al tuo account.'
     already_used: '&4L''indirizzo email inserito è già in uso'
@@ -100,8 +101,6 @@ email:
     send_failure: 'Non è stato possibile inviare l''email di recupero. Per favore contatta un amministratore.'
     change_password_expired: 'Non puoi più cambiare la tua password con questo comando.'
     email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentemente. Devi attendere %time prima di poterne richiedere una nuova.'
-    add_not_allowed: '&cNon hai il permesso di aggiungere un indirizzo email'
-    change_not_allowed: '&cNon hai il permesso di cambiare l''indirizzo email'
 
 # Password recovery by email
 recovery:
@@ -143,3 +142,16 @@ time:
     hours: 'ore'
     day: 'giorno'
     days: 'giorni'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Il tuo codice segreto è: &f%code%%nl%&2Puoi anche scannerizzare il codice QR da qui: &f%url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

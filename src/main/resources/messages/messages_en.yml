@@ -132,6 +132,7 @@ verification:
 
 two_factor:
   code_created: '&2Your secret code is %code. You can scan it from here %url'
+  confirmation_required: 'Please confirm your code with /2fa confirm <code>'
   code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
   already_enabled: 'Two-factor authentication is already enabled for your account!'
   enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'

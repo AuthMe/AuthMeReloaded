@@ -60,7 +60,6 @@ misc:
     logout: '&cSikeresen kijelentkeztél!'
     reload: 'Beállítások és az adatbázis újratöltve!'
     usage_change_password: 'Használat: "/changepassword <régi jelszó> <új jelszó>".'
-    two_factor_create: '&2A titkos kódod a következő: %code. Vagy skenneld be a következő oldalról: %url'
     accounts_owned_self: '%count db regisztrációd van:'
     accounts_owned_other: 'A %name nevű játékosnak, %count db regisztrációja van:'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&cHibás a régi email cím, próbáld újra!'
     invalid: '&cHibás az email cím, próbáld újra!'
     added: '&2Az email címed rögzítése sikeresen megtörtént!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&cKérlek, ellenőrízd az email címedet!'
     changed: '&2Az email cím cseréje sikeresen megtörtént!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2A jelenlegi email-ed a következő: &f%email'
     no_email_for_account: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
     already_used: '&4Ez az email cím már használatban van!'
@@ -99,8 +100,6 @@ email:
     send_failure: 'Nem sikerült elküldeni az emailt. Lépj kapcsolatba egy adminnal.'
     change_password_expired: 'Ezzel a paranccsal már nem módosíthatja jelszavát.'
     email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldése előtt várnod kell: %time.'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:
@@ -142,3 +141,16 @@ time:
     hours: 'óra'
     day: 'nap'
     days: 'nap'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2A titkos kódod a következő: %code. Vagy skenneld be a következő oldalról: %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

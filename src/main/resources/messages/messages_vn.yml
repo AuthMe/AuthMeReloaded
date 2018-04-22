@@ -60,7 +60,6 @@ misc:
     logout: '&2Bạn đã đăng xuất!'
     reload: '&2Cấu hình và cơ sở dử liệu đã được nạp lại!'
     usage_change_password: '&cSử dụng: /changepassword <mật khẩu cũ> <mật khẩu mới>'
-    two_factor_create: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
     accounts_owned_self: 'Bạn sở hữu %count tài khoản:'
     accounts_owned_other: 'Người chơi %name có %count tài khoản:'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&cEmail cũ không hợp lệ, vui lòng thử lại!'
     invalid: '&cĐại chỉ email không hợp lệ, vui lòng thử lại!'
     added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thành công!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&cVui lòng xác nhận địa chỉ email của bạn!'
     changed: '&2Địa chỉ email đã thay đổi!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
     no_email_for_account: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
     already_used: '&4Địa chỉ email đã được sử dụng'
@@ -99,8 +100,6 @@ email:
     send_failure: 'Không thể gửi thư. Vui lòng liên hệ với ban quản trị.'
     change_password_expired: '&cBạn không thể thay đổi mật khẩu bằng lệnh này từ nay.'
     email_cooldown_error: '&cMột bức thư đã được gửi gần đây. Bạn phải chờ %time trước khi có thể gửi một bức thư mới.'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:
@@ -142,3 +141,16 @@ time:
     hours: 'giờ'
     day: 'ngày'
     days: 'ngày'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

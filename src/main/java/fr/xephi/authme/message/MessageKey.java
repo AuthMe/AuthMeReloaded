@@ -125,7 +125,7 @@ public enum MessageKey {
     /** Forgot your password? Please use the command: /email recovery &lt;yourEmail&gt; */
     FORGOT_PASSWORD_MESSAGE("recovery.forgot_password_hint"),
 
-    /** To login you have to solve a captcha code, please use the command: /captcha %captcha_code */
+    /** To log in you have to solve a captcha code, please use the command: /captcha %captcha_code */
     USAGE_CAPTCHA("captcha.usage_captcha", "%captcha_code"),
 
     /** Wrong captcha, please type "/captcha %captcha_code" into the chat! */
@@ -134,7 +134,7 @@ public enum MessageKey {
     /** Captcha code solved correctly! */
     CAPTCHA_SUCCESS("captcha.valid_captcha"),
 
-    /** To register you have to solve a captcha code first, please use the command: /captcha %captcha_code */
+    /** To register you have to solve a captcha first, please use the command: /captcha %captcha_code */
     CAPTCHA_FOR_REGISTRATION_REQUIRED("captcha.captcha_for_registration", "%captcha_code"),
 
     /** Valid captcha! You may now register with /register */
@@ -203,7 +203,10 @@ public enum MessageKey {
     /** Your secret code is %code. You can scan it from here %url */
     TWO_FACTOR_CREATE("two_factor.code_created", "%code", "%url"),
 
-    /** Please submit your two-factor authentication code with /2fa code &lt;code&gt;. */
+    /** Please confirm your code with /2fa confirm &lt;code&gt; */
+    TWO_FACTOR_CREATE_CONFIRMATION_REQUIRED("two_factor.confirmation_required"),
+
+    /** Please submit your two-factor authentication code with /2fa code &lt;code&gt; */
     TWO_FACTOR_CODE_REQUIRED("two_factor.code_required"),
 
     /** Two-factor authentication is already enabled for your account! */
@@ -276,27 +279,21 @@ public enum MessageKey {
     EMAIL_COOLDOWN_ERROR("email.email_cooldown_error", "%time"),
 
     /**
-     * The command you are trying to execute is sensitive and requires a verification!
-     * A verification code has been sent to your email,
-     * run the command "/verification [code]" to verify your identity.
+     * This command is sensitive and requires an email verification!
+     * Check your inbox and follow the email's instructions.
      */
     VERIFICATION_CODE_REQUIRED("verification.code_required"),
 
     /** Usage: /verification &lt;code&gt; */
     USAGE_VERIFICATION_CODE("verification.command_usage"),
 
-    /** Incorrect code, please type "/verification &lt;code&gt;" into the chat! */
+    /** Incorrect code, please type "/verification &lt;code&gt;" into the chat, using the code you received by email */
     INCORRECT_VERIFICATION_CODE("verification.incorrect_code"),
 
-    /**
-     * Your identity has been verified!
-     * You can now execute every sensitive command within the current session!
-     */
+    /** Your identity has been verified! You can now execute all commands within the current session! */
     VERIFICATION_CODE_VERIFIED("verification.success"),
 
-    /**
-     * You can already execute every sensitive command within the current session!
-     */
+    /** You can already execute every sensitive command within the current session! */
     VERIFICATION_CODE_ALREADY_VERIFIED("verification.already_verified"),
 
     /** Your code has expired! Execute another sensitive command to get a new code! */

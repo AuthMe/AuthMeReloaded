@@ -61,7 +61,6 @@ misc:
     logout: '&cDesconectado correctamente.'
     reload: '&fLa configuración y la base de datos han sido recargados'
     usage_change_password: '&fUso: /changepw contraseñaActual contraseñaNueva'
-    two_factor_create: '&2Tu código secreto es %code. Lo puedes escanear desde aquí %url'
     accounts_owned_self: 'Eres propietario de %count cuentas:'
     accounts_owned_other: 'El jugador %name tiene %count cuentas:'
 
@@ -91,8 +90,10 @@ email:
     old_email_invalid: '[AuthMe] Email anterior inválido!'
     invalid: '[AuthMe] Email inválido'
     added: '[AuthMe] Email agregado !'
+    add_not_allowed: '&cNo se permite añadir un Email'
     request_confirmation: '[AuthMe] Confirma tu Email !'
     changed: '[AuthMe] Email cambiado !'
+    change_not_allowed: '&cNo se permite el cambio de Email'
     email_show: '&2Tu dirección de E-Mail actual es: &f%email'
     no_email_for_account: '&2No tienes ningun E-Mail asociado en esta cuenta.'
     already_used: '&4La dirección Email ya está siendo usada'
@@ -100,8 +101,6 @@ email:
     send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
     change_password_expired: 'No puedes cambiar la contraseña utilizando este comando.'
     email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar %time antes de volver a enviar uno nuevo.'
-    add_not_allowed: '&cNo se permite añadir un Email'
-    change_not_allowed: '&cNo se permite el cambio de Email'
 
 # Password recovery by email
 recovery:
@@ -143,3 +142,16 @@ time:
     hours: 'horas'
     day: 'día'
     days: 'días'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Tu código secreto es %code. Lo puedes escanear desde aquí %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

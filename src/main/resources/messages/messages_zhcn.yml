@@ -60,7 +60,6 @@ misc:
     logout: '&8[&6玩家系统&8] &c已成功登出！'
     reload: '&8[&6玩家系统&8] &f配置以及数据已经重新加载完毕'
     usage_change_password: '&8[&6玩家系统&8] &f正确用法：“/changepassword 旧密码 新密码”'
-    two_factor_create: '&8[&6玩家系统&8] &2你的代码是 %code，你可以使用 %url 来扫描'
     accounts_owned_self: '您拥有 %count 个账户：'
     accounts_owned_other: '玩家 %name 拥有 %count 个账户：'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&8[&6玩家系统&8] &f旧邮箱无效!'
     invalid: '&8[&6玩家系统&8] &f无效的邮箱'
     added: '&8[&6玩家系统&8] &f邮箱已添加 !'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&8[&6玩家系统&8] &f确认你的邮箱 !'
     changed: '&8[&6玩家系统&8] &f邮箱已改变 !'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2您当前的电子邮件地址为： &f%email'
     no_email_for_account: '&2您当前并没有任何邮箱与该账号绑定'
     already_used: '&8[&6玩家系统&8] &4邮箱已被使用'
@@ -99,8 +100,6 @@ email:
     send_failure: '邮件发送失败，请联系管理员'
     change_password_expired: '您不能使用此命令更改密码'
     email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:
@@ -142,3 +141,16 @@ time:
     hours: '小时'
     day: '天'
     days: '天'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&8[&6玩家系统&8] &2你的代码是 %code，你可以使用 %url 来扫描'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'
