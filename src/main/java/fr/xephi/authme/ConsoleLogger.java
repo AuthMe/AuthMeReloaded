@@ -5,7 +5,7 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.ExceptionUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -101,7 +101,7 @@ public final class ConsoleLogger {
      * @param th      The Throwable to log
      */
     public static void logException(String message, Throwable th) {
-        warning(message + " " + StringUtils.formatException(th));
+        warning(message + " " + ExceptionUtils.formatException(th));
         writeLog(Throwables.getStackTraceAsString(th));
     }
 

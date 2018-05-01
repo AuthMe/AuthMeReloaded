@@ -2,9 +2,7 @@ package fr.xephi.authme;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
-
 import com.google.common.annotations.VisibleForTesting;
-
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
@@ -35,9 +33,6 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.util.ExceptionUtils;
-
-import java.io.File;
-
 import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -47,6 +42,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
+
+import java.io.File;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.util.Utils.isClassLoaded;
@@ -160,7 +157,7 @@ public class AuthMe extends JavaPlugin {
 
         // Sponsor messages
         ConsoleLogger.info("Development builds are available on our jenkins, thanks to FastVM.io");
-        ConsoleLogger.info("Do you want a good vps for your  game server? Look at our sponsor FastVM.io leader "
+        ConsoleLogger.info("Do you want a good vps for your game server? Look at our sponsor FastVM.io leader "
             + "as virtual server provider!");
 
         // Successful message

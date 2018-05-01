@@ -12,7 +12,6 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.TwoFactorRegisterParams;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
@@ -21,11 +20,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
+
+import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -108,7 +107,7 @@ public class AsyncRegisterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForFailedExecutorCheck() {
+    public void shouldStopForCanceledEvent() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
@@ -116,14 +115,13 @@ public class AsyncRegisterTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
         given(dataSource.isAuthAvailable(name)).willReturn(false);
-        given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         RegistrationExecutor executor = mock(RegistrationExecutor.class);
         TwoFactorRegisterParams params = TwoFactorRegisterParams.of(player);
         singletonStoreWillReturn(registrationExecutorStore, executor);
-        doAnswer((Answer<Void>) invocation -> {
-            ((AuthMeAsyncPreRegisterEvent) invocation.getArgument(0)).setCanRegister(false);
-            return null;
-        }).when(bukkitService).callEvent(any(AuthMeAsyncPreRegisterEvent.class));
+
+        AuthMeAsyncPreRegisterEvent canceledEvent = new AuthMeAsyncPreRegisterEvent(player, true);
+        canceledEvent.setCanRegister(false);
+        given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(canceledEvent);
 
         // when
         asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, params);
@@ -134,7 +132,7 @@ public class AsyncRegisterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForCancelledEvent() {
+    public void shouldStopForFailedExecutorCheck() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
@@ -143,11 +141,13 @@ public class AsyncRegisterTest {
         given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
         given(commonService.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP)).willReturn(0);
         given(dataSource.isAuthAvailable(name)).willReturn(false);
-        given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         RegistrationExecutor executor = mock(RegistrationExecutor.class);
         TwoFactorRegisterParams params = TwoFactorRegisterParams.of(player);
         given(executor.isRegistrationAdmitted(params)).willReturn(false);
         singletonStoreWillReturn(registrationExecutorStore, executor);
+
+        given(bukkitService.createAndCallEvent(any(Function.class)))
+            .willReturn(new AuthMeAsyncPreRegisterEvent(player, false));
 
         // when
         asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, params);

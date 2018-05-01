@@ -3,6 +3,7 @@ package fr.xephi.authme.security.crypts;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
 import static fr.xephi.authme.security.crypts.BCryptService.hashpw;
 
 @Recommendation(Usage.RECOMMENDED)
@@ -14,12 +15,12 @@ public class Wbb4 extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
         if (hashedPassword.getHash().length() != 60) {
             return false;
         }
         String salt = hashedPassword.getHash().substring(0, 29);
-        return computeHash(password, salt, null).equals(hashedPassword.getHash());
+        return isEqual(hashedPassword.getHash(), computeHash(password, salt, name));
     }
 
     @Override

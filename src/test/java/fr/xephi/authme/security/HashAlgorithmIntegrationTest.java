@@ -2,6 +2,7 @@ package fr.xephi.authme.security;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -40,6 +41,7 @@ public class HashAlgorithmIntegrationTest {
         given(settings.getProperty(SecuritySettings.PBKDF2_NUMBER_OF_ROUNDS)).willReturn(10_000);
         injector = new InjectorBuilder().addDefaultHandlers("fr.xephi.authme").create();
         injector.register(Settings.class, settings);
+        TestHelper.setupLogger();
     }
 
     @Test
