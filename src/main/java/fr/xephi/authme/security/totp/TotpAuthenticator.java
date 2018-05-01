@@ -4,13 +4,14 @@ import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
 /**
- * Provides rudimentary TOTP functions (wraps third-party TOTP implementation).
+ * Provides TOTP functions (wrapping a third-party TOTP implementation).
  */
 public class TotpAuthenticator {
 
@@ -28,6 +29,10 @@ public class TotpAuthenticator {
      */
     protected IGoogleAuthenticator createGoogleAuthenticator() {
         return new GoogleAuthenticator();
+    }
+
+    public boolean checkCode(PlayerAuth auth, String totpCode) {
+        return checkCode(auth.getTotpKey(), totpCode);
     }
 
     /**
@@ -58,7 +63,7 @@ public class TotpAuthenticator {
         private final String totpKey;
         private final String authenticatorQrCodeUrl;
 
-        TotpGenerationResult(String totpKey, String authenticatorQrCodeUrl) {
+        public TotpGenerationResult(String totpKey, String authenticatorQrCodeUrl) {
             this.totpKey = totpKey;
             this.authenticatorQrCodeUrl = authenticatorQrCodeUrl;
         }

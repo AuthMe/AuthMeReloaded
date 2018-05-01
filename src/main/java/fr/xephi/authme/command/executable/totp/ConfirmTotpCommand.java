@@ -33,13 +33,17 @@ public class ConfirmTotpCommand extends PlayerCommand {
             messages.send(player, MessageKey.REGISTER_MESSAGE);
         } else if (auth.getTotpKey() != null) {
             messages.send(player, MessageKey.TWO_FACTOR_ALREADY_ENABLED);
+        } else {
+            verifyTotpCodeConfirmation(player, arguments.get(0));
         }
+    }
 
+    private void verifyTotpCodeConfirmation(Player player, String inputTotpCode) {
         final TotpGenerationResult totpDetails = generateTotpService.getGeneratedTotpKey(player);
         if (totpDetails == null) {
             messages.send(player, MessageKey.TWO_FACTOR_ENABLE_ERROR_NO_CODE);
         } else {
-            boolean isCodeValid = generateTotpService.isTotpCodeCorrectForGeneratedTotpKey(player, arguments.get(0));
+            boolean isCodeValid = generateTotpService.isTotpCodeCorrectForGeneratedTotpKey(player, inputTotpCode);
             if (isCodeValid) {
                 generateTotpService.removeGenerateTotpKey(player);
                 dataSource.setTotpKey(player.getName(), totpDetails.getTotpKey());

@@ -4,3 +4,5 @@ unknown_user: 'Message from test2'
 login: 'test2 - login'
 not_logged_in: 'test2 - not logged in'
 wrong_pwd: 'test2 - wrong password'
+misc:
+  two_factor_create: 'Old 2fa create text'

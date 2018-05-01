@@ -10,7 +10,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.login.AsynchronousLogin;
-import fr.xephi.authme.security.totp.TotpService;
+import fr.xephi.authme.security.totp.TotpAuthenticator;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -31,7 +31,7 @@ public class TotpCodeCommand extends PlayerCommand {
     private Messages messages;
 
     @Inject
-    private TotpService totpService;
+    private TotpAuthenticator totpAuthenticator;
 
     @Inject
     private DataSource dataSource;
@@ -61,7 +61,7 @@ public class TotpCodeCommand extends PlayerCommand {
     }
 
     private void processCode(Player player, PlayerAuth auth, String inputCode) {
-        boolean isCodeValid = totpService.verifyCode(auth, inputCode);
+        boolean isCodeValid = totpAuthenticator.checkCode(auth, inputCode);
         if (isCodeValid) {
             asynchronousLogin.performLogin(player, auth);
         } else {

@@ -1,6 +1,7 @@
 package fr.xephi.authme.security.totp;
 
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
@@ -84,6 +85,25 @@ public class TotpAuthenticatorTest {
         // then
         assertThat(result, equalTo(false));
         verifyZeroInteractions(googleAuthenticator);
+    }
+
+    @Test
+    public void shouldVerifyCode() {
+        // given
+        String totpKey = "ASLO43KDF2J";
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("Maya")
+            .totpKey(totpKey)
+            .build();
+        String inputCode = "408435";
+        given(totpAuthenticator.checkCode(totpKey, inputCode)).willReturn(true);
+
+        // when
+        boolean result = totpAuthenticator.checkCode(auth, inputCode);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(googleAuthenticator).authorize(totpKey, 408435);
     }
 
     private final class TotpAuthenticatorTestImpl extends TotpAuthenticator {
