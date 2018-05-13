@@ -7,7 +7,7 @@
 # Registration
 registration:
     disabled: '&cLa registrazione tramite i comandi di gioco è disabilitata.'
-    name_taken: '&cHai già eseguito la registrazione, non puoi eseguirla nuovamente.'
+    name_taken: '&cHai già eseguito la registrazione!'
     register_request: '&3Per favore, esegui la registrazione con il comando: /register <password> <confermaPassword>'
     command_usage: '&cUtilizzo: /register <password> <confermaPassword>'
     reg_only: '&4Puoi giocare in questo server solo dopo aver eseguito la registrazione attraverso il sito web! Per favore, vai su http://esempio.it per procedere!'
@@ -39,7 +39,7 @@ error:
     no_permission: '&4Non hai il permesso di eseguire questa operazione.'
     unexpected_error: '&4Qualcosa è andato storto, riporta questo errore ad un amministratore!'
     max_registration: '&cHai raggiunto il numero massimo di registrazioni (%reg_count/%max_acc %reg_names) per questo indirizzo IP!'
-    logged_in: '&cHai già eseguito l''autenticazione, non è necessario eseguirla nuovamente!'
+    logged_in: '&cHai già eseguito l''autenticazione!'
     kick_for_vip: '&3Un utente VIP è entrato mentre il server era pieno e ha preso il tuo posto!'
     tempban_max_logins: '&cSei stato temporaneamente bandito per aver fallito l''autenticazione troppe volte.'
 
@@ -146,12 +146,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Il tuo codice segreto è: &f%code%%nl%&2Puoi anche scannerizzare il codice QR da qui: &f%url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Per favore conferma il tuo codice con: /2fa confirm <codice>'
+    code_required: 'Per favore inserisci il tuo codice per l''autenticazione a 2 fattori con: /2fa code <codice>'
+    already_enabled: 'Hai già abilitato l''autenticazione a 2 fattori!'
+    enable_error_no_code: 'Non hai ancora generato un codice per l''autenticazione a 2 fattori oppure il tuo codice è scaduto. Per favore scrivi: /2fa add'
+    enable_success: 'Autenticazione a 2 fattori abilitata correttamente'
+    enable_error_wrong_code: 'Hai inserito un codice sbagliato o scaduto. Per favore scrivi: /2fa add'
+    not_enabled_error: 'L''autenticazione a 2 fattori non è ancora abilitata per il tuo account. Scrivi: /2fa add'
+    removed_success: 'Autenticazione a 2 fattori rimossa correttamente'
+    invalid_code: 'Il codice inserito non è valido, riprova!'
