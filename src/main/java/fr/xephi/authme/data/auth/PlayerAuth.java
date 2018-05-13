@@ -165,6 +165,10 @@ public class PlayerAuth {
         return totpKey;
     }
 
+    public void setTotpKey(String totpKey) {
+        this.totpKey = totpKey;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerAuth)) {

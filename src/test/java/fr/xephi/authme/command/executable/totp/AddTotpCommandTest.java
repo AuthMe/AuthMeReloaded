@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.totp;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.totp.GenerateTotpService;
@@ -32,21 +32,21 @@ public class AddTotpCommandTest {
     @Mock
     private GenerateTotpService generateTotpService;
     @Mock
-    private DataSource dataSource;
+    private PlayerCache playerCache;
     @Mock
     private Messages messages;
 
     @Test
-    public void shouldHandleNonExistentUser() {
+    public void shouldHandleNonLoggedInUser() {
         // given
         Player player = mockPlayerWithName("bob");
-        given(dataSource.getAuth("bob")).willReturn(null);
+        given(playerCache.getAuth("bob")).willReturn(null);
 
         // when
         addTotpCommand.runCommand(player, Collections.emptyList());
 
         // then
-        verify(messages).send(player, MessageKey.REGISTER_MESSAGE);
+        verify(messages).send(player, MessageKey.NOT_LOGGED_IN);
         verifyZeroInteractions(generateTotpService);
     }
 
@@ -56,7 +56,7 @@ public class AddTotpCommandTest {
         Player player = mockPlayerWithName("arend");
         PlayerAuth auth = PlayerAuth.builder().name("arend")
             .totpKey("TOTP2345").build();
-        given(dataSource.getAuth("arend")).willReturn(auth);
+        given(playerCache.getAuth("arend")).willReturn(auth);
 
         // when
         addTotpCommand.runCommand(player, Collections.emptyList());
@@ -71,7 +71,7 @@ public class AddTotpCommandTest {
         // given
         Player player = mockPlayerWithName("charles");
         PlayerAuth auth = PlayerAuth.builder().name("charles").build();
-        given(dataSource.getAuth("charles")).willReturn(auth);
+        given(playerCache.getAuth("charles")).willReturn(auth);
 
         TotpGenerationResult generationResult = new TotpGenerationResult(
             "777Key214", "http://example.org/qr-code/link");

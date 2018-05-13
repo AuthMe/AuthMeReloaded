@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.totp;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -56,6 +57,8 @@ public class TotpCodeCommand extends PlayerCommand {
         if (limbo != null && limbo.getState() == LimboPlayerState.TOTP_REQUIRED) {
             processCode(player, auth, arguments.get(0));
         } else {
+            ConsoleLogger.debug(() -> "Aborting TOTP check for player '" + player.getName()
+                + "'. Invalid limbo state: " + (limbo == null ? "no limbo" : limbo.getState()));
             messages.send(player, MessageKey.LOGIN_MESSAGE);
         }
     }
@@ -63,8 +66,10 @@ public class TotpCodeCommand extends PlayerCommand {
     private void processCode(Player player, PlayerAuth auth, String inputCode) {
         boolean isCodeValid = totpAuthenticator.checkCode(auth, inputCode);
         if (isCodeValid) {
+            ConsoleLogger.debug("Successfully checked TOTP code for `{0}`", player.getName());
             asynchronousLogin.performLogin(player, auth);
         } else {
+            ConsoleLogger.debug("Input TOTP code was invalid for player `{0}`", player.getName());
             messages.send(player, MessageKey.TWO_FACTOR_INVALID_CODE);
         }
     }
