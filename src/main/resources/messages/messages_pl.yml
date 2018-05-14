@@ -146,7 +146,7 @@ time:
 two_factor:
     code_created: '&2Twój sekretny kod to %code. Możesz zeskanować go tutaj: %url'
     confirmation_required: 'Musisz potwierdzić swój kod komendą /2fa confirm <kod>'
-    code_required: 'Wpisz swój kod weryfikacji dwuetapowej przy pomocy komendy /2fa code <code>'
+    code_required: 'Wpisz swój kod weryfikacji dwuetapowej przy pomocy komendy /2fa code <kod>'
     already_enabled: '&aWeryfikacja dwuetapowa jest już włączona dla Twojego konta.'
     enable_error_no_code: '&cKod weryfikacji dwuetapowej nie został dla Ciebie wygenerowany lub wygasł. Wpisz komende /2fa add'
     enable_success: '&aWeryfikacja dwuetapowa została włączona dla Twojego konta.'
