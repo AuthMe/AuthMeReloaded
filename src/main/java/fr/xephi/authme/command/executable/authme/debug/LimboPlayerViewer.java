@@ -74,7 +74,8 @@ class LimboPlayerViewer implements DebugSection {
             .sendEntry("Location", p -> formatLocation(p.getLocation()), l -> formatLocation(l.getLocation()))
             .sendEntry("Prim. group",
                 p -> permissionsManager.hasGroupSupport() ? permissionsManager.getPrimaryGroup(p) : "N/A",
-                LimboPlayer::getGroups);
+                LimboPlayer::getGroups)
+            .sendEntry("State", p -> "N/A", LimboPlayer::getState);
     }
 
     @Override
@@ -120,12 +121,11 @@ class LimboPlayerViewer implements DebugSection {
          * @param title the designation of the piece of information
          * @param playerGetter getter for data retrieval on Player
          * @param limboGetter getter for data retrieval on the LimboPlayer
-         * @param <T> the data type
          * @return this instance (for chaining)
          */
-        <T> InfoDisplayer sendEntry(String title,
-                                    Function<Player, T> playerGetter,
-                                    Function<LimboPlayer, T> limboGetter) {
+        InfoDisplayer sendEntry(String title,
+                                Function<Player, Object> playerGetter,
+                                Function<LimboPlayer, Object> limboGetter) {
             sender.sendMessage(
                 title + ": "
                 + getData(player, playerGetter)
@@ -136,7 +136,7 @@ class LimboPlayerViewer implements DebugSection {
             return this;
         }
 
-        static <E, T> String getData(Optional<E> entity, Function<E, T> getter) {
+        static <E> String getData(Optional<E> entity, Function<E, Object> getter) {
             return entity.map(getter).map(String::valueOf).orElse(" -- ");
         }
     }

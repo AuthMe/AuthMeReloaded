@@ -56,7 +56,7 @@ public final class IsEqualByReflectionMatcher<T> extends TypeSafeMatcher<T> {
         for (Field field : fieldsToCheck) {
             Object lhsValue = ReflectionTestUtils.getFieldValue(field, expected);
             Object rhsValue = ReflectionTestUtils.getFieldValue(field, item);
-            if (!Objects.equals(lhsValue, rhsValue)) {
+            if (!Objects.deepEquals(lhsValue, rhsValue)) {
                 fail("Field '" + field.getName() + "' does not have same value: '"
                     + lhsValue + "' vs. '" + rhsValue + "'");
                 return false;

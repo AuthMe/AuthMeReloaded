@@ -5,8 +5,8 @@
 
 # Registration
 registration:
-  register_request: '&3Please, register to the server with the command: /register <password> <ConfirmPassword>'
-  command_usage: '&cUsage: /register <password> <ConfirmPassword>'
+  register_request: '&3Please, register to the server with the command: /register <password> <confirmPassword>'
+  command_usage: '&cUsage: /register <password> <confirmPassword>'
   reg_only: '&4Only registered users can join the server! Please visit http://example.com to register yourself!'
   kicked_admin_registered: 'An admin just registered you; please log in again'
   success: '&2Successfully registered!'
@@ -20,6 +20,7 @@ password:
   unsafe_password: '&cThe chosen password isn''t safe, please choose another one...'
   forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
   wrong_length: '&cYour password is too short or too long! Please try with another one!'
+  new_password_required: 'You must set a new password. Please use /register <password> <confirmPassword>'
 
 # Login
 login:

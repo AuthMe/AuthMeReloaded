@@ -6,6 +6,8 @@ public enum LimboMessageType {
 
     LOG_IN,
 
-    TOTP_CODE
+    TOTP_CODE,
+
+    NEW_PASSWORD_REQUIRED
 
 }

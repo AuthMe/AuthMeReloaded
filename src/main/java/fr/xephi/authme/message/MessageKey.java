@@ -104,6 +104,9 @@ public enum MessageKey {
     /** Your password is too short or too long! Please try with another one! */
     INVALID_PASSWORD_LENGTH("password.wrong_length"),
 
+    /** You must set a new password. Please use /register &lt;password&gt; &lt;confirmPassword&gt;. */
+    NEW_PASSWORD_REQUIRED("password.new_password_required"),
+
     /** Configuration and database have been reloaded correctly! */
     CONFIG_RELOAD_SUCCESS("misc.reload"),
 

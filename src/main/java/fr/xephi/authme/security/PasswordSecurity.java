@@ -13,6 +13,7 @@ import org.bukkit.plugin.PluginManager;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Manager class for password-related operations.
@@ -81,9 +82,26 @@ public class PasswordSecurity implements Reloadable {
      * @return True if the password matches, false otherwise
      */
     public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
+        return verifyPassword(password, hashedPassword, playerName).isSuccessful();
+    }
+
+    /**
+     * Verifies the given password and returns detailed information on its execution.
+     *
+     * @param password The password to check
+     * @param hashedPassword The hashed password to check against
+     * @param playerName The player to check for
+     *
+     * @return The result of the password check
+     */
+    public PasswordCheckResult verifyPassword(String password, HashedPassword hashedPassword, String playerName) {
         String playerLowerCase = playerName.toLowerCase();
-        return methodMatches(encryptionMethod, password, hashedPassword, playerLowerCase)
-            || compareWithLegacyHashes(password, hashedPassword, playerLowerCase);
+        if (methodMatches(encryptionMethod, password, hashedPassword, playerLowerCase)) {
+            return PasswordCheckResult.successful();
+        }
+        return compareWithLegacyHashes(password, hashedPassword, playerLowerCase)
+            .map(PasswordCheckResult::successfulFromLegacyHash)
+            .orElseGet(PasswordCheckResult::failed);
     }
 
     /**
@@ -95,17 +113,19 @@ public class PasswordSecurity implements Reloadable {
      * @param hashedPassword The encrypted password to test the clear-text password against
      * @param playerName     The name of the player
      *
-     * @return True if there was a password match with a configured legacy encryption method, false otherwise
+     * @return optional with the matching hash algorithm if it evaluated successfully; empty optional if no
+     *         legacy hash passed the check
      */
-    private boolean compareWithLegacyHashes(String password, HashedPassword hashedPassword, String playerName) {
+    private Optional<HashAlgorithm> compareWithLegacyHashes(String password, HashedPassword hashedPassword,
+                                                            String playerName) {
         for (HashAlgorithm algorithm : legacyAlgorithms) {
             EncryptionMethod method = initializeEncryptionMethod(algorithm);
             if (methodMatches(method, password, hashedPassword, playerName)) {
-                hashAndSavePasswordWithNewAlgorithm(password, playerName);
-                return true;
+                hashAndSavePasswordWithNewAlgorithm(algorithm, password, playerName);
+                return Optional.of(algorithm);
             }
         }
-        return false;
+        return Optional.empty();
     }
 
     /**
@@ -155,9 +175,12 @@ public class PasswordSecurity implements Reloadable {
         return encryptionMethodFactory.newInstance(algorithm.getClazz());
     }
 
-    private void hashAndSavePasswordWithNewAlgorithm(String password, String playerName) {
-        HashedPassword hashedPassword = encryptionMethod.computeHash(password, playerName);
-        dataSource.updatePassword(playerName, hashedPassword);
+    private void hashAndSavePasswordWithNewAlgorithm(HashAlgorithm matchedAlgorithm,
+                                                     String password, String playerName) {
+        if (matchedAlgorithm != HashAlgorithm.TWO_FACTOR) {
+            HashedPassword hashedPassword = encryptionMethod.computeHash(password, playerName);
+            dataSource.updatePassword(playerName, hashedPassword);
+        }
     }
 
 }

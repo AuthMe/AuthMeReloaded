@@ -203,7 +203,6 @@ public class LimboServiceTest {
         getLimboMap().put("jeff", limbo);
         Player player = newPlayer("JEFF");
 
-
         // when
         limboService.replaceTasksAfterRegistration(player);
 
@@ -224,6 +223,21 @@ public class LimboServiceTest {
         // then
         verifyZeroInteractions(taskManager);
         verify(authGroupHandler).setGroup(player, null, AuthGroupType.REGISTERED_UNAUTHENTICATED);
+    }
+
+    @Test
+    public void shouldTransitionLimboPlayerToState() {
+        // given
+        Player player = newPlayer("word");
+        LimboPlayer limbo = mock(LimboPlayer.class);
+        getLimboMap().put("word", limbo);
+
+        // when
+        limboService.transitionToState(player, LimboPlayerState.TOTP_REQUIRED, LimboMessageType.TOTP_CODE);
+
+        // then
+        verify(limbo).setState(LimboPlayerState.TOTP_REQUIRED);
+        verify(taskManager).registerMessageTask(player, limbo, LimboMessageType.TOTP_CODE);
     }
 
     private static Player newPlayer(String name) {

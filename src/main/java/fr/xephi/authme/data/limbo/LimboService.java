@@ -152,6 +152,21 @@ public class LimboService {
     }
 
     /**
+     * Changes the state of the limbo player and updates the message task.
+     *
+     * @param player the player whose limbo player should be modified
+     * @param state the state to change to
+     * @param messageType the message to show for the limbo player
+     */
+    public void transitionToState(Player player, LimboPlayerState state, LimboMessageType messageType) {
+        getLimboOrLogError(player, "transition to state " + state)
+            .ifPresent(limbo -> {
+                limbo.setState(state);
+                taskManager.registerMessageTask(player, limbo, messageType);
+            });
+    }
+
+    /**
      * @param player the player whose message task should be muted
      */
     public void muteMessageTask(Player player) {
