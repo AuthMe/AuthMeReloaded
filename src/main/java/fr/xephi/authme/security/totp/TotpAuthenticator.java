@@ -1,5 +1,6 @@
 package fr.xephi.authme.security.totp;
 
+import com.google.common.primitives.Ints;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
@@ -43,13 +44,8 @@ public class TotpAuthenticator {
      * @return true if code is valid, false otherwise
      */
     public boolean checkCode(String totpKey, String inputCode) {
-        try {
-            Integer totpCode = Integer.valueOf(inputCode);
-            return authenticator.authorize(totpKey, totpCode);
-        } catch (NumberFormatException e) {
-            // ignore
-        }
-        return false;
+        Integer totpCode = Ints.tryParse(inputCode);
+        return totpCode != null && authenticator.authorize(totpKey, totpCode);
     }
 
     public TotpGenerationResult generateTotpKey(Player player) {

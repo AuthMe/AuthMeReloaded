@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.List;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -154,11 +155,10 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void shouldInformPlayersOnActivation() {
         // given - listening antibot
         List<Player> players = Arrays.asList(mock(Player.class), mock(Player.class));
-        given(bukkitService.getOnlinePlayers()).willReturn((List) players);
+        returnGivenOnlinePlayers(bukkitService, players);
         given(permissionsManager.hasPermission(players.get(0), AdminPermission.ANTIBOT_MESSAGES)).willReturn(false);
         given(permissionsManager.hasPermission(players.get(1), AdminPermission.ANTIBOT_MESSAGES)).willReturn(true);
 

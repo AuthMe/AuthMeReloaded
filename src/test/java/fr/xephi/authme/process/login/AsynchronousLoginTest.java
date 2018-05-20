@@ -21,13 +21,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -241,7 +241,6 @@ public class AsynchronousLoginTest {
         return player;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void mockOnlinePlayersInBukkitService() {
         // 127.0.0.4: albania (online), brazil (offline)
         Player playerA = mockPlayer("albania");
@@ -266,8 +265,8 @@ public class AsynchronousLoginTest {
         Player playerF = mockPlayer("france");
         TestHelper.mockPlayerIp(playerF, "192.168.0.0");
 
-        Collection onlinePlayers = Arrays.asList(playerA, playerB, playerC, playerD, playerE, playerF);
-        given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
+        List<Player> onlinePlayers = Arrays.asList(playerA, playerB, playerC, playerD, playerE, playerF);
+        returnGivenOnlinePlayers(bukkitService, onlinePlayers);
     }
 
 }
