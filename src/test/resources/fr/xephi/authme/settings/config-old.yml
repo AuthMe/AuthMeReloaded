@@ -275,7 +275,7 @@ settings:
     applyBlindEffect: false
 ExternalBoardOptions:
     # MySQL column for the salt , needed for some forum/cms support
-    mySQLColumnSalt: ''
+    mySQLColumnSalt: 'salt_col_name'
     # MySQL column for the group, needed for some forum/cms support
     mySQLColumnGroup: ''
     # -1 mean disabled. If u want that only

@@ -65,7 +65,7 @@ public final class DatabaseSettings implements SettingsHolder {
 
     @Comment("Column for storing players passwords salts")
     public static final Property<String> MYSQL_COL_SALT =
-        newProperty("ExternalBoardOptions.mySQLColumnSalt", "");
+        newProperty("DataSource.mySQLColumnSalt", "");
 
     @Comment("Column for storing players emails")
     public static final Property<String> MYSQL_COL_EMAIL =
