@@ -7,6 +7,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.permission.handlers.PermissionLoadUserException;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
@@ -65,7 +66,7 @@ public class PlayerListener implements Listener {
     @Inject
     private Settings settings;
     @Inject
-    private Messages m;
+    private Messages messages;
     @Inject
     private DataSource dataSource;
     @Inject
@@ -107,12 +108,12 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (!quickCommandsProtectionManager.isAllowed(player.getName())) {
             event.setCancelled(true);
-            player.kickPlayer(m.retrieveSingle(player, MessageKey.QUICK_COMMAND_PROTECTION_KICK));
+            player.kickPlayer(messages.retrieveSingle(player, MessageKey.QUICK_COMMAND_PROTECTION_KICK));
             return;
         }
         if (listenerService.shouldCancelEvent(player)) {
             event.setCancelled(true);
-            m.send(player, MessageKey.DENIED_COMMAND);
+            messages.send(player, MessageKey.DENIED_COMMAND);
         }
     }
 
@@ -123,10 +124,18 @@ public class PlayerListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-        if (listenerService.shouldCancelEvent(player)) {
+        final boolean mayPlayerSendChat = !listenerService.shouldCancelEvent(player)
+            || permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN);
+        if (mayPlayerSendChat) {
+            removeUnauthorizedRecipients(event);
+        } else {
             event.setCancelled(true);
-            m.send(player, MessageKey.DENIED_CHAT);
-        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+            messages.send(player, MessageKey.DENIED_CHAT);
+        }
+    }
+
+    private void removeUnauthorizedRecipients(AsyncPlayerChatEvent event) {
+        if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
             event.getRecipients().removeIf(listenerService::shouldCancelEvent);
             if (event.getRecipients().isEmpty()) {
                 event.setCancelled(true);
@@ -274,7 +283,7 @@ public class PlayerListener implements Listener {
         try {
             runOnJoinChecks(JoiningPlayer.fromName(name), event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(name, e.getReason(), e.getArgs()));
+            event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
         }
     }
@@ -302,7 +311,7 @@ public class PlayerListener implements Listener {
             try {
                 runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
-                event.setKickMessage(m.retrieveSingle(player, e.getReason(), e.getArgs()));
+                event.setKickMessage(messages.retrieveSingle(player, e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             }
         }

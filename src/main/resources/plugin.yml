@@ -161,6 +161,9 @@ permissions:
   authme.admin.updatemessages:
     description: Permission to use the update messages command.
     default: op
+  authme.allowchatbeforelogin:
+    description: Permission to send chat messages before being logged in.
+    default: false
   authme.allowmultipleaccounts:
     description: Permission to be able to register multiple accounts.
     default: op

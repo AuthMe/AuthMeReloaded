@@ -6,6 +6,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
@@ -60,6 +62,7 @@ import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceTo
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,6 +116,8 @@ public class PlayerListenerTest {
     private JoinMessageService joinMessageService;
     @Mock
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
+    @Mock
+    private PermissionsManager permissionsManager;
 
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
@@ -289,12 +294,14 @@ public class PlayerListenerTest {
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
         AsyncPlayerChatEvent event = newAsyncChatEvent();
         given(listenerService.shouldCancelEvent(event.getPlayer())).willReturn(true);
+        given(permissionsManager.hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN)).willReturn(false);
 
         // when
         listener.onPlayerChat(event);
 
         // then
         verify(listenerService).shouldCancelEvent(event.getPlayer());
+        verify(permissionsManager).hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN);
         verify(event).setCancelled(true);
         verify(messages).send(event.getPlayer(), MessageKey.DENIED_CHAT);
     }
@@ -354,6 +361,25 @@ public class PlayerListenerTest {
         verify(listenerService, times(4)).shouldCancelEvent(any(Player.class));
         verify(event).setCancelled(true);
         assertThat(event.getRecipients(), empty());
+    }
+
+    @Test
+    public void shouldAllowChatForBypassPermission() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
+        AsyncPlayerChatEvent event = newAsyncChatEvent();
+        given(listenerService.shouldCancelEvent(event.getPlayer())).willReturn(true);
+        given(permissionsManager.hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.HIDE_CHAT)).willReturn(false);
+
+        // when
+        listener.onPlayerChat(event);
+
+        // then
+        assertThat(event.isCancelled(), equalTo(false));
+        verify(listenerService).shouldCancelEvent(event.getPlayer());
+        verify(permissionsManager).hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN);
+        assertThat(event.getRecipients(), hasSize(3));
     }
 
     @Test
