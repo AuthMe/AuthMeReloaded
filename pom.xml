@@ -800,7 +800,7 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>datasourcecolumns</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1.1-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
 
