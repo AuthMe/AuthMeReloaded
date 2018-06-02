@@ -120,6 +120,9 @@ public class GeoIpService {
             }
         }
 
+        //set the downloading flag in order to fix race conditions outside
+        downloading = true;
+
         // File is outdated or doesn't exist - let's try to download the data file!
         // use bukkit's cached threads
         bukkitService.runTaskAsynchronously(this::updateDatabase);
@@ -130,8 +133,6 @@ public class GeoIpService {
      * Tries to update the database by downloading a new version from the website.
      */
     private void updateDatabase() {
-        downloading = true;
-
         ConsoleLogger.info("Downloading GEO IP database, because the old database is older than "
                 + UPDATE_INTERVAL_DAYS + " days or doesn't exist");
 
