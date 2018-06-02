@@ -21,8 +21,9 @@ import fr.xephi.authme.util.InternetProtocolUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -33,6 +34,9 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
@@ -54,6 +58,10 @@ public class GeoIpService {
     private static final String CHECKSUM_URL = ARCHIVE_URL + ".md5";
 
     private static final int UPDATE_INTERVAL_DAYS = 30;
+
+    // The server for MaxMind doesn't seem to understand RFC1123,
+    // but every HTTP implementation have to support  RFC 1023
+    private static final String TIME_RFC_1023 = "EEE, dd-MMM-yy HH:mm:ss zzz";
 
     private final Path dataFile;
     private final BukkitService bukkitService;
@@ -104,7 +112,7 @@ public class GeoIpService {
                     // don't fire the update task - we are up to date
                     return true;
                 } else {
-                    ConsoleLogger.debug("GEO Ip database is older than " + UPDATE_INTERVAL_DAYS + " Days");
+                    ConsoleLogger.debug("GEO IP database is older than " + UPDATE_INTERVAL_DAYS + " Days");
                 }
             } catch (IOException ioEx) {
                 ConsoleLogger.logException("Failed to load GeoLiteAPI database", ioEx);
@@ -113,53 +121,90 @@ public class GeoIpService {
         }
 
         // File is outdated or doesn't exist - let's try to download the data file!
-        startDownloadTask();
+        // use bukkit's cached threads
+        bukkitService.runTaskAsynchronously(this::updateDatabase);
         return false;
     }
 
     /**
-     * Create a thread which will attempt to download new data from the GeoLite website.
+     * Tries to update the database by downloading a new version from the website.
      */
-    private void startDownloadTask() {
+    private void updateDatabase() {
         downloading = true;
 
-        // use bukkit's cached threads
-        bukkitService.runTaskAsynchronously(() -> {
-            ConsoleLogger.info("Downloading GEO IP database, because the old database is outdated or doesn't exist");
+        ConsoleLogger.info("Downloading GEO IP database, because the old database is older than "
+                + UPDATE_INTERVAL_DAYS + " days or doesn't exist");
 
-            Path tempFile = null;
-            try {
-                // download database to temporarily location
-                tempFile = Files.createTempFile(ARCHIVE_FILE, null);
-                try (OutputStream out = Files.newOutputStream(tempFile)) {
-                    Resources.copy(new URL(ARCHIVE_URL), out);
-                }
-
-                // MD5 checksum verification
-                String targetChecksum = Resources.toString(new URL(CHECKSUM_URL), StandardCharsets.UTF_8);
-                if (!verifyChecksum(Hashing.md5(), tempFile, targetChecksum)) {
-                    return;
-                }
-
-                // tar extract database and copy to target destination
-                if (!extractDatabase(tempFile, dataFile)) {
-                    ConsoleLogger.warning("Cannot find database inside downloaded GEO IP file at " + tempFile);
-                    return;
-                }
-
-                ConsoleLogger.info("Successfully downloaded new GEO IP database to " + dataFile);
-
-                //only set this value to false on success otherwise errors could lead to endless download triggers
-                downloading = false;
-            } catch (IOException ioEx) {
-                ConsoleLogger.logException("Could not download GeoLiteAPI database", ioEx);
-            } finally {
-                // clean up
-                if (tempFile != null) {
-                    FileUtils.delete(tempFile.toFile());
-                }
+        Path tempFile = null;
+        try {
+            // download database to temporarily location
+            tempFile = Files.createTempFile(ARCHIVE_FILE, null);
+            if (!downloadDatabaseArchive(tempFile)) {
+                ConsoleLogger.info("There is no newer GEO IP database uploaded. Using the old one for now.");
+                return;
             }
-        });
+
+            // MD5 checksum verification
+            String expectedChecksum = Resources.toString(new URL(CHECKSUM_URL), StandardCharsets.UTF_8);
+            verifyChecksum(Hashing.md5(), tempFile, expectedChecksum);
+
+            // tar extract database and copy to target destination
+            extractDatabase(tempFile, dataFile);
+
+            //only set this value to false on success otherwise errors could lead to endless download triggers
+            ConsoleLogger.info("Successfully downloaded new GEO IP database to " + dataFile);
+            downloading = false;
+        } catch (IOException ioEx) {
+            ConsoleLogger.logException("Could not download GeoLiteAPI database", ioEx);
+        } finally {
+            // clean up
+            if (tempFile != null) {
+                FileUtils.delete(tempFile.toFile());
+            }
+        }
+    }
+
+    /**
+     * Downloads the archive to the destination file if it's newer than the locally version.
+     *
+     * @param lastModified modification timestamp of the already present file
+     * @param destination save file
+     * @return false if we already have the newest version, true if successful
+     * @throws IOException if failed during downloading and writing to destination file
+     */
+    private boolean downloadDatabaseArchive(Instant lastModified, Path destination) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(ARCHIVE_URL).openConnection();
+        if (lastModified != null) {
+            // Only download if we actually need a newer version - this field is specified in GMT zone
+            ZonedDateTime zonedTime = lastModified.atZone(ZoneId.of("GMT"));
+            String timeFormat = DateTimeFormatter.ofPattern(TIME_RFC_1023).format(zonedTime);
+            connection.addRequestProperty("If-Modified-Since", timeFormat);
+        }
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+            //we already have the newest version
+            connection.getInputStream().close();
+            return false;
+        }
+
+        Files.copy(connection.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        return true;
+    }
+
+    /**
+     * Downloads the archive to the destination file if it's newer than the locally version.
+     *
+     * @param destination save file
+     * @return false if we already have the newest version, true if successful
+     * @throws IOException if failed during downloading and writing to destination file
+     */
+    private boolean downloadDatabaseArchive(Path destination) throws IOException {
+        Instant lastModified = null;
+        if (Files.exists(dataFile)) {
+            lastModified = Files.getLastModifiedTime(dataFile).toInstant();
+        }
+
+        return downloadDatabaseArchive(lastModified, destination);
     }
 
     /**
@@ -168,19 +213,15 @@ public class GeoIpService {
      * @param function the checksum function like MD5, SHA256 used to generate the checksum from the file
      * @param file the file we want to calculate the checksum from
      * @param expectedChecksum the expected checksum
-     * @return true if equal, false otherwise
-     * @throws IOException on I/O error reading the file
+     * @throws IOException on I/O error reading the file or the checksum verification failed
      */
-    private boolean verifyChecksum(HashFunction function, Path file, String expectedChecksum) throws IOException {
+    private void verifyChecksum(HashFunction function, Path file, String expectedChecksum) throws IOException {
         HashCode actualHash = function.hashBytes(Files.readAllBytes(file));
         HashCode expectedHash = HashCode.fromString(expectedChecksum);
-        if (Objects.equals(actualHash, expectedHash)) {
-            return true;
+        if (!Objects.equals(actualHash, expectedHash)) {
+            throw new IOException("GEO IP Checksum verification failed. " +
+                    "Expected: " + expectedChecksum + "Actual:" + actualHash);
         }
-
-        ConsoleLogger.warning("GEO IP checksum verification failed");
-        ConsoleLogger.warning("Expected: " + expectedHash + " Actual: " + actualHash);
-        return false;
     }
 
     /**
@@ -188,38 +229,37 @@ public class GeoIpService {
      *
      * @param tarInputFile gzipped tar input file where the database is
      * @param outputFile destination file for the database
-     * @return true if the database was found, false otherwise
-     * @throws IOException on I/O error reading the tar archive or writing the output
+     * @throws IOException on I/O error reading the tar archive, or writing the output
+     * @throws FileNotFoundException if the database cannot be found inside the archive
      */
-    private boolean extractDatabase(Path tarInputFile, Path outputFile) throws IOException {
+    private void extractDatabase(Path tarInputFile, Path outputFile) throws FileNotFoundException, IOException {
         // .gz -> gzipped file
         try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(tarInputFile));
              TarInputStream tarIn = new TarInputStream(new GZIPInputStream(in))) {
-            TarEntry entry;
-            while ((entry = tarIn.getNextEntry()) != null) {
-                if (!entry.isDirectory()) {
-                    // filename including folders (absolute path inside the archive)
-                    String filename = entry.getName();
-                    if (filename.endsWith(DATABASE_EXT)) {
-                        // found the database file
-                        Files.copy(tarIn, outputFile, StandardCopyOption.REPLACE_EXISTING);
-
-                        // update the last modification date to be same as in the archive
-                        Files.setLastModifiedTime(outputFile, FileTime.from(entry.getModTime().toInstant()));
-                        return true;
-                    }
+            for (TarEntry entry = tarIn.getNextEntry(); entry != null; entry = tarIn.getNextEntry()) {
+                // filename including folders (absolute path inside the archive)
+                String filename = entry.getName();
+                if (entry.isDirectory() || !filename.endsWith(DATABASE_EXT)) {
+                    continue;
                 }
+
+                // found the database file and copy file
+                Files.copy(tarIn, outputFile, StandardCopyOption.REPLACE_EXISTING);
+
+                // update the last modification date to be same as in the archive
+                Files.setLastModifiedTime(outputFile, FileTime.from(entry.getModTime().toInstant()));
+                return;
             }
         }
 
-        return false;
+        throw new FileNotFoundException("Cannot find database inside downloaded GEO IP file at " + tarInputFile);
     }
 
     /**
      * Get the country code of the given IP address.
      *
      * @param ip textual IP address to lookup.
-     * @return two-character ISO 3166-1 alpha code for the country.
+     * @return two-character ISO 3166-1 alpha code for the country or "--" if it cannot be fetched.
      */
     public String getCountryCode(String ip) {
         return getCountry(ip).map(Country::getIsoCode).orElse("--");
@@ -229,7 +269,7 @@ public class GeoIpService {
      * Get the country name of the given IP address.
      *
      * @param ip textual IP address to lookup.
-     * @return The name of the country.
+     * @return The name of the country or "N/A" if it cannot be fetched.
      */
     public String getCountryName(String ip) {
         return getCountry(ip).map(Country::getName).orElse("N/A");
@@ -255,7 +295,7 @@ public class GeoIpService {
         try {
             InetAddress address = InetAddress.getByName(ip);
 
-            //Reader.getCountry() can be null for unknown addresses
+            // Reader.getCountry() can be null for unknown addresses
             return Optional.ofNullable(databaseReader.getCountry(address)).map(CountryResponse::getCountry);
         } catch (UnknownHostException e) {
             // Ignore invalid ip addresses
