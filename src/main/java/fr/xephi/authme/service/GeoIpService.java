@@ -141,7 +141,8 @@ public class GeoIpService {
             // download database to temporarily location
             tempFile = Files.createTempFile(ARCHIVE_FILE, null);
             if (!downloadDatabaseArchive(tempFile)) {
-                ConsoleLogger.info("There is no newer GEO IP database uploaded. Using the old one for now.");
+                ConsoleLogger.info("There is no newer GEO IP database uploaded to MaxMind. Using the old one for now.");
+                downloading = false;
                 return;
             }
 
