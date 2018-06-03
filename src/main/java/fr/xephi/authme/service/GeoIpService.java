@@ -106,8 +106,7 @@ public class GeoIpService {
             try {
                 FileTime lastModifiedTime = Files.getLastModifiedTime(dataFile);
                 if (Duration.between(lastModifiedTime.toInstant(), Instant.now()).toDays() <= UPDATE_INTERVAL_DAYS) {
-                    databaseReader = new Reader(dataFile.toFile(), FileMode.MEMORY, new CHMCache());
-                    ConsoleLogger.info(LICENSE);
+                    startReading();
 
                     // don't fire the update task - we are up to date
                     return true;
@@ -142,7 +141,7 @@ public class GeoIpService {
             tempFile = Files.createTempFile(ARCHIVE_FILE, null);
             if (!downloadDatabaseArchive(tempFile)) {
                 ConsoleLogger.info("There is no newer GEO IP database uploaded to MaxMind. Using the old one for now.");
-                downloading = false;
+                startReading();
                 return;
             }
 
@@ -155,7 +154,7 @@ public class GeoIpService {
 
             //only set this value to false on success otherwise errors could lead to endless download triggers
             ConsoleLogger.info("Successfully downloaded new GEO IP database to " + dataFile);
-            downloading = false;
+            startReading();
         } catch (IOException ioEx) {
             ConsoleLogger.logException("Could not download GeoLiteAPI database", ioEx);
         } finally {
@@ -164,6 +163,14 @@ public class GeoIpService {
                 FileUtils.delete(tempFile.toFile());
             }
         }
+    }
+
+    private void startReading() throws IOException {
+        databaseReader = new Reader(dataFile.toFile(), FileMode.MEMORY, new CHMCache());
+        ConsoleLogger.info(LICENSE);
+
+        // clear downloading flag, because we now have working reader instance
+        downloading = false;
     }
 
     /**
