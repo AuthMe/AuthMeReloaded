@@ -48,6 +48,14 @@ public class InternetProtocolUtilsTest {
     }
 
     @Test
+    public void testIsLoopback() {
+        // loopback
+        assertThat(InternetProtocolUtils.isLoopbackAddress("localhost"), equalTo(true));
+        assertThat(InternetProtocolUtils.isLoopbackAddress("127.0.0.1"), equalTo(true));
+        assertThat(InternetProtocolUtils.isLoopbackAddress("::1"), equalTo(true));
+    }
+
+    @Test
     public void shouldHavePrivateConstructor() {
         // given / when / then
         TestHelper.validateHasOnlyPrivateEmptyConstructor(InternetProtocolUtils.class);

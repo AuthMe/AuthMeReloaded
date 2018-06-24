@@ -184,7 +184,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private boolean validatePlayerCountForIp(final Player player, String ip) {
         if (service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP) > 0
             && !service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && !InternetProtocolUtils.isLocalAddress(ip)
+            && !InternetProtocolUtils.isLoopbackAddress(ip)
             && countOnlinePlayersByIp(ip) > service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)) {
 
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(

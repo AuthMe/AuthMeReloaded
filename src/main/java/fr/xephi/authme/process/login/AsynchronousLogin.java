@@ -326,7 +326,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         // Do not perform the check if player has multiple accounts permission or if IP is localhost
         if (service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP) <= 0
             || service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            || InternetProtocolUtils.isLocalAddress(ip)) {
+            || InternetProtocolUtils.isLoopbackAddress(ip)) {
             return false;
         }
 
