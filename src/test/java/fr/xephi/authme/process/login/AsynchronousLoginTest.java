@@ -180,7 +180,7 @@ public class AsynchronousLoginTest {
         mockOnlinePlayersInBukkitService();
 
         // when
-        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "127.0.0.4");
+        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "1.1.1.1");
 
         // then
         assertThat(result, equalTo(false));
