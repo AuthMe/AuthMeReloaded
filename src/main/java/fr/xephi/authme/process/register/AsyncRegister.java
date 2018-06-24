@@ -16,6 +16,7 @@ import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 
@@ -119,8 +120,7 @@ public class AsyncRegister implements AsynchronousProcess {
         final int maxRegPerIp = service.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP);
         final String ip = PlayerUtils.getPlayerIp(player);
         if (maxRegPerIp > 0
-            && !"127.0.0.1".equalsIgnoreCase(ip)
-            && !"localhost".equalsIgnoreCase(ip)
+            && !InternetProtocolUtils.isLocalAddress(ip)
             && !service.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
             if (otherAccounts.size() >= maxRegPerIp) {
