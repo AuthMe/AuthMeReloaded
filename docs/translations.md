@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 22 11:09:12 CEST 2018. See docs/translations/translations.tpl.md -->
+<!-- File auto-generated on Mon Jun 25 21:53:35 CEST 2018. See docs/translations/translations.tpl.md -->
 
 # AuthMe Translations
 The following translations are available in AuthMe. Set `messagesLanguage` to the language code
@@ -21,12 +21,12 @@ Code | Language | Translated | &nbsp;
 [gl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_gl.yml) | Galician | 48% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aa5500&w=48&h=5&txtpad=1" alt="bar" />
 [hu](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_hu.yml) | Hungarian | 87% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=99bb22&w=87&h=5&txtpad=1" alt="bar" />
 [id](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_id.yml) | Indonesian | 47% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aa5500&w=47&h=5&txtpad=1" alt="bar" />
-[it](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_it.yml) | Italian | 92% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=77dd44&w=92&h=5&txtpad=1" alt="bar" />
+[it](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_it.yml) | Italian | 100% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=66ff66&w=100&h=5&txtpad=1" alt="bar" />
 [ko](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ko.yml) | Korean | 89% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=88cc33&w=89&h=5&txtpad=1" alt="bar" />
 [lt](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_lt.yml) | Lithuanian | 36% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aa4400&w=36&h=5&txtpad=1" alt="bar" />
 [nl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_nl.yml) | Dutch | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
-[pl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pl.yml) | Polish | 92% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=77dd44&w=92&h=5&txtpad=1" alt="bar" />
-[pt](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pt.yml) | Portuguese | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
+[pl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pl.yml) | Polish | 100% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=66ff66&w=100&h=5&txtpad=1" alt="bar" />
+[pt](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pt.yml) | Portuguese | 100% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=66ff66&w=100&h=5&txtpad=1" alt="bar" />
 [ro](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ro.yml) | Romanian | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
 [ru](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ru.yml) | Russian | 92% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=77dd44&w=92&h=5&txtpad=1" alt="bar" />
 [sk](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_sk.yml) | Slovakian | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
@@ -41,4 +41,4 @@ Code | Language | Translated | &nbsp;
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 22 11:09:12 CEST 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Jun 25 21:53:35 CEST 2018
