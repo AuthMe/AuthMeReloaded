@@ -124,7 +124,7 @@ public class AsynchronousLoginTest {
     public void shouldNotForceLoginUserWithAlreadyOnlineIp() {
         // given
         String name = "oscar";
-        String ip = "127.0.12.245";
+        String ip = "1.1.1.245";
         Player player = mockPlayer(name);
         TestHelper.mockPlayerIp(player, ip);
         given(playerCache.isAuthenticated(name)).willReturn(false);
@@ -147,7 +147,7 @@ public class AsynchronousLoginTest {
     public void shouldNotForceLoginForCanceledEvent() {
         // given
         String name = "oscar";
-        String ip = "127.0.12.245";
+        String ip = "1.1.1.245";
         Player player = mockPlayer(name);
         TestHelper.mockPlayerIp(player, ip);
         given(playerCache.isAuthenticated(name)).willReturn(false);
@@ -195,7 +195,7 @@ public class AsynchronousLoginTest {
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
 
         // when
-        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "192.168.0.1");
+        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "2.2.2.2");
 
         // then
         assertThat(result, equalTo(false));
@@ -210,7 +210,7 @@ public class AsynchronousLoginTest {
         given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
 
         // when
-        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "127.0.0.4");
+        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "1.1.1.1");
 
         // then
         assertThat(result, equalTo(false));
@@ -227,7 +227,7 @@ public class AsynchronousLoginTest {
         mockOnlinePlayersInBukkitService();
 
         // when
-        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "192.168.0.1");
+        boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "2.2.2.2");
 
         // then
         assertThat(result, equalTo(true));
@@ -242,28 +242,28 @@ public class AsynchronousLoginTest {
     }
 
     private void mockOnlinePlayersInBukkitService() {
-        // 127.0.0.4: albania (online), brazil (offline)
+        // 1.1.1.1: albania (online), brazil (offline)
         Player playerA = mockPlayer("albania");
-        TestHelper.mockPlayerIp(playerA, "127.0.0.4");
+        TestHelper.mockPlayerIp(playerA, "1.1.1.1");
         given(dataSource.isLogged(playerA.getName())).willReturn(true);
         Player playerB = mockPlayer("brazil");
-        TestHelper.mockPlayerIp(playerB, "127.0.0.4");
+        TestHelper.mockPlayerIp(playerB, "1.1.1.1");
         given(dataSource.isLogged(playerB.getName())).willReturn(false);
 
-        // 192.168.0.1: congo (online), denmark (offline), ecuador (online)
+        // 2.2.2.2: congo (online), denmark (offline), ecuador (online)
         Player playerC = mockPlayer("congo");
-        TestHelper.mockPlayerIp(playerC, "192.168.0.1");
+        TestHelper.mockPlayerIp(playerC, "2.2.2.2");
         given(dataSource.isLogged(playerC.getName())).willReturn(true);
         Player playerD = mockPlayer("denmark");
-        TestHelper.mockPlayerIp(playerD, "192.168.0.1");
+        TestHelper.mockPlayerIp(playerD, "2.2.2.2");
         given(dataSource.isLogged(playerD.getName())).willReturn(false);
         Player playerE = mockPlayer("ecuador");
-        TestHelper.mockPlayerIp(playerE, "192.168.0.1");
+        TestHelper.mockPlayerIp(playerE, "2.2.2.2");
         given(dataSource.isLogged(playerE.getName())).willReturn(true);
 
-        // 192.168.0.0: france (offline)
+        // 3.3.3.3: france (offline)
         Player playerF = mockPlayer("france");
-        TestHelper.mockPlayerIp(playerF, "192.168.0.0");
+        TestHelper.mockPlayerIp(playerF, "3.3.3.3");
 
         List<Player> onlinePlayers = Arrays.asList(playerA, playerB, playerC, playerD, playerE, playerF);
         returnGivenOnlinePlayers(bukkitService, onlinePlayers);

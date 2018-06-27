@@ -1,14 +1,10 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.TestHelper;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link InternetProtocolUtils}
@@ -16,7 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class InternetProtocolUtilsTest {
 
     @Test
-    public void shouldCheckLocalAddress() throws UnknownHostException {
+    public void shouldCheckLocalAddress() {
         // loopback
         assertThat(InternetProtocolUtils.isLocalAddress("localhost"), equalTo(true));
         assertThat(InternetProtocolUtils.isLocalAddress("127.0.0.1"), equalTo(true));
