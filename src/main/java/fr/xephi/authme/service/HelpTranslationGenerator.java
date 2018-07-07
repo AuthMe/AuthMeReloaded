@@ -44,15 +44,17 @@ public class HelpTranslationGenerator {
     /**
      * Updates the help file to contain entries for all commands.
      *
+     * @return the help file that has been updated
      * @throws IOException if the help file cannot be written to
      */
-    public void updateHelpFile() throws IOException {
+    public File updateHelpFile() throws IOException {
         String languageCode = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
         File helpFile = new File(dataFolder, "messages/help_" + languageCode + ".yml");
         Map<String, Object> helpEntries = generateHelpMessageEntries();
 
         String helpEntriesYaml = exportToYaml(helpEntries);
         Files.write(helpFile.toPath(), helpEntriesYaml.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        return helpFile;
     }
 
     private static String exportToYaml(Map<String, Object> helpEntries) {

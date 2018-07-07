@@ -1,118 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&cRekisteröidy palvelimellemme komennolla "/register <salasana> <salasana>"'
-usage_reg: '&cKäyttötapa: /register <salasana> <salasana>'
-reg_only: '&fMene sivustolle: http://example.com rekisteröityäksesi!'
-# TODO kicked_admin_registered: 'An admin just registered you; please log in again'
-registered: '&cRekisteröidyit onnistuneesti!'
-reg_disabled: '&cRekisteröinti on suljettu!'
-user_regged: '&cPelaaja on jo rekisteröity'
+registration:
+    disabled: '&cRekisteröinti on suljettu!'
+    name_taken: '&cPelaaja on jo rekisteröity'
+    register_request: '&cRekisteröidy palvelimellemme komennolla "/register <salasana> <salasana>"'
+    command_usage: '&cKäyttötapa: /register <salasana> <salasana>'
+    reg_only: '&fMene sivustolle: http://example.com rekisteröityäksesi!'
+    success: '&cRekisteröidyit onnistuneesti!'
+    # TODO kicked_admin_registered: 'An admin just registered you; please log in again'
 
 # Password errors on registration
-password_error: '&fSalasanat ei täsmää'
-# TODO password_error_nick: '&cYou can''t use your name as password, please choose another one...'
-# TODO password_error_unsafe: '&cThe chosen password isn''t safe, please choose another one...'
-# TODO password_error_chars: '&4Your password contains illegal characters. Allowed chars: REG_EX'
-pass_len: '&fSalasanasi on liian pitkä tai lyhyt.'
+password:
+    match_error: '&fSalasanat ei täsmää'
+    # TODO name_in_password: '&cYou can''t use your name as password, please choose another one...'
+    # TODO unsafe_password: '&cThe chosen password isn''t safe, please choose another one...'
+    # TODO forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
+    wrong_length: '&fSalasanasi on liian pitkä tai lyhyt.'
 
 # Login
-usage_log: '&cKäyttötapa: /login salasana'
-wrong_pwd: '&cVäärä salasana'
-login: '&cKirjauduit onnistuneesti'
-login_msg: '&cKirjaudu palvelimmelle komennolla "/login salasana"'
-timeout: '&fKirjautumisaika meni umpeen.'
+login:
+    command_usage: '&cKäyttötapa: /login salasana'
+    wrong_password: '&cVäärä salasana'
+    success: '&cKirjauduit onnistuneesti'
+    login_request: '&cKirjaudu palvelimmelle komennolla "/login salasana"'
+    timeout_error: '&fKirjautumisaika meni umpeen.'
 
 # Errors
-unknown_user: '&cSalasanat eivät täsmää'
-# TODO denied_command: '&cIn order to use this command you must be authenticated!'
-# TODO denied_chat: '&cIn order to chat you must be authenticated!'
-not_logged_in: '&cEt ole kirjautunut sisään!'
-# TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
-# TODO: Missing tags %reg_count, %max_acc, %reg_names
-max_reg: '&fSinulla ei ole oikeuksia tehdä enempää pelaajatilejä!'
-no_perm: '&cEi oikeuksia'
-error: '&fVirhe: Ota yhteys palveluntarjoojaan!'
-kick_forvip: '&cVIP pelaaja liittyi täyteen palvelimeen!'
+error:
+    # TODO denied_command: '&cIn order to use this command you must be authenticated!'
+    # TODO denied_chat: '&cIn order to chat you must be authenticated!'
+    unregistered_user: '&cSalasanat eivät täsmää'
+    not_logged_in: '&cEt ole kirjautunut sisään!'
+    no_permission: '&cEi oikeuksia'
+    unexpected_error: '&fVirhe: Ota yhteys palveluntarjoojaan!'
+    max_registration: '&fSinulla ei ole oikeuksia tehdä enempää pelaajatilejä!'
+    logged_in: '&cOlet jo kirjautunut!'
+    kick_for_vip: '&cVIP pelaaja liittyi täyteen palvelimeen!'
+    # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 
 # AntiBot
-# TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
-# TODO antibot_auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number of connections!'
-# TODO antibot_auto_disabled: '&2[AntiBotService] AntiBot disabled after %m minutes!'
+antibot:
+    # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+    # TODO auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number of connections!'
+    # TODO auto_disabled: '&2[AntiBotService] AntiBot disabled after %m minutes!'
+
+# Unregister
+unregister:
+    success: '&cPelaajatili poistettu onnistuneesti!'
+    command_usage: '&cKäyttötapa: /unregister password'
 
 # Other messages
-unregistered: '&cPelaajatili poistettu onnistuneesti!'
-# TODO accounts_owned_self: 'You own %count accounts:'
-# TODO accounts_owned_other: 'The player %name has %count accounts:'
-# TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
-# TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
-# TODO recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-vb_nonActiv: '&fKäyttäjäsi ei ole vahvistettu!'
-usage_unreg: '&cKäyttötapa: /unregister password'
-pwd_changed: '&cSalasana vaihdettu!!'
-logged_in: '&cOlet jo kirjautunut!'
-logout: '&cKirjauduit ulos palvelimelta.'
-reload: '&fAsetukset uudelleenladattu'
-usage_changepassword: '&fKäyttötapa: /changepassword vanhaSalasana uusiSalasana'
+misc:
+    account_not_activated: '&fKäyttäjäsi ei ole vahvistettu!'
+    password_changed: '&cSalasana vaihdettu!!'
+    logout: '&cKirjauduit ulos palvelimelta.'
+    reload: '&fAsetukset uudelleenladattu'
+    usage_change_password: '&fKäyttötapa: /changepassword vanhaSalasana uusiSalasana'
+    # TODO accounts_owned_self: 'You own %count accounts:'
+    # TODO accounts_owned_other: 'The player %name has %count accounts:'
 
 # Session messages
-invalid_session: '&fIstunto ei täsmää! Ole hyvä ja odota istunnon loppuun'
-valid_session: '&cIstunto jatkettu!'
+session:
+    valid_session: '&cIstunto jatkettu!'
+    invalid_session: '&fIstunto ei täsmää! Ole hyvä ja odota istunnon loppuun'
 
 # Error messages when joining
-name_len: '&cPelaajanimesi on liian lyhyt tai pitkä'
-regex: '&cPelaajanimesi sisältää luvattomia merkkejä. Hyväksytyt merkit: REG_EX'
-# TODO country_banned: '&4Your country is banned from this server!'
-# TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
-kick_fullserver: '&cPalvelin on täynnä, Yritä pian uudelleen!'
-same_nick: '&COlet jo palvelimella! &COdota käyttäjän aikakatkaisua tai ota yhteyttä palveluntarjoojaan.'
-# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
-# TODO same_ip_online: 'A player with the same IP is already in game!'
+on_join_validation:
+    # TODO same_ip_online: 'A player with the same IP is already in game!'
+    same_nick_online: '&COlet jo palvelimella! &COdota käyttäjän aikakatkaisua tai ota yhteyttä palveluntarjoojaan.'
+    name_length: '&cPelaajanimesi on liian lyhyt tai pitkä'
+    characters_in_name: '&cPelaajanimesi sisältää luvattomia merkkejä. Hyväksytyt merkit: %valid_chars'
+    kick_full_server: '&cPalvelin on täynnä, Yritä pian uudelleen!'
+    # TODO country_banned: '&4Your country is banned from this server!'
+    # TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
+    # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&fKäyttötapa: /email add <email> <confirmEmail> '
-usage_email_change: '&fKäyttötapa: /email change <oldEmail> <newEmail> '
-usage_email_recovery: '&fKäyttötapa: /email recovery <Email>'
-new_email_invalid: '[AuthMe] Uusi sähköposti on väärä!'
-old_email_invalid: '[AuthMe] Vanha sähköposti on väärä!'
-email_invalid: '[AuthMe] Väärä sähköposti'
-email_added: '[AuthMe] Sähköposti lisätty!'
-email_confirm: '[AuthMe] Vahvistuta sähköposti!'
-email_changed: '[AuthMe] Sähköposti vaihdettu!'
-email_send: '[AuthMe] Palautus sähköposti lähetetty!'
-# TODO email_show: '&2Your current email address is: &f%email'
-# TODO incomplete_email_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
-# TODO email_already_used: '&4The email address is already being used'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
-add_email: '&cLisää sähköpostisi: /email add sähköpostisi sähköpostisiUudelleen'
-recovery_email: '&cUnohtuiko salasana? Käytä komentoa: /email recovery <Sähköpostisi>'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email:
+    add_email_request: '&cLisää sähköpostisi: /email add sähköpostisi sähköpostisiUudelleen'
+    usage_email_add: '&fKäyttötapa: /email add <email> <confirmEmail> '
+    usage_email_change: '&fKäyttötapa: /email change <oldEmail> <newEmail> '
+    new_email_invalid: '[AuthMe] Uusi sähköposti on väärä!'
+    old_email_invalid: '[AuthMe] Vanha sähköposti on väärä!'
+    invalid: '[AuthMe] Väärä sähköposti'
+    added: '[AuthMe] Sähköposti lisätty!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '[AuthMe] Vahvistuta sähköposti!'
+    changed: '[AuthMe] Sähköposti vaihdettu!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    # TODO email_show: '&2Your current email address is: &f%email'
+    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
+    # TODO already_used: '&4The email address is already being used'
+    # TODO incomplete_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
+    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&cUnohtuiko salasana? Käytä komentoa: /email recovery <Sähköpostisi>'
+    command_usage: '&fKäyttötapa: /email recovery <Email>'
+    email_sent: '[AuthMe] Palautus sähköposti lähetetty!'
+    code:
+        # TODO code_sent: 'A recovery code to reset your password has been sent to your email.'
+        # TODO incorrect: 'The recovery code is not correct! You have %count tries remaining.'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
-usage_captcha: '&cKäyttötapa: /captcha <theCaptcha>'
-wrong_captcha: '&cVäärä varmistus, käytä : /captcha THE_CAPTCHA'
-valid_captcha: '&cSinun varmistus onnistui.!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&cKäyttötapa: /captcha %captcha_code'
+    wrong_captcha: '&cVäärä varmistus, käytä : /captcha %captcha_code'
+    valid_captcha: '&cSinun varmistus onnistui.!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+time:
+    # TODO second: 'second'
+    # TODO seconds: 'seconds'
+    # TODO minute: 'minute'
+    # TODO minutes: 'minutes'
+    # TODO hour: 'hour'
+    # TODO hours: 'hours'
+    # TODO day: 'day'
+    # TODO days: 'days'
+
+# Two-factor authentication
+two_factor:
+    # TODO code_created: '&2Your secret code is %code. You can scan it from here %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

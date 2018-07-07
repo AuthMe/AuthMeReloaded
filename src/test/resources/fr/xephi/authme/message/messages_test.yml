@@ -1,9 +1,15 @@
 # Sample messages file
 
-unknown_user: 'We''ve got%nl%new lines%nl%and '' apostrophes'
-login: '&cHere we have&bdefined some colors &dand some other &lthings'
+error:
+  unregistered_user: 'We''ve got%nl%new lines%nl%and '' apostrophes'
+registration:
+  register_request: '&3Please %username%, register to the %displayname%&3.'
+login:
+  success: '&cHere we have&bdefined some colors &dand some other &lthings'
+  wrong_password: '&cWrong password!'
+  command_usage: '&cUsage: /login <password>'
 reg_voluntarily: 'You can register yourself to the server with the command "/register <password> <ConfirmPassword>"'
-usage_log: '&cUsage: /login <password>'
-wrong_pwd: '&cWrong password!'
-wrong_captcha: 'Use /captcha THE_CAPTCHA to solve the captcha'
-email_already_used: ''
+captcha:
+  wrong_captcha: 'Use /captcha %captcha_code to solve the captcha'
+email:
+  already_used: ''

@@ -23,6 +23,7 @@ public class LimboPlayer {
     private final float flySpeed;
     private BukkitTask timeoutTask = null;
     private MessageTask messageTask = null;
+    private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
 
     public LimboPlayer(Location loc, boolean operator, Collection<String> groups, boolean fly, float walkSpeed,
                        float flySpeed) {
@@ -123,5 +124,13 @@ public class LimboPlayer {
     public void clearTasks() {
         setMessageTask(null);
         setTimeoutTask(null);
+    }
+
+    public LimboPlayerState getState() {
+        return state;
+    }
+
+    public void setState(LimboPlayerState state) {
+        this.state = state;
     }
 }

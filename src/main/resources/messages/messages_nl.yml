@@ -1,117 +1,156 @@
-# Registratie
-reg_msg: '&cRegistreer met het commando: /register <wachtwoord> <herhaal wachtwoord>'
-usage_reg: '&cGebruik: /register <wachtwoord> <herhaal wachtwoord>'
-reg_only: 'Alleen voor geregistreerde spelers! Bezoek http://example.com om te registreren!'
-kicked_admin_registered: 'Een administrator heeft je net geregistreerd; log alsjeblieft opnieuw in.'
-registered: '&cSuccesvol geregistreerd!'
-reg_disabled: '&cRegistratie is uitgeschakeld!'
-user_regged: '&cJe hebt deze gebruikersnaam al geregistreerd!'
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
-# Wachtwoord fouten tijdens registratie
-password_error: 'Jouw wachtwoorden komen niet overeen, controleer ze opnieuw!'
-password_error_nick: '&fJe kunt je gebruikersnaam niet als wachtwoord gebruiken, kies een ander wachtwoord...'
-password_error_unsafe: '&fDit wachtwoord is onveilig, kies een ander wachtwoord...'
-password_error_chars: '&cJouw wachtwoord bevat ongeldige tekens. Toegestane karakters zijn: REG_EX'
-pass_len: 'Jouw gekozen wachtwoord voldoet niet aan de minimum of maximum lengte, kies een ander wachtwoord...'
+# Registration
+registration:
+    disabled: '&cRegistratie is uitgeschakeld!'
+    name_taken: '&cJe hebt deze gebruikersnaam al geregistreerd!'
+    register_request: '&cRegistreer met het commando: /register <wachtwoord> <herhaal wachtwoord>'
+    command_usage: '&cGebruik: /register <wachtwoord> <herhaal wachtwoord>'
+    reg_only: 'Alleen voor geregistreerde spelers! Bezoek http://example.com om te registreren!'
+    success: '&cSuccesvol geregistreerd!'
+    kicked_admin_registered: 'Een administrator heeft je net geregistreerd; log alsjeblieft opnieuw in.'
 
-# Inloggen
-usage_log: '&cGebruik: /login <wachtwoord>'
-wrong_pwd: '&cFout wachtwoord'
-login: '&cSuccesvol ingelogd!'
-login_msg: '&cLog in met: /login <wachtwoord>'
-timeout: 'Login time-out: het duurde te lang tot je inlogde.'
+# Password errors on registration
+password:
+    match_error: 'Jouw wachtwoorden komen niet overeen, controleer ze opnieuw!'
+    name_in_password: '&fJe kunt je gebruikersnaam niet als wachtwoord gebruiken, kies een ander wachtwoord...'
+    unsafe_password: '&fDit wachtwoord is onveilig, kies een ander wachtwoord...'
+    forbidden_characters: '&cJouw wachtwoord bevat ongeldige tekens. Toegestane karakters zijn: %valid_chars'
+    wrong_length: 'Jouw gekozen wachtwoord voldoet niet aan de minimum of maximum lengte, kies een ander wachtwoord...'
 
-# Fouten
-unknown_user: '&cDeze gebruikersnaam is niet geregistreerd!'
-denied_command: '&cJe moet ingelogd zijn om dit commando te gebruiken!'
-denied_chat: '&cJe moet ingelogd zijn om te kunnen chatten!'
-not_logged_in: '&cNiet ingelogd!'
-tempban_max_logins: '&cJe bent tijdelijk gebanned omdat het inloggen te vaak mislukt is.'
-max_reg: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
-no_perm: '&cJe hebt geen rechten om deze actie uit te voeren!'
-error: 'Er is een onverwachte fout opgetreden, neem contact op met een administrator!'
-kick_forvip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
+# Login
+login:
+    command_usage: '&cGebruik: /login <wachtwoord>'
+    wrong_password: '&cFout wachtwoord'
+    success: '&cSuccesvol ingelogd!'
+    login_request: '&cLog in met: /login <wachtwoord>'
+    timeout_error: 'Login time-out: het duurde te lang tot je inlogde.'
+
+# Errors
+error:
+    denied_command: '&cJe moet ingelogd zijn om dit commando te gebruiken!'
+    denied_chat: '&cJe moet ingelogd zijn om te kunnen chatten!'
+    unregistered_user: '&cDeze gebruikersnaam is niet geregistreerd!'
+    not_logged_in: '&cNiet ingelogd!'
+    no_permission: '&cJe hebt geen rechten om deze actie uit te voeren!'
+    unexpected_error: 'Er is een onverwachte fout opgetreden, neem contact op met een administrator!'
+    max_registration: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
+    logged_in: '&cJe bent al ingelogd!'
+    kick_for_vip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
+    tempban_max_logins: '&cJe bent tijdelijk gebanned omdat het inloggen te vaak mislukt is.'
 
 # AntiBot
-kick_antibot: 'AntiBot is aangezet! Wacht alsjeblieft enkele minuten voor je je met de server verbindt.'
-antibot_auto_enabled: '[AuthMe] AntiBotMod automatisch aangezet vanwege te veel verbindingen!'
-antibot_auto_disabled: '[AuthMe] AntiBotMod automatisch uitgezet na %m minuten!'
+antibot:
+    kick_antibot: 'AntiBot is aangezet! Wacht alsjeblieft enkele minuten voor je je met de server verbindt.'
+    auto_enabled: '[AuthMe] AntiBotMod automatisch aangezet vanwege te veel verbindingen!'
+    auto_disabled: '[AuthMe] AntiBotMod automatisch uitgezet na %m minuten!'
 
-# Overige berichten
-unregistered: '&cSuccesvol afgemeld!'
-accounts_owned_self: 'Je bezit %count accounts:'
-accounts_owned_other: 'De speler %name heeft %count accounts:'
-two_factor_create: '&2Je geheime code is %code. Je kunt hem scannen op %url'
-recovery_code_sent: 'Een herstelcode voor je wachtwoord is naar je mailbox gestuurd.'
-recovery_code_incorrect: 'De herstelcode is niet correct! Je kunt het nog %count keer proberen.'
-recovery_tries_exceeded: 'Je hebt het maximum aantal pogingen om een herstel code in te vullen bereikt. Gebruik "/email recovery [e-mail]" om een nieuwe code te krijgen'
-recovery_code_correct: 'De herstelcode is correct!'
-recovery_change_password: 'Gebruik alsjeblieft het commando /email setpassword <nieuw wachtwoord> om je wachtwoord direct te veranderen.'
-vb_nonActiv: 'Je account is nog niet geactiveerd, controleer je mailbox!'
-usage_unreg: '&cGebruik: /unregister [wachtwoord]'
-pwd_changed: '&cWachtwoord succesvol aangepast!'
-logged_in: '&cJe bent al ingelogd!'
-logout: '&2Je bent succesvol uitgelogd!'
-reload: '&2De configuratie en database zijn succesvol herladen!'
-usage_changepassword: '&cGebruik: /changepassword <oud wachtwoord> <nieuw wachtwoord>'
+# Unregister
+unregister:
+    success: '&cSuccesvol afgemeld!'
+    command_usage: '&cGebruik: /unregister [wachtwoord]'
 
-# Sessie berichten
-invalid_session: '&cJouw IP-adres is veranderd en je sessie is verlopen!'
-valid_session: '&2Ingelogd wegens sessie-herverbinding.'
+# Other messages
+misc:
+    account_not_activated: 'Je account is nog niet geactiveerd, controleer je mailbox!'
+    password_changed: '&cWachtwoord succesvol aangepast!'
+    logout: '&2Je bent succesvol uitgelogd!'
+    reload: '&2De configuratie en database zijn succesvol herladen!'
+    usage_change_password: '&cGebruik: /changepassword <oud wachtwoord> <nieuw wachtwoord>'
+    accounts_owned_self: 'Je bezit %count accounts:'
+    accounts_owned_other: 'De speler %name heeft %count accounts:'
 
-# Fout berichten tijdens het inloggen
-name_len: '&4Jouw gebruikersnaam is te kort of te lang!'
-regex: '&4Jouw gebruikersnaam bevat ongeldige tekens. Toegestane karakters zijn: REG_EX'
-country_banned: '&4Jouw land is gebanned op deze server!'
-not_owner_error: 'Jij bent niet de eigenaar van dit account. Kies alsjeblieft een andere naam!'
-kick_fullserver: '&4De server is vol, probeer het later opnieuw!'
-same_nick: '&4Er is al iemand met jouw gebruikersnaam online.'
-invalid_name_case: 'Verbind je alsjeblieft als %valid, niet als %invalid.'
-same_ip_online: 'Een speler met hetzelfde IP-adres is al online!'
+# Session messages
+session:
+    valid_session: '&2Ingelogd wegens sessie-herverbinding.'
+    invalid_session: '&cJouw IP-adres is veranderd en je sessie is verlopen!'
 
-# E-mail
-usage_email_add: '&cGebruik: /email add <e-mail> <herhaal e-mail>'
-usage_email_change: '&cGebruik: /email change <oude e-mail> <nieuwe e-mail>'
-usage_email_recovery: '&cGebruik: /email recovery <e-mail>'
-new_email_invalid: '&cOngeldig nieuw e-mailadres, probeer het opnieuw!'
-old_email_invalid: '&cOngeldig oud e-mailadres, probeer het opnieuw!'
-email_invalid: '&cOngeldig E-mailadres, probeer het opnieuw!'
-email_added: '&2Het e-mailadres is succesvol toegevoegd aan je account!'
-email_confirm: '&cVerifiëer je e-mailadres alsjeblieft!'
-email_changed: '&2Het e-mailadres is succesvol veranderd!'
-email_send: '&2Een herstel e-mail is verzonden! Check alsjeblieft je mailbox!'
-email_show: '&2Jouw huidige e-mailadres is: %email'
-incomplete_email_settings: 'Fout; er moeten nog enkele opties ingevuld worden om mails te kunnen sturen. Neem contact op met een administrator.'
-email_already_used: '&4Dit e-mailadres wordt al gebruikt'
-email_send_failure: 'De e-mail kon niet verzonden worden. Neem contact op met een administrator.'
-show_no_email: '&2Je hebt nog geen e-mailadres toegevoegd aan dit account.'
-add_email: '&3Voeg jouw e-mailadres alsjeblieft toe met: /email add <e-mail> <wachtwoord> <herhaal wachtwoord>'
-recovery_email: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando: /email recovery <e-mail>'
-change_password_expired: 'Je kunt je wachtwoord niet meer veranderen met dit commando.'
-email_cooldown_error: '&cEr is recent al een e-mail verzonden. Je moet %time wachten voordat je een nieuw bericht kunt versturen.'
+# Error messages when joining
+on_join_validation:
+    same_ip_online: 'Een speler met hetzelfde IP-adres is al online!'
+    same_nick_online: '&4Er is al iemand met jouw gebruikersnaam online.'
+    name_length: '&4Jouw gebruikersnaam is te kort of te lang!'
+    characters_in_name: '&4Jouw gebruikersnaam bevat ongeldige tekens. Toegestane karakters zijn: %valid_chars'
+    kick_full_server: '&4De server is vol, probeer het later opnieuw!'
+    country_banned: '&4Jouw land is gebanned op deze server!'
+    not_owner_error: 'Jij bent niet de eigenaar van dit account. Kies alsjeblieft een andere naam!'
+    invalid_name_case: 'Verbind je alsjeblieft als %valid, niet als %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+
+# Email
+email:
+    add_email_request: '&3Voeg jouw e-mailadres alsjeblieft toe met: /email add <e-mail> <wachtwoord> <herhaal wachtwoord>'
+    usage_email_add: '&cGebruik: /email add <e-mail> <herhaal e-mail>'
+    usage_email_change: '&cGebruik: /email change <oude e-mail> <nieuwe e-mail>'
+    new_email_invalid: '&cOngeldig nieuw e-mailadres, probeer het opnieuw!'
+    old_email_invalid: '&cOngeldig oud e-mailadres, probeer het opnieuw!'
+    invalid: '&cOngeldig E-mailadres, probeer het opnieuw!'
+    added: '&2Het e-mailadres is succesvol toegevoegd aan je account!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cVerifiëer je e-mailadres alsjeblieft!'
+    changed: '&2Het e-mailadres is succesvol veranderd!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2Jouw huidige e-mailadres is: %email'
+    no_email_for_account: '&2Je hebt nog geen e-mailadres toegevoegd aan dit account.'
+    already_used: '&4Dit e-mailadres wordt al gebruikt'
+    incomplete_settings: 'Fout; er moeten nog enkele opties ingevuld worden om mails te kunnen sturen. Neem contact op met een administrator.'
+    send_failure: 'De e-mail kon niet verzonden worden. Neem contact op met een administrator.'
+    change_password_expired: 'Je kunt je wachtwoord niet meer veranderen met dit commando.'
+    email_cooldown_error: '&cEr is recent al een e-mail verzonden. Je moet %time wachten voordat je een nieuw bericht kunt versturen.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Wachtwoord vergeten? Gebruik alsjeblieft het commando: /email recovery <e-mail>'
+    command_usage: '&cGebruik: /email recovery <e-mail>'
+    email_sent: '&2Een herstel e-mail is verzonden! Check alsjeblieft je mailbox!'
+    code:
+        code_sent: 'Een herstelcode voor je wachtwoord is naar je mailbox gestuurd.'
+        incorrect: 'De herstelcode is niet correct! Je kunt het nog %count keer proberen.'
+        tries_exceeded: 'Je hebt het maximum aantal pogingen om een herstel code in te vullen bereikt. Gebruik "/email recovery [e-mail]" om een nieuwe code te krijgen'
+        correct: 'De herstelcode is correct!'
+        change_password: 'Gebruik alsjeblieft het commando /email setpassword <nieuw wachtwoord> om je wachtwoord direct te veranderen.'
 
 # Captcha
-usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha <theCaptcha>'
-wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha THE_CAPTCHA" in de chat!'
-valid_captcha: '&2De captcha-code is geldig!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha %captcha_code'
+    wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha %captcha_code" in de chat!'
+    valid_captcha: '&2De captcha-code is geldig!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-second: 'seconde'
-seconds: 'seconden'
-minute: 'minuut'
-minutes: 'minuten'
-hour: 'uur'
-hours: 'uren'
-day: 'dag'
-days: 'dagen'
+time:
+    second: 'seconde'
+    seconds: 'seconden'
+    minute: 'minuut'
+    minutes: 'minuten'
+    hour: 'uur'
+    hours: 'uren'
+    day: 'dag'
+    days: 'dagen'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Je geheime code is %code. Je kunt hem scannen op %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

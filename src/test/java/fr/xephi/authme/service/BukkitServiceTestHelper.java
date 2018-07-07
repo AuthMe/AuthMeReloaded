@@ -1,7 +1,12 @@
 package fr.xephi.authme.service;
 
+import org.bukkit.entity.Player;
+
+import java.util.Collection;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 
 /**
@@ -80,5 +85,18 @@ public final class BukkitServiceTestHelper {
             runnable.run();
             return null;
         }).when(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), anyLong());
+    }
+
+    /**
+     * Sets a BukkitService mock to return the given players when its method
+     * {@link BukkitService#getOnlinePlayers()} is invoked.
+     *
+     * @param bukkitService the mock to set behavior on
+     * @param players the players to return
+     */
+    @SuppressWarnings("unchecked")
+    public static void returnGivenOnlinePlayers(BukkitService bukkitService, Collection<Player> players) {
+        // The compiler gets lost in generics because Collection<? extends Player> is returned from getOnlinePlayers()
+        given(bukkitService.getOnlinePlayers()).willReturn((Collection) players);
     }
 }

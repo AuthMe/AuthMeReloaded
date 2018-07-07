@@ -123,7 +123,7 @@ public class OnJoinVerifier implements Reloadable {
             return false;
         } else if (!permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
             // Server is full and player is NOT VIP; set kick message and proceed with kick
-            event.setKickMessage(messages.retrieveSingle(MessageKey.KICK_FULL_SERVER));
+            event.setKickMessage(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER));
             return true;
         }
 
@@ -135,12 +135,12 @@ public class OnJoinVerifier implements Reloadable {
         }
         Player nonVipPlayer = generateKickPlayer(onlinePlayers);
         if (nonVipPlayer != null) {
-            nonVipPlayer.kickPlayer(messages.retrieveSingle(MessageKey.KICK_FOR_VIP));
+            nonVipPlayer.kickPlayer(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP));
             event.allow();
             return false;
         } else {
             ConsoleLogger.info("VIP player " + player.getName() + " tried to join, but the server was full");
-            event.setKickMessage(messages.retrieveSingle(MessageKey.KICK_FULL_SERVER));
+            event.setKickMessage(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER));
             return true;
         }
     }

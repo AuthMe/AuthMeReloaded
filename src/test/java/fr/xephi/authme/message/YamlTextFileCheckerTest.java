@@ -2,6 +2,7 @@ package fr.xephi.authme.message;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.help.HelpSection;
+import fr.xephi.authme.util.ExceptionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.BeforeClass;
@@ -13,8 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static tools.utils.FileIoUtils.listFilesOrThrow;
 import static org.junit.Assert.fail;
+import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
  * Tests that all YML text files can be loaded.
@@ -85,7 +86,7 @@ public class YamlTextFileCheckerTest {
                 errors.add("Message for '" + mandatoryKey + "' is empty");
             }
         } catch (Exception e) {
-            errors.add("Could not load file: " + StringUtils.formatException(e));
+            errors.add("Could not load file: " + ExceptionUtils.formatException(e));
         }
     }
 }

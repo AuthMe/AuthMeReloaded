@@ -46,6 +46,11 @@ commands:
     aliases:
     - changepass
     - cp
+  totp:
+    description: TOTP commands
+    usage: /totp code|add|confirm|remove
+    aliases:
+    - 2fa
   captcha:
     description: Captcha command
     usage: /captcha <captcha>
@@ -156,6 +161,9 @@ permissions:
   authme.admin.updatemessages:
     description: Permission to use the update messages command.
     default: op
+  authme.allowchatbeforelogin:
+    description: Permission to send chat messages before being logged in.
+    default: false
   authme.allowmultipleaccounts:
     description: Permission to be able to register multiple accounts.
     default: op
@@ -230,9 +238,12 @@ permissions:
       authme.player.email.see: true
       authme.player.login: true
       authme.player.logout: true
+      authme.player.protection.quickcommandsprotection: true
       authme.player.register: true
       authme.player.security.verificationcode: true
       authme.player.seeownaccounts: true
+      authme.player.totpadd: true
+      authme.player.totpremove: true
       authme.player.unregister: true
   authme.player.canbeforced:
     description: Permission for users a login can be forced to.
@@ -268,6 +279,9 @@ permissions:
   authme.player.logout:
     description: Command permission to logout.
     default: true
+  authme.player.protection.quickcommandsprotection:
+    description: Permission that enables on join quick commands checks for the player.
+    default: true
   authme.player.register:
     description: Command permission to register.
     default: true
@@ -277,10 +291,16 @@ permissions:
   authme.player.seeownaccounts:
     description: Permission to use to see own other accounts.
     default: true
+  authme.player.totpadd:
+    description: Permission to enable two-factor authentication.
+    default: true
+  authme.player.totpremove:
+    description: Permission to disable two-factor authentication.
+    default: true
   authme.player.unregister:
     description: Command permission to unregister.
     default: true
   authme.vip:
     description: When the server is full and someone with this permission joins the
       server, someone will be kicked.
-    default: op
+    default: false

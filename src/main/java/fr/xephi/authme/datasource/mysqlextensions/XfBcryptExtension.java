@@ -85,6 +85,7 @@ class XfBcryptExtension extends MySqlExtension {
         }
     }
 
+    @Override
     public void extendAuth(PlayerAuth auth, int id, Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
             "SELECT data FROM " + xfPrefix + "user_authenticate WHERE " + col.ID + "=?;")) {

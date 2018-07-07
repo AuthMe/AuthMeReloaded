@@ -1,118 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&3[請先注冊] 請按T , 然後輸入 "/register [你的密碼] [重覆確認你的密碼]" 來注冊。'
-usage_reg: '&c使用方法: 輸入"/register [你的密碼] [重覆確認你的密碼]"'
-reg_only: '&4只有註冊用戶才能加入服務器！ 請訪問http://example.com註冊！'
-kicked_admin_registered: '管理員剛剛註冊了您; 請重新登錄。'
-registered: '&2已成功註冊!'
-reg_disabled: '&c遊戲內註冊已停用!'
-user_regged: '&c您已經註冊此用戶名!'
+registration:
+    disabled: '&c遊戲內註冊已停用!'
+    name_taken: '&c您已經註冊此用戶名!'
+    register_request: '&3[請先注冊] 請按T , 然後輸入 "/register [你的密碼] [重覆確認你的密碼]" 來注冊。'
+    command_usage: '&c使用方法: 輸入"/register [你的密碼] [重覆確認你的密碼]"'
+    reg_only: '&4只有註冊用戶才能加入服務器！ 請訪問http://example.com註冊！'
+    success: '&2已成功註冊!'
+    kicked_admin_registered: '管理員剛剛註冊了您; 請重新登錄。'
 
 # Password errors on registration
-password_error: '&密碼錯誤!'
-password_error_nick: '&c你不能使用你的用戶名作密碼,請 choose another one...'
-password_error_unsafe: '&c所選的你的密碼並不安全的，請選擇另一個...'
-password_error_chars: '&4您的密碼含有非法字符。允許的字符：REG_EX'
-pass_len: '&c你的密碼太短或太長!請嘗試另一個!'
+password:
+    match_error: '&密碼錯誤!'
+    name_in_password: '&c你不能使用你的用戶名作密碼,請 choose another one...'
+    unsafe_password: '&c所選的你的密碼並不安全的，請選擇另一個...'
+    forbidden_characters: '&4您的密碼含有非法字符。允許的字符：%valid_chars'
+    wrong_length: '&c你的密碼太短或太長!請嘗試另一個!'
 
 # Login
-usage_log: '&b使用方法: 輸入"/login [你的密碼]" 來登入'
-wrong_pwd: '&c密碼錯誤!'
-login: '&2你已成功登入!'
-login_msg: '&c [請先登入] 請按T , 然後輸入 "/login [你的密碼]" 。'
-timeout: '&4超過登錄超時，您已從伺服器中踢出，請重試!'
+login:
+    command_usage: '&b使用方法: 輸入"/login [你的密碼]" 來登入'
+    wrong_password: '&c密碼錯誤!'
+    success: '&2你已成功登入!'
+    login_request: '&c [請先登入] 請按T , 然後輸入 "/login [你的密碼]" 。'
+    timeout_error: '&4超過登錄超時，您已從伺服器中踢出，請重試!'
 
 # Errors
-unknown_user: '&c此用戶尚未注冊!'
-denied_command: '&c你必須得到權限來使用此指令!'
-denied_chat: '&c你必須得到權限來使用聊天功能!'
-not_logged_in: '&c你尚未登入!'
-tempban_max_logins: '&c由於登錄失敗次數過多，您已被暫時禁止。'
-max_reg: '&c您已超過註冊的最大數量(%reg_count/%max_acc %reg_names)!'
-no_perm: '&4您沒有執行此操作的權限!'
-error: '&4發生錯誤!請聯繫伺服器管理員!'
-kick_forvip: '&3一名VIP玩家在服務器已滿時已加入伺服器!'
+error:
+    denied_command: '&c你必須得到權限來使用此指令!'
+    denied_chat: '&c你必須得到權限來使用聊天功能!'
+    unregistered_user: '&c此用戶尚未注冊!'
+    not_logged_in: '&c你尚未登入!'
+    no_permission: '&4您沒有執行此操作的權限!'
+    unexpected_error: '&4發生錯誤!請聯繫伺服器管理員!'
+    max_registration: '&c您已超過註冊的最大數量(%reg_count/%max_acc %reg_names)!'
+    logged_in: '&c您已經登錄!'
+    kick_for_vip: '&3一名VIP玩家在服務器已滿時已加入伺服器!'
+    tempban_max_logins: '&c由於登錄失敗次數過多，您已被暫時禁止。'
 
 # AntiBot
-kick_antibot: '伺服器正在啟用AntiBot保護模式！ 您必須等待幾分鐘才能加入服務器。'
-antibot_auto_enabled: '&4[AntiBotService] 伺服器由於連接數量龐大而啟用AntiBot!'
-antibot_auto_disabled: '&2[AntiBotService] AntiBot將在%m分鐘後禁用!'
+antibot:
+    kick_antibot: '伺服器正在啟用AntiBot保護模式！ 您必須等待幾分鐘才能加入服務器。'
+    auto_enabled: '&4[AntiBotService] 伺服器由於連接數量龐大而啟用AntiBot!'
+    auto_disabled: '&2[AntiBotService] AntiBot將在%m分鐘後禁用!'
+
+# Unregister
+unregister:
+    success: '&c帳戶已刪除!'
+    command_usage: '&c使用方法: "/unregister <你的密碼>"'
 
 # Other messages
-unregistered: '&c帳戶已刪除!'
-accounts_owned_self: '您擁有 %count 個帳戶:'
-accounts_owned_other: '玩家 %name 擁有 %count 個帳戶:'
-two_factor_create: '&2您的密碼是 %code。您可以從這裡掃描 %url'
-recovery_code_sent: '已將重設密碼的恢復代碼發送到您的電子郵件。'
-# TODO: Missing tags %count
-recovery_code_incorrect: '恢復代碼錯誤!使用指令: "/email recovery [電郵地址]" 生成新的一個恢復代碼。'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-vb_nonActiv: '&c你的帳戶未激活,請確認電郵!'
-usage_unreg: '&c使用方法: "/unregister <你的密碼>"'
-pwd_changed: '&2密碼已更變!'
-logged_in: '&c您已經登錄!'
-logout: '&2已成功註銷!'
-reload: '&2伺服器已正確地被重新加載配置和數據庫！'
-usage_changepassword: '&c使用方法: "/changepassword [舊密碼] [新密碼]"'
+misc:
+    account_not_activated: '&c你的帳戶未激活,請確認電郵!'
+    password_changed: '&2密碼已更變!'
+    logout: '&2已成功註銷!'
+    reload: '&2伺服器已正確地被重新加載配置和數據庫！'
+    usage_change_password: '&c使用方法: "/changepassword [舊密碼] [新密碼]"'
+    accounts_owned_self: '您擁有 %count 個帳戶:'
+    accounts_owned_other: '玩家 %name 擁有 %count 個帳戶:'
 
 # Session messages
-invalid_session: '&c您的IP已更改，並且您的會話數據已過期！'
-valid_session: '&2由於會話重新連接而登錄.'
+session:
+    valid_session: '&2由於會話重新連接而登錄.'
+    invalid_session: '&c您的IP已更改，並且您的會話數據已過期！'
 
 # Error messages when joining
-name_len: '&4你的暱稱太短或太長!'
-regex: '&4您的暱稱含有非法字符。允許的字符：REG_EX'
-country_banned: '&4您的國家/地區已被禁止使用此伺服器!'
-not_owner_error: '您不是此帳戶的所有者。 請選擇其他名稱!'
-kick_fullserver: '&4服務器已滿,請稍後再試!'
-same_nick: '&4伺服器上已經在使用相同的用戶名！'
-invalid_name_case: '您應該使用用戶名 %valid 而不是 %invalid 來加入。'
-same_ip_online: '一位同一IP的玩家已在遊戲中!'
+on_join_validation:
+    same_ip_online: '一位同一IP的玩家已在遊戲中!'
+    same_nick_online: '&4伺服器上已經在使用相同的用戶名！'
+    name_length: '&4你的暱稱太短或太長!'
+    characters_in_name: '&4您的暱稱含有非法字符。允許的字符：%valid_chars'
+    kick_full_server: '&4服務器已滿,請稍後再試!'
+    country_banned: '&4您的國家/地區已被禁止使用此伺服器!'
+    not_owner_error: '您不是此帳戶的所有者。 請選擇其他名稱!'
+    invalid_name_case: '您應該使用用戶名 %valid 而不是 %invalid 來加入。'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&c使用方法: "/email add [電郵地址] [confirmEmail]"'
-usage_email_change: '&c使用方法: "/email change [舊電郵地址] [新電郵地址]"'
-usage_email_recovery: '&c使用方法: "/email recovery [電郵地址]"'
-new_email_invalid: '&c新電子郵件地址無效，請重試!'
-old_email_invalid: '&c舊電子郵件地址無效，請重試!'
-email_invalid: '&c電子郵件地址無效，請重試!'
-email_added: '&2電子郵件地址已成功添加到您的帳戶!'
-email_confirm: '&c請確認你的電郵地址!'
-email_changed: '&2已正確地更改電子郵件地址!'
-email_send: '&2帳戶恢復電子郵件已成功發送！ 請檢查您的電子郵件收件箱!'
-# TODO email_show: '&2Your current email address is: &f%email'
-incomplete_email_settings: '缺少必要的配置來為發送電子郵件。請聯繫管理員。'
-email_already_used: '&4此電子郵件地址已被使用'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
-add_email: '&3請使用命令: /email add [你的電郵地址] [重覆確認你的電郵地址] 將您的電子郵件添加到您的帳戶"'
-recovery_email: '&3忘記密碼了嗎？ 請使用命令: "/email recovery [你的電郵地址]"'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email:
+    add_email_request: '&3請使用命令: /email add [你的電郵地址] [重覆確認你的電郵地址] 將您的電子郵件添加到您的帳戶"'
+    usage_email_add: '&c使用方法: "/email add [電郵地址] [confirmEmail]"'
+    usage_email_change: '&c使用方法: "/email change [舊電郵地址] [新電郵地址]"'
+    new_email_invalid: '&c新電子郵件地址無效，請重試!'
+    old_email_invalid: '&c舊電子郵件地址無效，請重試!'
+    invalid: '&c電子郵件地址無效，請重試!'
+    added: '&2電子郵件地址已成功添加到您的帳戶!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&c請確認你的電郵地址!'
+    changed: '&2已正確地更改電子郵件地址!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    # TODO email_show: '&2Your current email address is: &f%email'
+    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
+    already_used: '&4此電子郵件地址已被使用'
+    incomplete_settings: '缺少必要的配置來為發送電子郵件。請聯繫管理員。'
+    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3忘記密碼了嗎？ 請使用命令: "/email recovery [你的電郵地址]"'
+    command_usage: '&c使用方法: "/email recovery [電郵地址]"'
+    email_sent: '&2帳戶恢復電子郵件已成功發送！ 請檢查您的電子郵件收件箱!'
+    code:
+        code_sent: '已將重設密碼的恢復代碼發送到您的電子郵件。'
+        incorrect: '恢復代碼錯誤!使用指令: "/email recovery [電郵地址]" 生成新的一個恢復代碼。'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
-usage_captcha: '&3T要登錄您必須使用captcha驗證碼,請使用命令: "/captcha <theCaptcha>"'
-wrong_captcha: '&c驗證碼錯誤!請按T在聊天中輸入 "/captcha THE_CAPTCHA"'
-valid_captcha: '&2驗證碼正確!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3T要登錄您必須使用captcha驗證碼,請使用命令: "/captcha %captcha_code"'
+    wrong_captcha: '&c驗證碼錯誤!請按T在聊天中輸入 "/captcha %captcha_code"'
+    valid_captcha: '&2驗證碼正確!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+time:
+    # TODO second: 'second'
+    # TODO seconds: 'seconds'
+    # TODO minute: 'minute'
+    # TODO minutes: 'minutes'
+    # TODO hour: 'hour'
+    # TODO hours: 'hours'
+    # TODO day: 'day'
+    # TODO days: 'days'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2您的密碼是 %code。您可以從這裡掃描 %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -366,7 +367,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public DataSourceResult<String> getEmail(String user) {
+    public DataSourceValue<String> getEmail(String user) {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
@@ -395,6 +396,11 @@ public class FlatFile implements DataSource {
 
     @Override
     public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+        throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    @Override
+    public boolean setTotpKey(String user, String totpKey) {
         throw new UnsupportedOperationException("Flat file no longer supported");
     }
 

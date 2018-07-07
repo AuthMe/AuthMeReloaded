@@ -123,4 +123,13 @@ public class HashUtilsTest {
         assertThat(HashUtils.isValidBcryptHash("#2ae5fc78"), equalTo(false));
     }
 
+    @Test
+    public void shouldCompareStrings() {
+        // given / when / then
+        assertThat(HashUtils.isEqual("test", "test"), equalTo(true));
+        assertThat(HashUtils.isEqual("test", "Test"), equalTo(false));
+        assertThat(HashUtils.isEqual("1234", "1234."), equalTo(false));
+        assertThat(HashUtils.isEqual("ພາສາຫວຽດນາມ", "ພາສາຫວຽດນາມ"), equalTo(true));
+        assertThat(HashUtils.isEqual("test", "tëst"), equalTo(false));
+    }
 }

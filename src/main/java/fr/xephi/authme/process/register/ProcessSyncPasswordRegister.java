@@ -2,8 +2,10 @@ package fr.xephi.authme.process.register;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.events.RegisterEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
@@ -15,6 +17,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 
 /**
+ * Performs synchronous tasks after a successful {@link RegistrationType#PASSWORD password registration}.
  */
 public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
@@ -29,6 +32,9 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
 
     @Inject
     private CommandManager commandManager;
+
+    @Inject
+    private BukkitService bukkitService;
 
     ProcessSyncPasswordRegister() {
     }
@@ -46,6 +52,11 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
     }
 
+    /**
+     * Processes a player having registered with a password.
+     *
+     * @param player the newly registered player
+     */
     public void processPasswordRegister(Player player) {
         service.send(player, MessageKey.REGISTER_SUCCESS);
 
@@ -54,11 +65,12 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         player.saveData();
+        bukkitService.callEvent(new RegisterEvent(player));
         ConsoleLogger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
 
         // Kick Player after Registration is enabled, kick the player
         if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {
-            player.kickPlayer(service.retrieveSingleMessage(MessageKey.REGISTER_SUCCESS));
+            player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.REGISTER_SUCCESS));
             return;
         }
 

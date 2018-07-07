@@ -19,7 +19,7 @@ Standalone server/Bungeecord network, SQLite/MySql, ...
 This can be found by running `/authme version`
 
 ### Error Log:
-Pastebin/Hastebin/Gist link of the error logo or stacktrace (if any)
+Pastebin/Hastebin/Gist link of the error log or stacktrace (if any)
 
 ### Configuration:
 Pastebin/Hastebin/Gist link of your config.yml file (remember to delete any sensitive data)

@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -375,5 +377,27 @@ public class BukkitService implements SettingsDependent {
      */
     public BanEntry banIp(String ip, String reason, Date expires, String source) {
         return Bukkit.getServer().getBanList(BanList.Type.IP).addBan(ip, reason, expires, source);
+    }
+
+    /**
+     * Returns an optional with a boolean indicating whether bungeecord is enabled or not if the
+     * server implementation is Spigot. Otherwise returns an empty optional.
+     *
+     * @return Optional with configuration value for Spigot, empty optional otherwise
+     */
+    public Optional<Boolean> isBungeeCordConfiguredForSpigot() {
+        try {
+            YamlConfiguration spigotConfig = Bukkit.spigot().getConfig();
+            return Optional.of(spigotConfig.getBoolean("settings.bungeecord"));
+        } catch (NoSuchMethodError e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @return the IP string that this server is bound to, otherwise empty string
+     */
+    public String getIp() {
+        return Bukkit.getServer().getIp();
     }
 }

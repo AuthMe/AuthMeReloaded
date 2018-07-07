@@ -18,9 +18,9 @@ import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -139,7 +139,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
+            player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.NOT_OWNER_ERROR));
             if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
                 server.banIP(ip);
             }
@@ -184,12 +184,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private boolean validatePlayerCountForIp(final Player player, String ip) {
         if (service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP) > 0
             && !service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && !"127.0.0.1".equalsIgnoreCase(ip)
-            && !"localhost".equalsIgnoreCase(ip)
+            && !InternetProtocolUtils.isLoopbackAddress(ip)
             && countOnlinePlayersByIp(ip) > service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)) {
 
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
-                () -> player.kickPlayer(service.retrieveSingleMessage(MessageKey.SAME_IP_ONLINE)));
+                () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.SAME_IP_ONLINE)));
             return false;
         }
         return true;

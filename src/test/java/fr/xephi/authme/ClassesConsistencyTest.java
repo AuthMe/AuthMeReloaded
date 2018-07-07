@@ -5,7 +5,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.data.captcha.CaptchaCodeStorage;
+import fr.xephi.authme.datasource.AbstractSqlDataSource;
 import fr.xephi.authme.datasource.Columns;
+import fr.xephi.authme.datasource.columnshandler.DataSourceColumn;
+import fr.xephi.authme.datasource.columnshandler.PlayerAuthColumn;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
@@ -18,6 +21,7 @@ import org.junit.Test;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,8 +53,9 @@ public class ClassesConsistencyTest {
     private static final Set<Class<?>> IMMUTABLE_TYPES = ImmutableSet.of(
         /* JDK */
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
+        Charset.class,
         /* AuthMe */
-        Property.class, RegistrationMethod.class,
+        Property.class, RegistrationMethod.class, DataSourceColumn.class, PlayerAuthColumn.class,
         /* Guava */
         ImmutableMap.class, ImmutableList.class);
 
@@ -58,6 +63,7 @@ public class ClassesConsistencyTest {
     private static final Set<Class<?>> CLASSES_EXCLUDED_FROM_VISIBILITY_TEST = ImmutableSet.of(
         Whirlpool.class, // not our implementation, so we don't touch it
         MySqlExtension.class, // has immutable protected fields used by all children
+        AbstractSqlDataSource.class, // protected members for inheritance
         Columns.class // uses non-static String constants, which is safe
     );
 
@@ -123,29 +129,13 @@ public class ClassesConsistencyTest {
     }
 
     /**
-     * Prints out the field with (most of) its modifiers.
+     * Prints out the field with its modifiers.
      *
      * @param field the field to format
      * @return description of the field
      */
     private static String formatField(Field field) {
-        String modifiersText = "";
-        int modifiers = field.getModifiers();
-        if (Modifier.isPublic(modifiers)) {
-            modifiersText += "public ";
-        } else if (Modifier.isProtected(modifiers)) {
-            modifiersText += "protected ";
-        } else if (Modifier.isPrivate(modifiers)) {
-            modifiersText += "private ";
-        }
-
-        if (Modifier.isStatic(modifiers)) {
-            modifiersText += "static ";
-        }
-        if (Modifier.isFinal(modifiers)) {
-            modifiersText += "final ";
-        }
-
+        String modifiersText = Modifier.toString(field.getModifiers());
         return String.format("[%s] %s %s %s", field.getDeclaringClass().getSimpleName(), modifiersText.trim(),
             field.getType().getSimpleName(), field.getName());
     }

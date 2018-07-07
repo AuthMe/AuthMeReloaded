@@ -1,118 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&cMesedez erabili "/register pasahitza pasahitza" erregistratzeko'
-usage_reg: '&cErabili: /register pasahitza pasahitza'
-reg_only: '&fErregistratuako erabiltzaileak bakarrik! Mesedez bisitatu http://example.com erregistratzeko'
-# TODO kicked_admin_registered: 'An admin just registered you; please log in again'
-registered: '&cOndo erregistratu zara!'
-reg_disabled: '&cErregistroa desgaitua'
-user_regged: '&cErabiltzailea dagoeneko erregistratua'
+registration:
+    disabled: '&cErregistroa desgaitua'
+    name_taken: '&cErabiltzailea dagoeneko erregistratua'
+    register_request: '&cMesedez erabili "/register pasahitza pasahitza" erregistratzeko'
+    command_usage: '&cErabili: /register pasahitza pasahitza'
+    reg_only: '&fErregistratuako erabiltzaileak bakarrik! Mesedez bisitatu http://example.com erregistratzeko'
+    success: '&cOndo erregistratu zara!'
+    # TODO kicked_admin_registered: 'An admin just registered you; please log in again'
 
 # Password errors on registration
-password_error: '&fPasahitzak ez datoz bat'
-# TODO password_error_nick: '&cYou can''t use your name as password, please choose another one...'
-# TODO password_error_unsafe: '&cThe chosen password isn''t safe, please choose another one...'
-# TODO password_error_chars: '&4Your password contains illegal characters. Allowed chars: REG_EX'
-pass_len: '&fZure pasahitza motzegia edo luzeegia da'
+password:
+    match_error: '&fPasahitzak ez datoz bat'
+    # TODO name_in_password: '&cYou can''t use your name as password, please choose another one...'
+    # TODO unsafe_password: '&cThe chosen password isn''t safe, please choose another one...'
+    # TODO forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
+    wrong_length: '&fZure pasahitza motzegia edo luzeegia da'
 
 # Login
-usage_log: '&cErabili: /login pasahitza'
-wrong_pwd: '&cPasahitz okerra'
-login: '&cOngi etorri!'
-login_msg: '&cMesedez erabili "/login pasahitza" saioa hasteko'
-timeout: '&fDenbora gehiegi egon zara saioa hasi gabe'
+login:
+    command_usage: '&cErabili: /login pasahitza'
+    wrong_password: '&cPasahitz okerra'
+    success: '&cOngi etorri!'
+    login_request: '&cMesedez erabili "/login pasahitza" saioa hasteko'
+    timeout_error: '&fDenbora gehiegi egon zara saioa hasi gabe'
 
 # Errors
-unknown_user: '&cErabiltzailea ez dago erregistratuta'
-# TODO denied_command: '&cIn order to use this command you must be authenticated!'
-# TODO denied_chat: '&cIn order to chat you must be authenticated!'
-not_logged_in: '&cSaioa hasi gabe!'
-# TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
-# TODO: Missing tags %reg_count, %max_acc, %reg_names
-max_reg: '&fKontuko 2 erabiltzaile bakarrik izan ditzakezu'
-no_perm: '&cBaimenik ez'
-error: '&fErrorea; Mesedez jarri kontaktuan administratzaile batekin'
-kick_forvip: '&cVIP erabiltzaile bat sartu da zerbitzaria beteta zegoenean!'
+error:
+    # TODO denied_command: '&cIn order to use this command you must be authenticated!'
+    # TODO denied_chat: '&cIn order to chat you must be authenticated!'
+    unregistered_user: '&cErabiltzailea ez dago erregistratuta'
+    not_logged_in: '&cSaioa hasi gabe!'
+    no_permission: '&cBaimenik ez'
+    unexpected_error: '&fErrorea; Mesedez jarri kontaktuan administratzaile batekin'
+    max_registration: '&fKontuko 2 erabiltzaile bakarrik izan ditzakezu'
+    logged_in: '&cDagoeneko saioa hasita!'
+    kick_for_vip: '&cVIP erabiltzaile bat sartu da zerbitzaria beteta zegoenean!'
+    # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 
 # AntiBot
-# TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
-# TODO antibot_auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number of connections!'
-# TODO antibot_auto_disabled: '&2[AntiBotService] AntiBot disabled after %m minutes!'
+antibot:
+    # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+    # TODO auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number of connections!'
+    # TODO auto_disabled: '&2[AntiBotService] AntiBot disabled after %m minutes!'
+
+# Unregister
+unregister:
+    success: '&cZure erregistroa ezabatu duzu!'
+    command_usage: '&cErabili: /unregister password'
 
 # Other messages
-unregistered: '&cZure erregistroa ezabatu duzu!'
-# TODO accounts_owned_self: 'You own %count accounts:'
-# TODO accounts_owned_other: 'The player %name has %count accounts:'
-# TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
-# TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
-# TODO recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-vb_nonActiv: '&fZure kontua aktibatu gabe dago, konfirmatu zure emaila!'
-usage_unreg: '&cErabili: /unregister password'
-pwd_changed: '&cPasahitza aldatu duzu!'
-logged_in: '&cDagoeneko saioa hasita!'
-logout: '&cAtera zara'
-reload: '&fConfiguration and database has been reloaded'
-usage_changepassword: '&fErabili: /changepassword pasahitzZaharra pasahitzBerria'
+misc:
+    account_not_activated: '&fZure kontua aktibatu gabe dago, konfirmatu zure emaila!'
+    password_changed: '&cPasahitza aldatu duzu!'
+    logout: '&cAtera zara'
+    reload: '&fConfiguration and database has been reloaded'
+    usage_change_password: '&fErabili: /changepassword pasahitzZaharra pasahitzBerria'
+    # TODO accounts_owned_self: 'You own %count accounts:'
+    # TODO accounts_owned_other: 'The player %name has %count accounts:'
 
 # Session messages
-# TODO invalid_session: '&cYour IP has been changed and your session data has expired!'
-valid_session: '&cSession login'
+session:
+    valid_session: '&cSession login'
+    # TODO invalid_session: '&cYour IP has been changed and your session data has expired!'
 
 # Error messages when joining
-name_len: '&cZure erabiltzaile izena motzegia edo luzeegia da'
-regex: '&cZure erabiltzaileak karaktere debekatuak ditu. Karaktere onartuak: REG_EX'
-country_banned: '[AuthMe] Zure herrialdea blokeatuta dago zerbitzari honetan'
-# TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
-kick_fullserver: '&cZerbitzaria beteta dago, Barkatu!'
-same_nick: '&fZure izen berdina duen erabiltzaile bat zerbitzarian jolasten dago'
-# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
-# TODO same_ip_online: 'A player with the same IP is already in game!'
+on_join_validation:
+    # TODO same_ip_online: 'A player with the same IP is already in game!'
+    same_nick_online: '&fZure izen berdina duen erabiltzaile bat zerbitzarian jolasten dago'
+    name_length: '&cZure erabiltzaile izena motzegia edo luzeegia da'
+    characters_in_name: '&cZure erabiltzaileak karaktere debekatuak ditu. Karaktere onartuak: %valid_chars'
+    kick_full_server: '&cZerbitzaria beteta dago, Barkatu!'
+    country_banned: '[AuthMe] Zure herrialdea blokeatuta dago zerbitzari honetan'
+    # TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
+    # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&fErabili: /email add <email> <confirmeEmail> '
-usage_email_change: '&fErabili: /email change <emailZaharra> <emailBerria> '
-usage_email_recovery: '&fErabili: /email recovery <Email>'
-new_email_invalid: '[AuthMe] Email okerra!'
-old_email_invalid: '[AuthMe] Email zaharra okerra!'
-email_invalid: '[AuthMe] Email okerrea'
-email_added: '[AuthMe] Emaila gehitu duzu !'
-email_confirm: '[AuthMe] Konfirmatu zure emaila !'
-email_changed: '[AuthMe] Emaila aldatua!'
-email_send: '[AuthMe] Berreskuratze emaila bidalita !'
-# TODO email_show: '&2Your current email address is: &f%email'
-# TODO incomplete_email_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
-# TODO email_already_used: '&4The email address is already being used'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
-add_email: '&cMesedez gehitu zure emaila : /email add yourEmail confirmEmail'
-recovery_email: '&cPasahitza ahaztu duzu? Erabili /email recovery <zureemaila>'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email:
+    add_email_request: '&cMesedez gehitu zure emaila : /email add yourEmail confirmEmail'
+    usage_email_add: '&fErabili: /email add <email> <confirmeEmail> '
+    usage_email_change: '&fErabili: /email change <emailZaharra> <emailBerria> '
+    new_email_invalid: '[AuthMe] Email okerra!'
+    old_email_invalid: '[AuthMe] Email zaharra okerra!'
+    invalid: '[AuthMe] Email okerrea'
+    added: '[AuthMe] Emaila gehitu duzu !'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '[AuthMe] Konfirmatu zure emaila !'
+    changed: '[AuthMe] Emaila aldatua!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    # TODO email_show: '&2Your current email address is: &f%email'
+    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
+    # TODO already_used: '&4The email address is already being used'
+    # TODO incomplete_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
+    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&cPasahitza ahaztu duzu? Erabili /email recovery <zureemaila>'
+    command_usage: '&fErabili: /email recovery <Email>'
+    email_sent: '[AuthMe] Berreskuratze emaila bidalita !'
+    code:
+        # TODO code_sent: 'A recovery code to reset your password has been sent to your email.'
+        # TODO incorrect: 'The recovery code is not correct! You have %count tries remaining.'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
-# TODO usage_captcha: '&3To log in you have to solve a captcha code, please use the command: /captcha <theCaptcha>'
-# TODO wrong_captcha: '&cWrong captcha, please type "/captcha THE_CAPTCHA" into the chat!'
-# TODO valid_captcha: '&2Captcha code solved correctly!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    # TODO usage_captcha: '&3To log in you have to solve a captcha code, please use the command: /captcha %captcha_code'
+    # TODO wrong_captcha: '&cWrong captcha, please type "/captcha %captcha_code" into the chat!'
+    # TODO valid_captcha: '&2Captcha code solved correctly!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+time:
+    # TODO second: 'second'
+    # TODO seconds: 'seconds'
+    # TODO minute: 'minute'
+    # TODO minutes: 'minutes'
+    # TODO hour: 'hour'
+    # TODO hours: 'hours'
+    # TODO day: 'day'
+    # TODO days: 'days'
+
+# Two-factor authentication
+two_factor:
+    # TODO code_created: '&2Your secret code is %code. You can scan it from here %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

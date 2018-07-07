@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.HashUtils;
-import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.ExceptionUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +32,7 @@ public class XfBCrypt implements EncryptionMethod {
         try {
             return HashUtils.isValidBcryptHash(hash.getHash()) && BCryptService.checkpw(password, hash.getHash());
         } catch (IllegalArgumentException e) {
-            ConsoleLogger.warning("XfBCrypt checkpw() returned " + StringUtils.formatException(e));
+            ConsoleLogger.warning("XfBCrypt checkpw() returned " + ExceptionUtils.formatException(e));
         }
         return false;
     }

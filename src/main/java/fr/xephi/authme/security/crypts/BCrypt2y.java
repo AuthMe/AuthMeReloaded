@@ -3,6 +3,8 @@ package fr.xephi.authme.security.crypts;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
+
 @Recommendation(Usage.RECOMMENDED)
 public class BCrypt2y extends HexSaltedMethod {
 
@@ -23,7 +25,7 @@ public class BCrypt2y extends HexSaltedMethod {
         // The salt is the first 29 characters of the hash
 
         String salt = hash.substring(0, 29);
-        return hash.equals(computeHash(password, salt, null));
+        return isEqual(hash, computeHash(password, salt, null));
     }
 
     @Override

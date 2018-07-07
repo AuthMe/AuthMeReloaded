@@ -1,117 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&cKérlek, regisztrálj be a következő paranccsal: "&7/register <jelszó> <jelszó ismét>&c".'
-usage_reg: '&cHasználat: "&7/register <jelszó> <jelszó ismét>&c".'
-reg_only: '&4Csak a regisztrált játékosok tudnak csatlakozni a szerverhez!'
-kicked_admin_registered: 'Az adminisztrátor által regisztrálva lettél. Kérlek, lépj be újra a szerverbe!'
-registered: '&aA regisztráció sikeres!'
-reg_disabled: '&cA regisztráció letiltva!'
-user_regged: '&cEz a játékosnév már regisztrálva van!'
+registration:
+    disabled: '&cA regisztráció letiltva!'
+    name_taken: '&cEz a játékosnév már regisztrálva van!'
+    register_request: '&cKérlek, regisztrálj be a következő paranccsal: "&7/register <jelszó> <jelszó ismét>&c".'
+    command_usage: '&cHasználat: "&7/register <jelszó> <jelszó ismét>&c".'
+    reg_only: '&4Csak a regisztrált játékosok tudnak csatlakozni a szerverhez!'
+    success: '&aA regisztráció sikeres!'
+    kicked_admin_registered: 'Az adminisztrátor által regisztrálva lettél. Kérlek, lépj be újra a szerverbe!'
 
 # Password errors on registration
-password_error: '&cA két jelszó nem egyezik!'
-password_error_nick: '&cNem használhatod a felhasználóneved jelszónak, kérlek, válassz másikat...'
-password_error_unsafe: '&cA választott jelszó nem biztonságos, kérlek, válassz másikat...'
-password_error_chars: '&4A választott jelszó nem engedélyezett karaktereket tartalmaz. Engedélyezett karakterek: REG_EX'
-pass_len: 'A jelszavad nem éri el a minimális hosszúságot!'
+password:
+    match_error: '&cA két jelszó nem egyezik!'
+    name_in_password: '&cNem használhatod a felhasználóneved jelszónak, kérlek, válassz másikat...'
+    unsafe_password: '&cA választott jelszó nem biztonságos, kérlek, válassz másikat...'
+    forbidden_characters: '&4A választott jelszó nem engedélyezett karaktereket tartalmaz. Engedélyezett karakterek: %valid_chars'
+    wrong_length: 'A jelszavad nem éri el a minimális hosszúságot!'
 
 # Login
-usage_log: '&cBejelentkezés: "&7/login <jelszó>&c".'
-wrong_pwd: '&4A jelszó helytelen!'
-login: '&aSikeresen beléptél!'
-login_msg: '&cKérlek, jelentkezz be: "&7/login <jelszó>&c"!'
-timeout: 'Bejelentkezési időtúllépés!'
+login:
+    command_usage: '&cBejelentkezés: "&7/login <jelszó>&c".'
+    wrong_password: '&4A jelszó helytelen!'
+    success: '&aSikeresen beléptél!'
+    login_request: '&cKérlek, jelentkezz be: "&7/login <jelszó>&c"!'
+    timeout_error: 'Bejelentkezési időtúllépés!'
 
 # Errors
-unknown_user: '&cEz a felhasználó nincs regisztrálva!'
-denied_command: '&cAmíg nem vagy bejelentkezve, nem használhatod ezt a parancsot!'
-denied_chat: '&cAmíg nem vagy bejelentkezve, nem használhatod a csevegőt!'
-not_logged_in: '&cNem vagy bejelentkezve!'
-tempban_max_logins: '&cIdeiglenesen ki lettél tiltva, mert túl sok alkalommal rontottad el a jelszavad!'
-max_reg: '&cElérted a maximálisan beregisztrálható karakterek számát. (%reg_count/%max_acc %reg_names)'
-no_perm: '&cNincs jogosultságod a használatára!'
-error: '&cHiba lépett fel! Lépj kapcsolatba a szerver tulajával!'
-kick_forvip: '&3VIP játékos csatlakozott a szerverhez!'
+error:
+    denied_command: '&cAmíg nem vagy bejelentkezve, nem használhatod ezt a parancsot!'
+    denied_chat: '&cAmíg nem vagy bejelentkezve, nem használhatod a csevegőt!'
+    unregistered_user: '&cEz a felhasználó nincs regisztrálva!'
+    not_logged_in: '&cNem vagy bejelentkezve!'
+    no_permission: '&cNincs jogosultságod a használatára!'
+    unexpected_error: '&cHiba lépett fel! Lépj kapcsolatba a szerver tulajával!'
+    max_registration: '&cElérted a maximálisan beregisztrálható karakterek számát. (%reg_count/%max_acc %reg_names)'
+    logged_in: '&cMár be vagy jelentkezve!'
+    kick_for_vip: '&3VIP játékos csatlakozott a szerverhez!'
+    tempban_max_logins: '&cIdeiglenesen ki lettél tiltva, mert túl sok alkalommal rontottad el a jelszavad!'
 
 # AntiBot
-kick_antibot: 'Az AntiBot védelem bekapcsolva! Kérlek, várj pár percet mielőtt csatlakozol.'
-antibot_auto_enabled: '&4[AntiBot] Az AntiBot védelem bekapcsolt, mert a megszabott időn belül több felhasználó csatlakozott!'
-antibot_auto_disabled: '&2[AntiBot] Az AntiBot kikapcsol %m perc múlva!'
+antibot:
+    kick_antibot: 'Az AntiBot védelem bekapcsolva! Kérlek, várj pár percet mielőtt csatlakozol.'
+    auto_enabled: '&4[AntiBot] Az AntiBot védelem bekapcsolt, mert a megszabott időn belül több felhasználó csatlakozott!'
+    auto_disabled: '&2[AntiBot] Az AntiBot kikapcsol %m perc múlva!'
+
+# Unregister
+unregister:
+    success: '&cA regisztráció sikeresen törölve!'
+    command_usage: '&cHasználat: "&7/unregister <jelszó>&c"'
 
 # Other messages
-unregistered: '&cA regisztráció sikeresen törölve!'
-accounts_owned_self: '%count db regisztrációd van:'
-accounts_owned_other: 'A %name nevű játékosnak, %count db regisztrációja van:'
-two_factor_create: '&2A titkos kódod a következő: %code. Vagy skenneld be a következő oldalról: %url'
-recovery_code_sent: 'A jelszavad visszaállításához szükséges kódot sikeresen elküldtük az email címedre!'
-recovery_code_incorrect: 'A visszaállító kód helytelen volt! Még %count lehetőséged maradt.'
-recovery_tries_exceeded: 'Elérted a próbálkozások maximális számát. Használd a következő parancsot: "/email recovery [email címed]" egy új generálásához.'
-recovery_code_correct: 'A visszaállító kód helyes!'
-recovery_change_password: 'Használd a következő parancsot: "/email setpassword <új jelszó>", hogy azonnal megváltoztasd a jelszavad.'
-vb_nonActiv: '&cA felhasználód aktiválása még nem történt meg, ellenőrizd a megadott emailed!'
-usage_unreg: '&cHasználat: "&7/unregister <jelszó>&c"'
-pwd_changed: '&cA jelszó sikeresen megváltoztatva!'
-logged_in: '&cMár be vagy jelentkezve!'
-logout: '&cSikeresen kijelentkeztél!'
-reload: 'Beállítások és az adatbázis újratöltve!'
-usage_changepassword: 'Használat: "/changepassword <régi jelszó> <új jelszó>".'
+misc:
+    account_not_activated: '&cA felhasználód aktiválása még nem történt meg, ellenőrizd a megadott emailed!'
+    password_changed: '&cA jelszó sikeresen megváltoztatva!'
+    logout: '&cSikeresen kijelentkeztél!'
+    reload: 'Beállítások és az adatbázis újratöltve!'
+    usage_change_password: 'Használat: "/changepassword <régi jelszó> <új jelszó>".'
+    accounts_owned_self: '%count db regisztrációd van:'
+    accounts_owned_other: 'A %name nevű játékosnak, %count db regisztrációja van:'
 
 # Session messages
-invalid_session: '&cAz IP címed megváltozott, ezért a visszacsatlakozási időkereted lejárt.'
-valid_session: '&2A megadott időkereten belül csatlakoztál vissza, így a rendszer automatikusan beléptetett.'
+session:
+    valid_session: '&2A megadott időkereten belül csatlakoztál vissza, így a rendszer automatikusan beléptetett.'
+    invalid_session: '&cAz IP címed megváltozott, ezért a visszacsatlakozási időkereted lejárt.'
 
 # Error messages when joining
-name_len: '&4A felhasználóneved túl hosszú, vagy túl rövid! Kérlek, válassz másikat!'
-regex: '&4A felhasználóneved nem engedélyezett karaktereket tartalmaz. Engedélyezett karakterek: REG_EX'
-country_banned: '&4Az országod a tiltólistán van ezen a szerveren!'
-not_owner_error: 'Ez nem a te felhasználód. Kérlek, válassz másik nevet!'
-kick_fullserver: '&4A szerver megtelt, próbálj csatlakozni később!'
-same_nick: 'Ezzel a játékosnévvel már játszanak a szerveren.'
-invalid_name_case: '%valid a felhasználó neved nem? Akkor ne %invalid névvel próbálj feljönni.'
-same_ip_online: 'Már valaki csatlakozott a szerverhez ezzel az IP címmel!'
+on_join_validation:
+    same_ip_online: 'Már valaki csatlakozott a szerverhez ezzel az IP címmel!'
+    same_nick_online: 'Ezzel a játékosnévvel már játszanak a szerveren.'
+    name_length: '&4A felhasználóneved túl hosszú, vagy túl rövid! Kérlek, válassz másikat!'
+    characters_in_name: '&4A felhasználóneved nem engedélyezett karaktereket tartalmaz. Engedélyezett karakterek: %valid_chars'
+    kick_full_server: '&4A szerver megtelt, próbálj csatlakozni később!'
+    country_banned: '&4Az országod a tiltólistán van ezen a szerveren!'
+    not_owner_error: 'Ez nem a te felhasználód. Kérlek, válassz másik nevet!'
+    invalid_name_case: '%valid a felhasználó neved nem? Akkor ne %invalid névvel próbálj feljönni.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cHasználat: "&7/email add <email> <email ismét>&c".'
-usage_email_change: '&cHasználat: "&7/email change <régi email> <új email>&c".'
-usage_email_recovery: '&cHasználat: "&7/email recovery <email>&c".'
-new_email_invalid: '&cHibás az új email cím, próbáld újra!'
-old_email_invalid: '&cHibás a régi email cím, próbáld újra!'
-email_invalid: '&cHibás az email cím, próbáld újra!'
-email_added: '&2Az email címed rögzítése sikeresen megtörtént!'
-email_confirm: '&cKérlek, ellenőrízd az email címedet!'
-email_changed: '&2Az email cím cseréje sikeresen megtörtént!'
-email_send: '&2A jelszó visszaállításhoz szükséges emailt elküldtük! Ellenőrizd a leveleidet!'
-email_show: '&2A jelenlegi email-ed a következő: &f%email'
-incomplete_email_settings: 'Hiba: nem lett beállítva az összes szükséges beállítás az email küldéshez. Vedd fel a kapcsolatot egy adminnal.'
-email_already_used: '&4Ez az email cím már használatban van!'
-email_send_failure: 'Nem sikerült elküldeni az emailt. Lépj kapcsolatba egy adminnal.'
-show_no_email: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
-add_email: '&3Kérlek, rendeld hozzá a felhasználódhoz az email címedet "&7/email add <email címed> <email címed ismét>&3".'
-recovery_email: '&3Ha elfelejtetted a jelszavad, használd az "&7/email recovery <regisztrált email címed>&3".'
-change_password_expired: 'Ezzel a paranccsal már nem módosíthatja jelszavát.'
-email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldése előtt várnod kell: %time.'
+email:
+    add_email_request: '&3Kérlek, rendeld hozzá a felhasználódhoz az email címedet "&7/email add <email címed> <email címed ismét>&3".'
+    usage_email_add: '&cHasználat: "&7/email add <email> <email ismét>&c".'
+    usage_email_change: '&cHasználat: "&7/email change <régi email> <új email>&c".'
+    new_email_invalid: '&cHibás az új email cím, próbáld újra!'
+    old_email_invalid: '&cHibás a régi email cím, próbáld újra!'
+    invalid: '&cHibás az email cím, próbáld újra!'
+    added: '&2Az email címed rögzítése sikeresen megtörtént!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cKérlek, ellenőrízd az email címedet!'
+    changed: '&2Az email cím cseréje sikeresen megtörtént!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2A jelenlegi email-ed a következő: &f%email'
+    no_email_for_account: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
+    already_used: '&4Ez az email cím már használatban van!'
+    incomplete_settings: 'Hiba: nem lett beállítva az összes szükséges beállítás az email küldéshez. Vedd fel a kapcsolatot egy adminnal.'
+    send_failure: 'Nem sikerült elküldeni az emailt. Lépj kapcsolatba egy adminnal.'
+    change_password_expired: 'Ezzel a paranccsal már nem módosíthatja jelszavát.'
+    email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldése előtt várnod kell: %time.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Ha elfelejtetted a jelszavad, használd az "&7/email recovery <regisztrált email címed>&3".'
+    command_usage: '&cHasználat: "&7/email recovery <email>&c".'
+    email_sent: '&2A jelszó visszaállításhoz szükséges emailt elküldtük! Ellenőrizd a leveleidet!'
+    code:
+        code_sent: 'A jelszavad visszaállításához szükséges kódot sikeresen elküldtük az email címedre!'
+        incorrect: 'A visszaállító kód helytelen volt! Még %count lehetőséged maradt.'
+        tries_exceeded: 'Elérted a próbálkozások maximális számát. Használd a következő parancsot: "/email recovery [email címed]" egy új generálásához.'
+        correct: 'A visszaállító kód helyes!'
+        change_password: 'Használd a következő parancsot: "/email setpassword <új jelszó>", hogy azonnal megváltoztasd a jelszavad.'
 
 # Captcha
-usage_captcha: '&3A bejelentkezéshez CAPTCHA szükséges, kérlek, használd a következő parancsot: "&7/captcha <theCaptcha>&3".'
-wrong_captcha: '&cHibás CAPTCHA, kérlek, írd be a következő parancsot: "&7/captcha THE_CAPTCHA&c"!'
-valid_captcha: '&2A CAPTCHA sikeresen feloldva!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3A bejelentkezéshez CAPTCHA szükséges, kérlek, használd a következő parancsot: "&7/captcha %captcha_code&3".'
+    wrong_captcha: '&cHibás CAPTCHA, kérlek, írd be a következő parancsot: "&7/captcha %captcha_code&c"!'
+    valid_captcha: '&2A CAPTCHA sikeresen feloldva!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-verification_code_required: '&3Ez a parancs érzékeny, és e-mailes igazolást igényel! Ellenőrizze a bejövő postafiókot, és kövesse az e-mail utasításait.'
-usage_verification_code: '&cHasználat: /verification <kód>'
-incorrect_verification_code: '&cHelytelen kód, írd be "/verification <kód>" be a chatbe, az e-mailben kapott kód használatával'
-verification_code_verified: '&2Az Ön személyazonosságát ellenőrizték! Mostantól végrehajthatja az összes parancsot az aktuális munkamenetben!'
-verification_code_already_verified: '&2Már minden érzékeny parancsot végrehajthat az aktuális munkameneten belül!'
-verification_code_expired: '&3A kód lejárt! Végezzen el egy másik érzékeny parancsot, hogy új kódot kapjon!'
-verification_code_email_needed: '&3A személyazonosságának igazolásához e-mail címet kell csatolnia fiókjához!'
+verification:
+    code_required: '&3Ez a parancs érzékeny, és e-mailes igazolást igényel! Ellenőrizze a bejövő postafiókot, és kövesse az e-mail utasításait.'
+    command_usage: '&cHasználat: /verification <kód>'
+    incorrect_code: '&cHelytelen kód, írd be "/verification <kód>" be a chatbe, az e-mailben kapott kód használatával'
+    success: '&2Az Ön személyazonosságát ellenőrizték! Mostantól végrehajthatja az összes parancsot az aktuális munkamenetben!'
+    already_verified: '&2Már minden érzékeny parancsot végrehajthat az aktuális munkameneten belül!'
+    code_expired: '&3A kód lejárt! Végezzen el egy másik érzékeny parancsot, hogy új kódot kapjon!'
+    email_needed: '&3A személyazonosságának igazolásához e-mail címet kell csatolnia fiókjához!'
 
 # Time units
-second: 'másodperc'
-seconds: 'másodperc'
-minute: 'perc'
-minutes: 'perc'
-hour: 'óra'
-hours: 'óra'
-day: 'nap'
-days: 'nap'
+time:
+    second: 'másodperc'
+    seconds: 'másodperc'
+    minute: 'perc'
+    minutes: 'perc'
+    hour: 'óra'
+    hours: 'óra'
+    day: 'nap'
+    days: 'nap'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2A titkos kódod a következő: %code. Vagy skenneld be a következő oldalról: %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

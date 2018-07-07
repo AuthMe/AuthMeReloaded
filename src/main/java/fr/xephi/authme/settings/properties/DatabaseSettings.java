@@ -65,7 +65,7 @@ public final class DatabaseSettings implements SettingsHolder {
 
     @Comment("Column for storing players passwords salts")
     public static final Property<String> MYSQL_COL_SALT =
-        newProperty("ExternalBoardOptions.mySQLColumnSalt", "");
+        newProperty("DataSource.mySQLColumnSalt", "");
 
     @Comment("Column for storing players emails")
     public static final Property<String> MYSQL_COL_EMAIL =
@@ -78,6 +78,10 @@ public final class DatabaseSettings implements SettingsHolder {
     @Comment("Column for storing if a player has a valid session or not")
     public static final Property<String> MYSQL_COL_HASSESSION =
         newProperty("DataSource.mySQLColumnHasSession", "hasSession");
+
+    @Comment("Column for storing a player's TOTP key (for two-factor authentication)")
+    public static final Property<String> MYSQL_COL_TOTP_KEY =
+        newProperty("DataSource.mySQLtotpKey", "totp");
 
     @Comment("Column for storing the player's last IP")
     public static final Property<String> MYSQL_COL_LAST_IP =

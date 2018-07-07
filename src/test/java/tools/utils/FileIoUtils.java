@@ -27,6 +27,12 @@ public final class FileIoUtils {
         writeToFile(Paths.get(outputFile), contents);
     }
 
+    /**
+     * Writes the given contents to the file, overriding any existing content.
+     *
+     * @param path the file to write to
+     * @param contents the contents to write
+     */
     public static void writeToFile(Path path, String contents) {
         try {
             Files.write(path, contents.getBytes());
@@ -35,6 +41,12 @@ public final class FileIoUtils {
         }
     }
 
+    /**
+     * Adds the given contents to the file while keeping any existing content.
+     *
+     * @param outputFile the file to write to
+     * @param contents the contents to append
+     */
     public static void appendToFile(String outputFile, String contents) {
         try {
             Files.write(Paths.get(outputFile), contents.getBytes(), StandardOpenOption.APPEND);
@@ -47,6 +59,12 @@ public final class FileIoUtils {
         return readFromFile(Paths.get(file));
     }
 
+    /**
+     * Returns the given file's contents as string.
+     *
+     * @param file the file to read
+     * @return the file's contents
+     */
     public static String readFromFile(Path file) {
         try {
             return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
@@ -55,6 +73,12 @@ public final class FileIoUtils {
         }
     }
 
+    /**
+     * Returns the lines of the given file.
+     *
+     * @param path the path of the file to read
+     * @return the lines of the file
+     */
     public static List<String> readLinesFromFile(Path path) {
         try {
             return Files.readAllLines(path, StandardCharsets.UTF_8);

@@ -22,7 +22,7 @@ public final class ProtectionSettings implements SettingsHolder {
 
     @Comment({
         "Countries allowed to join the server and register. For country codes, see",
-        "http://dev.maxmind.com/geoip/legacy/codes/iso3166/",
+        "https://dev.maxmind.com/geoip/legacy/codes/iso3166/",
         "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_WHITELIST =
         newListProperty("Protection.countries", "US", "GB");
@@ -54,6 +54,10 @@ public final class ProtectionSettings implements SettingsHolder {
     @Comment("Delay in seconds before the antibot activation")
     public static final Property<Integer> ANTIBOT_DELAY =
         newProperty("Protection.antiBotDelay", 60);
+
+    @Comment("Kicks the player that issued a command before the defined time after the join process")
+    public static final Property<Integer> QUICK_COMMANDS_DENIED_BEFORE_MILLISECONDS =
+        newProperty("Protection.quickCommands.denyCommandsBeforeMilliseconds", 1000);
 
     private ProtectionSettings() {
     }

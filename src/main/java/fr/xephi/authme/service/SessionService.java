@@ -45,11 +45,13 @@ public class SessionService implements Reloadable {
             database.setUnlogged(name);
             database.revokeSession(name);
             PlayerAuth auth = database.getAuth(name);
-            if (hasValidSessionData(auth, player)) {
+
+            SessionState state = fetchSessionStatus(auth, player);
+            if (state.equals(SessionState.VALID)) {
                 RestoreSessionEvent event = bukkitService.createAndCallEvent(
                     isAsync -> new RestoreSessionEvent(player, isAsync));
                 return !event.isCancelled();
-            } else {
+            } else if (state.equals(SessionState.IP_CHANGED)) {
                 service.send(player, MessageKey.SESSION_EXPIRED);
             }
         }
@@ -62,19 +64,26 @@ public class SessionService implements Reloadable {
      *
      * @param auth the player auth
      * @param player the associated player
-     * @return true if the player may resume his login session, false otherwise
+     * @return SessionState based on the state of the session (VALID, NOT_VALID, OUTDATED, IP_CHANGED)
      */
-    private boolean hasValidSessionData(PlayerAuth auth, Player player) {
+    private SessionState fetchSessionStatus(PlayerAuth auth, Player player) {
         if (auth == null) {
             ConsoleLogger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
-            return false;
+            return SessionState.NOT_VALID;
         } else if (auth.getLastLogin() == null) {
-            return false;
+            return SessionState.NOT_VALID;
         }
         long timeSinceLastLogin = System.currentTimeMillis() - auth.getLastLogin();
-        return PlayerUtils.getPlayerIp(player).equals(auth.getLastIp())
-            && timeSinceLastLogin > 0
-            && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * MILLIS_PER_MINUTE;
+
+        if (timeSinceLastLogin > 0
+            && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * MILLIS_PER_MINUTE) {
+            if (PlayerUtils.getPlayerIp(player).equals(auth.getLastIp())) {
+                return SessionState.VALID;
+            } else {
+                return SessionState.IP_CHANGED;
+            }
+        }
+        return SessionState.OUTDATED;
     }
 
     public void grantSession(String name) {

@@ -172,6 +172,11 @@ class MySqlDefaultChanger implements DebugSection {
             + sender.getName() + "'");
     }
 
+    /**
+     * Outputs the current definitions of all {@link Columns} which can be migrated.
+     *
+     * @param sender command sender to output the data to
+     */
     private void showColumnDetails(CommandSender sender) {
         sender.sendMessage(ChatColor.BLUE + "MySQL column details");
         final String tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);

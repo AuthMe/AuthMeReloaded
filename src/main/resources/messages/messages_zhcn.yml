@@ -1,119 +1,156 @@
-# 注册
-reg_msg: '&8[&6玩家系统&8] &c请输入“/register <密码> <再输入一次以确定密码>”以注册'
-usage_reg: '&8[&6玩家系统&8] &c正确用法：“/register <密码> <再输入一次以确定密码>”'
-reg_only: '&8[&6玩家系统&8] &f只允许注册过的玩家进服！请到 https://example.cn 注册'
-kicked_admin_registered: '有一位管理员刚刚为您完成了注册，请重新登录'
-registered: '&8[&6玩家系统&8] &c已成功注册！'
-reg_disabled: '&8[&6玩家系统&8] &c目前服务器暂时禁止注册，请到服务器论坛以得到更多资讯'
-user_regged: '&8[&6玩家系统&8] &c此用户已经在此服务器注册过'
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
-# 注册时密码错误
-password_error: '&8[&6玩家系统&8] &f密码不相同'
-password_error_nick: '&8[&6玩家系统&8] &f你不能使用你的名字作为密码。 '
-password_error_unsafe: '&8[&6玩家系统&8] &f你不能使用安全性过低的密码。 '
-password_error_chars: '&4您的密码包含了非法字符。可使用的字符: REG_EX'
-pass_len: '&8[&6玩家系统&8] &你的密码没有达到要求！'
+# Registration
+registration:
+    disabled: '&8[&6玩家系统&8] &c目前服务器暂时禁止注册，请到服务器论坛以得到更多资讯'
+    name_taken: '&8[&6玩家系统&8] &c此用户已经在此服务器注册过'
+    register_request: '&8[&6玩家系统&8] &c请输入“/register <密码> <再输入一次以确定密码>”以注册'
+    command_usage: '&8[&6玩家系统&8] &c正确用法：“/register <密码> <再输入一次以确定密码>”'
+    reg_only: '&8[&6玩家系统&8] &f只允许注册过的玩家进服！请到 https://example.cn 注册'
+    success: '&8[&6玩家系统&8] &c已成功注册！'
+    kicked_admin_registered: '有一位管理员刚刚为您完成了注册，请重新登录'
 
-# 登录
-usage_log: '&8[&6玩家系统&8] &c正确用法：“/login <密码>”'
-wrong_pwd: '&8[&6玩家系统&8] &c错误的密码'
-login: '&8[&6玩家系统&8] &c已成功登录！'
-login_msg: '&8[&6玩家系统&8] &c请输入“/login <密码>”以登录'
-timeout: '&8[&6玩家系统&8] &f给你登录的时间已经过了'
+# Password errors on registration
+password:
+    match_error: '&8[&6玩家系统&8] &f密码不相同'
+    name_in_password: '&8[&6玩家系统&8] &f你不能使用你的名字作为密码。 '
+    unsafe_password: '&8[&6玩家系统&8] &f你不能使用安全性过低的密码。 '
+    forbidden_characters: '&4您的密码包含了非法字符。可使用的字符: %valid_chars'
+    wrong_length: '&8[&6玩家系统&8] &你的密码没有达到要求！'
 
-# 出错
-unknown_user: '&8[&6玩家系统&8] &c此用户名还未注册过'
-denied_command: '&c您需要先通过验证才能使用该命令！'
-denied_chat: '&c您需要先通过验证才能聊天！'
-not_logged_in: '&8[&6玩家系统&8] &c你还未登录！'
-tempban_max_logins: '&c由于您登录失败次数过多，已被暂时禁止登录。'
-# TODO: Missing tags %reg_count, %max_acc, %reg_names
-max_reg: '&8[&6玩家系统&8] &f你不允许再为你的IP在服务器注册更多用户了！'
-no_perm: '&8[&6玩家系统&8] &c没有权限'
-error: '&8[&6玩家系统&8] &f发现错误，请联系管理员'
-kick_forvip: '&8[&6玩家系统&8] &cA VIP玩家加入了已满的服务器!'
+# Login
+login:
+    command_usage: '&8[&6玩家系统&8] &c正确用法：“/login <密码>”'
+    wrong_password: '&8[&6玩家系统&8] &c错误的密码'
+    success: '&8[&6玩家系统&8] &c已成功登录！'
+    login_request: '&8[&6玩家系统&8] &c请输入“/login <密码>”以登录'
+    timeout_error: '&8[&6玩家系统&8] &f给你登录的时间已经过了'
 
-# 防机器人
-kick_antibot: '&8[&6玩家系统&8] &f防机器人程序已启用 !请稍等几分钟后再次进入服务器'
-antibot_auto_enabled: '&8[&6玩家系统&8] &f防机器人程序由于大量异常连接而启用'
-antibot_auto_disabled: '&8[&6玩家系统&8] &f防机器人程序由于异常连接减少而在 %m 分钟后停止'
+# Errors
+error:
+    denied_command: '&c您需要先通过验证才能使用该命令！'
+    denied_chat: '&c您需要先通过验证才能聊天！'
+    unregistered_user: '&8[&6玩家系统&8] &c此用户名还未注册过'
+    not_logged_in: '&8[&6玩家系统&8] &c你还未登录！'
+    no_permission: '&8[&6玩家系统&8] &c没有权限'
+    unexpected_error: '&8[&6玩家系统&8] &f发现错误，请联系管理员'
+    max_registration: '&8[&6玩家系统&8] &f你不允许再为你的IP在服务器注册更多用户了！'
+    logged_in: '&8[&6玩家系统&8] &c你已经登陆过了！'
+    kick_for_vip: '&8[&6玩家系统&8] &cA VIP玩家加入了已满的服务器!'
+    tempban_max_logins: '&c由于您登录失败次数过多，已被暂时禁止登录。'
 
-# 其他消息
-unregistered: '&8[&6玩家系统&8] &c成功删除此用户！'
-accounts_owned_self: '您拥有 %count 个账户：'
-accounts_owned_other: '玩家 %name 拥有 %count 个账户：'
-two_factor_create: '&8[&6玩家系统&8] &2你的代码是 %code，你可以使用 %url 来扫描'
-recovery_code_sent: '一个用于重置您的密码的验证码已发到您的邮箱'
-# TODO: Missing tags %count
-recovery_code_incorrect: '验证码不正确！ 使用 /email recovery [邮箱] 以生成新的验证码'
-recovery_tries_exceeded: '您已经达到输入验证码次数的最大允许次数。请使用 "/email recovery [邮箱]" 来生成一个新的'
-recovery_code_correct: '验证码正确！'
-recovery_change_password: '请使用 /email setpassword <新密码> 立即设置新的密码'
-vb_nonActiv: '&8[&6玩家系统&8] &f你的帐号还未激活，请查看你的邮箱！'
-usage_unreg: '&8[&6玩家系统&8] &c正确用法：“/unregister <密码>”'
-pwd_changed: '&8[&6玩家系统&8] &c密码已成功修改！'
-logged_in: '&8[&6玩家系统&8] &c你已经登陆过了！'
-logout: '&8[&6玩家系统&8] &c已成功登出！'
-reload: '&8[&6玩家系统&8] &f配置以及数据已经重新加载完毕'
-usage_changepassword: '&8[&6玩家系统&8] &f正确用法：“/changepassword 旧密码 新密码”'
+# AntiBot
+antibot:
+    kick_antibot: '&8[&6玩家系统&8] &f防机器人程序已启用 !请稍等几分钟后再次进入服务器'
+    auto_enabled: '&8[&6玩家系统&8] &f防机器人程序由于大量异常连接而启用'
+    auto_disabled: '&8[&6玩家系统&8] &f防机器人程序由于异常连接减少而在 %m 分钟后停止'
 
-# 会话消息
-invalid_session: '&8[&6玩家系统&8] &f登录数据异常，请等待登录结束'
-valid_session: '&8[&6玩家系统&8] &c欢迎回来，已帮你自动登录到此服务器'
+# Unregister
+unregister:
+    success: '&8[&6玩家系统&8] &c成功删除此用户！'
+    command_usage: '&8[&6玩家系统&8] &c正确用法：“/unregister <密码>”'
 
-# 加入时出错
-name_len: '&8[&6玩家系统&8] &c你的用户名太短或者太长了'
-regex: '&8[&6玩家系统&8] &c你的用户名包含非法字母，用户名里允许的字母: REG_EX'
-country_banned: '这个服务器禁止该国家登陆'
-not_owner_error: '&8[&6玩家系统&8] &4警告！ &c你并不是此帐户持有人，请立即登出。 '
-kick_fullserver: '&8[&6玩家系统&8] &c抱歉，服务器已满!'
-same_nick: '&8[&6玩家系统&8] &f同样的用户名现在在线且已经登录了！'
-invalid_name_case: '&8[&6玩家系统&8] &c你应该使用「%valid」而并非「%invalid」登入游戏。 '
-same_ip_online: '已有一个同IP玩家在游戏中了！'
+# Other messages
+misc:
+    account_not_activated: '&8[&6玩家系统&8] &f你的帐号还未激活，请查看你的邮箱！'
+    password_changed: '&8[&6玩家系统&8] &c密码已成功修改！'
+    logout: '&8[&6玩家系统&8] &c已成功登出！'
+    reload: '&8[&6玩家系统&8] &f配置以及数据已经重新加载完毕'
+    usage_change_password: '&8[&6玩家系统&8] &f正确用法：“/changepassword 旧密码 新密码”'
+    accounts_owned_self: '您拥有 %count 个账户：'
+    accounts_owned_other: '玩家 %name 拥有 %count 个账户：'
 
-# 电子邮件
-usage_email_add: '&8[&6玩家系统&8] &f用法: /email add <邮箱> <确认电子邮件> '
-usage_email_change: '&8[&6玩家系统&8] &f用法: /email change <旧邮箱> <新邮箱> '
-usage_email_recovery: '&8[&6玩家系统&8] &f用法: /email recovery <邮箱>'
-new_email_invalid: '&8[&6玩家系统&8] &f新邮箱无效!'
-old_email_invalid: '&8[&6玩家系统&8] &f旧邮箱无效!'
-email_invalid: '&8[&6玩家系统&8] &f无效的邮箱'
-email_added: '&8[&6玩家系统&8] &f邮箱已添加 !'
-email_confirm: '&8[&6玩家系统&8] &f确认你的邮箱 !'
-email_changed: '&8[&6玩家系统&8] &f邮箱已改变 !'
-email_send: '&8[&6玩家系统&8] &f恢复邮件已发送 !'
-email_show: '&2您当前的电子邮件地址为： &f%email'
-incomplete_email_settings: '错误：并非所有发送邮件需要的设置都已被设置，请联系管理员'
-email_already_used: '&8[&6玩家系统&8] &4邮箱已被使用'
-email_send_failure: '邮件发送失败，请联系管理员'
-show_no_email: '&2您当前并没有任何邮箱与该账号绑定'
-add_email: '&8[&6玩家系统&8] &c请输入“/email add <你的邮箱> <再输入一次以确认>”以把你的邮箱添加到此帐号'
-recovery_email: '&8[&6玩家系统&8] &c忘了你的密码？请输入：“/email recovery <你的邮箱>”'
-change_password_expired: '您不能使用此命令更改密码'
-email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
+# Session messages
+session:
+    valid_session: '&8[&6玩家系统&8] &c欢迎回来，已帮你自动登录到此服务器'
+    invalid_session: '&8[&6玩家系统&8] &f登录数据异常，请等待登录结束'
 
-# 验证码
-usage_captcha: '&8[&6玩家系统&8] &c正确用法：/captcha <theCaptcha>'
-wrong_captcha: '&8[&6玩家系统&8] &c错误的验证码，请输入：“/captcha THE_CAPTCHA”'
-valid_captcha: '&8[&6玩家系统&8] &c你的验证码是有效的！'
-captcha_for_registration: '注册前您需要先提供验证码，请使用指令：/captcha <theCaptcha>'
-register_captcha_valid: '&2有效的验证码！您现在可以使用 /register 注册啦！'
+# Error messages when joining
+on_join_validation:
+    same_ip_online: '已有一个同IP玩家在游戏中了！'
+    same_nick_online: '&8[&6玩家系统&8] &f同样的用户名现在在线且已经登录了！'
+    name_length: '&8[&6玩家系统&8] &c你的用户名太短或者太长了'
+    characters_in_name: '&8[&6玩家系统&8] &c你的用户名包含非法字母，用户名里允许的字母: %valid_chars'
+    kick_full_server: '&8[&6玩家系统&8] &c抱歉，服务器已满!'
+    country_banned: '这个服务器禁止该国家登陆'
+    not_owner_error: '&8[&6玩家系统&8] &4警告！ &c你并不是此帐户持有人，请立即登出。 '
+    invalid_name_case: '&8[&6玩家系统&8] &c你应该使用「%valid」而并非「%invalid」登入游戏。 '
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
-# 验证码
-verification_code_required: '&3这个命令非常敏感，需要电子邮件验证！请检查您的收件箱，并遵循邮件的指导。'
-usage_verification_code: '&c使用方法： /verification <验证码>'
-incorrect_verification_code: '&c验证码错误， 请在聊天框输入 "/verification <验证码>"，使用您在电子邮件中收到的验证码。'
-verification_code_verified: '&2您的身份已经得到验证！您现在可以在当前会话中执行所有命令！'
-verification_code_already_verified: '&2您已经可以在当前会话中执行任何敏感命令！'
-verification_code_expired: '&3您的验证码已失效！执行另一个敏感命令以获得新的验证码！'
-verification_code_email_needed: '&3为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！！'
+# Email
+email:
+    add_email_request: '&8[&6玩家系统&8] &c请输入“/email add <你的邮箱> <再输入一次以确认>”以把你的邮箱添加到此帐号'
+    usage_email_add: '&8[&6玩家系统&8] &f用法: /email add <邮箱> <确认电子邮件> '
+    usage_email_change: '&8[&6玩家系统&8] &f用法: /email change <旧邮箱> <新邮箱> '
+    new_email_invalid: '&8[&6玩家系统&8] &f新邮箱无效!'
+    old_email_invalid: '&8[&6玩家系统&8] &f旧邮箱无效!'
+    invalid: '&8[&6玩家系统&8] &f无效的邮箱'
+    added: '&8[&6玩家系统&8] &f邮箱已添加 !'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&8[&6玩家系统&8] &f确认你的邮箱 !'
+    changed: '&8[&6玩家系统&8] &f邮箱已改变 !'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2您当前的电子邮件地址为： &f%email'
+    no_email_for_account: '&2您当前并没有任何邮箱与该账号绑定'
+    already_used: '&8[&6玩家系统&8] &4邮箱已被使用'
+    incomplete_settings: '错误：并非所有发送邮件需要的设置都已被设置，请联系管理员'
+    send_failure: '邮件发送失败，请联系管理员'
+    change_password_expired: '您不能使用此命令更改密码'
+    email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
 
-# 时间单位
-second: '秒'
-seconds: '秒'
-minute: '分钟'
-minutes: '分钟'
-hour: '小时'
-hours: '小时'
-day: '天'
-days: '天'
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&8[&6玩家系统&8] &c忘了你的密码？请输入：“/email recovery <你的邮箱>”'
+    command_usage: '&8[&6玩家系统&8] &f用法: /email recovery <邮箱>'
+    email_sent: '&8[&6玩家系统&8] &f恢复邮件已发送 !'
+    code:
+        code_sent: '一个用于重置您的密码的验证码已发到您的邮箱'
+        incorrect: '验证码不正确！ 使用 /email recovery [邮箱] 以生成新的验证码'
+        tries_exceeded: '您已经达到输入验证码次数的最大允许次数。请使用 "/email recovery [邮箱]" 来生成一个新的'
+        correct: '验证码正确！'
+        change_password: '请使用 /email setpassword <新密码> 立即设置新的密码'
+
+# Captcha
+captcha:
+    usage_captcha: '&8[&6玩家系统&8] &c正确用法：/captcha %captcha_code'
+    wrong_captcha: '&8[&6玩家系统&8] &c错误的验证码，请输入：“/captcha %captcha_code”'
+    valid_captcha: '&8[&6玩家系统&8] &c你的验证码是有效的！'
+    captcha_for_registration: '注册前您需要先提供验证码，请使用指令：/captcha %captcha_code'
+    register_captcha_valid: '&2有效的验证码！您现在可以使用 /register 注册啦！'
+
+# Verification code
+verification:
+    code_required: '&3这个命令非常敏感，需要电子邮件验证！请检查您的收件箱，并遵循邮件的指导。'
+    command_usage: '&c使用方法： /verification <验证码>'
+    incorrect_code: '&c验证码错误， 请在聊天框输入 "/verification <验证码>"，使用您在电子邮件中收到的验证码。'
+    success: '&2您的身份已经得到验证！您现在可以在当前会话中执行所有命令！'
+    already_verified: '&2您已经可以在当前会话中执行任何敏感命令！'
+    code_expired: '&3您的验证码已失效！执行另一个敏感命令以获得新的验证码！'
+    email_needed: '&3为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！！'
+
+# Time units
+time:
+    second: '秒'
+    seconds: '秒'
+    minute: '分钟'
+    minutes: '分钟'
+    hour: '小时'
+    hours: '小时'
+    day: '天'
+    days: '天'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&8[&6玩家系统&8] &2你的代码是 %code，你可以使用 %url 来扫描'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

@@ -56,6 +56,12 @@ public class EncryptionMethodInfoGatherer {
         }
     }
 
+    /**
+     * Creates a description of the given hash algorithm based on its annotations.
+     *
+     * @param algorithm the algorithm to describe
+     * @return description of the hash algorithm
+     */
     private static MethodDescription createDescription(HashAlgorithm algorithm) {
         Class<? extends EncryptionMethod> clazz = algorithm.getClazz();
         EncryptionMethod method = createEncryptionMethod(clazz);

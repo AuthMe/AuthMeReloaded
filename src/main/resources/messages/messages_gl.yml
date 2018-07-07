@@ -1,118 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&cPor favor, rexístrate con "/register <contrasinal> <confirmarContrasinal>"'
-usage_reg: '&cUso: /register contrasinal confirmarContrasinal'
-reg_only: '&fSó xogadores rexistrados! Por favor, visita http://example.com para rexistrarte'
-# TODO kicked_admin_registered: 'An admin just registered you; please log in again'
-registered: '&cRexistrado con éxito!'
-reg_disabled: '&cO rexistro está deshabilitado'
-user_regged: '&cEse nome de usuario xa está rexistrado'
+registration:
+    disabled: '&cO rexistro está deshabilitado'
+    name_taken: '&cEse nome de usuario xa está rexistrado'
+    register_request: '&cPor favor, rexístrate con "/register <contrasinal> <confirmarContrasinal>"'
+    command_usage: '&cUso: /register contrasinal confirmarContrasinal'
+    reg_only: '&fSó xogadores rexistrados! Por favor, visita http://example.com para rexistrarte'
+    success: '&cRexistrado con éxito!'
+    # TODO kicked_admin_registered: 'An admin just registered you; please log in again'
 
 # Password errors on registration
-password_error: '&fO contrasinal non coincide'
-# TODO password_error_nick: '&cYou can''t use your name as password, please choose another one...'
-# TODO password_error_unsafe: '&cThe chosen password isn''t safe, please choose another one...'
-# TODO password_error_chars: '&4Your password contains illegal characters. Allowed chars: REG_EX'
-pass_len: '&fO teu contrasinal non alcanza a lonxitude mínima ou excede a lonxitude máxima'
+password:
+    match_error: '&fO contrasinal non coincide'
+    # TODO name_in_password: '&cYou can''t use your name as password, please choose another one...'
+    # TODO unsafe_password: '&cThe chosen password isn''t safe, please choose another one...'
+    # TODO forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
+    wrong_length: '&fO teu contrasinal non alcanza a lonxitude mínima ou excede a lonxitude máxima'
 
 # Login
-usage_log: '&cUso: /login <contrasinal>'
-wrong_pwd: '&cContrasinal equivocado'
-login: '&cIdentificación con éxito!'
-login_msg: '&cPor favor, identifícate con "/login <password>"'
-timeout: '&fRematou o tempo da autentificación'
+login:
+    command_usage: '&cUso: /login <contrasinal>'
+    wrong_password: '&cContrasinal equivocado'
+    success: '&cIdentificación con éxito!'
+    login_request: '&cPor favor, identifícate con "/login <password>"'
+    timeout_error: '&fRematou o tempo da autentificación'
 
 # Errors
-unknown_user: '&cEse nome de usuario non está rexistrado'
-# TODO denied_command: '&cIn order to use this command you must be authenticated!'
-# TODO denied_chat: '&cIn order to chat you must be authenticated!'
-not_logged_in: '&cNon te identificaches!'
-# TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
-# TODO: Missing tags %reg_count, %max_acc, %reg_names
-max_reg: '&fExcediches o máximo de rexistros para a túa Conta'
-no_perm: '&cNon tes o permiso'
-error: '&fOcurriu un erro; contacta cun administrador'
-kick_forvip: '&cUn xogador VIP uniuse ao servidor cheo!'
+error:
+    # TODO denied_command: '&cIn order to use this command you must be authenticated!'
+    # TODO denied_chat: '&cIn order to chat you must be authenticated!'
+    unregistered_user: '&cEse nome de usuario non está rexistrado'
+    not_logged_in: '&cNon te identificaches!'
+    no_permission: '&cNon tes o permiso'
+    unexpected_error: '&fOcurriu un erro; contacta cun administrador'
+    max_registration: '&fExcediches o máximo de rexistros para a túa Conta'
+    logged_in: '&cXa estás identificado!'
+    kick_for_vip: '&cUn xogador VIP uniuse ao servidor cheo!'
+    # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 
 # AntiBot
-# TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
-antibot_auto_enabled: '[AuthMe] AntiBotMod conectouse automáticamente debido a conexións masivas!'
-antibot_auto_disabled: '[AuthMe] AntiBotMod  desactivouse automáticamente despois de %m minutos,  esperemos que a invasión se detivera'
+antibot:
+    # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+    auto_enabled: '[AuthMe] AntiBotMod conectouse automáticamente debido a conexións masivas!'
+    auto_disabled: '[AuthMe] AntiBotMod  desactivouse automáticamente despois de %m minutos,  esperemos que a invasión se detivera'
+
+# Unregister
+unregister:
+    success: '&cFeito! Xa non estás rexistrado!'
+    command_usage: '&cUso: /unregister <contrasinal>'
 
 # Other messages
-unregistered: '&cFeito! Xa non estás rexistrado!'
-# TODO accounts_owned_self: 'You own %count accounts:'
-# TODO accounts_owned_other: 'The player %name has %count accounts:'
-# TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
-# TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
-# TODO recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-vb_nonActiv: '&fA túa conta aínda non está activada, comproba a túa bandexa de correo!!'
-usage_unreg: '&cUso: /unregister <contrasinal>'
-pwd_changed: '&cCambiouse o contrasinal!'
-logged_in: '&cXa estás identificado!'
-logout: '&cSesión pechada con éxito'
-reload: '&fRecargáronse a configuración e a base de datos'
-usage_changepassword: '&fUso: /changepassword <contrasinalVello> <contrasinalNovo>'
+misc:
+    account_not_activated: '&fA túa conta aínda non está activada, comproba a túa bandexa de correo!!'
+    password_changed: '&cCambiouse o contrasinal!'
+    logout: '&cSesión pechada con éxito'
+    reload: '&fRecargáronse a configuración e a base de datos'
+    usage_change_password: '&fUso: /changepassword <contrasinalVello> <contrasinalNovo>'
+    # TODO accounts_owned_self: 'You own %count accounts:'
+    # TODO accounts_owned_other: 'The player %name has %count accounts:'
 
 # Session messages
-invalid_session: '&fOs datos de sesión non corresponden, por favor, espere a que remate a sesión'
-valid_session: '&cIdentificado mediante a sesión'
+session:
+    valid_session: '&cIdentificado mediante a sesión'
+    invalid_session: '&fOs datos de sesión non corresponden, por favor, espere a que remate a sesión'
 
 # Error messages when joining
-name_len: '&cO teu nome é demasiado curto ou demasiado longo'
-regex: '&cO teu nome contén caracteres ilegais. Caracteres permitidos: REG_EX'
-country_banned: 'O teu país está bloqueado neste servidor'
-# TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
-kick_fullserver: '&cO servidor está actualmente cheo, sentímolo!'
-same_nick: '&fXa está xogando alguén co mesmo nome'
-# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
-# TODO same_ip_online: 'A player with the same IP is already in game!'
+on_join_validation:
+    # TODO same_ip_online: 'A player with the same IP is already in game!'
+    same_nick_online: '&fXa está xogando alguén co mesmo nome'
+    name_length: '&cO teu nome é demasiado curto ou demasiado longo'
+    characters_in_name: '&cO teu nome contén caracteres ilegais. Caracteres permitidos: %valid_chars'
+    kick_full_server: '&cO servidor está actualmente cheo, sentímolo!'
+    country_banned: 'O teu país está bloqueado neste servidor'
+    # TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
+    # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&fUso: /email add <correo> <confirmeCorreo> '
-usage_email_change: '&fUso: /email change <correoVello> <correoNovo> '
-usage_email_recovery: '&fUso: /email recovery <correo>'
-new_email_invalid: '[AuthMe] O novo correo non é válido!'
-old_email_invalid: '[AuthMe] O correo vello non é válido!'
-email_invalid: '[AuthMe] Correo non válido'
-email_added: '[AuthMe] Correo engadido!'
-email_confirm: '[AuthMe] Confirma o teu correo!'
-email_changed: '[AuthMe] Cambiouse o correo!'
-email_send: '[AuthMe] Enviouse o correo de confirmación!'
-# TODO email_show: '&2Your current email address is: &f%email'
-# TODO incomplete_email_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
-# TODO email_already_used: '&4The email address is already being used'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
-add_email: '&cPor favor, engade o teu correo electrónico con: /email add <oTeuCorreo> <confirmarCorreo>'
-recovery_email: '&cOlvidaches o contrasinal? Por favor, usa /email recovery <oTeuCorreo>'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email:
+    add_email_request: '&cPor favor, engade o teu correo electrónico con: /email add <oTeuCorreo> <confirmarCorreo>'
+    usage_email_add: '&fUso: /email add <correo> <confirmeCorreo> '
+    usage_email_change: '&fUso: /email change <correoVello> <correoNovo> '
+    new_email_invalid: '[AuthMe] O novo correo non é válido!'
+    old_email_invalid: '[AuthMe] O correo vello non é válido!'
+    invalid: '[AuthMe] Correo non válido'
+    added: '[AuthMe] Correo engadido!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '[AuthMe] Confirma o teu correo!'
+    changed: '[AuthMe] Cambiouse o correo!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    # TODO email_show: '&2Your current email address is: &f%email'
+    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
+    # TODO already_used: '&4The email address is already being used'
+    # TODO incomplete_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
+    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&cOlvidaches o contrasinal? Por favor, usa /email recovery <oTeuCorreo>'
+    command_usage: '&fUso: /email recovery <correo>'
+    email_sent: '[AuthMe] Enviouse o correo de confirmación!'
+    code:
+        # TODO code_sent: 'A recovery code to reset your password has been sent to your email.'
+        # TODO incorrect: 'The recovery code is not correct! You have %count tries remaining.'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
-usage_captcha: '&cNecesitas escribir un captcha, por favor escribe: /captcha <theCaptcha>'
-wrong_captcha: '&cCaptcha equivocado, por favor usa: /captcha THE_CAPTCHA'
-valid_captcha: '&cO teu captcha é válido !'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&cNecesitas escribir un captcha, por favor escribe: /captcha %captcha_code'
+    wrong_captcha: '&cCaptcha equivocado, por favor usa: /captcha %captcha_code'
+    valid_captcha: '&cO teu captcha é válido !'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+time:
+    # TODO second: 'second'
+    # TODO seconds: 'seconds'
+    # TODO minute: 'minute'
+    # TODO minutes: 'minutes'
+    # TODO hour: 'hour'
+    # TODO hours: 'hours'
+    # TODO day: 'day'
+    # TODO days: 'days'
+
+# Two-factor authentication
+two_factor:
+    # TODO code_created: '&2Your secret code is %code. You can scan it from here %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

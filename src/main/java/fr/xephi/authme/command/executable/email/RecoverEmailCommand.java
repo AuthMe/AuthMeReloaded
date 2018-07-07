@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.executable.email;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
@@ -58,8 +58,8 @@ public class RecoverEmailCommand extends PlayerCommand {
             return;
         }
 
-        DataSourceResult<String> emailResult = dataSource.getEmail(playerName);
-        if (!emailResult.playerExists()) {
+        DataSourceValue<String> emailResult = dataSource.getEmail(playerName);
+        if (!emailResult.rowExists()) {
             commonService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }

@@ -45,13 +45,13 @@ class LimboPlayerTaskManager {
      *
      * @param player the player
      * @param limbo the associated limbo player of the player
-     * @param isRegistered whether the player is registered or not (needed to determine the message in the task)
+     * @param messageType message type
      */
-    void registerMessageTask(Player player, LimboPlayer limbo, boolean isRegistered) {
+    void registerMessageTask(Player player, LimboPlayer limbo, LimboMessageType messageType) {
         int interval = settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-        MessageResult messageResult = getMessageKey(player.getName(), isRegistered);
+        MessageResult result = getMessageKey(player.getName(), messageType);
         if (interval > 0) {
-            String[] joinMessage = messages.retrieveSingle(messageResult.messageKey, messageResult.args).split("\n");
+            String[] joinMessage = messages.retrieveSingle(player, result.messageKey, result.args).split("\n");
             MessageTask messageTask = new MessageTask(player, joinMessage);
             bukkitService.runTaskTimer(messageTask, 2 * TICKS_PER_SECOND, interval * TICKS_PER_SECOND);
             limbo.setMessageTask(messageTask);
@@ -67,7 +67,7 @@ class LimboPlayerTaskManager {
     void registerTimeoutTask(Player player, LimboPlayer limbo) {
         final int timeout = settings.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         if (timeout > 0) {
-            String message = messages.retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR);
+            String message = messages.retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
             BukkitTask task = bukkitService.runTaskLater(new TimeoutTask(player, message, playerCache), timeout);
             limbo.setTimeoutTask(task);
         }
@@ -89,12 +89,14 @@ class LimboPlayerTaskManager {
      * Returns the appropriate message key according to the registration status and settings.
      *
      * @param name the player's name
-     * @param isRegistered whether or not the username is registered
+     * @param messageType the message to show
      * @return the message key to display to the user
      */
-    private MessageResult getMessageKey(String name, boolean isRegistered) {
-        if (isRegistered) {
+    private MessageResult getMessageKey(String name, LimboMessageType messageType) {
+        if (messageType == LimboMessageType.LOG_IN) {
             return new MessageResult(MessageKey.LOGIN_MESSAGE);
+        } else if (messageType == LimboMessageType.TOTP_CODE) {
+            return new MessageResult(MessageKey.TWO_FACTOR_CODE_REQUIRED);
         } else if (registrationCaptchaManager.isCaptchaRequired(name)) {
             final String captchaCode = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(name);
             return new MessageResult(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captchaCode);

@@ -67,17 +67,6 @@ public final class StringUtils {
     }
 
     /**
-     * Format the information from a Throwable as string, retaining the type and its message.
-     *
-     * @param th The throwable to process
-     *
-     * @return String with the type of the Throwable and its message, e.g. "[IOException]: Could not open stream"
-     */
-    public static String formatException(Throwable th) {
-        return "[" + th.getClass().getSimpleName() + "]: " + th.getMessage();
-    }
-
-    /**
      * Check that the given needle is in the middle of the haystack, i.e. that the haystack
      * contains the needle and that it is not at the very start or end.
      *

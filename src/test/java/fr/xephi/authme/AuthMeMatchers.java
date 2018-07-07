@@ -11,6 +11,7 @@ import java.util.Objects;
 /**
  * Custom matchers for AuthMe entities.
  */
+@SuppressWarnings("checkstyle:JavadocMethod") // Justification: Javadoc would be huge because of the many parameters
 public final class AuthMeMatchers {
 
     private AuthMeMatchers() {
@@ -43,8 +44,8 @@ public final class AuthMeMatchers {
         };
     }
 
-    public static Matcher<? super PlayerAuth> hasAuthBasicData(String name, String realName,
-                                                               String email, String lastIp) {
+    public static Matcher<PlayerAuth> hasAuthBasicData(String name, String realName,
+                                                       String email, String lastIp) {
         return new TypeSafeMatcher<PlayerAuth>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {

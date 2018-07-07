@@ -19,7 +19,7 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * When the server is full and someone with this permission joins the server, someone will be kicked.
      */
-    IS_VIP("authme.vip", DefaultPermission.OP_ONLY),
+    IS_VIP("authme.vip", DefaultPermission.NOT_ALLOWED),
 
     /**
      * Permission to be able to register multiple accounts.
@@ -34,7 +34,12 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * Permission to bypass the GeoIp country code check.
      */
-    BYPASS_COUNTRY_CHECK("authme.bypasscountrycheck", DefaultPermission.NOT_ALLOWED);
+    BYPASS_COUNTRY_CHECK("authme.bypasscountrycheck", DefaultPermission.NOT_ALLOWED),
+
+    /**
+     * Permission to send chat messages before being logged in.
+     */
+    ALLOW_CHAT_BEFORE_LOGIN("authme.allowchatbeforelogin", DefaultPermission.NOT_ALLOWED);
 
     /**
      * The permission node.
@@ -42,7 +47,7 @@ public enum PlayerStatePermission implements PermissionNode {
     private String node;
 
     /**
-     * The default permission level
+     * The default permission level.
      */
     private DefaultPermission defaultPermission;
 

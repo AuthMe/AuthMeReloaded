@@ -1,5 +1,7 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
+import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -61,7 +63,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         // when
         HashedPassword bobbyPassword = dataSource.getPassword("bobby");
         HashedPassword invalidPassword = dataSource.getPassword("doesNotExist");
-        HashedPassword userPassword = dataSource.getPassword("user");
+        HashedPassword userPassword = dataSource.getPassword("User");
 
         // then
         assertThat(bobbyPassword, equalToHash("$SHA$11aa0706173d7272$dbba966"));
@@ -103,12 +105,14 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(bobbyAuth, hasRegistrationInfo("127.0.4.22", 1436778723L));
         assertThat(bobbyAuth.getLastLogin(), equalTo(1449136800L));
         assertThat(bobbyAuth.getPassword(), equalToHash("$SHA$11aa0706173d7272$dbba966"));
+        assertThat(bobbyAuth.getTotpKey(), equalTo("JBSWY3DPEHPK3PXP"));
 
         assertThat(userAuth, hasAuthBasicData("user", "user", "user@example.org", "34.56.78.90"));
         assertThat(userAuth, hasAuthLocation(124.1, 76.3, -127.8, "nether", 0.23f, 4.88f));
         assertThat(userAuth, hasRegistrationInfo(null, 0));
         assertThat(userAuth.getLastLogin(), equalTo(1453242857L));
         assertThat(userAuth.getPassword(), equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
+        assertThat(userAuth.getTotpKey(), nullValue());
     }
 
     @Test
@@ -160,7 +164,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updatePassword("non-existent-name", new HashedPassword("sd"));
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getPassword("user"), equalToHash(newHash));
     }
 
@@ -175,7 +180,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updatePassword("non-existent-name", new HashedPassword("asdfasdf", "a1f34ec"));
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getPassword("user"), equalToHash("new_hash"));
     }
 
@@ -191,7 +197,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updatePassword(invalidAuth);
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getPassword("bobby"), equalToHash("tt", "cc"));
     }
 
@@ -273,7 +280,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updateEmail(invalidAuth);
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getAllAuths(), hasItem(hasAuthBasicData("user", "user", email, "34.56.78.90")));
     }
 
@@ -328,7 +336,8 @@ public abstract class AbstractDataSourceIntegrationTest {
         boolean response2 = dataSource.updateRealName("notExists", "NOTEXISTS");
 
         // then
-        assertThat(response1 && response2, equalTo(true));
+        assertThat(response1, equalTo(true));
+        assertThat(response2, equalTo(false)); // no record modified
         assertThat(dataSource.getAuth("bobby"), hasAuthBasicData("bobby", "BOBBY", null, "123.45.67.89"));
     }
 
@@ -415,12 +424,12 @@ public abstract class AbstractDataSourceIntegrationTest {
         DataSource dataSource = getDataSource();
 
         // when
-        DataSourceResult<String> email1 = dataSource.getEmail(user1);
-        DataSourceResult<String> email2 = dataSource.getEmail(user2);
+        DataSourceValue<String> email1 = dataSource.getEmail(user1);
+        DataSourceValue<String> email2 = dataSource.getEmail(user2);
 
         // then
         assertThat(email1.getValue(), equalTo("user@example.org"));
-        assertThat(email2, is(DataSourceResult.unknownPlayer()));
+        assertThat(email2, is(DataSourceValueImpl.unknownRow()));
     }
 
     @Test
@@ -493,5 +502,34 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(Lists.transform(recentPlayers, PlayerAuth::getNickname),
             contains("user24", "user20", "user22", "user29", "user28",
                 "user16", "user18", "user12", "user14", "user11"));
+    }
+
+    @Test
+    public void shouldSetTotpKey() {
+        // given
+        DataSource dataSource = getDataSource();
+        String newTotpKey = "My new TOTP key";
+
+        // when
+        dataSource.setTotpKey("BObBy", newTotpKey);
+        dataSource.setTotpKey("does-not-exist", "bogus");
+
+        // then
+        assertThat(dataSource.getAuth("bobby").getTotpKey(), equalTo(newTotpKey));
+    }
+
+    @Test
+    public void shouldRemoveTotpKey() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        dataSource.removeTotpKey("BoBBy");
+        dataSource.removeTotpKey("user");
+        dataSource.removeTotpKey("does-not-exist");
+
+        // then
+        assertThat(dataSource.getAuth("bobby").getTotpKey(), nullValue());
+        assertThat(dataSource.getAuth("user").getTotpKey(), nullValue());
     }
 }

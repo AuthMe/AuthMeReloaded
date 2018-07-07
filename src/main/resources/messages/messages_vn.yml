@@ -1,118 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&2Xin vui lòng đăng ký tài khoản với lệnh "/register <mật khẩu> <nhập lại mật khẩu>"'
-usage_reg: '&cSử dụng: /register <mật khẩu> <nhập lại mật khẩu>'
-reg_only: '&4Chỉ có thành viên mới có thể tham gia máy chủ, vui lòng truy cập trang web http://example.com để đăng ký thành viên!'
-kicked_admin_registered: 'Một quản trị viên đã đăng ký cho bạn; vui lòng đăng nhập lại'
-registered: '&2Đăng ký thành công!'
-reg_disabled: '&cKhông cho phép đăng ký tài khoản trong máy chủ!'
-user_regged: '&cBạn có thể đăng ký với tên tài khoản này!'
+registration:
+    disabled: '&cKhông cho phép đăng ký tài khoản trong máy chủ!'
+    name_taken: '&cBạn có thể đăng ký với tên tài khoản này!'
+    register_request: '&2Xin vui lòng đăng ký tài khoản với lệnh "/register <mật khẩu> <nhập lại mật khẩu>"'
+    command_usage: '&cSử dụng: /register <mật khẩu> <nhập lại mật khẩu>'
+    reg_only: '&4Chỉ có thành viên mới có thể tham gia máy chủ, vui lòng truy cập trang web http://example.com để đăng ký thành viên!'
+    success: '&2Đăng ký thành công!'
+    kicked_admin_registered: 'Một quản trị viên đã đăng ký cho bạn; vui lòng đăng nhập lại'
 
 # Password errors on registration
-password_error: '&cMật khẩu không hợp, xin vui lòng kiểm tra lại!'
-password_error_nick: '&cBạn không thể đặt mật khẩu bằng tên của mình, vui lòng đặt lại...'
-password_error_unsafe: '&cMật khẩu của bạn vừa đặt không an toàn, vui lòng đặt lại...'
-password_error_chars: '&4Mật khẩu của bạn chứa ký tự không hợp lệ. Các ký tự cho phép: REG_EX'
-pass_len: '&cMật khẩu của bạn đặt quá dài hoặc quá ngắn, vui lòng đặt lại!'
+password:
+    match_error: '&cMật khẩu không hợp, xin vui lòng kiểm tra lại!'
+    name_in_password: '&cBạn không thể đặt mật khẩu bằng tên của mình, vui lòng đặt lại...'
+    unsafe_password: '&cMật khẩu của bạn vừa đặt không an toàn, vui lòng đặt lại...'
+    forbidden_characters: '&4Mật khẩu của bạn chứa ký tự không hợp lệ. Các ký tự cho phép: %valid_chars'
+    wrong_length: '&cMật khẩu của bạn đặt quá dài hoặc quá ngắn, vui lòng đặt lại!'
 
 # Login
-usage_log: '&cSử dụng: /login <mật khẩu>'
-wrong_pwd: '&cSai mật khẩu!'
-login: '&2Đăng nhập thành công!'
-login_msg: '&cXin vui lòng đăng nhập bằng lệnh "/login <mật khẩu>"'
-timeout: '&4Thời gian đăng nhập đã hết, bạn đã bị văng khỏi máy chủ. Xin vui lòng thử lại!'
+login:
+    command_usage: '&cSử dụng: /login <mật khẩu>'
+    wrong_password: '&cSai mật khẩu!'
+    success: '&2Đăng nhập thành công!'
+    login_request: '&cXin vui lòng đăng nhập bằng lệnh "/login <mật khẩu>"'
+    timeout_error: '&4Thời gian đăng nhập đã hết, bạn đã bị văng khỏi máy chủ. Xin vui lòng thử lại!'
 
 # Errors
-unknown_user: '&cNgười dùng này đã được đăng ký!'
-denied_command: '&cĐể được sử dụng lệnh bạn phải hoàn thành xác thực tài khoản đã!'
-denied_chat: '&cĐể được chát bạn phải hoàn thành xác thực tài khoản đã!'
-not_logged_in: '&cBạn chưa đăng nhập!'
-tempban_max_logins: '&cBạn đã bị tạm thời khóa truy cập do đăng nhập sai nhiều lần.'
-max_reg: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
-no_perm: '&4Bạn không có quyền truy cập lệnh này!'
-error: '&4Lỗi! Vui lòng liên hệ quản trị viên hoặc admin'
-kick_forvip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
+error:
+    denied_command: '&cĐể được sử dụng lệnh bạn phải hoàn thành xác thực tài khoản đã!'
+    denied_chat: '&cĐể được chát bạn phải hoàn thành xác thực tài khoản đã!'
+    unregistered_user: '&cNgười dùng này đã được đăng ký!'
+    not_logged_in: '&cBạn chưa đăng nhập!'
+    no_permission: '&4Bạn không có quyền truy cập lệnh này!'
+    unexpected_error: '&4Lỗi! Vui lòng liên hệ quản trị viên hoặc admin'
+    max_registration: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
+    logged_in: '&cBạn đã đăng nhập!'
+    kick_for_vip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
+    tempban_max_logins: '&cBạn đã bị tạm thời khóa truy cập do đăng nhập sai nhiều lần.'
 
 # AntiBot
-kick_antibot: 'Chế độ AntiBot đã được kích hoạt! Bạn phải đợi vài phút trước khi tham gia vào máy chủ.'
-antibot_auto_enabled: '&4[AntiBotService] AntiBot đã được kích hoạt do số lượng lớn kết nối đến máy chủ!'
-antibot_auto_disabled: '&2[AntiBotService] AntiBot đã được tắt sau %m phút!'
+antibot:
+    kick_antibot: 'Chế độ AntiBot đã được kích hoạt! Bạn phải đợi vài phút trước khi tham gia vào máy chủ.'
+    auto_enabled: '&4[AntiBotService] AntiBot đã được kích hoạt do số lượng lớn kết nối đến máy chủ!'
+    auto_disabled: '&2[AntiBotService] AntiBot đã được tắt sau %m phút!'
+
+# Unregister
+unregister:
+    success: '&cHủy đăng ký thành công!'
+    command_usage: '&cSử dụng: /unregister <mật khẩu>'
 
 # Other messages
-unregistered: '&cHủy đăng ký thành công!'
-accounts_owned_self: 'Bạn sở hữu %count tài khoản:'
-accounts_owned_other: 'Người chơi %name có %count tài khoản:'
-two_factor_create: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
-recovery_code_sent: 'Một mã khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn.'
-# TODO: Missing tags %count
-recovery_code_incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-vb_nonActiv: '&cTài khoản của bạn chưa được kích hoạt, vui lòng kiểm tra email!'
-usage_unreg: '&cSử dụng: /unregister <mật khẩu>'
-pwd_changed: '&2Thay đổi mật khẩu thành công!'
-logged_in: '&cBạn đã đăng nhập!'
-logout: '&2Bạn đã đăng xuất!'
-reload: '&2Cấu hình và cơ sở dử liệu đã được nạp lại!'
-usage_changepassword: '&cSử dụng: /changepassword <mật khẩu cũ> <mật khẩu mới>'
+misc:
+    account_not_activated: '&cTài khoản của bạn chưa được kích hoạt, vui lòng kiểm tra email!'
+    password_changed: '&2Thay đổi mật khẩu thành công!'
+    logout: '&2Bạn đã đăng xuất!'
+    reload: '&2Cấu hình và cơ sở dử liệu đã được nạp lại!'
+    usage_change_password: '&cSử dụng: /changepassword <mật khẩu cũ> <mật khẩu mới>'
+    accounts_owned_self: 'Bạn sở hữu %count tài khoản:'
+    accounts_owned_other: 'Người chơi %name có %count tài khoản:'
 
 # Session messages
-invalid_session: '&cIP của bạn đã bị thay đổi và phiên đăng nhập của bạn đã hết hạn!'
-valid_session: '&2Phiên đăng nhập đã được kết nối trở lại.'
+session:
+    valid_session: '&2Phiên đăng nhập đã được kết nối trở lại.'
+    invalid_session: '&cIP của bạn đã bị thay đổi và phiên đăng nhập của bạn đã hết hạn!'
 
 # Error messages when joining
-name_len: '&4Tên đăng nhập của bạn quá ngắn hoặc quá dài!'
-regex: '&4Tên nhân vật có chứa ký tự không hợp lệ. Các ký tự được cho phép: REG_EX'
-country_banned: '&4Quốc gia của bạn bị cấm tham gia máy chủ này!'
-not_owner_error: 'Bạn không phải là chủ sở hữu tài khoản này, hãy chọn tên khác!'
-kick_fullserver: '&4Máy chủ quá tải, vui lòng thử lại sau!'
-same_nick: '&4Tài khoản đang được sử dụng trên máy chủ!'
-invalid_name_case: 'Bạn nên vào máy chủ với tên đăng nhập là %valid, không phải là %invalid.'
-same_ip_online: 'Một người chơi với cùng địa chỉ IP đã đang chơi!'
+on_join_validation:
+    same_ip_online: 'Một người chơi với cùng địa chỉ IP đã đang chơi!'
+    same_nick_online: '&4Tài khoản đang được sử dụng trên máy chủ!'
+    name_length: '&4Tên đăng nhập của bạn quá ngắn hoặc quá dài!'
+    characters_in_name: '&4Tên nhân vật có chứa ký tự không hợp lệ. Các ký tự được cho phép: %valid_chars'
+    kick_full_server: '&4Máy chủ quá tải, vui lòng thử lại sau!'
+    country_banned: '&4Quốc gia của bạn bị cấm tham gia máy chủ này!'
+    not_owner_error: 'Bạn không phải là chủ sở hữu tài khoản này, hãy chọn tên khác!'
+    invalid_name_case: 'Bạn nên vào máy chủ với tên đăng nhập là %valid, không phải là %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cSử dụng: /email add <email> <nhập lại email>'
-usage_email_change: '&cSử dụng: /email change <email> <email mới>'
-usage_email_recovery: '&cSử dụng: /email recovery <email>'
-new_email_invalid: '&cEmail mới không hợp lệ, vui lòng thử lại!'
-old_email_invalid: '&cEmail cũ không hợp lệ, vui lòng thử lại!'
-email_invalid: '&cĐại chỉ email không hợp lệ, vui lòng thử lại!'
-email_added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thành công!'
-email_confirm: '&cVui lòng xác nhận địa chỉ email của bạn!'
-email_changed: '&2Địa chỉ email đã thay đổi!'
-email_send: '&2Email phục hồi đã được gửi thành công! Vui lòng kiểm tra hộp thư đến trong email của bạn.'
-email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
-incomplete_email_settings: 'Lỗi: các thiết lập để gửi thư không được cài đặt đầy đủ. Vui lòng liên hệ với quản trị viên để thông báo lỗi.'
-email_already_used: '&4Địa chỉ email đã được sử dụng'
-email_send_failure: 'Không thể gửi thư. Vui lòng liên hệ với ban quản trị.'
-show_no_email: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
-add_email: '&eVui lòng thêm email của bạn với lệnh "/email add <email> <nhập lại email>"'
-recovery_email: '&aBạn quên mật khẩu? Vui lòng gõ lệnh "/email recovery <email>"'
-change_password_expired: '&cBạn không thể thay đổi mật khẩu bằng lệnh này từ nay.'
-email_cooldown_error: '&cMột bức thư đã được gửi gần đây. Bạn phải chờ %time trước khi có thể gửi một bức thư mới.'
+email:
+    add_email_request: '&eVui lòng thêm email của bạn với lệnh "/email add <email> <nhập lại email>"'
+    usage_email_add: '&cSử dụng: /email add <email> <nhập lại email>'
+    usage_email_change: '&cSử dụng: /email change <email> <email mới>'
+    new_email_invalid: '&cEmail mới không hợp lệ, vui lòng thử lại!'
+    old_email_invalid: '&cEmail cũ không hợp lệ, vui lòng thử lại!'
+    invalid: '&cĐại chỉ email không hợp lệ, vui lòng thử lại!'
+    added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thành công!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cVui lòng xác nhận địa chỉ email của bạn!'
+    changed: '&2Địa chỉ email đã thay đổi!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
+    no_email_for_account: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
+    already_used: '&4Địa chỉ email đã được sử dụng'
+    incomplete_settings: 'Lỗi: các thiết lập để gửi thư không được cài đặt đầy đủ. Vui lòng liên hệ với quản trị viên để thông báo lỗi.'
+    send_failure: 'Không thể gửi thư. Vui lòng liên hệ với ban quản trị.'
+    change_password_expired: '&cBạn không thể thay đổi mật khẩu bằng lệnh này từ nay.'
+    email_cooldown_error: '&cMột bức thư đã được gửi gần đây. Bạn phải chờ %time trước khi có thể gửi một bức thư mới.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&aBạn quên mật khẩu? Vui lòng gõ lệnh "/email recovery <email>"'
+    command_usage: '&cSử dụng: /email recovery <email>'
+    email_sent: '&2Email phục hồi đã được gửi thành công! Vui lòng kiểm tra hộp thư đến trong email của bạn.'
+    code:
+        code_sent: 'Một mã khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn.'
+        incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
-usage_captcha: '&eĐể đăng nhập vui lòng hãy nhập mã Captcha, gõ lệnh "/captcha <theCaptcha>"'
-wrong_captcha: '&cSai mã captcha, Vui lòng gõ lệnh "/captcha THE_CAPTCHA"!'
-valid_captcha: '&2Mã captcha đã được xác nhận!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&eĐể đăng nhập vui lòng hãy nhập mã Captcha, gõ lệnh "/captcha %captcha_code"'
+    wrong_captcha: '&cSai mã captcha, Vui lòng gõ lệnh "/captcha %captcha_code"!'
+    valid_captcha: '&2Mã captcha đã được xác nhận!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-second: 'giây'
-seconds: 'giây'
-minute: 'phút'
-minutes: 'phút'
-hour: 'giờ'
-hours: 'giờ'
-day: 'ngày'
-days: 'ngày'
+time:
+    second: 'giây'
+    seconds: 'giây'
+    minute: 'phút'
+    minutes: 'phút'
+    hour: 'giờ'
+    hours: 'giờ'
+    day: 'ngày'
+    days: 'ngày'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

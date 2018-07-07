@@ -1,118 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&3Silahkan mendaftar ke server menggunakan command "/register <password> <ulangiPassword>"'
-# TODO usage_reg: '&cUsage: /register <password> <ConfirmPassword>'
-reg_only: '&4Hanya pengguna terdaftar yg bisa bergabung! Silahkan kunjungi http://example.com untuk mendaftar!'
-# TODO kicked_admin_registered: 'An admin just registered you; please log in again'
-registered: '&2Register berhasil!'
-reg_disabled: '&cRegister dalam game tidak diaktifkan!'
-user_regged: '&cKamu telah mendaftarkan username ini!'
+registration:
+    disabled: '&cRegister dalam game tidak diaktifkan!'
+    name_taken: '&cKamu telah mendaftarkan username ini!'
+    register_request: '&3Silahkan mendaftar ke server menggunakan command "/register <password> <ulangiPassword>"'
+    # TODO command_usage: '&cUsage: /register <password> <ConfirmPassword>'
+    reg_only: '&4Hanya pengguna terdaftar yg bisa bergabung! Silahkan kunjungi http://example.com untuk mendaftar!'
+    success: '&2Register berhasil!'
+    # TODO kicked_admin_registered: 'An admin just registered you; please log in again'
 
 # Password errors on registration
-password_error: '&cPassword tidak cocok, silahkan periksa dan ulangi kembali!'
-password_error_nick: '&cKamu tidak bisa menggunakan namamu sebagai password, silahkan coba yg lain...'
-password_error_unsafe: '&cPassword yg kamu pilih tidak aman, silahkan coba yg lain...'
-# TODO password_error_chars: '&4Your password contains illegal characters. Allowed chars: REG_EX'
-pass_len: '&cPassword kamu terlalu panjang/pendek! Silahkan pilih yg lain!'
+password:
+    match_error: '&cPassword tidak cocok, silahkan periksa dan ulangi kembali!'
+    name_in_password: '&cKamu tidak bisa menggunakan namamu sebagai password, silahkan coba yg lain...'
+    unsafe_password: '&cPassword yg kamu pilih tidak aman, silahkan coba yg lain...'
+    # TODO forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
+    wrong_length: '&cPassword kamu terlalu panjang/pendek! Silahkan pilih yg lain!'
 
 # Login
-usage_log: '&cUsage: /login <password>'
-wrong_pwd: '&cPassword salah!'
-login: '&2Login berhasil!'
-login_msg: '&cSilahkan login menggunakan command "/login <password>"'
-timeout: '&4Jangka waktu login telah habis, kamu di keluarkan dari server. Silahkan coba lagi!'
+login:
+    command_usage: '&cUsage: /login <password>'
+    wrong_password: '&cPassword salah!'
+    success: '&2Login berhasil!'
+    login_request: '&cSilahkan login menggunakan command "/login <password>"'
+    timeout_error: '&4Jangka waktu login telah habis, kamu di keluarkan dari server. Silahkan coba lagi!'
 
 # Errors
-unknown_user: '&cUser ini belum terdaftar!'
-# TODO denied_command: '&cIn order to use this command you must be authenticated!'
-# TODO denied_chat: '&cIn order to chat you must be authenticated!'
-not_logged_in: '&cKamu belum login!'
-# TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
-# TODO: Missing tags %reg_count, %max_acc, %reg_names
-max_reg: '&Kamu telah mencapai batas maksimum pendaftaran di server ini!'
-no_perm: '&4Kamu tidak mempunyai izin melakukan ini!'
-error: '&4Terjadi kesalahan tak dikenal, silahkan hubungi Administrator!'
-kick_forvip: '&3Player VIP mencoba masuk pada saat server sedang penuh!'
+error:
+    # TODO denied_command: '&cIn order to use this command you must be authenticated!'
+    # TODO denied_chat: '&cIn order to chat you must be authenticated!'
+    unregistered_user: '&cUser ini belum terdaftar!'
+    not_logged_in: '&cKamu belum login!'
+    no_permission: '&4Kamu tidak mempunyai izin melakukan ini!'
+    unexpected_error: '&4Terjadi kesalahan tak dikenal, silahkan hubungi Administrator!'
+    max_registration: '&Kamu telah mencapai batas maksimum pendaftaran di server ini!'
+    logged_in: '&cKamu telah login!'
+    kick_for_vip: '&3Player VIP mencoba masuk pada saat server sedang penuh!'
+    # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 
 # AntiBot
-# TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
-antibot_auto_enabled: '&4[AntiBotService] AntiBot diaktifkan dikarenakan banyak koneksi yg diterima!'
-antibot_auto_disabled: '&2[AntiBotService] AntiBot dimatikan setelah %m menit!'
+antibot:
+    # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+    auto_enabled: '&4[AntiBotService] AntiBot diaktifkan dikarenakan banyak koneksi yg diterima!'
+    auto_disabled: '&2[AntiBotService] AntiBot dimatikan setelah %m menit!'
+
+# Unregister
+unregister:
+    success: '&cUnregister berhasil!'
+    # TODO command_usage: '&cUsage: /unregister <password>'
 
 # Other messages
-unregistered: '&cUnregister berhasil!'
-# TODO accounts_owned_self: 'You own %count accounts:'
-# TODO accounts_owned_other: 'The player %name has %count accounts:'
-# TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
-# TODO recovery_code_sent: 'A recovery code to reset your password has been sent to your email.'
-# TODO recovery_code_incorrect: 'The recovery code is not correct! You have %count tries remaining.'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-vb_nonActiv: '&cAkunmu belum diaktifkan, silahkan periksa email kamu!'
-# TODO usage_unreg: '&cUsage: /unregister <password>'
-pwd_changed: '&2Berhasil mengubah password!'
-logged_in: '&cKamu telah login!'
-logout: '&2Berhasil logout!'
-reload: '&2Konfigurasi dan database telah dimuat ulang!'
-usage_changepassword: '&cUsage: /changepassword <passwordLama> <passwordBaru>'
+misc:
+    account_not_activated: '&cAkunmu belum diaktifkan, silahkan periksa email kamu!'
+    password_changed: '&2Berhasil mengubah password!'
+    logout: '&2Berhasil logout!'
+    reload: '&2Konfigurasi dan database telah dimuat ulang!'
+    usage_change_password: '&cUsage: /changepassword <passwordLama> <passwordBaru>'
+    # TODO accounts_owned_self: 'You own %count accounts:'
+    # TODO accounts_owned_other: 'The player %name has %count accounts:'
 
 # Session messages
-invalid_session: '&cIP kamu telah berubah, dan sesi kamu telah berakhir!'
-valid_session: '&2Otomatis login, karena sesi masih terhubung.'
+session:
+    valid_session: '&2Otomatis login, karena sesi masih terhubung.'
+    invalid_session: '&cIP kamu telah berubah, dan sesi kamu telah berakhir!'
 
 # Error messages when joining
-name_len: '&4Username kamu terlalu panjang atau terlalu pendek!'
-regex: '&4Username kamu mengandung karakter illegal. Karakter yg diijinkan: REG_EX'
-# TODO country_banned: '&4Your country is banned from this server!'
-# TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
-kick_fullserver: '&4Server sedang penuh, silahkan coba lagi nanti!'
-same_nick: '&4Username yg sama telah bermain di server ini!'
-# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
-# TODO same_ip_online: 'A player with the same IP is already in game!'
+on_join_validation:
+    # TODO same_ip_online: 'A player with the same IP is already in game!'
+    same_nick_online: '&4Username yg sama telah bermain di server ini!'
+    name_length: '&4Username kamu terlalu panjang atau terlalu pendek!'
+    characters_in_name: '&4Username kamu mengandung karakter illegal. Karakter yg diijinkan: %valid_chars'
+    kick_full_server: '&4Server sedang penuh, silahkan coba lagi nanti!'
+    # TODO country_banned: '&4Your country is banned from this server!'
+    # TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
+    # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cUsage: /email add <email> <ulangiEmail>'
-usage_email_change: '&cUsage: /email change <emailLama> <emailBaru>'
-usage_email_recovery: '&cUsage: /email recovery <Email>'
-new_email_invalid: '&cEmail baru tidak valid, coba lagi!'
-old_email_invalid: '&cEmail lama tidak valid, coba lagi!'
-email_invalid: '&cAlamat email tidak valid, coba lagi!'
-email_added: '&2Berhasil menambahkan alamat email ke akunmu!'
-email_confirm: '&cSilahkan konfirmasi alamat email kamu!'
-email_changed: '&2Alamat email telah diubah dengan benar!'
-email_send: '&2Email pemulihan akun telah dikirim! Silahkan periksa kotak masuk emailmu!'
-# TODO email_show: '&2Your current email address is: &f%email'
-# TODO incomplete_email_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
-# TODO email_already_used: '&4The email address is already being used'
-# TODO email_send_failure: 'The email could not be sent. Please contact an administrator.'
-# TODO show_no_email: '&2You currently don''t have email address associated with this account.'
-add_email: '&3Silahkan tambahkan email ke akunmu menggunakan command "/email add <emailKamu> <ulangiEmail>"'
-recovery_email: '&3Lupa password? silahkan gunakan command "/email recovery <emailKamu>"'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
-# TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+email:
+    add_email_request: '&3Silahkan tambahkan email ke akunmu menggunakan command "/email add <emailKamu> <ulangiEmail>"'
+    usage_email_add: '&cUsage: /email add <email> <ulangiEmail>'
+    usage_email_change: '&cUsage: /email change <emailLama> <emailBaru>'
+    new_email_invalid: '&cEmail baru tidak valid, coba lagi!'
+    old_email_invalid: '&cEmail lama tidak valid, coba lagi!'
+    invalid: '&cAlamat email tidak valid, coba lagi!'
+    added: '&2Berhasil menambahkan alamat email ke akunmu!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cSilahkan konfirmasi alamat email kamu!'
+    changed: '&2Alamat email telah diubah dengan benar!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    # TODO email_show: '&2Your current email address is: &f%email'
+    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
+    # TODO already_used: '&4The email address is already being used'
+    # TODO incomplete_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
+    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Lupa password? silahkan gunakan command "/email recovery <emailKamu>"'
+    command_usage: '&cUsage: /email recovery <Email>'
+    email_sent: '&2Email pemulihan akun telah dikirim! Silahkan periksa kotak masuk emailmu!'
+    code:
+        # TODO code_sent: 'A recovery code to reset your password has been sent to your email.'
+        # TODO incorrect: 'The recovery code is not correct! You have %count tries remaining.'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
-usage_captcha: '&3Kamu harus menyelesaikan kode captcha untuk login, silahkan gunakan command "/captcha <theCaptcha>"'
-wrong_captcha: '&cCaptcha salah, gunakan command "/captcha THE_CAPTCHA" pada chat!'
-valid_captcha: '&2Kode captcha terselesaikan!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3Kamu harus menyelesaikan kode captcha untuk login, silahkan gunakan command "/captcha %captcha_code"'
+    wrong_captcha: '&cCaptcha salah, gunakan command "/captcha %captcha_code" pada chat!'
+    valid_captcha: '&2Kode captcha terselesaikan!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-# TODO second: 'second'
-# TODO seconds: 'seconds'
-# TODO minute: 'minute'
-# TODO minutes: 'minutes'
-# TODO hour: 'hour'
-# TODO hours: 'hours'
-# TODO day: 'day'
-# TODO days: 'days'
+time:
+    # TODO second: 'second'
+    # TODO seconds: 'seconds'
+    # TODO minute: 'minute'
+    # TODO minutes: 'minutes'
+    # TODO hour: 'hour'
+    # TODO hours: 'hours'
+    # TODO day: 'day'
+    # TODO days: 'days'
+
+# Two-factor authentication
+two_factor:
+    # TODO code_created: '&2Your secret code is %code. You can scan it from here %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

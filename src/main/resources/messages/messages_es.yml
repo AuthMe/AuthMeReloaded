@@ -1,121 +1,157 @@
 # This file must be in ANSI if win, or UTF-8 if linux.
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
-reg_msg: '&cPor favor, regístrate con "/register <contraseña> <confirmarContraseña">'
-usage_reg: '&cUso: /register Contraseña ConfirmarContraseña'
-reg_only: '&f¡Sólo para jugadores registrados! Por favor visita http://www.example.com/ para registrarte'
-kicked_admin_registered: 'Un administrador te acaba de registrar; entra en la cuenta de nuevo'
-registered: '&c¡Registrado correctamente!'
-reg_disabled: '&cEl registro está desactivado'
-user_regged: '&cUsuario ya registrado'
+registration:
+    disabled: '&cEl registro está desactivado'
+    name_taken: '&cUsuario ya registrado'
+    register_request: '&cPor favor, regístrate con "/register <contraseña> <confirmarContraseña">'
+    command_usage: '&cUso: /register Contraseña ConfirmarContraseña'
+    reg_only: '&f¡Sólo para jugadores registrados! Por favor visita http://www.example.com/ para registrarte'
+    success: '&c¡Registrado correctamente!'
+    kicked_admin_registered: 'Un administrador te acaba de registrar; entra en la cuenta de nuevo'
 
 # Password errors on registration
-password_error: '&fLas contraseñas no son iguales'
-password_error_nick: '&cNo puedes utilizar tu nombre como contraseña, por favor elige otra...'
-password_error_unsafe: '&cLa contraseña elejida no es segura, por favor elige otra...'
-password_error_chars: '&cTu contraseña tiene carácteres no admitidos, los cuales son: REG_EX'
-pass_len: '&fTu contraseña es muy larga o muy corta'
+password:
+    match_error: '&fLas contraseñas no son iguales'
+    name_in_password: '&cNo puedes utilizar tu nombre como contraseña, por favor elige otra...'
+    unsafe_password: '&cLa contraseña elejida no es segura, por favor elige otra...'
+    forbidden_characters: '&cTu contraseña tiene carácteres no admitidos, los cuales son: %valid_chars'
+    wrong_length: '&fTu contraseña es muy larga o muy corta'
 
 # Login
-usage_log: '&cUso: /login contraseña'
-wrong_pwd: '&cContraseña incorrecta'
-login: '&c¡Sesión iniciada!'
-login_msg: '&cInicia sesión con "/login contraseña"'
-timeout: '&fTiempo de espera para inicio de sesión excedido'
+login:
+    command_usage: '&cUso: /login contraseña'
+    wrong_password: '&cContraseña incorrecta'
+    success: '&c¡Sesión iniciada!'
+    login_request: '&cInicia sesión con "/login contraseña"'
+    timeout_error: '&fTiempo de espera para inicio de sesión excedido'
 
 # Errors
-unknown_user: '&cUsuario no registrado'
-denied_command: '&c¡Para utilizar este comando debes iniciar sesión!'
-denied_chat: '&c¡Para poder hablar en el chat debes iniciar sesión!'
-not_logged_in: '&c¡No has iniciado sesión!'
-tempban_max_logins: '&cHas sido expulsado temporalmente por intentar iniciar sesión demasiadas veces.'
-# TODO: Missing tags %reg_count, %max_acc, %reg_names
-max_reg: '&fHas excedido la cantidad máxima de registros para tu cuenta'
-no_perm: '&cNo tienes permiso'
-error: '&fHa ocurrido un error. Por favor contacta al administrador.'
-kick_forvip: '&c¡Un jugador VIP ha ingresado al servidor lleno!'
+error:
+    denied_command: '&c¡Para utilizar este comando debes iniciar sesión!'
+    denied_chat: '&c¡Para poder hablar en el chat debes iniciar sesión!'
+    unregistered_user: '&cUsuario no registrado'
+    not_logged_in: '&c¡No has iniciado sesión!'
+    no_permission: '&cNo tienes permiso'
+    unexpected_error: '&fHa ocurrido un error. Por favor contacta al administrador.'
+    max_registration: '&fHas excedido la cantidad máxima de registros para tu cuenta'
+    logged_in: '&c¡Ya has iniciado sesión!'
+    kick_for_vip: '&c¡Un jugador VIP ha ingresado al servidor lleno!'
+    tempban_max_logins: '&cHas sido expulsado temporalmente por intentar iniciar sesión demasiadas veces.'
 
 # AntiBot
-kick_antibot: '¡El modo de protección AntiBot está habilitado! Tienes que esperar varios minutos antes de entrar en el servidor.'
-antibot_auto_enabled: '[AuthMe] AntiBotMod activado automáticamente debido a conexiones masivas!'
-antibot_auto_disabled: '[AuthMe] AntiBotMod desactivado automáticamente después de %m minutos. Esperamos que haya terminado'
+antibot:
+    kick_antibot: '¡El modo de protección AntiBot está habilitado! Tienes que esperar varios minutos antes de entrar en el servidor.'
+    auto_enabled: '[AuthMe] AntiBotMod activado automáticamente debido a conexiones masivas!'
+    auto_disabled: '[AuthMe] AntiBotMod desactivado automáticamente después de %m minutos. Esperamos que haya terminado'
+
+# Unregister
+unregister:
+    success: '&c¡Cuenta eliminada del registro!'
+    command_usage: '&cUso: /unregister contraseña'
 
 # Other messages
-unregistered: '&c¡Cuenta eliminada del registro!'
-accounts_owned_self: 'Eres propietario de %count cuentas:'
-accounts_owned_other: 'El jugador %name tiene %count cuentas:'
-two_factor_create: '&2Tu código secreto es %code. Lo puedes escanear desde aquí %url'
-recovery_code_sent: 'El código de recuperación para recuperar tu contraseña se ha enviado a tu correo.'
-# TODO: Missing tags %count
-recovery_code_incorrect: '¡El código de recuperación no es correcto! Usa "/email recovery [email]" para generar uno nuevo'
-recovery_tries_exceeded: 'Has excedido el número máximo de intentos para introducir el código de recuperación. Escribe "/email recovery [tuEmail]" para generar uno nuevo.'
-recovery_code_correct: '¡Código de recuperación introducido correctamente!'
-recovery_change_password: 'Por favor usa el comando "/email setpassword <nuevaContraseña>" para cambiar tu contraseña inmediatamente.'
-vb_nonActiv: '&fTu cuenta no está activada aún, ¡revisa tu correo!'
-usage_unreg: '&cUso: /unregister contraseña'
-pwd_changed: '&c¡Contraseña cambiada!'
-logged_in: '&c¡Ya has iniciado sesión!'
-logout: '&cDesconectado correctamente.'
-reload: '&fLa configuración y la base de datos han sido recargados'
-usage_changepassword: '&fUso: /changepw contraseñaActual contraseñaNueva'
+misc:
+    account_not_activated: '&fTu cuenta no está activada aún, ¡revisa tu correo!'
+    password_changed: '&c¡Contraseña cambiada!'
+    logout: '&cDesconectado correctamente.'
+    reload: '&fLa configuración y la base de datos han sido recargados'
+    usage_change_password: '&fUso: /changepw contraseñaActual contraseñaNueva'
+    accounts_owned_self: 'Eres propietario de %count cuentas:'
+    accounts_owned_other: 'El jugador %name tiene %count cuentas:'
 
 # Session messages
-invalid_session: '&fLos datos de sesión no corresponden. Por favor espera a terminar la sesión.'
-valid_session: '&cInicio de sesión'
+session:
+    valid_session: '&cInicio de sesión'
+    invalid_session: '&fLos datos de sesión no corresponden. Por favor espera a terminar la sesión.'
 
 # Error messages when joining
-name_len: '&cTu nombre de usuario es muy largo o muy corto.'
-regex: '&cTu usuario tiene carácteres no admitidos, los cuales son: REG_EX'
-country_banned: '¡Tu país ha sido baneado de este servidor!'
-not_owner_error: 'No eres el propietario de esta cuenta. ¡Por favor, elije otro nombre!'
-kick_fullserver: '&c¡El servidor está lleno, lo sentimos!'
-same_nick: '&fYa hay un usuario con ese nick conectado (posible error)'
-invalid_name_case: 'Solo puedes unirte mediante el nombre de usuario %valid, no %invalid.'
-same_ip_online: '¡Un jugador con la misma IP ya está en el juego!'
+on_join_validation:
+    same_ip_online: '¡Un jugador con la misma IP ya está en el juego!'
+    same_nick_online: '&fYa hay un usuario con ese nick conectado (posible error)'
+    name_length: '&cTu nombre de usuario es muy largo o muy corto.'
+    characters_in_name: '&cTu usuario tiene carácteres no admitidos, los cuales son: %valid_chars'
+    kick_full_server: '&c¡El servidor está lleno, lo sentimos!'
+    country_banned: '¡Tu país ha sido baneado de este servidor!'
+    not_owner_error: 'No eres el propietario de esta cuenta. ¡Por favor, elije otro nombre!'
+    invalid_name_case: 'Solo puedes unirte mediante el nombre de usuario %valid, no %invalid.'
+    quick_command: 'Has usado el comando demasiado rápido! Porfavor, entra al servidor de nuevo y espera un poco antes de usar cualquier comando.'
 
 # Email
-usage_email_add: '&fUso: /email add <email> <confirmaEmail> '
-usage_email_change: '&fUso: /email change <anteriorEmail> <nuevoEmail> '
-usage_email_recovery: '&fUso: /email recovery <Email>'
-new_email_invalid: '[AuthMe] Nuevo email inválido!'
-old_email_invalid: '[AuthMe] Email anterior inválido!'
-email_invalid: '[AuthMe] Email inválido'
-email_added: '[AuthMe] Email agregado !'
-email_confirm: '[AuthMe] Confirma tu Email !'
-email_changed: '[AuthMe] Email cambiado !'
-email_send: '[AuthMe] Correo de recuperación enviado !'
-email_show: '&2Tu dirección de E-Mail actual es: &f%email'
-incomplete_email_settings: 'Error: no todos los ajustes necesarios se han configurado para poder enviar correos. Por favor, contacta con un administrador.'
-email_already_used: '&4La dirección Email ya está siendo usada'
-email_send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
-show_no_email: '&2No tienes ningun E-Mail asociado en esta cuenta.'
-add_email: '&cPor favor agrega tu e-mail con: /email add tuEmail confirmarEmail'
-recovery_email: '&c¿Olvidaste tu contraseña? Por favor usa /email recovery <tuEmail>'
-change_password_expired: 'No puedes cambiar la contraseña utilizando este comando.'
-email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar %time antes de volver a enviar uno nuevo.'
+email:
+    add_email_request: '&cPor favor agrega tu e-mail con: /email add tuEmail confirmarEmail'
+    usage_email_add: '&fUso: /email add <email> <confirmaEmail> '
+    usage_email_change: '&fUso: /email change <anteriorEmail> <nuevoEmail> '
+    new_email_invalid: '[AuthMe] Nuevo email inválido!'
+    old_email_invalid: '[AuthMe] Email anterior inválido!'
+    invalid: '[AuthMe] Email inválido'
+    added: '[AuthMe] Email agregado !'
+    add_not_allowed: '&cNo se permite añadir un Email'
+    request_confirmation: '[AuthMe] Confirma tu Email !'
+    changed: '[AuthMe] Email cambiado !'
+    change_not_allowed: '&cNo se permite el cambio de Email'
+    email_show: '&2Tu dirección de E-Mail actual es: &f%email'
+    no_email_for_account: '&2No tienes ningun E-Mail asociado en esta cuenta.'
+    already_used: '&4La dirección Email ya está siendo usada'
+    incomplete_settings: 'Error: no todos los ajustes necesarios se han configurado para poder enviar correos. Por favor, contacta con un administrador.'
+    send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
+    change_password_expired: 'No puedes cambiar la contraseña utilizando este comando.'
+    email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar %time antes de volver a enviar uno nuevo.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&c¿Olvidaste tu contraseña? Por favor usa /email recovery <tuEmail>'
+    command_usage: '&fUso: /email recovery <Email>'
+    email_sent: '[AuthMe] Correo de recuperación enviado !'
+    code:
+        code_sent: 'El código de recuperación para recuperar tu contraseña se ha enviado a tu correo.'
+        incorrect: '¡El código de recuperación no es correcto! Usa "/email recovery [email]" para generar uno nuevo'
+        tries_exceeded: 'Has excedido el número máximo de intentos para introducir el código de recuperación. Escribe "/email recovery [tuEmail]" para generar uno nuevo.'
+        correct: '¡Código de recuperación introducido correctamente!'
+        change_password: 'Por favor usa el comando "/email setpassword <nuevaContraseña>" para cambiar tu contraseña inmediatamente.'
 
 # Captcha
-usage_captcha: '&cUso: /captcha <theCaptcha>'
-wrong_captcha: '&cCaptcha incorrecto, por favor usa: /captcha THE_CAPTCHA'
-valid_captcha: '&c¡Captcha ingresado correctamente!'
-captcha_for_registration: 'Para registrarse primero debes resolver el captcha, por favor usa el comando: /captcha <theCaptcha>'
-register_captcha_valid: '&2¡Captcha validado! Ahora puedes registrarte usando /register'
+captcha:
+    usage_captcha: '&cUso: /captcha %captcha_code'
+    wrong_captcha: '&cCaptcha incorrecto, por favor usa: /captcha %captcha_code'
+    valid_captcha: '&c¡Captcha ingresado correctamente!'
+    captcha_for_registration: 'Para registrarse primero debes resolver el captcha, por favor usa el comando: /captcha %captcha_code'
+    register_captcha_valid: '&2¡Captcha validado! Ahora puedes registrarte usando /register'
 
 # Verification code
-verification_code_required: '&3¡Este comando es privado y requiere una verificación por correo electrónico! Revisa tu bandeja de entrada y sigue las instrucciones del correo electrónico.'
-usage_verification_code: '&cUso: /verification <código>'
-incorrect_verification_code: '&cCódigo incorrecto, por favor escribe "/verification <código>" en el chat, utilizando el código que has recibido por correo electrónico.'
-verification_code_verified: '&2Tu identidad ha sido verificada! Ahora puedes ejecutar todos los comandos dentro de la sesión actual.'
-verification_code_already_verified: '&2¡Ya puedes ejecutar todos los comandos de seguridad dentro de la sesión actual!'
-verification_code_expired: '&3Tu código ha expirado! Ejecuta otra vez el comando de seguridad para obtener un nuevo código!'
-verification_code_email_needed: '&3¡Para verificar tu identidad necesitas añadir tu correo electrónico a tu cuenta!'
+verification:
+    code_required: '&3¡Este comando es privado y requiere una verificación por correo electrónico! Revisa tu bandeja de entrada y sigue las instrucciones del correo electrónico.'
+    command_usage: '&cUso: /verification <código>'
+    incorrect_code: '&cCódigo incorrecto, por favor escribe "/verification <código>" en el chat, utilizando el código que has recibido por correo electrónico.'
+    success: '&2Tu identidad ha sido verificada! Ahora puedes ejecutar todos los comandos dentro de la sesión actual.'
+    already_verified: '&2¡Ya puedes ejecutar todos los comandos de seguridad dentro de la sesión actual!'
+    code_expired: '&3Tu código ha expirado! Ejecuta otra vez el comando de seguridad para obtener un nuevo código!'
+    email_needed: '&3¡Para verificar tu identidad necesitas añadir tu correo electrónico a tu cuenta!'
 
 # Time units
-second: 'segundo'
-seconds: 'segundos'
-minute: 'minuto'
-minutes: 'minutos'
-hour: 'hora'
-hours: 'horas'
-day: 'día'
-days: 'días'
+time:
+    second: 'segundo'
+    seconds: 'segundos'
+    minute: 'minuto'
+    minutes: 'minutos'
+    hour: 'hora'
+    hours: 'horas'
+    day: 'día'
+    days: 'días'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Tu código secreto es %code. Lo puedes escanear desde aquí %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

@@ -122,6 +122,16 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
     }
 
     /**
+     * Removes a player from the list of successful recovers so that he can
+     * no longer use the /email setpassword command.
+     *
+     * @param player The player to remove.
+     */
+    public void removeFromSuccessfulRecovery(Player player) {
+        successfulRecovers.remove(player.getName());
+    }
+
+    /**
      * Check if a player is able to have emails sent.
      *
      * @param player The player to check.
@@ -149,12 +159,7 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
         String playerAddress = PlayerUtils.getPlayerIp(player);
         String storedAddress = successfulRecovers.get(name);
 
-        if (storedAddress == null || !playerAddress.equals(storedAddress)) {
-            messages.send(player, MessageKey.CHANGE_PASSWORD_EXPIRED);
-            return false;
-        }
-
-        return true;
+        return storedAddress != null && playerAddress.equals(storedAddress);
     }
 
     @Override

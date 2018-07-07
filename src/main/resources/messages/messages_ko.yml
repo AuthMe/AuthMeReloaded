@@ -1,121 +1,158 @@
-#Translated by Kirito (kds123321@naver.com), System32(me@syst32.com)
+#Translated by Kirito (kds123321@naver.com), System32(me@syst32.com), Adeuran(adeuran@tistory.com)
 #14.05.2017 Thanks for use
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
-# 회원가입
-reg_msg: '&3다음 명령어로 서버에 가입해주세요: /register <비밀번호> <비밀번호 확인>'
-usage_reg: '&c사용법: /register <비밀번호> <비밀번호 확인>'
-reg_only: '&4등록된 유저만 서버에 접속할 수 있습니다! 서버 홈페이지에 방문하여 가입해 주세요!'
-kicked_admin_registered: '관리자가 방금 이 닉네임을 등록했습니다. 다시 로그인 해주세요'
-registered: '&2회원가입이 완료되었습니다!'
-reg_disabled: '&c게임 안에서의 회원가입은 비활성화 되어 있습니다!'
-user_regged: '&c이미 이 닉네임으로 회원가입이 되어 있습니다!'
+# Registration
+registration:
+    disabled: '&c게임 안에서의 회원가입은 비활성화 되어 있습니다!'
+    name_taken: '&c이미 이 닉네임으로 회원가입이 되어 있습니다!'
+    register_request: '&3다음 명령어로 서버에 가입해주세요: /register <비밀번호> <비밀번호 확인>'
+    command_usage: '&c사용법: /register <비밀번호> <비밀번호 확인>'
+    reg_only: '&4등록된 유저만 서버에 접속할 수 있습니다! 서버 홈페이지에 방문하여 가입해 주세요!'
+    success: '&2회원가입이 완료되었습니다!'
+    kicked_admin_registered: '관리자가 방금 이 닉네임을 등록했습니다. 다시 로그인 해주세요'
 
-# 회원가입중 비밀번호 오류
-password_error: '&c비밀번호가 일치하지 않습니다, 다시 확인해주세요!'
-password_error_nick: '&c자신의 닉네임을 비밀번호로 사용할 수 없습니다, 다른 비밀번호를 사용하세요...'
-password_error_unsafe: '&c이 비밀번호는 안전하지 않습니다, 다른 비밀번호를 사용하세요...'
-password_error_chars: '&4비밀번호에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
-pass_len: '&c비밀번호가 너무 짧거나 너무 깁니다!'
+# Password errors on registration
+password:
+    match_error: '&c비밀번호가 일치하지 않습니다, 다시 확인해주세요!'
+    name_in_password: '&c자신의 닉네임을 비밀번호로 사용할 수 없습니다, 다른 비밀번호를 사용하세요...'
+    unsafe_password: '&c이 비밀번호는 안전하지 않습니다, 다른 비밀번호를 사용하세요...'
+    forbidden_characters: '&4비밀번호에 잘못된 문자가 있습니다. 허용된 문자: %valid_chars'
+    wrong_length: '&c비밀번호가 너무 짧거나 너무 깁니다!'
 
-# 로그인
-usage_log: '&c사용법: /login <비밀번호>'
-wrong_pwd: '&c비밀번호가 잘못되었습니다!'
-login: '&2로그인 되었습니다!'
-login_msg: '&c다음 명령어로 로그인 해주세요: /login <비밀번호>'
-timeout: '&4로그인 시간이 초과 되어 서버에서 추방당했습니다. 다시 시도하세요!'
+# Login
+login:
+    command_usage: '&c사용법: /login <비밀번호>'
+    wrong_password: '&c비밀번호가 잘못되었습니다!'
+    success: '&2로그인 되었습니다!'
+    login_request: '&c다음 명령어로 로그인 해주세요: /login <비밀번호>'
+    timeout_error: '&4로그인 시간이 초과 되어 서버에서 추방당했습니다. 다시 시도하세요!'
 
-# 오류
-unknown_user: '&c이 유저는 등록되지 않았습니다!'
-denied_command: '&c이 명령어를 사용하려면 로그인해야 합니다!'
-denied_chat: '&c채팅을 하려면 로그인해야 합니다!'
-not_logged_in: '&c로그인이 되어있지 않습니다!'
-tempban_max_logins: '&c너무 많이 로그인에 실패하여 잠시 서버에서 차단되었습니다.'
-max_reg: '&c당신은 가입할 수 있는 계정 한도를 초과했습니다 (%reg_count/%max_acc %reg_names)!'
-no_perm: '&4이 작업을 수행할 수 있는 권한이 없습니다!'
-error: '&4예기치 않은 오류가 발생했습니다, 관리자에게 알려주세요!'
-kick_forvip: '&3서버가 꽉 차있을땐 VIP 플레이어만 접속이 가능합니다!'
+# Errors
+error:
+    denied_command: '&c이 명령어를 사용하려면 로그인해야 합니다!'
+    denied_chat: '&c채팅을 하려면 로그인해야 합니다!'
+    unregistered_user: '&c이 유저는 등록되지 않았습니다!'
+    not_logged_in: '&c로그인이 되어있지 않습니다!'
+    no_permission: '&4이 작업을 수행할 수 있는 권한이 없습니다!'
+    unexpected_error: '&4예기치 않은 오류가 발생했습니다, 관리자에게 알려주세요!'
+    max_registration: '&c당신은 가입할 수 있는 계정 한도를 초과했습니다 (%reg_count/%max_acc %reg_names)!'
+    logged_in: '&c이미 로그인되어 있습니다!'
+    kick_for_vip: '&3서버가 꽉 차있을땐 VIP 플레이어만 접속이 가능합니다!'
+    tempban_max_logins: '&c너무 많이 로그인에 실패하여 잠시 서버에서 차단되었습니다.'
 
-# 봇테러 방지
-kick_antibot: 'AntiBot 보호 모드가 활성화 되었습니다! 서버에 접속하려면 몇 분 기다려야 합니다.'
-antibot_auto_enabled: '&4[AntiBotService] 엄청나게 많은 연결이 감지 되어 AntiBot이 활성화 되었습니다!'
-antibot_auto_disabled: '&2[AntiBotService] %m 분 후에 AntiBot이 비활성화 됩니다!'
+# AntiBot
+antibot:
+    kick_antibot: 'AntiBot 보호 모드가 활성화 되었습니다! 서버에 접속하려면 몇 분 기다려야 합니다.'
+    auto_enabled: '&4[AntiBotService] 엄청나게 많은 연결이 감지 되어 AntiBot이 활성화 되었습니다!'
+    auto_disabled: '&2[AntiBotService] %m 분 후에 AntiBot이 비활성화 됩니다!'
 
-# 기타 메세지
-unregistered: '&c회원 탈퇴가 완료되었습니다!'
-accounts_owned_self: '%count 개의 계정을 소유하고 있습니다.'
-accounts_owned_other: '플레이어 %name 는 %count 개의 계정을 소유하고 있습니다:'
-two_factor_create: '&2당신의 비밀 코드는 %code 입니다. %url 에서 스캔할 수 있습니다'
-recovery_code_sent: '비밀번호 재설정을 위한 복구 코드가 이메일로 전송되었습니다.'
-# TODO: Missing tags %count
-recovery_code_incorrect: '복구 코드가 올바르지 않습니다! "/email recovery [이메일 주소]"를 이용하여 새로 생성하세요.'
-recovery_tries_exceeded: '잘못된 복구 코드를 너무 많이 입력했습니다. "/email recovery [이메일 주소]"를 통해 새로 생성하세요.'
-recovery_code_correct: '복구 코드가 정상적으로 입력되었습니다!'
-recovery_change_password: '비밀번호를 변경하려면 /email setpassword <새 비밀번호>를 입력해주세요.'
-vb_nonActiv: '&c계정이 아직 활성화되지 않았습니다. 이메일을 확인해보세요!'
-usage_unreg: '&c사용법: /unregister <비밀번호>'
-pwd_changed: '&2비밀번호가 변경되었습니다!'
-logged_in: '&c이미 로그인되어 있습니다!'
-logout: '&2로그아웃 되었습니다!'
-reload: '&2설정과 데이터 베이스가 새로고침 되었습니다!'
-usage_changepassword: '&c사용법: /changepassword <예전 비밀번호> <새 비밀번호>'
+# Unregister
+unregister:
+    success: '&c회원 탈퇴가 완료되었습니다!'
+    command_usage: '&c사용법: /unregister <비밀번호>'
 
-# 세션 메세지
-invalid_session: '&cIP가 변경되어 세션이 만료되었습니다!'
-valid_session: '&2세션 재 연결로 인해 로그인 되었습니다.'
+# Other messages
+misc:
+    account_not_activated: '&c계정이 아직 활성화되지 않았습니다. 이메일을 확인해보세요!'
+    password_changed: '&2비밀번호가 변경되었습니다!'
+    logout: '&2로그아웃 되었습니다!'
+    reload: '&2설정과 데이터 베이스가 새로고침 되었습니다!'
+    usage_change_password: '&c사용법: /changepassword <예전 비밀번호> <새 비밀번호>'
+    accounts_owned_self: '%count 개의 계정을 소유하고 있습니다.'
+    accounts_owned_other: '플레이어 %name 는 %count 개의 계정을 소유하고 있습니다:'
 
-# 접속 오류 메세지
-name_len: '&4닉네임이 너무 짧거나 너무 깁니다!'
-regex: '&4닉네임에 잘못된 문자가 있습니다. 허용된 문자: REG_EX'
-country_banned: '&4당신의 국가에서는 이 서버를 이용하실 수 없습니다!'
-not_owner_error: '이 계정의 소유자가 아닙니다. 다른 닉네임을 선택하세요!'
-kick_fullserver: '&4서버가 꽉 찼습니다. 나중에 다시 접속해보세요!'
-same_nick: '&4똑같은 닉네임이 이미 이 서버에 접속해 있습니다!'
-invalid_name_case: '%invalid가 아닌, %valid 사용하여 접속해야 합니다.'
-same_ip_online: '똑같은 IP가 이미 이 서버에 접속해 있습니다!'
+# Session messages
+session:
+    valid_session: '&2세션 재 연결로 인해 로그인 되었습니다.'
+    invalid_session: '&cIP가 변경되어 세션이 만료되었습니다!'
 
-# 이메일
-usage_email_add: '&c사용법: /email add <이메일 주소> <이메일 주소 확인>'
-usage_email_change: '&c사용법: /email change <예전 이메일 주소> <새 이메일 주소>'
-usage_email_recovery: '&c사용법: /email recovery <이메일 주소>'
-new_email_invalid: '&c새 이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
-old_email_invalid: '&c예전 이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
-email_invalid: '&c이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
-email_added: '&2계정에 이메일 주소를 추가했습니다!'
-email_confirm: '&c이메일 주소를 확인해주세요!'
-email_changed: '&2이메일 주소가 변경되었습니다!'
-email_send: '&2복구 이메일을 보냈습니다! 메일함을 확인해보세요!'
-email_show: '&2현재 이메일 주소: &f%email'
-incomplete_email_settings: '오류: 메일을 보내기 위해 필요한 설정이 되어 있지 않습니다. 관리자에게 알려주세요.'
-email_already_used: '&4이메일 주소가 이미 사용 중입니다.'
-email_send_failure: '이메일을 보낼 수 없습니다. 관리자에게 알려주세요.'
-show_no_email: '&2현재 이 계정과 연결된 이메일 주소가 없습니다.'
-add_email: '&3다음 명령어로 계정에 이메일 주소를 추가하세요: /email add <이메일 주소> <이메일 주소 확인>'
-recovery_email: '&3비밀번호를 잊으셨나요? 이 명령어를 사용해보세요: /email recovery <이메일 주소>'
-change_password_expired: '더 이상 이 명령어를 통해 비밀번호를 변경할 수 없습니다.'
-email_cooldown_error: '&c이메일을 이미 발송했습니다. %time 후에 다시 발송할 수 있습니다.'
+# Error messages when joining
+on_join_validation:
+    same_ip_online: '똑같은 IP가 이미 이 서버에 접속해 있습니다!'
+    same_nick_online: '&4똑같은 닉네임이 이미 이 서버에 접속해 있습니다!'
+    name_length: '&4닉네임이 너무 짧거나 너무 깁니다!'
+    characters_in_name: '&4닉네임에 잘못된 문자가 있습니다. 허용된 문자: %valid_chars'
+    kick_full_server: '&4서버가 꽉 찼습니다. 나중에 다시 접속해보세요!'
+    country_banned: '&4당신의 국가에서는 이 서버를 이용하실 수 없습니다!'
+    not_owner_error: '이 계정의 소유자가 아닙니다. 다른 닉네임을 선택하세요!'
+    invalid_name_case: '%invalid가 아닌, %valid 사용하여 접속해야 합니다.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
-# 캡챠
-usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다. 이 명령어를 사용하세요: /captcha <theCaptcha>'
-wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha THE_CAPTCHA" 형태로 입력해주세요!'
-valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+# Email
+email:
+    add_email_request: '&3다음 명령어로 계정에 이메일 주소를 추가하세요: /email add <이메일 주소> <이메일 주소 확인>'
+    usage_email_add: '&c사용법: /email add <이메일 주소> <이메일 주소 확인>'
+    usage_email_change: '&c사용법: /email change <예전 이메일 주소> <새 이메일 주소>'
+    new_email_invalid: '&c새 이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
+    old_email_invalid: '&c예전 이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
+    invalid: '&c이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
+    added: '&2계정에 이메일 주소를 추가했습니다!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&c이메일 주소를 확인해주세요!'
+    changed: '&2이메일 주소가 변경되었습니다!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2현재 이메일 주소: &f%email'
+    no_email_for_account: '&2현재 이 계정과 연결된 이메일 주소가 없습니다.'
+    already_used: '&4이메일 주소가 이미 사용 중입니다.'
+    incomplete_settings: '오류: 메일을 보내기 위해 필요한 설정이 되어 있지 않습니다. 관리자에게 알려주세요.'
+    send_failure: '이메일을 보낼 수 없습니다. 관리자에게 알려주세요.'
+    change_password_expired: '더 이상 이 명령어를 통해 비밀번호를 변경할 수 없습니다.'
+    email_cooldown_error: '&c이메일을 이미 발송했습니다. %time 후에 다시 발송할 수 있습니다.'
 
-# 인증 코드
-verification_code_required: '&3이 명령어는 매우 민감하게 작동되며, 이메일 인증을 필요로 합니다. 이메일을 확인하고 지시에 따르십시오.'
-usage_verification_code: '&c사용법: /verification <인증 코드>'
-incorrect_verification_code: '&c코드가 올바르지 않습니다. "/verification <인증 코드>" 형태로 입력해주세요.'
-verification_code_verified: '&2신원이 확인되었습니다. 귀하는 이 세션이 만료되기 전까지 모든 명령어를 사용할 수 있습니다.'
-verification_code_already_verified: '&2이 인증 코드는 이미 사용되었습니다!'
-verification_code_expired: '&3이 인증 코드는 만료되었습니다! 새 인증 코드를 발급받아주세요.'
-verification_code_email_needed: '&3귀하의 신원을 확인하기 위해서는 귀하의 계정과 이메일 주소가 연결되어 있어야 합니다.'
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3비밀번호를 잊으셨나요? 이 명령어를 사용해보세요: /email recovery <이메일 주소>'
+    command_usage: '&c사용법: /email recovery <이메일 주소>'
+    email_sent: '&2복구 이메일을 보냈습니다! 메일함을 확인해보세요!'
+    code:
+        code_sent: '비밀번호 재설정을 위한 복구 코드가 이메일로 전송되었습니다.'
+        incorrect: '복구 코드가 올바르지 않습니다! "/email recovery [이메일 주소]"를 이용하여 새로 생성하세요.'
+        tries_exceeded: '잘못된 복구 코드를 너무 많이 입력했습니다. "/email recovery [이메일 주소]"를 통해 새로 생성하세요.'
+        correct: '복구 코드가 정상적으로 입력되었습니다!'
+        change_password: '비밀번호를 변경하려면 /email setpassword <새 비밀번호>를 입력해주세요.'
 
-# 시간 단위
-second: '초'
-seconds: '초'
-minute: '분'
-minutes: '분'
-hour: '시간'
-hours: '시간'
-day: '일'
-days: '일'
+# Captcha
+captcha:
+    usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다. 이 명령어를 사용하세요: /captcha %captcha_code'
+    wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha %captcha_code" 형태로 입력해주세요!'
+    valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
+    captcha_for_registration: '회원가입을 하기 위해서는 먼저 CAPTCHA 코드를 입력해야합니다. 이 명령어를 이 명령어를 사용하세요: /captcha %captcha_code'
+    register_captcha_valid: '&2올바른 CAPTCHA 코드입니다! 이제 /register 명령어를 이용하여 회원가입할 수 있습니다.'
+
+# Verification code
+verification:
+    code_required: '&3이 명령어는 매우 민감하게 작동되며, 이메일 인증을 필요로 합니다. 이메일을 확인하고 지시에 따르십시오.'
+    command_usage: '&c사용법: /verification <인증 코드>'
+    incorrect_code: '&c코드가 올바르지 않습니다. "/verification <인증 코드>" 형태로 입력해주세요.'
+    success: '&2신원이 확인되었습니다. 귀하는 이 세션이 만료되기 전까지 모든 명령어를 사용할 수 있습니다.'
+    already_verified: '&2이 인증 코드는 이미 사용되었습니다!'
+    code_expired: '&3이 인증 코드는 만료되었습니다! 새 인증 코드를 발급받아주세요.'
+    email_needed: '&3귀하의 신원을 확인하기 위해서는 귀하의 계정과 이메일 주소가 연결되어 있어야 합니다.'
+
+# Time units
+time:
+    second: '초'
+    seconds: '초'
+    minute: '분'
+    minutes: '분'
+    hour: '시간'
+    hours: '시간'
+    day: '일'
+    days: '일'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2당신의 비밀 코드는 %code 입니다. %url 에서 스캔할 수 있습니다'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

@@ -1,117 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&3Te rugam sa te inregistrezi folosind comanda "/register <parola> <parola>"'
-usage_reg: '&cFoloseste comanda: /register <parola> <parola>'
-reg_only: '&4Doar jucatori inregistrati pot intra pe server! Te rugam foloseste http://example.com pentru a te inregistra!'
-kicked_admin_registered: 'Un administrator tocmai te-a inregistrat, te rog autentifica-te din nou.'
-registered: '&2Te-ai inregistrat cu succes!'
-reg_disabled: '&cInregistrarea in joc nu este activata!'
-user_regged: '&cCineva este inregistrat cu acest nume!'
+registration:
+    disabled: '&cInregistrarea in joc nu este activata!'
+    name_taken: '&cCineva este inregistrat cu acest nume!'
+    register_request: '&3Te rugam sa te inregistrezi folosind comanda "/register <parola> <parola>"'
+    command_usage: '&cFoloseste comanda: /register <parola> <parola>'
+    reg_only: '&4Doar jucatori inregistrati pot intra pe server! Te rugam foloseste http://example.com pentru a te inregistra!'
+    success: '&2Te-ai inregistrat cu succes!'
+    kicked_admin_registered: 'Un administrator tocmai te-a inregistrat, te rog autentifica-te din nou.'
 
 # Password errors on registration
-password_error: '&cParolele nu corespund, verifica-le din nou!'
-password_error_nick: '&cNu poti folosi numele ca si parola. Te rugam sa folosesti alta parola...'
-password_error_unsafe: '&cParola aleasa nu este sigura. Te rugam sa folosesti alta parola...'
-password_error_chars: '&4Parola ta contine caractere nepermise. Caractere permise: REG_EX'
-pass_len: '&cParola ta este prea scurta pentru a te inregistra! Te rugam incearca alta parola!'
+password:
+    match_error: '&cParolele nu corespund, verifica-le din nou!'
+    name_in_password: '&cNu poti folosi numele ca si parola. Te rugam sa folosesti alta parola...'
+    unsafe_password: '&cParola aleasa nu este sigura. Te rugam sa folosesti alta parola...'
+    forbidden_characters: '&4Parola ta contine caractere nepermise. Caractere permise: %valid_chars'
+    wrong_length: '&cParola ta este prea scurta pentru a te inregistra! Te rugam incearca alta parola!'
 
 # Login
-usage_log: '&cFoloseste comanda "/login <parola>" pentru a te autentifica.'
-wrong_pwd: '&cParola gresita!'
-login: '&2Te-ai autentificat cu succes!'
-login_msg: '&cTe rugam sa te autentifici folosind comanda "/login <parola>"'
-timeout: '&4A expirat timpul de autentificare si ai fost dat afara de server, te rugam incearca din nou!'
+login:
+    command_usage: '&cFoloseste comanda "/login <parola>" pentru a te autentifica.'
+    wrong_password: '&cParola gresita!'
+    success: '&2Te-ai autentificat cu succes!'
+    login_request: '&cTe rugam sa te autentifici folosind comanda "/login <parola>"'
+    timeout_error: '&4A expirat timpul de autentificare si ai fost dat afara de server, te rugam incearca din nou!'
 
 # Errors
-unknown_user: '&cAcest jucator nu este inregistrat!'
-denied_command: '&cPentru a folosi comanda trebuie sa te autentifici!'
-denied_chat: 'Pentru a folosi chat-ul trebuie sa te autentifici!'
-not_logged_in: '&cNu te-ai autentificat!'
-tempban_max_logins: '&cAi fost interzis temporar deoarece ai esuat sa te autentifici de prea multe ori.'
-max_reg: '&cTe-ai inregistrat cu prea multe conturi pe acelasi ip! (%reg_count/%max_acc %reg_names)'
-no_perm: '&4Nu ai permisiunea!'
-error: '&4A aparut o eroare, te rugam contacteaza un administrator!'
-kick_forvip: '&3Un V.I.P a intrat pe server cand era plin!'
+error:
+    denied_command: '&cPentru a folosi comanda trebuie sa te autentifici!'
+    denied_chat: 'Pentru a folosi chat-ul trebuie sa te autentifici!'
+    unregistered_user: '&cAcest jucator nu este inregistrat!'
+    not_logged_in: '&cNu te-ai autentificat!'
+    no_permission: '&4Nu ai permisiunea!'
+    unexpected_error: '&4A aparut o eroare, te rugam contacteaza un administrator!'
+    max_registration: '&cTe-ai inregistrat cu prea multe conturi pe acelasi ip! (%reg_count/%max_acc %reg_names)'
+    logged_in: '&cEsti deja autentificat!'
+    kick_for_vip: '&3Un V.I.P a intrat pe server cand era plin!'
+    tempban_max_logins: '&cAi fost interzis temporar deoarece ai esuat sa te autentifici de prea multe ori.'
 
 # AntiBot
-kick_antibot: 'Protectia AntiBot este activata! Trebuie sa astepti cateva minute pentru a intra pe server.'
-antibot_auto_enabled: '&4[Protectie AntiBot] AntiBot-ul a fost activat din cauza numarului mare de conexiuni!'
-antibot_auto_disabled: '&2[Protectie AntiBot] AntiBot-ul a fost dezactivat dupa %m minute!'
+antibot:
+    kick_antibot: 'Protectia AntiBot este activata! Trebuie sa astepti cateva minute pentru a intra pe server.'
+    auto_enabled: '&4[Protectie AntiBot] AntiBot-ul a fost activat din cauza numarului mare de conexiuni!'
+    auto_disabled: '&2[Protectie AntiBot] AntiBot-ul a fost dezactivat dupa %m minute!'
+
+# Unregister
+unregister:
+    success: '&cTi-ai sters contul cu succes!'
+    command_usage: '&cFoloseste comanda: /unregister <parola>'
 
 # Other messages
-unregistered: '&cTi-ai sters contul cu succes!'
-accounts_owned_self: 'Detii %count conturi:'
-accounts_owned_other: 'Jucatorul %name are %count conturi:'
-two_factor_create: '&2Codul tau secret este %code. Il poti scana de aici %url'
-recovery_code_sent: 'Un cod de recuperare a parolei a fost trimis catre email-ul tau.'
-recovery_code_incorrect: 'Codul de recuperare nu este corect! Mai ai %count incercari ramase.'
-recovery_tries_exceeded: 'Ai atins numarul maxim de incercari pentru introducerea codului de recuperare. Foloseste "/email recovery [email]" pentru a genera unul nou.'
-recovery_code_correct: 'Cod de recuperare corect!'
-recovery_change_password: 'Foloseste imediat comanda /email setpassword <parola noua> pentru a-ti schimba parola.'
-vb_nonActiv: '&cContul tau nu este activat, te rugam verifica-ti email-ul!'
-usage_unreg: '&cFoloseste comanda: /unregister <parola>'
-pwd_changed: '&2Parola a fost salvata cu succes!'
-logged_in: '&cEsti deja autentificat!'
-logout: '&2Te-ai dezautentificat cu succes!'
-reload: '&2Configuratiile si baza de date sau reincarcat corect!'
-usage_changepassword: '&cFoloseste comanda: /changepassword <parola veche> <parola noua>'
+misc:
+    account_not_activated: '&cContul tau nu este activat, te rugam verifica-ti email-ul!'
+    password_changed: '&2Parola a fost salvata cu succes!'
+    logout: '&2Te-ai dezautentificat cu succes!'
+    reload: '&2Configuratiile si baza de date sau reincarcat corect!'
+    usage_change_password: '&cFoloseste comanda: /changepassword <parola veche> <parola noua>'
+    accounts_owned_self: 'Detii %count conturi:'
+    accounts_owned_other: 'Jucatorul %name are %count conturi:'
 
 # Session messages
-invalid_session: '&cIP-ul tau a fost schimbat si sesiunea ta a expirat!'
-valid_session: '&2Ai fost reconectat automat.'
+session:
+    valid_session: '&2Ai fost reconectat automat.'
+    invalid_session: '&cIP-ul tau a fost schimbat si sesiunea ta a expirat!'
 
 # Error messages when joining
-name_len: '&4Numele tau este prea scurt pentru a te putea conecta!'
-regex: '&4Numele tau contine caractere ilegale. Caractere permise: REG_EX'
-country_banned: '&4Tara ta este interzisa pe acest server!'
-not_owner_error: 'Tu nu esti detinatorul acestui cont. Te rugam alege alt nume!'
-kick_fullserver: '&4Server-ul este plin, te rugam incearca din nou mai tarziu!'
-same_nick: '&4Acelasi nume apartine unui jucator care e deja pe server!'
-invalid_name_case: 'Ar trebui sa intri cu numele %valid, nu %invalid'
-same_ip_online: 'Deja este un jucator care are aceiasi adresa ip cu a ta!'
+on_join_validation:
+    same_ip_online: 'Deja este un jucator care are aceiasi adresa ip cu a ta!'
+    same_nick_online: '&4Acelasi nume apartine unui jucator care e deja pe server!'
+    name_length: '&4Numele tau este prea scurt pentru a te putea conecta!'
+    characters_in_name: '&4Numele tau contine caractere ilegale. Caractere permise: %valid_chars'
+    kick_full_server: '&4Server-ul este plin, te rugam incearca din nou mai tarziu!'
+    country_banned: '&4Tara ta este interzisa pe acest server!'
+    not_owner_error: 'Tu nu esti detinatorul acestui cont. Te rugam alege alt nume!'
+    invalid_name_case: 'Ar trebui sa intri cu numele %valid, nu %invalid'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cFoloseste comanda: /email add <email> <email>'
-usage_email_change: '&cFoloseste comanda: /email change <email vechi> <email nou>'
-usage_email_recovery: '&cFoloseste comanda: /email recovery <email>'
-new_email_invalid: '&cNoul email este invalid, incearca din nou!'
-old_email_invalid: '&cEmail-ul vechi este invalid, incearca din nou!'
-email_invalid: '&cEmail-ul este invalid, incearca din nou!'
-email_added: '&2Email-ul a fost adaugat cu succes la contul tau!'
-email_confirm: '&cTe rugam sa confirmi adresa ta de email!'
-email_changed: '&2Email-ul a fost schimbat cu succes!'
-email_send: ' &2Ti-am trimis un mail cu codul necesar recuperarii parolei tale!'
-email_show: '&2Adresa ta curenta de email este: &f%email'
-incomplete_email_settings: 'Eroare: Nu indeplinesti conditiile trimiterii unui email! Te rugam contacteaza un administrator.'
-email_already_used: '&4Email-ul acesta este deja folosit de altcineva'
-email_send_failure: 'Email-ul nu a putut fi trimis. Ta rugam contactatezi un administrator.'
-show_no_email: '&2Nu ai nici o adresa de email asociata cu acest cont.'
-add_email: '&3Te rugam adaugati email-ul la contul tau folosind comanda "/email add <email> <email>"'
-recovery_email: '&3Ti-ai uitat parola? Te rugam foloseste comanda "/email recovery <email>"'
-change_password_expired: 'Nu mai iti poti schimba parola folosind aceasta comanda.'
-email_cooldown_error: '&cAi primit deja un mail pentru schimbarea parolei. Trebuie sa astepti %time inainte de a trimite unul nou.'
+email:
+    add_email_request: '&3Te rugam adaugati email-ul la contul tau folosind comanda "/email add <email> <email>"'
+    usage_email_add: '&cFoloseste comanda: /email add <email> <email>'
+    usage_email_change: '&cFoloseste comanda: /email change <email vechi> <email nou>'
+    new_email_invalid: '&cNoul email este invalid, incearca din nou!'
+    old_email_invalid: '&cEmail-ul vechi este invalid, incearca din nou!'
+    invalid: '&cEmail-ul este invalid, incearca din nou!'
+    added: '&2Email-ul a fost adaugat cu succes la contul tau!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cTe rugam sa confirmi adresa ta de email!'
+    changed: '&2Email-ul a fost schimbat cu succes!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2Adresa ta curenta de email este: &f%email'
+    no_email_for_account: '&2Nu ai nici o adresa de email asociata cu acest cont.'
+    already_used: '&4Email-ul acesta este deja folosit de altcineva'
+    incomplete_settings: 'Eroare: Nu indeplinesti conditiile trimiterii unui email! Te rugam contacteaza un administrator.'
+    send_failure: 'Email-ul nu a putut fi trimis. Ta rugam contactatezi un administrator.'
+    change_password_expired: 'Nu mai iti poti schimba parola folosind aceasta comanda.'
+    email_cooldown_error: '&cAi primit deja un mail pentru schimbarea parolei. Trebuie sa astepti %time inainte de a trimite unul nou.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Ti-ai uitat parola? Te rugam foloseste comanda "/email recovery <email>"'
+    command_usage: '&cFoloseste comanda: /email recovery <email>'
+    email_sent: ' &2Ti-am trimis un mail cu codul necesar recuperarii parolei tale!'
+    code:
+        code_sent: 'Un cod de recuperare a parolei a fost trimis catre email-ul tau.'
+        incorrect: 'Codul de recuperare nu este corect! Mai ai %count incercari ramase.'
+        tries_exceeded: 'Ai atins numarul maxim de incercari pentru introducerea codului de recuperare. Foloseste "/email recovery [email]" pentru a genera unul nou.'
+        correct: 'Cod de recuperare corect!'
+        change_password: 'Foloseste imediat comanda /email setpassword <parola noua> pentru a-ti schimba parola.'
 
 # Captcha
-usage_captcha: '&3Pentru a te autentifica, te rugam sa folosesti comanda "/captcha <theCaptcha>"'
-wrong_captcha: '&cCodul de verificare este gresit, te rugam foloseste comanda "/captcha THE_CAPTCHA"!'
-valid_captcha: '&2Codul de verificare a fost scris corect!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3Pentru a te autentifica, te rugam sa folosesti comanda "/captcha %captcha_code"'
+    wrong_captcha: '&cCodul de verificare este gresit, te rugam foloseste comanda "/captcha %captcha_code"!'
+    valid_captcha: '&2Codul de verificare a fost scris corect!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-second: 'secunda'
-seconds: 'secunde'
-minute: 'minut'
-minutes: 'minute'
-hour: 'ora'
-hours: 'ore'
-day: 'zi'
-days: 'zile'
+time:
+    second: 'secunda'
+    seconds: 'secunde'
+    minute: 'minut'
+    minutes: 'minute'
+    hour: 'ora'
+    hours: 'ore'
+    day: 'zi'
+    days: 'zile'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Codul tau secret este %code. Il poti scana de aici %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

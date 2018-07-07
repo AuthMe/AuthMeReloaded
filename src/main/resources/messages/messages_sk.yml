@@ -4,121 +4,159 @@
 #   in future there can be more translators   #
 #         if they are not listed here         #
 #      check Translators on GitHub Wiki.      #
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
-reg_msg: '&cZaregistruj sa príkazom "/register <heslo> <zopakujHeslo>".'
-usage_reg: '&cPoužitie: /register <heslo> <zopakujHeslo>'
-reg_only: '&fIba zaregistrovaný hráči sa môžu pripojiť na tento server! Navštív http://example.com pre registráciu.'
-kicked_admin_registered: 'Admin ťa zaregistroval; prosím prihlás sa znovu.'
-registered: '&cBol si úspešne zaregistrovaný.'
-reg_disabled: '&cRegistrácia nie je povolená.'
-user_regged: '&cZadané meno je už zaregistrované.'
+registration:
+    disabled: '&cRegistrácia nie je povolená.'
+    name_taken: '&cZadané meno je už zaregistrované.'
+    register_request: '&cZaregistruj sa príkazom "/register <heslo> <zopakujHeslo>".'
+    command_usage: '&cPoužitie: /register <heslo> <zopakujHeslo>'
+    reg_only: '&fIba zaregistrovaný hráči sa môžu pripojiť na tento server! Navštív http://example.com pre registráciu.'
+    success: '&cBol si úspešne zaregistrovaný.'
+    kicked_admin_registered: 'Admin ťa zaregistroval; prosím prihlás sa znovu.'
 
 # Password errors on registration
-password_error: '&fHeslá sa nezhodujú.'
-password_error_nick: '&cNemôžeš použiť tvoje meno ako heslo, prosím zvoľ si iné...'
-password_error_unsafe: '&cTvoje heslo nieje bezpečné, prosím zvoľ si iné...'
-password_error_chars: '&4Tvoje heslo obsahuje zakázané znaky. Povolené znaky: REG_EX'
-pass_len: '&fHeslo je veľmi krátke alebo veľmi dlhé.'
+password:
+    match_error: '&fHeslá sa nezhodujú.'
+    name_in_password: '&cNemôžeš použiť tvoje meno ako heslo, prosím zvoľ si iné...'
+    unsafe_password: '&cTvoje heslo nieje bezpečné, prosím zvoľ si iné...'
+    forbidden_characters: '&4Tvoje heslo obsahuje zakázané znaky. Povolené znaky: %valid_chars'
+    wrong_length: '&fHeslo je veľmi krátke alebo veľmi dlhé.'
 
 # Login
-usage_log: '&cPoužitie: /login <heslo>'
-wrong_pwd: '&cZadal si zlé heslo.'
-login: '&cBol si úspešne prihlásený!'
-login_msg: '&cPrihlás sa príkazom "/login <heslo>".'
-timeout: '&fVypršal čas na prihlásenie, pripoj sa a skús to znovu.'
+login:
+    command_usage: '&cPoužitie: /login <heslo>'
+    wrong_password: '&cZadal si zlé heslo.'
+    success: '&cBol si úspešne prihlásený!'
+    login_request: '&cPrihlás sa príkazom "/login <heslo>".'
+    timeout_error: '&fVypršal čas na prihlásenie, pripoj sa a skús to znovu.'
 
 # Errors
-unknown_user: '&cZadané meno nie je zaregistrované!'
-denied_command: '&cPre použitie tohto príkazu sa musíš prihlásiť!'
-denied_chat: '&cMusíš byť prihlásený ak chceš použiť chat!'
-not_logged_in: '&cNie si ešte prihlásený!'
-tempban_max_logins: '&cBol si dočasne zabanovaný za opakované zadanie zlého hesla.'
-max_reg: '&fPrekročil si maximum registrovaných účtov(%reg_count/%max_acc|%reg_names).'
-no_perm: '&cNemáš dostatočné práva na vykonanie tejto činnosti.'
-error: '&fNastala chyba, prosím kontaktuj Administrátora.'
-kick_forvip: '&3Uvoľnil si miesto pre VIP hráča!'
+error:
+    denied_command: '&cPre použitie tohto príkazu sa musíš prihlásiť!'
+    denied_chat: '&cMusíš byť prihlásený ak chceš použiť chat!'
+    unregistered_user: '&cZadané meno nie je zaregistrované!'
+    not_logged_in: '&cNie si ešte prihlásený!'
+    no_permission: '&cNemáš dostatočné práva na vykonanie tejto činnosti.'
+    unexpected_error: '&fNastala chyba, prosím kontaktuj Administrátora.'
+    max_registration: '&fPrekročil si maximum registrovaných účtov(%reg_count/%max_acc|%reg_names).'
+    logged_in: '&cAktuálne si už prihlásený!'
+    kick_for_vip: '&3Uvoľnil si miesto pre VIP hráča!'
+    tempban_max_logins: '&cBol si dočasne zabanovaný za opakované zadanie zlého hesla.'
 
 # AntiBot
-kick_antibot: 'AntiBot je zapnutý! Musíš počkať niekoľko minút pred znovupripojením sa na server.'
-antibot_auto_enabled: '&4[AntiBotService] AntiBot bol zapnutý kôli masívnym pokusom o pripojenie!'
-antibot_auto_disabled: '&2[AntiBotService] AntiBot bol vypnutý po %m minútach!'
+antibot:
+    kick_antibot: 'AntiBot je zapnutý! Musíš počkať niekoľko minút pred znovupripojením sa na server.'
+    auto_enabled: '&4[AntiBotService] AntiBot bol zapnutý kôli masívnym pokusom o pripojenie!'
+    auto_disabled: '&2[AntiBotService] AntiBot bol vypnutý po %m minútach!'
+
+# Unregister
+unregister:
+    success: '&cÚčet bol vymazaný!'
+    command_usage: '&cPoužitie: /unregister heslo'
 
 # Other messages
-unregistered: '&cÚčet bol vymazaný!'
-accounts_owned_self: 'Vlastníš tieto účty(%count): '
-accounts_owned_other: 'Hráč %name vlastní tieto účty(%count): '
-two_factor_create: '&2Tvoj tajný kód je %code. Môžeš ho oskenovať tu: %url'
-recovery_code_sent: 'Kód na obnovenie účtu bol poslaný na tvoj e-mail.'
-recovery_code_incorrect: 'Nesprávny kód! Zostávajúce pokusy: %count.'
-recovery_tries_exceeded: 'Prekročil si maximálny počet pokusov o zadanie kódu pre obnovenie účtu. Použi "/email recovery [email]" pre vygenerovanie nového kódu.'
-recovery_code_correct: 'Správny kód!'
-recovery_change_password: 'Prosím hneď použi príkaz /email setpassword <nové heslo> pre zmenenie tvojeho hesla.'
-vb_nonActiv: '&fTvoj účet nie je aktivovaný. Prezri si svoj e-mail!'
-usage_unreg: '&cPoužitie: /unregister heslo'
-pwd_changed: '&cHeslo zmenené!'
-logged_in: '&cAktuálne si už prihlásený!'
-logout: '&cBol si úspešne odhlásený.'
-reload: '&fZnovu načítanie konfigurácie a databázy bolo úspešné.'
-usage_changepassword: '&fPoužitie: /changepassword <staréHeslo> <novéHeslo>'
+misc:
+    account_not_activated: '&fTvoj účet nie je aktivovaný. Prezri si svoj e-mail!'
+    password_changed: '&cHeslo zmenené!'
+    logout: '&cBol si úspešne odhlásený.'
+    reload: '&fZnovu načítanie konfigurácie a databázy bolo úspešné.'
+    usage_change_password: '&fPoužitie: /changepassword <staréHeslo> <novéHeslo>'
+    accounts_owned_self: 'Vlastníš tieto účty(%count): '
+    accounts_owned_other: 'Hráč %name vlastní tieto účty(%count): '
 
 # Session messages
-invalid_session: '&fTvoja IP sa zmenila a tvoje prihlásenie(relácia) vypršalo(/a).'
-valid_session: '&cAutomatické prihlásenie z dôvodu pokračovania relácie.'
+session:
+    valid_session: '&cAutomatické prihlásenie z dôvodu pokračovania relácie.'
+    invalid_session: '&fTvoja IP sa zmenila a tvoje prihlásenie(relácia) vypršalo(/a).'
 
 # Error messages when joining
-name_len: '&cTvoje meno je veľmi krátke alebo veľmi dlhé.'
-regex: '&cTvoje meno obsahuje zakázané znaky. Povolené znaky: REG_EX'
-country_banned: '&4Tvoja krajina je zabanovaná na tomto serveri!'
-not_owner_error: 'Niesi majiteľ tohto účtu. Prosím zvoľ si iné meno!'
-kick_fullserver: '&4Server je plný, skús znovu neskôr!'
-same_nick: '&fHrác s týmto nickom už hrá!'
-invalid_name_case: 'Mal by si sa pripojiť s nickom %valid, nie %invalid -pozor na veľké a malé písmená.'
-same_ip_online: 'Hráč s tvojou IP už hrá na tomto serveri!'
+on_join_validation:
+    same_ip_online: 'Hráč s tvojou IP už hrá na tomto serveri!'
+    same_nick_online: '&fHrác s týmto nickom už hrá!'
+    name_length: '&cTvoje meno je veľmi krátke alebo veľmi dlhé.'
+    characters_in_name: '&cTvoje meno obsahuje zakázané znaky. Povolené znaky: %valid_chars'
+    kick_full_server: '&4Server je plný, skús znovu neskôr!'
+    country_banned: '&4Tvoja krajina je zabanovaná na tomto serveri!'
+    not_owner_error: 'Niesi majiteľ tohto účtu. Prosím zvoľ si iné meno!'
+    invalid_name_case: 'Mal by si sa pripojiť s nickom %valid, nie %invalid -pozor na veľké a malé písmená.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cPoužitie: /email add <email> <znovuEmail>'
-usage_email_change: '&cPoužitie: /email change <starýEmail> <novýEmail>'
-usage_email_recovery: '&cPoužitie: /email recovery <Email>'
-new_email_invalid: '&cNeplatný nový email, skús to znovu!'
-old_email_invalid: '&cNeplatný starý email, skús to znovu!'
-email_invalid: '&cNeplatná emailová adresa, skús to znovu!'
-email_added: '&2Emailová adresa bola úspešne pridaná k tvojmu účtu!'
-email_confirm: '&cProsím potvrď svoju emailovú adresu!'
-email_changed: '&2Emailová adresa bola úspešne zmenená!'
-email_send: '&2Email na obnovenie bol úspešne odoslaný! Prosím skontroluj si svoju emailovú schránku!'
-email_show: '&2Tvoja súčastná emailová adresa je: &f%email'
-incomplete_email_settings: 'Chyba: nie všetky potrebné nastavenia sú nastavené pre posielanie emailov. Prosím kontaktuj Administrátora.'
-email_already_used: '&4Túto emailovú adresu už niekto používa.'
-email_send_failure: 'Email nemohol byť poslaný. Prosím kontaktuj Administrátora.'
-show_no_email: '&2Momentálne nemáš emailovú adresu spojenú s týmto účtom.'
-add_email: '&cPridaj svoj e-mail príkazom "/email add <email> <znovuEmail>".'
-recovery_email: '&cZabudol si heslo? Použi príkaz /email recovery <tvojEmail>'
-change_password_expired: 'Už nemôžeš zmeniť svoje heslo týmto príkazom.'
-email_cooldown_error: '&cEmail bol nedávno poslaný. Musíš počkať %time predtým ako ti pošleme nový.'
+email:
+    add_email_request: '&cPridaj svoj e-mail príkazom "/email add <email> <znovuEmail>".'
+    usage_email_add: '&cPoužitie: /email add <email> <znovuEmail>'
+    usage_email_change: '&cPoužitie: /email change <starýEmail> <novýEmail>'
+    new_email_invalid: '&cNeplatný nový email, skús to znovu!'
+    old_email_invalid: '&cNeplatný starý email, skús to znovu!'
+    invalid: '&cNeplatná emailová adresa, skús to znovu!'
+    added: '&2Emailová adresa bola úspešne pridaná k tvojmu účtu!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cProsím potvrď svoju emailovú adresu!'
+    changed: '&2Emailová adresa bola úspešne zmenená!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2Tvoja súčastná emailová adresa je: &f%email'
+    no_email_for_account: '&2Momentálne nemáš emailovú adresu spojenú s týmto účtom.'
+    already_used: '&4Túto emailovú adresu už niekto používa.'
+    incomplete_settings: 'Chyba: nie všetky potrebné nastavenia sú nastavené pre posielanie emailov. Prosím kontaktuj Administrátora.'
+    send_failure: 'Email nemohol byť poslaný. Prosím kontaktuj Administrátora.'
+    change_password_expired: 'Už nemôžeš zmeniť svoje heslo týmto príkazom.'
+    email_cooldown_error: '&cEmail bol nedávno poslaný. Musíš počkať %time predtým ako ti pošleme nový.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&cZabudol si heslo? Použi príkaz /email recovery <tvojEmail>'
+    command_usage: '&cPoužitie: /email recovery <Email>'
+    email_sent: '&2Email na obnovenie bol úspešne odoslaný! Prosím skontroluj si svoju emailovú schránku!'
+    code:
+        code_sent: 'Kód na obnovenie účtu bol poslaný na tvoj e-mail.'
+        incorrect: 'Nesprávny kód! Zostávajúce pokusy: %count.'
+        tries_exceeded: 'Prekročil si maximálny počet pokusov o zadanie kódu pre obnovenie účtu. Použi "/email recovery [email]" pre vygenerovanie nového kódu.'
+        correct: 'Správny kód!'
+        change_password: 'Prosím hneď použi príkaz /email setpassword <nové heslo> pre zmenenie tvojeho hesla.'
 
 # Captcha
-usage_captcha: '&3Pre prihlásenie musíš vyriešiť captcha kód, prosím použi príkaz: /captcha <theCaptcha>'
-wrong_captcha: '&cNesprávny kód captcha, prosím napíš "/captcha THE_CAPTCHA" do chatu!'
-valid_captcha: '&2Správne si vyriešil captcha kód!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3Pre prihlásenie musíš vyriešiť captcha kód, prosím použi príkaz: /captcha %captcha_code'
+    wrong_captcha: '&cNesprávny kód captcha, prosím napíš "/captcha %captcha_code" do chatu!'
+    valid_captcha: '&2Správne si vyriešil captcha kód!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-second: 'sek.'
-seconds: 'sek.'
-minute: 'min.'
-minutes: 'min.'
-hour: 'hod.'
-hours: 'hod.'
-day: 'd.'
-days: 'd.'
+time:
+    second: 'sek.'
+    seconds: 'sek.'
+    minute: 'min.'
+    minutes: 'min.'
+    hour: 'hod.'
+    hours: 'hod.'
+    day: 'd.'
+    days: 'd.'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Tvoj tajný kód je %code. Môžeš ho oskenovať tu: %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

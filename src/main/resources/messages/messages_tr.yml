@@ -1,118 +1,156 @@
-# Kayit mesajlari
-reg_msg: '&3Lutfen kayit komutunu kullanin "/register <sifre> <TekrarSifre>"'
-usage_reg: '&cKullanim: /register <sifre> <TekrarSifre>'
-reg_only: '&4Sunucuya kayit sadece internet uzerinden yapilmakta! Lutfen http://ornek.com sitesini kayit icin ziyaret edin!'
-kicked_admin_registered: 'Bir yetkili seni kayit etti; tekrardan giris yap'
-registered: '&2Basariyla kaydoldun!'
-reg_disabled: '&cOyun icin kayit olma kapatildi!'
-user_regged: '&cSenin adinda daha once birisi kaydolmus!'
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
-# Kayit aninda sifre hatalari
-password_error: '&cSifre eslesmiyor, tekrar deneyin!'
-password_error_nick: '&cSifrenize adinizi koyamazsiniz, lutfen farkli bir sifre secin...'
-password_error_unsafe: '&cSectiginiz sifre guvenli degil, lutfen farkli bir sifre secin...'
-password_error_chars: '&4Sifrenizde izin verilmeyen karakterler bulunmakta. Izin verilen karakterler: REG_EX'
-pass_len: '&cSenin sifren ya cok kisa yada cok uzun! Lutfen farkli birsey dene!'
+# Registration
+registration:
+    disabled: '&cOyun icin kayit olma kapatildi!'
+    name_taken: '&cSenin adinda daha once birisi kaydolmus!'
+    register_request: '&3Lutfen kayit komutunu kullanin "/register <sifre> <TekrarSifre>"'
+    command_usage: '&cKullanim: /register <sifre> <TekrarSifre>'
+    reg_only: '&4Sunucuya kayit sadece internet uzerinden yapilmakta! Lutfen http://ornek.com sitesini kayit icin ziyaret edin!'
+    success: '&2Basariyla kaydoldun!'
+    kicked_admin_registered: 'Bir yetkili seni kayit etti; tekrardan giris yap'
 
-# Oturuma giris
-usage_log: '&cKullanim: /login <sifre>'
-wrong_pwd: '&cYanlis sifre!'
-login: '&2Giris basarili!'
-login_msg: '&cLutfen giris komutunu kullanin "/login <sifre>"'
-timeout: '&4Giris izni icin verilen zaman suresini astigin icin sunucudan atildin, tekrar deneyin!'
+# Password errors on registration
+password:
+    match_error: '&cSifre eslesmiyor, tekrar deneyin!'
+    name_in_password: '&cSifrenize adinizi koyamazsiniz, lutfen farkli bir sifre secin...'
+    unsafe_password: '&cSectiginiz sifre guvenli degil, lutfen farkli bir sifre secin...'
+    forbidden_characters: '&4Sifrenizde izin verilmeyen karakterler bulunmakta. Izin verilen karakterler: %valid_chars'
+    wrong_length: '&cSenin sifren ya cok kisa yada cok uzun! Lutfen farkli birsey dene!'
 
-# Hata mesajlari
-unknown_user: '&cBu oyuncu kayitli degil!'
-denied_command: '&cSuanda bu komutu kullanamazsin!'
-denied_chat: '&cSuanda sohbeti kullanamazsin!'
-not_logged_in: '&cGiris yapmadin!'
-tempban_max_logins: '&cBir cok kez yanlis giris yaptiginiz icin gecici olarak banlandiniz.'
-max_reg: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
-no_perm: '&4Bunu yapmak icin iznin yok!'
-error: '&4Beklenmedik bir hata olustu, yetkili ile iletisime gecin!'
-kick_forvip: '&3Bir VIP oyuna giris yaptigi icin atildin!'
+# Login
+login:
+    command_usage: '&cKullanim: /login <sifre>'
+    wrong_password: '&cYanlis sifre!'
+    success: '&2Giris basarili!'
+    login_request: '&cLutfen giris komutunu kullanin "/login <sifre>"'
+    timeout_error: '&4Giris izni icin verilen zaman suresini astigin icin sunucudan atildin, tekrar deneyin!'
+
+# Errors
+error:
+    denied_command: '&cSuanda bu komutu kullanamazsin!'
+    denied_chat: '&cSuanda sohbeti kullanamazsin!'
+    unregistered_user: '&cBu oyuncu kayitli degil!'
+    not_logged_in: '&cGiris yapmadin!'
+    no_permission: '&4Bunu yapmak icin iznin yok!'
+    unexpected_error: '&4Beklenmedik bir hata olustu, yetkili ile iletisime gecin!'
+    max_registration: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
+    logged_in: '&cZaten giris yaptin!'
+    kick_for_vip: '&3Bir VIP oyuna giris yaptigi icin atildin!'
+    tempban_max_logins: '&cBir cok kez yanlis giris yaptiginiz icin gecici olarak banlandiniz.'
 
 # AntiBot
-kick_antibot: 'AntiBot koruma modu aktif! Birkac dakika sonra tekrar girmeyi deneyin.'
-antibot_auto_enabled: '&4[AntiBotServis] Saldiri oldugu icin AntiBot aktif edildi!'
-antibot_auto_disabled: '&2[AntiBotServis] AntiBot, %m dakika sonra deaktif edilecek!'
+antibot:
+    kick_antibot: 'AntiBot koruma modu aktif! Birkac dakika sonra tekrar girmeyi deneyin.'
+    auto_enabled: '&4[AntiBotServis] Saldiri oldugu icin AntiBot aktif edildi!'
+    auto_disabled: '&2[AntiBotServis] AntiBot, %m dakika sonra deaktif edilecek!'
 
-# Baska mesajlar
-unregistered: '&cKayit basariyla kaldirildi!'
-accounts_owned_self: 'Sen %count hesaba sahipsin:'
-accounts_owned_other: 'Oyuncu %name %count hesaba sahip:'
-two_factor_create: '&2Gizli kodunuz %code. Buradan test edebilirsin, %url'
-recovery_code_sent: 'Sifre sifirlama kodu eposta adresinize gonderildi.'
-# TODO: Missing tags %count
-recovery_code_incorrect: 'Kod dogru degil! Kullanim "/email recovery [eposta]" ile yeni bir kod olustur'
-# TODO recovery_tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-# TODO recovery_code_correct: 'Recovery code entered correctly!'
-# TODO recovery_change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-vb_nonActiv: '&cHeabiniz henuz aktif edilmemis, e-postanizi kontrol edin!'
-usage_unreg: '&cKullanim: /unregister <sifre>'
-pwd_changed: '&2Sifre basariyla degistirildi!'
-logged_in: '&cZaten giris yaptin!'
-logout: '&2Basariyla cikis yaptin!'
-reload: '&2Ayarlar ve veritabani yenilendi!'
-usage_changepassword: '&cKullanim: /changepassword <eskiSifre> <yeniSifre>'
+# Unregister
+unregister:
+    success: '&cKayit basariyla kaldirildi!'
+    command_usage: '&cKullanim: /unregister <sifre>'
 
-# Otomatik giris
-invalid_session: '&cIP adresin degistirildi ve oturum suren doldu!'
-valid_session: '&2Oturuma girisiniz otomatikmen yapilmistir.'
+# Other messages
+misc:
+    account_not_activated: '&cHeabiniz henuz aktif edilmemis, e-postanizi kontrol edin!'
+    password_changed: '&2Sifre basariyla degistirildi!'
+    logout: '&2Basariyla cikis yaptin!'
+    reload: '&2Ayarlar ve veritabani yenilendi!'
+    usage_change_password: '&cKullanim: /changepassword <eskiSifre> <yeniSifre>'
+    accounts_owned_self: 'Sen %count hesaba sahipsin:'
+    accounts_owned_other: 'Oyuncu %name %count hesaba sahip:'
 
-# Servore giris aninda hata mesajlari
-name_len: '&4Senin ismin ya cok kisa yada cok uzun!'
-regex: '&4Senin isminde uygunsuz karakterler bulunmakta. Izin verilen karakterler: REG_EX'
-country_banned: '&4Senin bolgen sunucudan yasaklandi!'
-not_owner_error: 'Bu hesabin sahibi degilsin. Lutfen farkli bir isim sec!'
-kick_fullserver: '&4Sunucu suanda dolu, daha sonra tekrar deneyin!'
-same_nick: '&4Senin isminde bir oyuncu suncuda bulunmakta!'
-invalid_name_case: 'Oyuna %valid isminde katilmalisin. %invalid ismini kullanarak katilamazsin.'
-same_ip_online: 'Oyunda sizin ipnizden giren biri bulunmakta!'
+# Session messages
+session:
+    valid_session: '&2Oturuma girisiniz otomatikmen yapilmistir.'
+    invalid_session: '&cIP adresin degistirildi ve oturum suren doldu!'
+
+# Error messages when joining
+on_join_validation:
+    same_ip_online: 'Oyunda sizin ipnizden giren biri bulunmakta!'
+    same_nick_online: '&4Senin isminde bir oyuncu suncuda bulunmakta!'
+    name_length: '&4Senin ismin ya cok kisa yada cok uzun!'
+    characters_in_name: '&4Senin isminde uygunsuz karakterler bulunmakta. Izin verilen karakterler: %valid_chars'
+    kick_full_server: '&4Sunucu suanda dolu, daha sonra tekrar deneyin!'
+    country_banned: '&4Senin bolgen sunucudan yasaklandi!'
+    not_owner_error: 'Bu hesabin sahibi degilsin. Lutfen farkli bir isim sec!'
+    invalid_name_case: 'Oyuna %valid isminde katilmalisin. %invalid ismini kullanarak katilamazsin.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cKullanim: /email add <eposta> <tekrarEposta>'
-usage_email_change: '&cKullanim: /email change <eskiEposta> <yeniEposta>'
-usage_email_recovery: '&cKullanim: /email recovery <Eposta>'
-new_email_invalid: '&cGecersiz yeni eposta, tekrar deneyin!'
-old_email_invalid: '&cGecersiz eski eposta, tekrar deneyin!'
-email_invalid: '&cGecersiz eposta, tekrar deneyin!'
-email_added: '&2Eposta basariyla kullaniciniza eklendi!'
-email_confirm: '&cLutfen tekrar epostanizi giriniz!'
-email_changed: '&2Epostaniz basariyla degistirildi!'
-email_send: '&2Sifreniz epostaniza gonderildi! Lutfen eposta kutunuzu kontrol edin!'
-email_show: '&2Suanki eposta adresin: &f%email'
-incomplete_email_settings: 'Hata: Gonderilen epostada bazi ayarlar tamamlanmis degil. Yetkili ile iletisime gec.'
-email_already_used: '&4Eposta adresi zaten kullaniliyor.'
-email_send_failure: 'Eposta gonderilemedi. Yetkili ile iletisime gec.'
-show_no_email: '&2Bu hesapla iliskili bir eposta bulunmuyor.'
-add_email: '&3Lutfen hesabinize eposta adresinizi komut ile ekleyin "/email add <eposta> <tekrarEposta>"'
-recovery_email: '&3Sifreni mi unuttun ? Komut kullanarak ogrenebilirsin "/email recovery <eposta>"'
-# TODO change_password_expired: 'You cannot change your password using this command anymore.'
-email_cooldown_error: '&cKisa bir sure once eposta gonderildi. Yeni bir eposta almak icin %time beklemelisin.'
+email:
+    add_email_request: '&3Lutfen hesabinize eposta adresinizi komut ile ekleyin "/email add <eposta> <tekrarEposta>"'
+    usage_email_add: '&cKullanim: /email add <eposta> <tekrarEposta>'
+    usage_email_change: '&cKullanim: /email change <eskiEposta> <yeniEposta>'
+    new_email_invalid: '&cGecersiz yeni eposta, tekrar deneyin!'
+    old_email_invalid: '&cGecersiz eski eposta, tekrar deneyin!'
+    invalid: '&cGecersiz eposta, tekrar deneyin!'
+    added: '&2Eposta basariyla kullaniciniza eklendi!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cLutfen tekrar epostanizi giriniz!'
+    changed: '&2Epostaniz basariyla degistirildi!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2Suanki eposta adresin: &f%email'
+    no_email_for_account: '&2Bu hesapla iliskili bir eposta bulunmuyor.'
+    already_used: '&4Eposta adresi zaten kullaniliyor.'
+    incomplete_settings: 'Hata: Gonderilen epostada bazi ayarlar tamamlanmis degil. Yetkili ile iletisime gec.'
+    send_failure: 'Eposta gonderilemedi. Yetkili ile iletisime gec.'
+    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    email_cooldown_error: '&cKisa bir sure once eposta gonderildi. Yeni bir eposta almak icin %time beklemelisin.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Sifreni mi unuttun ? Komut kullanarak ogrenebilirsin "/email recovery <eposta>"'
+    command_usage: '&cKullanim: /email recovery <Eposta>'
+    email_sent: '&2Sifreniz epostaniza gonderildi! Lutfen eposta kutunuzu kontrol edin!'
+    code:
+        code_sent: 'Sifre sifirlama kodu eposta adresinize gonderildi.'
+        incorrect: 'Kod dogru degil! Kullanim "/email recovery [eposta]" ile yeni bir kod olustur'
+        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
+        # TODO correct: 'Recovery code entered correctly!'
+        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
 
 # Captcha
-usage_captcha: '&3Giris yapmak icin guvenlik kodunu komut yazarak girin "/captcha <theCaptcha>"'
-wrong_captcha: '&cYanlis guvenlik kodu, kullanim sekli "/captcha THE_CAPTCHA" sohbete yazin!'
-valid_captcha: '&2Guvenlik kodu dogrulandi!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3Giris yapmak icin guvenlik kodunu komut yazarak girin "/captcha %captcha_code"'
+    wrong_captcha: '&cYanlis guvenlik kodu, kullanim sekli "/captcha %captcha_code" sohbete yazin!'
+    valid_captcha: '&2Guvenlik kodu dogrulandi!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
-# Zaman birimleri
-second: 'saniye'
-seconds: 'saniye'
-minute: 'dakika'
-minutes: 'dakika'
-hour: 'saat'
-hours: 'saat'
-day: 'gun'
-days: 'gun'
+# Time units
+time:
+    second: 'saniye'
+    seconds: 'saniye'
+    minute: 'dakika'
+    minutes: 'dakika'
+    hour: 'saat'
+    hours: 'saat'
+    day: 'gun'
+    days: 'gun'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Gizli kodunuz %code. Buradan test edebilirsin, %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

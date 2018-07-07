@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission.handlers;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import me.lucko.luckperms.LuckPerms;
@@ -41,13 +42,8 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     private void saveUser(User user) {
-        luckPermsApi.getStorage().saveUser(user)
-            .thenAcceptAsync(wasSuccessful -> {
-                if (!wasSuccessful) {
-                    return;
-                }
-                user.refreshPermissions();
-            }, luckPermsApi.getStorage().getAsyncExecutor());
+        luckPermsApi.getUserManager().saveUser(user)
+            .thenAcceptAsync(wasSuccessful -> user.refreshCachedData());
     }
 
     @Override
@@ -62,7 +58,8 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        DataMutateResult result = user.setPermissionUnchecked(luckPermsApi.getNodeFactory().makeGroupNode(newGroup).build());
+        DataMutateResult result = user.setPermission(
+            luckPermsApi.getNodeFactory().makeGroupNode(newGroup).build());
         if (result == DataMutateResult.FAIL) {
             return false;
         }
@@ -82,6 +79,8 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean hasPermissionOffline(String name, PermissionNode node) {
         User user = luckPermsApi.getUser(name);
         if (user == null) {
+            ConsoleLogger.warning("LuckPermsHandler: tried to check permission for offline user "
+                + name + " but it isn't loaded!");
             return false;
         }
 
@@ -97,6 +96,8 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean isInGroup(OfflinePlayer player, String group) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
+            ConsoleLogger.warning("LuckPermsHandler: tried to check group for offline user "
+                + player.getName() + " but it isn't loaded!");
             return false;
         }
 
@@ -111,6 +112,8 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean removeFromGroup(OfflinePlayer player, String group) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
+            ConsoleLogger.warning("LuckPermsHandler: tried to remove group for offline user "
+                + player.getName() + " but it isn't loaded!");
             return false;
         }
 
@@ -120,7 +123,7 @@ public class LuckPermsHandler implements PermissionHandler {
         }
 
         Node groupNode = luckPermsApi.getNodeFactory().makeGroupNode(permissionGroup).build();
-        boolean result = user.unsetPermissionUnchecked(groupNode) != DataMutateResult.FAIL;
+        boolean result = user.unsetPermission(groupNode) != DataMutateResult.FAIL;
 
         luckPermsApi.cleanupUser(user);
         return result;
@@ -130,6 +133,8 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean setGroup(OfflinePlayer player, String group) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
+            ConsoleLogger.warning("LuckPermsHandler: tried to set group for offline user "
+                + player.getName() + " but it isn't loaded!");
             return false;
         }
         Group permissionGroup = luckPermsApi.getGroup(group);
@@ -137,7 +142,7 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
         Node groupNode = luckPermsApi.getNodeFactory().makeGroupNode(permissionGroup).build();
-        DataMutateResult result = user.setPermissionUnchecked(groupNode);
+        DataMutateResult result = user.setPermission(groupNode);
         if (result == DataMutateResult.FAIL) {
             return false;
         }
@@ -152,6 +157,8 @@ public class LuckPermsHandler implements PermissionHandler {
     public List<String> getGroups(OfflinePlayer player) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
+            ConsoleLogger.warning("LuckPermsHandler: tried to get groups for offline user "
+                + player.getName() + " but it isn't loaded!");
             return Collections.emptyList();
         }
 
@@ -182,22 +189,21 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     @Override
-    public void loadUserData(UUID uuid) {
+    public void loadUserData(UUID uuid) throws PermissionLoadUserException {
         try {
-            luckPermsApi.getStorage().loadUser(uuid).get(5, TimeUnit.SECONDS);
+            luckPermsApi.getUserManager().loadUser(uuid).get(5, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            throw new PermissionLoadUserException("Unable to load the permission data of the user " + uuid, e);
         }
     }
 
     @Override
-    public void loadUserData(String name) {
+    public void loadUserData(String name) throws PermissionLoadUserException {
         try {
             UUID uuid = luckPermsApi.getStorage().getUUID(name).get(5, TimeUnit.SECONDS);
             loadUserData(uuid);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            throw new PermissionLoadUserException("Unable to load the permission data of the user " + name, e);
         }
     }
-
 }

@@ -3,6 +3,8 @@ package fr.xephi.authme.security.crypts;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
+
 @Recommendation(Usage.RECOMMENDED)
 public class XAuth extends HexSaltedMethod {
 
@@ -23,14 +25,14 @@ public class XAuth extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
         String hash = hashedPassword.getHash();
         int saltPos = password.length() >= hash.length() ? hash.length() - 1 : password.length();
         if (saltPos + 12 > hash.length()) {
             return false;
         }
         String salt = hash.substring(saltPos, saltPos + 12);
-        return hash.equals(computeHash(password, salt, null));
+        return isEqual(hash, computeHash(password, salt, name));
     }
 
     @Override

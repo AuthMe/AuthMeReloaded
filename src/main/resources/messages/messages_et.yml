@@ -1,117 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&3Palun registreeri käsklusega /register <Parool> <KinnitaParool>'
-usage_reg: '&cKasutus: /register <KinnitaParool> <KinnitaParool>'
-reg_only: '&4Ainult registreeritud mängijad saavad liituda! Külasta veebilehte http://example.com, et ennast regsitreerida.'
-kicked_admin_registered: 'Administraator registreeris sind, palun lahku korra serverist ja liitu tagasi.'
-registered: '&2Edukalt registreeritud!'
-reg_disabled: '&cMängusisene registreerimine välja lülitatud!'
-user_regged: '&cKasutajanimi juba registreeritud!'
+registration:
+    disabled: '&cMängusisene registreerimine välja lülitatud!'
+    name_taken: '&cKasutajanimi juba registreeritud!'
+    register_request: '&3Palun registreeri käsklusega /register <Parool> <KinnitaParool>'
+    command_usage: '&cKasutus: /register <KinnitaParool> <KinnitaParool>'
+    reg_only: '&4Ainult registreeritud mängijad saavad liituda! Külasta veebilehte http://example.com, et ennast regsitreerida.'
+    success: '&2Edukalt registreeritud!'
+    kicked_admin_registered: 'Administraator registreeris sind, palun lahku korra serverist ja liitu tagasi.'
 
 # Password errors on registration
-password_error: '&cParoolid ei klapi, kontrolli neid!'
-password_error_nick: '&cSa ei saa kasutada oma kasutajanime paroolina, vali teine parool.'
-password_error_unsafe: '&cSee parool ei ole turvaline, vali teistsugune.'
-password_error_chars: '&44Su parool sisaldab keelatud karaktereid. Lubatud karakterid: REG_EX'
-pass_len: '&cSu parool on liiga pikk või lühike, vali teine!'
+password:
+    match_error: '&cParoolid ei klapi, kontrolli neid!'
+    name_in_password: '&cSa ei saa kasutada oma kasutajanime paroolina, vali teine parool.'
+    unsafe_password: '&cSee parool ei ole turvaline, vali teistsugune.'
+    forbidden_characters: '&44Su parool sisaldab keelatud karaktereid. Lubatud karakterid: %valid_chars'
+    wrong_length: '&cSu parool on liiga pikk või lühike, vali teine!'
 
 # Login
-usage_log: '&cKasutus: /login <Parool>'
-wrong_pwd: '&cVale salasõna!'
-login: '&2Edukalt sisselogitud!'
-login_msg: '&cPalun logi sisse kasutades käsklust: /login <Parool>'
-timeout: '&4Sisselogimise taimer täis, palun logi sisse ja proovi uuesti!'
+login:
+    command_usage: '&cKasutus: /login <Parool>'
+    wrong_password: '&cVale salasõna!'
+    success: '&2Edukalt sisselogitud!'
+    login_request: '&cPalun logi sisse kasutades käsklust: /login <Parool>'
+    timeout_error: '&4Sisselogimise taimer täis, palun logi sisse ja proovi uuesti!'
 
 # Errors
-unknown_user: '&cSee kasutaja ei ole registreeritud.'
-denied_command: '&cSelle käskluse kasutamiseks pead sa olema audenditud!'
-denied_chat: '&cChati kasutamiseks pead sa olema audenditud!'
-not_logged_in: '&cSa ei ole sisse loginud!'
-tempban_max_logins: '&cSind on ajutiselt pagendatud serverist, sest sul ebaõnnestus sisse logida liiga palju kordi.'
-max_reg: '&cSu IP peal (%reg_count/%max_acc %reg_names) on liiga palju kontosid!'
-no_perm: '&4Sul ei ole selle käskluse kasutamiseks õigust.'
-error: '&4Süsteemi viga, teata sellest serveri meeskonda.'
-kick_forvip: '&3VIP kasutaja liitus serveriga, kui see oli täis. Sind visati välja, et talle ruumi teha.'
+error:
+    denied_command: '&cSelle käskluse kasutamiseks pead sa olema audenditud!'
+    denied_chat: '&cChati kasutamiseks pead sa olema audenditud!'
+    unregistered_user: '&cSee kasutaja ei ole registreeritud.'
+    not_logged_in: '&cSa ei ole sisse loginud!'
+    no_permission: '&4Sul ei ole selle käskluse kasutamiseks õigust.'
+    unexpected_error: '&4Süsteemi viga, teata sellest serveri meeskonda.'
+    max_registration: '&cSu IP peal (%reg_count/%max_acc %reg_names) on liiga palju kontosid!'
+    logged_in: '&cJuba sisselogitud!'
+    kick_for_vip: '&3VIP kasutaja liitus serveriga, kui see oli täis. Sind visati välja, et talle ruumi teha.'
+    tempban_max_logins: '&cSind on ajutiselt pagendatud serverist, sest sul ebaõnnestus sisse logida liiga palju kordi.'
 
 # AntiBot
-kick_antibot: 'AntiBot on sisse lülitatud! Sa pead ootama mõned minutid enne kui uuesti sisse logid.'
-antibot_auto_enabled: '&4[AntiBot] AntiBot sisse lülitatud suure liikluse tõttu!'
-antibot_auto_disabled: '&2[AntiBot] AntiBot välja lülitatud peale %m minutit!'
+antibot:
+    kick_antibot: 'AntiBot on sisse lülitatud! Sa pead ootama mõned minutid enne kui uuesti sisse logid.'
+    auto_enabled: '&4[AntiBot] AntiBot sisse lülitatud suure liikluse tõttu!'
+    auto_disabled: '&2[AntiBot] AntiBot välja lülitatud peale %m minutit!'
+
+# Unregister
+unregister:
+    success: '&cKonto edukalt kustutatud!'
+    command_usage: '&cKasutus: /unregister <Parool>'
 
 # Other messages
-unregistered: '&cKonto edukalt kustutatud!'
-accounts_owned_self: 'Sa omad %count kontot:'
-accounts_owned_other: 'Mängijal %name on %count kontot:'
-two_factor_create: '&2Su salajane kood on %code. Skänni see siin: %url'
-recovery_code_sent: 'Taastuskood saadeti su meilile.'
-recovery_code_incorrect: 'Taastuskood ei ole õige! Sul on %count proovi järelejäänud.'
-recovery_tries_exceeded: 'Sa oled liiga palju proovinud taastuskoodi sisestada. Kasuta "/email recovery [email]" et genereerida uut koodi.'
-recovery_code_correct: 'Taastuskood on õige!'
-recovery_change_password: 'Palun kasuta käsklust /email setpassword <UusParool> et vahetada oma parooli koheselt.'
-vb_nonActiv: '&cSu konto pole veel aktiveeritud, vaata oma postkasti.'
-usage_unreg: '&cKasutus: /unregister <Parool>'
-pwd_changed: '&2Parool edukalt vahetatud!'
-logged_in: '&cJuba sisselogitud!'
-logout: '&2Edukalt välja logitud!!'
-reload: '&2Andmebaas uuendatud!'
-usage_changepassword: '&cKasutus: /changepassword <vanaParool> <UusParool>'
+misc:
+    account_not_activated: '&cSu konto pole veel aktiveeritud, vaata oma postkasti.'
+    password_changed: '&2Parool edukalt vahetatud!'
+    logout: '&2Edukalt välja logitud!!'
+    reload: '&2Andmebaas uuendatud!'
+    usage_change_password: '&cKasutus: /changepassword <vanaParool> <UusParool>'
+    accounts_owned_self: 'Sa omad %count kontot:'
+    accounts_owned_other: 'Mängijal %name on %count kontot:'
 
 # Session messages
-invalid_session: '&cSu IP on vahetunud ja sessiooni info on aegunud!'
-valid_session: '&2Sisselogitud eelneva sessiooni tõttu.'
+session:
+    valid_session: '&2Sisselogitud eelneva sessiooni tõttu.'
+    invalid_session: '&cSu IP on vahetunud ja sessiooni info on aegunud!'
 
 # Error messages when joining
-name_len: '&4Su kasutajanimi on liiga pikk või lühike!'
-regex: '&4Su kasutajanimes on keelatud karaktereid. Lubatud karakterid: REG_EX'
-country_banned: '&4Su riik on siin serveris keelatud!'
-not_owner_error: 'Sa ei ole selle konto omanik. Vali teine nimi.'
-kick_fullserver: '&4Server on täis, proovi hiljem uuesti.'
-same_nick: '&4Sama kasutajanimi mängib juba serveris.'
-invalid_name_case: 'Logi sisse kasutajanimega %valid, mitte kasutajanimega %invalid.'
-same_ip_online: 'Sama IP-ga mängija on juba sees!'
+on_join_validation:
+    same_ip_online: 'Sama IP-ga mängija on juba sees!'
+    same_nick_online: '&4Sama kasutajanimi mängib juba serveris.'
+    name_length: '&4Su kasutajanimi on liiga pikk või lühike!'
+    characters_in_name: '&4Su kasutajanimes on keelatud karaktereid. Lubatud karakterid: %valid_chars'
+    kick_full_server: '&4Server on täis, proovi hiljem uuesti.'
+    country_banned: '&4Su riik on siin serveris keelatud!'
+    not_owner_error: 'Sa ei ole selle konto omanik. Vali teine nimi.'
+    invalid_name_case: 'Logi sisse kasutajanimega %valid, mitte kasutajanimega %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cKasutus: /email add <email> <KinnitaEmail>'
-usage_email_change: '&cKasutus: /email change <VanaEmail> <UusEmail>'
-usage_email_recovery: '&cKasutus: /email recovery <Email>'
-new_email_invalid: '&cVale meiliaadress, proovi uuesti.'
-old_email_invalid: '&cVale vana meiliaadress, proovi uuesti.'
-email_invalid: '&cVale meiliaadress, proovi uuesti.'
-email_added: '&2Meiliaadress edukalt vahetatud!'
-email_confirm: '&cPalun kinnita oma meiliaadress.'
-email_changed: '&2Meiliaadress edukalt vahetatud.'
-email_send: '&2Taastuskood edukalt saadetud su meiliaadressile. Kontrolli oma postkasti.'
-email_show: '&2Su meiliaadress on: &f%email'
-incomplete_email_settings: 'Viga: Meiliaadressi kinnitamiseks vajalikud seaded pole serveri poolt paigas. Kontakteeru meeskonnaga.'
-email_already_used: '&4Meiliaadress juba kasutuses.'
-email_send_failure: 'Meili ei õnnestunud saata. Kontakteeru meeskonnaga.'
-show_no_email: '&2Selle kasutajaga pole seotud ühtegi meiliaadressi.'
-add_email: '&3Lisa oma meiliaadress kasutades käsklust: /email add <Email> <KinnitaEmail>'
-recovery_email: '&3Unustasid salasõna? Kasuta käsklust: /email recovery <Email>'
-change_password_expired: '&3Enam ei saa vahetada oma parooli kasutades seda käsklust.'
-email_cooldown_error: '&cEmail juba saadeti. Sa pead ootama %time ennem, kui saad uuesti saata.'
+email:
+    add_email_request: '&3Lisa oma meiliaadress kasutades käsklust: /email add <Email> <KinnitaEmail>'
+    usage_email_add: '&cKasutus: /email add <email> <KinnitaEmail>'
+    usage_email_change: '&cKasutus: /email change <VanaEmail> <UusEmail>'
+    new_email_invalid: '&cVale meiliaadress, proovi uuesti.'
+    old_email_invalid: '&cVale vana meiliaadress, proovi uuesti.'
+    invalid: '&cVale meiliaadress, proovi uuesti.'
+    added: '&2Meiliaadress edukalt vahetatud!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cPalun kinnita oma meiliaadress.'
+    changed: '&2Meiliaadress edukalt vahetatud.'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2Su meiliaadress on: &f%email'
+    no_email_for_account: '&2Selle kasutajaga pole seotud ühtegi meiliaadressi.'
+    already_used: '&4Meiliaadress juba kasutuses.'
+    incomplete_settings: 'Viga: Meiliaadressi kinnitamiseks vajalikud seaded pole serveri poolt paigas. Kontakteeru meeskonnaga.'
+    send_failure: 'Meili ei õnnestunud saata. Kontakteeru meeskonnaga.'
+    change_password_expired: '&3Enam ei saa vahetada oma parooli kasutades seda käsklust.'
+    email_cooldown_error: '&cEmail juba saadeti. Sa pead ootama %time ennem, kui saad uuesti saata.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Unustasid salasõna? Kasuta käsklust: /email recovery <Email>'
+    command_usage: '&cKasutus: /email recovery <Email>'
+    email_sent: '&2Taastuskood edukalt saadetud su meiliaadressile. Kontrolli oma postkasti.'
+    code:
+        code_sent: 'Taastuskood saadeti su meilile.'
+        incorrect: 'Taastuskood ei ole õige! Sul on %count proovi järelejäänud.'
+        tries_exceeded: 'Sa oled liiga palju proovinud taastuskoodi sisestada. Kasuta "/email recovery [email]" et genereerida uut koodi.'
+        correct: 'Taastuskood on õige!'
+        change_password: 'Palun kasuta käsklust /email setpassword <UusParool> et vahetada oma parooli koheselt.'
 
 # Captcha
-usage_captcha: '&3Sisselogimiseks pead lahendama captcha. Tee seda kasutades käsklust: /captcha <theCaptcha>'
-wrong_captcha: '&cVale captcha, kirjuta "/captcha THE_CAPTCHA" chatti!'
-valid_captcha: '&2Captcha lahendatud!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3Sisselogimiseks pead lahendama captcha. Tee seda kasutades käsklust: /captcha %captcha_code'
+    wrong_captcha: '&cVale captcha, kirjuta "/captcha %captcha_code" chatti!'
+    valid_captcha: '&2Captcha lahendatud!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-second: 'sekund'
-seconds: 'sekundit'
-minute: 'minut'
-minutes: 'minutit'
-hour: 'tund'
-hours: 'tundi'
-day: 'päev'
-days: 'päeva'
+time:
+    second: 'sekund'
+    seconds: 'sekundit'
+    minute: 'minut'
+    minutes: 'minutit'
+    hour: 'tund'
+    hours: 'tundi'
+    day: 'päev'
+    days: 'päeva'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Su salajane kood on %code. Skänni see siin: %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

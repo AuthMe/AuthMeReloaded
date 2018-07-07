@@ -1,117 +1,156 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
 # Registration
-reg_msg: '&3Bonvolu registri al la servilo per la komando: /register <pasvorto> <konfirmiPasvorto>'
-usage_reg: '&cUzado: /register <pasvorto> <konfirmiPasvorto>'
-reg_only: '&4Nur registritaj uzantoj povas aliĝi la servilon! Bonvolu viziti http://example.com registri vin mem!'
-kicked_admin_registered: 'Administranto ĵus registrita vin; bonvolu ensaluti denove'
-registered: '&2Sukcese registris!'
-reg_disabled: '&cEn-ludo registriĝo estas malebligita!'
-user_regged: '&cVi jam registris tiun uzantnomon!'
+registration:
+    disabled: '&cEn-ludo registriĝo estas malebligita!'
+    name_taken: '&cVi jam registris tiun uzantnomon!'
+    register_request: '&3Bonvolu registri al la servilo per la komando: /register <pasvorto> <konfirmiPasvorto>'
+    command_usage: '&cUzado: /register <pasvorto> <konfirmiPasvorto>'
+    reg_only: '&4Nur registritaj uzantoj povas aliĝi la servilon! Bonvolu viziti http://example.com registri vin mem!'
+    success: '&2Sukcese registris!'
+    kicked_admin_registered: 'Administranto ĵus registrita vin; bonvolu ensaluti denove'
 
 # Password errors on registration
-password_error: '&cLa pasvortoj ne kongruas, kontrolu ilin!'
-password_error_nick: '&cVi ne povas uzi vian nomon kiel pasvorto, bonvolu elekti alian...'
-password_error_unsafe: '&cLa elektita pasvorto estas danĝere, bonvolu elekti alian...'
-password_error_chars: '&4Via pasvorto enhavas kontraŭleĝan karakteroj. Permesita signoj: REG_EX'
-pass_len: '&cVia pasvorto estas tro mallonga aŭ tro longa! Bonvolu provi alian pasvorton!'
+password:
+    match_error: '&cLa pasvortoj ne kongruas, kontrolu ilin!'
+    name_in_password: '&cVi ne povas uzi vian nomon kiel pasvorto, bonvolu elekti alian...'
+    unsafe_password: '&cLa elektita pasvorto estas danĝere, bonvolu elekti alian...'
+    forbidden_characters: '&4Via pasvorto enhavas kontraŭleĝan karakteroj. Permesita signoj: %valid_chars'
+    wrong_length: '&cVia pasvorto estas tro mallonga aŭ tro longa! Bonvolu provi alian pasvorton!'
 
 # Login
-usage_log: '&cUzado: /login <pasvorto>'
-wrong_pwd: '&cErara pasvorto!'
-login: '&2Sukcesa ensaluto!'
-login_msg: '&cBonvolu ensaluti per la komando: /login <pasvorto>'
-timeout: '&4Salutnomo tempolimo superis, vi estis piedbatita el la servilo, bonvolu provi denove!'
+login:
+    command_usage: '&cUzado: /login <pasvorto>'
+    wrong_password: '&cErara pasvorto!'
+    success: '&2Sukcesa ensaluto!'
+    login_request: '&cBonvolu ensaluti per la komando: /login <pasvorto>'
+    timeout_error: '&4Salutnomo tempolimo superis, vi estis piedbatita el la servilo, bonvolu provi denove!'
 
 # Errors
-unknown_user: '&cTiu uzanto ne estas registrita!'
-denied_command: '&cPor uzi ĉi komando vi devas esti legalizita!'
-denied_chat: '&cPor babili vi devas esti legalizita!'
-not_logged_in: '&cVi ne estas ensalutita!'
-tempban_max_logins: '&cVi estis portempe malpermesita por ne ensaluti tro multajn fojojn.'
-max_reg: 'Vi superis la maksimuman nombron de enregistroj (%reg_count/%max_acc %reg_names) pro via ligo!'
-no_perm: '&4Vi ne havas la permeson por fari ĉi tiun funkcion!'
-error: '&4Neatendita eraro, bonvolu kontakti administranto!'
-kick_forvip: '&3VIP ludanto aliĝis al la servilo kiam ĝi pleniĝis!'
+error:
+    denied_command: '&cPor uzi ĉi komando vi devas esti legalizita!'
+    denied_chat: '&cPor babili vi devas esti legalizita!'
+    unregistered_user: '&cTiu uzanto ne estas registrita!'
+    not_logged_in: '&cVi ne estas ensalutita!'
+    no_permission: '&4Vi ne havas la permeson por fari ĉi tiun funkcion!'
+    unexpected_error: '&4Neatendita eraro, bonvolu kontakti administranto!'
+    max_registration: 'Vi superis la maksimuman nombron de enregistroj (%reg_count/%max_acc %reg_names) pro via ligo!'
+    logged_in: '&cVi jam estas ensalutinta!'
+    kick_for_vip: '&3VIP ludanto aliĝis al la servilo kiam ĝi pleniĝis!'
+    tempban_max_logins: '&cVi estis portempe malpermesita por ne ensaluti tro multajn fojojn.'
 
 # AntiBot
-kick_antibot: 'KontraŭRoboto protekto modon estas ŝaltita! Vi devas atendi kelkajn minutojn antaŭ kunigi al la servilo.'
-antibot_auto_enabled: '&4[KontraŭRobotoServo] KontraŭRoboto ŝaltita pro la grandega nombro de konektoj!'
-antibot_auto_disabled: '&2[KontraŭRobotoServo] KontraŭRoboto malebligita post %m minutoj!'
+antibot:
+    kick_antibot: 'KontraŭRoboto protekto modon estas ŝaltita! Vi devas atendi kelkajn minutojn antaŭ kunigi al la servilo.'
+    auto_enabled: '&4[KontraŭRobotoServo] KontraŭRoboto ŝaltita pro la grandega nombro de konektoj!'
+    auto_disabled: '&2[KontraŭRobotoServo] KontraŭRoboto malebligita post %m minutoj!'
+
+# Unregister
+unregister:
+    success: '&cSukcese neregistritajn!'
+    command_usage: '&cUzado: /unregister <pasvorto>'
 
 # Other messages
-unregistered: '&cSukcese neregistritajn!'
-accounts_owned_self: 'Vi posedas %count kontoj:'
-accounts_owned_other: 'La ludanto %name havas %count kontojn::'
-two_factor_create: '&2Via sekreta kodo estas %code. Vi povas skani ĝin de tie %url'
-recovery_code_sent: 'Rekorda kodo restarigi vian pasvorton sendis al via retpoŝto.'
-recovery_code_incorrect: 'La reakiro kodo estas ne korekti! Vi havas %count provoj restas.'
-recovery_tries_exceeded: 'Vi superis la maksimuman nombron provas eniri la reakiro kodo. Uzo "/email recovery [retpoŝto]" por generi novan.'
-recovery_code_correct: 'Reakiro kodo eniris ĝuste!'
-recovery_change_password: 'Bonvolu uzi la komando /email setpassword <novaPasvorto> ŝanĝi vian pasvorton tuj.'
-vb_nonActiv: '&cVia konto ne aktivigis tamen, bonvolu kontroli viajn retpoŝtojn!'
-usage_unreg: '&cUzado: /unregister <pasvorto>'
-pwd_changed: '&2Pasvorto sukcese ŝanĝita!'
-logged_in: '&cVi jam estas ensalutinta!'
-logout: '&2Elsalutita sukcese!'
-reload: '&2Agordo kaj datumbazo estis larditaj korekte!'
-usage_changepassword: '&cUzado: /changepassword <malnovaPasvorto> <novaPasvorto>'
+misc:
+    account_not_activated: '&cVia konto ne aktivigis tamen, bonvolu kontroli viajn retpoŝtojn!'
+    password_changed: '&2Pasvorto sukcese ŝanĝita!'
+    logout: '&2Elsalutita sukcese!'
+    reload: '&2Agordo kaj datumbazo estis larditaj korekte!'
+    usage_change_password: '&cUzado: /changepassword <malnovaPasvorto> <novaPasvorto>'
+    accounts_owned_self: 'Vi posedas %count kontoj:'
+    accounts_owned_other: 'La ludanto %name havas %count kontojn::'
 
 # Session messages
-invalid_session: '&cVia IP estis ŝanĝita kaj via seanco datumoj finiĝis!'
-valid_session: '&2Ensalutantojn pro Sesio Rekonektas.'
+session:
+    valid_session: '&2Ensalutantojn pro Sesio Rekonektas.'
+    invalid_session: '&cVia IP estis ŝanĝita kaj via seanco datumoj finiĝis!'
 
 # Error messages when joining
-name_len: '&4Via uzantnomo estas aŭ tro mallonga aŭ tro longa!'
-regex: '&4Via uzantnomo enhavas kontraŭleĝan karakteroj. Permesita signoj: REG_EX'
-country_banned: '&4Via lando estas malpermesitaj de tiu servilo!'
-not_owner_error: 'Vi ne estas la posedanto de tiu konto. Bonvolu elekti alian nomon!'
-kick_fullserver: '&4La servilo estas plena, reprovi poste!'
-same_nick: '&4La sama uzantnomo estas jam ludas sur la servilo!'
-invalid_name_case: 'Vi devus aliĝi uzante uzantnomon %valid, ne %invalid.'
-same_ip_online: 'Ludanto kun la sama IP jam estas en ludo!'
+on_join_validation:
+    same_ip_online: 'Ludanto kun la sama IP jam estas en ludo!'
+    same_nick_online: '&4La sama uzantnomo estas jam ludas sur la servilo!'
+    name_length: '&4Via uzantnomo estas aŭ tro mallonga aŭ tro longa!'
+    characters_in_name: '&4Via uzantnomo enhavas kontraŭleĝan karakteroj. Permesita signoj: %valid_chars'
+    kick_full_server: '&4La servilo estas plena, reprovi poste!'
+    country_banned: '&4Via lando estas malpermesitaj de tiu servilo!'
+    not_owner_error: 'Vi ne estas la posedanto de tiu konto. Bonvolu elekti alian nomon!'
+    invalid_name_case: 'Vi devus aliĝi uzante uzantnomon %valid, ne %invalid.'
+    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
-usage_email_add: '&cUzado: /email add <retpoŝto> <konfirmiRetpoŝto>'
-usage_email_change: '&cUzado: /email change <malnovaRetpoŝto> <novaRetpoŝto>'
-usage_email_recovery: '&cUzado: /email recovery <retpoŝto>'
-new_email_invalid: '&cNevalida nova retpoŝta, provu denove!'
-old_email_invalid: '&cNevalida malnovaj retpoŝto, provu denove!'
-email_invalid: '&cNevalida retadreso, provu denove!'
-email_added: '&2Retpoŝtadreso sukcese aldonitaj al via konto!'
-email_confirm: '&cBonvolu konfirmi vian retadreson!'
-email_changed: '&2Retpoŝtadreso ŝanĝis ĝuste!'
-email_send: '&2Reakiro retpoŝto sendita sukcese! Bonvolu kontroli vian retpoŝton enirkesto!'
-email_show: '&2Via nuna retadreso estas: &f%email'
-incomplete_email_settings: 'Eraro: ne ĉiuj postulata agordoj estas metita por sendi retpoŝtojn. Bonvolu kontakti administranto.'
-email_already_used: '&4La retpoŝto jam estas uzata'
-email_send_failure: 'La retpoŝto ne estis sendita. Bonvolu kontakti administranto.'
-show_no_email: '&2Vi aktuale ne havas retadreson asociita kun ĉi tiu konto.'
-add_email: '&3Bonvolu aldoni vian retpoŝtan vian konton kun la komando: /email add <viRetpoŝto> <konfirmiRetpoŝto>'
-recovery_email: '&3Ĉu vi forgesis vian pasvorton? Bonvolu uzi la komando: /email recovery <viRetpoŝto>'
-change_password_expired: 'Vi ne povas ŝanĝi vian pasvorton per tiu ĉi komando plu.'
-email_cooldown_error: '&cRetmesaĝon jam sendita lastatempe. Vi devas atendi %time antaŭ vi povas sendi novan.'
+email:
+    add_email_request: '&3Bonvolu aldoni vian retpoŝtan vian konton kun la komando: /email add <viRetpoŝto> <konfirmiRetpoŝto>'
+    usage_email_add: '&cUzado: /email add <retpoŝto> <konfirmiRetpoŝto>'
+    usage_email_change: '&cUzado: /email change <malnovaRetpoŝto> <novaRetpoŝto>'
+    new_email_invalid: '&cNevalida nova retpoŝta, provu denove!'
+    old_email_invalid: '&cNevalida malnovaj retpoŝto, provu denove!'
+    invalid: '&cNevalida retadreso, provu denove!'
+    added: '&2Retpoŝtadreso sukcese aldonitaj al via konto!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
+    request_confirmation: '&cBonvolu konfirmi vian retadreson!'
+    changed: '&2Retpoŝtadreso ŝanĝis ĝuste!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
+    email_show: '&2Via nuna retadreso estas: &f%email'
+    no_email_for_account: '&2Vi aktuale ne havas retadreson asociita kun ĉi tiu konto.'
+    already_used: '&4La retpoŝto jam estas uzata'
+    incomplete_settings: 'Eraro: ne ĉiuj postulata agordoj estas metita por sendi retpoŝtojn. Bonvolu kontakti administranto.'
+    send_failure: 'La retpoŝto ne estis sendita. Bonvolu kontakti administranto.'
+    change_password_expired: 'Vi ne povas ŝanĝi vian pasvorton per tiu ĉi komando plu.'
+    email_cooldown_error: '&cRetmesaĝon jam sendita lastatempe. Vi devas atendi %time antaŭ vi povas sendi novan.'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Ĉu vi forgesis vian pasvorton? Bonvolu uzi la komando: /email recovery <viRetpoŝto>'
+    command_usage: '&cUzado: /email recovery <retpoŝto>'
+    email_sent: '&2Reakiro retpoŝto sendita sukcese! Bonvolu kontroli vian retpoŝton enirkesto!'
+    code:
+        code_sent: 'Rekorda kodo restarigi vian pasvorton sendis al via retpoŝto.'
+        incorrect: 'La reakiro kodo estas ne korekti! Vi havas %count provoj restas.'
+        tries_exceeded: 'Vi superis la maksimuman nombron provas eniri la reakiro kodo. Uzo "/email recovery [retpoŝto]" por generi novan.'
+        correct: 'Reakiro kodo eniris ĝuste!'
+        change_password: 'Bonvolu uzi la komando /email setpassword <novaPasvorto> ŝanĝi vian pasvorton tuj.'
 
 # Captcha
-usage_captcha: '&3Ensaluti vi devas solvi captcha kodo, bonvolu uzi la komando: /captcha <theCaptcha>'
-wrong_captcha: '&cMalĝusta captcha, bonvolu tajpi "/captcha THE_CAPTCHA" en la babilejo!'
-valid_captcha: '&2Captcha kodo solvita ĝuste!'
-# TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha <theCaptcha>'
-# TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+captcha:
+    usage_captcha: '&3Ensaluti vi devas solvi captcha kodo, bonvolu uzi la komando: /captcha %captcha_code'
+    wrong_captcha: '&cMalĝusta captcha, bonvolu tajpi "/captcha %captcha_code" en la babilejo!'
+    valid_captcha: '&2Captcha kodo solvita ĝuste!'
+    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
+    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
 
 # Verification code
-# TODO verification_code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-# TODO usage_verification_code: '&cUsage: /verification <code>'
-# TODO incorrect_verification_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-# TODO verification_code_verified: '&2Your identity has been verified! You can now execute all commands within the current session!'
-# TODO verification_code_already_verified: '&2You can already execute every sensitive command within the current session!'
-# TODO verification_code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-# TODO verification_code_email_needed: '&3To verify your identity you need to link an email address with your account!!'
+verification:
+    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    # TODO command_usage: '&cUsage: /verification <code>'
+    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
+    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
+    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
-second: 'sekundo'
-seconds: 'sekundoj'
-minute: 'minuto'
-minutes: 'minutoj'
-hour: 'horo'
-hours: 'horoj'
-day: 'tago'
-days: 'tagoj'
+time:
+    second: 'sekundo'
+    seconds: 'sekundoj'
+    minute: 'minuto'
+    minutes: 'minutoj'
+    hour: 'horo'
+    hours: 'horoj'
+    day: 'tago'
+    days: 'tagoj'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Via sekreta kodo estas %code. Vi povas skani ĝin de tie %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

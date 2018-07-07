@@ -30,10 +30,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -101,7 +101,7 @@ public class OnJoinVerifierTest {
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(false);
         String serverFullMessage = "server is full";
-        given(messages.retrieveSingle(MessageKey.KICK_FULL_SERVER)).willReturn(serverFullMessage);
+        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn(serverFullMessage);
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -123,9 +123,9 @@ public class OnJoinVerifierTest {
         List<Player> onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
         given(permissionsManager.hasPermission(onlinePlayers.get(1), PlayerStatePermission.IS_VIP)).willReturn(false);
-        returnOnlineListFromBukkitServer(onlinePlayers);
+        returnGivenOnlinePlayers(bukkitService, onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
+        given(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -147,9 +147,9 @@ public class OnJoinVerifierTest {
         given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
         List<Player> onlinePlayers = Collections.singletonList(mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
-        returnOnlineListFromBukkitServer(onlinePlayers);
+        returnGivenOnlinePlayers(bukkitService, onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
+        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -499,13 +499,6 @@ public class OnJoinVerifierTest {
 
         // when
         onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, false);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void returnOnlineListFromBukkitServer(Collection<Player> onlineList) {
-        // Note ljacqu 20160529: The compiler gets lost in generics because Collection<? extends Player> is returned
-        // from getOnlinePlayers(). We need to uncheck onlineList to a simple Collection or it will refuse to compile.
-        given(bukkitService.getOnlinePlayers()).willReturn((Collection) onlineList);
     }
 
     private void expectValidationExceptionWith(MessageKey messageKey, String... args) {

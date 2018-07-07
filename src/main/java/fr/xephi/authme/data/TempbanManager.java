@@ -97,7 +97,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         if (isEnabled) {
             final String name = player.getName();
             final String ip = PlayerUtils.getPlayerIp(player);
-            final String reason = messages.retrieveSingle(MessageKey.TEMPBAN_MAX_LOGINS);
+            final String reason = messages.retrieveSingle(player, MessageKey.TEMPBAN_MAX_LOGINS);
 
             final Date expires = new Date();
             long newTime = expires.getTime() + (length * MILLIS_PER_MINUTE);

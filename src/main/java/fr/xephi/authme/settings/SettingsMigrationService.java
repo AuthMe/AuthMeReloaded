@@ -10,6 +10,7 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -74,6 +75,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | convertToRegistrationType(resource)
             | mergeAndMovePermissionGroupSettings(resource)
             | moveDeprecatedHashAlgorithmIntoLegacySection(resource)
+            | moveSaltColumnConfigWithOtherColumnConfigs(resource)
             || hasDeprecatedProperties(resource);
     }
 
@@ -311,6 +313,18 @@ public class SettingsMigrationService extends PlainMigrationService {
             }
         }
         return false;
+    }
+
+    /**
+     * Moves the property for the password salt column name to the same path as all other column name properties.
+     *
+     * @param resource The property resource
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean moveSaltColumnConfigWithOtherColumnConfigs(PropertyResource resource) {
+        Property<String> oldProperty = newProperty("ExternalBoardOptions.mySQLColumnSalt",
+            DatabaseSettings.MYSQL_COL_SALT.getDefaultValue());
+        return moveProperty(oldProperty, DatabaseSettings.MYSQL_COL_SALT, resource);
     }
 
     /**

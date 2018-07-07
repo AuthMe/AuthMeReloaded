@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
+import static fr.xephi.authme.settings.properties.DatabaseSettings.MYSQL_COL_SALT;
 import static fr.xephi.authme.settings.properties.PluginSettings.ENABLE_PERMISSION_CHECK;
 import static fr.xephi.authme.settings.properties.PluginSettings.LOG_LEVEL;
 import static fr.xephi.authme.settings.properties.PluginSettings.REGISTERED_GROUP;
@@ -128,6 +129,7 @@ public class SettingsMigrationServiceTest {
         assertThat(settings.getProperty(UNREGISTERED_GROUP), equalTo(""));
         assertThat(settings.getProperty(PASSWORD_HASH), equalTo(HashAlgorithm.SHA256));
         assertThat(settings.getProperty(LEGACY_HASHES), contains(HashAlgorithm.PBKDF2, HashAlgorithm.WORDPRESS, HashAlgorithm.SHA512));
+        assertThat(settings.getProperty(MYSQL_COL_SALT), equalTo("salt_col_name"));
 
         // Check migration of old setting to email.html
         assertThat(Files.readLines(new File(dataFolder, "email.html"), StandardCharsets.UTF_8),
