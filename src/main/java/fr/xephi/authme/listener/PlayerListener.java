@@ -271,6 +271,8 @@ public class PlayerListener implements Listener {
         if (event.getAddress() == null) {
             unresolvedPlayerHostname.add(event.getName());
             return;
+        } else {
+            unresolvedPlayerHostname.remove(event.getName());
         }
 
         final String name = event.getName();
