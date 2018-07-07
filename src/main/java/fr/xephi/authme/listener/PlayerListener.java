@@ -54,6 +54,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
@@ -95,6 +97,7 @@ public class PlayerListener implements Listener {
     private BungeeSender bungeeSender;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
+    private List<String> unresolvedPlayerHostname = new ArrayList<>();
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -263,6 +266,11 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        if (event.getAddress() == null) {
+            unresolvedPlayerHostname.add(event.getName());
+            return;
+        }
+
         final String name = event.getName();
 
         if (validationService.isUnrestricted(name)) {
@@ -307,7 +315,9 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!isAsyncPlayerPreLoginEventCalled || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
+
+        if (!isAsyncPlayerPreLoginEventCalled || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)
+            || unresolvedPlayerHostname.remove(name)) {
             try {
                 runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
