@@ -25,8 +25,7 @@ public class Command {
      * @param executor the executor of the command
      */
     public Command(String command, Executor executor) {
-        this.command = command;
-        this.executor = executor;
+        this(command, executor, 0);
     }
 
     /**
