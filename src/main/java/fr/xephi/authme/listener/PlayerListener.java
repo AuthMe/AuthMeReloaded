@@ -54,8 +54,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
@@ -97,7 +97,7 @@ public class PlayerListener implements Listener {
     private BungeeSender bungeeSender;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
-    private List<String> unresolvedPlayerHostname = new ArrayList<>();
+    private Set<String> unresolvedPlayerHostname = new HashSet<>();
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -266,6 +266,8 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        // getAddress() sometimes returning null if not yet resolved
+        // skip it and let PlayerLoginEvent to handle it
         if (event.getAddress() == null) {
             unresolvedPlayerHostname.add(event.getName());
             return;
