@@ -1,5 +1,7 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
+import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -244,10 +246,10 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public DataSourceResult<String> getEmail(String user) {
+    public DataSourceValue<String> getEmail(String user) {
         return cachedAuths.getUnchecked(user)
-            .map(auth -> DataSourceResult.of(auth.getEmail()))
-            .orElse(DataSourceResult.unknownPlayer());
+            .map(auth -> DataSourceValueImpl.of(auth.getEmail()))
+            .orElse(DataSourceValueImpl.unknownRow());
     }
 
     @Override
@@ -266,6 +268,15 @@ public class CacheDataSource implements DataSource {
     @Override
     public List<PlayerAuth> getRecentlyLoggedInPlayers() {
         return source.getRecentlyLoggedInPlayers();
+    }
+
+    @Override
+    public boolean setTotpKey(String user, String totpKey) {
+        boolean result = source.setTotpKey(user, totpKey);
+        if (result) {
+            cachedAuths.refresh(user);
+        }
+        return result;
     }
 
     @Override

@@ -62,7 +62,6 @@ misc:
     logout: '&b【AuthMe】&6您已成功登出'
     reload: '&b【AuthMe】&6已重新讀取設定檔及資料庫'
     usage_change_password: '&b【AuthMe】&6用法: &c"/changepassword <舊密碼> <新密碼>"'
-    two_factor_create: '&b【AuthMe - 兩步驗證碼】&b您的登入金鑰為&9「%c%code&9」&b，掃描連結為：&c %url'
     accounts_owned_self: '&b【AuthMe】&6您擁有 %count 個帳號:'
     accounts_owned_other: '&b【AuthMe】&6玩家 %name 擁有 %count 個帳號:'
 
@@ -92,8 +91,10 @@ email:
     old_email_invalid: '&b【AuthMe】&6舊的Email無效!'
     invalid: '&b【AuthMe】&6無效的Email!'
     added: '&b【AuthMe】&6已添加Email!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&b【AuthMe】&6請驗證您的Email!'
     changed: '&b【AuthMe】&6Email已變更!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&b【AuthMe】&2目前的電子郵件: &f%email'
     no_email_for_account: '&b【AuthMe】&2您目前沒有設置電子郵件.'
     already_used: '&b【AuthMe】&4這個電郵地址已被使用。'
@@ -142,3 +143,16 @@ time:
     hours: '時'
     day: '天'
     days: '天'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&b【AuthMe - 兩步驗證碼】&b您的登入金鑰為&9「%c%code&9」&b，掃描連結為：&c %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

@@ -393,4 +393,11 @@ public class BukkitService implements SettingsDependent {
             return Optional.empty();
         }
     }
+
+    /**
+     * @return the IP string that this server is bound to, otherwise empty string
+     */
+    public String getIp() {
+        return Bukkit.getServer().getIp();
+    }
 }

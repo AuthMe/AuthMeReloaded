@@ -30,21 +30,9 @@ public class CodeClimateConfigTest {
         assertThat(excludePaths, not(empty()));
         removeTestsExclusionOrThrow(excludePaths);
         for (String path : excludePaths) {
-            verifySourceFileExists(path);
-        }
-    }
-
-    private static void verifySourceFileExists(String path) {
-        // Note ljacqu 20170323: In the future, we could have legitimate exclusions that don't fulfill these checks,
-        // in which case this test needs to be adapted accordingly.
-        if (!path.startsWith(TestHelper.SOURCES_FOLDER)) {
-            fail("Unexpected path '" + path + "': expected to start with sources folder");
-        } else if (!path.endsWith(".java")) {
-            fail("Expected path '" + path + "' to end with '.java'");
-        }
-
-        if (!new File(path).exists()) {
-            fail("Path '" + path + "' does not exist!");
+            if (!new File(path).exists()) {
+                fail("Path '" + path + "' does not exist!");
+            }
         }
     }
 

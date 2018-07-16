@@ -16,7 +16,6 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -57,7 +56,7 @@ public class LoginCommandTest {
         command.executeCommand(sender, Collections.singletonList("password"));
 
         // then
-        verify(management).performLogin(eq(sender), eq("password"));
+        verify(management).performLogin(sender, "password" );
     }
 
     @Test

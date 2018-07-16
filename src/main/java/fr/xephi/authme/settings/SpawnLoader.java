@@ -198,9 +198,11 @@ public class SpawnLoader implements Reloadable {
                     // ignore
             }
             if (spawnLoc != null) {
+                ConsoleLogger.debug("Spawn location determined as `{0}` for world `{1}`", spawnLoc, world.getName());
                 return spawnLoc;
             }
         }
+        ConsoleLogger.debug("Fall back to default world spawn location. World: `{0}`", world.getName());
         return world.getSpawnLocation(); // return default location
     }
 

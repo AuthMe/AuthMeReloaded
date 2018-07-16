@@ -1,7 +1,7 @@
 package fr.xephi.authme.data;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
@@ -51,7 +51,7 @@ public class VerificationCodeManagerTest {
         // given
         String name1 = "ILoveTests";
         Player player1 = mockPlayerWithName(name1);
-        given(dataSource.getEmail(name1)).willReturn(DataSourceResult.of("ilovetests@test.com"));
+        given(dataSource.getEmail(name1)).willReturn(DataSourceValueImpl.of("ilovetests@test.com"));
         given(permissionsManager.hasPermission(player1, PlayerPermission.VERIFICATION_CODE)).willReturn(true);
         String name2 = "StillLovingTests";
         Player player2 = mockPlayerWithName(name2);
@@ -106,7 +106,7 @@ public class VerificationCodeManagerTest {
         // given
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
-        given(dataSource.getEmail(player)).willReturn(DataSourceResult.of(email));
+        given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
         VerificationCodeManager codeManager1 = createCodeManager();
         VerificationCodeManager codeManager2 = createCodeManager();
         codeManager2.codeExistOrGenerateNew(player);
@@ -125,7 +125,7 @@ public class VerificationCodeManagerTest {
         // given
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
-        given(dataSource.getEmail(player)).willReturn(DataSourceResult.of(email));
+        given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
         VerificationCodeManager codeManager1 = createCodeManager();
         VerificationCodeManager codeManager2 = createCodeManager();
         codeManager2.codeExistOrGenerateNew(player);
@@ -145,7 +145,7 @@ public class VerificationCodeManagerTest {
         String player = "ILoveTests";
         String code = "193458";
         String email = "ilovetests@test.com";
-        given(dataSource.getEmail(player)).willReturn(DataSourceResult.of(email));
+        given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
         VerificationCodeManager codeManager1 = createCodeManager();
         VerificationCodeManager codeManager2 = createCodeManager();
         codeManager1.codeExistOrGenerateNew(player);

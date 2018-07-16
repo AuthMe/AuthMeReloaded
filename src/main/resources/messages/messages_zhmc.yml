@@ -60,7 +60,6 @@ misc:
     logout: '&2已成功註銷!'
     reload: '&2伺服器已正確地被重新加載配置和數據庫！'
     usage_change_password: '&c使用方法: "/changepassword [舊密碼] [新密碼]"'
-    two_factor_create: '&2您的密碼是 %code。您可以從這裡掃描 %url'
     accounts_owned_self: '您擁有 %count 個帳戶:'
     accounts_owned_other: '玩家 %name 擁有 %count 個帳戶:'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&c舊電子郵件地址無效，請重試!'
     invalid: '&c電子郵件地址無效，請重試!'
     added: '&2電子郵件地址已成功添加到您的帳戶!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&c請確認你的電郵地址!'
     changed: '&2已正確地更改電子郵件地址!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     # TODO email_show: '&2Your current email address is: &f%email'
     # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
     already_used: '&4此電子郵件地址已被使用'
@@ -140,3 +141,16 @@ time:
     # TODO hours: 'hours'
     # TODO day: 'day'
     # TODO days: 'days'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2您的密碼是 %code。您可以從這裡掃描 %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

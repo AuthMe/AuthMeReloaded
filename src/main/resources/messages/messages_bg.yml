@@ -60,7 +60,6 @@ misc:
     logout: '&2Излязохте успешно!'
     reload: '&2Конфигурацията и база данните бяха презаредени правилно!'
     usage_change_password: '&cКоманда: /changepassword Стара-Парола Нова-Парола'
-    two_factor_create: '&2Кода е %code. Можеш да го провериш оттука: %url'
     accounts_owned_self: 'Претежаваш %count акаунт/а:'
     accounts_owned_other: 'Потребителят %name има %count акаунт/а:'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&cСтарият имейл е грешен, опитайте отново!'
     invalid: '&cИмейла е невалиден, опитайте с друг!'
     added: '&2Имейл адреса е добавен!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&cМоля потвърди своя имейл адрес!'
     changed: '&2Имейл адреса е сменен!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2Твоят имейл адрес е: &f%email'
     no_email_for_account: '&2Няма добавен имейл адрес към акаунта.'
     already_used: '&4Имейл адреса вече се използва, опитайте с друг.'
@@ -140,3 +141,16 @@ time:
     hours: 'часа'
     day: 'ден'
     days: 'дена'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Кода е %code. Можеш да го провериш оттука: %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

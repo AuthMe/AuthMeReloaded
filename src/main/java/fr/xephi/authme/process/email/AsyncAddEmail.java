@@ -4,8 +4,10 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.EmailChangedEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
@@ -35,6 +37,9 @@ public class AsyncAddEmail implements AsynchronousProcess {
     @Inject
     private BungeeSender bungeeSender;
 
+    @Inject
+    private BukkitService bukkitService;
+
     AsyncAddEmail() { }
 
     /**
@@ -57,6 +62,13 @@ public class AsyncAddEmail implements AsynchronousProcess {
             } else if (!validationService.isEmailFreeForRegistration(email, player)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
+                EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
+                    -> new EmailChangedEvent(player, null, email, isAsync));
+                if (event.isCancelled()) {
+                    ConsoleLogger.info("Could not add email to player '" + player + "' – event was cancelled");
+                    service.send(player, MessageKey.EMAIL_ADD_NOT_ALLOWED);
+                    return;
+                }
                 auth.setEmail(email);
                 if (dataSource.updateEmail(auth)) {
                     playerCache.updatePlayer(auth);

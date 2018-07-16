@@ -1,12 +1,12 @@
 package fr.xephi.authme.command.executable.email;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -118,7 +118,7 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getEmail(name)).willReturn(DataSourceResult.unknownPlayer());
+        given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.unknownRow());
 
         // when
         command.executeCommand(sender, Collections.singletonList("someone@example.com"));
@@ -138,7 +138,7 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of(DEFAULT_EMAIL));
+        given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(DEFAULT_EMAIL));
 
         // when
         command.executeCommand(sender, Collections.singletonList(DEFAULT_EMAIL));
@@ -158,7 +158,7 @@ public class RecoverEmailCommandTest {
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
-        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of("raptor@example.org"));
+        given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of("raptor@example.org"));
 
         // when
         command.executeCommand(sender, Collections.singletonList("wrong-email@example.com"));
@@ -180,7 +180,7 @@ public class RecoverEmailCommandTest {
         given(emailService.sendRecoveryCode(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
-        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of(email));
+        given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(email));
         String code = "a94f37";
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(true);
         given(recoveryCodeService.generateCode(name)).willReturn(code);
@@ -205,7 +205,7 @@ public class RecoverEmailCommandTest {
         given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
-        given(dataSource.getEmail(name)).willReturn(DataSourceResult.of(email));
+        given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(email));
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(false);
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
 

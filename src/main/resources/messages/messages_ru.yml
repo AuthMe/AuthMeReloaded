@@ -60,7 +60,6 @@ misc:
     logout: '&2Вы успешно вышли.'
     reload: '&6Конфигурация и база данных перезагружены.'
     usage_change_password: '&cИспользование: /changepassword <пароль> <новый пароль>'
-    two_factor_create: '&2Ваш секретный код — %code. Просканируйте его здесь: %url'
     accounts_owned_self: 'У вас %count уч. записей:'
     accounts_owned_other: 'У игрока %name %count уч. записей:'
 
@@ -79,7 +78,7 @@ on_join_validation:
     country_banned: '&4Вход с IP-адресов вашей страны запрещён на этом сервере.'
     not_owner_error: 'Вы не являетесь владельцем данной уч. записи. Выберите себе другое имя!'
     invalid_name_case: 'Неверное имя! Зайдите под именем %valid, а не %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Вы вводили команды слишком часто! Пожалуйста заходите снова и вводите команды помедленнее.'
 
 # Email
 email:
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&cНедействительная старая электронная почта!'
     invalid: '&cНедействительный адрес электронной почты!'
     added: '&2Электронная почта успешно добавлена!'
+    add_not_allowed: '&cДобавление электронной почты не было разрешено.'
     request_confirmation: '&cПодтвердите свою электронную почту!'
     changed: '&2Адрес электронной почты изменён!'
+    change_not_allowed: '&cИзменение электронной почты не было разрешено.'
     email_show: '&2Текущий адрес электронной почты — &f%email'
     no_email_for_account: '&2К вашей уч. записи не привязана электронная почта.'
     already_used: '&4Эта электронная почта уже используется.'
@@ -117,8 +118,8 @@ captcha:
     usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha %captcha_code»'
     wrong_captcha: '&cНеверно! Используйте «/captcha %captcha_code».'
     valid_captcha: '&2Вы успешно решили каптчу!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Чтобы зарегистрироваться, решите каптчу используя команду: «/captcha %captcha_code»'
+    register_captcha_valid: '&2Вы успешно решили каптчу! Теперь вы можете зарегистрироваться командой «/register»'
 
 # Verification code
 verification:
@@ -140,3 +141,16 @@ time:
     hours: 'ч.'
     day: 'дн.'
     days: 'дн.'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Ваш секретный код — %code. Просканируйте его здесь: %url'
+    confirmation_required: 'Пожалуйста, подтвердите ваш код с помощью /2fa confirm <код>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    enable_success: 'Двухфакторная аутентификация для вашего аккаунта успешно подключена'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

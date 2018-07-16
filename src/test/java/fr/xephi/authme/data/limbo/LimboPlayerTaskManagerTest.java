@@ -76,7 +76,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(interval);
 
         // when
-        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, false);
+        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.REGISTER);
 
         // then
         verify(limboPlayer).setMessageTask(any(MessageTask.class));
@@ -94,7 +94,7 @@ public class LimboPlayerTaskManagerTest {
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(0);
 
         // when
-        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, true);
+        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.LOG_IN);
 
         // then
         verifyZeroInteractions(limboPlayer, bukkitService);
@@ -113,7 +113,7 @@ public class LimboPlayerTaskManagerTest {
         given(messages.retrieveSingle(player, MessageKey.REGISTER_MESSAGE)).willReturn("Please register!");
 
         // when
-        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, false);
+        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.REGISTER);
 
         // then
         assertThat(limboPlayer.getMessageTask(), not(nullValue()));
@@ -137,7 +137,7 @@ public class LimboPlayerTaskManagerTest {
         given(messages.retrieveSingle(player, MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha)).willReturn("Need to use captcha");
 
         // when
-        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, false);
+        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.REGISTER);
 
         // then
         assertThat(limboPlayer.getMessageTask(), not(nullValue()));

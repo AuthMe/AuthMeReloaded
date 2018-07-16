@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Feb 02 20:09:14 CET 2018. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Sun Apr 22 11:00:10 CEST 2018. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -85,6 +85,15 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/changepassword** &lt;oldPassword> &lt;newPassword>: Command to change your password using AuthMeReloaded.
   <br />Requires `authme.player.changepassword`
 - **/changepassword help** [query]: View detailed help for /changepassword commands.
+- **/totp**: Performs actions related to two-factor authentication.
+- **/totp code** &lt;code>: Processes the two-factor authentication code during login.
+- **/totp add**: Enables two-factor authentication for your account.
+  <br />Requires `authme.player.totpadd`
+- **/totp confirm** &lt;code>: Saves the generated TOTP secret after confirmation.
+  <br />Requires `authme.player.totpadd`
+- **/totp remove** &lt;code>: Disables two-factor authentication for your account.
+  <br />Requires `authme.player.totpremove`
+- **/totp help** [query]: View detailed help for /totp commands.
 - **/captcha** &lt;captcha>: Captcha command for AuthMeReloaded.
   <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help for /captcha commands.
@@ -95,4 +104,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Feb 02 20:09:14 CET 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 22 11:00:10 CEST 2018

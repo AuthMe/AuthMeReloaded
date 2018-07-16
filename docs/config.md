@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Jan 21 18:49:44 CET 2018. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Mon May 21 09:08:25 CEST 2018. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -37,12 +37,16 @@ DataSource:
     mySQLRealName: 'realname'
     # Column for storing players passwords
     mySQLColumnPassword: 'password'
+    # Column for storing players passwords salts
+    mySQLColumnSalt: ''
     # Column for storing players emails
     mySQLColumnEmail: 'email'
     # Column for storing if a player is logged in or not
     mySQLColumnLogged: 'isLogged'
     # Column for storing if a player has a valid session or not
     mySQLColumnHasSession: 'hasSession'
+    # Column for storing a player's TOTP key (for two-factor authentication)
+    mySQLtotpKey: 'totp'
     # Column for storing the player's last IP
     mySQLColumnIp: 'ip'
     # Column for storing players lastlogins
@@ -69,8 +73,6 @@ DataSource:
     # You should set this at least 30 seconds less than mysql server wait_timeout
     maxLifetime: 1800
 ExternalBoardOptions:
-    # Column for storing players passwords salts
-    mySQLColumnSalt: ''
     # Column for storing players groups
     mySQLColumnGroup: ''
     # -1 means disabled. If you want that only activated players
@@ -138,6 +140,8 @@ settings:
         - '/reg'
         - '/email'
         - '/captcha'
+        - '/2fa'
+        - '/totp'
         # Max number of allowed registrations per IP
         # The value 0 means an unlimited number of registrations!
         maxRegPerIp: 1
@@ -384,7 +388,7 @@ Protection:
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
     # Countries allowed to join the server and register. For country codes, see
-    # http://dev.maxmind.com/geoip/legacy/codes/iso3166/
+    # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # PLEASE USE QUOTES!
     countries: 
     - 'US'
@@ -404,6 +408,9 @@ Protection:
     antiBotDuration: 10
     # Delay in seconds before the antibot activation
     antiBotDelay: 60
+    quickCommands:
+        # Kicks the player that issued a command before the defined time after the join process
+        denyCommandsBeforeMilliseconds: 1000
 Purge:
     # If enabled, AuthMe automatically purges old, unused accounts
     useAutoPurge: false
@@ -555,4 +562,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Jan 21 18:49:44 CET 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon May 21 09:08:25 CEST 2018

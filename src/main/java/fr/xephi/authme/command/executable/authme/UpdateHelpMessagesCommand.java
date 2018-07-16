@@ -7,6 +7,7 @@ import fr.xephi.authme.service.HelpTranslationGenerator;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class UpdateHelpMessagesCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
         try {
-            helpTranslationGenerator.updateHelpFile();
-            sender.sendMessage("Successfully updated the help file");
+            File updatedFile = helpTranslationGenerator.updateHelpFile();
+            sender.sendMessage("Successfully updated the help file '" + updatedFile.getName() + "'");
             helpMessagesService.reloadMessagesFile();
         } catch (IOException e) {
             sender.sendMessage("Could not update help file: " + e.getMessage());

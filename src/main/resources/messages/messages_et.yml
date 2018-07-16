@@ -60,7 +60,6 @@ misc:
     logout: '&2Edukalt välja logitud!!'
     reload: '&2Andmebaas uuendatud!'
     usage_change_password: '&cKasutus: /changepassword <vanaParool> <UusParool>'
-    two_factor_create: '&2Su salajane kood on %code. Skänni see siin: %url'
     accounts_owned_self: 'Sa omad %count kontot:'
     accounts_owned_other: 'Mängijal %name on %count kontot:'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&cVale vana meiliaadress, proovi uuesti.'
     invalid: '&cVale meiliaadress, proovi uuesti.'
     added: '&2Meiliaadress edukalt vahetatud!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&cPalun kinnita oma meiliaadress.'
     changed: '&2Meiliaadress edukalt vahetatud.'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2Su meiliaadress on: &f%email'
     no_email_for_account: '&2Selle kasutajaga pole seotud ühtegi meiliaadressi.'
     already_used: '&4Meiliaadress juba kasutuses.'
@@ -140,3 +141,16 @@ time:
     hours: 'tundi'
     day: 'päev'
     days: 'päeva'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Su salajane kood on %code. Skänni see siin: %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -216,7 +217,7 @@ public interface DataSource extends Reloadable {
      * @param user the user to retrieve an email for
      * @return the email saved for the user, or null if user or email is not present
      */
-    DataSourceResult<String> getEmail(String user);
+    DataSourceValue<String> getEmail(String user);
 
     /**
      * Return all players of the database.
@@ -231,6 +232,25 @@ public interface DataSource extends Reloadable {
      * @return the 10 last players who last logged in
      */
     List<PlayerAuth> getRecentlyLoggedInPlayers();
+
+    /**
+     * Sets the given TOTP key to the player's account.
+     *
+     * @param user the name of the player to modify
+     * @param totpKey the totp key to set
+     * @return True upon success, false upon failure
+     */
+    boolean setTotpKey(String user, String totpKey);
+
+    /**
+     * Removes the TOTP key if present of the given player's account.
+     *
+     * @param user the name of the player to modify
+     * @return True upon success, false upon failure
+     */
+    default boolean removeTotpKey(String user) {
+        return setTotpKey(user, null);
+    }
 
     /**
      * Reload the data source.

@@ -46,6 +46,11 @@ commands:
     aliases:
     - changepass
     - cp
+  totp:
+    description: TOTP commands
+    usage: /totp code|add|confirm|remove
+    aliases:
+    - 2fa
   captcha:
     description: Captcha command
     usage: /captcha <captcha>
@@ -156,6 +161,9 @@ permissions:
   authme.admin.updatemessages:
     description: Permission to use the update messages command.
     default: op
+  authme.allowchatbeforelogin:
+    description: Permission to send chat messages before being logged in.
+    default: false
   authme.allowmultipleaccounts:
     description: Permission to be able to register multiple accounts.
     default: op
@@ -234,6 +242,8 @@ permissions:
       authme.player.register: true
       authme.player.security.verificationcode: true
       authme.player.seeownaccounts: true
+      authme.player.totpadd: true
+      authme.player.totpremove: true
       authme.player.unregister: true
   authme.player.canbeforced:
     description: Permission for users a login can be forced to.
@@ -280,6 +290,12 @@ permissions:
     default: true
   authme.player.seeownaccounts:
     description: Permission to use to see own other accounts.
+    default: true
+  authme.player.totpadd:
+    description: Permission to enable two-factor authentication.
+    default: true
+  authme.player.totpremove:
+    description: Permission to disable two-factor authentication.
     default: true
   authme.player.unregister:
     description: Command permission to unregister.

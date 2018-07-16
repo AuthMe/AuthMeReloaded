@@ -332,6 +332,19 @@ public class BukkitServiceTest {
         assertThat(event.getPlayer(), equalTo(player));
     }
 
+    @Test
+    public void shouldReturnServerIp() {
+        // given
+        String ip = "99.99.99.99";
+        given(server.getIp()).willReturn(ip);
+
+        // when
+        String result = bukkitService.getIp();
+
+        // then
+        assertThat(result, equalTo(ip));
+    }
+
     // Note: This method is used through reflections
     public static Player[] onlinePlayersImpl() {
         return new Player[]{

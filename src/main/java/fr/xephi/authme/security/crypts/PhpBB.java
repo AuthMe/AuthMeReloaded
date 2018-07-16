@@ -10,6 +10,8 @@ import fr.xephi.authme.security.crypts.description.Usage;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
+
 /**
  * Encryption method compatible with phpBB3.
  * <p>
@@ -43,7 +45,7 @@ public class PhpBB implements EncryptionMethod {
         } else if (hash.length() == 34) {
             return PhpassSaltedMd5.phpbb_check_hash(password, hash);
         } else {
-            return PhpassSaltedMd5.md5(password).equals(hash);
+            return isEqual(hash, PhpassSaltedMd5.md5(password));
         }
     }
 
@@ -153,7 +155,7 @@ public class PhpBB implements EncryptionMethod {
         }
 
         private static boolean phpbb_check_hash(String password, String hash) {
-            return _hash_crypt_private(password, hash).equals(hash);
+            return isEqual(hash, _hash_crypt_private(password, hash)); // #1561: fix timing issue
         }
     }
 }

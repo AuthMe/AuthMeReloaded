@@ -60,7 +60,6 @@ misc:
     logout: '&cSaida com sucesso'
     reload: '&fConfiguração e base de dados foram recarregadas'
     usage_change_password: '&fUse: /changepassword <passwordAntiga> <passwordNova>'
-    two_factor_create: '&2O seu código secreto é o %code. Você pode verificá-lo a partir daqui %url'
     accounts_owned_self: 'Você possui %count contas:'
     accounts_owned_other: 'O jogador %name possui %count contas:'
 
@@ -79,7 +78,7 @@ on_join_validation:
     country_banned: 'O seu país está banido deste servidor'
     not_owner_error: 'Não é o proprietário da conta. Por favor, escolha outro nome!'
     invalid_name_case: 'Deve se juntar usando nome de usuário %valid, não %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Você usou o comando demasiado rapido por favor re-entre no servidor e aguarde antes de digitar qualquer comando.'
 
 # Email
 email:
@@ -99,6 +98,8 @@ email:
     send_failure: 'Não foi possivel enviar o email. Por favor contate um administrador.'
     change_password_expired: 'Você não pode mais alterar a sua password usando este comando.'
     email_cooldown_error: '&cUm email já foi enviado recentemente.Por favor, espere %time antes de enviar novamente'
+    add_not_allowed: '&cAdicionar e-mail não é permitido'
+    change_not_allowed: '&cAlterar e-mail não é permitido'
 
 # Password recovery by email
 recovery:
@@ -117,18 +118,18 @@ captcha:
     usage_captcha: '&cPrecisa digitar um captcha, escreva: /captcha %captcha_code'
     wrong_captcha: '&cCaptcha errado, por favor escreva: /captcha %captcha_code'
     valid_captcha: '&cO seu captcha é válido!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Para se registar tem de resolver o captcha primeiro, por favor use: /captcha %captcha_code'
+    register_captcha_valid: '&2Captcha Valido! Agora você pode te registar com /register'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    code_required: '&3Este codigo é sensivel e requer uma verificação por e-mail! Verifique na sua caixa de entrada e siga as instruções do e-mail.'
+    command_usage: '&cUso: /verification <codigo>'
+    incorrect_code: '&cCodigo incorreto, por favor digite "/verification <codigo>" no chat, utilizando o codigo que recebeu no e-mail.'
+    success: '&2Sua identidade foi verificada! Agora você pode executar todos os comandos nesta sessão!'
+    already_verified: '&2Você já pode digitar todos os comandos sensiveis nesta sessão!'
+    code_expired: '&3Seu codigo expirou! Execute outro comando sensivel para obter um novo codigo!'
+    email_needed: '&3Para confirmar a sua identidade necessita de associar um endereço de e-mail!!'
 
 # Time units
 time:
@@ -140,3 +141,16 @@ time:
     hours: 'horas'
     day: 'dia'
     days: 'dias'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2O seu código secreto é o %code. Você pode verificá-lo a partir daqui %url'
+    confirmation_required: 'Por favor confirme seu codigo de 2 etapas com /2fa confirm <codigo>'
+    code_required: 'Por favor submita seu codigo de duas etapas com /2fa code <codigo>'
+    already_enabled: 'Autenticação de duas etapas já se encontra habilitada na sua conta!'
+    enable_error_no_code: 'Nenhuma chave 2fa foi gerada por você ou expirou. Por favor digite /2fa add'
+    enable_success: 'Autenticação de duas etapas habilitada com sucesso na sua conta'
+    enable_error_wrong_code: 'Codigo errado ou o codigo expirou. Por favor digite /2fa add'
+    not_enabled_error: 'Autenticação de duas etapas não está habilitada na sua conta. Digite /2fa add'
+    removed_success: 'Autenticação de duas etapas removida com sucesso da sua conta'
+    invalid_code: 'Codigo invalido!'

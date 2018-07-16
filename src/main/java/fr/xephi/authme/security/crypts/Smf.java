@@ -7,6 +7,8 @@ import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.util.RandomStringUtils;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
+
 /**
  * Hashing algorithm for SMF forums.
  * <p>
@@ -32,7 +34,7 @@ public class Smf implements EncryptionMethod {
 
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
-        return computeHash(password, null, name).equals(hashedPassword.getHash());
+        return isEqual(hashedPassword.getHash(), computeHash(password, null, name));
     }
 
     @Override

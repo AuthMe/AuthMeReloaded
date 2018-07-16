@@ -6,6 +6,8 @@ import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.LoginCaptchaManager;
+import fr.xephi.authme.data.limbo.LimboMessageType;
+import fr.xephi.authme.data.limbo.LimboPlayerState;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
@@ -28,6 +30,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.ChatColor;
@@ -90,7 +93,13 @@ public class AsynchronousLogin implements AsynchronousProcess {
     public void login(Player player, String password) {
         PlayerAuth auth = getPlayerAuth(player);
         if (auth != null && checkPlayerInfo(player, auth, password)) {
-            performLogin(player, auth);
+            if (auth.getTotpKey() != null) {
+                limboService.resetMessageTask(player, LimboMessageType.TOTP_CODE);
+                limboService.getLimboPlayer(player.getName()).setState(LimboPlayerState.TOTP_REQUIRED);
+                // TODO #1141: Check if we should check limbo state before processing password
+            } else {
+                performLogin(player, auth);
+            }
         }
     }
 
@@ -125,7 +134,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (auth == null) {
             service.send(player, MessageKey.UNKNOWN_USER);
             // Recreate the message task to immediately send the message again as response
-            limboService.resetMessageTask(player, false);
+            limboService.resetMessageTask(player, LimboMessageType.REGISTER);
             return null;
         }
 
@@ -218,7 +227,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param player the player to log in
      * @param auth the associated PlayerAuth object
      */
-    private void performLogin(Player player, PlayerAuth auth) {
+    public void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
             final boolean isFirstLogin = (auth.getLastLogin() == null);
 
@@ -317,8 +326,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         // Do not perform the check if player has multiple accounts permission or if IP is localhost
         if (service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP) <= 0
             || service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            || "127.0.0.1".equalsIgnoreCase(ip)
-            || "localhost".equalsIgnoreCase(ip)) {
+            || InternetProtocolUtils.isLoopbackAddress(ip)) {
             return false;
         }
 

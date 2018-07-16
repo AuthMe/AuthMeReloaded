@@ -73,8 +73,12 @@
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkit.version>1.12.2-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.13-pre7-R0.1-SNAPSHOT</bukkit.version>
     </properties>
+
+    <prerequisites>
+        <maven>3.3.9</maven>
+    </prerequisites>
 
     <!-- Jenkins profile -->
     <profiles>
@@ -131,12 +135,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -150,7 +154,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.0</version>
+                <version>0.8.1</version>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -169,10 +173,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20.1</version>
+                <version>2.21.0</version>
                 <configuration>
                     <!-- Force the right file encoding during unit testing -->
-                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{argLine}</argLine>
+                    <!-- Set language to English in order to get consistent results for localized time formatting -->
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
                     <systemPropertyVariables>
                         <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
                     </systemPropertyVariables>
@@ -181,12 +186,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadoc</id>
@@ -226,7 +231,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -251,12 +256,8 @@
                             <shadedPattern>fr.xephi.authme.libs.com.google</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>ch.jalu.injector</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.jalu.injector</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>ch.jalu.configme</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.ch.jalu.configme</shadedPattern>
+                            <pattern>ch.jalu</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
@@ -285,6 +286,10 @@
                         <relocation>
                             <pattern>de.mkammerer</pattern>
                             <shadedPattern>fr.xephi.authme.libs.de.mkammerer</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.warrenstrange</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.warrenstrange</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>javax.inject</pattern>
@@ -387,7 +392,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.2</version>
+            <version>2.8.5</version>
             <optional>true</optional>
         </dependency>
 
@@ -395,7 +400,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>24.1-jre</version>
+            <version>25.1-jre</version>
             <optional>true</optional>
         </dependency>
 
@@ -436,7 +441,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.7.8</version>
+            <version>3.2.0</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -466,6 +471,14 @@
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
             <version>2.4</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- TOTP client -->
+        <dependency>
+            <groupId>com.warrenstrange</groupId>
+            <artifactId>googleauth</artifactId>
+            <version>1.1.5</version>
             <optional>true</optional>
         </dependency>
 
@@ -545,7 +558,7 @@
         <dependency>
             <groupId>me.lucko.luckperms</groupId>
             <artifactId>luckperms-api</artifactId>
-            <version>4.1</version>
+            <version>4.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -788,6 +801,13 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>datasourcecolumns</artifactId>
+            <version>0.1.1-SNAPSHOT</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Unit Testing Libraries -->
 
         <dependency>
@@ -808,7 +828,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>2.16.0</version>
+            <version>2.19.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -821,13 +841,13 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.21.0.1</version>
+            <version>3.23.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.196</version>
+            <version>1.4.197</version>
             <scope>test</scope>
         </dependency>
 

@@ -101,6 +101,23 @@ public class MessageUpdaterTest {
     }
 
     @Test
+    public void shouldPerformNewerMigrations() throws IOException {
+        // given
+        File messagesFile = temporaryFolder.newFile();
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test2.yml"), messagesFile);
+
+        // when
+        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "messages/messages_en.yml", "messages/messages_en.yml");
+
+        // then
+        assertThat(wasChanged, equalTo(true));
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(messagesFile);
+        assertThat(configuration.getString(MessageKey.TWO_FACTOR_CREATE.getKey()), equalTo("Old 2fa create text"));
+        assertThat(configuration.getString(MessageKey.WRONG_PASSWORD.getKey()), equalTo("test2 - wrong password")); // from pre-5.5 key
+        assertThat(configuration.getString(MessageKey.SECOND.getKey()), equalTo("second")); // from messages_en.yml
+    }
+
+    @Test
     public void shouldHaveAllKeysInConfigurationData() {
         // given
         Set<String> messageKeysFromEnum = Arrays.stream(MessageKey.values())

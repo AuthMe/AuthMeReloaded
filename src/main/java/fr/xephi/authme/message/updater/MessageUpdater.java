@@ -5,7 +5,7 @@ import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.PropertyListBuilder;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
-import ch.jalu.configme.resource.YamlFileResource;
+import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
@@ -57,14 +57,16 @@ public class MessageUpdater {
      */
     private boolean migrateAndSave(File userFile, JarMessageSource jarMessageSource) {
         // YamlConfiguration escapes all special characters when saving, making the file hard to use, so use ConfigMe
-        YamlFileResource userResource = new MigraterYamlFileResource(userFile);
+        PropertyResource userResource = new MigraterYamlFileResource(userFile);
 
         // Step 1: Migrate any old keys in the file to the new paths
         boolean movedOldKeys = migrateOldKeys(userResource);
-        // Step 2: Take any missing messages from the message files shipped in the AuthMe JAR
+        // Step 2: Perform newer migrations
+        boolean movedNewerKeys = migrateKeys(userResource);
+        // Step 3: Take any missing messages from the message files shipped in the AuthMe JAR
         boolean addedMissingKeys = addMissingKeys(jarMessageSource, userResource);
 
-        if (movedOldKeys || addedMissingKeys) {
+        if (movedOldKeys || movedNewerKeys || addedMissingKeys) {
             backupMessagesFile(userFile);
 
             SettingsManager settingsManager = new SettingsManager(userResource, null, CONFIGURATION_DATA);
@@ -75,7 +77,19 @@ public class MessageUpdater {
         return false;
     }
 
-    private boolean migrateOldKeys(YamlFileResource userResource) {
+    private boolean migrateKeys(PropertyResource userResource) {
+        return moveIfApplicable(userResource, "misc.two_factor_create", MessageKey.TWO_FACTOR_CREATE.getKey());
+    }
+
+    private static boolean moveIfApplicable(PropertyResource resource, String oldPath, String newPath) {
+        if (resource.getString(newPath) == null && resource.getString(oldPath) != null) {
+            resource.setValue(newPath, resource.getString(oldPath));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean migrateOldKeys(PropertyResource userResource) {
         boolean hasChange = OldMessageKeysMigrater.migrateOldPaths(userResource);
         if (hasChange) {
             ConsoleLogger.info("Old keys have been moved to the new ones in your messages_xx.yml file");
@@ -83,7 +97,7 @@ public class MessageUpdater {
         return hasChange;
     }
 
-    private boolean addMissingKeys(JarMessageSource jarMessageSource, YamlFileResource userResource) {
+    private boolean addMissingKeys(JarMessageSource jarMessageSource, PropertyResource userResource) {
         List<String> addedKeys = new ArrayList<>();
         for (Property<?> property : CONFIGURATION_DATA.getProperties()) {
             final String key = property.getPath();
@@ -131,6 +145,7 @@ public class MessageUpdater {
             .put("captcha", new String[]{"Captcha"})
             .put("verification", new String[]{"Verification code"})
             .put("time", new String[]{"Time units"})
+            .put("two_factor", new String[]{"Two-factor authentication"})
             .build();
 
         Set<String> addedKeys = new HashSet<>();

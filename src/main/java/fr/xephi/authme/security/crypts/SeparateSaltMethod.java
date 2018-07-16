@@ -1,5 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
+import static fr.xephi.authme.security.HashUtils.isEqual;
+
 /**
  * Common supertype for encryption methods which store their salt separately from the hash.
  */
@@ -19,7 +21,7 @@ public abstract class SeparateSaltMethod implements EncryptionMethod {
 
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
-        return hashedPassword.getHash().equals(computeHash(password, hashedPassword.getSalt(), null));
+        return isEqual(hashedPassword.getHash(), computeHash(password, hashedPassword.getSalt(), null));
     }
 
     @Override

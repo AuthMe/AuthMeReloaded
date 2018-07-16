@@ -56,7 +56,6 @@ unregister:
 misc:
   accounts_owned_self: 'You own %count accounts:'
   accounts_owned_other: 'The player %name has %count accounts:'
-  two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
   account_not_activated: '&cYour account isn''t activated yet, please check your emails!'
   password_changed: '&2Password changed successfully!'
   logout: '&2Logged out successfully!'
@@ -98,6 +97,8 @@ email:
   add_email_request: '&3Please add your email to your account with the command: /email add <yourEmail> <confirmEmail>'
   change_password_expired: 'You cannot change your password using this command anymore.'
   email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+  add_not_allowed: '&cAdding email was not allowed'
+  change_not_allowed: '&cChanging email was not allowed'
 
 # Password recovery by email
 recovery:
@@ -128,6 +129,18 @@ verification:
   already_verified: '&2You can already execute every sensitive command within the current session!'
   code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
   email_needed: '&3To verify your identity you need to link an email address with your account!!'
+
+two_factor:
+  code_created: '&2Your secret code is %code. You can scan it from here %url'
+  confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+  code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+  already_enabled: 'Two-factor authentication is already enabled for your account!'
+  enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+  enable_success: 'Successfully enabled two-factor authentication for your account'
+  enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+  not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+  removed_success: 'Successfully removed two-factor auth from your account'
+  invalid_code: 'Invalid code!'
 
 # Time units
 time:

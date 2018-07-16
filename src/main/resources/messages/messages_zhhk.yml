@@ -63,7 +63,6 @@ misc:
     logout: '&8[&6用戶系統&8] &b你成功登出了。'
     reload: '&8[&6用戶系統&8] &b登入系統設定及資料庫重新載入完畢。'
     usage_change_password: '&8[&6用戶系統&8] &f用法：《 /changepassword <舊密碼> <新密碼> 》'
-    two_factor_create: '&8[&6用戶系統 - 兩步驗證碼&8] &b你的登入金鑰為&9「%c%code&9」&b，掃描連結為：&c %url'
     accounts_owned_self: '你擁有 %count 個帳戶：'
     accounts_owned_other: '玩家《%name》擁有 %count 個帳戶：'
 
@@ -93,8 +92,10 @@ email:
     old_email_invalid: '&8[&6用戶系統&8] &c你所填寫的舊電郵地址並不正確。'
     invalid: '&8[&6用戶系統&8] &c你所填寫的電郵地址並不正確。'
     added: '&8[&6用戶系統&8] &a已新增你的電郵地址。'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&8[&6用戶系統&8] &5請重覆輸入你的電郵地址。'
     changed: '&8[&6用戶系統&8] &a你的電郵地址已更改。'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&8[&6用戶系統&8] &2你所使用的電郵地址為：&f%email'
     no_email_for_account: '&8[&6用戶系統&8] &2你並未有綁定電郵地址到此帳戶。'
     already_used: '&8[&6用戶系統&8] &4這個電郵地址已被使用。'
@@ -143,3 +144,16 @@ time:
     hours: '小時'
     day: '日'
     days: '日'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&8[&6用戶系統 - 兩步驗證碼&8] &b你的登入金鑰為&9「%c%code&9」&b，掃描連結為：&c %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

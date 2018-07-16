@@ -3,7 +3,6 @@ package fr.xephi.authme.data.limbo;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
@@ -19,9 +18,6 @@ import static fr.xephi.authme.util.Utils.isCollectionEmpty;
  * Helper class for the LimboService.
  */
 class LimboServiceHelper {
-
-    @Inject
-    private SpawnLoader spawnLoader;
 
     @Inject
     private PermissionsManager permissionsManager;

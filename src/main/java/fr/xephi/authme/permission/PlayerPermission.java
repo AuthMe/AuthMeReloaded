@@ -73,7 +73,17 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission that enables on join quick commands checks for the player.
      */
-    QUICK_COMMANDS_PROTECTION("authme.player.protection.quickcommandsprotection");
+    QUICK_COMMANDS_PROTECTION("authme.player.protection.quickcommandsprotection"),
+
+    /**
+     * Permission to enable two-factor authentication.
+     */
+    ENABLE_TWO_FACTOR_AUTH("authme.player.totpadd"),
+
+    /**
+     * Permission to disable two-factor authentication.
+     */
+    DISABLE_TWO_FACTOR_AUTH("authme.player.totpremove");
 
     /**
      * The permission node.

@@ -60,7 +60,6 @@ misc:
     logout: '&2Je bent succesvol uitgelogd!'
     reload: '&2De configuratie en database zijn succesvol herladen!'
     usage_change_password: '&cGebruik: /changepassword <oud wachtwoord> <nieuw wachtwoord>'
-    two_factor_create: '&2Je geheime code is %code. Je kunt hem scannen op %url'
     accounts_owned_self: 'Je bezit %count accounts:'
     accounts_owned_other: 'De speler %name heeft %count accounts:'
 
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '&cOngeldig oud e-mailadres, probeer het opnieuw!'
     invalid: '&cOngeldig E-mailadres, probeer het opnieuw!'
     added: '&2Het e-mailadres is succesvol toegevoegd aan je account!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&cVerifiëer je e-mailadres alsjeblieft!'
     changed: '&2Het e-mailadres is succesvol veranderd!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2Jouw huidige e-mailadres is: %email'
     no_email_for_account: '&2Je hebt nog geen e-mailadres toegevoegd aan dit account.'
     already_used: '&4Dit e-mailadres wordt al gebruikt'
@@ -140,3 +141,16 @@ time:
     hours: 'uren'
     day: 'dag'
     days: 'dagen'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Je geheime code is %code. Je kunt hem scannen op %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

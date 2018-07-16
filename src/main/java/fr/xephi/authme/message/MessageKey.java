@@ -125,7 +125,7 @@ public enum MessageKey {
     /** Forgot your password? Please use the command: /email recovery &lt;yourEmail&gt; */
     FORGOT_PASSWORD_MESSAGE("recovery.forgot_password_hint"),
 
-    /** To login you have to solve a captcha code, please use the command: /captcha %captcha_code */
+    /** To log in you have to solve a captcha code, please use the command: /captcha %captcha_code */
     USAGE_CAPTCHA("captcha.usage_captcha", "%captcha_code"),
 
     /** Wrong captcha, please type "/captcha %captcha_code" into the chat! */
@@ -134,7 +134,7 @@ public enum MessageKey {
     /** Captcha code solved correctly! */
     CAPTCHA_SUCCESS("captcha.valid_captcha"),
 
-    /** To register you have to solve a captcha code first, please use the command: /captcha %captcha_code */
+    /** To register you have to solve a captcha first, please use the command: /captcha %captcha_code */
     CAPTCHA_FOR_REGISTRATION_REQUIRED("captcha.captcha_for_registration", "%captcha_code"),
 
     /** Valid captcha! You may now register with /register */
@@ -167,11 +167,17 @@ public enum MessageKey {
     /** Email address successfully added to your account! */
     EMAIL_ADDED_SUCCESS("email.added"),
 
+    /** Adding email was not allowed */
+    EMAIL_ADD_NOT_ALLOWED("email.add_not_allowed"),
+
     /** Please confirm your email address! */
     CONFIRM_EMAIL_MESSAGE("email.request_confirmation"),
 
     /** Email address changed correctly! */
     EMAIL_CHANGED_SUCCESS("email.changed"),
+
+    /** Changing email was not allowed */
+    EMAIL_CHANGE_NOT_ALLOWED("email.change_not_allowed"),
 
     /** Your current email address is: %email */
     EMAIL_SHOW("email.email_show", "%email"),
@@ -195,7 +201,34 @@ public enum MessageKey {
     EMAIL_ALREADY_USED_ERROR("email.already_used"),
 
     /** Your secret code is %code. You can scan it from here %url */
-    TWO_FACTOR_CREATE("misc.two_factor_create", "%code", "%url"),
+    TWO_FACTOR_CREATE("two_factor.code_created", "%code", "%url"),
+
+    /** Please confirm your code with /2fa confirm &lt;code&gt; */
+    TWO_FACTOR_CREATE_CONFIRMATION_REQUIRED("two_factor.confirmation_required"),
+
+    /** Please submit your two-factor authentication code with /2fa code &lt;code&gt; */
+    TWO_FACTOR_CODE_REQUIRED("two_factor.code_required"),
+
+    /** Two-factor authentication is already enabled for your account! */
+    TWO_FACTOR_ALREADY_ENABLED("two_factor.already_enabled"),
+
+    /** No 2fa key has been generated for you or it has expired. Please run /2fa add */
+    TWO_FACTOR_ENABLE_ERROR_NO_CODE("two_factor.enable_error_no_code"),
+
+    /** Successfully enabled two-factor authentication for your account */
+    TWO_FACTOR_ENABLE_SUCCESS("two_factor.enable_success"),
+
+    /** Wrong code or code has expired. Please run /2fa add */
+    TWO_FACTOR_ENABLE_ERROR_WRONG_CODE("two_factor.enable_error_wrong_code"),
+
+    /** Two-factor authentication is not enabled for your account. Run /2fa add */
+    TWO_FACTOR_NOT_ENABLED_ERROR("two_factor.not_enabled_error"),
+
+    /** Successfully removed two-factor auth from your account */
+    TWO_FACTOR_REMOVED_SUCCESS("two_factor.removed_success"),
+
+    /** Invalid code! */
+    TWO_FACTOR_INVALID_CODE("two_factor.invalid_code"),
 
     /** You are not the owner of this account. Please choose another name! */
     NOT_OWNER_ERROR("on_join_validation.not_owner_error"),
@@ -246,27 +279,21 @@ public enum MessageKey {
     EMAIL_COOLDOWN_ERROR("email.email_cooldown_error", "%time"),
 
     /**
-     * The command you are trying to execute is sensitive and requires a verification!
-     * A verification code has been sent to your email,
-     * run the command "/verification [code]" to verify your identity.
+     * This command is sensitive and requires an email verification!
+     * Check your inbox and follow the email's instructions.
      */
     VERIFICATION_CODE_REQUIRED("verification.code_required"),
 
     /** Usage: /verification &lt;code&gt; */
     USAGE_VERIFICATION_CODE("verification.command_usage"),
 
-    /** Incorrect code, please type "/verification &lt;code&gt;" into the chat! */
+    /** Incorrect code, please type "/verification &lt;code&gt;" into the chat, using the code you received by email */
     INCORRECT_VERIFICATION_CODE("verification.incorrect_code"),
 
-    /**
-     * Your identity has been verified!
-     * You can now execute every sensitive command within the current session!
-     */
+    /** Your identity has been verified! You can now execute all commands within the current session! */
     VERIFICATION_CODE_VERIFIED("verification.success"),
 
-    /**
-     * You can already execute every sensitive command within the current session!
-     */
+    /** You can already execute every sensitive command within the current session! */
     VERIFICATION_CODE_ALREADY_VERIFIED("verification.already_verified"),
 
     /** Your code has expired! Execute another sensitive command to get a new code! */

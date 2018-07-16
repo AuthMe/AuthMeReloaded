@@ -4,12 +4,10 @@
 # %username% - Sostituisce il nome dell'utente che riceve il messaggio.
 # %displayname% - Sostituisce il nickname (e i colori) dell'utente che riceve il messaggio.
 
-# Registrazione
-
 # Registration
 registration:
     disabled: '&cLa registrazione tramite i comandi di gioco è disabilitata.'
-    name_taken: '&cHai già eseguito la registrazione, non puoi eseguirla nuovamente.'
+    name_taken: '&cHai già eseguito la registrazione!'
     register_request: '&3Per favore, esegui la registrazione con il comando: /register <password> <confermaPassword>'
     command_usage: '&cUtilizzo: /register <password> <confermaPassword>'
     reg_only: '&4Puoi giocare in questo server solo dopo aver eseguito la registrazione attraverso il sito web! Per favore, vai su http://esempio.it per procedere!'
@@ -41,7 +39,7 @@ error:
     no_permission: '&4Non hai il permesso di eseguire questa operazione.'
     unexpected_error: '&4Qualcosa è andato storto, riporta questo errore ad un amministratore!'
     max_registration: '&cHai raggiunto il numero massimo di registrazioni (%reg_count/%max_acc %reg_names) per questo indirizzo IP!'
-    logged_in: '&cHai già eseguito l''autenticazione, non è necessario eseguirla nuovamente!'
+    logged_in: '&cHai già eseguito l''autenticazione!'
     kick_for_vip: '&3Un utente VIP è entrato mentre il server era pieno e ha preso il tuo posto!'
     tempban_max_logins: '&cSei stato temporaneamente bandito per aver fallito l''autenticazione troppe volte.'
 
@@ -63,7 +61,6 @@ misc:
     logout: '&2Disconnessione avvenuta correttamente!'
     reload: '&2La configurazione e il database sono stati ricaricati correttamente!'
     usage_change_password: '&cUtilizzo: /changepassword <vecchiaPassword> <nuovaPassword>'
-    two_factor_create: '&2Il tuo codice segreto è: &f%code%%nl%&2Puoi anche scannerizzare il codice QR da qui: &f%url'
     accounts_owned_self: 'Possiedi %count account:'
     accounts_owned_other: 'Il giocatore %name possiede %count account:'
 
@@ -82,7 +79,7 @@ on_join_validation:
     country_banned: '&4Il tuo paese è bandito da questo server!'
     not_owner_error: 'Non sei il proprietario di questo account. Per favore scegli un altro nome!'
     invalid_name_case: 'Dovresti entrare con questo nome utente "%valid", al posto di "%invalid".'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Hai usato un comando troppo velocemente dal tuo accesso! Per favore, rientra nel server e aspetta un po'' di più prima di usare un qualsiasi comando.'
 
 # Email
 email:
@@ -93,8 +90,10 @@ email:
     old_email_invalid: '&cIl vecchio indirizzo email inserito non è valido, riprova!'
     invalid: '&cL''indirizzo email inserito non è valido, riprova!'
     added: '&2Indirizzo email aggiunto correttamente al tuo account!'
+    add_not_allowed: '&cNon hai il permesso di aggiungere un indirizzo email'
     request_confirmation: '&cPer favore, conferma il tuo indirizzo email!'
     changed: '&2Indirizzo email cambiato correttamente!'
+    change_not_allowed: '&cNon hai il permesso di cambiare l''indirizzo email'
     email_show: '&2Il tuo indirizzo email al momento è: &f%email'
     no_email_for_account: '&2Al momento non hai nessun indirizzo email associato al tuo account.'
     already_used: '&4L''indirizzo email inserito è già in uso'
@@ -105,7 +104,7 @@ email:
 
 # Password recovery by email
 recovery:
-    forgot_password_hint: '&3Hai dimenticato la tua password? Puoi recuperarla eseguendo il comando: /email recovery <email>'
+    forgot_password_hint: '&3Hai dimenticato la tua password? Puoi recuperarla usando il comando: /email recovery <email>'
     command_usage: '&cUtilizzo: /email recovery <email>'
     email_sent: '&2Una email di recupero è stata appena inviata al tuo indirizzo email!'
     code:
@@ -143,3 +142,16 @@ time:
     hours: 'ore'
     day: 'giorno'
     days: 'giorni'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Il tuo codice segreto è: &f%code%%nl%&2Puoi anche scannerizzare il codice QR da qui: &f%url'
+    confirmation_required: 'Per favore conferma il tuo codice con: /2fa confirm <codice>'
+    code_required: 'Per favore inserisci il tuo codice per l''autenticazione a 2 fattori con: /2fa code <codice>'
+    already_enabled: 'Hai già abilitato l''autenticazione a 2 fattori!'
+    enable_error_no_code: 'Non hai ancora generato un codice per l''autenticazione a 2 fattori oppure il tuo codice è scaduto. Per favore scrivi: /2fa add'
+    enable_success: 'Autenticazione a 2 fattori abilitata correttamente'
+    enable_error_wrong_code: 'Hai inserito un codice sbagliato o scaduto. Per favore scrivi: /2fa add'
+    not_enabled_error: 'L''autenticazione a 2 fattori non è ancora abilitata per il tuo account. Scrivi: /2fa add'
+    removed_success: 'Autenticazione a 2 fattori rimossa correttamente'
+    invalid_code: 'Il codice inserito non è valido, riprova!'

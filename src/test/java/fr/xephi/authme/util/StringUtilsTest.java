@@ -3,8 +3,6 @@ package fr.xephi.authme.util;
 import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
-
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -61,18 +59,6 @@ public class StringUtilsTest {
         // Should be false if string has content
         assertFalse(StringUtils.isEmpty("P"));
         assertFalse(StringUtils.isEmpty(" test"));
-    }
-
-    @Test
-    public void shouldFormatException() {
-        // given
-        MalformedURLException ex = new MalformedURLException("Unrecognized URL format");
-
-        // when
-        String result = StringUtils.formatException(ex);
-
-        // then
-        assertThat(result, equalTo("[MalformedURLException]: Unrecognized URL format"));
     }
 
     @Test

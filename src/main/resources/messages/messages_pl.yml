@@ -60,7 +60,6 @@ misc:
     logout: '&cPomyślnie wylogowany'
     reload: '&fKonfiguracja bazy danych została przeładowana.'
     usage_change_password: '&fUżycie: /changepassword <stare_hasło> <nowe_hasło>'
-    two_factor_create: '&2Twój sekretny kod to %code. Możesz zeskanować go tutaj: %url'
     accounts_owned_self: '&7Posiadasz %count kont:'
     accounts_owned_other: '&7Gracz %name posiada %count kont:'
 
@@ -79,7 +78,7 @@ on_join_validation:
     country_banned: '&4Ten kraj jest zbanowany na tym serwerze'
     not_owner_error: '&cNie jesteś właścicielem tego konta, wybierz inny nick!'
     invalid_name_case: '&cPowinieneś dołączyć do serwera z nicku %valid, a nie %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: '&cUżyłeś komendy zbyt szybko! Ponownie dołącz do serwera i poczekaj chwilę, zanim użyjesz dowolnej komendy.'
 
 # Email
 email:
@@ -90,8 +89,10 @@ email:
     old_email_invalid: '[AuthMe] Stary e-mail niepoprawny!'
     invalid: '[AuthMe] Nieprawidłowy adres e-mail.'
     added: '[AuthMe] E-mail został dodany do Twojego konta!'
+    add_not_allowed: '&cMożliwość dodania adresu e-mail jest wyłączona.'
     request_confirmation: '[AuthMe] Potwierdź swój adres e-mail!'
     changed: '[AuthMe] E-mail został zmieniony!'
+    change_not_allowed: '&cMożliwość zmiany adresu e-mail jest wyłączona.'
     email_show: '&2Twój aktualny adres e-mail to: &f%email'
     no_email_for_account: '&2Nie posiadasz adresu e-mail przypisanego do tego konta.'
     already_used: '&4Ten adres e-mail jest aktualnie używany!'
@@ -140,3 +141,16 @@ time:
     hours: 'godzin'
     day: 'dzień'
     days: 'dni'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Twój sekretny kod to %code. Możesz zeskanować go tutaj: %url'
+    confirmation_required: 'Musisz potwierdzić swój kod komendą /2fa confirm <kod>'
+    code_required: 'Wpisz swój kod weryfikacji dwuetapowej przy pomocy komendy /2fa code <kod>'
+    already_enabled: '&aWeryfikacja dwuetapowa jest już włączona dla Twojego konta.'
+    enable_error_no_code: '&cKod weryfikacji dwuetapowej nie został dla Ciebie wygenerowany lub wygasł. Wpisz komende /2fa add'
+    enable_success: '&aWeryfikacja dwuetapowa została włączona dla Twojego konta.'
+    enable_error_wrong_code: '&cWpisany kod jest nieprawidłowy lub wygasły. Wpisz ponownie /2fa add'
+    not_enabled_error: 'Weryfikacja dwuetapowa nie jest włączona dla twojego konta. Wpisz komende /2fa add'
+    removed_success: '&aPomyślnie usunięto weryfikacje dwuetapową z Twojego konta.'
+    invalid_code: '&cWpisany kod jest nieprawidłowy, spróbuj jeszcze raz.'

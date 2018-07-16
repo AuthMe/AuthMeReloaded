@@ -63,7 +63,6 @@ misc:
     logout: '&2Desconectado com sucesso!'
     reload: '&2Configuração e o banco de dados foram recarregados corretamente!'
     usage_change_password: '&cUse: /changepassword <senhaVelha> <senhaNova>'
-    two_factor_create: '&2O seu código secreto é %code. Você pode verificá-lo a partir daqui %url'
     accounts_owned_self: 'Você tem %count contas:'
     accounts_owned_other: 'O jogador %name tem %count contas:'
 
@@ -93,8 +92,10 @@ email:
     old_email_invalid: '&cE-mail velho inválido, tente novamente!'
     invalid: '&E-mail inválido, tente novamente!'
     added: '&2Email adicionado com sucesso à sua conta!'
+    # TODO add_not_allowed: '&cAdding email was not allowed'
     request_confirmation: '&cPor favor confirme seu endereço de email!'
     changed: '&2Troca de email com sucesso.!'
+    # TODO change_not_allowed: '&cChanging email was not allowed'
     email_show: '&2O seu endereço de e-mail atual é: &f%email'
     no_email_for_account: '&2Você atualmente não têm endereço de e-mail associado a esta conta.'
     already_used: '&4O endereço de e-mail já está sendo usado'
@@ -143,3 +144,16 @@ time:
     hours: 'horas'
     day: 'dia'
     days: 'dias'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2O seu código secreto é %code. Você pode verificá-lo a partir daqui %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    # TODO removed_success: 'Successfully removed two-factor auth from your account'
+    # TODO invalid_code: 'Invalid code!'

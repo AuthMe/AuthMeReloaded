@@ -1,7 +1,7 @@
 package fr.xephi.authme.data;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSourceResult;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.mail.EmailService;
@@ -103,8 +103,8 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean hasEmail(String name) {
         boolean result = false;
-        DataSourceResult<String> emailResult = dataSource.getEmail(name);
-        if (emailResult.playerExists()) {
+        DataSourceValue<String> emailResult = dataSource.getEmail(name);
+        if (emailResult.rowExists()) {
             final String email = emailResult.getValue();
             if (!Utils.isEmailEmpty(email)) {
                 result = true;
@@ -130,8 +130,8 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @param name the name of the player to generate a code for
      */
     private void generateCode(String name) {
-        DataSourceResult<String> emailResult = dataSource.getEmail(name);
-        if (emailResult.playerExists()) {
+        DataSourceValue<String> emailResult = dataSource.getEmail(name);
+        if (emailResult.rowExists()) {
             final String email = emailResult.getValue();
             if (!Utils.isEmailEmpty(email)) {
                 String code = RandomStringUtils.generateNum(6); // 6 digits code
@@ -162,7 +162,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      *
      * @param name the name of the player to generate a code for
      */
-    public void verify(String name){
+    public void verify(String name) {
         verifiedPlayers.add(name.toLowerCase());
     }
 
