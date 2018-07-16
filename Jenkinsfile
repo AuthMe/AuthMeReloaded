@@ -42,7 +42,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: '**/target/*.jar', excludes: '*-noshade.jar', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/*.jar', excludes: '**/target/*-noshade.jar', fingerprint: true
                 }
             }
         }
@@ -56,7 +56,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/*.jar', excludes: '**/target/*-noshade.jar', fingerprint: true
                     step([
                         $class: 'JavadocArchiver',
                         javadocDir: 'target/apidocs',
@@ -74,6 +74,12 @@ pipeline {
                     currentBuild.result = 'NOT_BUILT'
                 }
             }
+        }
+        success {
+            githubNotify description: 'The jenkins build was successful',  status: 'SUCCESS'
+        }
+        failure {
+            githubNotify description: 'The jenkins build failed',  status: 'FAILURE'
         }
     }
 }
