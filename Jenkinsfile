@@ -11,11 +11,6 @@ pipeline {
         timestamps()
     }
 
-    environment {
-        COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-        VERSION = readMavenPom().getVersion()
-    }
-
     triggers {
         githubPush()
     }
@@ -42,10 +37,6 @@ pipeline {
 
         stage ('Build') {
             steps {
-                script {
-                    currentBuild.displayName = "${VERSION} #${BUILD_NUMBER}".replace("-SNAPSHOT", "")
-                    currentBuild.description = "git-AuthMeReloaded-${COMMIT}"
-                }
                 sh 'mvn -B clean package'
             }
             post {
