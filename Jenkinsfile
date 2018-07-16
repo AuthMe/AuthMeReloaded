@@ -16,7 +16,7 @@ pipeline {
     }
 
     stages {
-        stage ('Check commit') {
+        stage ('Checkout') {
             steps {
                 script {
                     env.CI_SKIP = "false"
@@ -29,28 +29,42 @@ pipeline {
             }
         }
 
+        stage ('Clean') {
+            steps {
+                sh 'mvn -B clean'
+            }
+        }
+
         stage ('Build') {
+            when {
+                not branch "master"
+            }
             steps {
                 sh 'mvn -B clean package'
             }
             post {
                 success {
                     archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-                    step([
-                        $class: 'JavadocArchiver',
-                        javadocDir: 'target/site/apidocs',
-                        keepAll: true
-                    ])
                 }
             }
         }
 
-        stage ('Deploy') {
+        stage ('Build & Deploy') {
             when {
                 branch "master"
             }
             steps {
-                sh 'mvn -B deploy -DskipTests'
+                sh 'mvn -B clean package javadoc:aggregate-jar source:jar deploy'
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                    step([
+                        $class: 'JavadocArchiver',
+                        javadocDir: 'target/apidocs',
+                        keepAll: true
+                    ])
+                }
             }
         }
     }
