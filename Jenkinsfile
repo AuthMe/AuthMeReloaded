@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.5.4-jdk-10'
+            image 'sgdc3/maven-argon2:3.5.4-jdk-10'
             args '-v $HOME/.m2:/root/.m2'
         }
     }
@@ -26,12 +26,6 @@ pipeline {
                         error "'[CI-SKIP]' found in git commit message. Aborting."
                     }
                 }
-            }
-        }
-
-        stage ('Install system dependencies') {
-            steps {
-                sh 'apt install libargon2-0-dev && ln -s /usr/lib/x86_64-linux-gnu/libargon2.so /usr/lib/libargon2.so'
             }
         }
 
