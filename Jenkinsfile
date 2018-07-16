@@ -31,28 +31,11 @@ pipeline {
             }
         }
 
-        stage ('Build') {
-            when {
-                not {
-                    branch "master"
-                }
-            }
-            steps {
-                sh 'mvn -B clean package'
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: '**/target/*.jar', excludes: '**/target/*-noshade.jar', fingerprint: true
-                }
-            }
-        }
-
         stage ('Build & Deploy') {
-            when {
-                branch "master"
-            }
             steps {
-                sh 'mvn -B clean package javadoc:aggregate-jar source:jar deploy'
+                withCredentials([string(credentialsId: 'authme-coveralls-token', variable: 'COVERALLS_TOKEN')]) {
+                    sh 'mvn -B clean package javadoc:aggregate-jar source:jar deploy coveralls:report -DrepoToken=$COVERALLS_TOKEN'
+                }
             }
             post {
                 success {
@@ -62,6 +45,8 @@ pipeline {
                         javadocDir: 'target/apidocs',
                         keepAll: true
                     ])
+                    jacoco(execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src/main/java')
+                    junit 'target/surefire-reports/*.xml'
                 }
             }
         }
@@ -74,12 +59,6 @@ pipeline {
                     currentBuild.result = 'NOT_BUILT'
                 }
             }
-        }
-        success {
-            githubNotify description: 'The jenkins build was successful',  status: 'SUCCESS'
-        }
-        failure {
-            githubNotify description: 'The jenkins build failed',  status: 'FAILURE'
         }
     }
 }
