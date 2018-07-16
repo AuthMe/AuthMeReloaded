@@ -11,6 +11,10 @@ pipeline {
         timestamps()
     }
 
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage ('Checkout') {
             steps {
