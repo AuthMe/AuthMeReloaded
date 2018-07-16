@@ -69,11 +69,5 @@ pipeline {
                 }
             }
         }
-        success {
-            githubNotify description: 'The jenkins build was successful',  status: 'SUCCESS'
-        }
-        failure {
-            githubNotify description: 'The jenkins build failed',  status: 'FAILURE'
-        }
     }
 }
