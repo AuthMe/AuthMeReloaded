@@ -4,6 +4,7 @@ website: ${project.url}
 description: ${project.description}
 main: ${bukkitplugin.main}
 version: ${bukkitplugin.version}
+api-version: 1.13
 softdepend:
     - Vault
     - LuckPerms

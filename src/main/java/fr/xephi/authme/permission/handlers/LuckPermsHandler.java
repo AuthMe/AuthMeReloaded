@@ -200,7 +200,7 @@ public class LuckPermsHandler implements PermissionHandler {
     @Override
     public void loadUserData(String name) throws PermissionLoadUserException {
         try {
-            UUID uuid = luckPermsApi.getStorage().getUUID(name).get(5, TimeUnit.SECONDS);
+            UUID uuid = luckPermsApi.getUserManager().lookupUuid(name).get(5, TimeUnit.SECONDS);
             loadUserData(uuid);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new PermissionLoadUserException("Unable to load the permission data of the user " + name, e);
