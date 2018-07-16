@@ -37,7 +37,9 @@ pipeline {
 
         stage ('Build') {
             when {
-                not branch "master"
+                not {
+                    branch "master"
+                }
             }
             steps {
                 sh 'mvn -B clean package'
