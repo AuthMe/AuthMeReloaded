@@ -35,7 +35,7 @@ pipeline {
         stage ('Build & Deploy') {
             steps {
                 withMaven(
-                    jdk 'OracleJDK 8',
+                    jdk: 'OracleJDK 8',
                     maven: 'Maven 3',
                     globalMavenSettingsConfig: 'e5b005b5-be4d-4709-8657-1981662bcbe3',
                     mavenOpts: '-Xmx4G'
