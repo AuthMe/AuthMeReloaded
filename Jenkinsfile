@@ -3,6 +3,10 @@ pipeline {
         label 'argon2'
     }
 
+    tools {
+        jdk 'OracleJDK 8'
+    }
+
     options {
         timeout(time: 5, unit: 'MINUTES')
         timestamps()
@@ -36,7 +40,6 @@ pipeline {
             steps {
                 withMaven(
                     maven: 'Maven 3'
-                    jdk: 'OracleJDK 8'
                     globalMavenSettingsConfig: 'e5b005b5-be4d-4709-8657-1981662bcbe3'
                     mavenOpts: '-Xmx4G'
                 ) {
