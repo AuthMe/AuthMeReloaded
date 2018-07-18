@@ -1,9 +1,11 @@
 pipeline {
     agent {
-        docker {
-            image 'sgdc3/maven-argon2:3.5.4-jdk-10'
-            args '-v $HOME/.m2:/root/.m2'
-        }
+        label 'argon2'
+    }
+
+    tools {
+        maven 'Maven 3'
+        jdk 'OracleJDK 8'
     }
 
     options {
