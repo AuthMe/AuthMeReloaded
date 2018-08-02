@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Dec 01 19:16:17 CET 2017. See docs/hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Thu Aug 02 21:12:09 CEST 2018. See docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -10,6 +10,7 @@ Algorithm | Recommendation | Hash length | ASCII |     | Salt type | Length | Se
 ARGON2 | Recommended | 96 |  | | Text | 16 | 
 BCRYPT | Recommended | 60 |  | | Text |  | 
 BCRYPT2Y | Recommended | 60 |  | | Text | 22 | 
+CMW | Do not use | 32 |  | | None |  | 
 CRAZYCRYPT1 | Do not use | 128 |  | | Username |  | 
 IPB3 | Acceptable | 32 |  | | Text | 5 | Y
 IPB4 | Does not work | 60 |  | | Text | 22 | Y
@@ -79,4 +80,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Dec 01 19:16:17 CET 2017
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Aug 02 21:12:09 CEST 2018

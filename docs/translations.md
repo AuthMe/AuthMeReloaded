@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Mon Jun 25 21:53:35 CEST 2018. See docs/translations/translations.tpl.md -->
+<!-- File auto-generated on Thu Aug 02 21:12:10 CEST 2018. See docs/translations/translations.tpl.md -->
 
 # AuthMe Translations
 The following translations are available in AuthMe. Set `messagesLanguage` to the language code
@@ -13,7 +13,7 @@ Code | Language | Translated | &nbsp;
 [cz](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_cz.yml) | Czech | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
 [de](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_de.yml) | German | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
 [eo](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_eo.yml) | Esperanto | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
-[es](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_es.yml) | Spanish | 92% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=77dd44&w=92&h=5&txtpad=1" alt="bar" />
+[es](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_es.yml) | Spanish | 100% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=66ff66&w=100&h=5&txtpad=1" alt="bar" />
 [et](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_et.yml) | Estonian | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
 [eu](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_eu.yml) | Basque | 42% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aa5500&w=42&h=5&txtpad=1" alt="bar" />
 [fi](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_fi.yml) | Finnish | 45% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aa5500&w=45&h=5&txtpad=1" alt="bar" />
@@ -28,9 +28,9 @@ Code | Language | Translated | &nbsp;
 [pl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pl.yml) | Polish | 100% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=66ff66&w=100&h=5&txtpad=1" alt="bar" />
 [pt](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pt.yml) | Portuguese | 100% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=66ff66&w=100&h=5&txtpad=1" alt="bar" />
 [ro](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ro.yml) | Romanian | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
-[ru](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ru.yml) | Russian | 92% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=77dd44&w=92&h=5&txtpad=1" alt="bar" />
+[ru](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ru.yml) | Russian | 93% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=77dd44&w=93&h=5&txtpad=1" alt="bar" />
 [sk](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_sk.yml) | Slovakian | 80% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=aaaa11&w=80&h=5&txtpad=1" alt="bar" />
-[tr](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_tr.yml) | Turkish | 76% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=bb9900&w=76&h=5&txtpad=1" alt="bar" />
+[tr](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_tr.yml) | Turkish | 100% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=66ff66&w=100&h=5&txtpad=1" alt="bar" />
 [uk](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_uk.yml) | Ukrainian | 63% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=bb7700&w=63&h=5&txtpad=1" alt="bar" />
 [vn](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_vn.yml) | Vietnamese | 77% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=bb9900&w=77&h=5&txtpad=1" alt="bar" />
 [zhcn](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhcn.yml) | Chinese (China) | 89% | <img src="https://placeholdit.imgix.net/~text?txtsize=5&bg=88cc33&w=89&h=5&txtpad=1" alt="bar" />
@@ -41,4 +41,4 @@ Code | Language | Translated | &nbsp;
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Jun 25 21:53:35 CEST 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Aug 02 21:12:10 CEST 2018
