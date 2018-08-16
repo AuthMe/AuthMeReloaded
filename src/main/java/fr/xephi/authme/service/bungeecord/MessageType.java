@@ -12,7 +12,7 @@ public enum MessageType {
     REGISTER("register", true),
     UNREGISTER("unregister", true),
     // Bungee-only outgoing messages
-    //TODO should be broadcasts, AuthMeBungee needs to be adapted.
+    // TODO #1614: should be broadcasts, AuthMeBungee needs to be adapted.
     LOGIN("login", false),
     LOGOUT("logout", false),
     // Bungee-only incoming messages
