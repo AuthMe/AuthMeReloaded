@@ -12,7 +12,7 @@ public enum MessageType {
     REGISTER("register", true),
     UNREGISTER("unregister", true),
     // Bungee-only outgoing messages
-    // TODO: should be broadcasts, AuthMeBungee needs to be adapted.
+    //TODO: should be broadcasts, AuthMeBungee needs to be adapted.
     LOGIN("login", false),
     LOGOUT("logout", false),
     // Bungee-only incoming messages
@@ -34,6 +34,12 @@ public enum MessageType {
         return broadcast;
     }
 
+    /**
+     * Returns the MessageType with the given ID.
+     *
+     * @param id the message type id.
+     * @return the MessageType with the given id, MessageType.UNKNOWN if invalid.
+     */
     public static MessageType fromId(String id) {
         for(MessageType current : values()) {
             if(current.getId().equals(id)) {

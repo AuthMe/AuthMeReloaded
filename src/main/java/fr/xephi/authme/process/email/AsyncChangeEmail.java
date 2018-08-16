@@ -36,16 +36,17 @@ public class AsyncChangeEmail implements AsynchronousProcess {
 
     @Inject
     private BungeeSender bungeeSender;
-    
+
     @Inject
     private BukkitService bukkitService;
 
-    AsyncChangeEmail() { }
+    AsyncChangeEmail() {
+    }
 
     /**
      * Handles the request to change the player's email address.
      *
-     * @param player the player to change the email for
+     * @param player   the player to change the email for
      * @param oldEmail provided old email
      * @param newEmail provided new email
      */
@@ -71,6 +72,14 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         }
     }
 
+    /**
+     * Saves the new email value into the database and informs services.
+     *
+     * @param auth     the player auth object
+     * @param player   the player object
+     * @param oldEmail the old email value
+     * @param newEmail the new email value
+     */
     private void saveNewEmail(PlayerAuth auth, Player player, String oldEmail, String newEmail) {
         EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
             -> new EmailChangedEvent(player, oldEmail, newEmail, isAsync));
