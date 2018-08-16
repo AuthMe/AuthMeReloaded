@@ -3,6 +3,7 @@ package fr.xephi.authme.initialization;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.ValidationService;
@@ -72,7 +73,9 @@ public class OnShutdownPlayerSaver {
                 .realName(player.getName())
                 .location(loc).build();
             dataSource.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, player.getName());
+            if (dataSource instanceof CacheDataSource) {
+                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, player.getName());
+            }
         }
     }
 }

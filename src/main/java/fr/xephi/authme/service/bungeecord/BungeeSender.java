@@ -75,13 +75,17 @@ public class BungeeSender implements SettingsDependent {
      * @param type       The message type, See {@link MessageType}
      * @param playerName the player related to the message
      */
-    public void sendAuthMeBungeecordMessage(String type, String playerName) {
+    public void sendAuthMeBungeecordMessage(MessageType type, String playerName) {
         if (isEnabled) {
-            if(!plugin.isEnabled()) {
+            if (!plugin.isEnabled()) {
                 ConsoleLogger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
                 return;
             }
-            sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
+            if (type.isBroadcast()) {
+                sendBungeecordMessage("Forward", "ALL", "AuthMe", type.getId(), playerName.toLowerCase());
+            } else {
+                sendBungeecordMessage("AuthMe", type.getId(), playerName.toLowerCase());
+            }
         }
     }
 

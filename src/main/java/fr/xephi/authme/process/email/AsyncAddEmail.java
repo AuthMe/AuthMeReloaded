@@ -3,6 +3,7 @@ package fr.xephi.authme.process.email;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.EmailChangedEvent;
 import fr.xephi.authme.message.MessageKey;
@@ -72,7 +73,9 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 auth.setEmail(email);
                 if (dataSource.updateEmail(auth)) {
                     playerCache.updatePlayer(auth);
-                    bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
+                    if (dataSource instanceof CacheDataSource) {
+                        bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
+                    }
                     service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
                     ConsoleLogger.warning("Could not save email for player '" + player + "'");

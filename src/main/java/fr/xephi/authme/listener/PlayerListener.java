@@ -3,6 +3,7 @@ package fr.xephi.authme.listener;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -488,7 +489,9 @@ public class PlayerListener implements Listener {
                 .location(spawn)
                 .build();
             dataSource.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            if (dataSource instanceof CacheDataSource) {
+                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            }
         }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);

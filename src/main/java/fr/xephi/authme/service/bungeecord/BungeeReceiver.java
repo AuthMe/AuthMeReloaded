@@ -61,17 +61,17 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
 
         String type = in.readUTF();
         String name = in.readUTF();
-        switch (type) {
-            case MessageType.UNREGISTER:
+        switch (MessageType.fromId(type)) {
+            case UNREGISTER:
                 dataSource.invalidateCache(name);
                 break;
-            case MessageType.REFRESH_PASSWORD:
-            case MessageType.REFRESH_QUITLOC:
-            case MessageType.REFRESH_EMAIL:
-            case MessageType.REFRESH:
+            case REFRESH_PASSWORD:
+            case REFRESH_QUITLOC:
+            case REFRESH_EMAIL:
+            case REFRESH:
                 dataSource.refreshCache(name);
                 break;
-            case MessageType.BUNGEE_LOGIN:
+            case BUNGEE_LOGIN:
                 handleBungeeLogin(name);
                 break;
             default:

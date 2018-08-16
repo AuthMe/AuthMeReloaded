@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
@@ -88,7 +89,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            if (database instanceof CacheDataSource) {
+                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            }
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip

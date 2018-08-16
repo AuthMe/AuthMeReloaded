@@ -9,6 +9,7 @@ import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboMessageType;
 import fr.xephi.authme.data.limbo.LimboPlayerState;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.events.FailedLoginEvent;
@@ -237,7 +238,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
             auth.setLastLogin(System.currentTimeMillis());
             auth.setLastIp(ip);
             dataSource.updateSession(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
+            if (dataSource instanceof CacheDataSource) {
+                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
+            }
 
             // Successful login, so reset the captcha & temp ban count
             final String name = player.getName();

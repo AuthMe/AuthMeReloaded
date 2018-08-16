@@ -3,6 +3,7 @@ package fr.xephi.authme.process.logout;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -59,11 +60,15 @@ public class AsynchronousLogout implements AsynchronousProcess {
 
         PlayerAuth auth = playerCache.getAuth(name);
         database.updateSession(auth);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, name);
+        if (database instanceof CacheDataSource) {
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, name);
+        }
         if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
             auth.setQuitLocation(player.getLocation());
             database.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            if (database instanceof CacheDataSource) {
+                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            }
         }
 
         playerCache.removePlayer(name);
