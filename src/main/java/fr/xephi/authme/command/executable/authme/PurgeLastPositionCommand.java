@@ -2,7 +2,6 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
-import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;

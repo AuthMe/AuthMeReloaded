@@ -9,7 +9,6 @@ import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.limbo.LimboMessageType;
 import fr.xephi.authme.data.limbo.LimboPlayerState;
 import fr.xephi.authme.data.limbo.LimboService;
-import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.events.FailedLoginEvent;
