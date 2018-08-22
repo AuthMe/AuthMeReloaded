@@ -238,9 +238,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             auth.setLastLogin(System.currentTimeMillis());
             auth.setLastIp(ip);
             dataSource.updateSession(auth);
-            if (dataSource instanceof CacheDataSource) {
-                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
-            }
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
 
             // Successful login, so reset the captcha & temp ban count
             final String name = player.getName();

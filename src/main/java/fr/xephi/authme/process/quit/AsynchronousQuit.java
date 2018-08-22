@@ -89,9 +89,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);
-            if (database instanceof CacheDataSource) {
-                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
-            }
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip

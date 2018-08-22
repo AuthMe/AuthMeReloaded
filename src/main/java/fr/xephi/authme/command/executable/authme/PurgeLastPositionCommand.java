@@ -35,9 +35,7 @@ public class PurgeLastPositionCommand implements ExecutableCommand {
             for (PlayerAuth auth : dataSource.getAllAuths()) {
                 resetLastPosition(auth);
                 dataSource.updateQuitLoc(auth);
-                if (dataSource instanceof CacheDataSource) {
-                    bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, playerName);
-                }
+                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, playerName);
             }
             sender.sendMessage("All players last position locations are now reset");
         } else {
@@ -50,9 +48,7 @@ public class PurgeLastPositionCommand implements ExecutableCommand {
 
             resetLastPosition(auth);
             dataSource.updateQuitLoc(auth);
-            if (dataSource instanceof CacheDataSource) {
-                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, playerName);
-            }
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, playerName);
             sender.sendMessage(playerName + "'s last position location is now reset");
         }
     }

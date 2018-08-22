@@ -1,9 +1,8 @@
 package fr.xephi.authme.service.bungeecord;
 
+import java.util.Optional;
+
 public enum MessageType {
-    // Placeholders
-    UNKNOWN("unknown", false),
-    // Broadcast messages
     REFRESH_PASSWORD("refresh.password", true),
     REFRESH_SESSION("refresh.session", true),
     REFRESH_QUITLOC("refresh.quitloc", true),
@@ -11,12 +10,9 @@ public enum MessageType {
     REFRESH("refresh", true),
     REGISTER("register", true),
     UNREGISTER("unregister", true),
-    // Bungee-only outgoing messages
-    // TODO #1614: should be broadcasts, AuthMeBungee needs to be adapted.
-    LOGIN("login", false),
-    LOGOUT("logout", false),
-    // Bungee-only incoming messages
-    BUNGEE_LOGIN("bungeelogin", false);
+    LOGIN("login", true),
+    LOGOUT("logout", true),
+    PERFORM_LOGIN("perform.login", false);
 
     private final String id;
     private final boolean broadcast;
@@ -49,14 +45,15 @@ public enum MessageType {
      *
      * @param id the message type id.
      *
-     * @return the MessageType with the given id, MessageType.UNKNOWN if invalid.
+     * @return the MessageType with the given id, empty if invalid.
      */
-    public static MessageType fromId(String id) {
+    public static Optional<MessageType> fromId(String id) {
         for (MessageType current : values()) {
             if (current.getId().equals(id)) {
-                return current;
+                return Optional.of(current);
             }
         }
-        return UNKNOWN;
+        return Optional.empty();
     }
+
 }

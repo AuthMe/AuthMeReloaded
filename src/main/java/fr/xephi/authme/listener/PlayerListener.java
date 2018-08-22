@@ -489,9 +489,7 @@ public class PlayerListener implements Listener {
                 .location(spawn)
                 .build();
             dataSource.updateQuitLoc(auth);
-            if (dataSource instanceof CacheDataSource) {
-                bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
-            }
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);

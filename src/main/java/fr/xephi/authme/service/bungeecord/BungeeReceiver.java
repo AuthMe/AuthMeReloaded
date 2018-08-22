@@ -15,6 +15,7 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class BungeeReceiver implements PluginMessageListener, SettingsDependent {
 
@@ -59,32 +60,36 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
             return;
         }
 
-        String type = in.readUTF();
-        String name = in.readUTF();
-        switch (MessageType.fromId(type)) {
+        Optional<MessageType> type = MessageType.fromId(in.readUTF());
+        if(!type.isPresent()) {
+            ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", type);
+            return;
+        }
+
+        String argument = in.readUTF();
+        switch (type.get()) {
             case UNREGISTER:
-                dataSource.invalidateCache(name);
+                dataSource.invalidateCache(argument);
                 break;
             case REFRESH_PASSWORD:
             case REFRESH_QUITLOC:
             case REFRESH_EMAIL:
             case REFRESH:
-                dataSource.refreshCache(name);
+                dataSource.refreshCache(argument);
                 break;
-            case BUNGEE_LOGIN:
-                handleBungeeLogin(name);
+            case PERFORM_LOGIN:
+                performLogin(argument);
                 break;
             default:
-                ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", type);
         }
     }
 
-    private void handleBungeeLogin(String name) {
+    private void performLogin(String name) {
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
             management.forceLogin(player);
             ConsoleLogger.info("The user " + player.getName() + " has been automatically logged in, "
-                + "as requested by the AuthMeBungee integration.");
+                + "as requested via plugin messaging.");
         }
 
     }
