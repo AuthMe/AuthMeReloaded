@@ -23,9 +23,10 @@ public final class ProtectionSettings implements SettingsHolder {
     @Comment({
         "Countries allowed to join the server and register. For country codes, see",
         "https://dev.maxmind.com/geoip/legacy/codes/iso3166/",
+        "Use \"LOCALHOST\" for local addresses.",
         "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_WHITELIST =
-        newListProperty("Protection.countries", "US", "GB");
+        newListProperty("Protection.countries", "US", "GB", "LOCALHOST");
 
     @Comment({
         "Countries not allowed to join the server and register",

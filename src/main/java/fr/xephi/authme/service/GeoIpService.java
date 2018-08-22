@@ -268,9 +268,13 @@ public class GeoIpService {
      * Get the country code of the given IP address.
      *
      * @param ip textual IP address to lookup.
-     * @return two-character ISO 3166-1 alpha code for the country or "--" if it cannot be fetched.
+     * @return two-character ISO 3166-1 alpha code for the country, "LOCALHOST" for local addresses
+     * or "--" if it cannot be fetched.
      */
     public String getCountryCode(String ip) {
+        if(InternetProtocolUtils.isLocalAddress(ip)) {
+            return "LOCALHOST";
+        }
         return getCountry(ip).map(Country::getIsoCode).orElse("--");
     }
 
@@ -278,9 +282,12 @@ public class GeoIpService {
      * Get the country name of the given IP address.
      *
      * @param ip textual IP address to lookup.
-     * @return The name of the country or "N/A" if it cannot be fetched.
+     * @return The name of the country, "LocalHost" for local addresses, or "N/A" if it cannot be fetched.
      */
     public String getCountryName(String ip) {
+        if(InternetProtocolUtils.isLocalAddress(ip)) {
+            return "LocalHost";
+        }
         return getCountry(ip).map(Country::getName).orElse("N/A");
     }
 
@@ -297,7 +304,7 @@ public class GeoIpService {
      * </ul>
      */
     private Optional<Country> getCountry(String ip) {
-        if (ip == null || ip.isEmpty() || InternetProtocolUtils.isLocalAddress(ip) || !isDataAvailable()) {
+        if (ip == null || ip.isEmpty() || !isDataAvailable()) {
             return Optional.empty();
         }
 
