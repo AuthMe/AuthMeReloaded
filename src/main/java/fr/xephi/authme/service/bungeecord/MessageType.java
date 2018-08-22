@@ -20,10 +20,16 @@ public enum MessageType {
 
     private final String id;
     private final boolean broadcast;
+    private final boolean requiresCaching;
 
-    MessageType(String id, boolean broadcast) {
+    MessageType(String id, boolean broadcast, boolean requiresCaching) {
         this.id = id;
         this.broadcast = broadcast;
+        this.requiresCaching = requiresCaching;
+    }
+
+    MessageType(String id, boolean broadcast) {
+        this(id, broadcast, false);
     }
 
     public String getId() {
@@ -34,15 +40,20 @@ public enum MessageType {
         return broadcast;
     }
 
+    public boolean isRequiresCaching() {
+        return requiresCaching;
+    }
+
     /**
      * Returns the MessageType with the given ID.
      *
      * @param id the message type id.
+     *
      * @return the MessageType with the given id, MessageType.UNKNOWN if invalid.
      */
     public static MessageType fromId(String id) {
-        for(MessageType current : values()) {
-            if(current.getId().equals(id)) {
+        for (MessageType current : values()) {
+            if (current.getId().equals(id)) {
                 return current;
             }
         }

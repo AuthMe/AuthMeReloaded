@@ -72,6 +72,11 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public boolean isCached() {
+        return true;
+    }
+
+    @Override
     public boolean isAuthAvailable(String user) {
         return getAuth(user) != null;
     }
