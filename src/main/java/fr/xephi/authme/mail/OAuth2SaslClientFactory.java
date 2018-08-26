@@ -15,12 +15,11 @@
  */
 package fr.xephi.authme.mail;
 
-import java.util.Map;
-import java.util.logging.Logger;
-
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslClientFactory;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A SaslClientFactory that returns instances of OAuth2SaslClient.

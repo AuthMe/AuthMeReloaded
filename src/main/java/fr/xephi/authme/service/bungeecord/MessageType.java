@@ -1,19 +1,59 @@
 package fr.xephi.authme.service.bungeecord;
 
-public final class MessageType {
+import java.util.Optional;
 
-    public static final String LOGIN = "login";
-    public static final String LOGOUT = "logout";
-    public static final String REGISTER = "register";
-    public static final String UNREGISTER = "unregister";
-    public static final String REFRESH_PASSWORD = "refresh.password";
-    public static final String REFRESH_SESSION = "refresh.session";
-    public static final String REFRESH_QUITLOC = "refresh.quitloc";
-    public static final String REFRESH_EMAIL = "refresh.email";
-    public static final String REFRESH = "refresh";
-    public static final String BUNGEE_LOGIN = "bungeelogin";
+public enum MessageType {
+    REFRESH_PASSWORD("refresh.password", true),
+    REFRESH_SESSION("refresh.session", true),
+    REFRESH_QUITLOC("refresh.quitloc", true),
+    REFRESH_EMAIL("refresh.email", true),
+    REFRESH("refresh", true),
+    REGISTER("register", true),
+    UNREGISTER("unregister", true),
+    LOGIN("login", true),
+    LOGOUT("logout", true),
+    PERFORM_LOGIN("perform.login", false);
 
-    private MessageType() {
+    private final String id;
+    private final boolean broadcast;
+    private final boolean requiresCaching;
+
+    MessageType(String id, boolean broadcast, boolean requiresCaching) {
+        this.id = id;
+        this.broadcast = broadcast;
+        this.requiresCaching = requiresCaching;
+    }
+
+    MessageType(String id, boolean broadcast) {
+        this(id, broadcast, false);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public boolean isBroadcast() {
+        return broadcast;
+    }
+
+    public boolean isRequiresCaching() {
+        return requiresCaching;
+    }
+
+    /**
+     * Returns the MessageType with the given ID.
+     *
+     * @param id the message type id.
+     *
+     * @return the MessageType with the given id, empty if invalid.
+     */
+    public static Optional<MessageType> fromId(String id) {
+        for (MessageType current : values()) {
+            if (current.getId().equals(id)) {
+                return Optional.of(current);
+            }
+        }
+        return Optional.empty();
     }
 
 }

@@ -13,12 +13,12 @@ import com.maxmind.db.Reader.FileMode;
 import com.maxmind.db.cache.CHMCache;
 import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.InternetProtocolUtils;
 
+import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,8 +40,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
-
-import javax.inject.Inject;
 
 public class GeoIpService {
 

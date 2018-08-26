@@ -3,7 +3,6 @@ package fr.xephi.authme.task.purge;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.permission.handlers.PermissionLoadUserException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

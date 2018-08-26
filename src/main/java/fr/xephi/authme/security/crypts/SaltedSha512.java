@@ -1,9 +1,9 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
-import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
+import fr.xephi.authme.util.RandomStringUtils;
 
 @Recommendation(Usage.RECOMMENDED)
 public class SaltedSha512 extends SeparateSaltMethod {

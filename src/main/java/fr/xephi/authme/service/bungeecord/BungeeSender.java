@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
@@ -17,6 +18,7 @@ public class BungeeSender implements SettingsDependent {
 
     private final AuthMe plugin;
     private final BukkitService bukkitService;
+    private final DataSource dataSource;
 
     private boolean isEnabled;
     private String destinationServerOnLogin;
@@ -25,9 +27,10 @@ public class BungeeSender implements SettingsDependent {
      * Constructor.
      */
     @Inject
-    BungeeSender(AuthMe plugin, BukkitService bukkitService, Settings settings) {
+    BungeeSender(AuthMe plugin, BukkitService bukkitService, DataSource dataSource, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
+        this.dataSource = dataSource;
         reload(settings);
     }
 
@@ -75,13 +78,20 @@ public class BungeeSender implements SettingsDependent {
      * @param type       The message type, See {@link MessageType}
      * @param playerName the player related to the message
      */
-    public void sendAuthMeBungeecordMessage(String type, String playerName) {
+    public void sendAuthMeBungeecordMessage(MessageType type, String playerName) {
         if (isEnabled) {
-            if(!plugin.isEnabled()) {
+            if (!plugin.isEnabled()) {
                 ConsoleLogger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
                 return;
             }
-            sendBungeecordMessage("AuthMe", type, playerName.toLowerCase());
+            if(type.isRequiresCaching() && !dataSource.isCached()) {
+                return;
+            }
+            if (type.isBroadcast()) {
+                sendBungeecordMessage("Forward", "ALL", "AuthMe", type.getId(), playerName.toLowerCase());
+            } else {
+                sendBungeecordMessage("AuthMe", type.getId(), playerName.toLowerCase());
+            }
         }
     }
 
