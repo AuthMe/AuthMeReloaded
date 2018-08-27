@@ -66,7 +66,14 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
             return;
         }
 
-        String argument = in.readUTF();
+        String argument;
+        try {
+            argument = in.readUTF();
+        } catch (IllegalStateException e) {
+            ConsoleLogger.warning("Received invalid plugin message of type " + type.get().name() + ": argument is missing!");
+            return;
+        }
+
         switch (type.get()) {
             case UNREGISTER:
                 dataSource.invalidateCache(argument);
