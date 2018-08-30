@@ -18,13 +18,13 @@ public enum MessageType {
     private final boolean broadcast;
     private final boolean requiresCaching;
 
-    MessageType(String id, boolean broadcast, boolean requiresCaching) {
+    MessageType(final String id, final boolean broadcast, final boolean requiresCaching) {
         this.id = id;
         this.broadcast = broadcast;
         this.requiresCaching = requiresCaching;
     }
 
-    MessageType(String id, boolean broadcast) {
+    MessageType(final String id, final boolean broadcast) {
         this(id, broadcast, false);
     }
 
@@ -47,8 +47,8 @@ public enum MessageType {
      *
      * @return the MessageType with the given id, empty if invalid.
      */
-    public static Optional<MessageType> fromId(String id) {
-        for (MessageType current : values()) {
+    public static Optional<MessageType> fromId(final String id) {
+        for (final MessageType current : values()) {
             if (current.getId().equals(id)) {
                 return Optional.of(current);
             }

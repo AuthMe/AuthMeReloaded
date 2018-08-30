@@ -27,7 +27,8 @@ public class BungeeSender implements SettingsDependent {
      * Constructor.
      */
     @Inject
-    BungeeSender(AuthMe plugin, BukkitService bukkitService, DataSource dataSource, Settings settings) {
+    BungeeSender(final AuthMe plugin, final BukkitService bukkitService, final DataSource dataSource,
+                 final Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         this.dataSource = dataSource;
@@ -35,12 +36,12 @@ public class BungeeSender implements SettingsDependent {
     }
 
     @Override
-    public void reload(Settings settings) {
+    public void reload(final Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         this.destinationServerOnLogin = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
 
         if (this.isEnabled) {
-            Messenger messenger = plugin.getServer().getMessenger();
+            final Messenger messenger = plugin.getServer().getMessenger();
             if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
                 messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
             }
@@ -51,11 +52,26 @@ public class BungeeSender implements SettingsDependent {
         return isEnabled;
     }
 
-    private void sendBungeecordMessage(String... data) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        for (String element : data) {
+    private void sendBungeecordMessage(final String... data) {
+        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        for (final String element : data) {
             out.writeUTF(element);
         }
+        bukkitService.sendBungeeMessage(out.toByteArray());
+    }
+
+    private void sendForwardedBungeecordMessage(final String subChannel, final String... data) {
+        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF(subChannel);
+        final ByteArrayDataOutput dataOut = ByteStreams.newDataOutput();
+        for (final String element : data) {
+            dataOut.writeUTF(element);
+        }
+        final byte[] dataBytes = dataOut.toByteArray();
+        out.writeShort(dataBytes.length);
+        out.write(dataBytes);
         bukkitService.sendBungeeMessage(out.toByteArray());
     }
 
@@ -65,7 +81,7 @@ public class BungeeSender implements SettingsDependent {
      *
      * @param player The player to send.
      */
-    public void connectPlayerOnLogin(Player player) {
+    public void connectPlayerOnLogin(final Player player) {
         if (isEnabled && !destinationServerOnLogin.isEmpty()) {
             bukkitService.scheduleSyncDelayedTask(() ->
                 sendBungeecordMessage("ConnectOther", player.getName(), destinationServerOnLogin), 5L);
@@ -78,19 +94,19 @@ public class BungeeSender implements SettingsDependent {
      * @param type       The message type, See {@link MessageType}
      * @param playerName the player related to the message
      */
-    public void sendAuthMeBungeecordMessage(MessageType type, String playerName) {
+    public void sendAuthMeBungeecordMessage(final MessageType type, final String playerName) {
         if (isEnabled) {
             if (!plugin.isEnabled()) {
                 ConsoleLogger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
                 return;
             }
-            if(type.isRequiresCaching() && !dataSource.isCached()) {
+            if (type.isRequiresCaching() && !dataSource.isCached()) {
                 return;
             }
             if (type.isBroadcast()) {
-                sendBungeecordMessage("Forward", "ALL", "AuthMe", type.getId(), playerName.toLowerCase());
+                sendForwardedBungeecordMessage("AuthMe.v2.Broadcast", type.getId(), playerName.toLowerCase());
             } else {
-                sendBungeecordMessage("AuthMe", type.getId(), playerName.toLowerCase());
+                sendBungeecordMessage("AuthMe.v2", type.getId(), playerName.toLowerCase());
             }
         }
     }
