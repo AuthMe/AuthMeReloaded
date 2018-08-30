@@ -63,7 +63,7 @@ public class BungeeSender implements SettingsDependent {
     private void sendForwardedBungeecordMessage(final String subChannel, final String... data) {
         final ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
-        out.writeUTF("ALL");
+        out.writeUTF("ONLINE");
         out.writeUTF(subChannel);
         final ByteArrayDataOutput dataOut = ByteStreams.newDataOutput();
         for (final String element : data) {
