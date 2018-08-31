@@ -76,7 +76,8 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
     }
 
     @VisibleForTesting
-    PostgreSqlDataSource(Settings settings, HikariDataSource hikariDataSource, MySqlExtensionsFactory extensionsFactory) {
+    PostgreSqlDataSource(Settings settings, HikariDataSource hikariDataSource,
+                         MySqlExtensionsFactory extensionsFactory) {
         ds = hikariDataSource;
         setParameters(settings, extensionsFactory);
     }
