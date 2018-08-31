@@ -7,7 +7,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
-import fr.xephi.authme.datasource.PostgreSQL;
+import fr.xephi.authme.datasource.PostgreSqlDataSource;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.datasource.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
@@ -73,7 +73,7 @@ public class DataSourceProvider implements Provider<DataSource> {
                 dataSource = new MySQL(settings, mySqlExtensionsFactory);
                 break;
             case POSTGRESQL:
-                dataSource = new PostgreSQL(settings, mySqlExtensionsFactory);
+                dataSource = new PostgreSqlDataSource(settings, mySqlExtensionsFactory);
                 break;
             case SQLITE:
                 dataSource = new SQLite(settings, dataFolder);

@@ -30,10 +30,8 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 /**
  * PostgreSQL data source.
  */
-@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
-public class PostgreSQL extends AbstractSqlDataSource {
+public class PostgreSqlDataSource extends AbstractSqlDataSource {
 
-    private boolean useSsl;
     private String host;
     private String port;
     private String username;
@@ -47,7 +45,7 @@ public class PostgreSQL extends AbstractSqlDataSource {
     private MySqlExtension sqlExtension;
     private HikariDataSource ds;
 
-    public PostgreSQL(Settings settings, MySqlExtensionsFactory extensionsFactory) throws SQLException {
+    public PostgreSqlDataSource(Settings settings, MySqlExtensionsFactory extensionsFactory) throws SQLException {
         setParameters(settings, extensionsFactory);
 
         // Set the connection arguments (and check if connection is ok)
@@ -78,7 +76,7 @@ public class PostgreSQL extends AbstractSqlDataSource {
     }
 
     @VisibleForTesting
-    PostgreSQL(Settings settings, HikariDataSource hikariDataSource, MySqlExtensionsFactory extensionsFactory) {
+    PostgreSqlDataSource(Settings settings, HikariDataSource hikariDataSource, MySqlExtensionsFactory extensionsFactory) {
         ds = hikariDataSource;
         setParameters(settings, extensionsFactory);
     }
@@ -102,7 +100,6 @@ public class PostgreSQL extends AbstractSqlDataSource {
         this.sqlExtension = extensionsFactory.buildExtension(col);
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
-        this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
     }
 
     /**
@@ -124,22 +121,12 @@ public class PostgreSQL extends AbstractSqlDataSource {
         ds.setUsername(this.username);
         ds.setPassword(this.password);
 
-        // Request postgres over SSL
-        ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
-
-        // Encoding
-        ds.addDataSourceProperty("characterEncoding", "utf8");
-        ds.addDataSourceProperty("encoding", "UTF-8");
-        ds.addDataSourceProperty("useUnicode", "true");
-
         // Random stuff
-        ds.addDataSourceProperty("rewriteBatchedStatements", "true");
-        ds.addDataSourceProperty("jdbcCompliantTruncation", "false");
+        ds.addDataSourceProperty("reWriteBatchedInserts", "true");
 
         // Caching
         ds.addDataSourceProperty("cachePrepStmts", "true");
-        ds.addDataSourceProperty("prepStmtCacheSize", "275");
-        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        ds.addDataSourceProperty("preparedStatementCacheQueries", "275");
 
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
