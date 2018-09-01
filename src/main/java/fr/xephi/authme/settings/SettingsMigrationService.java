@@ -188,7 +188,7 @@ public class SettingsMigrationService extends PlainMigrationService {
      */
     private static boolean migratePoolSizeSetting(PropertyResource resource) {
         Integer oldValue = resource.getInt("DataSource.poolSize");
-        if(oldValue == null || oldValue > 0) {
+        if (oldValue == null || oldValue > 0) {
             return false;
         }
         resource.setValue("DataSource.poolSize", 10);

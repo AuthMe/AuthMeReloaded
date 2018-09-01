@@ -157,16 +157,16 @@ public class ValidationService implements Reloadable {
 
         String ip = PlayerUtils.getPlayerIp(player);
         String domain = player.getAddress().getHostName();
-        for(String restriction : restrictions) {
-            if(restriction.startsWith("regex:")) {
+        for (String restriction : restrictions) {
+            if (restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");
             } else {
-                restriction = restriction.replaceAll("\\*","(.*)");
+                restriction = restriction.replace("*", "(.*)");
             }
-            if(ip.matches(restriction)) {
+            if (ip.matches(restriction)) {
                 return true;
             }
-            if(domain.matches(restriction)) {
+            if (domain.matches(restriction)) {
                 return true;
             }
         }

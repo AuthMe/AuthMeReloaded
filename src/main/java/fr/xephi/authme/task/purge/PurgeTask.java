@@ -73,7 +73,7 @@ class PurgeTask extends BukkitRunnable {
 
             OfflinePlayer offlinePlayer = offlinePlayers[nextPosition];
             if (offlinePlayer.getName() != null && toPurge.remove(offlinePlayer.getName().toLowerCase())) {
-                if(!permissionsManager.loadUserData(offlinePlayer)) {
+                if (!permissionsManager.loadUserData(offlinePlayer)) {
                     ConsoleLogger.warning("Unable to check if the user " + offlinePlayer.getName() + " can be purged!");
                     continue;
                 }
