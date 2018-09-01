@@ -300,6 +300,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.postgresql</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.org.postgresql</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
             </plugin>
