@@ -27,6 +27,12 @@ public final class SqlDataSourceTestUtil {
         return new MySQL(settings, hikariDataSource, extensionsFactory);
     }
 
+    public static PostgreSqlDataSource createPostgres(Settings settings, HikariDataSource hikariDataSource) {
+        MySqlExtensionsFactory extensionsFactory = mock(MySqlExtensionsFactory.class);
+        given(extensionsFactory.buildExtension(any())).willReturn(mock(MySqlExtension.class));
+        return new PostgreSqlDataSource(settings, hikariDataSource, extensionsFactory);
+    }
+
     /**
      * Creates a SQLite implementation for testing purposes. Methods are overridden so the
      * provided connection is never overridden.

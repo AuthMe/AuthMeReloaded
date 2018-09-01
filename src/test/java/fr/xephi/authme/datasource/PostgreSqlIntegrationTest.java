@@ -76,7 +76,7 @@ public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest
     @Override
     protected DataSource getDataSource(String saltColumn) {
         when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
-        return SqlDataSourceTestUtil.createMySql(settings, hikariSource);
+        return SqlDataSourceTestUtil.createPostgres(settings, hikariSource);
     }
 
     private static <T> void set(Property<T> property, T value) {
