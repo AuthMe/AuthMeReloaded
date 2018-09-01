@@ -69,7 +69,7 @@ public class PluginHookService {
      */
     public File getCmiDataFolder() {
         Plugin plugin = pluginManager.getPlugin("CMI");
-        if(plugin == null) {
+        if (plugin == null) {
             return null;
         }
         return plugin.getDataFolder();

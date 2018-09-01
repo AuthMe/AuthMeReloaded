@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *                       version (in case the page is viewed on a fork)</li>
  * </ul>
  */
-public class TagReplacer {
+public final class TagReplacer {
 
     private TagReplacer() {
     }

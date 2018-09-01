@@ -226,8 +226,8 @@ public class GeoIpService {
         HashCode actualHash = function.hashBytes(Files.readAllBytes(file));
         HashCode expectedHash = HashCode.fromString(expectedChecksum);
         if (!Objects.equals(actualHash, expectedHash)) {
-            throw new IOException("GEO IP Checksum verification failed. " +
-                    "Expected: " + expectedChecksum + "Actual:" + actualHash);
+            throw new IOException("GEO IP Checksum verification failed. "
+                + "Expected: " + expectedChecksum + "Actual:" + actualHash);
         }
     }
 
@@ -267,10 +267,10 @@ public class GeoIpService {
      *
      * @param ip textual IP address to lookup.
      * @return two-character ISO 3166-1 alpha code for the country, "LOCALHOST" for local addresses
-     * or "--" if it cannot be fetched.
+     *         or "--" if it cannot be fetched.
      */
     public String getCountryCode(String ip) {
-        if(InternetProtocolUtils.isLocalAddress(ip)) {
+        if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LOCALHOST";
         }
         return getCountry(ip).map(Country::getIsoCode).orElse("--");
@@ -283,7 +283,7 @@ public class GeoIpService {
      * @return The name of the country, "LocalHost" for local addresses, or "N/A" if it cannot be fetched.
      */
     public String getCountryName(String ip) {
-        if(InternetProtocolUtils.isLocalAddress(ip)) {
+        if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LocalHost";
         }
         return getCountry(ip).map(Country::getName).orElse("N/A");

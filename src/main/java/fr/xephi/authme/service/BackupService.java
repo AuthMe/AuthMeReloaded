@@ -97,6 +97,11 @@ public class BackupService {
         return false;
     }
 
+    /**
+     * Performs a backup for the MySQL data source.
+     *
+     * @return true if successful, false otherwise
+     */
     private boolean performMySqlBackup() {
         FileUtils.createDirectory(backupFolder);
         File sqlBackupFile = constructBackupFile("sql");

@@ -10,6 +10,7 @@ import static fr.xephi.authme.security.HashUtils.md5;
 
 @Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 8)
+@SuppressWarnings({"checkstyle:AbbreviationAsWordInName"})
 public class MyBB extends SeparateSaltMethod {
 
     @Override

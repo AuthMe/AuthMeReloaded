@@ -79,6 +79,9 @@ public class ProtocolLibService implements SettingsDependent {
         this.isEnabled = true;
     }
 
+    /**
+     * Stops all features based on ProtocolLib.
+     */
     public void disable() {
         isEnabled = false;
 

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class TagValueHolder {
+public final class TagValueHolder {
 
     private Map<String, TagValue<?>> values;
 
