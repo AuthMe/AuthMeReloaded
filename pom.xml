@@ -300,6 +300,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.postgresql</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.org.postgresql</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
             </plugin>
@@ -811,6 +815,12 @@
             <artifactId>datasourcecolumns</artifactId>
             <version>0.1.1-SNAPSHOT</version>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.4</version>
         </dependency>
 
         <!-- Unit Testing Libraries -->
