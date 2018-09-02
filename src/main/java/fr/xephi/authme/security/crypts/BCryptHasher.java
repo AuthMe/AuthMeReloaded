@@ -4,6 +4,8 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.util.RandomStringUtils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Wraps a {@link BCrypt.Hasher} instance and provides methods suitable for use in AuthMe.
  */
@@ -29,12 +31,13 @@ public class BCryptHasher {
     }
 
     public HashedPassword hash(String password) {
-        byte[] hash = hasher.hash(costFactor, password.getBytes());
-        return new HashedPassword(new String(hash));
+        byte[] hash = hasher.hash(costFactor, password.getBytes(UTF_8));
+        return new HashedPassword(new String(hash, UTF_8));
     }
 
     public String hashWithRawSalt(String password, byte[] rawSalt) {
-        return new String(hasher.hash(costFactor, rawSalt, password.getBytes()));
+        byte[] hash = hasher.hash(costFactor, rawSalt, password.getBytes(UTF_8));
+        return new String(hash, UTF_8);
     }
 
     /**
@@ -46,7 +49,7 @@ public class BCryptHasher {
      */
     public static boolean comparePassword(String password, String hash) {
         if (HashUtils.isValidBcryptHash(hash)) {
-            BCrypt.Result result = BCrypt.verifyer().verify(password.getBytes(), hash.getBytes());
+            BCrypt.Result result = BCrypt.verifyer().verify(password.getBytes(UTF_8), hash.getBytes(UTF_8));
             return result.verified;
         }
         return false;

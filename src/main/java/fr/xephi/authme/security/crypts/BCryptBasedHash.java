@@ -6,6 +6,7 @@ import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 
 import static fr.xephi.authme.security.crypts.BCryptHasher.SALT_LENGTH_ENCODED;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Abstract parent for BCrypt-based hash algorithms.
@@ -27,7 +28,7 @@ public abstract class BCryptBasedHash implements EncryptionMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
-        return bCryptHasher.hashWithRawSalt(password, salt.getBytes());
+        return bCryptHasher.hashWithRawSalt(password, salt.getBytes(UTF_8));
     }
 
     @Override

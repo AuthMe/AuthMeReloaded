@@ -8,6 +8,8 @@ import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.util.RandomStringUtils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 
 /**
  * Implementation for Ipb4 (Invision Power Board 4).
@@ -32,7 +34,7 @@ public class Ipb4 implements EncryptionMethod {
 
         String dummyHash = "$2a$10$" + salt + "3Cfb5GnwvKhJ20r.hMjmcNkIT9.Uh9K";
         try {
-            BCrypt.HashData parseResult = BCrypt.Version.VERSION_2A.parser.parse(dummyHash.getBytes());
+            BCrypt.HashData parseResult = BCrypt.Version.VERSION_2A.parser.parse(dummyHash.getBytes(UTF_8));
             return bCryptHasher.hashWithRawSalt(password, parseResult.rawSalt);
         } catch (IllegalBCryptFormatException |IllegalArgumentException e) {
             throw new IllegalStateException("Cannot parse hash with salt '" + salt + "'", e);

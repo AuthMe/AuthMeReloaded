@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import static fr.xephi.authme.security.HashUtils.isEqual;
 import static fr.xephi.authme.security.crypts.BCryptHasher.BYTES_IN_SALT;
 import static fr.xephi.authme.security.crypts.BCryptHasher.SALT_LENGTH_ENCODED;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Recommendation(Usage.RECOMMENDED)
 @HasSalt(value = SaltType.TEXT, length = SALT_LENGTH_ENCODED)
@@ -32,13 +33,13 @@ public class Wbb4 implements EncryptionMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
-        return hashInternal(password, salt.getBytes());
+        return hashInternal(password, salt.getBytes(UTF_8));
     }
 
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
         try {
-            BCrypt.HashData hashData = BCrypt.Version.VERSION_2A.parser.parse(hashedPassword.getHash().getBytes());
+            BCrypt.HashData hashData = BCrypt.Version.VERSION_2A.parser.parse(hashedPassword.getHash().getBytes(UTF_8));
             byte[] salt = hashData.rawSalt;
             String computedHash = hashInternal(password, salt);
             return isEqual(hashedPassword.getHash(), computedHash);
