@@ -2,7 +2,10 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import org.junit.Test;
 
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -20,10 +23,21 @@ public class BCryptTest extends AbstractEncryptionMethodTest {
         );
     }
 
+    @Test
+    public void shouldGenerateWith2aPrefix() {
+        // given
+        BCrypt bCrypt = new BCrypt(mockSettings());
+
+        // when
+        HashedPassword result = bCrypt.computeHash("test", null);
+
+        // then
+        assertThat(result.getHash(), startsWith("$2a$08$"));
+    }
+
     private static Settings mockSettings() {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         return settings;
     }
-
 }

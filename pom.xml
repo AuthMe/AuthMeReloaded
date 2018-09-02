@@ -295,6 +295,10 @@
                             <pattern>javax.inject</pattern>
                             <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>at.favre.lib</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.at.favre.lib</shadedPattern>
+                        </relocation>
                         <!-- bStats metrics class -->
                         <relocation>
                             <pattern>org.bstats</pattern>
@@ -762,6 +766,14 @@
                     <artifactId>craftbukkit</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- BCrypt implementation -->
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.5.0</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- XAuth, another authentication plugin, required by the database converter -->

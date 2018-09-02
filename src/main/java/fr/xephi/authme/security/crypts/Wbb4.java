@@ -1,41 +1,71 @@
 package fr.xephi.authme.security.crypts;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import at.favre.lib.crypto.bcrypt.IllegalBCryptFormatException;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 
+import java.security.SecureRandom;
+
 import static fr.xephi.authme.security.HashUtils.isEqual;
-import static fr.xephi.authme.security.crypts.BCryptService.hashpw;
+import static fr.xephi.authme.security.crypts.BCryptHasher.BYTES_IN_SALT;
+import static fr.xephi.authme.security.crypts.BCryptHasher.SALT_LENGTH_ENCODED;
 
 @Recommendation(Usage.RECOMMENDED)
-public class Wbb4 extends HexSaltedMethod {
+@HasSalt(value = SaltType.TEXT, length = SALT_LENGTH_ENCODED)
+public class Wbb4 implements EncryptionMethod {
+
+    private BCryptHasher bCryptHasher = new BCryptHasher(BCrypt.Version.VERSION_2A, 8);
+    private SecureRandom random = new SecureRandom();
+
+    @Override
+    public HashedPassword computeHash(String password, String name) {
+        byte[] salt = new byte[BYTES_IN_SALT];
+        random.nextBytes(salt);
+
+        String hash = hashInternal(password, salt);
+        return new HashedPassword(hash);
+    }
 
     @Override
     public String computeHash(String password, String salt, String name) {
-        return hashpw(hashpw(password, salt), salt);
+        return hashInternal(password, salt.getBytes());
     }
 
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
-        if (hashedPassword.getHash().length() != 60) {
-            return false;
+        try {
+            BCrypt.HashData hashData = BCrypt.Version.VERSION_2A.parser.parse(hashedPassword.getHash().getBytes());
+            byte[] salt = hashData.rawSalt;
+            String computedHash = hashInternal(password, salt);
+            return isEqual(hashedPassword.getHash(), computedHash);
+        } catch (IllegalBCryptFormatException | IllegalArgumentException e) {
+            ConsoleLogger.logException("Invalid WBB4 hash:", e);
         }
-        String salt = hashedPassword.getHash().substring(0, 29);
-        return isEqual(hashedPassword.getHash(), computeHash(password, salt, name));
+        return false;
+    }
+
+    /**
+     * Hashes the given password with the provided salt twice: hash(hash(password, salt), salt).
+     *
+     * @param password the password to hash
+     * @param rawSalt the salt to use
+     * @return WBB4-compatible hash
+     */
+    private String hashInternal(String password, byte[] rawSalt) {
+        return bCryptHasher.hashWithRawSalt(bCryptHasher.hashWithRawSalt(password, rawSalt), rawSalt);
     }
 
     @Override
     public String generateSalt() {
-        return BCryptService.gensalt(8);
+        return BCryptHasher.generateSalt();
     }
 
-    /**
-     * Note that {@link #generateSalt()} is overridden for this class.
-     *
-     * @return The salt length
-     */
     @Override
-    public int getSaltLength() {
-        return 8;
+    public boolean hasSeparateSalt() {
+        return false;
     }
-
 }
