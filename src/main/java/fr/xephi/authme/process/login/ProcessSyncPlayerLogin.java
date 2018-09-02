@@ -6,6 +6,8 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
@@ -51,6 +53,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
     private JoinMessageService joinMessageService;
+
+    @Inject
+    private PermissionsManager permissionsManager;
 
     ProcessSyncPlayerLogin() {
     }
@@ -106,7 +111,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
         commandManager.runCommandsOnLogin(player, authsWithSameIp);
 
-        // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeSender.connectPlayerOnLogin(player);
+        if (!permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_BUNGEE_SEND)) {
+            // Send Bungee stuff. The service will check if it is enabled or not.
+            bungeeSender.connectPlayerOnLogin(player);
+        }
     }
 }
