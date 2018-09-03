@@ -120,6 +120,7 @@ public class HashUtilsTest {
         assertThat(HashUtils.isValidBcryptHash("$2"), equalTo(false));
         assertThat(HashUtils.isValidBcryptHash("#2ae5fc78"), equalTo(false));
         assertThat(HashUtils.isValidBcryptHash("$2afsdaf"), equalTo(false));
+        assertThat(HashUtils.isValidBcryptHash("$fdfasdfasdfasdfasdfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf"), equalTo(false));
         assertThat(HashUtils.isValidBcryptHash("$2y$asdfasdfasdfasdfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf"), equalTo(true));
     }
 

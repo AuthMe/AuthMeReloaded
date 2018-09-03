@@ -3,8 +3,10 @@ package fr.xephi.authme.security.crypts;
 import org.junit.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Test for {@link Ipb4}.
@@ -22,13 +24,29 @@ public class Ipb4Test extends AbstractEncryptionMethodTest {
     @Test
     public void shouldCreateHashesWith2aAndCostFactor13() {
         // given
-        Ipb4 method = new Ipb4();
+        Ipb4 hashMethod = new Ipb4();
 
         // when
-        HashedPassword result = method.computeHash("test", "name");
+        HashedPassword result = hashMethod.computeHash("test", "name");
 
         // then
         assertThat(result.getHash(), startsWith("$2a$13$"));
         assertThat(result.getSalt(), stringWithLength(22));
+    }
+
+    @Test
+    public void shouldThrowForInvalidSalt() {
+        // given
+        Ipb4 hashMethod = new Ipb4();
+
+        // when
+        try {
+            hashMethod.computeHash("pass", "invalid salt", "name");
+
+            // then
+            fail("Expected exception to be thrown");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage(), containsString("Cannot parse hash with salt"));
+        }
     }
 }
