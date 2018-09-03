@@ -1,36 +1,20 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.crypts.description.Recommendation;
-import fr.xephi.authme.security.crypts.description.Usage;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
-import static fr.xephi.authme.security.HashUtils.isEqual;
+import javax.inject.Inject;
 
-@Recommendation(Usage.RECOMMENDED)
-public class BCrypt2y extends HexSaltedMethod {
+/**
+ * Hash for BCrypt in the $2y$ variant. Uses a fixed cost factor of 10.
+ */
+public class BCrypt2y extends BCryptBasedHash {
 
-    @Override
-    public String computeHash(String password, String salt, String name) {
-        if (salt.length() == 22) {
-            salt = "$2y$10$" + salt;
-        }
-        return BCryptService.hashpw(password, salt);
+    @Inject
+    public BCrypt2y() {
+        this(10);
     }
 
-    @Override
-    public boolean comparePassword(String password, HashedPassword encrypted, String unusedName) {
-        String hash = encrypted.getHash();
-        if (hash.length() != 60) {
-            return false;
-        }
-        // The salt is the first 29 characters of the hash
-
-        String salt = hash.substring(0, 29);
-        return isEqual(hash, computeHash(password, salt, null));
+    public BCrypt2y(int cost) {
+        super(new BCryptHasher(BCrypt.Version.VERSION_2Y, cost));
     }
-
-    @Override
-    public int getSaltLength() {
-        return 22;
-    }
-
 }

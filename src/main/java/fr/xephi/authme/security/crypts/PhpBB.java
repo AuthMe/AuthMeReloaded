@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 
 import static fr.xephi.authme.security.HashUtils.isEqual;
+import static fr.xephi.authme.security.crypts.BCryptHasher.SALT_LENGTH_ENCODED;
 
 /**
  * Encryption method compatible with phpBB3.
@@ -21,15 +22,14 @@ import static fr.xephi.authme.security.HashUtils.isEqual;
  * as well as plain MD5.
  */
 @Recommendation(Usage.ACCEPTABLE)
-@HasSalt(value = SaltType.TEXT, length = 22)
+@HasSalt(value = SaltType.TEXT, length = SALT_LENGTH_ENCODED)
 public class PhpBB implements EncryptionMethod {
 
     private final BCrypt2y bCrypt2y = new BCrypt2y();
 
     @Override
     public HashedPassword computeHash(String password, String name) {
-        String salt = generateSalt();
-        return new HashedPassword(BCryptService.hashpw(password, salt));
+        return bCrypt2y.computeHash(password, name);
     }
 
     @Override
@@ -52,7 +52,8 @@ public class PhpBB implements EncryptionMethod {
     @Override
     public String generateSalt() {
         // Salt length 22, as seen in https://github.com/phpbb/phpbb/blob/master/phpBB/phpbb/passwords/driver/bcrypt.php
-        return BCryptService.gensalt(10);
+        // Ours generates 16 chars because the salt must not yet be encoded.
+        return BCryptHasher.generateSalt();
     }
 
     @Override

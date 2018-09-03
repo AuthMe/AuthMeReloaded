@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Aug 02 21:12:09 CEST 2018. See docs/hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Sun Sep 02 20:38:48 CEST 2018. See docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -8,7 +8,7 @@ AuthMe supports the following hash algorithms for storing your passwords safely.
 Algorithm | Recommendation | Hash length | ASCII |     | Salt type | Length | Separate?
 --------- | -------------- | ----------- | ----- | --- | --------- | ------ | ---------
 ARGON2 | Recommended | 96 |  | | Text | 16 | 
-BCRYPT | Recommended | 60 |  | | Text |  | 
+BCRYPT | Recommended | 60 |  | | Text | 22 | 
 BCRYPT2Y | Recommended | 60 |  | | Text | 22 | 
 CMW | Do not use | 32 |  | | None |  | 
 CRAZYCRYPT1 | Do not use | 128 |  | | Username |  | 
@@ -28,10 +28,10 @@ SHA256 | Recommended | 86 |  | | Text | 16 |
 SMF | Do not use | 40 |  | | Username |  | Y
 TWO_FACTOR | Does not work | 16 |  | | None |  | 
 WBB3 | Acceptable | 40 |  | | Text | 40 | Y
-WBB4 | Recommended | 60 |  | | Text | 8 | 
+WBB4 | Recommended | 60 |  | | Text | 22 | 
 WORDPRESS | Acceptable | 34 |  | | Text | 9 | 
 XAUTH | Recommended | 140 |  | | Text | 12 | 
-XFBCRYPT |  | 60 |  | |  |  | 
+XFBCRYPT | Recommended | 60 |  | | Text | 22 | 
 CUSTOM |  |  |  |  |  |  |  |
 
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
@@ -80,4 +80,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Aug 02 21:12:09 CEST 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Sep 02 20:38:48 CEST 2018
