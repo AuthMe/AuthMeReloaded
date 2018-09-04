@@ -309,6 +309,18 @@
                             <shadedPattern>fr.xephi.authme.libs.org.postgresql</shadedPattern>
                         </relocation>
                     </relocations>
+                    <filters>
+                        <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
+                        <!-- "Invalid signature file digest for Manifest main attributes" -->
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
             </plugin>
             <plugin>
