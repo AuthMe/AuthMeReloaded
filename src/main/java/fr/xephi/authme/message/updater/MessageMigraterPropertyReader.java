@@ -12,14 +12,16 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
 /**
  * Implementation of {@link PropertyReader} which can read a file or a stream with
  * a specified charset.
  */
-public final class MessageMigraterPropertyReader implements PropertyReader {
+// TODO: Could extend from YamlFileReader using somewhat hacky-ish ways (cannot rely on File being there)
+final class MessageMigraterPropertyReader implements PropertyReader {
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
 
@@ -54,6 +56,16 @@ public final class MessageMigraterPropertyReader implements PropertyReader {
     }
 
     @Override
+    public boolean contains(String path) {
+        return getObject(path) != null;
+    }
+
+    @Override
+    public Set<String> getKeys(boolean b) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Object getObject(String path) {
         if (path.isEmpty()) {
             return hasObjectAsRoot ? root.get("") : root;
@@ -70,66 +82,29 @@ public final class MessageMigraterPropertyReader implements PropertyReader {
     }
 
     @Override
-    public <T> T getTypedObject(String path, Class<T> clazz) {
-        Object value = getObject(path);
-        if (clazz.isInstance(value)) {
-            return clazz.cast(value);
-        }
-        return null;
+    public String getString(String path) {
+        Object o = getObject(path);
+        return o instanceof String ? (String) o : null;
     }
 
     @Override
-    public void set(String path, Object value) {
-        Objects.requireNonNull(path);
-
-        if (path.isEmpty()) {
-            root.clear();
-            root.put("", value);
-            hasObjectAsRoot = true;
-        } else if (hasObjectAsRoot) {
-            throw new ConfigMeException("The root path is a bean property; you cannot set values to any subpath. "
-                + "Modify the bean at the root or set a new one instead.");
-        } else {
-            setValueInChildPath(path, value);
-        }
-    }
-
-    /**
-     * Sets the value at the given path. This method is used when the root is a map and not a specific object.
-     *
-     * @param path the path to set the value at
-     * @param value the value to set
-     */
-    @SuppressWarnings("unchecked")
-    private void setValueInChildPath(String path, Object value) {
-        Map<String, Object> node = root;
-        String[] keys = path.split("\\.");
-        for (int i = 0; i < keys.length - 1; ++i) {
-            Object child = node.get(keys[i]);
-            if (child instanceof Map<?, ?>) {
-                node = (Map<String, Object>) child;
-            } else { // child is null or some other value - replace with map
-                Map<String, Object> newEntry = new HashMap<>();
-                node.put(keys[i], newEntry);
-                if (value == null) {
-                    // For consistency, replace whatever value/null here with an empty map,
-                    // but if the value is null our work here is done.
-                    return;
-                }
-                node = newEntry;
-            }
-        }
-        // node now contains the parent map (existing or newly created)
-        if (value == null) {
-            node.remove(keys[keys.length - 1]);
-        } else {
-            node.put(keys[keys.length - 1], value);
-        }
+    public Integer getInt(String path) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void reload() {
-        throw new UnsupportedOperationException("Reload not supported by this implementation");
+    public Double getDouble(String path) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Boolean getBoolean(String path) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<?> getList(String path) {
+        throw new UnsupportedOperationException();
     }
 
     private static Map<String, Object> readStreamToMap(InputStream inputStream) {

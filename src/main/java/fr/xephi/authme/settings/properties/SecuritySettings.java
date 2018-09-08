@@ -6,10 +6,9 @@ import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.EnumSetProperty;
 
-import java.util.List;
 import java.util.Set;
 
-import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseListProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseStringSetProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
 public final class SecuritySettings implements SettingsHolder {
@@ -86,8 +85,8 @@ public final class SecuritySettings implements SettingsHolder {
         "- '123456'",
         "- 'password'",
         "- 'help'"})
-    public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newLowercaseListProperty("settings.security.unsafePasswords",
+    public static final Property<Set<String>> UNSAFE_PASSWORDS =
+        newLowercaseStringSetProperty("settings.security.unsafePasswords",
             "123456", "password", "qwerty", "12345", "54321", "123456789", "help");
 
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")

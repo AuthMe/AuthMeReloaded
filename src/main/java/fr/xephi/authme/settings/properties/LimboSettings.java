@@ -1,16 +1,13 @@
 package fr.xephi.authme.settings.properties;
 
 import ch.jalu.configme.Comment;
-import ch.jalu.configme.SectionComments;
 import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.Property;
-import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.data.limbo.AllowFlightRestoreType;
 import fr.xephi.authme.data.limbo.WalkFlySpeedRestoreType;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistenceType;
 import fr.xephi.authme.data.limbo.persistence.SegmentSize;
-
-import java.util.Map;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
@@ -72,8 +69,8 @@ public final class LimboSettings implements SettingsHolder {
     private LimboSettings() {
     }
 
-    @SectionComments
-    public static Map<String, String[]> createSectionComments() {
+    @Override
+    public void registerComments(CommentsConfiguration conf) {
         String[] limboExplanation = {
             "Before a user logs in, various properties are temporarily removed from the player,",
             "such as OP status, ability to fly, and walk/fly speed.",
@@ -81,6 +78,6 @@ public final class LimboSettings implements SettingsHolder {
             "In this section, you may define how these properties should be handled.",
             "Read more at https://github.com/AuthMe/AuthMeReloaded/wiki/Limbo-players"
         };
-        return ImmutableMap.of("limbo", limboExplanation);
+        conf.setComment("limbo", limboExplanation);
     }
 }

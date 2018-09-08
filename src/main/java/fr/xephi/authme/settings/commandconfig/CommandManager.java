@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings.commandconfig;
 
 import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.SettingsManagerBuilder;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.service.BukkitService;
@@ -148,8 +149,11 @@ public class CommandManager implements Reloadable {
         File file = new File(dataFolder, "commands.yml");
         FileUtils.copyFileFromResource(file, "commands.yml");
 
-        SettingsManager settingsManager = new SettingsManager(
-            YamlFileResourceProvider.loadFromFile(file), commandMigrationService, CommandSettingsHolder.class);
+        SettingsManager settingsManager = SettingsManagerBuilder
+            .withResource(YamlFileResourceProvider.loadFromFile(file))
+            .configurationData(CommandSettingsHolder.class)
+            .migrationService(commandMigrationService)
+            .create();
         CommandConfig commandConfig = settingsManager.getProperty(CommandSettingsHolder.COMMANDS);
         onJoinCommands = newReplacer(commandConfig.getOnJoin());
         onLoginCommands = newOnLoginCmdReplacer(commandConfig.getOnLogin());

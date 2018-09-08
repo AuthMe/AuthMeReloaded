@@ -1,7 +1,7 @@
 package tools.docs.config;
 
 import ch.jalu.configme.SettingsManager;
-import ch.jalu.configme.resource.YamlFileResource;
+import ch.jalu.configme.SettingsManagerBuilder;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.util.FileUtils;
 import tools.utils.AutoToolTask;
@@ -31,8 +31,9 @@ public class UpdateConfigPageTask implements AutoToolTask {
         try {
             // Create empty temporary .yml file and save the config to it
             config = File.createTempFile("authme-config-", ".yml");
-            SettingsManager settingsManager = new SettingsManager(
-                new YamlFileResource(config), null, AuthMeSettingsRetriever.buildConfigurationData());
+            SettingsManager settingsManager = SettingsManagerBuilder.withYamlFile(config)
+                .configurationData(AuthMeSettingsRetriever.buildConfigurationData())
+                .create();
             settingsManager.save();
 
             // Get the contents and generate template file

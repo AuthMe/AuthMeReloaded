@@ -1,10 +1,10 @@
 package fr.xephi.authme.message.updater;
 
-import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.PropertyListBuilder;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
+import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
@@ -20,20 +20,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonList;
 
 /**
  * Migrates the used messages file to a complete, up-to-date version when necessary.
  */
 public class MessageUpdater {
-
-    /**
-     * Configuration data object for all message keys incl. comments associated to sections.
-     */
-    private static final ConfigurationData CONFIGURATION_DATA = buildConfigurationData();
-
-    public static ConfigurationData getConfigurationData() {
-        return CONFIGURATION_DATA;
-    }
 
     /**
      * Applies any necessary migrations to the user's messages file and saves it if it has been modified.
@@ -57,52 +51,57 @@ public class MessageUpdater {
      */
     private boolean migrateAndSave(File userFile, JarMessageSource jarMessageSource) {
         // YamlConfiguration escapes all special characters when saving, making the file hard to use, so use ConfigMe
+        MessageKeyConfigurationData configurationData = createConfigurationData();
         PropertyResource userResource = new MigraterYamlFileResource(userFile);
 
+        PropertyReader reader = userResource.createReader();
+        configurationData.initializeValues(reader);
+
         // Step 1: Migrate any old keys in the file to the new paths
-        boolean movedOldKeys = migrateOldKeys(userResource);
+        boolean movedOldKeys = migrateOldKeys(reader, configurationData);
         // Step 2: Perform newer migrations
-        boolean movedNewerKeys = migrateKeys(userResource);
+        boolean movedNewerKeys = migrateKeys(reader, configurationData);
         // Step 3: Take any missing messages from the message files shipped in the AuthMe JAR
-        boolean addedMissingKeys = addMissingKeys(jarMessageSource, userResource);
+        boolean addedMissingKeys = addMissingKeys(jarMessageSource, configurationData);
 
         if (movedOldKeys || movedNewerKeys || addedMissingKeys) {
             backupMessagesFile(userFile);
 
-            SettingsManager settingsManager = new SettingsManager(userResource, null, CONFIGURATION_DATA);
-            settingsManager.save();
+            userResource.exportProperties(configurationData);
             ConsoleLogger.debug("Successfully saved {0}", userFile);
             return true;
         }
         return false;
     }
 
-    private boolean migrateKeys(PropertyResource userResource) {
-        return moveIfApplicable(userResource, "misc.two_factor_create", MessageKey.TWO_FACTOR_CREATE.getKey());
+    private boolean migrateKeys(PropertyReader propertyReader, MessageKeyConfigurationData configurationData) {
+        return moveIfApplicable(propertyReader, configurationData,
+            "misc.two_factor_create", MessageKey.TWO_FACTOR_CREATE);
     }
 
-    private static boolean moveIfApplicable(PropertyResource resource, String oldPath, String newPath) {
-        if (resource.getString(newPath) == null && resource.getString(oldPath) != null) {
-            resource.setValue(newPath, resource.getString(oldPath));
+    private static boolean moveIfApplicable(PropertyReader reader, MessageKeyConfigurationData configurationData,
+                                            String oldPath, MessageKey messageKey) {
+        if (configurationData.getMessage(messageKey) == null && reader.getString(oldPath) != null) {
+            configurationData.setMessage(messageKey, reader.getString(oldPath));
             return true;
         }
         return false;
     }
 
-    private boolean migrateOldKeys(PropertyResource userResource) {
-        boolean hasChange = OldMessageKeysMigrater.migrateOldPaths(userResource);
+    private boolean migrateOldKeys(PropertyReader propertyReader, MessageKeyConfigurationData configurationData) {
+        boolean hasChange = OldMessageKeysMigrater.migrateOldPaths(propertyReader, configurationData);
         if (hasChange) {
             ConsoleLogger.info("Old keys have been moved to the new ones in your messages_xx.yml file");
         }
         return hasChange;
     }
 
-    private boolean addMissingKeys(JarMessageSource jarMessageSource, PropertyResource userResource) {
+    private boolean addMissingKeys(JarMessageSource jarMessageSource, MessageKeyConfigurationData configurationData) {
         List<String> addedKeys = new ArrayList<>();
-        for (Property<?> property : CONFIGURATION_DATA.getProperties()) {
+        for (Property<String> property : configurationData.getAllMessageProperties()) {
             final String key = property.getPath();
-            if (userResource.getString(key) == null) {
-                userResource.setValue(key, jarMessageSource.getMessageFromJar(property));
+            if (configurationData.getValue(property) == null) {
+                configurationData.setValue(property, jarMessageSource.getMessageFromJar(property));
                 addedKeys.add(key);
             }
         }
@@ -129,40 +128,68 @@ public class MessageUpdater {
      *
      * @return the configuration data to export with
      */
-    private static ConfigurationData buildConfigurationData() {
-        Map<String, String[]> comments = ImmutableMap.<String, String[]>builder()
-            .put("registration", new String[]{"Registration"})
-            .put("password", new String[]{"Password errors on registration"})
-            .put("login", new String[]{"Login"})
-            .put("error", new String[]{"Errors"})
-            .put("antibot", new String[]{"AntiBot"})
-            .put("unregister", new String[]{"Unregister"})
-            .put("misc", new String[]{"Other messages"})
-            .put("session", new String[]{"Session messages"})
-            .put("on_join_validation", new String[]{"Error messages when joining"})
-            .put("email", new String[]{"Email"})
-            .put("recovery", new String[]{"Password recovery by email"})
-            .put("captcha", new String[]{"Captcha"})
-            .put("verification", new String[]{"Verification code"})
-            .put("time", new String[]{"Time units"})
-            .put("two_factor", new String[]{"Two-factor authentication"})
+    public static MessageKeyConfigurationData createConfigurationData() {
+        Map<String, String> comments = ImmutableMap.<String, String>builder()
+            .put("registration", "Registration")
+            .put("password", "Password errors on registration")
+            .put("login", "Login")
+            .put("error", "Errors")
+            .put("antibot", "AntiBot")
+            .put("unregister", "Unregister")
+            .put("misc", "Other messages")
+            .put("session", "Session messages")
+            .put("on_join_validation", "Error messages when joining")
+            .put("email", "Email")
+            .put("recovery", "Password recovery by email")
+            .put("captcha", "Captcha")
+            .put("verification", "Verification code")
+            .put("time", "Time units")
+            .put("two_factor", "Two-factor authentication")
             .build();
 
         Set<String> addedKeys = new HashSet<>();
-        PropertyListBuilder builder = new PropertyListBuilder();
+        MessageKeyPropertyListBuilder builder = new MessageKeyPropertyListBuilder();
         // Add one key per section based on the comments map above so that the order is clear
         for (String path : comments.keySet()) {
             MessageKey key = Arrays.stream(MessageKey.values()).filter(p -> p.getKey().startsWith(path + "."))
                 .findFirst().orElseThrow(() -> new IllegalStateException(path));
-            builder.add(new StringProperty(key.getKey(), ""));
+            builder.addMessageKey(key);
             addedKeys.add(key.getKey());
         }
         // Add all remaining keys to the property list builder
         Arrays.stream(MessageKey.values())
             .filter(key -> !addedKeys.contains(key.getKey()))
-            .forEach(key -> builder.add(new StringProperty(key.getKey(), "")));
+            .forEach(builder::addMessageKey);
 
-        return new ConfigurationData(builder.create(), comments);
+        // Create ConfigurationData instance
+        Map<String, List<String>> commentsMap = comments.entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey(), e -> singletonList(e.getValue())));
+        return new MessageKeyConfigurationData(builder, commentsMap);
     }
 
+    static final class MessageKeyProperty extends StringProperty {
+
+        MessageKeyProperty(MessageKey messageKey) {
+            super(messageKey.getKey(), "");
+        }
+
+        @Override
+        protected String getFromReader(PropertyReader reader) {
+            return reader.getString(getPath());
+        }
+    }
+
+    static final class MessageKeyPropertyListBuilder {
+
+        private PropertyListBuilder propertyListBuilder = new PropertyListBuilder();
+
+        void addMessageKey(MessageKey key) {
+            propertyListBuilder.add(new MessageKeyProperty(key));
+        }
+
+        @SuppressWarnings("unchecked")
+        List<MessageKeyProperty> getAllProperties() {
+            return (List) propertyListBuilder.create();
+        }
+    }
 }
