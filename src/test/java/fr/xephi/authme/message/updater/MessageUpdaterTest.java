@@ -1,9 +1,7 @@
 package fr.xephi.authme.message.updater;
 
-import ch.jalu.configme.configurationdata.ConfigurationDataImpl;
 import ch.jalu.configme.properties.Property;
 import com.google.common.io.Files;
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,6 +14,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -141,8 +140,7 @@ public class MessageUpdaterTest {
             .collect(Collectors.toSet());
 
         // when
-        Map<String, String[]> comments = ReflectionTestUtils.getFieldValue(
-            ConfigurationDataImpl.class, MessageUpdater.createConfigurationData(), "allComments");
+        Map<String, List<String>> comments = MessageUpdater.createConfigurationData().getAllComments();
 
         // then
         assertThat(comments.keySet(), equalTo(rootPaths));

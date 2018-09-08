@@ -1,11 +1,9 @@
 package fr.xephi.authme.settings;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
-import ch.jalu.configme.configurationdata.ConfigurationDataImpl;
 import ch.jalu.configme.properties.EnumProperty;
 import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableSet;
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.BeforeClass;
@@ -61,11 +59,7 @@ public class SettingsConsistencyTest {
     @Test
     public void shouldNotHaveVeryLongCommentLines() {
         // given
-        ConfigurationDataImpl configurationData = (ConfigurationDataImpl) SettingsConsistencyTest.configurationData;
-        // TODO ConfigMe/#67: Have a way to get all comments from ConfigurationData
-        Map<String, List<String>> commentEntries =
-            ReflectionTestUtils.getFieldValue(ConfigurationDataImpl.class, configurationData, "allComments");
-
+        Map<String, List<String>> commentEntries = configurationData.getAllComments();
         List<String> badPaths = new ArrayList<>(0);
 
         // when
