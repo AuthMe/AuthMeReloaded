@@ -20,14 +20,11 @@ import java.util.Set;
  * Implementation of {@link PropertyReader} which can read a file or a stream with
  * a specified charset.
  */
-// TODO: Could extend from YamlFileReader using somewhat hacky-ish ways (cannot rely on File being there)
 final class MessageMigraterPropertyReader implements PropertyReader {
 
-    public static final Charset CHARSET = StandardCharsets.UTF_8;
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     private Map<String, Object> root;
-    /** See same field in {@link ch.jalu.configme.resource.YamlFileReader} for details. */
-    private boolean hasObjectAsRoot = false;
 
     private MessageMigraterPropertyReader(Map<String, Object> valuesMap) {
         root = valuesMap;
@@ -40,14 +37,11 @@ final class MessageMigraterPropertyReader implements PropertyReader {
      * @return the created property reader
      */
     public static MessageMigraterPropertyReader loadFromFile(File file) {
-        Map<String, Object> valuesMap;
         try (InputStream is = new FileInputStream(file)) {
-            valuesMap = readStreamToMap(is);
+            return loadFromStream(is);
         } catch (IOException e) {
             throw new IllegalStateException("Error while reading file '" + file + "'", e);
         }
-
-        return new MessageMigraterPropertyReader(valuesMap);
     }
 
     public static MessageMigraterPropertyReader loadFromStream(InputStream inputStream) {
@@ -68,7 +62,7 @@ final class MessageMigraterPropertyReader implements PropertyReader {
     @Override
     public Object getObject(String path) {
         if (path.isEmpty()) {
-            return hasObjectAsRoot ? root.get("") : root;
+            return root.get("");
         }
         Object node = root;
         String[] keys = path.split("\\.");
