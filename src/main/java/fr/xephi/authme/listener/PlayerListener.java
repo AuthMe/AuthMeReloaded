@@ -40,7 +40,9 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -284,11 +286,7 @@ public class PlayerListener implements Listener {
 
         // Keep pre-UUID compatibility
         try {
-            try {
-                permissionsManager.loadUserData(event.getUniqueId());
-            } catch (NoSuchMethodError e) {
-                permissionsManager.loadUserData(name);
-            }
+            permissionsManager.loadUserData(event.getUniqueId());
         } catch (PermissionLoadUserException e) {
             ConsoleLogger.logException("Unable to load the permission data of user " + name, e);
         }
@@ -504,6 +502,20 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerFish(PlayerFishEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerEditBook(PlayerEditBookEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }

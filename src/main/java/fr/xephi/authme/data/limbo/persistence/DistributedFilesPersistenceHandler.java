@@ -11,7 +11,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.util.FileUtils;
-import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -57,7 +56,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
 
     @Override
     public LimboPlayer getLimboPlayer(Player player) {
-        String uuid = PlayerUtils.getUuidOrName(player);
+        String uuid = player.getUniqueId().toString();
         File file = getPlayerSegmentFile(uuid);
         Map<String, LimboPlayer> entries = readLimboPlayers(file);
         return entries == null ? null : entries.get(uuid);
@@ -65,7 +64,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
 
     @Override
     public void saveLimboPlayer(Player player, LimboPlayer limbo) {
-        String uuid = PlayerUtils.getUuidOrName(player);
+        String uuid = player.getUniqueId().toString();
         File file = getPlayerSegmentFile(uuid);
 
         Map<String, LimboPlayer> entries = null;
@@ -79,17 +78,17 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
             entries = new HashMap<>();
         }
 
-        entries.put(PlayerUtils.getUuidOrName(player), limbo);
+        entries.put(player.getUniqueId().toString(), limbo);
         saveEntries(entries, file);
     }
 
     @Override
     public void removeLimboPlayer(Player player) {
-        String uuid = PlayerUtils.getUuidOrName(player);
+        String uuid = player.getUniqueId().toString();
         File file = getPlayerSegmentFile(uuid);
         if (file.exists()) {
             Map<String, LimboPlayer> entries = readLimboPlayers(file);
-            if (entries != null && entries.remove(PlayerUtils.getUuidOrName(player)) != null) {
+            if (entries != null && entries.remove(player.getUniqueId().toString()) != null) {
                 saveEntries(entries, file);
             }
         }

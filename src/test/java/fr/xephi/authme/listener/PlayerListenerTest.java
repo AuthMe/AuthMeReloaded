@@ -32,7 +32,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -888,6 +890,18 @@ public class PlayerListenerTest {
         // then
         assertThat(event.getJoinMessage(), nullValue());
         verify(joinMessageService).putMessage("thename0", "thename0 is joining us");
+    }
+
+    @Test
+    public void shouldCancelPlayerEditBookEvent() {
+        withServiceMock(listenerService)
+            .check(listener::onPlayerEditBook, PlayerEditBookEvent.class);
+    }
+
+    @Test
+    public void shouldCancelPlayerInteractAtEntityEvent() {
+        withServiceMock(listenerService)
+            .check(listener::onPlayerInteractAtEntity, PlayerInteractAtEntityEvent.class);
     }
 
     private static Player mockPlayerWithName(String name) {

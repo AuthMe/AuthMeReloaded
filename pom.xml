@@ -73,7 +73,7 @@
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkit.version>1.13-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.13.1-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
     <prerequisites>
@@ -175,6 +175,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
                 <configuration>
+                    <trimStackTrace>false</trimStackTrace>
                     <!-- Force the right file encoding during unit testing -->
                     <!-- Set language to English in order to get consistent results for localized time formatting -->
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
@@ -244,17 +245,11 @@
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                     <finalName>${project.outputName}-${project.version}</finalName>
-
                     <!--
                     Relocate all lib we use in order to fix class loading errors if we use different versions
-                    than already loaded libs (i.e. by Mojang -> gson)
+                    than already loaded libs
                     -->
                     <relocations>
-                        <!-- Include all google libraries, because they are not available before 1.12 -->
-                        <relocation>
-                            <pattern>com.google</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.google</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>ch.jalu</pattern>
                             <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
@@ -413,22 +408,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- GSON (required to provide 1.7.10 and below compatibility) -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Guava (required to allow compatibility with any version since 1.7.10) -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- MaxMind GEO IP with our modifications to use GSON in replacement of the big Jackson dependency -->
         <!-- GSON is already included and therefore it reduces the file size in comparison to the original version -->
         <dependency>
@@ -483,6 +462,20 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>datasourcecolumns</artifactId>
+            <version>0.1.1-SNAPSHOT</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.4</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- PBKDF2 implementation -->
         <dependency>
             <groupId>de.rtner</groupId>
@@ -507,6 +500,28 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- BCrypt implementation -->
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.5.0</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- ConfigMe -->
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>configme</artifactId>
+            <version>1.0.1</version>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Spigot API, http://www.spigotmc.org/ -->
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -523,35 +538,13 @@
                     <groupId>javax.persistence</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>bungeecord-chat</artifactId>
                     <groupId>net.md-5</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>gson</artifactId>
-                    <groupId>com.google.code.gson</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
 
         <!-- Bukkit Libraries  -->
-
-        <!-- ConfigMe -->
-        <dependency>
-            <groupId>ch.jalu</groupId>
-            <artifactId>configme</artifactId>
-            <version>1.0.1</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <!-- bStats metrics -->
         <dependency>
@@ -565,7 +558,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
-            <version>4.3.0</version>
+            <version>4.4.0-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -784,14 +777,6 @@
             </exclusions>
         </dependency>
 
-        <!-- BCrypt implementation -->
-        <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bcrypt</artifactId>
-            <version>0.5.0</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- XAuth, another authentication plugin, required by the database converter -->
         <dependency>
             <groupId>de.luricos.bukkit</groupId>
@@ -832,19 +817,6 @@
                     <groupId>org.apache.logging.log4j</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.jalu</groupId>
-            <artifactId>datasourcecolumns</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.4</version>
         </dependency>
 
         <!-- Unit Testing Libraries -->

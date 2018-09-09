@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;

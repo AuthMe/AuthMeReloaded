@@ -160,7 +160,7 @@ public class PurgeExecutor {
             makePath(settings.getProperty(PurgeSettings.DEFAULT_WORLD), "players"));
 
         for (OfflinePlayer offlinePlayer : cleared) {
-            File playerFile = new File(dataFolder, PlayerUtils.getUuidOrName(offlinePlayer) + ".dat");
+            File playerFile = new File(dataFolder, offlinePlayer.getUniqueId().toString() + ".dat");
             if (playerFile.delete()) {
                 i++;
             }
@@ -192,7 +192,7 @@ public class PurgeExecutor {
 
         int deletedFiles = 0;
         for (OfflinePlayer offlinePlayer : cleared) {
-            File playerFile = new File(userDataFolder, PlayerUtils.getUuidOrName(offlinePlayer) + ".yml");
+            File playerFile = new File(userDataFolder, offlinePlayer.getUniqueId().toString() + ".yml");
             if (playerFile.exists() && playerFile.delete()) {
                 deletedFiles++;
             }
