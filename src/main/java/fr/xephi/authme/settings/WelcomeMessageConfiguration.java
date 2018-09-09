@@ -116,7 +116,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
      */
     private List<String> readWelcomeFile() {
         if (!(service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE))) {
-            return;
+            return Collections.emptyList();
         }
 
         File welcomeFile = new File(pluginFolder, "welcome.txt");
