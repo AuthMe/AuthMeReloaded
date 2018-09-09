@@ -61,7 +61,7 @@ public class Command {
         return delay;
     }
 
-    public void setDelay(int delay) {
+    public void setDelay(long delay) {
         this.delay = delay;
     }
 
