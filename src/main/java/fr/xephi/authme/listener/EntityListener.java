@@ -1,7 +1,6 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
-
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;

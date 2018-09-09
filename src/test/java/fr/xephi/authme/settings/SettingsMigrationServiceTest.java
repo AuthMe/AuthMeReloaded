@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
-import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.io.Files;
@@ -108,7 +108,7 @@ public class SettingsMigrationServiceTest {
         SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
 
         // when
-        migrationService.performMigrations(resource, AuthMeSettingsRetriever.buildConfigurationData().getProperties());
+        migrationService.performMigrations(resource.createReader(), AuthMeSettingsRetriever.buildConfigurationData());
 
         // then
         assertThat(migrationService.hasOldOtherAccountsCommand(), equalTo(true));
@@ -146,8 +146,8 @@ public class SettingsMigrationServiceTest {
         }
 
         @Override
-        protected boolean performMigrations(PropertyResource resource, List<Property<?>> properties) {
-            boolean result = super.performMigrations(resource, properties);
+        protected boolean performMigrations(PropertyReader reader, ConfigurationData configurationData) {
+            boolean result = super.performMigrations(reader, configurationData);
             returnedValues.add(result);
             return result;
         }

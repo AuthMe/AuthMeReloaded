@@ -17,8 +17,8 @@ registration:
 # Password errors on registration
 password:
     match_error: '&fLas contraseñas no son iguales'
-    name_in_password: '&cNo puedes utilizar tu nombre como contraseña, por favor elige otra...'
-    unsafe_password: '&cLa contraseña elejida no es segura, por favor elige otra...'
+    name_in_password: '&cNo puedes utilizar tu nombre como contraseña. Por favor, elija otra...'
+    unsafe_password: '&cLa contraseña elegida no es segura, por favor elija otra...'
     forbidden_characters: '&cTu contraseña tiene carácteres no admitidos, los cuales son: %valid_chars'
     wrong_length: '&fTu contraseña es muy larga o muy corta'
 
@@ -146,12 +146,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Tu código secreto es %code. Lo puedes escanear desde aquí %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Por favor, confirme su código con el comando /2fa confirm <código>'
+    code_required: 'Por favor, suba su código de autentificación de dos factores con el comando /2fa code <código>'
+    already_enabled: '¡El código de autentificación de dos factores ya está habilitado!'
+    enable_error_no_code: 'No se ha encontrado un código 2fa o ha expirado el actual. Por favor, ejecute /2fa add'
+    enable_success: '¡Autentificación en dos factores habilitado correctamente!'
+    enable_error_wrong_code: 'Código incorrecto o ha expirado. Por favor, ejecute /2fa add'
+    not_enabled_error: 'La autentificación de dos factores no está habilitada. Ejecute /2fa add'
+    removed_success: 'Se ha eliminado la autentificación de dos pasos en tu cuenta.'
+    invalid_code: '¡Código inválido!'

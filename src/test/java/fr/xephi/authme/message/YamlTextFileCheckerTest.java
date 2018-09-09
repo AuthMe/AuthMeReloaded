@@ -1,10 +1,11 @@
 package fr.xephi.authme.message;
 
+import ch.jalu.configme.resource.PropertyReader;
+import ch.jalu.configme.resource.YamlFileReader;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.util.ExceptionUtils;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -81,8 +82,8 @@ public class YamlTextFileCheckerTest {
      */
     private void checkFile(File file, String mandatoryKey, List<String> errors) {
         try {
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-            if (StringUtils.isEmpty(configuration.getString(mandatoryKey))) {
+            PropertyReader reader = new YamlFileReader(file);
+            if (StringUtils.isEmpty(reader.getString(mandatoryKey))) {
                 errors.add("Message for '" + mandatoryKey + "' is empty");
             }
         } catch (Exception e) {

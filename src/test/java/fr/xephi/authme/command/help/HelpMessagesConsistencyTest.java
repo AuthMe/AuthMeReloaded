@@ -1,5 +1,7 @@
 package fr.xephi.authme.command.help;
 
+import ch.jalu.configme.resource.PropertyReader;
+import ch.jalu.configme.resource.YamlFileReader;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
@@ -61,16 +63,16 @@ public class HelpMessagesConsistencyTest {
     @Test
     public void shouldHaveEntryForEachHelpMessageKey() {
         // given
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
+        PropertyReader reader = new YamlFileReader(DEFAULT_MESSAGES_FILE);
 
         // when / then
         for (HelpMessage message : HelpMessage.values()) {
-            assertThat("Default configuration has entry for message '" + message + "'",
-                configuration.contains(message.getKey()), equalTo(true));
+            assertThat("Default configuration should have entry for message '" + message + "'",
+                reader.contains(message.getKey()), equalTo(true));
         }
         for (HelpSection section : HelpSection.values()) {
-            assertThat("Default configuration has entry for section '" + section + "'",
-                configuration.contains(section.getKey()), equalTo(true));
+            assertThat("Default configuration should have entry for section '" + section + "'",
+                reader.contains(section.getKey()), equalTo(true));
         }
     }
 

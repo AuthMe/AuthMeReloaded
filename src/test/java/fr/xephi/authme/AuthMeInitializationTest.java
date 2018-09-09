@@ -41,6 +41,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -91,7 +92,7 @@ public class AuthMeInitializationTest {
     public void shouldInitializeAllServices() {
         // given
         Settings settings =
-            new Settings(dataFolder, mock(PropertyResource.class), null, buildConfigurationData());
+            new Settings(dataFolder, mock(PropertyResource.class, RETURNS_DEEP_STUBS), null, buildConfigurationData());
 
         Injector injector = new InjectorBuilder()
             .addDefaultHandlers("fr.xephi.authme")

@@ -4,6 +4,7 @@ website: ${project.url}
 description: ${project.description}
 main: ${bukkitplugin.main}
 version: ${bukkitplugin.version}
+api-version: 1.13
 softdepend:
     - Vault
     - LuckPerms
@@ -166,6 +167,9 @@ permissions:
     default: false
   authme.allowmultipleaccounts:
     description: Permission to be able to register multiple accounts.
+    default: op
+  authme.bypassbungeesend:
+    description: Permission node to bypass BungeeCord server teleportation.
     default: op
   authme.bypassantibot:
     description: Permission node to bypass AntiBot protection.

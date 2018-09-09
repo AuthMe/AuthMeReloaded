@@ -1,12 +1,9 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import ch.jalu.configme.SectionComments;
 import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.BeanProperty;
 import ch.jalu.configme.properties.Property;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Settings holder class for the commands.yml settings.
@@ -16,12 +13,11 @@ public final class CommandSettingsHolder implements SettingsHolder {
     public static final Property<CommandConfig> COMMANDS =
         new BeanProperty<>(CommandConfig.class, "", new CommandConfig());
 
-
     private CommandSettingsHolder() {
     }
 
-    @SectionComments
-    public static Map<String, String[]> sectionComments() {
+    @Override
+    public void registerComments(CommentsConfiguration conf) {
         String[] rootComments = {
             "This configuration file allows you to execute commands on various events.",
             "Supported placeholders in commands:",
@@ -67,21 +63,15 @@ public final class CommandSettingsHolder implements SettingsHolder {
             "    ifNumberOfAccountsAtLeast: 5"
         };
 
-        Map<String, String[]> commentMap = new HashMap<>();
-        commentMap.put("", rootComments);
-        commentMap.put("onFirstLogin", new String[]{
-            "Commands to run for players logging in whose 'last login date' was empty"
-        });
-        commentMap.put("onUnregister", new String[]{
-            "Commands to run whenever a player is unregistered (by himself, or by an admin)"
-        });
-        commentMap.put("onLogout", new String[]{
+        conf.setComment("", rootComments);
+        conf.setComment("onFirstLogin",
+            "Commands to run for players logging in whose 'last login date' was empty");
+        conf.setComment("onUnregister",
+            "Commands to run whenever a player is unregistered (by himself, or by an admin)");
+        conf.setComment("onLogout",
             "These commands are called whenever a logged in player uses /logout or quits.",
             "The commands are not run if a player that was not logged in quits the server.",
             "Note: if your server crashes, these commands won't be run, so don't rely on them to undo",
-            "'onLogin' commands that would be dangerous for non-logged in players to have!"
-        });
-        return commentMap;
+            "'onLogin' commands that would be dangerous for non-logged in players to have!");
     }
-
 }

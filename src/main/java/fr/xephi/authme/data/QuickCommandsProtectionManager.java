@@ -48,7 +48,7 @@ public class QuickCommandsProtectionManager implements SettingsDependent, HasCle
      * @param player the player to process
      */
     public void processJoin(Player player) {
-        if(shouldSavePlayer(player)) {
+        if (shouldSavePlayer(player)) {
             setJoin(player.getName());
         }
     }

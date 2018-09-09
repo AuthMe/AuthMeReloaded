@@ -1,30 +1,22 @@
 package fr.xephi.authme.settings;
 
-import ch.jalu.configme.SectionComments;
-import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.properties.EnumProperty;
 import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableSet;
-import fr.xephi.authme.ClassCollector;
-import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static fr.xephi.authme.ReflectionTestUtils.getFieldValue;
 import static org.junit.Assert.fail;
 
@@ -58,7 +50,7 @@ public class SettingsConsistencyTest {
 
         // when / then
         for (Property<?> property : properties) {
-            if (configurationData.getCommentsForSection(property.getPath()).length == 0) {
+            if (configurationData.getCommentsForSection(property.getPath()).isEmpty()) {
                 fail("No comment defined for " + property);
             }
         }
@@ -67,83 +59,27 @@ public class SettingsConsistencyTest {
     @Test
     public void shouldNotHaveVeryLongCommentLines() {
         // given
-        List<Property<?>> properties = configurationData.getProperties();
-        List<Property<?>> badProperties = new ArrayList<>();
+        Map<String, List<String>> commentEntries = configurationData.getAllComments();
+        List<String> badPaths = new ArrayList<>(0);
 
         // when
-        for (Property<?> property : properties) {
-            for (String comment : configurationData.getCommentsForSection(property.getPath())) {
+        for (Map.Entry<String, List<String>> commentEntry : commentEntries.entrySet()) {
+            for (String comment : commentEntry.getValue()) {
                 if (comment.length() > MAX_COMMENT_LENGTH) {
-                    badProperties.add(property);
+                    badPaths.add(commentEntry.getKey());
                     break;
                 }
             }
         }
 
         // then
-        if (!badProperties.isEmpty()) {
+        if (!badPaths.isEmpty()) {
             fail("Comment lines should not be longer than " + MAX_COMMENT_LENGTH + " chars, "
-                + "but found too long comments for:\n- "
-                + badProperties.stream().map(Property::getPath).collect(Collectors.joining("\n- ")));
+                + "but found too long comments for paths:\n- "
+                + String.join("\n- ", badPaths));
         }
     }
 
-    @Test
-    public void shouldNotHaveVeryLongSectionCommentLines() {
-        // given
-        List<Method> sectionCommentMethods = getSectionCommentMethods();
-        Set<Method> badMethods = new HashSet<>();
-
-        // when
-        for (Method method : sectionCommentMethods) {
-            boolean hasTooLongLine = getSectionComments(method).stream()
-                .anyMatch(line -> line.length() > MAX_COMMENT_LENGTH);
-            if (hasTooLongLine) {
-                badMethods.add(method);
-            }
-        }
-
-        // then
-        if (!badMethods.isEmpty()) {
-            String methodList = badMethods.stream()
-                .map(m -> m.getName() + " in " + m.getDeclaringClass().getSimpleName())
-                .collect(Collectors.joining("\n- "));
-            fail("Found SectionComments methods with too long comments:\n- " + methodList);
-        }
-    }
-
-    /**
-     * Gets all {@link SectionComments} methods from {@link SettingsHolder} implementations.
-     */
-    @SuppressWarnings("unchecked")
-    private List<Method> getSectionCommentMethods() {
-        // Find all SettingsHolder classes
-        List<Class<? extends SettingsHolder>> settingsClasses =
-            new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "settings/properties/")
-                .collectClasses(SettingsHolder.class);
-        checkArgument(!settingsClasses.isEmpty(), "Could not find any SettingsHolder classes");
-
-        // Find all @SectionComments methods in these classes
-        return settingsClasses.stream()
-            .map(Class::getDeclaredMethods)
-            .flatMap(Arrays::stream)
-            .filter(method -> method.isAnnotationPresent(SectionComments.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Returns all comments returned from the given SectionComments method, flattened into one list.
-     *
-     * @param sectionCommentsMethod the method whose comments should be retrieved
-     * @return flattened list of all comments provided by the method
-     */
-    private static List<String> getSectionComments(Method sectionCommentsMethod) {
-        // @SectionComments methods are static
-        Map<String, String[]> comments = ReflectionTestUtils.invokeMethod(sectionCommentsMethod, null);
-        return comments.values().stream()
-            .flatMap(Arrays::stream)
-            .collect(Collectors.toList());
-    }
 
     /**
      * Checks that enum properties have all possible enum values listed in their comment

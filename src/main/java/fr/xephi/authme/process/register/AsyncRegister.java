@@ -54,7 +54,7 @@ public class AsyncRegister implements AsynchronousProcess {
      * @param <P>        parameters type
      */
     public <P extends RegistrationParameters> void register(RegistrationMethod<P> variant, P parameters) {
-        if (preRegisterCheck(parameters.getPlayer())) {
+        if (preRegisterCheck(variant, parameters.getPlayer())) {
             RegistrationExecutor<P> executor = registrationExecutorFactory.getSingleton(variant.getExecutorClass());
             if (executor.isRegistrationAdmitted(parameters)) {
                 executeRegistration(parameters, executor);
@@ -65,11 +65,12 @@ public class AsyncRegister implements AsynchronousProcess {
     /**
      * Checks if the player is able to register, in that case the {@link AuthMeAsyncPreRegisterEvent} is invoked.
      *
-     * @param player the player which is trying to register.
+     * @param variant the registration type variant.
+     * @param player  the player which is trying to register.
      *
      * @return true if the checks are successful and the event hasn't marked the action as denied, false otherwise.
      */
-    private boolean preRegisterCheck(Player player) {
+    private boolean preRegisterCheck(RegistrationMethod<?> variant, Player player) {
         final String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -88,7 +89,7 @@ public class AsyncRegister implements AsynchronousProcess {
             return false;
         }
 
-        return isPlayerIpAllowedToRegister(player);
+        return variant == RegistrationMethod.API_REGISTRATION || isPlayerIpAllowedToRegister(player);
     }
 
     /**

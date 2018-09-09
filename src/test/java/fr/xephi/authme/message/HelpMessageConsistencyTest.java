@@ -1,11 +1,11 @@
 package fr.xephi.authme.message;
 
+import ch.jalu.configme.resource.PropertyReader;
+import ch.jalu.configme.resource.YamlFileReader;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.help.HelpMessage;
 import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.permission.DefaultPermission;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,27 +49,27 @@ public class HelpMessageConsistencyTest {
     public void shouldHaveRequiredEntries() {
         for (File file : helpFiles) {
             // given
-            FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+            PropertyReader reader = new YamlFileReader(file);
 
             // when / then
-            assertHasAllHelpSectionEntries(file.getName(), configuration);
+            assertHasAllHelpSectionEntries(file.getName(), reader);
         }
     }
 
-    private void assertHasAllHelpSectionEntries(String filename, FileConfiguration configuration) {
+    private void assertHasAllHelpSectionEntries(String filename, PropertyReader reader) {
         for (HelpSection section : HelpSection.values()) {
             assertThat(filename + " should have entry for HelpSection '" + section + "'",
-                configuration.getString(section.getKey()), notEmptyString());
+                reader.getString(section.getKey()), notEmptyString());
         }
 
         for (HelpMessage message : HelpMessage.values()) {
             assertThat(filename + " should have entry for HelpMessage '" + message + "'",
-                configuration.getString(message.getKey()), notEmptyString());
+                reader.getString(message.getKey()), notEmptyString());
         }
 
         for (DefaultPermission defaultPermission : DefaultPermission.values()) {
             assertThat(filename + " should have entry for DefaultPermission '" + defaultPermission + "'",
-                configuration.getString(getPathForDefaultPermission(defaultPermission)), notEmptyString());
+                reader.getString(getPathForDefaultPermission(defaultPermission)), notEmptyString());
         }
     }
 

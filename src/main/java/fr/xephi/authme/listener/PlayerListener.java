@@ -23,6 +23,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -54,8 +55,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
@@ -97,7 +98,7 @@ public class PlayerListener implements Listener {
     private BungeeSender bungeeSender;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
-    private List<String> unresolvedPlayerHostname = new ArrayList<>();
+    private Set<String> unresolvedPlayerHostname = new HashSet<>();
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -226,6 +227,15 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
+        if (unresolvedPlayerHostname.remove(player.getName())) {
+            try {
+                runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), PlayerUtils.getPlayerIp(player));
+            } catch (FailedVerificationException e) {
+                player.kickPlayer(messages.retrieveSingle(player, e.getReason(), e.getArgs()));
+                return;
+            }
+        }
+
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
         }
@@ -266,11 +276,6 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (event.getAddress() == null) {
-            unresolvedPlayerHostname.add(event.getName());
-            return;
-        }
-
         final String name = event.getName();
 
         if (validationService.isUnrestricted(name)) {
@@ -286,6 +291,15 @@ public class PlayerListener implements Listener {
             }
         } catch (PermissionLoadUserException e) {
             ConsoleLogger.logException("Unable to load the permission data of user " + name, e);
+        }
+
+        // getAddress() sometimes returning null if not yet resolved
+        // skip it and let PlayerLoginEvent to handle it
+        if (event.getAddress() == null) {
+            unresolvedPlayerHostname.add(event.getName());
+            return;
+        } else {
+            unresolvedPlayerHostname.remove(event.getName());
         }
 
         try {
@@ -316,9 +330,16 @@ public class PlayerListener implements Listener {
         }
 
 
-        if (!isAsyncPlayerPreLoginEventCalled || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)
-            || unresolvedPlayerHostname.remove(name)) {
+        if (event.getAddress() == null) { // Address still null
+            unresolvedPlayerHostname.add(name);
+            return;
+        } else {
+            unresolvedPlayerHostname.remove(name);
+        }
+
+        if (!isAsyncPlayerPreLoginEventCalled || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
             try {
+                // Player.getAddress() can be null at this event, use event.getAddress()
                 runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
                 event.setKickMessage(messages.retrieveSingle(player, e.getReason(), e.getArgs()));

@@ -48,7 +48,7 @@ public class Log4JFilter extends AbstractFilter {
     @Override
     public Result filter(LogEvent event) {
         Message candidate = null;
-        if(event != null) {
+        if (event != null) {
             candidate = event.getMessage();
         }
         return validateMessage(candidate);
@@ -67,7 +67,7 @@ public class Log4JFilter extends AbstractFilter {
     @Override
     public Result filter(Logger logger, Level level, Marker marker, Object msg, Throwable t) {
         String candidate = null;
-        if(msg != null) {
+        if (msg != null) {
             candidate = msg.toString();
         }
         return validateMessage(candidate);

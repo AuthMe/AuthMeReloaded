@@ -17,6 +17,7 @@ import java.nio.file.Files;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.mock;
 public class SettingsTest {
     
     private static final ConfigurationData CONFIG_DATA =
-        ConfigurationDataBuilder.collectData(TestConfiguration.class);
+        ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -49,7 +50,7 @@ public class SettingsTest {
         createFile(emailFile);
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
-        PropertyResource resource = mock(PropertyResource.class);
+        PropertyResource resource = mock(PropertyResource.class, RETURNS_DEEP_STUBS);
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
@@ -67,7 +68,7 @@ public class SettingsTest {
         createFile(emailFile);
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
-        PropertyResource resource = mock(PropertyResource.class);
+        PropertyResource resource = mock(PropertyResource.class, RETURNS_DEEP_STUBS);
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
@@ -85,7 +86,7 @@ public class SettingsTest {
         createFile(emailFile);
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
-        PropertyResource resource = mock(PropertyResource.class);
+        PropertyResource resource = mock(PropertyResource.class, RETURNS_DEEP_STUBS);
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when

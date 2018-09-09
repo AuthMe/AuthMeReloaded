@@ -1,6 +1,6 @@
 package fr.xephi.authme.message.updater;
 
-import ch.jalu.configme.resource.PropertyResource;
+import ch.jalu.configme.resource.PropertyReader;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.message.MessageKey;
@@ -15,7 +15,6 @@ import static com.google.common.collect.ImmutableMap.of;
  * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/1467">Issue #1467</a>
  */
 final class OldMessageKeysMigrater {
-
 
     @VisibleForTesting
     static final Map<MessageKey, String> KEYS_TO_OLD_PATH = ImmutableMap.<MessageKey, String>builder()
@@ -130,23 +129,26 @@ final class OldMessageKeysMigrater {
     /**
      * Migrates any existing old key paths to their new paths if no text has been defined for the new key.
      *
-     * @param resource the resource to modify and read from
+     * @param reader the property reader to get values from
+     * @param configurationData the configuration data to write to
      * @return true if at least one message could be migrated, false otherwise
      */
-    static boolean migrateOldPaths(PropertyResource resource) {
+    static boolean migrateOldPaths(PropertyReader reader, MessageKeyConfigurationData configurationData) {
         boolean wasPropertyMoved = false;
         for (Map.Entry<MessageKey, String> migrationEntry : KEYS_TO_OLD_PATH.entrySet()) {
-            wasPropertyMoved |= moveIfApplicable(resource, migrationEntry.getKey(), migrationEntry.getValue());
+            wasPropertyMoved |= moveIfApplicable(reader, configurationData,
+                migrationEntry.getKey(), migrationEntry.getValue());
         }
         return wasPropertyMoved;
     }
 
-    private static boolean moveIfApplicable(PropertyResource resource, MessageKey messageKey, String oldPath) {
-        if (resource.getString(messageKey.getKey()) == null) {
-            String textAtOldPath = resource.getString(oldPath);
+    private static boolean moveIfApplicable(PropertyReader reader, MessageKeyConfigurationData configurationData,
+                                            MessageKey messageKey, String oldPath) {
+        if (configurationData.getMessage(messageKey) == null) {
+            String textAtOldPath = reader.getString(oldPath);
             if (textAtOldPath != null) {
                 textAtOldPath = replaceOldPlaceholders(messageKey, textAtOldPath);
-                resource.setValue(messageKey.getKey(), textAtOldPath);
+                configurationData.setMessage(messageKey, textAtOldPath);
                 return true;
             }
         }

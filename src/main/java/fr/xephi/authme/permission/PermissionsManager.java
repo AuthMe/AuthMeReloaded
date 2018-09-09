@@ -321,7 +321,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The group name.
      *
      * @return True if the player is in the specified group, false otherwise.
-     * False is also returned if groups aren't supported by the used permissions system.
+     *         False is also returned if groups aren't supported by the used permissions system.
      */
     public boolean isInGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.isInGroup(player, groupName);
@@ -334,7 +334,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroup(OfflinePlayer player, String groupName) {
         if (!isEnabled() || StringUtils.isEmpty(groupName)) {
@@ -350,7 +350,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupNames The name of the groups to add.
      *
      * @return True if at least one group was added, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroups(OfflinePlayer player, Collection<String> groupNames) {
         // If no permissions system is used, return false
@@ -377,7 +377,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean removeGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.removeFromGroup(player, groupName);
@@ -390,7 +390,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupNames The name of the groups to remove.
      *
      * @return True if at least one group was removed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean removeGroups(OfflinePlayer player, Collection<String> groupNames) {
         // If no permissions system is used, return false
@@ -418,7 +418,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
-     * False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean setGroup(OfflinePlayer player, String groupName) {
         return isEnabled() && handler.setGroup(player, groupName);
@@ -432,7 +432,7 @@ public class PermissionsManager implements Reloadable {
      * @param player The player to remove all groups from.
      *
      * @return True if succeed, false otherwise.
-     * False will also be returned if this feature isn't supported for the used permissions system.
+     *         False will also be returned if this feature isn't supported for the used permissions system.
      */
     public boolean removeAllGroups(OfflinePlayer player) {
         // If no permissions system is used, return false
