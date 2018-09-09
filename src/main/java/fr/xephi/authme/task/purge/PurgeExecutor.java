@@ -7,7 +7,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
-import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;

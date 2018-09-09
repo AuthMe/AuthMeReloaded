@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**

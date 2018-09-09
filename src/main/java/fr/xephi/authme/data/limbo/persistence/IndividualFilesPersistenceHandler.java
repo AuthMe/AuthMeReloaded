@@ -8,7 +8,6 @@ import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
-import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
