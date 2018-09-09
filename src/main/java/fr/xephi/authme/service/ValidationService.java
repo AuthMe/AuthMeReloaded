@@ -23,7 +23,6 @@ import org.bukkit.entity.Player;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -45,7 +44,6 @@ public class ValidationService implements Reloadable {
     private GeoIpService geoIpService;
 
     private Pattern passwordRegex;
-    private Set<String> unrestrictedNames;
     private Multimap<String, String> restrictedNames;
 
     ValidationService() {
@@ -55,8 +53,6 @@ public class ValidationService implements Reloadable {
     @Override
     public void reload() {
         passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
-        // Use Set for more efficient contains() lookup
-        unrestrictedNames = new HashSet<>(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES));
         restrictedNames = settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)
             ? loadNameRestrictions(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
             : HashMultimap.create();
@@ -140,7 +136,7 @@ public class ValidationService implements Reloadable {
      * @return true if unrestricted, false otherwise
      */
     public boolean isUnrestricted(String name) {
-        return unrestrictedNames.contains(name.toLowerCase());
+        return settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name.toLowerCase());
     }
 
     /**
@@ -208,7 +204,7 @@ public class ValidationService implements Reloadable {
      * @param configuredRestrictions the restriction rules to convert to a map
      * @return map of allowed IPs/domain names by player name
      */
-    private Multimap<String, String> loadNameRestrictions(List<String> configuredRestrictions) {
+    private Multimap<String, String> loadNameRestrictions(Set<String> configuredRestrictions) {
         Multimap<String, String> restrictions = HashMultimap.create();
         for (String restriction : configuredRestrictions) {
             if (isInsideString(';', restriction)) {

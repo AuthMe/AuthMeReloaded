@@ -543,7 +543,7 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
-            <version>0.4.1</version>
+            <version>1.0.1</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>

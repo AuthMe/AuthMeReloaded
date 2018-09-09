@@ -1,6 +1,8 @@
 package fr.xephi.authme.service.yaml;
 
-import org.yaml.snakeyaml.parser.ParserException;
+import ch.jalu.configme.exception.ConfigMeException;
+
+import static com.google.common.base.MoreObjects.firstNonNull;
 
 /**
  * Exception when a YAML file could not be parsed.
@@ -13,10 +15,10 @@ public class YamlParseException extends RuntimeException {
      * Constructor.
      *
      * @param file the file a parsing exception occurred with
-     * @param snakeYamlException the caught exception from SnakeYAML
+     * @param configMeException the caught exception from ConfigMe
      */
-    public YamlParseException(String file, ParserException snakeYamlException) {
-        super(snakeYamlException);
+    public YamlParseException(String file, ConfigMeException configMeException) {
+        super(firstNonNull(configMeException.getCause(), configMeException));
         this.file = file;
     }
 

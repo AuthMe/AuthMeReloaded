@@ -39,7 +39,7 @@ public class JarMessageSource {
     }
 
     private static String getString(String path, PropertyReader reader) {
-        return reader == null ? null : reader.getTypedObject(path, String.class);
+        return reader == null ? null : reader.getString(path);
     }
 
     private static MessageMigraterPropertyReader loadJarFile(String jarPath) {

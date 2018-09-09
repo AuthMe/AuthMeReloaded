@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
-import ch.jalu.configme.properties.Property;
-import ch.jalu.configme.resource.PropertyResource;
+import ch.jalu.configme.properties.BaseProperty;
+import ch.jalu.configme.resource.PropertyReader;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -15,7 +15,7 @@ import static com.google.common.collect.Sets.newHashSet;
  *
  * @param <E> the enum type
  */
-public class EnumSetProperty<E extends Enum<E>> extends Property<Set<E>> {
+public class EnumSetProperty<E extends Enum<E>> extends BaseProperty<Set<E>> {
 
     private final Class<E> enumClass;
 
@@ -26,8 +26,8 @@ public class EnumSetProperty<E extends Enum<E>> extends Property<Set<E>> {
     }
 
     @Override
-    protected Set<E> getFromResource(PropertyResource resource) {
-        Object entry = resource.getObject(getPath());
+    protected Set<E> getFromReader(PropertyReader reader) {
+        Object entry = reader.getObject(getPath());
         if (entry instanceof Collection<?>) {
             return ((Collection<?>) entry).stream()
                 .map(val -> toEnum(String.valueOf(val)))
@@ -44,5 +44,12 @@ public class EnumSetProperty<E extends Enum<E>> extends Property<Set<E>> {
             }
         }
         return null;
+    }
+
+    @Override
+    public Object toExportValue(Set<E> value) {
+        return value.stream()
+            .map(Enum::name)
+            .collect(Collectors.toList());
     }
 }

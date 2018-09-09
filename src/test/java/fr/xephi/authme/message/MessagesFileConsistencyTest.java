@@ -1,9 +1,9 @@
 package fr.xephi.authme.message;
 
+import ch.jalu.configme.resource.PropertyReader;
+import ch.jalu.configme.resource.YamlFileReader;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 
 import java.io.File;
@@ -24,10 +24,10 @@ public class MessagesFileConsistencyTest {
     @Test
     public void shouldHaveAllMessages() {
         File file = TestHelper.getJarFile(MESSAGES_FILE);
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        PropertyReader reader = new YamlFileReader(file);
         List<String> errors = new ArrayList<>();
         for (MessageKey messageKey : MessageKey.values()) {
-            validateMessage(messageKey, configuration, errors);
+            validateMessage(messageKey, reader, errors);
         }
 
         if (!errors.isEmpty()) {
@@ -36,9 +36,9 @@ public class MessagesFileConsistencyTest {
         }
     }
 
-    private static void validateMessage(MessageKey messageKey, FileConfiguration configuration, List<String> errors) {
+    private static void validateMessage(MessageKey messageKey, PropertyReader reader, List<String> errors) {
         final String key = messageKey.getKey();
-        final String message = configuration.getString(key);
+        final String message = reader.getString(key);
 
         if (StringUtils.isEmpty(message)) {
             errors.add("Messages file should have message for key '" + key + "'");

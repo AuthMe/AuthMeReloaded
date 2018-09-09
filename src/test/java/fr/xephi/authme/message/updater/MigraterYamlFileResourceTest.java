@@ -1,8 +1,10 @@
 package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
+import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
+import ch.jalu.configme.resource.PropertyReader;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import org.junit.Rule;
@@ -31,14 +33,15 @@ public class MigraterYamlFileResourceTest {
     public void shouldReadChineseFile() {
         // given
         File file = TestHelper.getJarFile(CHINESE_MESSAGES_FILE);
-
-        // when
         MigraterYamlFileResource resource = new MigraterYamlFileResource(file);
 
+        // when
+        PropertyReader reader = resource.createReader();
+
         // then
-        assertThat(resource.getString("first"), equalTo("错误的密码"));
-        assertThat(resource.getString("second"), equalTo("为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！"));
-        assertThat(resource.getString("third"), equalTo("您已经可以在当前会话中执行任何敏感命令！"));
+        assertThat(reader.getString("first"), equalTo("错误的密码"));
+        assertThat(reader.getString("second"), equalTo("为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！"));
+        assertThat(reader.getString("third"), equalTo("您已经可以在当前会话中执行任何敏感命令！"));
     }
 
     @Test
@@ -47,24 +50,26 @@ public class MigraterYamlFileResourceTest {
         File file = temporaryFolder.newFile();
         Files.copy(TestHelper.getJarFile(CHINESE_MESSAGES_FILE), file);
         MigraterYamlFileResource resource = new MigraterYamlFileResource(file);
+        ConfigurationData configurationData = buildConfigurationData();
+        configurationData.initializeValues(resource.createReader());
         String newMessage = "您当前并没有任何邮箱与该账号绑定";
-        resource.setValue("third", newMessage);
+        configurationData.setValue(new StringProperty("third", ""), newMessage);
 
         // when
-        resource.exportProperties(buildConfigurationData());
+        resource.exportProperties(configurationData);
 
         // then
-        resource = new MigraterYamlFileResource(file);
-        assertThat(resource.getString("first"), equalTo("错误的密码"));
-        assertThat(resource.getString("second"), equalTo("为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！"));
-        assertThat(resource.getString("third"), equalTo(newMessage));
+        PropertyReader reader = resource.createReader();
+        assertThat(reader.getString("first"), equalTo("错误的密码"));
+        assertThat(reader.getString("second"), equalTo("为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！"));
+        assertThat(reader.getString("third"), equalTo(newMessage));
     }
 
     private static ConfigurationData buildConfigurationData() {
-        List<Property<?>> properties = Arrays.asList(
+        List<Property<String>> properties = Arrays.asList(
             new StringProperty("first", "first"),
             new StringProperty("second", "second"),
             new StringProperty("third", "third"));
-        return new ConfigurationData(properties);
+        return ConfigurationDataBuilder.createConfiguration(properties);
     }
 }

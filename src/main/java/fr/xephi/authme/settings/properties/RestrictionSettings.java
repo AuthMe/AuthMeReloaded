@@ -5,9 +5,10 @@ import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.properties.Property;
 
 import java.util.List;
+import java.util.Set;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
-import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseListProperty;
+import static ch.jalu.configme.properties.PropertyInitializer.newLowercaseStringSetProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
 public final class RestrictionSettings implements SettingsHolder {
@@ -24,8 +25,8 @@ public final class RestrictionSettings implements SettingsHolder {
         newProperty("settings.restrictions.hideChat", false);
 
     @Comment("Allowed commands for unauthenticated players")
-    public static final Property<List<String>> ALLOW_COMMANDS =
-        newLowercaseListProperty("settings.restrictions.allowCommands",
+    public static final Property<Set<String>> ALLOW_COMMANDS =
+        newLowercaseStringSetProperty("settings.restrictions.allowCommands",
             "/login", "/register", "/l", "/reg", "/email", "/captcha", "/2fa", "/totp");
 
     @Comment({
@@ -83,8 +84,8 @@ public final class RestrictionSettings implements SettingsHolder {
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1",
         "    - playername;regex:127\\.0\\.0\\..*"})
-    public static final Property<List<String>> RESTRICTED_USERS =
-        newLowercaseListProperty("settings.restrictions.AllowedRestrictedUser");
+    public static final Property<Set<String>> RESTRICTED_USERS =
+        newLowercaseStringSetProperty("settings.restrictions.AllowedRestrictedUser");
 
     @Comment("Ban unknown IPs trying to log in with a restricted username?")
     public static final Property<Boolean> BAN_UNKNOWN_IP =
@@ -177,8 +178,8 @@ public final class RestrictionSettings implements SettingsHolder {
         "- 'npcPlayer'",
         "- 'npcPlayer2'"
     })
-    public static final Property<List<String>> UNRESTRICTED_NAMES =
-        newLowercaseListProperty("settings.unrestrictions.UnrestrictedName");
+    public static final Property<Set<String>> UNRESTRICTED_NAMES =
+        newLowercaseStringSetProperty("settings.unrestrictions.UnrestrictedName");
 
     private RestrictionSettings() {
     }
