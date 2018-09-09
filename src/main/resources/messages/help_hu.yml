@@ -3,29 +3,29 @@
 # -------------------------------------------------------
 # List of texts used in the help section
 common:
-    header: '==========[ AuthMeReloaded Segítség ]=========='
-    optional: 'Opcionális'
-    hasPermission: 'Van ehhez jogod'
-    noPermission: 'Nincs jogod ehhez'
-    default: 'Alapértelmezett'
-    result: 'Eredmény'
-    defaultPermissions:
-        notAllowed: 'Nincs jogod ehhez'
-        opOnly: 'OP jog szükséges'
-        allowed: 'Mindenkinek elérhető'
+  header:                     ======[ AuthMeReloaded Segítség ]======
+  optional:                   Opcionális
+  hasPermission:              Van ehhez jogod
+  noPermission:               Nincs jogod ehhez
+  default:                    Alapértelmezett
+  result:                     Eredmény
+  defaultPermissions:
+    notAllowed:               Nincs jogod ehhez
+    opOnly:                   Op jog szükséges
+    allowed:                  Mindenkinek elérhető
 
 # -------------------------------------------------------
 # Titles of the individual help sections
 # Set the translation text to empty text to disable the section, e.g. to hide alternatives:
 #   alternatives: ''
 section:
-    command: 'Parancs'
-    description: 'Rövid leírás'
-    detailedDescription: 'Hosszabb leírás'
-    arguments: 'Argumentum (változó)'
-    permissions: 'Jogok'
-    alternatives: 'Alternatívák'
-    children: 'Parancsok'
+    command:                   Parancs
+    description:               Rövid leírás
+    detailedDescription:       Hosszabb leírás
+    arguments:                 Argumentum (változó)
+    permissions:               Jogok
+    alternatives:              Alternatívák
+    children:                  Parancsok
 
 # -------------------------------------------------------
 # You can translate the data for all commands using the below pattern.
@@ -34,12 +34,318 @@ section:
 # Translations don't need to be complete; any missing section will be taken from the default silently
 # Important: Put main commands like "authme" before their children (e.g. "authme.reload")
 commands:
-    authme.register:
-        description: 'Játékos regisztrálása'
-        detailedDescription: 'Megadott játékos regisztrálása egy megadott jelszóval.'
-        arg1:
-            label: 'Játékos'
-            description: 'Játékos neve'
-        arg2:
-            label: 'jelszó'
-            description: 'Jelszó'
+  authme:
+    description:              AuthMe operátor parancsok
+    detailedDescription:      Az AuthMeReloaded fő parancsa. Az összes adminisztrációs parancs gyökere.
+  authme.register:
+    description:              Játékos regisztrálása
+    detailedDescription:      Megadott játékos regisztrálása egy megadott jelszóval.
+    arg1:
+      label:                  játékos
+      description:            Játékos név
+    arg2:
+      label:                  jelszó
+      description:            Jelszó
+  authme.unregister:
+    description:              A játékos fiókjának visszavonása
+    detailedDescription:      Kiveszi a játékos regisztrált fiókját.
+    arg1:
+      label:                  játékos
+      description:            Játékos név
+  authme.forcelogin:
+    description:              Kötelező bejelentkezés
+    detailedDescription:      Ez arra kényszerít egy adott játékost, hogy jelentkezzen be.
+    arg1:
+      label:                  játékos
+      description:            A játékos neve, ha online
+  authme.password:
+    description:              A játékos jelszavának módosítása
+    detailedDescription:      A játékos jelszavának módosítása.
+    arg1:
+      label:                  játékos
+      description:            Játékos név
+    arg2:
+      label:                  jelszó
+      description:            Új jelszó
+  authme.lastlogin:
+    description:              Utolsó bejelentkezés
+    detailedDescription:      Megtekintheti egy adott játékos utolsó bejelentkezésének dátumát.
+    arg1:
+      label:                  játékos
+      description:            Játékos név
+  authme.accounts:
+    description:              Játékosok megjelenítése
+    detailedDescription:      Megmutassa a játékos összes fiókját a játékos nevével vagy IP-jével.
+    arg1:
+      label:                  játékos
+      description:            Játékos neve vagy IP címe
+  authme.email:
+    description:              Játékos levelek megjelenítése
+    detailedDescription:      Egy adott játékos e-mailjét mutatja, ha a fiókjában beállította.
+    arg1:
+      label:                  játékos
+      description:            Játékos név
+  authme.setemail:
+    description:              Módosítsa a játékos e-mailjét
+    detailedDescription:      Egy adott játékos e-mail címének módosítása.
+    arg1:
+      label:                  játékos
+      description:            Játékos név
+    arg2:
+      label:                  email
+      description:            A játékos e-mailje
+  authme.getip:
+    description:              A játékos IP cím mutatása
+    detailedDescription:      Kap egy adott online játékos IP-címét.
+    arg1:
+      label:                  játékos
+      description:            Játékos név
+  authme.spawn:
+    description:              Teleportálás a spawnra
+    detailedDescription:      Teleportál a spawnra.
+  authme.setspawn:
+    description:              Spawn beállítása
+    detailedDescription:      Beállítja a spawn kezdőhelyet a játékos jelenlegi pozicíójában.
+  authme.firstspawn:
+    description:              Teleportálás az első spawnhoz
+    detailedDescription:      Teleportál az első spawn kezdőhelyre.
+  authme.setfirstspawn:
+    description:              Első spawn beállítása
+    detailedDescription:      Beállítja az első spawn kezdőhelyet a játékos jelenlegi pozicíójában.
+  authme.purge:
+    description:              Törli a régi adatokat
+    detailedDescription:      Törli az AuthMeReloaded játékos adatokat a megadott nap szerint.
+    arg1:
+      label:                  nap
+      description:            Napok száma
+  authme.purgeplayer:
+    description:              Játékos adat törlés
+    detailedDescription:      Törli a kiválasztott játékos adatait.
+    arg1:
+      label:                  játékos
+      description:            A játékos törlése az adatbázisból
+    arg2:
+      label:                  opciók
+      description:            'Írd be a parancs végén a ''force'' parancsot, hogy ellenőrizze a játékos regisztrálva van-e'
+  authme.backup:
+    description:              Biztonsági másolat készítése
+    detailedDescription:      Létrehoz egy biztonsági másolatot a regisztrált felhasználókról.
+  authme.resetpos:
+    description:              Visszaállítja a játékos utolsó helyzetét
+    detailedDescription:      Visszaállítja az adott játékos vagy az összes játékos utolsó ismert pozícióját.
+    arg1:
+      label:                  játékos
+      description:            Játékos neve vagy írd be a '*' gomb az összes játékos kiválasztásához
+  authme.purgebannedplayers:
+    description:              Törli az adatokat a kitiltott játékosoktól
+    detailedDescription:      Törli az összes AuthMeReloaded adatokat a kitiltott játékosoktól.
+  authme.switchantibot:
+    description:              Módosítja az AntiBot módot
+    detailedDescription:      Az AntiBot mód megváltoztatása vagy átkapcsolása a megadott állapotra.
+    arg1:
+      label:                  mód
+      description:            ON / OFF
+  authme.reload:
+    description:              Plugin újratöltés
+    detailedDescription:      Újratölti az AuthMeReloaded plugint.
+  authme.version:
+    description:              Plugin verzió
+    detailedDescription:      Részletes információ az AuthMeReloaded telepített verziójáról, az alkotókról, a közreműködőkről és az engedélyekről.
+  authme.converter:
+    description:              Parancs konvertáló
+    detailedDescription:      AuthMeReloaded konvertáló parancs.
+    arg1:
+      label:                  munka
+      description:            'Konverziós munka: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite / loginsecurity'
+  authme.messages:
+    description:              Add hiányzó üzeneteket
+    detailedDescription:      Hozzáadja a hiányzó üzeneteket az aktuális üzenetfájlhoz.
+    arg1:
+      label:                  help
+      description:            A 'help' frissítéséhez, hogy frissítse a segítséget
+  authme.recent:
+    description:              Utolsó bejelentkezett játékosok megjelenítése
+    detailedDescription:      Megjeleníti az utolsó bejelentkezett játékosokat.
+  authme.debug:
+    description:              Hibakeresés funkciói
+    detailedDescription:      Lehetővé tesz több hibakeresési műveletet.
+    arg1:
+      label:                  gyermek
+      description:            A végrehajtandó gyermek (gyermek)
+    arg2:
+      label:                  argumentum
+      description:            Argumentum (a debug-szekciótól függ)
+    arg3:
+      label:                  argumentum
+      description:            Argumentum (a debug-szekciótól függ)
+  authme.help:
+    description:              Segítség megjelenítése
+    detailedDescription:      Részletesen megmutatja az authme parancsok segítséget.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy lekérdezés leírása.
+  email:
+    description:              Hozzáadja az e-mailt vagy megjeleníti a játékos email-jét
+    detailedDescription:      Az AuthMeReloaded e-mail parancs alapja.
+  email.show:
+    description:              E-mail megjelenítése
+    detailedDescription:      Jelenlegi e-mail megjelenítése.
+  email.add:
+    description:              E-mail hozzáadása
+    detailedDescription:      Új e-mail üzenet hozzáadása.
+    arg1:
+      label:                  email
+      description:            E-mail cím
+    arg2:
+      label:                  emailMegerősítés
+      description:            Az e-mail cím ellenőrzése
+  email.change:
+    description:              E-mail megváltoztatása
+    detailedDescription:      Megváltoztatja a fiók e-mail címét.
+    arg1:
+      label:                  RégiEmail
+      description:            Korábbi e-mail cím
+    arg2:
+      label:                  újEmail
+      description:            Új e-mail cím
+  email.recover:
+    description:              Jelszó lekérése e-mail alapján
+    detailedDescription:      Visszaszerezheted a fiókod e-mailben, hogy új jelszót küldjön.
+    arg1:
+      label:                  email
+      description:            E-mail cím
+  email.code:
+    description:              Kód elküldése a jelszó visszaállításához
+    detailedDescription:      Visszaszerezheted a fiókod a kapott kód e-mailben történő elküldésével.
+    arg1:
+      label:                  kód
+      description:            Helyreállítási kód
+  email.setpassword:
+    description:              Jelszó beállítása
+    detailedDescription:      Új jelszó beállítása a fiók teljes körű visszaállítása után.
+    arg1:
+      label:                  jelszó
+      description:            Új jelszó
+  email.help:
+    description:              E-mail segítség
+    detailedDescription:      Részletes segítség az /email parancshoz.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy a lekérdezés, hogy lásd a segítséget.
+  login:
+    description:              Bejelentkezés parancs
+    detailedDescription:      Az AuthMeReloadedban használt bejelentkezési parancs.
+    arg1:
+      label:                  jelszó
+      description:            Bejelentkezés jelszó
+  login.help:
+    description:              Bejelentkezési segítség
+    detailedDescription:      Részletes segítség a /login parancsról.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy a lekérdezés, hogy lásd a segítséget.
+  logout:
+    description:              Kijelentkezés parancs
+    detailedDescription:      Az AuthMeReloaded által használt kijelentkezés parancs.
+  logout.help:
+    description:              Kijelentkezési segítség
+    detailedDescription:      Részletes segítség a /logout parancsról.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy a lekérdezés, hogy lásd a segítséget.
+  register:
+    description:              Fiók regisztrálása
+    detailedDescription:      Parancs az AuthMeReloaded által használt fiók regisztrálásához.
+    arg1:
+      label:                  jelszó
+      description:            Jelszó
+    arg2:
+      label:                  jelszóMegerősítő
+      description:            Jelszó megerősítése
+  register.help:
+    description:              Regisztrálási segítség
+    detailedDescription:      Részletes segítség a /register parancsról.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy a lekérdezés, hogy lássuk a segítséget.
+  unregister:
+    description:              Fiók törlése
+    detailedDescription:      Parancs az AuthMeReloaded által használt regisztrált fiók törléséhez.
+    arg1:
+      label:                  jelszó
+      description:            Jelszó
+  unregister.help:
+    description:              Fiók törlési segítség
+    detailedDescription:      Részletes segítség az /unregister parancsról.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy a lekérdezés, hogy lássuk a segítséget.
+  changepassword:
+    description:              Fiók jelszó módosítása
+    detailedDescription:      Parancs az AuthMeReloaded által használt jelszó megváltoztatásához.
+    arg1:
+      label:                  régiJelszó
+      description:            Régi jelszó
+    arg2:
+      label:                  újJelszó
+      description:            Új jelszó
+  changepassword.help:
+    description:              Jelszó változtatási segítség
+    detailedDescription:      Részletes segítség a /changepassword parancsról.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy a lekérdezés, hogy lássuk a segítséget.
+  totp:
+    description:              Kétfaktoros hitelesítéssel kapcsolatos műveleteket végez
+    detailedDescription:      Elvégzi a kétfaktoros hitelesítéssel kapcsolatos műveleteket.
+  totp.code:
+    description:              Feldolgozza a kétfaktorú hitelesítési kódot bejelentkezés során
+    detailedDescription:      A bejelentkezés során feldolgozza a kétfaktorú hitelesítési kódot.
+    arg1:
+      label:                  kód
+      description:            Kód
+  totp.add:
+    description:              Fiók kétütemű hitelesítése
+    detailedDescription:      Engedélyezi a fiók kétütemű hitelesítését.
+  totp.confirm:
+    description:              TOTP titkokat visszaigazolás után ment
+    detailedDescription:      A létrehozott TOTP titkokat a visszaigazolás után elmenti.
+    arg1:
+      label:                  kód
+      description:            Kód
+  totp.remove:
+    description:              Fiók kétütemű hitelesítés letiltása
+    detailedDescription:      Letiltja a fiók kétütemű hitelesítését.
+    arg1:
+      label:                  kód
+      description:            Kód
+  totp.help:
+    description:              /totp parancsok részletes segítsége
+    detailedDescription:      Megtekinti a /totp parancsok részletes segítségét.
+    arg1:
+      label:                  kérdés
+      description:            Kérdés
+  captcha:
+    description:              Captcha parancs
+    detailedDescription:      Captcha parancs az AuthMeReloaded számára.
+    arg1:
+      label:                  captcha
+      description:            A captcha
+  captcha.help:
+    description:              Segítség megjelenítése
+    detailedDescription:      Megmutassa a /captcha parancs részletes segítségét.
+    arg1:
+      label:                  konzultáció
+      description:            A parancs vagy a lekérdezés, hogy lásd a segítséget.
+  verification:
+    description:              AuthMeReloaded hitelesítési folyamatának befejezése
+    detailedDescription:      Parancs az AuthMeReloaded hitelesítési folyamatának befejezéséhez.
+    arg1:
+      label:                  kód
+      description:            Kód
+  verification.help:
+    description:              Részletes segítség a /verification parancshoz
+    detailedDescription:      Részletes segítséget mutat a /verification parancshoz.
+    arg1:
+      label:                  kérdés
+      description:            Kérdés
