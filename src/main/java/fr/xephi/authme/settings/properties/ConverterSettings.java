@@ -1,12 +1,9 @@
 package fr.xephi.authme.settings.properties;
 
 import ch.jalu.configme.Comment;
-import ch.jalu.configme.SectionComments;
 import ch.jalu.configme.SettingsHolder;
+import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.Property;
-import com.google.common.collect.ImmutableMap;
-
-import java.util.Map;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
@@ -51,9 +48,9 @@ public final class ConverterSettings implements SettingsHolder {
     private ConverterSettings() {
     }
 
-    @SectionComments
-    public static Map<String, String[]> buildSectionComments() {
-        return ImmutableMap.of("Converter",
-            new String[]{"Converter settings: see https://github.com/AuthMe/AuthMeReloaded/wiki/Converters"});
+    @Override
+    public void registerComments(CommentsConfiguration conf) {
+        conf.setComment("Converter",
+            "Converter settings: see https://github.com/AuthMe/AuthMeReloaded/wiki/Converters");
     }
 }

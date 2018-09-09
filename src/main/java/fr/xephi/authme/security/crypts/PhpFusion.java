@@ -1,10 +1,10 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
-import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
+import fr.xephi.authme.util.RandomStringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

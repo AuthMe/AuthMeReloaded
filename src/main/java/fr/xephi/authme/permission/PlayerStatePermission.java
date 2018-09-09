@@ -12,6 +12,11 @@ public enum PlayerStatePermission implements PermissionNode {
     BYPASS_ANTIBOT("authme.bypassantibot", DefaultPermission.OP_ONLY),
 
     /**
+     * Permission node to bypass BungeeCord server teleportation.
+     */
+    BYPASS_BUNGEE_SEND("authme.bypassbungeesend", DefaultPermission.OP_ONLY),
+
+    /**
      * Permission for users to bypass force-survival mode.
      */
     BYPASS_FORCE_SURVIVAL("authme.bypassforcesurvival", DefaultPermission.OP_ONLY),

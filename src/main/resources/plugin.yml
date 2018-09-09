@@ -168,6 +168,9 @@ permissions:
   authme.allowmultipleaccounts:
     description: Permission to be able to register multiple accounts.
     default: op
+  authme.bypassbungeesend:
+    description: Permission node to bypass BungeeCord server teleportation.
+    default: op
   authme.bypassantibot:
     description: Permission node to bypass AntiBot protection.
     default: op

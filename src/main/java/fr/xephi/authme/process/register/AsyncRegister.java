@@ -66,7 +66,7 @@ public class AsyncRegister implements AsynchronousProcess {
      * Checks if the player is able to register, in that case the {@link AuthMeAsyncPreRegisterEvent} is invoked.
      *
      * @param variant the registration type variant.
-     * @param player the player which is trying to register.
+     * @param player  the player which is trying to register.
      *
      * @return true if the checks are successful and the event hasn't marked the action as denied, false otherwise.
      */

@@ -26,7 +26,7 @@ public class YamlFileResourceProviderTest {
         YamlFileResource resource = YamlFileResourceProvider.loadFromFile(yamlFile);
 
         // then
-        assertThat(resource.getString("test.jkl"), equalTo("Test test"));
+        assertThat(resource.createReader().getString("test.jkl"), equalTo("Test test"));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class YamlFileResourceProviderTest {
 
         // when
         try {
-            YamlFileResourceProvider.loadFromFile(yamlFile);
+            YamlFileResourceProvider.loadFromFile(yamlFile).createReader();
 
             // then
             fail("Expected exception to be thrown");

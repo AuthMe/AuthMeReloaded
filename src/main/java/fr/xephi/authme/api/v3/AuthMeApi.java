@@ -12,13 +12,11 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.util.PlayerUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;

@@ -25,13 +25,14 @@ public final class ReflectionTestUtils {
      * @param instance the instance to modify (pass null for static fields)
      * @param fieldName the field name
      * @param value the value to set the field to
+     * @param <T> the instance type
      */
     public static <T> void setField(Class<? super T> clazz, T instance, String fieldName, Object value) {
         try {
             Field field = getField(clazz, fieldName);
             field.set(instance, value);
         } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException(
+            throw new IllegalStateException(
                 format("Could not set value to field '%s' for instance '%s' of class '%s'",
                     fieldName, instance, clazz.getName()), e);
         }
@@ -55,7 +56,7 @@ public final class ReflectionTestUtils {
             field.setAccessible(true);
             return field;
         } catch (NoSuchFieldException e) {
-            throw new UnsupportedOperationException(format("Could not get field '%s' from class '%s'",
+            throw new IllegalStateException(format("Could not get field '%s' from class '%s'",
                 fieldName, clazz.getName()), e);
         }
     }
@@ -66,13 +67,21 @@ public final class ReflectionTestUtils {
         return getFieldValue(field, instance);
     }
 
+    /**
+     * Returns the value of the field on the given instance. Wraps exceptions into a runtime exception.
+     *
+     * @param field the field to read
+     * @param instance the instance to get the value from, null if field is static
+     * @param <V> type of the field
+     * @return value of the field
+     */
     @SuppressWarnings("unchecked")
     public static <V> V getFieldValue(Field field, Object instance) {
         field.setAccessible(true);
         try {
             return (V) field.get(instance);
         } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("Could not get value of field '" + field.getName() + "'", e);
+            throw new IllegalStateException("Could not get value of field '" + field.getName() + "'", e);
         }
     }
 
@@ -90,7 +99,7 @@ public final class ReflectionTestUtils {
             method.setAccessible(true);
             return method;
         } catch (NoSuchMethodException e) {
-            throw new UnsupportedOperationException("Could not retrieve method '" + methodName + "' from class '"
+            throw new IllegalStateException("Could not retrieve method '" + methodName + "' from class '"
                 + clazz.getName() + "'");
         }
     }
@@ -110,7 +119,7 @@ public final class ReflectionTestUtils {
         try {
             return (V) method.invoke(instance, parameters);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new UnsupportedOperationException("Could not invoke method '" + method + "'", e);
+            throw new IllegalStateException("Could not invoke method '" + method + "'", e);
         }
     }
 
@@ -138,7 +147,7 @@ public final class ReflectionTestUtils {
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException("Could not invoke no-args constructor of class " + clazz, e);
+            throw new IllegalStateException("Could not invoke no-args constructor of class " + clazz, e);
         }
     }
 }

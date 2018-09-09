@@ -1,15 +1,16 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+
 import javax.inject.Inject;
 
 /**

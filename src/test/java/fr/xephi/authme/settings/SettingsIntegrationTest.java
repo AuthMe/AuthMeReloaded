@@ -38,7 +38,7 @@ public class SettingsIntegrationTest {
     private static final String INCOMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-incomplete-sample.yml";
 
     private static ConfigurationData CONFIG_DATA =
-        ConfigurationDataBuilder.collectData(TestConfiguration.class);
+        ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();

@@ -17,8 +17,8 @@ registration:
 # Password errors on registration
 password:
     match_error: '&fLas contraseñas no son iguales'
-    name_in_password: '&cNo puedes utilizar tu nombre como contraseña, por favor elige otra...'
-    unsafe_password: '&cLa contraseña elejida no es segura, por favor elige otra...'
+    name_in_password: '&cNo puedes utilizar tu nombre como contraseña. Por favor, elija otra...'
+    unsafe_password: '&cLa contraseña elegida no es segura, por favor elija otra...'
     forbidden_characters: '&cTu contraseña tiene carácteres no admitidos, los cuales son: %valid_chars'
     wrong_length: '&fTu contraseña es muy larga o muy corta'
 
@@ -146,8 +146,8 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Tu código secreto es %code. Lo puedes escanear desde aquí %url'
-    confirmation_required: ' Por favor confirma tu código con /2fa confirm <código>'
-    code_required: 'Por favor envía tu código de atenticación de dos factores con /2fa code <código>'
+    confirmation_required: 'Por favor, confirma tu código con /2fa confirm <código>'
+    code_required: 'Por favor, envía tu código de atenticación de dos factores con /2fa code <código>'
     already_enabled: '¡La autenticación de dos factores ha sido habilitada para tu cuenta!'
     enable_error_no_code: 'No se ha generado ninguna clave o código 2fa o ha expirado. Por favor usa /2fa add'
     enable_success: 'Se ha habilitado correctamente la autenticación de dos factores para tu cuenta'

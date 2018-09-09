@@ -57,6 +57,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static org.hamcrest.Matchers.contains;
@@ -206,8 +207,7 @@ public class PlayerListenerTest {
     public void shouldNotStopAllowedCommand() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS))
-            .willReturn(Arrays.asList("/plugins", "/mail", "/msg"));
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/plugins", "/mail", "/msg"));
         PlayerCommandPreprocessEvent event = mockCommandEvent("/Mail send test Test");
 
         // when
@@ -222,7 +222,7 @@ public class PlayerListenerTest {
     public void shouldNotCancelEventForAuthenticatedPlayer() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Collections.emptyList());
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Collections.emptySet());
         Player player = playerWithMockedServer();
         // PlayerCommandPreprocessEvent#getPlayer is final, so create a spy instead of a mock
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
@@ -243,7 +243,7 @@ public class PlayerListenerTest {
     public void shouldCancelCommandEvent() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Arrays.asList("/spawn", "/help"));
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/spawn", "/help"));
         Player player = playerWithMockedServer();
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
@@ -262,7 +262,7 @@ public class PlayerListenerTest {
     public void shouldCancelFastCommandEvent() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Arrays.asList("/spawn", "/help"));
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/spawn", "/help"));
         Player player = playerWithMockedServer();
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
         given(quickCommandsProtectionManager.isAllowed(player.getName())).willReturn(false);

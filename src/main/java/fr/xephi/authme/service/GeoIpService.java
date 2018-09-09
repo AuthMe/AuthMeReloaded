@@ -13,12 +13,12 @@ import com.maxmind.db.Reader.FileMode;
 import com.maxmind.db.cache.CHMCache;
 import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.InternetProtocolUtils;
 
+import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,8 +40,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
-
-import javax.inject.Inject;
 
 public class GeoIpService {
 
@@ -228,8 +226,8 @@ public class GeoIpService {
         HashCode actualHash = function.hashBytes(Files.readAllBytes(file));
         HashCode expectedHash = HashCode.fromString(expectedChecksum);
         if (!Objects.equals(actualHash, expectedHash)) {
-            throw new IOException("GEO IP Checksum verification failed. " +
-                    "Expected: " + expectedChecksum + "Actual:" + actualHash);
+            throw new IOException("GEO IP Checksum verification failed. "
+                + "Expected: " + expectedChecksum + "Actual:" + actualHash);
         }
     }
 
@@ -268,9 +266,13 @@ public class GeoIpService {
      * Get the country code of the given IP address.
      *
      * @param ip textual IP address to lookup.
-     * @return two-character ISO 3166-1 alpha code for the country or "--" if it cannot be fetched.
+     * @return two-character ISO 3166-1 alpha code for the country, "LOCALHOST" for local addresses
+     *         or "--" if it cannot be fetched.
      */
     public String getCountryCode(String ip) {
+        if (InternetProtocolUtils.isLocalAddress(ip)) {
+            return "LOCALHOST";
+        }
         return getCountry(ip).map(Country::getIsoCode).orElse("--");
     }
 
@@ -278,9 +280,12 @@ public class GeoIpService {
      * Get the country name of the given IP address.
      *
      * @param ip textual IP address to lookup.
-     * @return The name of the country or "N/A" if it cannot be fetched.
+     * @return The name of the country, "LocalHost" for local addresses, or "N/A" if it cannot be fetched.
      */
     public String getCountryName(String ip) {
+        if (InternetProtocolUtils.isLocalAddress(ip)) {
+            return "LocalHost";
+        }
         return getCountry(ip).map(Country::getName).orElse("N/A");
     }
 
@@ -297,7 +302,7 @@ public class GeoIpService {
      * </ul>
      */
     private Optional<Country> getCountry(String ip) {
-        if (ip == null || ip.isEmpty() || InternetProtocolUtils.isLocalAddress(ip) || !isDataAvailable()) {
+        if (ip == null || ip.isEmpty() || !isDataAvailable()) {
             return Optional.empty();
         }
 

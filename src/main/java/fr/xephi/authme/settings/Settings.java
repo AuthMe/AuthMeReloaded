@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings;
 
-import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.SettingsManagerImpl;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.MigrationService;
 import ch.jalu.configme.resource.PropertyResource;
@@ -16,7 +16,7 @@ import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 /**
  * The AuthMe settings manager.
  */
-public class Settings extends SettingsManager {
+public class Settings extends SettingsManagerImpl {
 
     private final File pluginFolder;
     private String passwordEmailMessage;
@@ -33,7 +33,7 @@ public class Settings extends SettingsManager {
      */
     public Settings(File pluginFolder, PropertyResource resource, MigrationService migrationService,
                     ConfigurationData configurationData) {
-        super(resource, migrationService, configurationData);
+        super(resource, configurationData, migrationService);
         this.pluginFolder = pluginFolder;
         loadSettingsFromFiles();
     }

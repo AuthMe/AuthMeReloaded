@@ -3,7 +3,6 @@ package fr.xephi.authme.task.purge;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.permission.handlers.PermissionLoadUserException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -74,7 +73,7 @@ class PurgeTask extends BukkitRunnable {
 
             OfflinePlayer offlinePlayer = offlinePlayers[nextPosition];
             if (offlinePlayer.getName() != null && toPurge.remove(offlinePlayer.getName().toLowerCase())) {
-                if(!permissionsManager.loadUserData(offlinePlayer)) {
+                if (!permissionsManager.loadUserData(offlinePlayer)) {
                     ConsoleLogger.warning("Unable to check if the user " + offlinePlayer.getName() + " can be purged!");
                     continue;
                 }

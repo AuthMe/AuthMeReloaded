@@ -45,6 +45,13 @@ public final class IsEqualByReflectionMatcher<T> extends TypeSafeMatcher<T> {
         description.appendText("parameters " + expected);
     }
 
+    /**
+     * Checks that all fields of the given {@code item} are equal to the {@link #expected} object. Both objects must
+     * be exactly of the same type.
+     *
+     * @param item the object to check
+     * @return true if all fields are equal, false otherwise
+     */
     private boolean assertAreFieldsEqual(T item) {
         if (expected.getClass() != item.getClass()) {
             fail("Classes don't match, got " + expected.getClass().getSimpleName()

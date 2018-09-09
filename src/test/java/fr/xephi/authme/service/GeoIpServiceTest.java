@@ -79,7 +79,7 @@ public class GeoIpServiceTest {
         String result = geoIpService.getCountryCode(ip);
 
         // then
-        assertThat(result, equalTo("--"));
+        assertThat(result, equalTo("LOCALHOST"));
         verify(lookupService, never()).getCountry(any());
     }
 
@@ -113,7 +113,7 @@ public class GeoIpServiceTest {
         String result = geoIpService.getCountryName(ip.getHostAddress());
 
         // then
-        assertThat(result, equalTo("N/A"));
+        assertThat(result, equalTo("LocalHost"));
         verify(lookupService, never()).getCountry(ip);
     }
 }
