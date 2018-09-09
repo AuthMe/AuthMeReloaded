@@ -31,16 +31,16 @@ public class HelpMessagesConsistencyTest {
     public void shouldHaveIdenticalTexts() {
         // given
         CommandDescription description = getAuthMeRegisterDescription();
-        PropertyReader reader = new YamlFileReader(DEFAULT_MESSAGES_FILE);
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
         final String path = "commands.authme.register.";
 
         // when / then
-        assertThat(reader.getString(path + "description"), equalTo(description.getDescription()));
-        assertThat(reader.getString(path + "detailedDescription"), equalTo(description.getDetailedDescription()));
-        assertThat(reader.getString(path + "arg1.label"), equalTo(description.getArguments().get(0).getName()));
-        assertThat(reader.getString(path + "arg1.description"), equalTo(description.getArguments().get(0).getDescription()));
-        assertThat(reader.getString(path + "arg2.label"), equalTo(description.getArguments().get(1).getName()));
-        assertThat(reader.getString(path + "arg2.description"), equalTo(description.getArguments().get(1).getDescription()));
+        assertThat(configuration.get(path + "description"), equalTo(description.getDescription()));
+        assertThat(configuration.get(path + "detailedDescription"), equalTo(description.getDetailedDescription()));
+        assertThat(configuration.get(path + "arg1.label"), equalTo(description.getArguments().get(0).getName()));
+        assertThat(configuration.get(path + "arg1.description"), equalTo(description.getArguments().get(0).getDescription()));
+        assertThat(configuration.get(path + "arg2.label"), equalTo(description.getArguments().get(1).getName()));
+        assertThat(configuration.get(path + "arg2.description"), equalTo(description.getArguments().get(1).getDescription()));
     }
 
     /**
