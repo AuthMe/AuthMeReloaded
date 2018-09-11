@@ -19,26 +19,21 @@ public class Command {
     }
 
     /**
-     * Constructor.
+     * Creates a copy of this Command object, setting the given command text on the copy.
      *
-     * @param command the command
-     * @param executor the executor of the command
+     * @param command the command text to use in the copy
+     * @return copy of the source with the new command
      */
-    public Command(String command, Executor executor) {
-        this(command, executor, 0);
+    public Command copyWithCommand(String command) {
+        Command copy = new Command();
+        setValuesToCopyWithNewCommand(copy, command);
+        return copy;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param command the command
-     * @param executor the executor of the command
-     * @param delay the delay (in ticks) before executing command
-     */
-    public Command(String command, Executor executor, long delay) {
-        this.command = command;
-        this.executor = executor;
-        this.delay = delay;
+    protected void setValuesToCopyWithNewCommand(Command copy, String newCommand) {
+        copy.command = newCommand;
+        copy.executor = this.executor;
+        copy.delay = this.delay;
     }
 
     public String getCommand() {

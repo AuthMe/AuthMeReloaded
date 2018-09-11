@@ -174,15 +174,12 @@ public class CommandManager implements Reloadable {
 
     private WrappedTagReplacer<Command, Player> newReplacer(Map<String, Command> commands) {
         return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
-            (cmd, text) -> new Command(text, cmd.getExecutor()));
+            Command::copyWithCommand);
     }
 
-    private WrappedTagReplacer<OnLoginCommand, Player> newOnLoginCmdReplacer(
-        Map<String, OnLoginCommand> commands) {
-
+    private WrappedTagReplacer<OnLoginCommand, Player> newOnLoginCmdReplacer(Map<String, OnLoginCommand> commands) {
         return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
-            (cmd, text) -> new OnLoginCommand(text, cmd.getExecutor(), cmd.getIfNumberOfAccountsAtLeast(),
-                cmd.getIfNumberOfAccountsLessThan()));
+            OnLoginCommand::copyWithCommand);
     }
 
     private List<Tag<Player>> buildAvailableTags() {
