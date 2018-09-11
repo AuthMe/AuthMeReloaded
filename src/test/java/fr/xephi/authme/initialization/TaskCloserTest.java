@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
@@ -56,7 +55,7 @@ public class TaskCloserTest {
         Server server = mock(Server.class);
         given(server.getScheduler()).willReturn(bukkitScheduler);
         ReflectionTestUtils.setField(JavaPlugin.class, authMe, "server", server);
-        ReflectionTestUtils.setField(JavaPlugin.class, authMe, "logger", logger);
+        given(authMe.getLogger()).willReturn(logger);
         taskCloser = spy(new TaskCloser(authMe, dataSource));
     }
 
