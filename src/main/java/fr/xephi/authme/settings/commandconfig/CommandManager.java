@@ -125,15 +125,23 @@ public class CommandManager implements Reloadable {
     }
 
     private <T extends Command> void executeCommands(Player player, List<T> commands, Predicate<T> predicate) {
-        for (T command : commands) {
-            if (predicate.test(command)) {
-                final String execution = command.getCommand();
-                if (Executor.CONSOLE.equals(command.getExecutor())) {
-                    bukkitService.dispatchConsoleCommand(execution);
+        for (T cmd : commands) {
+            if (predicate.test(cmd)) {
+                long delay = cmd.getDelay();
+                if (delay > 0) {
+                    bukkitService.scheduleSyncDelayedTask(() -> dispatchCommand(player, cmd), delay);
                 } else {
-                    bukkitService.dispatchCommand(player, execution);
+                    dispatchCommand(player, cmd);
                 }
             }
+        }
+    }
+
+    private void dispatchCommand(Player player, Command command) {
+        if (Executor.CONSOLE.equals(command.getExecutor())) {
+            bukkitService.dispatchConsoleCommand(command.getCommand());
+        } else {
+            bukkitService.dispatchCommand(player, command.getCommand());
         }
     }
 
@@ -166,22 +174,19 @@ public class CommandManager implements Reloadable {
 
     private WrappedTagReplacer<Command, Player> newReplacer(Map<String, Command> commands) {
         return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
-            (cmd, text) -> new Command(text, cmd.getExecutor()));
+            Command::copyWithCommand);
     }
 
-    private WrappedTagReplacer<OnLoginCommand, Player> newOnLoginCmdReplacer(
-        Map<String, OnLoginCommand> commands) {
-
+    private WrappedTagReplacer<OnLoginCommand, Player> newOnLoginCmdReplacer(Map<String, OnLoginCommand> commands) {
         return new WrappedTagReplacer<>(availableTags, commands.values(), Command::getCommand,
-            (cmd, text) -> new OnLoginCommand(text, cmd.getExecutor(), cmd.getIfNumberOfAccountsAtLeast(),
-                cmd.getIfNumberOfAccountsLessThan()));
+            OnLoginCommand::copyWithCommand);
     }
 
     private List<Tag<Player>> buildAvailableTags() {
         return Arrays.asList(
-            createTag("%p",       pl -> pl.getName()),
-            createTag("%nick",    pl -> pl.getDisplayName()),
-            createTag("%ip",      pl -> PlayerUtils.getPlayerIp(pl)),
+            createTag("%p",       Player::getName),
+            createTag("%nick",    Player::getDisplayName),
+            createTag("%ip",      PlayerUtils::getPlayerIp),
             createTag("%country", pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
     }
 }

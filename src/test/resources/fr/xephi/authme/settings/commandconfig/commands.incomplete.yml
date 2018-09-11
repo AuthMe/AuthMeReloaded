@@ -8,12 +8,14 @@ onLogin:
     welcome:
         command: 'msg %p Welcome back, %nick'
         executor: CONSOLE
+        delay: 0
     show_motd:
         # command: 'motd' <-- mandatory property, so entry should be ignored
         executor: PLAYER
     display_list:
         command: 'list'
         executor: WRONG_EXECUTOR
+        delay: 100
 doesNotExist:
     wrongEntry:
         command: 'should be ignored'

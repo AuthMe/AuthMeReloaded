@@ -41,8 +41,9 @@ class CommandMigrationService implements MigrationService {
 
     private boolean moveOtherAccountsConfig(CommandConfig commandConfig) {
         if (settingsMigrationService.hasOldOtherAccountsCommand()) {
-            OnLoginCommand command = new OnLoginCommand(
-                replaceOldPlaceholdersWithNew(settingsMigrationService.getOldOtherAccountsCommand()), Executor.CONSOLE);
+            OnLoginCommand command = new OnLoginCommand();
+            command.setCommand(replaceOldPlaceholdersWithNew(settingsMigrationService.getOldOtherAccountsCommand()));
+            command.setExecutor(Executor.CONSOLE);
             command.setIfNumberOfAccountsAtLeast(
                 Optional.of(settingsMigrationService.getOldOtherAccountsCommandThreshold()));
 
