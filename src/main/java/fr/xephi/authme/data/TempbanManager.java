@@ -104,7 +104,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
             expires.setTime(newTime);
 
             bukkitService.scheduleSyncDelayedTask(() -> {
-                if(customCommand.isEmpty()) {
+                if (customCommand.isEmpty()) {
                     bukkitService.banIp(ip, reason, expires, "AuthMe");
                     player.kickPlayer(reason);
                 } else {

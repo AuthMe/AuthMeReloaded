@@ -11,7 +11,7 @@ registration:
     command_usage: '&cHasználat: "&7/register <jelszó> <jelszó ismét>&c".'
     reg_only: '&4Csak a regisztrált játékosok tudnak csatlakozni a szerverhez!'
     success: '&aA regisztráció sikeres!'
-    kicked_admin_registered: 'Az adminisztrátor által regisztrálva lettél. Kérlek, lépj be újra a szerverbe!'
+    kicked_admin_registered: 'Adminisztrátor által regisztrálva lettél. Kérlek, lépj be újra a szerverbe!'
 
 # Password errors on registration
 password:
@@ -78,7 +78,7 @@ on_join_validation:
     country_banned: '&4Az országod a tiltólistán van ezen a szerveren!'
     not_owner_error: 'Ez nem a te felhasználód. Kérlek, válassz másik nevet!'
     invalid_name_case: '%valid a felhasználó neved nem? Akkor ne %invalid névvel próbálj feljönni.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Túl gyorsan használtad a parancsot! Kérjük, csatlakoz a szerverhez, és várj, amíg bármilyen parancsot használsz.'
 
 # Email
 email:
@@ -89,11 +89,11 @@ email:
     old_email_invalid: '&cHibás a régi email cím, próbáld újra!'
     invalid: '&cHibás az email cím, próbáld újra!'
     added: '&2Az email címed rögzítése sikeresen megtörtént!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cAz email hozzáadása nem engedélyezett'
     request_confirmation: '&cKérlek, ellenőrízd az email címedet!'
     changed: '&2Az email cím cseréje sikeresen megtörtént!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
-    email_show: '&2A jelenlegi email-ed a következő: &f%email'
+    change_not_allowed: '&cAz emailek módosítása nem engedélyezett'
+    email_show: '&2A jelenlegi emailed a következő: &f%email'
     no_email_for_account: '&2Ehhez a felhasználóhoz jelenleg még nincs email hozzárendelve.'
     already_used: '&4Ez az email cím már használatban van!'
     incomplete_settings: 'Hiba: nem lett beállítva az összes szükséges beállítás az email küldéshez. Vedd fel a kapcsolatot egy adminnal.'
@@ -118,18 +118,18 @@ captcha:
     usage_captcha: '&3A bejelentkezéshez CAPTCHA szükséges, kérlek, használd a következő parancsot: "&7/captcha %captcha_code&3".'
     wrong_captcha: '&cHibás CAPTCHA, kérlek, írd be a következő parancsot: "&7/captcha %captcha_code&c"!'
     valid_captcha: '&2A CAPTCHA sikeresen feloldva!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'A regisztrációhoz meg kell oldanod a captcha-t, kérjük, használd a parancsot: /captcha %captcha_code'
+    register_captcha_valid: '&2Érvényes captcha! Most regisztrálhatsz a /register paranccsal.'
 
 # Verification code
 verification:
-    code_required: '&3Ez a parancs érzékeny, és e-mailes igazolást igényel! Ellenőrizze a bejövő postafiókot, és kövesse az e-mail utasításait.'
+    code_required: '&3Ez a parancs érzékeny, és emailes igazolást igényel! Ellenőrizze a bejövő postafiókot, és kövesse az email utasításait.'
     command_usage: '&cHasználat: /verification <kód>'
-    incorrect_code: '&cHelytelen kód, írd be "/verification <kód>" be a chatbe, az e-mailben kapott kód használatával'
+    incorrect_code: '&cHelytelen kód, írd be "/verification <kód>" be a chatbe, az emailben kapott kód használatával'
     success: '&2Az Ön személyazonosságát ellenőrizték! Mostantól végrehajthatja az összes parancsot az aktuális munkamenetben!'
     already_verified: '&2Már minden érzékeny parancsot végrehajthat az aktuális munkameneten belül!'
     code_expired: '&3A kód lejárt! Végezzen el egy másik érzékeny parancsot, hogy új kódot kapjon!'
-    email_needed: '&3A személyazonosságának igazolásához e-mail címet kell csatolnia fiókjához!'
+    email_needed: '&3A személyazonosságának igazolásához email címet kell csatolnia fiókjához!'
 
 # Time units
 time:
@@ -145,12 +145,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2A titkos kódod a következő: %code. Vagy skenneld be a következő oldalról: %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Kérjük, erősítsd meg a kódot /2fa confirm <kód>'
+    code_required: 'Kérjük, küldd el a kétütemű hitelesítési kódot /2fa code <kód>'
+    already_enabled: 'Kétszámjegyű hitelesítés már engedélyezve van a fiókodban!'
+    enable_error_no_code: 'Nem hoztad létre a 2fa kulcsot számodra, vagy lejárt. Kérlek, futtasd a /2fa add'
+    enable_success: 'Sikeresen engedélyezted a fiók kétütemű hitelesítését'
+    enable_error_wrong_code: 'Hibás kód vagy a kód lejárt. Futtasd a /2fa add'
+    not_enabled_error: 'Kétszámjegyű hitelesítés nincs engedélyezve a fiókodban. Futtasd a /2fa add'
+    removed_success: 'Sikeresen eltávolítottad a fiók két számjegyű hitelesítőjét'
+    invalid_code: 'Érvénytelen kód!'

@@ -1,10 +1,10 @@
 package fr.xephi.authme.message;
 
+import ch.jalu.configme.resource.PropertyReader;
+import ch.jalu.configme.resource.YamlFileReader;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.TestHelper;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -51,12 +51,12 @@ public class MessageFilePlaceholderTest {
     @Test
     public void shouldHaveAllPlaceholders() {
         // given
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(messagesFile);
-        List<String> errors = new ArrayList<>();
+        PropertyReader reader = new YamlFileReader(messagesFile);
+        List<String> errors = new ArrayList<>(0);
 
         // when
         for (MessageKey key : MessageKey.values()) {
-            List<String> missingTags = findMissingTags(key, configuration);
+            List<String> missingTags = findMissingTags(key, reader);
             if (!missingTags.isEmpty()) {
                 errors.add("Message key '" + key + "' should have tags: " + String.join(", ", missingTags));
             }
@@ -68,9 +68,9 @@ public class MessageFilePlaceholderTest {
         }
     }
 
-    private List<String> findMissingTags(MessageKey key, FileConfiguration configuration) {
-        if (key.getTags().length > 0 && configuration.contains(key.getKey())) {
-            String message = configuration.getString(key.getKey());
+    private List<String> findMissingTags(MessageKey key, PropertyReader reader) {
+        if (key.getTags().length > 0 && reader.contains(key.getKey())) {
+            String message = reader.getString(key.getKey());
             return Arrays.stream(key.getTags())
                 .filter(tag -> !EXCLUSIONS.get(key).contains(tag) && !message.contains(tag))
                 .collect(Collectors.toList());

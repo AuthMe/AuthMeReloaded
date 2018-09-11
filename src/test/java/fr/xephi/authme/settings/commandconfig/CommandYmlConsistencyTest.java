@@ -42,7 +42,7 @@ public class CommandYmlConsistencyTest {
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(
-            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+            resource.createReader(), ConfigurationDataBuilder.createConfiguration(CommandSettingsHolder.class));
 
         // then
         assertThat(result, equalTo(false));

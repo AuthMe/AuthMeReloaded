@@ -84,7 +84,8 @@ public final class TestCommandsUtil {
 
     /* Shortcut command to initialize a new test command. */
     private static CommandDescription createCommand(PermissionNode permission, CommandDescription parent,
-                                                    List<String> labels, Class<? extends ExecutableCommand> commandClass,
+                                                    List<String> labels,
+                                                    Class<? extends ExecutableCommand> commandClass,
                                                     CommandArgumentDescription... arguments) {
         CommandDescription.CommandBuilder command = CommandDescription.builder()
             .labels(labels)

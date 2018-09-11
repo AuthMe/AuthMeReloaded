@@ -1,8 +1,8 @@
 package fr.xephi.authme.settings.commandconfig;
 
+import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.MigrationService;
-import ch.jalu.configme.properties.Property;
-import ch.jalu.configme.resource.PropertyResource;
+import ch.jalu.configme.resource.PropertyReader;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import fr.xephi.authme.settings.SettingsMigrationService;
@@ -30,10 +30,10 @@ class CommandMigrationService implements MigrationService {
     }
 
     @Override
-    public boolean checkAndMigrate(PropertyResource resource, List<Property<?>> properties) {
-        final CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.getValue(resource);
-        if (moveOtherAccountsConfig(commandConfig) || isFileEmpty(resource)) {
-            resource.setValue("", commandConfig);
+    public boolean checkAndMigrate(PropertyReader reader, ConfigurationData configurationData) {
+        final CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.determineValue(reader);
+        if (moveOtherAccountsConfig(commandConfig) || isAnyCommandMissing(reader)) {
+            configurationData.setValue(CommandSettingsHolder.COMMANDS, commandConfig);
             return true;
         }
         return false;
@@ -41,8 +41,9 @@ class CommandMigrationService implements MigrationService {
 
     private boolean moveOtherAccountsConfig(CommandConfig commandConfig) {
         if (settingsMigrationService.hasOldOtherAccountsCommand()) {
-            OnLoginCommand command = new OnLoginCommand(
-                replaceOldPlaceholdersWithNew(settingsMigrationService.getOldOtherAccountsCommand()), Executor.CONSOLE);
+            OnLoginCommand command = new OnLoginCommand();
+            command.setCommand(replaceOldPlaceholdersWithNew(settingsMigrationService.getOldOtherAccountsCommand()));
+            command.setExecutor(Executor.CONSOLE);
             command.setIfNumberOfAccountsAtLeast(
                 Optional.of(settingsMigrationService.getOldOtherAccountsCommandThreshold()));
 
@@ -59,7 +60,7 @@ class CommandMigrationService implements MigrationService {
             .replace("%playerip%", "%ip");
     }
 
-    private static boolean isFileEmpty(PropertyResource resource) {
-        return COMMAND_CONFIG_PROPERTIES.stream().anyMatch(property -> resource.getObject(property) == null);
+    private static boolean isAnyCommandMissing(PropertyReader reader) {
+        return COMMAND_CONFIG_PROPERTIES.stream().anyMatch(property -> reader.getObject(property) == null);
     }
 }

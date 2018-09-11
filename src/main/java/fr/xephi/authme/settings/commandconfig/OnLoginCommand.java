@@ -17,28 +17,18 @@ public class OnLoginCommand extends Command {
     }
 
     /**
-     * Constructor.
+     * Creates a copy of this object, using the given command as new {@link Command#command command}.
      *
-     * @param command the command to execute
-     * @param executor the executor of the command
+     * @param command the command text to use in the copy
+     * @return copy of the source with the new command
      */
-    public OnLoginCommand(String command, Executor executor) {
-        super(command, executor);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param command the command to execute
-     * @param executor the executor of the command
-     * @param ifNumberOfAccountsAtLeast required number of accounts for the command to run
-     * @param ifNumberOfAccountsLessThan max threshold of accounts, from which the command will not be run
-     */
-    public OnLoginCommand(String command, Executor executor, Optional<Integer> ifNumberOfAccountsAtLeast,
-                          Optional<Integer> ifNumberOfAccountsLessThan) {
-        super(command, executor);
-        this.ifNumberOfAccountsAtLeast = ifNumberOfAccountsAtLeast;
-        this.ifNumberOfAccountsLessThan = ifNumberOfAccountsLessThan;
+    @Override
+    public OnLoginCommand copyWithCommand(String command) {
+        OnLoginCommand copy = new OnLoginCommand();
+        setValuesToCopyWithNewCommand(copy, command);
+        copy.ifNumberOfAccountsAtLeast = this.ifNumberOfAccountsAtLeast;
+        copy.ifNumberOfAccountsLessThan = this.ifNumberOfAccountsLessThan;
+        return copy;
     }
 
     public Optional<Integer> getIfNumberOfAccountsAtLeast() {

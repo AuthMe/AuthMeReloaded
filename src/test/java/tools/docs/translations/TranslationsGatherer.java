@@ -1,8 +1,8 @@
 package tools.docs.translations;
 
+import ch.jalu.configme.resource.PropertyReader;
+import ch.jalu.configme.resource.YamlFileReader;
 import fr.xephi.authme.message.MessageKey;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import tools.utils.ToolsConstants;
 
 import java.io.File;
@@ -43,10 +43,10 @@ public class TranslationsGatherer {
     }
 
     private void processMessagesFile(String code, File file) {
-        FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        PropertyReader reader = new YamlFileReader(file);
         int availableMessages = 0;
         for (MessageKey key : MessageKey.values()) {
-            if (configuration.contains(key.getKey())) {
+            if (reader.contains(key.getKey())) {
                 ++availableMessages;
             }
         }

@@ -1,7 +1,7 @@
 package tools.filegeneration;
 
 import ch.jalu.configme.SettingsManager;
-import ch.jalu.configme.resource.YamlFileResource;
+import ch.jalu.configme.SettingsManagerBuilder;
 import fr.xephi.authme.settings.commandconfig.CommandConfig;
 import fr.xephi.authme.settings.commandconfig.CommandSettingsHolder;
 import tools.utils.AutoToolTask;
@@ -24,8 +24,9 @@ public class GenerateCommandsYml implements AutoToolTask {
         CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.getDefaultValue();
 
         // Export the value to the file
-        SettingsManager settingsManager = new SettingsManager(
-            new YamlFileResource(file), null, CommandSettingsHolder.class);
+        SettingsManager settingsManager = SettingsManagerBuilder.withYamlFile(file)
+            .configurationData(CommandSettingsHolder.class)
+            .create();
         settingsManager.setProperty(CommandSettingsHolder.COMMANDS, commandConfig);
         settingsManager.save();
 

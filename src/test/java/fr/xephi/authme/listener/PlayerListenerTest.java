@@ -6,6 +6,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
@@ -55,11 +57,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,6 +117,8 @@ public class PlayerListenerTest {
     private JoinMessageService joinMessageService;
     @Mock
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
+    @Mock
+    private PermissionsManager permissionsManager;
 
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
@@ -201,8 +207,7 @@ public class PlayerListenerTest {
     public void shouldNotStopAllowedCommand() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS))
-            .willReturn(Arrays.asList("/plugins", "/mail", "/msg"));
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/plugins", "/mail", "/msg"));
         PlayerCommandPreprocessEvent event = mockCommandEvent("/Mail send test Test");
 
         // when
@@ -217,7 +222,7 @@ public class PlayerListenerTest {
     public void shouldNotCancelEventForAuthenticatedPlayer() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Collections.emptyList());
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Collections.emptySet());
         Player player = playerWithMockedServer();
         // PlayerCommandPreprocessEvent#getPlayer is final, so create a spy instead of a mock
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
@@ -238,7 +243,7 @@ public class PlayerListenerTest {
     public void shouldCancelCommandEvent() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Arrays.asList("/spawn", "/help"));
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/spawn", "/help"));
         Player player = playerWithMockedServer();
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
@@ -257,7 +262,7 @@ public class PlayerListenerTest {
     public void shouldCancelFastCommandEvent() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
-        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Arrays.asList("/spawn", "/help"));
+        given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/spawn", "/help"));
         Player player = playerWithMockedServer();
         PlayerCommandPreprocessEvent event = spy(new PlayerCommandPreprocessEvent(player, "/hub"));
         given(quickCommandsProtectionManager.isAllowed(player.getName())).willReturn(false);
@@ -289,12 +294,14 @@ public class PlayerListenerTest {
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
         AsyncPlayerChatEvent event = newAsyncChatEvent();
         given(listenerService.shouldCancelEvent(event.getPlayer())).willReturn(true);
+        given(permissionsManager.hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN)).willReturn(false);
 
         // when
         listener.onPlayerChat(event);
 
         // then
         verify(listenerService).shouldCancelEvent(event.getPlayer());
+        verify(permissionsManager).hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN);
         verify(event).setCancelled(true);
         verify(messages).send(event.getPlayer(), MessageKey.DENIED_CHAT);
     }
@@ -354,6 +361,25 @@ public class PlayerListenerTest {
         verify(listenerService, times(4)).shouldCancelEvent(any(Player.class));
         verify(event).setCancelled(true);
         assertThat(event.getRecipients(), empty());
+    }
+
+    @Test
+    public void shouldAllowChatForBypassPermission() {
+        // given
+        given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
+        AsyncPlayerChatEvent event = newAsyncChatEvent();
+        given(listenerService.shouldCancelEvent(event.getPlayer())).willReturn(true);
+        given(permissionsManager.hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.HIDE_CHAT)).willReturn(false);
+
+        // when
+        listener.onPlayerChat(event);
+
+        // then
+        assertThat(event.isCancelled(), equalTo(false));
+        verify(listenerService).shouldCancelEvent(event.getPlayer());
+        verify(permissionsManager).hasPermission(event.getPlayer(), PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN);
+        assertThat(event.getRecipients(), hasSize(3));
     }
 
     @Test

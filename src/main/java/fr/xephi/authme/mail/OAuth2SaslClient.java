@@ -14,13 +14,13 @@
  */
 package fr.xephi.authme.mail;
 
-import java.io.IOException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
+import java.io.IOException;
 
 /**
  * An OAuth2 implementation of SaslClient.

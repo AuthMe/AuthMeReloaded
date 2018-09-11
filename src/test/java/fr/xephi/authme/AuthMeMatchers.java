@@ -44,8 +44,8 @@ public final class AuthMeMatchers {
         };
     }
 
-    public static Matcher<? super PlayerAuth> hasAuthBasicData(String name, String realName,
-                                                               String email, String lastIp) {
+    public static Matcher<PlayerAuth> hasAuthBasicData(String name, String realName,
+                                                       String email, String lastIp) {
         return new TypeSafeMatcher<PlayerAuth>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {

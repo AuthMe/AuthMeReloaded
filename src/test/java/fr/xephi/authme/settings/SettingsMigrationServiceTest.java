@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
-import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.io.Files;
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
+import static fr.xephi.authme.settings.properties.DatabaseSettings.MYSQL_COL_SALT;
 import static fr.xephi.authme.settings.properties.PluginSettings.ENABLE_PERMISSION_CHECK;
 import static fr.xephi.authme.settings.properties.PluginSettings.LOG_LEVEL;
 import static fr.xephi.authme.settings.properties.PluginSettings.REGISTERED_GROUP;
@@ -107,7 +108,7 @@ public class SettingsMigrationServiceTest {
         SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
 
         // when
-        migrationService.performMigrations(resource, AuthMeSettingsRetriever.buildConfigurationData().getProperties());
+        migrationService.performMigrations(resource.createReader(), AuthMeSettingsRetriever.buildConfigurationData());
 
         // then
         assertThat(migrationService.hasOldOtherAccountsCommand(), equalTo(true));
@@ -128,6 +129,7 @@ public class SettingsMigrationServiceTest {
         assertThat(settings.getProperty(UNREGISTERED_GROUP), equalTo(""));
         assertThat(settings.getProperty(PASSWORD_HASH), equalTo(HashAlgorithm.SHA256));
         assertThat(settings.getProperty(LEGACY_HASHES), contains(HashAlgorithm.PBKDF2, HashAlgorithm.WORDPRESS, HashAlgorithm.SHA512));
+        assertThat(settings.getProperty(MYSQL_COL_SALT), equalTo("salt_col_name"));
 
         // Check migration of old setting to email.html
         assertThat(Files.readLines(new File(dataFolder, "email.html"), StandardCharsets.UTF_8),
@@ -144,8 +146,8 @@ public class SettingsMigrationServiceTest {
         }
 
         @Override
-        protected boolean performMigrations(PropertyResource resource, List<Property<?>> properties) {
-            boolean result = super.performMigrations(resource, properties);
+        protected boolean performMigrations(PropertyReader reader, ConfigurationData configurationData) {
+            boolean result = super.performMigrations(reader, configurationData);
             returnedValues.add(result);
             return result;
         }

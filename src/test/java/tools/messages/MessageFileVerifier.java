@@ -70,6 +70,10 @@ public class MessageFileVerifier {
         return !missingKeys.isEmpty() || !missingTags.isEmpty() || !unknownKeys.isEmpty();
     }
 
+    /**
+     * Performs the actual verification for the given file and collects all found issues into this
+     * instance's fields.
+     */
     private void verifyKeys() {
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(messagesFile);
 

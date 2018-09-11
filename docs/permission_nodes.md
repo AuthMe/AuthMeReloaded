@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 22 11:00:13 CEST 2018. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Mon May 21 08:43:08 CEST 2018. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -30,7 +30,9 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.admin.switchantibot** – Administrator command to toggle the AntiBot protection status.
 - **authme.admin.unregister** – Administrator command to unregister an existing user.
 - **authme.admin.updatemessages** – Permission to use the update messages command.
+- **authme.allowchatbeforelogin** – Permission to send chat messages before being logged in.
 - **authme.allowmultipleaccounts** – Permission to be able to register multiple accounts.
+- **authme.bypassbungeesend** – Permission node to bypass BungeeCord server teleportation.
 - **authme.bypassantibot** – Permission node to bypass AntiBot protection.
 - **authme.bypasscountrycheck** – Permission to bypass the GeoIp country code check.
 - **authme.bypassforcesurvival** – Permission for users to bypass force-survival mode.
@@ -69,4 +71,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 22 11:00:13 CEST 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon May 21 08:43:08 CEST 2018

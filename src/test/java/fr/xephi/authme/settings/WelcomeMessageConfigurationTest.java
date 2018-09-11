@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -68,7 +69,7 @@ public class WelcomeMessageConfigurationTest {
     }
 
     @Test
-    public void shouldLoadWelcomeMessage() throws IOException {
+    public void shouldLoadWelcomeMessage() {
         // given
         String welcomeMessage = "This is my welcome message for testing\nBye!";
         setWelcomeMessageAndReload(welcomeMessage);
@@ -84,7 +85,7 @@ public class WelcomeMessageConfigurationTest {
     }
 
     @Test
-    public void shouldReplaceNameAndIpAndCountry() throws IOException {
+    public void shouldReplaceNameAndIpAndCountry() {
         // given
         String welcomeMessage = "Hello {PLAYER}, your IP is {IP}\nYour country is {COUNTRY}.\nWelcome to {SERVER}!";
         setWelcomeMessageAndReload(welcomeMessage);
@@ -108,11 +109,11 @@ public class WelcomeMessageConfigurationTest {
     }
 
     @Test
-    public void shouldApplyOtherReplacements() throws IOException {
+    public void shouldApplyOtherReplacements() {
         // given
         String welcomeMessage = "{ONLINE}/{MAXPLAYERS} online\n{LOGINS} logged in\nYour world is {WORLD}\nServer: {VERSION}";
         setWelcomeMessageAndReload(welcomeMessage);
-        given(bukkitService.getOnlinePlayers()).willReturn((List) Arrays.asList(mock(Player.class), mock(Player.class)));
+        returnGivenOnlinePlayers(bukkitService, Arrays.asList(mock(Player.class), mock(Player.class)));
         given(server.getMaxPlayers()).willReturn(20);
         given(playerCache.getLogged()).willReturn(1);
         given(server.getBukkitVersion()).willReturn("Bukkit-456.77.8");

@@ -32,6 +32,7 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.ChatColor;
@@ -343,8 +344,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         // Do not perform the check if player has multiple accounts permission or if IP is localhost
         if (service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP) <= 0
             || service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            || "127.0.0.1".equalsIgnoreCase(ip)
-            || "localhost".equalsIgnoreCase(ip)) {
+            || InternetProtocolUtils.isLoopbackAddress(ip)) {
             return false;
         }
 

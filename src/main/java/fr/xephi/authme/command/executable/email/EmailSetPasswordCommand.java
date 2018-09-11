@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Command for changing password following successful recovery.
  */
-public class SetPasswordCommand extends PlayerCommand {
+public class EmailSetPasswordCommand extends PlayerCommand {
 
     @Inject
     private DataSource dataSource;
@@ -45,11 +45,14 @@ public class SetPasswordCommand extends PlayerCommand {
             if (!result.hasError()) {
                 HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
                 dataSource.updatePassword(name, hashedPassword);
+                recoveryService.removeFromSuccessfulRecovery(player);
                 ConsoleLogger.info("Player '" + name + "' has changed their password from recovery");
                 commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             } else {
                 commonService.send(player, result.getMessageKey(), result.getArgs());
             }
+        } else {
+            commonService.send(player, MessageKey.CHANGE_PASSWORD_EXPIRED);
         }
     }
 }

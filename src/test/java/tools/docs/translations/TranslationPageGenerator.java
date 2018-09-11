@@ -20,7 +20,8 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 public class TranslationPageGenerator implements AutoToolTask {
 
     private static final String DOCS_PAGE = ToolsConstants.DOCS_FOLDER + "translations.md";
-    private static final String TEMPLATE_FILE = ToolsConstants.TOOLS_SOURCE_ROOT + "docs/translations/translations.tpl.md";
+    private static final String TEMPLATE_FILE =
+        ToolsConstants.TOOLS_SOURCE_ROOT + "docs/translations/translations.tpl.md";
     private static final Map<String, String> LANGUAGE_NAMES = buildLanguageNames();
 
     // Color configuration for the bars shown next to translation percentage

@@ -182,7 +182,11 @@ public class SQLite extends AbstractSqlDataSource {
         ConsoleLogger.info("SQLite Setup finished");
     }
 
-    protected void migrateIfNeeded() throws SQLException {
+    /**
+     * Migrates the database if necessary. See {@link SqLiteMigrater} for details.
+     */
+    @VisibleForTesting
+    void migrateIfNeeded() throws SQLException {
         DatabaseMetaData metaData = con.getMetaData();
         if (SqLiteMigrater.isMigrationRequired(metaData, tableName, col)) {
             new SqLiteMigrater(settings, dataFolder).performMigration(this);

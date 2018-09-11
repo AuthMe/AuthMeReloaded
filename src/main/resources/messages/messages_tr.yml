@@ -78,7 +78,7 @@ on_join_validation:
     country_banned: '&4Senin bolgen sunucudan yasaklandi!'
     not_owner_error: 'Bu hesabin sahibi degilsin. Lutfen farkli bir isim sec!'
     invalid_name_case: 'Oyuna %valid isminde katilmalisin. %invalid ismini kullanarak katilamazsin.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Bu komutu cok hizli kullandin! Lutfen, sunucuya tekrar gir ve herhangi bir komut kullanmadan once biraz bekle.'
 
 # Email
 email:
@@ -89,16 +89,16 @@ email:
     old_email_invalid: '&cGecersiz eski eposta, tekrar deneyin!'
     invalid: '&cGecersiz eposta, tekrar deneyin!'
     added: '&2Eposta basariyla kullaniciniza eklendi!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cE-posta eklenmesine izin verilmedi!'
     request_confirmation: '&cLutfen tekrar epostanizi giriniz!'
     changed: '&2Epostaniz basariyla degistirildi!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&cEposta degistirilmesine izin verilmedi!'
     email_show: '&2Suanki eposta adresin: &f%email'
     no_email_for_account: '&2Bu hesapla iliskili bir eposta bulunmuyor.'
     already_used: '&4Eposta adresi zaten kullaniliyor.'
     incomplete_settings: 'Hata: Gonderilen epostada bazi ayarlar tamamlanmis degil. Yetkili ile iletisime gec.'
     send_failure: 'Eposta gonderilemedi. Yetkili ile iletisime gec.'
-    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
+    change_password_expired: 'Artik bu komutu kullanarak sifrenizi degistiremezsiniz.'
     email_cooldown_error: '&cKisa bir sure once eposta gonderildi. Yeni bir eposta almak icin %time beklemelisin.'
 
 # Password recovery by email
@@ -109,27 +109,27 @@ recovery:
     code:
         code_sent: 'Sifre sifirlama kodu eposta adresinize gonderildi.'
         incorrect: 'Kod dogru degil! Kullanim "/email recovery [eposta]" ile yeni bir kod olustur'
-        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-        # TODO correct: 'Recovery code entered correctly!'
-        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
-
+        tries_exceeded: 'Kurtarma kodu icin girilen maksimum sayisi astiniz. "/email recovery [email]" komutunu kullanarak yeni bir tane olusturabilirsiniz.'
+        correct: 'Kurtarma kodu dogru sekilde girildi!'
+        change_password: 'Lutfen sifrenizi degistirmek icin /email setpassword <yeni sifre> komutunu kullanin.'
+        
 # Captcha
 captcha:
     usage_captcha: '&3Giris yapmak icin guvenlik kodunu komut yazarak girin "/captcha %captcha_code"'
     wrong_captcha: '&cYanlis guvenlik kodu, kullanim sekli "/captcha %captcha_code" sohbete yazin!'
     valid_captcha: '&2Guvenlik kodu dogrulandi!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Kayit olmak icin once bir captcha cozmeniz gerekiyor, lutfen bu komutu kullan: /captcha %captcha_code'
+    register_captcha_valid: '&2Gecerli captcha! /register ile kayit olabilirsiniz'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    code_required: '&3Bu komut hassas ve eposta dogrulamasi gerektiriyor! Gelen kutunuzu kontrol edin ve epostalarin talimatlarina uyun.'
+    command_usage: '&Kullanim: /verification <code>'
+    incorrect_code: '&cYanlis kod, lutfen email ile aldiginiz kodu kullanarak, chate "/verification <kod>" yazin'
+    success: '&2Kimliginiz dogrulandi! Simdi mevcut oturumdaki butun komutlari calistirabilirsiniz!'
+    already_verified: '&2Mevcut oturumda her hassas komutu zaten calistirabilirsiniz!'
+    code_expired: '&3Kodunuzun suresi doldu! Diger hassas komutlari calistirmak icin yeni bir kod alin!'
+    email_needed: '&3Kimliginizi dogrulamak icin hesabiniza bir email adresi baglamis olmaniz gerekir!!'
 
 # Time units
 time:
@@ -145,12 +145,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Gizli kodunuz %code. Buradan test edebilirsin, %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Lutfen kodunuzu /2fa confirm <kod> komutu ile dogrulayin'
+    code_required: 'Lutfen iki-faktorlu dogrulama kodunuzu /2fa code <kod> komutu ile gonderin'
+    already_enabled: 'Iki-faktorlu dogrulama zaten hesabinizda aktif durumda!'
+    enable_error_no_code: 'Sizin icin 2fa anahtari olusturulmamis ya da suresi dolmus. Lutfen /2fa add komutunu calistirin'
+    enable_success: 'Iki-faktorlu kimlik dogrulama hesabiniz icin basariyla aktif edildi'
+    enable_error_wrong_code: 'Yanlis kod veya kodun suresi dolmus. Lutfen /2fa add komutunu calistirin'
+    not_enabled_error: 'Iki-faktorlu kimlik dogrulama kodu hesabiniz icin aktif edilmemis. /2fa add komutunu calistirin'
+    removed_success: 'Iki-faktorlu dogrulama hesabinizdan basariyla kaldirilmistir'
+    invalid_code: 'Gecersiz kod!'

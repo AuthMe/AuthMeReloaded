@@ -33,9 +33,9 @@ import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
+import fr.xephi.authme.command.executable.email.EmailSetPasswordCommand;
 import fr.xephi.authme.command.executable.email.ProcessCodeCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
-import fr.xephi.authme.command.executable.email.SetPasswordCommand;
 import fr.xephi.authme.command.executable.email.ShowEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
@@ -540,7 +540,7 @@ public class CommandInitializer {
             .detailedDescription("Set a new password after successfully recovering your account.")
             .withArgument("password", "New password", MANDATORY)
             .permission(PlayerPermission.RECOVER_EMAIL)
-            .executableCommand(SetPasswordCommand.class)
+            .executableCommand(EmailSetPasswordCommand.class)
             .register();
 
         return emailBase;

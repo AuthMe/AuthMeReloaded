@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.formatLocation;
 import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.applyToLimboPlayersMap;
+import static fr.xephi.authme.command.executable.authme.debug.DebugSectionUtils.formatLocation;
 
 /**
  * Shows the data stored in LimboPlayers and the equivalent properties on online players.

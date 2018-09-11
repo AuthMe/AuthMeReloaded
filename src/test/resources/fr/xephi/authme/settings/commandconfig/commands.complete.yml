@@ -8,9 +8,11 @@ onRegister:
     announce:
         command: 'me I just registered'
         executor: PLAYER
+        delay: 100
     notify:
         command: 'log %p (%ip, %country) registered'
         executor: CONSOLE
+        delay: 100
 onLogin:
     welcome:
         command: 'msg %p Welcome back'
@@ -18,18 +20,22 @@ onLogin:
     show_motd:
         command: 'motd'
         executor: PLAYER
+        delay: 60
     display_list:
         command: 'list'
         executor: PLAYER
+        delay: 120
     warn_for_alts:
         command: 'helpop Player %p has more than 1 account'
         executor: CONSOLE
         ifNumberOfAccountsAtLeast: 2
+        delay: 180
     log_suspicious_user:
         command: 'log %p %ip many accounts'
         executor: CONSOLE
         ifNumberOfAccountsAtLeast: 5
         ifNumberOfAccountsLessThan: 20
+        delay: 240
 onSessionLogin:
     welcome:
         command: 'msg %p Session login!'

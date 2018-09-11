@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.service.AntiBotService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

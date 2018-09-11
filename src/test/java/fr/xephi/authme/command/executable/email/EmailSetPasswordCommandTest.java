@@ -24,13 +24,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Tests for {@link SetPasswordCommand}.
+ * Tests for {@link EmailSetPasswordCommand}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SetPasswordCommandTest {
+public class EmailSetPasswordCommandTest {
 
     @InjectMocks
-    private SetPasswordCommand command;
+    private EmailSetPasswordCommand command;
 
     @Mock
     private DataSource dataSource;
@@ -70,6 +70,7 @@ public class SetPasswordCommandTest {
         // then
         verify(validationService).validatePassword("abc123", name);
         verify(dataSource).updatePassword(name, hashedPassword);
+        verify(recoveryService).removeFromSuccessfulRecovery(player);
         verify(commonService).send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
     }
 
@@ -101,7 +102,7 @@ public class SetPasswordCommandTest {
         command.runCommand(player, Collections.singletonList("abc123"));
 
         // then
-        verifyZeroInteractions(validationService);
-        verifyZeroInteractions(dataSource);
+        verifyZeroInteractions(validationService, dataSource);
+        verify(commonService).send(player, MessageKey.CHANGE_PASSWORD_EXPIRED);
     }
 }

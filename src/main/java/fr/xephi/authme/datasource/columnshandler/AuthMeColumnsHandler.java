@@ -5,9 +5,8 @@ import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import ch.jalu.datasourcecolumns.data.UpdateValues;
 import ch.jalu.datasourcecolumns.predicate.Predicate;
 import ch.jalu.datasourcecolumns.sqlimplementation.PredicateSqlGenerator;
-import ch.jalu.datasourcecolumns.sqlimplementation.PreparedStatementGenerator;
-import ch.jalu.datasourcecolumns.sqlimplementation.ResultSetValueRetriever;
 import ch.jalu.datasourcecolumns.sqlimplementation.SqlColumnsHandler;
+import ch.jalu.datasourcecolumns.sqlimplementation.statementgenerator.ConnectionSupplier;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -16,6 +15,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import static ch.jalu.datasourcecolumns.sqlimplementation.SqlColumnsHandlerConfig.forConnectionPool;
+import static ch.jalu.datasourcecolumns.sqlimplementation.SqlColumnsHandlerConfig.forSingleConnection;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
 /**
@@ -43,8 +44,9 @@ public final class AuthMeColumnsHandler {
         String nameColumn = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
 
         SqlColumnsHandler<ColumnContext, String> sqlColHandler = new SqlColumnsHandler<>(
-            PreparedStatementGenerator.fromConnection(connection), columnContext, tableName, nameColumn,
-            new ResultSetValueRetriever<>(columnContext), new PredicateSqlGenerator<>(columnContext, true));
+            forSingleConnection(connection, tableName, nameColumn, columnContext)
+                .setPredicateSqlGenerator(new PredicateSqlGenerator<>(columnContext, true))
+        );
         return new AuthMeColumnsHandler(sqlColHandler);
     }
 
@@ -61,8 +63,7 @@ public final class AuthMeColumnsHandler {
         String nameColumn = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
 
         SqlColumnsHandler<ColumnContext, String> sqlColHandler = new SqlColumnsHandler<>(
-            new MySqlPreparedStatementGenerator(connectionSupplier), columnContext, tableName, nameColumn,
-            new ResultSetValueRetriever<>(columnContext), new PredicateSqlGenerator<>(columnContext));
+            forConnectionPool(connectionSupplier, tableName, nameColumn, columnContext));
         return new AuthMeColumnsHandler(sqlColHandler);
     }
 

@@ -35,7 +35,14 @@ class XfBcryptExtension extends MySqlExtension {
             updateXenforoTablesOnSave(auth, authId.getAsInt(), con);
         }
     }
-    
+
+    /**
+     * Updates the xenforo tables after a player auth has been saved.
+     *
+     * @param auth the player auth which was saved
+     * @param id the account id
+     * @param con connection to the database
+     */
     private void updateXenforoTablesOnSave(PlayerAuth auth, int id, Connection con) throws SQLException {
         // Insert player password, salt in xf_user_authenticate
         String sql = "INSERT INTO " + xfPrefix + "user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";

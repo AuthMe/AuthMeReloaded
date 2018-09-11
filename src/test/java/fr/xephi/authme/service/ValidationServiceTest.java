@@ -22,10 +22,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Logger;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -57,10 +57,9 @@ public class ValidationServiceTest {
         given(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).willReturn("[a-zA-Z]+");
         given(settings.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(3);
         given(settings.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(20);
-        given(settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
-            .willReturn(asList("unsafe", "other-unsafe"));
+        given(settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).willReturn(newHashSet("unsafe", "other-unsafe"));
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
-        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(asList("name01", "npc"));
+        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(newHashSet("name01", "npc"));
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(false);
     }
 
@@ -261,7 +260,7 @@ public class ValidationServiceTest {
         assertThat(validationService.isUnrestricted("NAME01"), equalTo(true));
 
         // Check reloading
-        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(asList("new", "names"));
+        given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(newHashSet("new", "names"));
         validationService.reload();
         assertThat(validationService.isUnrestricted("npc"), equalTo(false));
         assertThat(validationService.isUnrestricted("New"), equalTo(true));
@@ -350,7 +349,7 @@ public class ValidationServiceTest {
         // given
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
-            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;32.24.16.8", "Gabriel;regex:93\\.23\\.44\\..*", "emanuel;94.65.24.*", "imyourisp;*.yourisp.net"));
+            .willReturn(newHashSet("Bobby;127.0.0.4", "Tamara;32.24.16.8", "Gabriel;regex:93\\.23\\.44\\..*", "emanuel;94.65.24.*", "imyourisp;*.yourisp.net"));
         validationService.reload();
 
         Player bobby = mockPlayer("bobby", "127.0.0.4");
@@ -389,7 +388,7 @@ public class ValidationServiceTest {
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
-            .willReturn(Arrays.asList("Bobby;127.0.0.4", "Tamara;"));
+            .willReturn(newHashSet("Bobby;127.0.0.4", "Tamara;"));
 
         // when
         validationService.reload();

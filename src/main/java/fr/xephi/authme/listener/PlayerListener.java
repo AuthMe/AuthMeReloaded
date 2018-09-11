@@ -7,6 +7,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.permission.handlers.PermissionLoadUserException;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
@@ -22,6 +23,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -53,6 +55,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
@@ -65,7 +69,7 @@ public class PlayerListener implements Listener {
     @Inject
     private Settings settings;
     @Inject
-    private Messages m;
+    private Messages messages;
     @Inject
     private DataSource dataSource;
     @Inject
@@ -94,6 +98,7 @@ public class PlayerListener implements Listener {
     private BungeeSender bungeeSender;
 
     private boolean isAsyncPlayerPreLoginEventCalled = false;
+    private Set<String> unresolvedPlayerHostname = new HashSet<>();
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -107,12 +112,12 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (!quickCommandsProtectionManager.isAllowed(player.getName())) {
             event.setCancelled(true);
-            player.kickPlayer(m.retrieveSingle(player, MessageKey.QUICK_COMMAND_PROTECTION_KICK));
+            player.kickPlayer(messages.retrieveSingle(player, MessageKey.QUICK_COMMAND_PROTECTION_KICK));
             return;
         }
         if (listenerService.shouldCancelEvent(player)) {
             event.setCancelled(true);
-            m.send(player, MessageKey.DENIED_COMMAND);
+            messages.send(player, MessageKey.DENIED_COMMAND);
         }
     }
 
@@ -123,10 +128,18 @@ public class PlayerListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-        if (listenerService.shouldCancelEvent(player)) {
+        final boolean mayPlayerSendChat = !listenerService.shouldCancelEvent(player)
+            || permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_CHAT_BEFORE_LOGIN);
+        if (mayPlayerSendChat) {
+            removeUnauthorizedRecipients(event);
+        } else {
             event.setCancelled(true);
-            m.send(player, MessageKey.DENIED_CHAT);
-        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+            messages.send(player, MessageKey.DENIED_CHAT);
+        }
+    }
+
+    private void removeUnauthorizedRecipients(AsyncPlayerChatEvent event) {
+        if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
             event.getRecipients().removeIf(listenerService::shouldCancelEvent);
             if (event.getRecipients().isEmpty()) {
                 event.setCancelled(true);
@@ -214,6 +227,15 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
+        if (unresolvedPlayerHostname.remove(player.getName())) {
+            try {
+                runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), PlayerUtils.getPlayerIp(player));
+            } catch (FailedVerificationException e) {
+                player.kickPlayer(messages.retrieveSingle(player, e.getReason(), e.getArgs()));
+                return;
+            }
+        }
+
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
         }
@@ -271,10 +293,19 @@ public class PlayerListener implements Listener {
             ConsoleLogger.logException("Unable to load the permission data of user " + name, e);
         }
 
+        // getAddress() sometimes returning null if not yet resolved
+        // skip it and let PlayerLoginEvent to handle it
+        if (event.getAddress() == null) {
+            unresolvedPlayerHostname.add(event.getName());
+            return;
+        } else {
+            unresolvedPlayerHostname.remove(event.getName());
+        }
+
         try {
             runOnJoinChecks(JoiningPlayer.fromName(name), event.getAddress().getHostAddress());
         } catch (FailedVerificationException e) {
-            event.setKickMessage(m.retrieveSingle(name, e.getReason(), e.getArgs()));
+            event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
         }
     }
@@ -298,11 +329,20 @@ public class PlayerListener implements Listener {
             return;
         }
 
+
+        if (event.getAddress() == null) { // Address still null
+            unresolvedPlayerHostname.add(name);
+            return;
+        } else {
+            unresolvedPlayerHostname.remove(name);
+        }
+
         if (!isAsyncPlayerPreLoginEventCalled || !settings.getProperty(PluginSettings.USE_ASYNC_PRE_LOGIN_EVENT)) {
             try {
+                // Player.getAddress() can be null at this event, use event.getAddress()
                 runOnJoinChecks(JoiningPlayer.fromPlayerObject(player), event.getAddress().getHostAddress());
             } catch (FailedVerificationException e) {
-                event.setKickMessage(m.retrieveSingle(player, e.getReason(), e.getArgs()));
+                event.setKickMessage(messages.retrieveSingle(player, e.getReason(), e.getArgs()));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             }
         }

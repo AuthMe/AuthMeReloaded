@@ -1,7 +1,8 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import ch.jalu.configme.beanmapper.BeanDescriptionFactory;
-import ch.jalu.configme.beanmapper.BeanPropertyDescription;
+import ch.jalu.configme.beanmapper.propertydescription.BeanDescriptionFactoryImpl;
+import ch.jalu.configme.beanmapper.propertydescription.BeanPropertyDescription;
+import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
@@ -52,7 +53,7 @@ public class CommandMigrationServiceTest {
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(
-            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+            resource.createReader(), ConfigurationDataBuilder.createConfiguration(CommandSettingsHolder.class));
 
         // then
         assertThat(result, equalTo(true));
@@ -66,7 +67,7 @@ public class CommandMigrationServiceTest {
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(
-            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+            resource.createReader(), ConfigurationDataBuilder.createConfiguration(CommandSettingsHolder.class));
 
         // then
         assertThat(result, equalTo(true));
@@ -80,7 +81,7 @@ public class CommandMigrationServiceTest {
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(
-            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+            resource.createReader(), ConfigurationDataBuilder.createConfiguration(CommandSettingsHolder.class));
 
         // then
         assertThat(result, equalTo(false));
@@ -93,8 +94,8 @@ public class CommandMigrationServiceTest {
     @Test
     public void shouldHaveAllPropertiesFromCommandConfig() {
         // given
-        String[] properties = new BeanDescriptionFactory()
-            .collectWritableFields(CommandConfig.class)
+        String[] properties = new BeanDescriptionFactoryImpl()
+            .getAllProperties(CommandConfig.class)
             .stream()
             .map(BeanPropertyDescription::getName)
             .toArray(String[]::new);
@@ -112,13 +113,14 @@ public class CommandMigrationServiceTest {
         given(settingsMigrationService.getOldOtherAccountsCommandThreshold()).willReturn(3);
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.complete.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
+        ConfigurationData configurationData = ConfigurationDataBuilder.createConfiguration(CommandSettingsHolder.class);
 
         // when
         commandMigrationService.checkAndMigrate(
-            resource, ConfigurationDataBuilder.collectData(CommandSettingsHolder.class).getProperties());
+            resource.createReader(), configurationData);
 
         // then
-        Map<String, OnLoginCommand> onLoginCommands = CommandSettingsHolder.COMMANDS.getValue(resource).getOnLogin();
+        Map<String, OnLoginCommand> onLoginCommands = configurationData.getValue(CommandSettingsHolder.COMMANDS).getOnLogin();
         assertThat(onLoginCommands, aMapWithSize(6)); // 5 in the file + the newly migrated on
         OnLoginCommand newCommand = getUnknownOnLoginCommand(onLoginCommands);
         assertThat(newCommand.getCommand(), equalTo("helpop %p (%ip) has other accounts!"));

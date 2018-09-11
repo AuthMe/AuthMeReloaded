@@ -12,6 +12,11 @@ public enum PlayerStatePermission implements PermissionNode {
     BYPASS_ANTIBOT("authme.bypassantibot", DefaultPermission.OP_ONLY),
 
     /**
+     * Permission node to bypass BungeeCord server teleportation.
+     */
+    BYPASS_BUNGEE_SEND("authme.bypassbungeesend", DefaultPermission.OP_ONLY),
+
+    /**
      * Permission for users to bypass force-survival mode.
      */
     BYPASS_FORCE_SURVIVAL("authme.bypassforcesurvival", DefaultPermission.OP_ONLY),
@@ -34,7 +39,12 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * Permission to bypass the GeoIp country code check.
      */
-    BYPASS_COUNTRY_CHECK("authme.bypasscountrycheck", DefaultPermission.NOT_ALLOWED);
+    BYPASS_COUNTRY_CHECK("authme.bypasscountrycheck", DefaultPermission.NOT_ALLOWED),
+
+    /**
+     * Permission to send chat messages before being logged in.
+     */
+    ALLOW_CHAT_BEFORE_LOGIN("authme.allowchatbeforelogin", DefaultPermission.NOT_ALLOWED);
 
     /**
      * The permission node.
@@ -42,7 +52,7 @@ public enum PlayerStatePermission implements PermissionNode {
     private String node;
 
     /**
-     * The default permission level
+     * The default permission level.
      */
     private DefaultPermission defaultPermission;
 
