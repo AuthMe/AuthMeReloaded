@@ -170,7 +170,7 @@ permissions:
     default: op
   authme.bypassbungeesend:
     description: Permission node to bypass BungeeCord server teleportation.
-    default: op
+    default: false
   authme.bypassantibot:
     description: Permission node to bypass AntiBot protection.
     default: op
