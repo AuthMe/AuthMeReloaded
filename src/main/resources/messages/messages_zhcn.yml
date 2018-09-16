@@ -151,7 +151,7 @@ two_factor:
     already_enabled: '&8[&6玩家系统&8] &a两步验证码已在您的账号上启用'
     enable_error_no_code: '&8[&6玩家系统&8] &c两步验证密钥不存在或已过期，请输入 &a/2fa add &c来添加'
     enable_success: '&8[&6玩家系统&8] &a已成功启用两步验证码'
-    enable_error_wrong_code: '&8[&6玩家系统&8] &8[&6玩家系统&8] &c两步验证代码错误或者已经过期，请重新执行 &a/2fa add'
+    enable_error_wrong_code: '&8[&6玩家系统&8] &c两步验证代码错误或者已经过期，请重新执行 &a/2fa add'
     not_enabled_error: '&8[&6玩家系统&8] &c两步验证码未在您的账号上启用，请使用 &a/2fa add &c来启用'
     removed_success: '&8[&6玩家系统&8] &c两步验证码已从您的账号上删除'
     invalid_code: '&8[&6玩家系统&8] &c无效的验证码'
