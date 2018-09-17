@@ -56,9 +56,10 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         final ByteArrayDataInput dataIn = ByteStreams.newDataInput(dataBytes);
 
         // Parse type
-        final Optional<MessageType> type = MessageType.fromId(dataIn.readUTF());
+        final String typeId = dataIn.readUTF();
+        final Optional<MessageType> type = MessageType.fromId(typeId);
         if (!type.isPresent()) {
-            ConsoleLogger.debug("Received unsupported forwarded bungeecord message type! ({0})", type);
+            ConsoleLogger.debug("Received unsupported forwarded bungeecord message type! ({0})", typeId);
             return;
         }
 
@@ -88,9 +89,10 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
 
     private void handle(final ByteArrayDataInput in) {
         // Parse type
-        final Optional<MessageType> type = MessageType.fromId(in.readUTF());
+        final String typeId = in.readUTF();
+        final Optional<MessageType> type = MessageType.fromId(typeId);
         if (!type.isPresent()) {
-            ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", type);
+            ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", typeId);
             return;
         }
 
