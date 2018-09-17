@@ -1,9 +1,9 @@
-name: ${bukkitplugin.name}
-authors: [${bukkitplugin.authors}]
+name: ${pluginDescription.name}
+authors: [${pluginDescription.authors}]
 website: ${project.url}
 description: ${project.description}
-main: ${bukkitplugin.main}
-version: ${bukkitplugin.version}
+main: ${pluginDescription.main}
+version: ${pluginDescription.version}
 api-version: 1.13
 softdepend:
     - Vault

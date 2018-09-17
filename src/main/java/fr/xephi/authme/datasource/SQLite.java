@@ -75,6 +75,8 @@ public class SQLite extends AbstractSqlDataSource {
 
     /**
      * Initializes the connection to the SQLite database.
+     *
+     * @throws SQLException when an SQL error occurs while connecting
      */
     protected void connect() throws SQLException {
         try {
@@ -90,6 +92,8 @@ public class SQLite extends AbstractSqlDataSource {
 
     /**
      * Creates the table if necessary, or adds any missing columns to the table.
+     *
+     * @throws SQLException when an SQL error occurs while initializing the database
      */
     @VisibleForTesting
     protected void setup() throws SQLException {
