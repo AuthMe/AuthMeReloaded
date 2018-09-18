@@ -7,32 +7,32 @@
 registration:
     disabled: '&cRegister dalam game tidak diaktifkan!'
     name_taken: '&cKamu telah mendaftarkan username ini!'
-    register_request: '&3Silahkan mendaftar ke server menggunakan command "/register <password> <ulangiPassword>"'
-    # TODO command_usage: '&cUsage: /register <password> <ConfirmPassword>'
-    reg_only: '&4Hanya pengguna terdaftar yg bisa bergabung! Silahkan kunjungi http://example.com untuk mendaftar!'
+    register_request: '&3Silahkan mendaftar ke server menggunakan perintah "/register <password> <ulangiPassword>"'
+    command_usage: '&cPenggunaan: /register <password> <KonfirmasiPassword>'
+    reg_only: '&4Hanya pengguna terdaftar yang bisa bergabung! Silahkan kunjungi http://example.com untuk mendaftar!'
     success: '&2Register berhasil!'
-    # TODO kicked_admin_registered: 'An admin just registered you; please log in again'
+    kicked_admin_registered: 'Administrator sudah meregistrasi kamu; dimohon untuk login kembali'
 
 # Password errors on registration
 password:
     match_error: '&cPassword tidak cocok, silahkan periksa dan ulangi kembali!'
-    name_in_password: '&cKamu tidak bisa menggunakan namamu sebagai password, silahkan coba yg lain...'
-    unsafe_password: '&cPassword yg kamu pilih tidak aman, silahkan coba yg lain...'
-    # TODO forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
-    wrong_length: '&cPassword kamu terlalu panjang/pendek! Silahkan pilih yg lain!'
+    name_in_password: '&cKamu tidak bisa menggunakan namamu sebagai password, silahkan coba yang lain...'
+    unsafe_password: '&cPassword yang kamu pilih tidak aman, silahkan coba yang lain...'
+    forbidden_characters: '&4Password kamu memiliki karakter illegal. Karakter yang diperbolehkan: %valid_chars'
+    wrong_length: '&cPassword kamu terlalu panjang/pendek! Silahkan pilih yang lain!'
 
 # Login
 login:
-    command_usage: '&cUsage: /login <password>'
+    command_usage: '&cPenggunaan: /login <password>'
     wrong_password: '&cPassword salah!'
     success: '&2Login berhasil!'
-    login_request: '&cSilahkan login menggunakan command "/login <password>"'
-    timeout_error: '&4Jangka waktu login telah habis, kamu di keluarkan dari server. Silahkan coba lagi!'
+    login_request: '&cSilahkan login menggunakan perintah "/login <password>"'
+    timeout_error: '&4Jangka waktu login telah habis, kamu dikeluarkan dari server. Silahkan coba lagi!'
 
 # Errors
 error:
-    # TODO denied_command: '&cIn order to use this command you must be authenticated!'
-    # TODO denied_chat: '&cIn order to chat you must be authenticated!'
+    denied_command: '&cUntuk menggunakan perintah ini, kamu harus terautentikasi!'
+    denied_chat: '&cUntuk mengobrol, kamu harus terautentikasi!'
     unregistered_user: '&cUser ini belum terdaftar!'
     not_logged_in: '&cKamu belum login!'
     no_permission: '&4Kamu tidak mempunyai izin melakukan ini!'
@@ -40,18 +40,18 @@ error:
     max_registration: '&Kamu telah mencapai batas maksimum pendaftaran di server ini!'
     logged_in: '&cKamu telah login!'
     kick_for_vip: '&3Player VIP mencoba masuk pada saat server sedang penuh!'
-    # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
+    tempban_max_logins: '&cKamu untuk sementara diblokir karena terlalu sering salah saat login.'
 
 # AntiBot
 antibot:
-    # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+    kick_antibot: 'Proteksi AntiBot diaktifkan! Kamu harus menunggu beberapa menit sebelum masuk server.'
     auto_enabled: '&4[AntiBotService] AntiBot diaktifkan dikarenakan banyak koneksi yg diterima!'
     auto_disabled: '&2[AntiBotService] AntiBot dimatikan setelah %m menit!'
 
 # Unregister
 unregister:
     success: '&cUnregister berhasil!'
-    # TODO command_usage: '&cUsage: /unregister <password>'
+    command_usage: '&cPenggunaan: /unregister <password>'
 
 # Other messages
 misc:
@@ -59,9 +59,9 @@ misc:
     password_changed: '&2Berhasil mengubah password!'
     logout: '&2Berhasil logout!'
     reload: '&2Konfigurasi dan database telah dimuat ulang!'
-    usage_change_password: '&cUsage: /changepassword <passwordLama> <passwordBaru>'
-    # TODO accounts_owned_self: 'You own %count accounts:'
-    # TODO accounts_owned_other: 'The player %name has %count accounts:'
+    usage_change_password: '&cPenggunaan: /changepassword <passwordLama> <passwordBaru>'
+    accounts_owned_self: 'Kamu memiliki %count akun:'
+    accounts_owned_other: 'Pengguna akun %name memiliki %count akun:'
 
 # Session messages
 session:
@@ -70,56 +70,56 @@ session:
 
 # Error messages when joining
 on_join_validation:
-    # TODO same_ip_online: 'A player with the same IP is already in game!'
+    same_ip_online: 'Seorang pemain dengan IP yang sama sudah didalam permainan!'
     same_nick_online: '&4Username yg sama telah bermain di server ini!'
     name_length: '&4Username kamu terlalu panjang atau terlalu pendek!'
-    characters_in_name: '&4Username kamu mengandung karakter illegal. Karakter yg diijinkan: %valid_chars'
+    characters_in_name: '&4Username kamu mengandung karakter illegal. Karakter yg diizinkan: %valid_chars'
     kick_full_server: '&4Server sedang penuh, silahkan coba lagi nanti!'
-    # TODO country_banned: '&4Your country is banned from this server!'
-    # TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
-    # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    country_banned: '&4Negara kamu diblokir dari server ini!'
+    not_owner_error: 'Kamu bukan pemilik dari akun ini. Tolong pilih nama lain!'
+    invalid_name_case: 'Kamu seharusnya masuk menggunakan username %valid, bukan %invalid.'
+    quick_command: 'Kamu menggunakan perintah terlalu cepat! Tolong masuk kembali ke server dan tunggu sebentar sebelum menggunakan perintah lagi.'
 
 # Email
 email:
-    add_email_request: '&3Silahkan tambahkan email ke akunmu menggunakan command "/email add <emailKamu> <ulangiEmail>"'
-    usage_email_add: '&cUsage: /email add <email> <ulangiEmail>'
-    usage_email_change: '&cUsage: /email change <emailLama> <emailBaru>'
+    add_email_request: '&3Silahkan tambahkan email ke akunmu menggunakan perintah "/email add <emailKamu> <ulangiEmail>"'
+    usage_email_add: '&cPenggunaan: /email add <email> <ulangiEmail>'
+    usage_email_change: '&cPenggunaan: /email change <emailLama> <emailBaru>'
     new_email_invalid: '&cEmail baru tidak valid, coba lagi!'
     old_email_invalid: '&cEmail lama tidak valid, coba lagi!'
     invalid: '&cAlamat email tidak valid, coba lagi!'
     added: '&2Berhasil menambahkan alamat email ke akunmu!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cMenambah email tidak diperbolehkan'
     request_confirmation: '&cSilahkan konfirmasi alamat email kamu!'
     changed: '&2Alamat email telah diubah dengan benar!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
-    # TODO email_show: '&2Your current email address is: &f%email'
-    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
-    # TODO already_used: '&4The email address is already being used'
-    # TODO incomplete_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
-    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
-    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
-    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+    change_not_allowed: '&cMengubah email tidak diperbolehkan'
+    email_show: '&2Emailmu saat ini: &f%email'
+    no_email_for_account: '&2Kamu tidak memiliki alamat email terkait dengan akun ini.'
+    already_used: '&4Alamat email sudah terpakai'
+    incomplete_settings: 'Error: tidak semua syarat setelan disetel untuk mengirim email. Tolong kontak Administrator.'
+    send_failure: 'Email tidak dapat dikirim. Tolong kontak Administrator.'
+    change_password_expired: 'Kamu tidak dapat mengubah password menggunakan perintah ini lagi.'
+    email_cooldown_error: '&cSebuah email telah dikirim beberapa waktu lalu. Kamu harus menunggu %time sebelum kamu mengirim yang baru.'
 
 # Password recovery by email
 recovery:
     forgot_password_hint: '&3Lupa password? silahkan gunakan command "/email recovery <emailKamu>"'
-    command_usage: '&cUsage: /email recovery <Email>'
+    command_usage: '&cPenggunaan: /email recovery <Email>'
     email_sent: '&2Email pemulihan akun telah dikirim! Silahkan periksa kotak masuk emailmu!'
     code:
-        # TODO code_sent: 'A recovery code to reset your password has been sent to your email.'
-        # TODO incorrect: 'The recovery code is not correct! You have %count tries remaining.'
-        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-        # TODO correct: 'Recovery code entered correctly!'
-        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
+        code_sent: 'Sebuah kode pemulihan untuk mengatur ulang passwordmu telah terkirim ke emailmu.'
+        incorrect: 'Kode pemulihan salah! Kamu memiliki %count kali kesempatan tersisa.'
+        tries_exceeded: 'Kamu telah mencapai batas maksimal untuk memasukkan kode pemulihan. Gunakan "/email recovery [email]" membuat yang baru.'
+        correct: 'Kode pemulihan berhasil dimasukkan!'
+        change_password: 'Tolong gunakan perintah /email setpassword <password baru> untuk mengubah passwordmu segera.'
 
 # Captcha
 captcha:
-    usage_captcha: '&3Kamu harus menyelesaikan kode captcha untuk login, silahkan gunakan command "/captcha %captcha_code"'
-    wrong_captcha: '&cCaptcha salah, gunakan command "/captcha %captcha_code" pada chat!'
+    usage_captcha: '&3Kamu harus menyelesaikan kode captcha untuk login, silahkan gunakan perintah "/captcha %captcha_code"'
+    wrong_captcha: '&cCaptcha salah, gunakan perintah "/captcha %captcha_code" pada komentar!'
     valid_captcha: '&2Kode captcha terselesaikan!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Untuk meregistrasi, kamu harus menyelesaikan captcha terlebih dahulu, tolong gunakan perintah: /captcha %captcha_code'
+    register_captcha_valid: '&2Captcha terselesaikan! Kini kamu dapat mendaftar dengan /register'
 
 # Verification code
 verification:
@@ -133,24 +133,24 @@ verification:
 
 # Time units
 time:
-    # TODO second: 'second'
-    # TODO seconds: 'seconds'
-    # TODO minute: 'minute'
-    # TODO minutes: 'minutes'
-    # TODO hour: 'hour'
-    # TODO hours: 'hours'
-    # TODO day: 'day'
-    # TODO days: 'days'
+    second: 'detik'
+    seconds: 'detik'
+    minute: 'menit'
+    minutes: 'menit'
+    hour: 'jam'
+    hours: 'jam'
+    day: 'hari'
+    days: 'hari'
 
 # Two-factor authentication
 two_factor:
-    # TODO code_created: '&2Your secret code is %code. You can scan it from here %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    code_created: '&2Kode rahasiamu adalah %code. Kamu dapat memindainya di %url'
+    confirmation_required: 'Tolong konfirmasi kodemu dengan /2fa confirm <code>'
+    code_required: 'Mohon kirimkan kode dari autentikasi dua langkah dengan /2fa code <code>'
+    already_enabled: 'Autentikasi dua langkah sudah diaktifkan untuk akunmu!'
+    enable_error_no_code: 'Tidak ada kunci autentikasi dua langkah atau sudah kadaluarsa. Tolong jalankan /2fa add'
+    enable_success: 'Sukses mengaktifkan autentikasi dua langkah untuk akunmu'
+    enable_error_wrong_code: 'Kode salah atau kode sudah kadaluarsa. Tolong jalankan /2fa add'
+    not_enabled_error: 'Autentikasi dua langkah tidak diaktifkan untuk akunmu. Jalankan /2fa add'
+    removed_success: 'Sukses menghapus autentikasi dua langkah dari akunmu'
+    invalid_code: 'Kode tidak valid!'
