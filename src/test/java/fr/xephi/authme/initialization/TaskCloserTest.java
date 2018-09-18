@@ -55,7 +55,7 @@ public class TaskCloserTest {
         Server server = mock(Server.class);
         given(server.getScheduler()).willReturn(bukkitScheduler);
         ReflectionTestUtils.setField(JavaPlugin.class, authMe, "server", server);
-        ReflectionTestUtils.setField(JavaPlugin.class, authMe, "logger", logger);
+        given(authMe.getLogger()).willReturn(logger);
         taskCloser = spy(new TaskCloser(authMe, dataSource));
     }
 
