@@ -1,10 +1,10 @@
 #Tradução pt/br Authme Reloaded
-#Feito por GabrielDev(DeathRush) e Frani (PotterCraft_)
+#Feito por GabrielDev(DeathRush) e Eufranio (Eufranio#0800)
 # http://gamersboard.com.br/ | www.magitechserver.com
-# List of global tags:
-# %nl% - Goes to new line.
-# %username% - Replaces the username of the player receiving the message.
-# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+# Lista de tags globais:
+# %nl% - Pula uma linha
+# %username% - Substitui pelo nome do jogador RECEBENDO a mensagem
+# %displayname% - Substitui o nickname (e cores) do jogador RECEBENDO a mensagem
 
 # Registration
 registration:
@@ -121,18 +121,18 @@ captcha:
     usage_captcha: '&3Para iniciar sessão você tem que resolver um código captcha, utilize o comando "/captcha %captcha_code"'
     wrong_captcha: '&cCaptcha errado, por favor, escreva "/captcha %captcha_code" no chat!'
     valid_captcha: '&2Código Captcha resolvido corretamente!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Para se registrar você tem que resolver um código captcha, utilize o comando "/captcha %captcha_code"'
+    register_captcha_valid: '&2Código correto! Agora você pode se registrar com /register!'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    code_required: '&3Esse comando é importante e precisa de uma verificação via e-mail! Cheque sua caixa de entrada e siga as instruções do e-mail.'
+    command_usage: '&cUso correto: /verification <código>'
+    incorrect_code: '&cCódigo incorreto, utilize "/verification <código>" usando o código que você recebeu no e-mail!'
+    success: '&2Sua identidade foi verificada, agora você pode usar todos os comandos nessa sessão.'
+    already_verified: '&2Você já pode executar comandos importantes nessa sessão!'
+    code_expired: '&3Seu código expirou! Execute outro comando importante para criar um novo.'
+    email_needed: '&3Para verificar sua identidade, você precisa ligar um e-mail à sua conta!'
 
 # Time units
 time:
@@ -148,12 +148,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2O seu código secreto é %code. Você pode verificá-lo a partir daqui %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Confirme seu código com /2fa confirm <código>'
+    code_required: 'Registre seu código de autenticação de 2 fatores com /2fa code <código>'
+    already_enabled: 'A autenticação em 2 fatores já está ativada para sua conta!'
+    enable_error_no_code: 'Nenhuma chave de autenticação foi gerada, ou expirou. Por favor, use /2fa add'
+    enable_success: 'Autenticação em 2 fatores ativada com sucesso para sua conta!'
+    enable_error_wrong_code: 'Código errado ou expirado! Use /2fa add'
+    not_enabled_error: 'A autenticação em 2 fatores não está ativada para sua conta. Use /2fa add'
+    removed_success: 'Autenticação em 2 fatores desativada com sucesso para sua conta.'
+    invalid_code: 'Código inválido!'
