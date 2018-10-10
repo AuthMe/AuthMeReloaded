@@ -53,6 +53,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.inventory.Inventory;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -411,11 +412,20 @@ public class PlayerListener implements Listener {
         }
     }
 
+    private boolean isInventoryWhitelisted(Inventory inventory) {
+        if (inventory == null) {
+            return false;
+        }
+        Set<String> whitelist = settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES);
+        return whitelist.contains(ChatColor.stripColor(inventory.getName()));
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final HumanEntity player = event.getPlayer();
 
-        if (listenerService.shouldCancelEvent(player)) {
+        if (listenerService.shouldCancelEvent(player)
+            && !isInventoryWhitelisted(event.getInventory())) {
             event.setCancelled(true);
 
             /*
@@ -428,7 +438,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        if (listenerService.shouldCancelEvent(event.getWhoClicked())) {
+        if (listenerService.shouldCancelEvent(event.getWhoClicked())
+            && !isInventoryWhitelisted(event.getClickedInventory())) {
             event.setCancelled(true);
         }
     }
