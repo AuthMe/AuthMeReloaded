@@ -17,13 +17,13 @@ registration:
     command_usage: '&cPoužitie: /register <heslo> <zopakujHeslo>'
     reg_only: '&fIba zaregistrovaný hráči sa môžu pripojiť na tento server! Navštív http://example.com pre registráciu.'
     success: '&cBol si úspešne zaregistrovaný.'
-    kicked_admin_registered: 'Admin ťa zaregistroval; prosím prihlás sa znovu.'
+    kicked_admin_registered: 'Admin ťa zaregistroval. Prosím, prihlás sa znovu.'
 
 # Password errors on registration
 password:
     match_error: '&fHeslá sa nezhodujú.'
-    name_in_password: '&cNemôžeš použiť tvoje meno ako heslo, prosím zvoľ si iné...'
-    unsafe_password: '&cTvoje heslo nieje bezpečné, prosím zvoľ si iné...'
+    name_in_password: '&cNemôžeš použiť tvoje meno ako heslo. Prosím, zvoľ si iné...'
+    unsafe_password: '&cTvoje heslo nieje bezpečné. Prosím, zvoľ si iné...'
     forbidden_characters: '&4Tvoje heslo obsahuje zakázané znaky. Povolené znaky: %valid_chars'
     wrong_length: '&fHeslo je veľmi krátke alebo veľmi dlhé.'
 
@@ -40,7 +40,7 @@ error:
     denied_command: '&cPre použitie tohto príkazu sa musíš prihlásiť!'
     denied_chat: '&cMusíš byť prihlásený ak chceš použiť chat!'
     unregistered_user: '&cZadané meno nie je zaregistrované!'
-    not_logged_in: '&cNie si ešte prihlásený!'
+    not_logged_in: '&cEšte nie si prihlásený!'
     no_permission: '&cNemáš dostatočné práva na vykonanie tejto činnosti.'
     unexpected_error: '&fNastala chyba, prosím kontaktuj Administrátora.'
     max_registration: '&fPrekročil si maximum registrovaných účtov(%reg_count/%max_acc|%reg_names).'
@@ -77,13 +77,13 @@ session:
 # Error messages when joining
 on_join_validation:
     same_ip_online: 'Hráč s tvojou IP už hrá na tomto serveri!'
-    same_nick_online: '&fHrác s týmto nickom už hrá!'
+    same_nick_online: '&fHráč s týmto nickom už hrá!'
     name_length: '&cTvoje meno je veľmi krátke alebo veľmi dlhé.'
     characters_in_name: '&cTvoje meno obsahuje zakázané znaky. Povolené znaky: %valid_chars'
-    kick_full_server: '&4Server je plný, skús znovu neskôr!'
+    kick_full_server: '&4Server je plný, skús to znovu neskôr!'
     country_banned: '&4Tvoja krajina je zabanovaná na tomto serveri!'
-    not_owner_error: 'Niesi majiteľ tohto účtu. Prosím zvoľ si iné meno!'
-    invalid_name_case: 'Mal by si sa pripojiť s nickom %valid, nie %invalid -pozor na veľké a malé písmená.'
+    not_owner_error: 'Nie si majiteľom tohto účtu. Prosím zvoľ si iné meno!'
+    invalid_name_case: 'Mal by si sa pripojiť s nickom %valid, nie %invalid - pozor na veľké a malé písmená.'
     # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
 
 # Email
