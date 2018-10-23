@@ -421,8 +421,8 @@
 
         <!-- bStats Repo -->
         <repository>
-            <id>bstats-repo</id>
-            <url>http://repo.bstats.org/content/groups/public</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -587,7 +587,7 @@
 
         <!-- bStats metrics -->
         <dependency>
-            <groupId>org.bstats</groupId>
+            <groupId>org.bstats.bStats-Metrics</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.3</version>
             <optional>true</optional>
