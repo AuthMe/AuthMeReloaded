@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.3.9</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.13.1-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.13.2-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
