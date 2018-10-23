@@ -9,6 +9,7 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -66,6 +67,7 @@ public class WelcomeMessageConfigurationTest {
         testPluginFolder = temporaryFolder.newFolder();
         welcomeFile = new File(testPluginFolder, "welcome.txt");
         welcomeFile.createNewFile();
+        given(service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)).willReturn(true);
     }
 
     @Test
