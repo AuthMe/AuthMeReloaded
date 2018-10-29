@@ -607,7 +607,7 @@
 
         <!-- bStats metrics -->
         <dependency>
-            <groupId>org.bstats.bStats-Metrics</groupId>
+            <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.4</version>
             <optional>true</optional>
