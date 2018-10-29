@@ -1,7 +1,3 @@
-# List of global tags:
-# %nl% - Goes to new line.
-# %username% - Replaces the username of the player receiving the message.
-# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
 
 # Registration
 registration:
@@ -12,7 +8,6 @@ registration:
     reg_only: '&4Вход только для зарегистрированных! Посетите http://сайт_сервера.ru для регистрации.'
     success: '&2Вы успешно зарегистрировались!'
     kicked_admin_registered: 'Администратор зарегистрировал вас. Авторизируйтесь снова.'
-
 # Password errors on registration
 password:
     match_error: '&cПароли не совпадают.'
@@ -20,7 +15,6 @@ password:
     unsafe_password: '&cТакой пароль небезопасен.'
     forbidden_characters: '&4Пароль содержит запрещённые символы. Разрешённые: %valid_chars'
     wrong_length: '&cПароль слишком длинный/короткий.'
-
 # Login
 login:
     command_usage: '&cИспользование: /login <пароль>'
@@ -28,7 +22,6 @@ login:
     success: '&2Вы успешно вошли!'
     login_request: '&3Авторизация: /login <Пароль>'
     timeout_error: '&4Время авторизации истекло.'
-
 # Errors
 error:
     denied_command: '&cНеобходимо авторизоваться для использования этой команды!'
@@ -41,18 +34,15 @@ error:
     logged_in: '&cВы уже авторизированы!'
     kick_for_vip: '&3VIP-игрок зашёл на переполненный сервер.'
     tempban_max_logins: '&cВы временно заблокированы из-за большого количества неудачных попыток авторизоваться.'
-
 # AntiBot
 antibot:
     kick_antibot: 'Сработала защита против ботов! Необходимо подождать перед следующим входом на сервер.'
     auto_enabled: '&4[AuthMe] AntiBot-режим включился из-за большого количества входов!'
     auto_disabled: '&2[AuthMe] AntiBot-режим отключился спустя %m мин.'
-
 # Unregister
 unregister:
     success: '&cУчётная запись успешно удалена!'
     command_usage: '&cИспользование: /unregister <пароль>'
-
 # Other messages
 misc:
     account_not_activated: '&cВаша уч. запись ещё не активирована. Проверьте электронную почту!'
@@ -62,12 +52,10 @@ misc:
     usage_change_password: '&cИспользование: /changepassword <пароль> <новый пароль>'
     accounts_owned_self: 'У вас %count уч. записей:'
     accounts_owned_other: 'У игрока %name %count уч. записей:'
-
 # Session messages
 session:
     valid_session: '&2Вы автоматически авторизовались!'
     invalid_session: '&cСессия некорректна. Дождитесь, пока она закончится.'
-
 # Error messages when joining
 on_join_validation:
     same_ip_online: 'Игрок с данным IP-адресом уже играет на сервере!'
@@ -79,7 +67,6 @@ on_join_validation:
     not_owner_error: 'Вы не являетесь владельцем данной уч. записи. Выберите себе другое имя!'
     invalid_name_case: 'Неверное имя! Зайдите под именем %valid, а не %invalid.'
     quick_command: 'Вы вводили команды слишком часто! Пожалуйста заходите снова и вводите команды помедленнее.'
-
 # Email
 email:
     add_email_request: '&3Добавьте электронную почту: /email add <эл. почта> <повтор эл. почты>'
@@ -100,7 +87,6 @@ email:
     send_failure: 'Письмо не может быть отправлено. Свяжитесь в администратором.'
     change_password_expired: 'Больше нельзя сменить свой пароль, используя эту команду.'
     email_cooldown_error: '&cПисьмо было отправлено недавно. Подождите %time, прежде чем отправить новое.'
-
 # Password recovery by email
 recovery:
     forgot_password_hint: '&Забыли пароль? Используйте «/email recovery <эл. почта>».'
@@ -112,7 +98,6 @@ recovery:
         tries_exceeded: 'Вы слишком много раз неверно ввели код восстановления. Используйте «/email recovery [эл. почта]», чтобы получить новый код.'
         correct: 'Код восстановления введён верно!'
         change_password: 'Используйте «/email setpassword <новый пароль>», чтобы сменить свой пароль.'
-
 # Captcha
 captcha:
     usage_captcha: '&3Необходимо ввести текст с каптчи. Используйте «/captcha %captcha_code»'
@@ -120,7 +105,6 @@ captcha:
     valid_captcha: '&2Вы успешно решили каптчу!'
     captcha_for_registration: 'Чтобы зарегистрироваться, решите каптчу используя команду: «/captcha %captcha_code»'
     register_captcha_valid: '&2Вы успешно решили каптчу! Теперь вы можете зарегистрироваться командой «/register»'
-
 # Verification code
 verification:
     code_required: '&3Эта команда чувствительна и требует подтверждения электронной почты! Проверьте свою почту и следуйте инструкциям в письме.'
@@ -130,7 +114,6 @@ verification:
     already_verified: '&2Вы уже можете выполнять все чувствительные команды в текущем сеансе!'
     code_expired: '&3Срок действия кода истёк! Выполните чувствительную команду, чтобы получить новый код!'
     email_needed: '&3Чтобы подтвердить вашу личность, необходимо привязать электронную почту к учётной записи!!'
-
 # Time units
 time:
     second: 'с.'
@@ -141,16 +124,15 @@ time:
     hours: 'ч.'
     day: 'дн.'
     days: 'дн.'
-
 # Two-factor authentication
 two_factor:
     code_created: '&2Ваш секретный код — %code. Просканируйте его здесь: %url'
     confirmation_required: 'Пожалуйста, подтвердите ваш код с помощью /2fa confirm <код>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    code_required: 'Пожалуйста, введите ваш код двухфакторной аутентификации используя команду /2fa code <код>'
+    already_enabled: 'Двухфакторная аутентификация уже активирована для вашего аккаунта!'
+    enable_error_no_code: 'Код двухфакторной аутентификации не был сгенерирован или истек. Пожалуйста, введите /2fa add'
     enable_success: 'Двухфакторная аутентификация для вашего аккаунта успешно подключена'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    enable_error_wrong_code: 'Срок действия кода истек или код неверный. Введите /2fa add'
+    not_enabled_error: 'Двухфакторная аутентификация не включена для вашего аккаунта. Введите /2fa add'
+    removed_success: 'Двухфакторная аутентификация успешно удалена с вашего аккаунта!'
+    invalid_code: 'Неверный код!'
