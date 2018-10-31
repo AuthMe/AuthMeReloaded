@@ -492,7 +492,6 @@ public class CommandInitializer {
             .description("Add Email")
             .detailedDescription("Add a new email address to your account.")
             .withArgument("email", "Email address", MANDATORY)
-            .withArgument("verifyEmail", "Email address verification", MANDATORY)
             .permission(PlayerPermission.ADD_EMAIL)
             .executableCommand(AddEmailCommand.class)
             .register();

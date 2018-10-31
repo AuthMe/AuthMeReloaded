@@ -43,9 +43,6 @@ commands:
     arg1:
       label: add arg1
       description: add arg1 text
-    arg2:
-      label: add arg2
-      description: add arg2 text
 
   # Unknown subcommand
   email.doesNotExist:

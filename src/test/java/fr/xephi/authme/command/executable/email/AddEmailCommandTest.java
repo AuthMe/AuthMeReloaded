@@ -2,7 +2,6 @@ package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,9 +30,6 @@ public class AddEmailCommandTest {
     private AddEmailCommand command;
 
     @Mock
-    private CommonService commandService;
-
-    @Mock
     private Management management;
 
     @Test
@@ -59,20 +55,6 @@ public class AddEmailCommandTest {
 
         // then
         verify(management).performAddEmail(sender, email);
-    }
-
-    @Test
-    public void shouldFailForConfirmationMismatch() {
-        // given
-        Player sender = mock(Player.class);
-        String email = "asdfasdf@example.com";
-
-        // when
-        command.executeCommand(sender, Arrays.asList(email, "wrongConf"));
-
-        // then
-        verifyZeroInteractions(management);
-        verify(commandService).send(sender, MessageKey.CONFIRM_EMAIL_MESSAGE);
     }
 
     @Test

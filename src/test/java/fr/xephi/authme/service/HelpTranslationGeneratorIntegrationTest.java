@@ -121,8 +121,7 @@ public class HelpTranslationGeneratorIntegrationTest {
 
         // Check /email add
         checkDescription(configuration.get("commands.email.add"), "email add desc", "email add long desc");
-        checkArgs(configuration.get("commands.email.add"),
-            arg("add arg1", "add arg1 text"), arg("add arg2", "add arg2 text"));
+        checkArgs(configuration.get("commands.email.add"), arg("add arg1", "add arg1 text"));
 
         // Check /login
         checkDescription(configuration.get("commands.login"), "Login command", "/login detailed desc.");
