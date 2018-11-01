@@ -22,7 +22,7 @@ password:
     name_in_password: '&8[&6用戶系統&8] &c這個密碼太不安全了！'
     unsafe_password: '&8[&6用戶系統&8] &c這個密碼太不安全了！'
     forbidden_characters: '&8[&6用戶系統&8] &4密碼字符只能含有這些喔：%valid_chars'
-    wrong_length: '&8[&6用戶系統&8] &f嗯，你的密碼並不符合規定長度。'
+    wrong_length: '&8[&6用戶系統&8] &f嗯...你的密碼並不符合規定長度。'
 
 # Login
 login:
@@ -53,7 +53,7 @@ antibot:
 
 # Unregister
 unregister:
-    success: '&8[&6用戶系統&8] &c你已成功刪除會員註冊記錄。'
+    success: '&8[&6用戶系統&8] &c已成功刪除會員註冊記錄。'
     command_usage: '&8[&6用戶系統&8] &f用法：《 /unregister <密碼> 》'
 
 # Other messages
@@ -78,10 +78,10 @@ on_join_validation:
     name_length: '&8[&6用戶系統&8] &c你的用戶名不符合規定長度。'
     characters_in_name: '&8[&6用戶系統&8] &c用戶名稱錯誤！ 登入系統只接受以下字符：%valid_chars'
     kick_full_server: '&c抱歉！ 因為伺服器滿人了，所以你目前未能登入伺服器。'
-    country_banned: '&8[&6用戶系統&8] &4本伺服器已停止對你的國家提供遊戲服務。'
+    country_banned: '&8[&6用戶系統&8] &c抱歉！&4本伺服器已停止對你的國家提供遊戲服務。'
     not_owner_error: '&8[&6用戶系統&8] &4警告！&c你並不是此帳戶持有人，請立即登出。'
     invalid_name_case: '&8[&6用戶系統&8] &4警告！&c你應該使用「%valid」而並非「%invalid」登入遊戲。'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: '&8[&6用戶系統&8] &4警告！&c你使用指令的速度太快了，請重新登入並稍等一會才再次使用指令。'
 
 # Email
 email:
@@ -92,17 +92,17 @@ email:
     old_email_invalid: '&8[&6用戶系統&8] &c你所填寫的舊電郵地址並不正確。'
     invalid: '&8[&6用戶系統&8] &c你所填寫的電郵地址並不正確。'
     added: '&8[&6用戶系統&8] &a已新增你的電郵地址。'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&8[&6用戶系統&8] &c你不能新增電郵地址到你的帳戶。'
     request_confirmation: '&8[&6用戶系統&8] &5請重覆輸入你的電郵地址。'
     changed: '&8[&6用戶系統&8] &a你的電郵地址已更改。'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
-    email_show: '&8[&6用戶系統&8] &2你所使用的電郵地址為：&f%email'
+    change_not_allowed: '&8[&6用戶系統&8] &c你不能更改你的電郵地址。'
+    email_show: '&8[&6用戶系統&8] &2你所使用的電郵地址為： &f%email'
     no_email_for_account: '&8[&6用戶系統&8] &2你並未有綁定電郵地址到此帳戶。'
     already_used: '&8[&6用戶系統&8] &4這個電郵地址已被使用。'
     incomplete_settings: '&8[&6用戶系統&8] &c電郵系統錯誤，請聯絡伺服器管理員。 &7(err: mailconfig_incomplete)'
     send_failure: '&8[&6用戶系統&8] &c電郵系統錯誤，請聯絡伺服器管理員。 &7(err: smtperr)'
     change_password_expired: '&8[&6用戶系統&8] 此指令已過期，請重新辦理。'
-    email_cooldown_error: '&8[&6用戶系統&8] &c你已經辦理過重寄郵件，請等待 %time 後再嘗試吧。'
+    email_cooldown_error: '&8[&6用戶系統&8] &c你最近已經辦理過重寄郵件，請等待 %time 後再嘗試吧。'
 
 # Password recovery by email
 recovery:
@@ -121,18 +121,31 @@ captcha:
     usage_captcha: '&8[&6用戶系統&8] &f用法：《 /captcha %captcha_code 》'
     wrong_captcha: '&8[&6用戶系統&8] &c你所輸入的驗證碼無效，請使用 《 /captcha %captcha_code 》 再次輸入。'
     valid_captcha: '&8[&6用戶系統&8] &c你所輸入的驗證碼無效 ！'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: '&8[&6用戶系統&8] &2要完成玩家註冊程序，請先執行驗証指令：《 /captcha %captcha_code 》'
+    register_captcha_valid: '&8[&6用戶系統&8] &2驗證成功！你現在可以使用指令《 /register 》進行註冊了～'
 
 # Verification code
 verification:
     # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
+    command_usage: '&8[&6用戶系統&8] &f用法：《 /verification <code> 》'
     # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
     # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
     # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
     # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
     # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&8[&6用戶系統 - 兩步驗證碼&8] &b你的登入金鑰為&9「%c%code&9」&b，掃描連結為：%nl%&c %url'
+    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
+    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
+    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
+    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
+    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
+    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    removed_success: '&8[&6用戶系統 - 兩步驗證碼&8] &2已成功關閉兩步驗證功能；&c為保障帳戶安全，請儘快於可行的情況下重新啟用本功能。'
+    invalid_code: '&8[&6用戶系統 - 兩步驗證碼&8] &c無效的兩步驗證碼！'
 
 # Time units
 time:
@@ -144,16 +157,3 @@ time:
     hours: '小時'
     day: '日'
     days: '日'
-
-# Two-factor authentication
-two_factor:
-    code_created: '&8[&6用戶系統 - 兩步驗證碼&8] &b你的登入金鑰為&9「%c%code&9」&b，掃描連結為：&c %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
