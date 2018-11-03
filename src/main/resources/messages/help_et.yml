@@ -5,14 +5,14 @@
 common:
     header: '==========[ AuthMeReloaded ABI ]=========='
     optional: 'Valikuline'
-    hasPermission: 'Sul ei ole õigust'
-    noPermission: 'Õigus puudub'
+    hasPermission: 'Sul on õigus'
+    noPermission: 'Pole õigust'
     default: 'Vaikimisi'
     result: 'Tulemus'
     defaultPermissions:
         notAllowed: 'Pole õigust'
-        opOnly: 'Ainult operaatoritele'
-        allowed: 'Kõigile lubatud'
+        opOnly: 'Ainult operaatorid'
+        allowed: 'Õigus kõigil'
 
 # -------------------------------------------------------
 # Titles of the individual help sections
@@ -20,8 +20,8 @@ common:
 #   alternatives: ''
 section:
     command: 'Käsklus'
-    description: 'Lühike selgitus'
-    detailedDescription: 'Detailne selgitus'
+    description: 'Lühike kirjeldus'
+    detailedDescription: 'Detailne kirjeldus'
     arguments: 'Argumendid'
     permissions: 'Õigused'
     alternatives: 'Alternatiivid'
@@ -35,11 +35,11 @@ section:
 # Important: Put main commands like "authme" before their children (e.g. "authme.reload")
 commands:
     authme.register:
-        description: 'Registreeri mängija'
-        detailedDescription: 'Registreeri valitud mängija valitud parooliga.'
+        description: 'Register a player'
+        detailedDescription: 'Register the specified player with the specified password.'
         arg1:
-            label: 'mängija'
-            description: 'mängija nimi'
+            label: 'player'
+            description: 'Player name'
         arg2:
-            label: 'parool'
-            description: 'parool'
+            label: 'password'
+            description: 'Password'
