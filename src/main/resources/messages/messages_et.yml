@@ -7,7 +7,7 @@
 registration:
   register_request: '&3Palun registreeri käsklusega: /register <parool> <KinnitaParool>'
   command_usage: '&cKasutus: /register <parool> <KinnitaParool>'
-  reg_only: '&4Vaid registreeritud mängijad saavad liituda serveriga! Külasta http://näide.ee enda kasutaja registreerimiseks!'
+  reg_only: '&4Vaid registreeritud mängijad saavad liituda serveriga! Külasta http://example.com enda kasutaja registreerimiseks!'
   kicked_admin_registered: 'Administraator registreeris teie kasutaja, palun logige uuesti sisse.'
   success: '&2Edukalt registreeritud!'
   disabled: '&cMängusisene registreerimine on välja lülitatud!'

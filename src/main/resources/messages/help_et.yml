@@ -35,11 +35,11 @@ section:
 # Important: Put main commands like "authme" before their children (e.g. "authme.reload")
 commands:
     authme.register:
-        description: 'Register a player'
-        detailedDescription: 'Register the specified player with the specified password.'
+        description: 'Registreeri mängija'
+        detailedDescription: 'Registreeri valitud mängija valitud parooliga.'
         arg1:
-            label: 'player'
-            description: 'Player name'
+            label: 'mängija'
+            description: 'Mängija nimi'
         arg2:
-            label: 'password'
-            description: 'Password'
+            label: 'parool'
+            description: 'Parool'
