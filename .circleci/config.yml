@@ -3,7 +3,7 @@ jobs:
     build_and_test_jdk8:
         working_directory: ~/authmereloaded-jdk8
         docker:
-            - image: maven:3.6.0-jdk8
+            - image: maven:3.6.0-jdk-8
         environment:
                 MAVEN_OPTS: -Xmx2048m
         steps:
@@ -25,7 +25,7 @@ jobs:
     build_and_test_jdk11:
         working_directory: ~/authmereloaded-jdk11
         docker:
-            - image: maven:3.6.0-jdk11
+            - image: maven:3.6.0-jdk-11
         environment:
             MAVEN_OPTS: -Xmx2048m
         steps:
