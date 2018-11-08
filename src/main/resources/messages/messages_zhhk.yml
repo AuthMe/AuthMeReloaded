@@ -119,14 +119,14 @@ recovery:
 # Captcha
 captcha:
     usage_captcha: '&8[&6用戶系統&8] &f用法：《 /captcha %captcha_code 》'
-    wrong_captcha: '&8[&6用戶系統&8] &c你所輸入的驗證碼無效，請使用 《 /captcha %captcha_code 》 再次輸入。'
+    wrong_captcha: '&8[&6用戶系統&8] &c你所輸入的驗證碼無效，請使用 《 &f/captcha %captcha_code&c 》 再次輸入。'
     valid_captcha: '&8[&6用戶系統&8] &c你所輸入的驗證碼無效 ！'
-    captcha_for_registration: '&8[&6用戶系統&8] &2要完成玩家註冊程序，請先執行驗証指令：《 /captcha %captcha_code 》'
-    register_captcha_valid: '&8[&6用戶系統&8] &2驗證成功！你現在可以使用指令《 /register 》進行註冊了～'
+    captcha_for_registration: '&8[&6用戶系統&8] &2要完成玩家註冊程序，請先執行驗証指令：《 &f/captcha %captcha_code&2 》'
+    register_captcha_valid: '&8[&6用戶系統&8] &2驗證成功！你現在可以使用指令《 &f/register&2 》進行註冊了～'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    code_required: '&8[&6用戶系統&8] &e這個高級魔法指令需要再一次進行電郵驗證方可使用，請查收電郵並按信件內容進行驗證。'
     command_usage: '&8[&6用戶系統&8] &f用法：《 /verification <code> 》'
     # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
     # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
@@ -136,16 +136,16 @@ verification:
 
 # Two-factor authentication
 two_factor:
-    code_created: '&8[&6用戶系統 - 兩步驗證碼&8] &b你的登入金鑰為&9「%c%code&9」&b，掃描連結為：%nl%&c %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    removed_success: '&8[&6用戶系統 - 兩步驗證碼&8] &2已成功關閉兩步驗證功能；&c為保障帳戶安全，請儘快於可行的情況下重新啟用本功能。'
-    invalid_code: '&8[&6用戶系統 - 兩步驗證碼&8] &c無效的兩步驗證碼！'
+    code_created: '&8[&6用戶系統&8] &b你的登入金鑰為&9〔 %c%code&9 〕&b，掃描連結為：%nl%&c %url'
+    confirmation_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa confirm <code>&b 》以確認你的身份。'
+    code_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa code <code>&b 》以驗證你的帳戶。'
+    already_enabled: '&8[&6用戶系統&8] &2嗯...這個帳戶已經啓用了兩步驗證功能，毋須再次啓用。'
+    enable_error_no_code: '&8[&6用戶系統&8] &c無效的登入金鑰！ &f你可以使用指令《 /2fa add 》再次嘗試啓用此功能。'
+    enable_success: '&8[&6用戶系統&8] &2你已成功啓用兩步驗證功能！'
+    enable_error_wrong_code: '&8[&6用戶系統&8] &c無效的兩步驗證碼！ &f你可以使用指令《 /2fa add 》再次嘗試啓用此功能。'
+    not_enabled_error: '&8[&6用戶系統&8] &c你的帳戶尚未啓用兩步驗證功能！ &f你可以使用指令《 /2fa add 》以啓用此功能。'
+    removed_success: '&8[&6用戶系統&8] &2你已成功關閉兩步驗證功能；&c為保障帳戶安全，請儘快於可行的情況下重新啟用本功能。'
+    invalid_code: '&8[&6用戶系統&8] &c無效的兩步驗證碼！'
 
 # Time units
 time:
