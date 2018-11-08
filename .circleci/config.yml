@@ -12,12 +12,12 @@ jobs:
                 keys:
                     - authmereloaded-{{ checksum "pom.xml" }}
                     - authmereloaded-
-            - run: mvn -T 2 -B dependency:go-offline
+            - run: mvn -B dependency:go-offline
             - save_cache:
                 paths:
                     - ~/.m2
                 key: authmereloaded-{{ checksum "pom.xml" }}
-            - run: mvn -T 2 -B package
+            - run: mvn -B -O package
             - store_test_results:
                 path: target/surefire-reports
             - store_artifacts:
@@ -34,12 +34,12 @@ jobs:
                 keys:
                     - authmereloaded-{{ checksum "pom.xml" }}
                     - authmereloaded-
-            - run: mvn -T 2 -B dependency:go-offline
+            - run: mvn -B dependency:go-offline
             - save_cache:
                 paths:
                     - ~/.m2
                 key: authmereloaded-{{ checksum "pom.xml" }}
-            - run: mvn -T 2 -B package
+            - run: mvn -B -O package
             - store_test_results:
                 path: target/surefire-reports
             - store_artifacts:
