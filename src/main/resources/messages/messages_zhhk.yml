@@ -127,18 +127,18 @@ captcha:
 # Verification code
 verification:
     code_required: '&8[&6用戶系統&8] &e這個高級魔法指令需要再一次進行電郵驗證方可使用，請查收電郵並按信件內容進行驗證。'
-    command_usage: '&8[&6用戶系統&8] &f用法：《 /verification <code> 》'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    command_usage: '&8[&6用戶系統&8] &f用法：《 /verification <驗證碼> 》'
+    incorrect_code: '&8[&6用戶系統&8] &c錯誤的驗證碼，請使用指令《 &f/verification <驗證碼>&c 》再次嘗試驗證。'
+    success: '&8[&6用戶系統&8] &2身份驗證成功！你現在可以在目前的登入階段執行所有等級的指令了！'
+    already_verified: '&8[&6用戶系統&8] &2你已經爲目前的登入階段成功通過電郵身份驗證了，毋須再次驗證。'
+    code_expired: '&8[&6用戶系統&8] &c你的驗證碼已經過期，請執行另一個高等魔法指令以觸發新的身份驗證挑戰。'
+    email_needed: '&8[&6用戶系統&8] &c嗯...你的帳戶沒有已經連結的電郵地址，不能使用電郵驗證功能。'
 
 # Two-factor authentication
 two_factor:
     code_created: '&8[&6用戶系統&8] &b你的登入金鑰為&9〔 %c%code&9 〕&b，掃描連結為：%nl%&c %url'
-    confirmation_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa confirm <code>&b 》以確認你的身份。'
-    code_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa code <code>&b 》以驗證你的帳戶。'
+    confirmation_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa confirm <驗證碼>&b 》以確認你的身份。'
+    code_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa code <驗證碼>&b 》以驗證你的帳戶。'
     already_enabled: '&8[&6用戶系統&8] &2嗯...這個帳戶已經啓用了兩步驗證功能，毋須再次啓用。'
     enable_error_no_code: '&8[&6用戶系統&8] &c無效的登入金鑰！ &f你可以使用指令《 /2fa add 》再次嘗試啓用此功能。'
     enable_success: '&8[&6用戶系統&8] &2你已成功啓用兩步驗證功能！'
