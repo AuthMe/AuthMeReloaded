@@ -1,4 +1,4 @@
-#Translated by Kirito (kds123321@naver.com), System32(me@syst32.com), Adeuran(adeuran@tistory.com)
+#Translated by Kirito (kds123321@naver.com), Spectre (me@ptr.kr), Adeuran(adeuran@tistory.com)
 #14.05.2017 Thanks for use
 # List of global tags:
 # %nl% - Goes to new line.
@@ -7,12 +7,12 @@
 
 # Registration
 registration:
-    disabled: '&c게임 안에서의 회원가입은 비활성화 되어 있습니다!'
-    name_taken: '&c이미 이 닉네임으로 회원가입이 되어 있습니다!'
+    disabled: '&c현재 회원 가입이 비활성화 되어 있습니다!'
+    name_taken: '&c이미 이 닉네임으로 회원 가입이 되어 있습니다!'
     register_request: '&3다음 명령어로 서버에 가입해주세요: /register <비밀번호> <비밀번호 확인>'
     command_usage: '&c사용법: /register <비밀번호> <비밀번호 확인>'
     reg_only: '&4등록된 유저만 서버에 접속할 수 있습니다! 서버 홈페이지에 방문하여 가입해 주세요!'
-    success: '&2회원가입이 완료되었습니다!'
+    success: '&2회원 가입이 완료되었습니다!'
     kicked_admin_registered: '관리자가 방금 이 닉네임을 등록했습니다. 다시 로그인 해주세요'
 
 # Password errors on registration
@@ -41,7 +41,7 @@ error:
     unexpected_error: '&4예기치 않은 오류가 발생했습니다, 관리자에게 알려주세요!'
     max_registration: '&c당신은 가입할 수 있는 계정 한도를 초과했습니다 (%reg_count/%max_acc %reg_names)!'
     logged_in: '&c이미 로그인되어 있습니다!'
-    kick_for_vip: '&3서버가 꽉 차있을땐 VIP 플레이어만 접속이 가능합니다!'
+    kick_for_vip: '&3서버가 꽉 차있을 때는 VIP 플레이어만 접속이 가능합니다!'
     tempban_max_logins: '&c너무 많이 로그인에 실패하여 잠시 서버에서 차단되었습니다.'
 
 # AntiBot
@@ -80,7 +80,7 @@ on_join_validation:
     country_banned: '&4당신의 국가에서는 이 서버를 이용하실 수 없습니다!'
     not_owner_error: '이 계정의 소유자가 아닙니다. 다른 닉네임을 선택하세요!'
     invalid_name_case: '%invalid가 아닌, %valid 사용하여 접속해야 합니다.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: '명령어를 너무 빠르게 입력하고 있습니다! 서버에 다시 접속한 후 조금만 기다려주시기 바랍니다.'
 
 # Email
 email:
@@ -91,10 +91,10 @@ email:
     old_email_invalid: '&c예전 이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
     invalid: '&c이메일 주소가 잘못되었습니다. 다시 시도해보세요!'
     added: '&2계정에 이메일 주소를 추가했습니다!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&c이메일 주소의 추가가 제한된 상태입니다.'
     request_confirmation: '&c이메일 주소를 확인해주세요!'
     changed: '&2이메일 주소가 변경되었습니다!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&c이메일 주소의 변경이 제한된 상태입니다.'
     email_show: '&2현재 이메일 주소: &f%email'
     no_email_for_account: '&2현재 이 계정과 연결된 이메일 주소가 없습니다.'
     already_used: '&4이메일 주소가 이미 사용 중입니다.'
@@ -120,8 +120,8 @@ captcha:
     usage_captcha: '&3로그인 하려면 CAPTCHA 코드를 입력해야 합니다. 이 명령어를 사용하세요: /captcha %captcha_code'
     wrong_captcha: '&c잘못된 CAPTCHA 코드 입니다. "/captcha %captcha_code" 형태로 입력해주세요!'
     valid_captcha: '&2CAPTCHA 코드가 확인되었습니다!'
-    captcha_for_registration: '회원가입을 하기 위해서는 먼저 CAPTCHA 코드를 입력해야합니다. 이 명령어를 이 명령어를 사용하세요: /captcha %captcha_code'
-    register_captcha_valid: '&2올바른 CAPTCHA 코드입니다! 이제 /register 명령어를 이용하여 회원가입할 수 있습니다.'
+    captcha_for_registration: '회원 가입을 하기 위해서는 먼저 CAPTCHA 코드를 입력해야합니다. 이 명령어를 이 명령어를 사용하세요: /captcha %captcha_code'
+    register_captcha_valid: '&2올바른 CAPTCHA 코드입니다! 이제 /register 명령어를 이용하여 회원 가입할 수 있습니다.'
 
 # Verification code
 verification:
@@ -146,13 +146,13 @@ time:
 
 # Two-factor authentication
 two_factor:
-    code_created: '&2당신의 비밀 코드는 %code 입니다. %url 에서 스캔할 수 있습니다'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    code_created: '&2당신의 2단계 인증 코드는 %code 입니다. %url 에서 스캔할 수 있습니다'
+    confirmation_required: '/2fa confirm <code> 명령어를 통해 귀하의 코드를 확인해 주시기 바랍니다.'
+    code_required: '/2fa code <code> 명령어를 통해 2단계 인증을 진행해주세요.'
+    already_enabled: '2단계 인증 기능을 이미 활성화하셨습니다!'
+    enable_error_no_code: '2단계 인증 키가 생성되지 않았거나 만료되었습니다. /2fa add 명령어를 통해 새로 생성해주세요.'
+    enable_success: '2단계 인증 기능을 성공적으로 활성화하였습니다.'
+    enable_error_wrong_code: '잘못되었거나 만료된 코드입니다. /2fa add 명령어를 통해 새로 생성해주세요.'
+    not_enabled_error: '2단계 인증 기능을 활성화하시지 않았습니다. /2fa add 명령어를 통해 활성화해주세요.'
+    removed_success: '2단계 인증 기능을 성공적으로 비활성화하였습니다.'
+    invalid_code: '올바르지 않은 인증 코드입니다!'
