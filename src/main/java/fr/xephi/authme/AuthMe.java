@@ -120,6 +120,14 @@ public class AuthMe extends JavaPlugin {
         // Load the plugin version data from the plugin description file
         loadPluginInfo(getDescription().getVersion());
 
+        // Prevent running AuthMeBridge due to major exploit issues
+        if(getServer().getPluginManager().isPluginEnabled("AuthMeBridge")) {
+            ConsoleLogger.warning("Detected AuthMeBridge, support for it has been dropped as it was "
+                + "causing exploit issues, please use AuthMeBungee instead! Aborting!");
+            stopOrUnload();
+            return;
+        }
+
         // Initialize the plugin
         try {
             initialize();
