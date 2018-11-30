@@ -1,0 +1,335 @@
+common:
+  header: ==========[ AuthMeReloaded - Помощ ]==========
+  optional: Опция
+  hasPermission: Имате права
+  noPermission: Нямате права
+  default: Стандартно
+  result: Резултат
+  defaultPermissions:
+    notAllowed: Не е разрешено
+    opOnly: Само за Оператори (OP)
+    allowed: Позволено за всички
+section:
+  command: Команда
+  description: Кратко описание
+  detailedDescription: Подробно описание
+  arguments: Аргументи
+  alternatives: Алтернативи
+  permissions: Права
+  children: Команди
+commands:
+  authme:
+    description: AuthMe op commands
+    detailedDescription: The main AuthMeReloaded command. The root for all admin commands.
+  authme.register:
+    description: Регистриране на играч
+    detailedDescription: Регистриране на играч с дадена парола.
+    arg1:
+      label: Играч
+      description: Име на играча
+    arg2:
+      label: парола
+      description: Парола
+  authme.unregister:
+    description: Премахване на регистрацията на играча
+    detailedDescription: Премахване на регистрацията на даден играч от базата данни.
+    arg1:
+      label: играч
+      description: име на играча
+  authme.forcelogin:
+    description: Удостоверяване на играча
+    detailedDescription: Удостоверяване на даденият играч.
+    arg1:
+      label: играч
+      description: име на играча
+  authme.password:
+    description: Промяна на парола
+    detailedDescription: Променя паролата на дадения играч.
+    arg1:
+      label: играч
+      description: име на играча
+    arg2:
+      label: парола
+      description: нова парола
+  authme.lastlogin:
+    description: Последен вход на играча
+    detailedDescription: Показва дата и час на последното влизане на дадения играч.
+    arg1:
+      label: играч
+      description: име на играча
+  authme.accounts:
+    description: Акаунти на играча
+    detailedDescription: Изброява всички акаунти на играча, според името и IP-адреса
+    arg1:
+      label: играч
+      description: име на играча или IP-адрес
+  authme.email:
+    description: Имейл адрес на играча
+    detailedDescription: Показва имейл адреса на посочения играч.
+    arg1:
+      label: играч
+      description: име на играча
+  authme.setemail:
+    description: Смяна на имейл на играча.
+    detailedDescription: Променя имейл адреса на дадения играч.
+    arg1:
+      label: играч
+      description: име на играча
+    arg2:
+      label: имейл
+      description: имейл на играча
+  authme.getip:
+    description: IP-адрес
+    detailedDescription: Показва текущият IP-адрес на посочения играч.
+    arg1:
+      label: играч
+      description: име на играча
+  authme.spawn:
+    description: Място на съживяване
+    detailedDescription: Телепортиране на мястото на съживяване.
+  authme.setspawn:
+    description: Задаване на място на съживяване.
+    detailedDescription: Задава точката на съживяване на текущото местонахождение.
+  authme.firstspawn:
+    description: Първоначално място на съживяване.
+    detailedDescription: Избира се първоначалното място на съживяване.
+  authme.setfirstspawn:
+    description: Задаване на първоначално място на съживяване.
+    detailedDescription: Задава първоначалната точка на съживяване на текущото местонахождение.
+  authme.purge:
+    description: Изтриване на стари данни.
+    detailedDescription: Изтрива стари данни според указаното количество дни.
+    arg1:
+      label: дни
+      description: брой дни
+  authme.purgeplayer:
+    description: Изтрива данните на даден играч.
+    detailedDescription: Изтрива всички данни на даден играч.
+    arg1:
+      label: Играч
+      description: Името на играча, за което трябва да се изтрият данните.
+    arg2:
+      label: Опции
+      description: '''force'' за да се изтрие без проверка дали играча е регистриран.'
+  authme.backup:
+    description: Създаване на резервно копие
+    detailedDescription: Създава резервно копие на всички регистрирани играчи.
+  authme.resetpos:
+    description: Рестартиране позиция на играч
+    detailedDescription: Рестартира последното известно местонахождение на указания
+      играч, или на всички играчи.
+    arg1:
+      label: играч|*
+      description: име на играча/всички играчи
+  authme.purgebannedplayers:
+    description: Изтриване на данни за блокирани играчи.
+    detailedDescription: Изтрива всички данни за блокираните играчи от базата данни.
+  authme.switchantibot:
+    description: Промяна на AntiBot-режима
+    detailedDescription: Променя режима на AntiBot системата според указанието.
+    arg1:
+      label: ON|OFF
+      description: включено/изключено
+  authme.reload:
+    description: Презареждане на плъгина.
+    detailedDescription: Презарежда плъгина AuthMeReloaded.
+  authme.version:
+    description: Информация за версията
+    detailedDescription: Показва подробна информация за версията на AuthMeReloaded,
+      неговите разработчици, помощници и лиценз.
+  authme.converter:
+    description: Преобразувател
+    detailedDescription: Преубразовател за базата данни.
+    arg1:
+      label: тип
+      description: 'тип преобразуване: xauth / crazylogin / rakamak / royalauth /
+        vauth / sqliteToSql / mysqlToSqlite'
+  authme.messages:
+    description: Добавяне на липсващи съобщения в помощния файл.
+    detailedDescription: Добавя всички стойности (на англ. език) в помощният файл.
+  authme.recent:
+    description: Проверка на скоро влизалите играчи.
+    detailedDescription: Показва последните играчи, които са били успешно влезли в играта.
+  authme.debug:
+    description: Отстраняване на грешки.
+    detailedDescription: Позволява различни опции за записване на грешки от плъгина.
+    arg1:
+      label: секция 
+      description: Секцията за отстраняване на грешки, която да бъде изпълнена.
+    arg2:
+      label: аргумент
+      description: Аргумент (Зависи от избора на секция за отстраняване на грешки)
+    arg3:
+      label: аргумент
+      description: Аргумент (Зависи от избора на секция за отстраняване на грешки)
+  authme.help:
+    description: Помощ
+    detailedDescription: Показва помощ за командите започващи с /authme.
+    arg1:
+      label: команда
+      description: команда, за която е необходимо да се покаже помощ.
+  email:
+    description: Добавя имейл или възстановява парола. 
+    detailedDescription: Основната команда на AuthMeReloaded свързана с имейлите.
+  email.show:
+    description: Показва Имейл
+    detailedDescription: Показва текущият Ви имейл.
+  email.add:
+    description: Добавяне на имейл. 
+    detailedDescription: Добавя нов имейл адрес към Вашият акаунт.
+    arg1:
+      label: имейл
+      description: Имейл адрес
+    arg2:
+      label: Потвърждение
+      description: Потвърждение на имейл адреса.
+  email.change:
+    description: Смяна на Имейл
+    detailedDescription: Смяна на имейл адреса на Вашият акаунт.
+    arg1:
+      label: стар-имейл
+      description: Текущия имейл използван към Вашият акаунт
+    arg2:
+      label: нов-имейл
+      description: Новия имейл, който да бъде задеден към акаунта.
+  email.recover:
+    description: Възстановяване на парола чрез имейл.
+    detailedDescription: Възстановяване на Вашият акаунт, използвайки Имейл с нова парола.
+    arg1:
+      label: имейл
+      description: Имейл адреса на Вашият акаунт.
+  email.code:
+    description: Изпращане на код за възстановяване на парола.
+    detailedDescription: Възстановяване на Вашият акаунт чрез код, изпратен по имейл.
+    arg1:
+      label: код
+      description: Код за възстановяване
+  email.setpassword:
+    description: Задаване на нова парола след възстановяване.
+    detailedDescription: Задаване на нова парола след успешно възстановяване на Вашият акаунт.
+    arg1:
+      label: парола
+      description: Нова парола
+  email.help:
+    description: Помощ
+    detailedDescription: Подробна помощ за /email командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  login:
+    description: вход
+    detailedDescription: Командата която се използва за идентификация в сървъра на Вашият акаунт.
+    arg1:
+      label: парола
+      description: Паролата на акаунта Ви.
+  login.help:
+    description: Помощ
+    detailedDescription: Подробна помощ за /login командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  logout:
+    description: Изход
+    detailedDescription: Командата за изход от Вашият акаунт.
+  logout.help:
+    description: помощ
+    detailedDescription: КПодробна помощ за /logout командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  register:
+    description: Регистрация на акаунт.
+    detailedDescription: Команда за регистриране на Вашият акаунт.
+    arg1:
+      label: парола
+      description: Парола
+    arg2:
+      label: Потвърждение
+      description: Потвърждение на паролата
+  register.help:
+    description: Помощ
+    detailedDescription: Детайлна помощ за /register командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  unregister:
+    description: Дерегистриране на акаунт.
+    detailedDescription: Команда за премахване на регистрацията на Вашият акаунт.
+    arg1:
+      label: парола
+      description: Вашата парола.
+  unregister.help:
+    description: Помощ 
+    detailedDescription: Детайлна помощ за /unregister командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  changepassword:
+    description: Смяна на парола
+    detailedDescription: Смяна на паролата за Вашият акаунт.
+    arg1:
+      label: текуща-парола
+      description: Текущата парола на Вашият акаунт.
+    arg2:
+      label: Нова парола
+      description: Новата парола, която да бъде използвана за Вашият акаунт.
+  changepassword.help:
+    description: Помощ
+    detailedDescription: Детайлна помощ за /changepassword командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  totp:
+    description: TOTP команди
+    detailedDescription: Команди свързани с допълнителната сигурност на акаунта Ви чрез секретен код.
+  totp.code:
+    description: Команда за вход
+    detailedDescription: Изпълнява проверката на секретния код на Вашият акаунт при влизане.
+    arg1:
+      label: код
+      description: Секретният код, използван за влизане.
+  totp.add:
+    description: Включване на TOTP
+    detailedDescription: Включване на защитата със секретен код за Вашият акаунт.
+  totp.confirm:
+    description: Активиране на TOTP след въвеждане на правилен секретен код.
+    detailedDescription: Запазва генерираният секретен код след потвърждение.
+    arg1:
+      label: код
+      description: Секретният код след изпълняване на командата /totp add
+  totp.remove:
+    description: Изключване на  TOTP
+    detailedDescription: Изключване на защитата със секретен код за Вашият акаунт.
+    arg1:
+      label: код
+      description: Текущ секретен код
+  totp.help:
+    description: Помощ
+    detailedDescription: Детайлна помощ за /totp командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  captcha:
+    description: Код за сигурност
+    detailedDescription: Команда за код за сигурност.
+    arg1:
+      label: код
+      description: Код за сигурност
+  captcha.help:
+    description: Помощ
+    detailedDescription: Детайлна помощ за /captcha командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
+  verification:
+    description: Команда за потвърждение.
+    detailedDescription: Команда за потвърждение.
+    arg1:
+      label: код
+      description: Код за потвърждение.
+  verification.help:
+    description: Помощ
+    detailedDescription: Детайлна помощ за /verification командите.
+    arg1:
+      label: команда
+      description: Командата за която да се покаже помощ (или за всички).
