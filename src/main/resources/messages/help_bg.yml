@@ -1,9 +1,10 @@
 # Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+# Преведено от Калоян Николов, tzerber (at) gmail (dot) com
 
 # -------------------------------------------------------
 # List of texts used in the help section
 common:
-    header: '==========[ Помощ ]=========='
+    header: '==========[ AuthMeReloaded - Помощ ]=========='
     optional: 'Опция'
     hasPermission: 'Имате права'
     noPermission: 'Нямате права'
@@ -43,3 +44,111 @@ commands:
         arg2:
             label: 'парола'
             description: 'Парола'
+    authme.unregister:
+        description: 'Премахване на регистрацията на играча'
+        detailedDescription: 'Премахване на регистрацията на даден играч от базата данни.'
+        arg1:
+            label: 'играч'
+            description: 'име на играча'
+    authme.forcelogin:
+        description: 'Удостоверяване на играча'
+        detailedDescription: 'Удостоверяване на даденият играч.'
+        arg1:
+            label: 'играч'
+            description: 'име на играча'
+    authme.password:
+        description: 'Промяна на парола'
+        detailedDescription: 'Променя паролата на дадения играч.'
+        arg1:
+            label: 'играч'
+            description: 'име на играча'
+        arg2:
+            label: 'парола'
+            description: 'нова парола'
+    authme.lastlogin:
+        description: 'Последен вход на играча'
+        detailedDescription: 'Показва дата и час на последното влизане на дадения играч.'
+        arg1:
+            label: 'играч'
+            description: 'име на играча'
+    authme.accounts:
+        description: 'Акаунти на играча'
+        detailedDescription: 'Изброява всички акаунти на играча, според името и IP-адреса'
+        arg1:
+            label: 'играч'
+            description: 'име на играча или IP-адрес'
+    authme.email:
+        description: 'Имейл адрес на играча'
+        detailedDescription: 'Показва имейл адреса на посочения играч.'
+        arg1:
+            label: 'играч'
+            description: 'име на играча'
+    authme.setemail:
+        description: 'Смяна на имейл на играча.'
+        detailedDescription: 'Променя имейл адреса на дадения играч.'
+        arg1:
+            label: 'играч'
+            description: 'име на играча'
+        arg2:
+            label: 'имейл'
+            description: 'имейл на играча'
+    authme.getip:
+        description: 'IP-адрес'
+        detailedDescription: 'Показва текущият IP-адрес на посочения играч.'
+        arg1:
+            label: 'играч'
+            description: 'име на играча'
+    authme.spawn:
+        description: 'Място на съживяване'
+        detailedDescription: 'Телепортиране на мястото на съживяване.'
+    authme.setspawn:
+        description: 'Задаване на място на съживяване.'
+        detailedDescription: 'Задава точката на съживяване на текущото местонахождение.'
+    authme.firstspawn:
+        description: 'Първоначално място на съживяване.'
+        detailedDescription: 'Избира се първоначалното място на съживяване.'
+    authme.setfirstspawn:
+        description: 'Задаване на първоначално място на съживяване.'
+        detailedDescription: 'Задава първоначалната точка на съживяване на текущото местонахождение.'
+    authme.purge:
+        description: 'Изтриване на стари данни.'
+        detailedDescription: 'Изтрива стари данни според указаното количество дни.'
+        arg1:
+            label: 'дни'
+            description: 'брой дни'
+    authme.resetpos:
+        description: 'Рестартиране позиция на играч'
+        detailedDescription: 'Рестартира последното известно местонахождение на указания играч, или на всички играчи.'
+        arg1:
+            label: 'играч|*'
+            description: 'име на играча/всички играчи'
+    authme.purgebannedplayers:
+        description: 'Изтриване на данни за блокирани играчи.'
+        detailedDescription: 'Изтрива всички данни за блокираните играчи от базата данни.'
+    authme.switchantibot:
+        description: 'Промяна на AntiBot-режима'
+        detailedDescription: 'Променя режима на AntiBot системата според указанието.'
+        arg1:
+            label: 'ON|OFF'
+            description: 'включено/изключено'
+    authme.reload:
+        description: 'Презареждане на плъгина.'
+        detailedDescription: 'Презарежда плъгина AuthMeReloaded.'
+    authme.version:
+        description: 'Информация за версията'
+        detailedDescription: 'Показва подробна информация за версията на AuthMeReloaded, неговите разработчици, помощници и лиценз.'
+    authme.converter:
+        description: 'Преобразувател'
+        detailedDescription: 'Преубразовател за базата данни.'
+        arg1:
+            label: 'тип'
+            description: 'тип преобразуване: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite'
+    authme.help:
+        description: 'Помощ'
+        detailedDescription: 'Показва помощ за командите започващи с /authme.'
+        arg1:
+            label: 'команда'
+            description: 'команда, за която е необходимо да се покаже помощ.'
+    authme.backup:
+        description: 'Създаване на резервно копие'
+        detailedDescription: 'Създава резервно копие на всички регистрирани играчи.'
