@@ -35,24 +35,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 
 import javax.inject.Inject;
@@ -285,11 +268,7 @@ public class PlayerListener implements Listener {
 
         // Keep pre-UUID compatibility
         try {
-            try {
-                permissionsManager.loadUserData(event.getUniqueId());
-            } catch (NoSuchMethodError e) {
-                permissionsManager.loadUserData(name);
-            }
+            permissionsManager.loadUserData(event.getUniqueId());
         } catch (PermissionLoadUserException e) {
             ConsoleLogger.logException("Unable to load the permission data of user " + name, e);
         }
@@ -515,6 +494,20 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerFish(PlayerFishEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerEditBook(PlayerEditBookEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }

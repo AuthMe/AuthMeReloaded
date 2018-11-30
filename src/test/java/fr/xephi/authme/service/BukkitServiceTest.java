@@ -21,10 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
-
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -60,34 +57,6 @@ public class BukkitServiceTest {
         given(server.getPluginManager()).willReturn(pluginManager);
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         bukkitService = new BukkitService(authMe, settings);
-    }
-
-    /**
-     * Checks that {@link BukkitService#getOnlinePlayersIsCollection} is initialized to {@code true} on startup;
-     * the test scope is configured with a Bukkit implementation that returns a Collection and not an array.
-     */
-    @Test
-    public void shouldHavePlayerListAsCollectionMethod() {
-        // given / when
-        boolean doesMethodReturnCollection = ReflectionTestUtils
-            .getFieldValue(BukkitService.class, bukkitService, "getOnlinePlayersIsCollection");
-
-        // then
-        assertThat(doesMethodReturnCollection, equalTo(true));
-    }
-
-    @Test
-    public void shouldRetrieveListOfOnlinePlayersFromReflectedMethod() {
-        // given
-        ReflectionTestUtils.setField(BukkitService.class, bukkitService, "getOnlinePlayersIsCollection", false);
-        ReflectionTestUtils.setField(BukkitService.class, bukkitService, "getOnlinePlayers",
-            ReflectionTestUtils.getMethod(BukkitServiceTest.class, "onlinePlayersImpl"));
-
-        // when
-        Collection<? extends Player> players = bukkitService.getOnlinePlayers();
-
-        // then
-        assertThat(players, hasSize(2));
     }
 
     @Test

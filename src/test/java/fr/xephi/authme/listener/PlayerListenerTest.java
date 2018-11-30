@@ -28,21 +28,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.InventoryView;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -888,6 +874,18 @@ public class PlayerListenerTest {
         // then
         assertThat(event.getJoinMessage(), nullValue());
         verify(joinMessageService).putMessage("thename0", "thename0 is joining us");
+    }
+
+    @Test
+    public void shouldCancelPlayerEditBookEvent() {
+        withServiceMock(listenerService)
+            .check(listener::onPlayerEditBook, PlayerEditBookEvent.class);
+    }
+
+    @Test
+    public void shouldCancelPlayerInteractAtEntityEvent() {
+        withServiceMock(listenerService)
+            .check(listener::onPlayerInteractAtEntity, PlayerInteractAtEntityEvent.class);
     }
 
     private static Player mockPlayerWithName(String name) {

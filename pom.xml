@@ -6,7 +6,7 @@
 
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
-    <version>5.5.0-SNAPSHOT</version>
+    <version>5.5.1-SNAPSHOT</version>
 
     <name>AuthMeReloaded</name>
     <description>The first authentication plugin for the Bukkit API!</description>
@@ -146,7 +146,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.3.9</version>
+                                    <version>${maven.minimumVersion}</version>
                                 </requireMavenVersion>
                             </rules>
                             <fail>true</fail>
@@ -275,14 +275,9 @@
 
                     <!--
                     Relocate all lib we use in order to fix class loading errors if we use different versions
-                    than already loaded libs (i.e. by Mojang -> gson)
+                    than already loaded libs
                     -->
                     <relocations>
-                        <!-- Include all google libraries, because they are not available before 1.12 -->
-                        <relocation>
-                            <pattern>com.google</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.google</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>ch.jalu</pattern>
                             <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
@@ -439,22 +434,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- GSON (required to provide 1.7.10 and below compatibility) -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Guava (required to allow compatibility with any version since 1.7.10) -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- MaxMind GEO IP with our modifications to use GSON in replacement of the big Jackson dependency -->
         <!-- GSON is already included and therefore it reduces the file size in comparison to the original version -->
         <dependency>
@@ -551,20 +530,8 @@
                     <groupId>junit</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>persistence-api</artifactId>
-                    <groupId>javax.persistence</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>bungeecord-chat</artifactId>
                     <groupId>net.md-5</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>gson</artifactId>
-                    <groupId>com.google.code.gson</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

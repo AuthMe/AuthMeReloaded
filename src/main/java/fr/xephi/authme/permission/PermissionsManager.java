@@ -455,11 +455,7 @@ public class PermissionsManager implements Reloadable {
      */
     public boolean loadUserData(OfflinePlayer offlinePlayer) {
         try {
-            try {
-                loadUserData(offlinePlayer.getUniqueId());
-            } catch (NoSuchMethodError e) {
-                loadUserData(offlinePlayer.getName());
-            }
+            loadUserData(offlinePlayer.getUniqueId());
         } catch (PermissionLoadUserException e) {
             ConsoleLogger.logException("Unable to load the permission data of user " + offlinePlayer.getName(), e);
             return false;
@@ -480,16 +476,4 @@ public class PermissionsManager implements Reloadable {
         handler.loadUserData(uuid);
     }
 
-    /**
-     * Loads the permission data of the given player name.
-     *
-     * @param name the name of the player.
-     * @throws PermissionLoadUserException if the action failed.
-     */
-    public void loadUserData(String name) throws PermissionLoadUserException {
-        if (!isEnabled()) {
-            return;
-        }
-        handler.loadUserData(name);
-    }
 }

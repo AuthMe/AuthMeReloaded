@@ -6,21 +6,8 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.DataFolder;
-import fr.xephi.authme.initialization.DataSourceProvider;
-import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
-import fr.xephi.authme.initialization.OnStartupTasks;
-import fr.xephi.authme.initialization.SettingsProvider;
-import fr.xephi.authme.initialization.TaskCloser;
-import fr.xephi.authme.listener.BlockListener;
-import fr.xephi.authme.listener.EntityListener;
-import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.listener.PlayerListener111;
-import fr.xephi.authme.listener.PlayerListener16;
-import fr.xephi.authme.listener.PlayerListener18;
-import fr.xephi.authme.listener.PlayerListener19;
-import fr.xephi.authme.listener.PlayerListener19Spigot;
-import fr.xephi.authme.listener.ServerListener;
+import fr.xephi.authme.initialization.*;
+import fr.xephi.authme.listener.*;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -121,7 +108,7 @@ public class AuthMe extends JavaPlugin {
         loadPluginInfo(getDescription().getVersion());
 
         // Prevent running AuthMeBridge due to major exploit issues
-        if(getServer().getPluginManager().isPluginEnabled("AuthMeBridge")) {
+        if (getServer().getPluginManager().isPluginEnabled("AuthMeBridge")) {
             ConsoleLogger.warning("Detected AuthMeBridge, support for it has been dropped as it was "
                 + "causing exploit issues, please use AuthMeBungee instead! Aborting!");
             stopOrUnload();
@@ -272,16 +259,6 @@ public class AuthMe extends JavaPlugin {
         pluginManager.registerEvents(injector.getSingleton(EntityListener.class), this);
         pluginManager.registerEvents(injector.getSingleton(ServerListener.class), this);
 
-        // Try to register 1.6 player listeners
-        if (isClassLoaded("org.bukkit.event.player.PlayerEditBookEvent")) {
-            pluginManager.registerEvents(injector.getSingleton(PlayerListener16.class), this);
-        }
-
-        // Try to register 1.8 player listeners
-        if (isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
-            pluginManager.registerEvents(injector.getSingleton(PlayerListener18.class), this);
-        }
-
         // Try to register 1.9 player listeners
         if (isClassLoaded("org.bukkit.event.player.PlayerSwapHandItemsEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
@@ -341,7 +318,6 @@ public class AuthMe extends JavaPlugin {
      * @param cmd          The command (Bukkit).
      * @param commandLabel The command label (Bukkit).
      * @param args         The command arguments (Bukkit).
-     *
      * @return True if the command was executed, false otherwise.
      */
     @Override
