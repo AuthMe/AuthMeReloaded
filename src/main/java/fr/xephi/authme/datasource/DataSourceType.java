@@ -9,9 +9,6 @@ public enum DataSourceType {
 
     POSTGRESQL,
 
-    SQLITE,
-
-    @Deprecated
-    FILE
+    SQLITE
 
 }
