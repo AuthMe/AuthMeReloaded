@@ -1,0 +1,45 @@
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ Помощ ]=========='
+    optional: 'Опция'
+    hasPermission: 'Имате права'
+    noPermission: 'Нямате права'
+    default: 'Стандартно'
+    result: 'Резултат'
+    defaultPermissions:
+        notAllowed: 'Не е разрешено'
+        opOnly: 'Само за Оператори (OP)'
+        allowed: 'Позволено за всички'
+
+# -------------------------------------------------------
+# Titles of the individual help sections
+# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+#   alternatives: ''
+section:
+    command: 'Команда'
+    description: 'Кратко описание'
+    detailedDescription: 'Подробно описание'
+    arguments: 'Аргументи'
+    permissions: 'Права'
+    alternatives: 'Алтернативи'
+    children: 'Команди'
+
+# -------------------------------------------------------
+# You can translate the data for all commands using the below pattern.
+# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
+# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
+# Translations don't need to be complete; any missing section will be taken from the default silently
+# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+commands:
+    authme.register:
+        description: 'Регистриране на играч'
+        detailedDescription: 'Регистриране на играч с дадена парола.'
+        arg1:
+            label: 'Играч'
+            description: 'Име на играча'
+        arg2:
+            label: 'парола'
+            description: 'Парола'
