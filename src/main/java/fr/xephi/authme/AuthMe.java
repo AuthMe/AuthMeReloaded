@@ -107,6 +107,13 @@ public class AuthMe extends JavaPlugin {
         // Load the plugin version data from the plugin description file
         loadPluginInfo(getDescription().getVersion());
 
+        // Check server version
+        if (!isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
+            ConsoleLogger.warning("You are running an unsupported server version! AuthMe requires 1.8.X at least!");
+            stopOrUnload();
+            return;
+        }
+
         // Prevent running AuthMeBridge due to major exploit issues
         if (getServer().getPluginManager().isPluginEnabled("AuthMeBridge")) {
             ConsoleLogger.warning("Detected AuthMeBridge, support for it has been dropped as it was "
