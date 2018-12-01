@@ -533,7 +533,25 @@
                     <artifactId>bungeecord-chat</artifactId>
                     <groupId>net.md-5</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.json-simple</groupId>
+                    <artifactId>json-simple</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <!--  Keep in sync with spigot 1.8.8  -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>17.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--  Keep in sync with spigot 1.8.8  -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Bukkit Libraries  -->

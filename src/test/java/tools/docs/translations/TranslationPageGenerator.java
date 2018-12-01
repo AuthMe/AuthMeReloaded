@@ -10,9 +10,8 @@ import tools.utils.ToolsConstants;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.MoreObjects.firstNonNull;
 
 /**
  * Generates the translations page in docs.
@@ -47,7 +46,7 @@ public class TranslationPageGenerator implements AutoToolTask {
 
         for (TranslationInfo translation : gatherer.getTranslationInfo()) {
             int percentage = (int) Math.round(translation.getPercentTranslated() * 100);
-            String name = firstNonNull(LANGUAGE_NAMES.get(translation.getCode()), "?");
+            String name = Optional.ofNullable(LANGUAGE_NAMES.get(translation.getCode())).orElse("?");
             TagValueHolder valueHolder = TagValueHolder.create()
                 .put("code", translation.getCode())
                 .put("name", name)
