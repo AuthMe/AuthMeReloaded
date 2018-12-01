@@ -27,6 +27,7 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -58,7 +59,7 @@ class InventoryPacketAdapter extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         byte windowId = packet.getIntegers().read(0).byteValue();
-        if (windowId == PLAYER_INVENTORY && !playerCache.isAuthenticated(player.getName())) {
+        if (windowId == PLAYER_INVENTORY && !playerCache.isAuthenticated(new OnlineIdentifier(player))) {
             packetEvent.setCancelled(true);
         }
     }

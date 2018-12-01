@@ -1,5 +1,6 @@
 package fr.xephi.authme.events;
 
+import fr.xephi.authme.data.player.NamedIdentifier;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -20,7 +21,7 @@ import org.bukkit.event.HandlerList;
 public class UnregisterByAdminEvent extends AbstractUnregisterEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    private final String playerName;
+    private final NamedIdentifier identifier;
     private final CommandSender initiator;
 
     /**
@@ -31,9 +32,9 @@ public class UnregisterByAdminEvent extends AbstractUnregisterEvent {
      * @param isAsync whether or not the event is async
      * @param initiator the initiator of the unregister process (may be null - see class JavaDoc)
      */
-    public UnregisterByAdminEvent(Player player, String playerName, boolean isAsync, CommandSender initiator) {
+    public UnregisterByAdminEvent(NamedIdentifier identifier, boolean isAsync, CommandSender initiator) {
         super(player, isAsync);
-        this.playerName = playerName;
+        this.identifier = identifier;
         this.initiator = initiator;
     }
 

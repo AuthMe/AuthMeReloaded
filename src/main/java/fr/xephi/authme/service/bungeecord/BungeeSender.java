@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.service.BukkitService;
@@ -92,9 +93,9 @@ public class BungeeSender implements SettingsDependent {
      * Sends a message to the AuthMe plugin messaging channel, if enabled.
      *
      * @param type       The message type, See {@link MessageType}
-     * @param playerName the player related to the message
+     * @param identifier The identifier of the player related to the message
      */
-    public void sendAuthMeBungeecordMessage(final MessageType type, final String playerName) {
+    public void sendAuthMeBungeecordMessage(final MessageType type, final NamedIdentifier identifier) {
         if (isEnabled) {
             if (!plugin.isEnabled()) {
                 ConsoleLogger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
@@ -104,9 +105,9 @@ public class BungeeSender implements SettingsDependent {
                 return;
             }
             if (type.isBroadcast()) {
-                sendForwardedBungeecordMessage("AuthMe.v2.Broadcast", type.getId(), playerName.toLowerCase());
+                sendForwardedBungeecordMessage("AuthMe.v2.Broadcast", type.getId(), identifier.getLowercaseName());
             } else {
-                sendBungeecordMessage("AuthMe.v2", type.getId(), playerName.toLowerCase());
+                sendBungeecordMessage("AuthMe.v2", type.getId(), identifier.getLowercaseName());
             }
         }
     }

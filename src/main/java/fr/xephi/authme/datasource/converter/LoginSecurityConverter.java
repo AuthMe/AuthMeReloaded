@@ -3,6 +3,7 @@ package fr.xephi.authme.datasource.converter;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
@@ -90,7 +91,8 @@ public class LoginSecurityConverter implements Converter {
         long successfulSaves = 0;
         while (resultSet.next()) {
             String name = resultSet.getString("last_name");
-            if (dataSource.isAuthAvailable(name)) {
+            NamedIdentifier identifier = new NamedIdentifier(name.toLowerCase(), name);
+            if (dataSource.isAuthAvailable(identifier)) {
                 skippedPlayers.add(name);
             } else {
                 PlayerAuth auth = buildAuthFromLoginSecurity(name, resultSet);

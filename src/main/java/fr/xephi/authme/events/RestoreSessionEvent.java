@@ -1,5 +1,6 @@
 package fr.xephi.authme.events;
 
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -10,12 +11,12 @@ import org.bukkit.event.HandlerList;
 public class RestoreSessionEvent extends CustomEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    private final Player player;
+    private final OnlineIdentifier identifier;
     private boolean isCancelled;
 
-    public RestoreSessionEvent(Player player, boolean isAsync) {
+    public RestoreSessionEvent(OnlineIdentifier identifier, boolean isAsync) {
         super(isAsync);
-        this.player = player;
+        this.identifier = identifier;
     }
 
     @Override
@@ -29,10 +30,17 @@ public class RestoreSessionEvent extends CustomEvent implements Cancellable {
     }
 
     /**
+     * @return the player identifier for which the session will be enabled
+     */
+    public OnlineIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    /**
      * @return the player for which the session will be enabled
      */
     public Player getPlayer() {
-        return player;
+        return identifier.getPlayer();
     }
 
     /**

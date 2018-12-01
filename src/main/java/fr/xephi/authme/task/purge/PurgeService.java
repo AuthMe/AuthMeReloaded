@@ -1,6 +1,7 @@
 package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
@@ -112,9 +113,9 @@ public class PurgeService {
      * Perform purge operations for the given players and names.
      *
      * @param players the players (associated with the names)
-     * @param names the lowercase names
+     * @param identifiers the identifiers
      */
-    void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
-        purgeExecutor.executePurge(players, names);
+    void executePurge(Collection<OfflinePlayer> players, Collection<NamedIdentifier> identifiers) {
+        purgeExecutor.executePurge(players, identifiers);
     }
 }

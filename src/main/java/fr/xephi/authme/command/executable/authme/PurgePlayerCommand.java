@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.task.purge.PurgeExecutor;
@@ -34,9 +35,10 @@ public class PurgePlayerCommand implements ExecutableCommand {
     }
 
     private void executeCommand(CommandSender sender, String name, String option) {
-        if ("force".equals(option) || !dataSource.isAuthAvailable(name)) {
+        NamedIdentifier identifier = new NamedIdentifier(name.toLowerCase(), name);
+        if ("force".equals(option) || !dataSource.isAuthAvailable(identifier)) {
             OfflinePlayer offlinePlayer = bukkitService.getOfflinePlayer(name);
-            purgeExecutor.executePurge(singletonList(offlinePlayer), singletonList(name.toLowerCase()));
+            purgeExecutor.executePurge(singletonList(offlinePlayer), singletonList(identifier.getLowercaseName()));
             sender.sendMessage("Purged data for player " + name);
         } else {
             sender.sendMessage("This player is still registered! Are you sure you want to proceed? "

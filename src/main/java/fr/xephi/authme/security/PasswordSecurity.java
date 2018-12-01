@@ -1,6 +1,7 @@
 package fr.xephi.authme.security;
 
 import ch.jalu.injector.factory.Factory;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.initialization.Reloadable;
@@ -62,13 +63,13 @@ public class PasswordSecurity implements Reloadable {
      * Check if the given password matches the player's stored password.
      *
      * @param password The password to check
-     * @param playerName The player to check for
+     * @param identifier The player to check for
      *
      * @return True if the password is correct, false otherwise
      */
-    public boolean comparePassword(String password, String playerName) {
-        HashedPassword auth = dataSource.getPassword(playerName);
-        return auth != null && comparePassword(password, auth, playerName);
+    public boolean comparePassword(String password, NamedIdentifier identifier) {
+        HashedPassword auth = dataSource.getPassword(identifier);
+        return auth != null && comparePassword(password, auth, identifier);
     }
 
     /**
@@ -76,14 +77,13 @@ public class PasswordSecurity implements Reloadable {
      *
      * @param password The password to check
      * @param hashedPassword The hashed password to check against
-     * @param playerName The player to check for
+     * @param identifier The player to check for
      *
      * @return True if the password matches, false otherwise
      */
-    public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
-        String playerLowerCase = playerName.toLowerCase();
-        return methodMatches(encryptionMethod, password, hashedPassword, playerLowerCase)
-            || compareWithLegacyHashes(password, hashedPassword, playerLowerCase);
+    public boolean comparePassword(String password, HashedPassword hashedPassword, NamedIdentifier identifier) {
+        return methodMatches(encryptionMethod, password, hashedPassword, identifier)
+            || compareWithLegacyHashes(password, hashedPassword, identifier);
     }
 
     /**
@@ -93,15 +93,15 @@ public class PasswordSecurity implements Reloadable {
      *
      * @param password       The clear-text password to check
      * @param hashedPassword The encrypted password to test the clear-text password against
-     * @param playerName     The name of the player
+     * @param identifier     The identifier of the player
      *
      * @return True if there was a password match with a configured legacy encryption method, false otherwise
      */
-    private boolean compareWithLegacyHashes(String password, HashedPassword hashedPassword, String playerName) {
+    private boolean compareWithLegacyHashes(String password, HashedPassword hashedPassword, NamedIdentifier identifier) {
         for (HashAlgorithm algorithm : legacyAlgorithms) {
             EncryptionMethod method = initializeEncryptionMethod(algorithm);
-            if (methodMatches(method, password, hashedPassword, playerName)) {
-                hashAndSavePasswordWithNewAlgorithm(password, playerName);
+            if (methodMatches(method, password, hashedPassword, identifier)) {
+                hashAndSavePasswordWithNewAlgorithm(password, identifier);
                 return true;
             }
         }
@@ -115,14 +115,14 @@ public class PasswordSecurity implements Reloadable {
      * @param method The encryption method to use
      * @param password The password to check
      * @param hashedPassword The hash to check against
-     * @param playerName The name of the player
+     * @param identifier The identifier of the player
      *
      * @return True if the password matched, false otherwise
      */
     private static boolean methodMatches(EncryptionMethod method, String password,
-                                         HashedPassword hashedPassword, String playerName) {
+                                         HashedPassword hashedPassword, NamedIdentifier identifier) {
         return method != null && (!method.hasSeparateSalt() || hashedPassword.getSalt() != null)
-            && method.comparePassword(password, hashedPassword, playerName);
+            && method.comparePassword(password, hashedPassword, identifier);
     }
 
     /**
@@ -155,9 +155,9 @@ public class PasswordSecurity implements Reloadable {
         return encryptionMethodFactory.newInstance(algorithm.getClazz());
     }
 
-    private void hashAndSavePasswordWithNewAlgorithm(String password, String playerName) {
-        HashedPassword hashedPassword = encryptionMethod.computeHash(password, playerName);
-        dataSource.updatePassword(playerName, hashedPassword);
+    private void hashAndSavePasswordWithNewAlgorithm(String password, NamedIdentifier identifier) {
+        HashedPassword hashedPassword = encryptionMethod.computeHash(password, identifier.getLowercaseName());
+        dataSource.updatePassword(identifier, hashedPassword);
     }
 
 }

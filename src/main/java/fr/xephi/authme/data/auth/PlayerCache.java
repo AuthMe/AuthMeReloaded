@@ -1,6 +1,8 @@
 package fr.xephi.authme.data.auth;
 
 
+import fr.xephi.authme.data.player.NamedIdentifier;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PlayerCache {
 
-    private final Map<String, PlayerAuth> cache = new ConcurrentHashMap<>();
+    private final Map<NamedIdentifier, PlayerAuth> cache = new ConcurrentHashMap<>();
 
     PlayerCache() {
     }
@@ -20,38 +22,38 @@ public class PlayerCache {
      * @param auth the player auth object to save
      */
     public void updatePlayer(PlayerAuth auth) {
-        cache.put(auth.getNickname().toLowerCase(), auth);
+        cache.put(auth.toIdentifier(), auth);
     }
 
     /**
      * Removes a player from the player cache.
      *
-     * @param user name of the player to remove
+     * @param identifier identifier of the player to remove
      */
-    public void removePlayer(String user) {
-        cache.remove(user.toLowerCase());
+    public void removePlayer(NamedIdentifier identifier) {
+        cache.remove(identifier);
     }
 
     /**
      * Get whether a player is authenticated (i.e. whether he is present in the player cache).
      *
-     * @param user player's name
+     * @param identifier player's identifier
      *
      * @return true if player is logged in, false otherwise.
      */
-    public boolean isAuthenticated(String user) {
-        return cache.containsKey(user.toLowerCase());
+    public boolean isAuthenticated(NamedIdentifier identifier) {
+        return cache.containsKey(identifier);
     }
 
     /**
      * Returns the PlayerAuth associated with the given user, if available.
      *
-     * @param user name of the player
+     * @param identifier identifier of the player
      *
      * @return the associated auth object, or null if not available
      */
-    public PlayerAuth getAuth(String user) {
-        return cache.get(user.toLowerCase());
+    public PlayerAuth getAuth(NamedIdentifier identifier) {
+        return cache.get(identifier);
     }
 
     /**
@@ -66,7 +68,7 @@ public class PlayerCache {
      *
      * @return all player auths inside the player cache
      */
-    public Map<String, PlayerAuth> getCache() {
+    public Map<NamedIdentifier, PlayerAuth> getCache() {
         return this.cache;
     }
 

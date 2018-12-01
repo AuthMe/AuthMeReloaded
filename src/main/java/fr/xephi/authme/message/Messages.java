@@ -2,6 +2,7 @@ package fr.xephi.authme.message;
 
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -58,6 +59,27 @@ public class Messages {
         for (String line : lines) {
             sender.sendMessage(line);
         }
+    }
+
+    /**
+     * Sends a message to the command sender.
+     *
+     * @param identifier the command sender
+     * @param key the message key
+     */
+    public void send(OnlineIdentifier identifier, MessageKey key) {
+        send(identifier.getPlayer(), key);
+    }
+
+    /**
+     * Sends a message to the command sender with the given replacements.
+     *
+     * @param identifier the command sender
+     * @param key the message key
+     * @param replacements the replacements to apply to the message
+     */
+    public void send(OnlineIdentifier identifier, MessageKey key, String... replacements) {
+        send(identifier.getPlayer(), key, replacements);
     }
 
     /**

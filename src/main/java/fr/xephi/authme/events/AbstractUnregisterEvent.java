@@ -1,5 +1,6 @@
 package fr.xephi.authme.events;
 
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import org.bukkit.entity.Player;
 
 /**
@@ -7,17 +8,17 @@ import org.bukkit.entity.Player;
  */
 public abstract class AbstractUnregisterEvent extends CustomEvent {
 
-    private final Player player;
+    private final OnlineIdentifier identifier;
 
     /**
      * Constructor for a player that has unregistered himself.
      *
-     * @param player the player
+     * @param identifier the player identifier
      * @param isAsync if the event is called asynchronously
      */
-    public AbstractUnregisterEvent(Player player, boolean isAsync) {
+    public AbstractUnregisterEvent(OnlineIdentifier identifier, boolean isAsync) {
         super(isAsync);
-        this.player = player;
+        this.identifier = identifier;
     }
 
     /**
@@ -28,6 +29,17 @@ public abstract class AbstractUnregisterEvent extends CustomEvent {
      * @return the unregistered player, or null
      */
     public Player getPlayer() {
-        return player;
+        return identifier.getPlayer();
+    }
+
+    /**
+     * Returns the identifier of the player that has been unregistered.
+     * <p>
+     * This may be {@code null}! Please refer to the implementations of this class for details.
+     *
+     * @return the unregistered player identifier, or null
+     */
+    public OnlineIdentifier getIdentifier() {
+        return identifier;
     }
 }

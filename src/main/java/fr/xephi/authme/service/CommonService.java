@@ -1,6 +1,7 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.configme.properties.Property;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionNode;
@@ -58,6 +59,27 @@ public class CommonService {
      */
     public void send(CommandSender sender, MessageKey key, String... replacements) {
         messages.send(sender, key, replacements);
+    }
+
+    /**
+     * Sends a message to the command sender.
+     *
+     * @param identifier the command sender
+     * @param key the message key
+     */
+    public void send(OnlineIdentifier identifier, MessageKey key) {
+        messages.send(identifier, key);
+    }
+
+    /**
+     * Sends a message to the command sender with the given replacements.
+     *
+     * @param identifier the command sender
+     * @param key the message key
+     * @param replacements the replacements to apply to the message
+     */
+    public void send(OnlineIdentifier identifier, MessageKey key, String... replacements) {
+        messages.send(identifier, key, replacements);
     }
 
     /**

@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
 
@@ -27,7 +28,7 @@ public class CacheDataSource implements DataSource {
 
     private final DataSource source;
     private final PlayerCache playerCache;
-    private final LoadingCache<String, Optional<PlayerAuth>> cachedAuths;
+    private final LoadingCache<NamedIdentifier, Optional<PlayerAuth>> cachedAuths;
     private final ListeningExecutorService executorService;
 
     /**
@@ -49,20 +50,20 @@ public class CacheDataSource implements DataSource {
         cachedAuths = CacheBuilder.newBuilder()
             .refreshAfterWrite(5, TimeUnit.MINUTES)
             .expireAfterAccess(15, TimeUnit.MINUTES)
-            .build(new CacheLoader<String, Optional<PlayerAuth>>() {
+            .build(new CacheLoader<NamedIdentifier, Optional<PlayerAuth>>() {
                 @Override
-                public Optional<PlayerAuth> load(String key) {
+                public Optional<PlayerAuth> load(NamedIdentifier key) {
                     return Optional.ofNullable(source.getAuth(key));
                 }
 
                 @Override
-                public ListenableFuture<Optional<PlayerAuth>> reload(final String key, Optional<PlayerAuth> oldValue) {
+                public ListenableFuture<Optional<PlayerAuth>> reload(final NamedIdentifier key, Optional<PlayerAuth> oldValue) {
                     return executorService.submit(() -> load(key));
                 }
             });
     }
 
-    public LoadingCache<String, Optional<PlayerAuth>> getCachedAuths() {
+    public LoadingCache<NamedIdentifier, Optional<PlayerAuth>> getCachedAuths() {
         return cachedAuths;
     }
 
@@ -77,31 +78,29 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean isAuthAvailable(String user) {
-        return getAuth(user) != null;
+    public boolean isAuthAvailable(NamedIdentifier identifier) {
+        return getAuth(identifier) != null;
     }
 
     @Override
-    public HashedPassword getPassword(String user) {
-        user = user.toLowerCase();
-        Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user);
+    public HashedPassword getPassword(NamedIdentifier identifier) {
+        Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(identifier);
         if (pAuthOpt != null && pAuthOpt.isPresent()) {
             return pAuthOpt.get().getPassword();
         }
-        return source.getPassword(user);
+        return source.getPassword(identifier);
     }
 
     @Override
-    public PlayerAuth getAuth(String user) {
-        user = user.toLowerCase();
-        return cachedAuths.getUnchecked(user).orElse(null);
+    public PlayerAuth getAuth(NamedIdentifier identifier) {
+        return cachedAuths.getUnchecked(identifier).orElse(null);
     }
 
     @Override
     public boolean saveAuth(PlayerAuth auth) {
         boolean result = source.saveAuth(auth);
         if (result) {
-            cachedAuths.refresh(auth.getNickname());
+            cachedAuths.refresh(auth.toIdentifier());
         }
         return result;
     }
@@ -110,17 +109,16 @@ public class CacheDataSource implements DataSource {
     public boolean updatePassword(PlayerAuth auth) {
         boolean result = source.updatePassword(auth);
         if (result) {
-            cachedAuths.refresh(auth.getNickname());
+            cachedAuths.refresh(auth.toIdentifier());
         }
         return result;
     }
 
     @Override
-    public boolean updatePassword(String user, HashedPassword password) {
-        user = user.toLowerCase();
-        boolean result = source.updatePassword(user, password);
+    public boolean updatePassword(NamedIdentifier identifier, HashedPassword password) {
+        boolean result = source.updatePassword(identifier, password);
         if (result) {
-            cachedAuths.refresh(user);
+            cachedAuths.refresh(identifier);
         }
         return result;
     }
@@ -129,7 +127,7 @@ public class CacheDataSource implements DataSource {
     public boolean updateSession(PlayerAuth auth) {
         boolean result = source.updateSession(auth);
         if (result) {
-            cachedAuths.refresh(auth.getNickname());
+            cachedAuths.refresh(auth.toIdentifier());
         }
         return result;
     }
@@ -138,7 +136,7 @@ public class CacheDataSource implements DataSource {
     public boolean updateQuitLoc(final PlayerAuth auth) {
         boolean result = source.updateQuitLoc(auth);
         if (result) {
-            cachedAuths.refresh(auth.getNickname());
+            cachedAuths.refresh(auth.toIdentifier());
         }
         return result;
     }
@@ -149,11 +147,10 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean removeAuth(String name) {
-        name = name.toLowerCase();
-        boolean result = source.removeAuth(name);
+    public boolean removeAuth(NamedIdentifier identifier) {
+        boolean result = source.removeAuth(identifier);
         if (result) {
-            cachedAuths.invalidate(name);
+            cachedAuths.invalidate(identifier);
         }
         return result;
     }
@@ -174,13 +171,13 @@ public class CacheDataSource implements DataSource {
     public boolean updateEmail(final PlayerAuth auth) {
         boolean result = source.updateEmail(auth);
         if (result) {
-            cachedAuths.refresh(auth.getNickname());
+            cachedAuths.refresh(auth.toIdentifier());
         }
         return result;
     }
 
     @Override
-    public List<String> getAllAuthsByIp(String ip) {
+    public List<NamedIdentifier> getAllAuthsByIp(String ip) {
         return source.getAllAuthsByIp(ip);
     }
 
@@ -190,9 +187,9 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void purgeRecords(Collection<String> banned) {
-        source.purgeRecords(banned);
-        cachedAuths.invalidateAll(banned);
+    public void purgeRecords(Collection<NamedIdentifier> toPurge) {
+        source.purgeRecords(toPurge);
+        cachedAuths.invalidateAll(toPurge);
     }
 
     @Override
@@ -201,33 +198,33 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean isLogged(String user) {
-        return source.isLogged(user);
+    public boolean isLogged(NamedIdentifier identifier) {
+        return source.isLogged(identifier);
     }
 
     @Override
-    public void setLogged(final String user) {
-        source.setLogged(user.toLowerCase());
+    public void setLogged(final NamedIdentifier identifier) {
+        source.setLogged(identifier);
     }
 
     @Override
-    public void setUnlogged(final String user) {
-        source.setUnlogged(user.toLowerCase());
+    public void setUnlogged(final NamedIdentifier identifier) {
+        source.setUnlogged(identifier);
     }
 
     @Override
-    public boolean hasSession(final String user) {
-        return source.hasSession(user);
+    public boolean hasSession(final NamedIdentifier identifier) {
+        return source.hasSession(identifier);
     }
 
     @Override
-    public void grantSession(final String user) {
-        source.grantSession(user);
+    public void grantSession(final NamedIdentifier identifier) {
+        source.grantSession(identifier);
     }
 
     @Override
-    public void revokeSession(final String user) {
-        source.revokeSession(user);
+    public void revokeSession(final NamedIdentifier identifier) {
+        source.revokeSession(identifier);
     }
 
     @Override
@@ -242,17 +239,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateRealName(String user, String realName) {
-        boolean result = source.updateRealName(user, realName);
+    public boolean updateRealName(NamedIdentifier identifier) {
+        boolean result = source.updateRealName(identifier);
         if (result) {
-            cachedAuths.refresh(user);
+            cachedAuths.refresh(identifier);
         }
         return result;
     }
 
     @Override
-    public DataSourceValue<String> getEmail(String user) {
-        return cachedAuths.getUnchecked(user)
+    public DataSourceValue<String> getEmail(NamedIdentifier identifier) {
+        return cachedAuths.getUnchecked(identifier)
             .map(auth -> DataSourceValueImpl.of(auth.getEmail()))
             .orElse(DataSourceValueImpl.unknownRow());
     }
@@ -263,10 +260,10 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public List<String> getLoggedPlayersWithEmptyMail() {
+    public List<NamedIdentifier> getLoggedPlayersWithEmptyMail() {
         return playerCache.getCache().values().stream()
             .filter(auth -> Utils.isEmailEmpty(auth.getEmail()))
-            .map(PlayerAuth::getRealName)
+            .map(PlayerAuth::toIdentifier)
             .collect(Collectors.toList());
     }
 
@@ -276,23 +273,23 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean setTotpKey(String user, String totpKey) {
-        boolean result = source.setTotpKey(user, totpKey);
+    public boolean setTotpKey(NamedIdentifier identifier, String totpKey) {
+        boolean result = source.setTotpKey(identifier, totpKey);
         if (result) {
-            cachedAuths.refresh(user);
+            cachedAuths.refresh(identifier);
         }
         return result;
     }
 
     @Override
-    public void invalidateCache(String playerName) {
-        cachedAuths.invalidate(playerName);
+    public void invalidateCache(NamedIdentifier identifier) {
+        cachedAuths.invalidate(identifier);
     }
 
     @Override
-    public void refreshCache(String playerName) {
-        if (cachedAuths.getIfPresent(playerName) != null) {
-            cachedAuths.refresh(playerName);
+    public void refreshCache(NamedIdentifier identifier) {
+        if (cachedAuths.getIfPresent(identifier) != null) {
+            cachedAuths.refresh(identifier);
         }
     }
 

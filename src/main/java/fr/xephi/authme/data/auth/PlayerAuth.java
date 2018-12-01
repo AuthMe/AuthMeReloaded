@@ -1,5 +1,6 @@
 package fr.xephi.authme.data.auth;
 
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
@@ -167,6 +168,10 @@ public class PlayerAuth {
 
     public void setTotpKey(String totpKey) {
         this.totpKey = totpKey;
+    }
+
+    public NamedIdentifier toIdentifier() {
+        return new NamedIdentifier(nickname, realName);
     }
 
     @Override

@@ -57,7 +57,7 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
 
         List<String> skippedPlayers = new ArrayList<>();
         for (PlayerAuth auth : source.getAllAuths()) {
-            if (destination.isAuthAvailable(auth.getNickname())) {
+            if (destination.isAuthAvailable(auth.toIdentifier())) {
                 skippedPlayers.add(auth.getNickname());
             } else {
                 adaptPlayerAuth(auth);

@@ -3,6 +3,9 @@ package fr.xephi.authme.datasource.converter;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.player.NamedIdentifier;
+import fr.xephi.authme.data.player.OfflineIdentifier;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -31,18 +34,18 @@ public class RoyalAuthConverter implements Converter {
     public void execute(CommandSender sender) {
         for (OfflinePlayer player : plugin.getServer().getOfflinePlayers()) {
             try {
-                String name = player.getName().toLowerCase();
-                File file = new File(makePath(".", "plugins", "RoyalAuth", "userdata", name + ".yml"));
+                OfflineIdentifier identifier = new OfflineIdentifier(player);
+                File file = new File(makePath(".", "plugins", "RoyalAuth", "userdata", identifier.getLowercaseName() + ".yml"));
 
-                if (dataSource.isAuthAvailable(name) || !file.exists()) {
+                if (dataSource.isAuthAvailable(identifier) || !file.exists()) {
                     continue;
                 }
                 FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
                 PlayerAuth auth = PlayerAuth.builder()
-                    .name(name)
+                    .name(identifier.getLowercaseName())
                     .password(configuration.getString(PASSWORD_PATH), null)
                     .lastLogin(configuration.getLong(LAST_LOGIN_PATH))
-                    .realName(player.getName())
+                    .realName(identifier.getRealName().orElse(null))
                     .build();
 
                 dataSource.saveAuth(auth);

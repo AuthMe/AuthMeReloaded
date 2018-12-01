@@ -2,13 +2,14 @@ package fr.xephi.authme.service;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.player.NamedIdentifier;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.PlayerUtils;
-import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
@@ -36,23 +37,23 @@ public class SessionService implements Reloadable {
     /**
      * Returns whether the player has a session he can resume.
      *
-     * @param player the player to check
+     * @param identifier the player to check
+     *
      * @return true if there is a current session, false otherwise
      */
-    public boolean canResumeSession(Player player) {
-        final String name = player.getName();
-        if (isEnabled && database.hasSession(name)) {
-            database.setUnlogged(name);
-            database.revokeSession(name);
-            PlayerAuth auth = database.getAuth(name);
+    public boolean canResumeSession(OnlineIdentifier identifier) {
+        if (isEnabled && database.hasSession(identifier)) {
+            database.setUnlogged(identifier);
+            database.revokeSession(identifier);
+            PlayerAuth auth = database.getAuth(identifier);
 
-            SessionState state = fetchSessionStatus(auth, player);
+            SessionState state = fetchSessionStatus(auth, identifier);
             if (state.equals(SessionState.VALID)) {
                 RestoreSessionEvent event = bukkitService.createAndCallEvent(
-                    isAsync -> new RestoreSessionEvent(player, isAsync));
+                    isAsync -> new RestoreSessionEvent(identifier, isAsync));
                 return !event.isCancelled();
             } else if (state.equals(SessionState.IP_CHANGED)) {
-                service.send(player, MessageKey.SESSION_EXPIRED);
+                service.send(identifier, MessageKey.SESSION_EXPIRED);
             }
         }
         return false;
@@ -62,13 +63,14 @@ public class SessionService implements Reloadable {
      * Checks if the given Player has a current session by comparing its properties
      * with the given PlayerAuth's.
      *
-     * @param auth the player auth
-     * @param player the associated player
+     * @param auth   the player auth
+     * @param identifier the associated player identifier
+     *
      * @return SessionState based on the state of the session (VALID, NOT_VALID, OUTDATED, IP_CHANGED)
      */
-    private SessionState fetchSessionStatus(PlayerAuth auth, Player player) {
+    private SessionState fetchSessionStatus(PlayerAuth auth, OnlineIdentifier identifier) {
         if (auth == null) {
-            ConsoleLogger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
+            ConsoleLogger.warning("No PlayerAuth in database for '" + identifier.getRealName() + "' during session check");
             return SessionState.NOT_VALID;
         } else if (auth.getLastLogin() == null) {
             return SessionState.NOT_VALID;
@@ -77,7 +79,7 @@ public class SessionService implements Reloadable {
 
         if (timeSinceLastLogin > 0
             && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * MILLIS_PER_MINUTE) {
-            if (PlayerUtils.getPlayerIp(player).equals(auth.getLastIp())) {
+            if (PlayerUtils.getPlayerIp(identifier.getPlayer()).equals(auth.getLastIp())) {
                 return SessionState.VALID;
             } else {
                 return SessionState.IP_CHANGED;
@@ -86,14 +88,14 @@ public class SessionService implements Reloadable {
         return SessionState.OUTDATED;
     }
 
-    public void grantSession(String name) {
+    public void grantSession(NamedIdentifier identifier) {
         if (isEnabled) {
-            database.grantSession(name);
+            database.grantSession(identifier);
         }
     }
 
-    public void revokeSession(String name) {
-        database.revokeSession(name);
+    public void revokeSession(NamedIdentifier identifier) {
+        database.revokeSession(identifier);
     }
 
     @Override

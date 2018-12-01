@@ -3,6 +3,7 @@ package fr.xephi.authme.datasource;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -219,10 +220,10 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public PlayerAuth getAuth(String user) {
+    public PlayerAuth getAuth(NamedIdentifier identifier) {
         String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user);
+            pst.setString(1, identifier.getLowercaseName());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     return buildAuthFromResultSet(rs);
@@ -256,11 +257,11 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public void purgeRecords(Collection<String> toPurge) {
+    public void purgeRecords(Collection<NamedIdentifier> toPurge) {
         String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement deletePst = con.prepareStatement(delete)) {
-            for (String name : toPurge) {
-                deletePst.setString(1, name.toLowerCase());
+            for (NamedIdentifier identifier : toPurge) {
+                deletePst.setString(1, identifier.getLowercaseName());
                 deletePst.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -269,10 +270,10 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public boolean removeAuth(String user) {
+    public boolean removeAuth(NamedIdentifier identifier) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user.toLowerCase());
+            pst.setString(1, identifier.getLowercaseName());
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -313,13 +314,13 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public List<String> getLoggedPlayersWithEmptyMail() {
-        List<String> players = new ArrayList<>();
-        String sql = "SELECT " + col.REAL_NAME + " FROM " + tableName + " WHERE " + col.IS_LOGGED + " = 1"
+    public List<NamedIdentifier> getLoggedPlayersWithEmptyMail() {
+        List<NamedIdentifier> players = new ArrayList<>();
+        String sql = "SELECT " + col.NAME + "," + col.REAL_NAME + " FROM " + tableName + " WHERE " + col.IS_LOGGED + " = 1"
             + " AND (" + col.EMAIL + " = 'your@email.com' OR " + col.EMAIL + " IS NULL);";
         try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
-                players.add(rs.getString(1));
+                players.add(new NamedIdentifier(rs.getString(1), rs.getString(2)));
             }
         } catch (SQLException ex) {
             logSqlException(ex);
@@ -343,11 +344,11 @@ public class SQLite extends AbstractSqlDataSource {
 
 
     @Override
-    public boolean setTotpKey(String user, String totpKey) {
+    public boolean setTotpKey(NamedIdentifier identifier, String totpKey) {
         String sql = "UPDATE " + tableName + " SET " + col.TOTP_KEY + " = ? WHERE " + col.NAME + " = ?";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, totpKey);
-            pst.setString(2, user.toLowerCase());
+            pst.setString(2, identifier.getLowercaseName());
             pst.executeUpdate();
             return true;
         } catch (SQLException e) {

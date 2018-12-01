@@ -1,6 +1,6 @@
 package fr.xephi.authme.events;
 
-import org.bukkit.entity.Player;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import org.bukkit.event.HandlerList;
 
 /**
@@ -13,11 +13,11 @@ public class UnregisterByPlayerEvent extends AbstractUnregisterEvent {
     /**
      * Constructor.
      *
-     * @param player the player (never null)
+     * @param identifier the player identifier (never null)
      * @param isAsync if the event is called asynchronously
      */
-    public UnregisterByPlayerEvent(Player player, boolean isAsync) {
-        super(player, isAsync);
+    public UnregisterByPlayerEvent(OnlineIdentifier identifier, boolean isAsync) {
+        super(identifier, isAsync);
     }
 
     /**

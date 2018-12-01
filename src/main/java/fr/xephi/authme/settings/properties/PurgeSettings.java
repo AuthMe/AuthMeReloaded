@@ -28,14 +28,6 @@ public final class PurgeSettings implements SettingsHolder {
     public static final Property<String> DEFAULT_WORLD =
         newProperty("Purge.defaultWorld", "world");
 
-    @Comment("Remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge?")
-    public static final Property<Boolean> REMOVE_LIMITED_CREATIVE_INVENTORIES =
-        newProperty("Purge.removeLimitedCreativesInventories", false);
-
-    @Comment("Do we need to remove the AntiXRayData/PlayerData/player file during purge process?")
-    public static final Property<Boolean> REMOVE_ANTI_XRAY_FILE =
-        newProperty("Purge.removeAntiXRayFile", false);
-
     @Comment("Do we need to remove permissions?")
     public static final Property<Boolean> REMOVE_PERMISSIONS =
         newProperty("Purge.removePermissions", false);

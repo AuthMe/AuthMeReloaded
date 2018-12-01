@@ -4,6 +4,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
+import fr.xephi.authme.data.player.NamedIdentifier;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.UnregisterByAdminEvent;
 import fr.xephi.authme.events.UnregisterByPlayerEvent;
@@ -63,22 +65,21 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * Processes a player's request to unregister himself. Unregisters the player after
      * successful password check.
      *
-     * @param player the player
+     * @param identifier the player identifier
      * @param password the input password to check before unregister
      */
-    public void unregister(Player player, String password) {
-        final String name = player.getName();
-        final PlayerAuth cachedAuth = playerCache.getAuth(name);
-        if (passwordSecurity.comparePassword(password, cachedAuth.getPassword(), name)) {
-            if (dataSource.removeAuth(name)) {
-                performPostUnregisterActions(name, player);
-                ConsoleLogger.info(name + " unregistered himself");
-                bukkitService.createAndCallEvent(isAsync -> new UnregisterByPlayerEvent(player, isAsync));
+    public void unregister(OnlineIdentifier identifier, String password) {
+        final PlayerAuth cachedAuth = playerCache.getAuth(identifier);
+        if (passwordSecurity.comparePassword(password, cachedAuth.getPassword(), identifier)) {
+            if (dataSource.removeAuth(identifier)) {
+                performPostUnregisterActions(identifier);
+                ConsoleLogger.info(identifier.getLowercaseName() + " unregistered himself");
+                bukkitService.createAndCallEvent(isAsync -> new UnregisterByPlayerEvent(identifier, isAsync));
             } else {
-                service.send(player, MessageKey.ERROR);
+                service.send(identifier, MessageKey.ERROR);
             }
         } else {
-            service.send(player, MessageKey.WRONG_PASSWORD);
+            service.send(identifier, MessageKey.WRONG_PASSWORD);
         }
     }
 
@@ -86,20 +87,19 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * Unregisters a player as administrator or console.
      *
      * @param initiator the initiator of this process (nullable)
-     * @param name the name of the player
-     * @param player the according Player object (nullable)
+     * @param identifier the identifier of the player
      */
     // We need to have the name and the player separate because Player might be null in this case:
     // we might have some player in the database that has never been online on the server
-    public void adminUnregister(CommandSender initiator, String name, Player player) {
-        if (dataSource.removeAuth(name)) {
-            performPostUnregisterActions(name, player);
-            bukkitService.createAndCallEvent(isAsync -> new UnregisterByAdminEvent(player, name, isAsync, initiator));
+    public void adminUnregister(CommandSender initiator, NamedIdentifier identifier) {
+        if (dataSource.removeAuth(identifier)) {
+            performPostUnregisterActions(identifier);
+            bukkitService.createAndCallEvent(isAsync -> new UnregisterByAdminEvent(identifier, isAsync, initiator));
 
             if (initiator == null) {
-                ConsoleLogger.info(name + " was unregistered");
+                ConsoleLogger.info(identifier.getLowercaseName() + " was unregistered");
             } else {
-                ConsoleLogger.info(name + " was unregistered by " + initiator.getName());
+                ConsoleLogger.info(identifier.getLowercaseName() + " was unregistered by " + initiator.getName());
                 service.send(initiator, MessageKey.UNREGISTERED_SUCCESS);
             }
         } else if (initiator != null) {
@@ -110,35 +110,39 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     /**
      * Process the post unregister actions. Makes the user status consistent.
      *
-     * @param name the name of the player
-     * @param player the according Player object (nullable)
+     * @param identifier the identifier of the player
      */
-    private void performPostUnregisterActions(String name, Player player) {
-        playerCache.removePlayer(name);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
+    private void performPostUnregisterActions(NamedIdentifier identifier) {
+        playerCache.removePlayer(identifier);
+        bungeeSender.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, identifier);
 
-        if (player == null || !player.isOnline()) {
+        if(!(identifier instanceof OnlineIdentifier)) {
             return;
         }
+        OnlineIdentifier onlineIdentifier = (OnlineIdentifier) identifier;
+        if (!onlineIdentifier.getPlayer().isOnline()) {
+            return;
+        }
+
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
-            commandManager.runCommandsOnUnregister(player));
+            commandManager.runCommandsOnUnregister(onlineIdentifier));
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
-            teleportationService.teleportOnJoin(player);
-            player.saveData();
+            teleportationService.teleportOnJoin(onlineIdentifier);
+            onlineIdentifier.getPlayer().saveData();
 
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-                limboService.createLimboPlayer(player, false);
-                applyBlindEffect(player);
+                limboService.createLimboPlayer(onlineIdentifier, false);
+                applyBlindEffect(onlineIdentifier);
             });
         }
-        service.send(player, MessageKey.UNREGISTERED_SUCCESS);
+        service.send(onlineIdentifier, MessageKey.UNREGISTERED_SUCCESS);
     }
 
-    private void applyBlindEffect(final Player player) {
+    private void applyBlindEffect(final OnlineIdentifier identifier) {
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
+            identifier.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));
         }
     }
 

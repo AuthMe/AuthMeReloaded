@@ -4,7 +4,9 @@ import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import ch.jalu.datasourcecolumns.data.DataSourceValues;
 import ch.jalu.datasourcecolumns.predicate.AlwaysTruePredicate;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.player.NamedIdentifier;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumns;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -12,6 +14,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ch.jalu.datasourcecolumns.data.UpdateValues.with;
 import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.eq;
@@ -27,9 +30,9 @@ public abstract class AbstractSqlDataSource implements DataSource {
     protected AuthMeColumnsHandler columnsHandler;
 
     @Override
-    public boolean isAuthAvailable(String user) {
+    public boolean isAuthAvailable(NamedIdentifier identifier) {
         try {
-            return columnsHandler.retrieve(user, AuthMeColumns.NAME).rowExists();
+            return columnsHandler.retrieve(identifier.getLowercaseName(), AuthMeColumns.NAME).rowExists();
         } catch (SQLException e) {
             logSqlException(e);
             return false;
@@ -37,9 +40,9 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     @Override
-    public HashedPassword getPassword(String user) {
+    public HashedPassword getPassword(NamedIdentifier identifier) {
         try {
-            DataSourceValues values = columnsHandler.retrieve(user, AuthMeColumns.PASSWORD, AuthMeColumns.SALT);
+            DataSourceValues values = columnsHandler.retrieve(identifier.getLowercaseName(), AuthMeColumns.PASSWORD, AuthMeColumns.SALT);
             if (values.rowExists()) {
                 return new HashedPassword(values.get(AuthMeColumns.PASSWORD), values.get(AuthMeColumns.SALT));
             }
@@ -57,9 +60,9 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     @Override
-    public boolean hasSession(String user) {
+    public boolean hasSession(NamedIdentifier identifier) {
         try {
-            DataSourceValue<Integer> result = columnsHandler.retrieve(user, AuthMeColumns.HAS_SESSION);
+            DataSourceValue<Integer> result = columnsHandler.retrieve(identifier.getLowercaseName(), AuthMeColumns.HAS_SESSION);
             return result.rowExists() && Integer.valueOf(1).equals(result.getValue());
         } catch (SQLException e) {
             logSqlException(e);
@@ -74,12 +77,12 @@ public abstract class AbstractSqlDataSource implements DataSource {
 
     @Override
     public boolean updatePassword(PlayerAuth auth) {
-        return updatePassword(auth.getNickname(), auth.getPassword());
+        return updatePassword(auth.toIdentifier(), auth.getPassword());
     }
 
     @Override
-    public boolean updatePassword(String user, HashedPassword password) {
-        return columnsHandler.update(user,
+    public boolean updatePassword(NamedIdentifier identifier, HashedPassword password) {
+        return columnsHandler.update(identifier.getLowercaseName(),
             with(AuthMeColumns.PASSWORD, password.getHash())
             .and(AuthMeColumns.SALT, password.getSalt()).build());
     }
@@ -92,9 +95,12 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByIp(String ip) {
+    public List<NamedIdentifier> getAllAuthsByIp(String ip) {
         try {
-            return columnsHandler.retrieve(eq(AuthMeColumns.LAST_IP, ip), AuthMeColumns.NAME);
+            return columnsHandler.retrieve(eq(AuthMeColumns.LAST_IP, ip), AuthMeColumns.NAME, AuthMeColumns.NICK_NAME)
+                .stream()
+                .map(values -> new NamedIdentifier(values.get(AuthMeColumns.NAME), values.get(AuthMeColumns.NICK_NAME)))
+                .collect(Collectors.toList());
         } catch (SQLException e) {
             logSqlException(e);
             return Collections.emptyList();
@@ -112,9 +118,9 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     @Override
-    public boolean isLogged(String user) {
+    public boolean isLogged(NamedIdentifier identifier) {
         try {
-            DataSourceValue<Integer> result = columnsHandler.retrieve(user, AuthMeColumns.IS_LOGGED);
+            DataSourceValue<Integer> result = columnsHandler.retrieve(identifier.getLowercaseName(), AuthMeColumns.IS_LOGGED);
             return result.rowExists() && Integer.valueOf(1).equals(result.getValue());
         } catch (SQLException e) {
             logSqlException(e);
@@ -123,23 +129,23 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     @Override
-    public void setLogged(String user) {
-        columnsHandler.update(user, AuthMeColumns.IS_LOGGED, 1);
+    public void setLogged(NamedIdentifier identifier) {
+        columnsHandler.update(identifier.getLowercaseName(), AuthMeColumns.IS_LOGGED, 1);
     }
 
     @Override
-    public void setUnlogged(String user) {
-        columnsHandler.update(user, AuthMeColumns.IS_LOGGED, 0);
+    public void setUnlogged(NamedIdentifier identifier) {
+        columnsHandler.update(identifier.getLowercaseName(), AuthMeColumns.IS_LOGGED, 0);
     }
 
     @Override
-    public void grantSession(String user) {
-        columnsHandler.update(user, AuthMeColumns.HAS_SESSION, 1);
+    public void grantSession(NamedIdentifier identifier) {
+        columnsHandler.update(identifier.getLowercaseName(), AuthMeColumns.HAS_SESSION, 1);
     }
 
     @Override
-    public void revokeSession(String user) {
-        columnsHandler.update(user, AuthMeColumns.HAS_SESSION, 0);
+    public void revokeSession(NamedIdentifier identifier) {
+        columnsHandler.update(identifier.getLowercaseName(), AuthMeColumns.HAS_SESSION, 0);
     }
 
     @Override
@@ -153,14 +159,14 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateRealName(String user, String realName) {
-        return columnsHandler.update(user, AuthMeColumns.NICK_NAME, realName);
+    public boolean updateRealName(NamedIdentifier identifier) {
+        return columnsHandler.update(identifier.getLowercaseName(), AuthMeColumns.NICK_NAME, identifier.getRealName().orElse(null));
     }
 
     @Override
-    public DataSourceValue<String> getEmail(String user) {
+    public DataSourceValue<String> getEmail(NamedIdentifier identifier) {
         try {
-            return columnsHandler.retrieve(user, AuthMeColumns.EMAIL);
+            return columnsHandler.retrieve(identifier.getLowercaseName(), AuthMeColumns.EMAIL);
         } catch (SQLException e) {
             logSqlException(e);
             return DataSourceValueImpl.unknownRow();

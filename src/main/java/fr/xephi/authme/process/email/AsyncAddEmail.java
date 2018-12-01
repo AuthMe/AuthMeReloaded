@@ -3,6 +3,7 @@ package fr.xephi.authme.process.email;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.player.OnlineIdentifier;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.EmailChangedEvent;
 import fr.xephi.authme.message.MessageKey;
@@ -49,10 +50,10 @@ public class AsyncAddEmail implements AsynchronousProcess {
      * @param email the email to add
      */
     public void addEmail(Player player, String email) {
-        String playerName = player.getName().toLowerCase();
+        OnlineIdentifier identifier = new OnlineIdentifier(player);
 
-        if (playerCache.isAuthenticated(playerName)) {
-            PlayerAuth auth = playerCache.getAuth(playerName);
+        if (playerCache.isAuthenticated(identifier)) {
+            PlayerAuth auth = playerCache.getAuth(identifier);
             final String currentEmail = auth.getEmail();
 
             if (!Utils.isEmailEmpty(currentEmail)) {
@@ -72,7 +73,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 auth.setEmail(email);
                 if (dataSource.updateEmail(auth)) {
                     playerCache.updatePlayer(auth);
-                    bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
+                    bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, identifier);
                     service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
                     ConsoleLogger.warning("Could not save email for player '" + player + "'");
@@ -80,15 +81,15 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 }
             }
         } else {
-            sendUnloggedMessage(player);
+            sendUnloggedMessage(identifier);
         }
     }
 
-    private void sendUnloggedMessage(Player player) {
-        if (dataSource.isAuthAvailable(player.getName())) {
-            service.send(player, MessageKey.LOGIN_MESSAGE);
+    private void sendUnloggedMessage(OnlineIdentifier identifier) {
+        if (dataSource.isAuthAvailable(identifier)) {
+            service.send(identifier, MessageKey.LOGIN_MESSAGE);
         } else {
-            service.send(player, MessageKey.REGISTER_MESSAGE);
+            service.send(identifier, MessageKey.REGISTER_MESSAGE);
         }
     }
 

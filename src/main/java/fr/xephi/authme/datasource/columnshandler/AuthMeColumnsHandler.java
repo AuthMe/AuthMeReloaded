@@ -174,6 +174,18 @@ public final class AuthMeColumnsHandler {
     }
 
     /**
+     * Retrieves a column's value for all rows that satisfy the given predicate.
+     *
+     * @param predicate the predicate to fulfill
+     * @param columns the columns to retrieve from the matching rows
+     * @return the values of the matching rows
+     * @throws SQLException .
+     */
+    public List<DataSourceValues> retrieve(Predicate<ColumnContext> predicate, DataSourceColumn<?>... columns) throws SQLException {
+        return internalHandler.retrieve(predicate, columns);
+    }
+
+    /**
      * Inserts the given values into a new row, as taken from the player auth.
      *
      * @param auth the player auth to get values from
