@@ -543,7 +543,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>17.0</version>
+            <version>23.0</version>
             <scope>provided</scope>
         </dependency>
         <!--  Keep in sync with spigot 1.8.8  -->
