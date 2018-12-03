@@ -1,12 +1,12 @@
 # Traduction par: André & Twonox
 
 # Pour afficher une apostrophe, vous devez en mettre deux consécutivement (ex: «J''ai» au lieu de «J'ai»)
-# List of global tags:
-# %nl% - Pour passer à la ligne.
-# %username% - Replaces the username of the player receiving the message.
-# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+# Liste des tags globaux:
+# %nl% - Permet de passer à la ligne.
+# %username% - Affiche le pseudo du joueur recevant le message.
+# %displayname% - Affiche le pseudo avec couleurs du joueur recevant le message.
 
-# Registration
+# Enregistrement
 registration:
     disabled: '&cL''inscription est désactivée.'
     name_taken: '&cUtilisateur déjà inscrit.'
@@ -16,7 +16,7 @@ registration:
     success: '&aInscription effectuée !'
     kicked_admin_registered: 'Un admin vient de vous inscrire, veuillez vous reconnecter.'
 
-# Password errors on registration
+# Erreurs de mot de passe lors de l'enregistrement
 password:
     match_error: '&cLe mot de passe de confirmation ne correspond pas.'
     name_in_password: '&cVous ne pouvez pas utiliser votre pseudo comme mot de passe.'
@@ -24,15 +24,15 @@ password:
     forbidden_characters: '&cVotre mot de passe contient des caractères non autorisés. Caractères permis : %valid_chars'
     wrong_length: '&cVotre mot de passe est trop court ou trop long !'
 
-# Login
+# Identification
 login:
     command_usage: '&cUsage: /login <MotDePasse>'
     wrong_password: '&cMauvais mot de passe !'
-    success: '&aConnexion effectuée !'
-    login_request: '&cPour vous connecter, utilisez "/login <MotDePasse>"'
-    timeout_error: 'Vous avez été expulsé car vous êtes trop lent pour vous enregistrer/connecter !'
+    success: '&aIdentification effectuée !'
+    login_request: '&cPour vous identifier, utilisez "/login <MotDePasse>"'
+    timeout_error: 'Vous avez été expulsé car vous êtes trop lent pour vous enregistrer/identifier !'
 
-# Errors
+# Erreurs
 error:
     denied_command: '&cVous devez être connecté pour pouvoir utiliser cette commande.'
     denied_chat: '&cVous devez être connecté pour pouvoir écrire dans le chat.'
@@ -51,12 +51,12 @@ antibot:
     auto_enabled: 'L''AntiBot a été activé automatiquement à cause de nombreuses connexions !'
     auto_disabled: 'L''AntiBot a été désactivé automatiquement après %m minutes, espérons que l''invasion se soit arrêtée !'
 
-# Unregister
+# Dé-enregistrement
 unregister:
     success: '&aCompte supprimé !'
     command_usage: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'
 
-# Other messages
+# Messages divers
 misc:
     account_not_activated: '&fCe compte n''est pas actif, consultez vos mails !'
     password_changed: '&aMot de passe changé avec succès !'
@@ -66,12 +66,12 @@ misc:
     accounts_owned_self: 'Vous avez %count comptes:'
     accounts_owned_other: 'Le joueur %name a %count comptes:'
 
-# Session messages
+# Messages de sessions
 session:
     valid_session: '&aVous avez été automatiquement connecté !'
     invalid_session: 'Session expirée suite à un changement d''IP.'
 
-# Error messages when joining
+# Messages d'erreurs lors de la connexion
 on_join_validation:
     same_ip_online: 'Un joueur avec la même adresse IP joue déjà !'
     same_nick_online: 'Un joueur ayant le même pseudo est déjà connecté.'
@@ -81,7 +81,7 @@ on_join_validation:
     country_banned: 'Votre pays est banni de ce serveur.'
     not_owner_error: 'Vous n''êtes pas le propriétaire de ce compte. Veuillez utiliser un autre pseudo !'
     invalid_name_case: 'Veuillez vous connecter avec "%valid" et non pas avec "%invalid".'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: '&cUtilisation trop rapide de commande! Veuillez vous reconnecter et attendre plus longtemps avant d''executer une commande.'
 
 # Email
 email:
@@ -92,10 +92,10 @@ email:
     old_email_invalid: '&cAncien email invalide !'
     invalid: '&cL''email inscrit est invalide !'
     added: '&aEmail enregistré. En cas de perte de MDP, faites "/email recover <Email>"'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cVous n''êtes pas permis d''ajouter une adresse mail.'
     request_confirmation: '&cLa confirmation de l''email est manquante ou éronnée.'
     changed: '&aVotre email a été mis à jour.'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&cVous n''êtes pas permis de modifier l''adresse mail.'
     email_show: '&fL''email enregistré pour votre compte est: %email'
     no_email_for_account: '&c&oVous n''avez aucun email enregistré sur votre compte.'
     already_used: '&cCet email est déjà utilisé !'
@@ -104,7 +104,7 @@ email:
     change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cette commande.'
     email_cooldown_error: '&cUn mail de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
 
-# Password recovery by email
+# Récupération de mot de passe par mail
 recovery:
     forgot_password_hint: '&cVous avez oublié votre Mot de Passe? Utilisez "/email recovery <votreEmail>"'
     command_usage: '&fUsage: /email recovery <Email>'
@@ -124,7 +124,7 @@ captcha:
     captcha_for_registration: 'Avant de vous inscrire veuillez rentrer un captcha en faisant "/captcha %captcha_code"'
     register_captcha_valid: '&aCaptcha validé! Vous pouvez maintenant vous inscrire.'
 
-# Verification code
+# Code de vérification
 verification:
     code_required: '&cCette commande est sensible, elle nécessite donc une confirmation par email.%nl%&cVeuillez suivre les instructions qui viennent de vous être envoyées par email.'
     command_usage: '&cUsage: /verification <code>'
@@ -134,7 +134,20 @@ verification:
     code_expired: '&cVotre code d''identification a expiré !%nl%&cVeuillez re-exécuter une commande sensible pour recevoir un nouveau code.'
     email_needed: '&cAfin de vérifier votre identité, vous devez avoir un email lié à votre compte.%nl%&cPour cela, faites "/email add <Email> <ConfirmerEmail>"'
 
-# Time units
+# Authentification à double facteur
+two_factor:
+    code_created: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
+    code_required: 'Veuillez indiquer votre code secret en écrivant "/2fa code <Code>"'
+    confirmation_required: 'Veuillez confirmer votre code secret en écrivant "/2fa confirm <Code>"'
+    already_enabled: '&aL''authentification à double facteur est déjà active !'
+    enable_error_no_code: '&cAucun code secret n'a été généré ou bien a expiré. Veuillez faire "/2fa add"'
+    enable_success: '&aL''authentification à double facteur a été activé pour votre compte !'
+    enable_error_wrong_code: '&cLe code secret est faux ou bien a expiré. Veuillez faire "/2fa add"'
+    not_enabled_error: '&cL''authentification à double facteur n''est pas active sur votre compte. Faites "/2fa add" pour l''activer.'
+    removed_success: '&cL''authentification à double facteur a été désactivé pour votre compte !'
+    invalid_code: '&cCode secret invalide !'
+    
+# Unités de temps
 time:
     second: 'seconde'
     seconds: 'secondes'
@@ -144,16 +157,3 @@ time:
     hours: 'heures'
     day: 'jour'
     days: 'jours'
-
-# Two-factor authentication
-two_factor:
-    code_created: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
