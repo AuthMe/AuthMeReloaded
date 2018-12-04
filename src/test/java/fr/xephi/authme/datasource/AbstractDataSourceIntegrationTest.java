@@ -452,7 +452,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         DataSource dataSource = getDataSource();
 
         // when
-        dataSource.grantSession("bobby");
+        dataSource.grantSession("Bobby");
         dataSource.grantSession("doesNotExist");
 
         // then
