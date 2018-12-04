@@ -4,7 +4,7 @@
 # Liste des tags globaux:
 # %nl% - Permet de passer à la ligne.
 # %username% - Affiche le pseudo du joueur recevant le message.
-# %displayname% - Affiche le pseudo avec couleurs du joueur recevant le message.
+# %displayname% - Affiche le pseudo, avec couleurs, du joueur recevant le message.
 
 # Enregistrement
 registration:
@@ -140,9 +140,9 @@ two_factor:
     code_required: 'Veuillez indiquer votre code secret en écrivant "/2fa code <Code>"'
     confirmation_required: 'Veuillez confirmer votre code secret en écrivant "/2fa confirm <Code>"'
     already_enabled: '&aL''authentification à double facteur est déjà active !'
-    enable_error_no_code: '&cAucun code secret n'a été généré ou bien a expiré. Veuillez faire "/2fa add"'
+    enable_error_no_code: '&cAucun code secret n'a été généré ou bien a expiré. Veuillez écrire "/2fa add"'
     enable_success: '&aL''authentification à double facteur a été activé pour votre compte !'
-    enable_error_wrong_code: '&cLe code secret est faux ou bien a expiré. Veuillez faire "/2fa add"'
+    enable_error_wrong_code: '&cLe code secret est faux ou bien a expiré. Veuillez écrire "/2fa add"'
     not_enabled_error: '&cL''authentification à double facteur n''est pas active sur votre compte. Faites "/2fa add" pour l''activer.'
     removed_success: '&cL''authentification à double facteur a été désactivé pour votre compte !'
     invalid_code: '&cCode secret invalide !'
