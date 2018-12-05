@@ -67,7 +67,7 @@ public class CrazyLoginConverter implements Converter {
         String password = args[1];
         if (password != null) {
             PlayerAuth auth = PlayerAuth.builder()
-                .name(playerName.toLowerCase())
+                .name(playerName)
                 .realName(playerName)
                 .password(password, null)
                 .build();

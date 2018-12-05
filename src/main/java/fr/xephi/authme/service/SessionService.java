@@ -88,12 +88,12 @@ public class SessionService implements Reloadable {
 
     public void grantSession(String name) {
         if (isEnabled) {
-            database.grantSession(name);
+            database.grantSession(name.toLowerCase());
         }
     }
 
     public void revokeSession(String name) {
-        database.revokeSession(name);
+        database.revokeSession(name.toLowerCase());
     }
 
     @Override

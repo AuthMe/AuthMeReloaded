@@ -83,8 +83,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public HashedPassword getPassword(String user) {
-        user = user.toLowerCase();
-        Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user);
+        Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user.toLowerCase());
         if (pAuthOpt != null && pAuthOpt.isPresent()) {
             return pAuthOpt.get().getPassword();
         }
@@ -93,8 +92,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public PlayerAuth getAuth(String user) {
-        user = user.toLowerCase();
-        return cachedAuths.getUnchecked(user).orElse(null);
+        return cachedAuths.getUnchecked(user.toLowerCase()).orElse(null);
     }
 
     @Override
@@ -117,10 +115,9 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public boolean updatePassword(String user, HashedPassword password) {
-        user = user.toLowerCase();
         boolean result = source.updatePassword(user, password);
         if (result) {
-            cachedAuths.refresh(user);
+            cachedAuths.refresh(user.toLowerCase());
         }
         return result;
     }
@@ -150,10 +147,9 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public boolean removeAuth(String name) {
-        name = name.toLowerCase();
         boolean result = source.removeAuth(name);
         if (result) {
-            cachedAuths.invalidate(name);
+            cachedAuths.invalidate(name.toLowerCase());
         }
         return result;
     }
@@ -207,12 +203,12 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void setLogged(final String user) {
-        source.setLogged(user.toLowerCase());
+        source.setLogged(user);
     }
 
     @Override
     public void setUnlogged(final String user) {
-        source.setUnlogged(user.toLowerCase());
+        source.setUnlogged(user);
     }
 
     @Override

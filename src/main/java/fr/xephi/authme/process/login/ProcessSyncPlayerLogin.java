@@ -76,7 +76,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
      * @param authsWithSameIp registered names with the same IP address as the player's
      */
     public void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
         // Limbo contains the State of the Player before /login

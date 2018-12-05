@@ -49,7 +49,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
      * @param email the email to add
      */
     public void addEmail(Player player, String email) {
-        String playerName = player.getName().toLowerCase();
+        String playerName = player.getName();
 
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);

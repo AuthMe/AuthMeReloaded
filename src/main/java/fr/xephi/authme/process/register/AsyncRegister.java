@@ -71,7 +71,7 @@ public class AsyncRegister implements AsynchronousProcess {
      * @return true if the checks are successful and the event hasn't marked the action as denied, false otherwise.
      */
     private boolean preRegisterCheck(RegistrationMethod<?> variant, Player player) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return false;

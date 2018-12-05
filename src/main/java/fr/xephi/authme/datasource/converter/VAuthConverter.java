@@ -46,12 +46,12 @@ public class VAuthConverter implements Converter {
                         continue;
                     }
                     auth = PlayerAuth.builder()
-                        .name(pname.toLowerCase())
+                        .name(pname)
                         .realName(pname)
                         .password(password, null).build();
                 } else {
                     auth = PlayerAuth.builder()
-                        .name(name.toLowerCase())
+                        .name(name)
                         .realName(name)
                         .password(password, null).build();
                 }

@@ -50,7 +50,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
      * @param newEmail provided new email
      */
     public void changeEmail(Player player, String oldEmail, String newEmail) {
-        String playerName = player.getName().toLowerCase();
+        String playerName = player.getName();
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
             final String currentEmail = auth.getEmail();

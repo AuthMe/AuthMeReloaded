@@ -52,7 +52,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         if (isEnabled) {
             TimedCounter<String> countsByName = ipLoginFailureCounts.computeIfAbsent(
                 address, k -> new TimedCounter<>(resetThreshold, TimeUnit.MINUTES));
-            countsByName.increment(name);
+            countsByName.increment(name.toLowerCase());
         }
     }
 
@@ -66,7 +66,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         if (isEnabled) {
             TimedCounter<String> counter = ipLoginFailureCounts.get(address);
             if (counter != null) {
-                counter.remove(name);
+                counter.remove(name.toLowerCase());
             }
         }
     }

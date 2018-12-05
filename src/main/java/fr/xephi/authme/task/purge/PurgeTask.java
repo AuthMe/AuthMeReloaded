@@ -90,7 +90,7 @@ class PurgeTask extends BukkitRunnable {
             //we went through all offlineplayers but there are still names remaining
             for (String name : toPurge) {
                 if (!permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_PURGE)) {
-                    namePortion.add(name);
+                    namePortion.add(name.toLowerCase());
                 }
             }
             toPurge.clear();
