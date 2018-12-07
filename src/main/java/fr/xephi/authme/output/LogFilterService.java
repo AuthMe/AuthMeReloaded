@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class LogFilterService {
 
+    private static final String ISSUED_COMMAND_PREFIX_TEXT = "issued server command: /";
+
     @Inject
     private CommandMapper commandMapper;
-
-    private static final String ISSUED_COMMAND_PREFIX_TEXT = "issued server command: /";
 
     /**
      * Validate a message and return whether the message contains a sensitive AuthMe command.
@@ -35,6 +35,8 @@ public class LogFilterService {
             case UNKNOWN_LABEL:
             case MISSING_BASE_COMMAND:
                 return false;
+            default:
+                break;
         }
         return command.getCommandDescription().isSensitive();
     }
