@@ -13,14 +13,14 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 /**
- * Test for {@link LogFilterHelper}.
+ * Test for {@link LogFilterService}.
  */
 public class LogFilterHelperTest {
 
     private static final List<CommandDescription> ALL_COMMANDS = new CommandInitializer().getCommands();
 
     /**
-     * Checks that {@link LogFilterHelper#COMMANDS_TO_SKIP} contains the entries we expect
+     * Checks that {@link LogFilterService#COMMANDS_TO_SKIP} contains the entries we expect
      * (commands with password argument).
      */
     @Test
@@ -39,7 +39,7 @@ public class LogFilterHelperTest {
             .toArray(String[]::new);
 
         // when / then
-        assertThat(LogFilterHelper.COMMANDS_TO_SKIP, containsInAnyOrder(expectedEntries));
+        assertThat(LogFilterService.COMMANDS_TO_SKIP, containsInAnyOrder(expectedEntries));
 
     }
 

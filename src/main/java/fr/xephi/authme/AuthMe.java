@@ -211,7 +211,8 @@ public class AuthMe extends JavaPlugin {
         // Get settings and set up logger
         settings = injector.getSingleton(Settings.class);
         ConsoleLogger.setLoggingOptions(settings);
-        OnStartupTasks.setupConsoleFilter(settings, getLogger());
+        OnStartupTasks onStartupTasks = injector.newInstance(OnStartupTasks.class);
+        onStartupTasks.setupConsoleFilter(settings, getLogger());
 
         // Set all service fields on the AuthMe class
         instantiateServices(injector);
@@ -229,7 +230,6 @@ public class AuthMe extends JavaPlugin {
         registerEventListeners(injector);
 
         // Start Email recall task if needed
-        OnStartupTasks onStartupTasks = injector.newInstance(OnStartupTasks.class);
         onStartupTasks.scheduleRecallEmailTask();
     }
 

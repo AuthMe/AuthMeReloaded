@@ -55,6 +55,10 @@ public class CommandDescription {
      * Permission node required to execute this command.
      */
     private PermissionNode permission;
+    /**
+     * Defines if the command contains sensitive data
+     */
+    private boolean sensitive;
 
     /**
      * Private constructor.
@@ -72,7 +76,8 @@ public class CommandDescription {
      */
     private CommandDescription(List<String> labels, String description, String detailedDescription, 
                                Class<? extends ExecutableCommand> executableCommand, CommandDescription parent,
-                               List<CommandArgumentDescription> arguments,  PermissionNode permission) {
+                               List<CommandArgumentDescription> arguments,  PermissionNode permission,
+                               boolean sensitive) {
         this.labels = labels;
         this.description = description;
         this.detailedDescription = detailedDescription;
@@ -80,6 +85,7 @@ public class CommandDescription {
         this.parent = parent;
         this.arguments = arguments;
         this.permission = permission;
+        this.sensitive = sensitive;
     }
 
     /**
@@ -184,6 +190,10 @@ public class CommandDescription {
         return permission;
     }
 
+    public boolean isSensitive() {
+        return sensitive;
+    }
+
     /**
      * Return a builder instance to create a new command description.
      *
@@ -204,6 +214,7 @@ public class CommandDescription {
         private CommandDescription parent;
         private List<CommandArgumentDescription> arguments = new ArrayList<>();
         private PermissionNode permission;
+        private Boolean sensitive;
 
         /**
          * Build a CommandDescription and register it onto the parent if available.
@@ -232,7 +243,7 @@ public class CommandDescription {
             // parents and permissions may be null; arguments may be empty
 
             return new CommandDescription(labels, description, detailedDescription, executableCommand,
-                                          parent, arguments, permission);
+                                          parent, arguments, permission, sensitive == null ? false : sensitive);
         }
 
         public CommandBuilder labels(List<String> labels) {
@@ -287,6 +298,17 @@ public class CommandDescription {
          */
         public CommandBuilder permission(PermissionNode permission) {
             this.permission = permission;
+            return this;
+        }
+
+        /**
+         * Defines if the command contains sensitive data
+         *
+         * @param sensitive The sensitive data flag
+         * @return The builder
+         */
+        public CommandBuilder sensitive(boolean sensitive) {
+            this.sensitive = sensitive;
             return this;
         }
     }

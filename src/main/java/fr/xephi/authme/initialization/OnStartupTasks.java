@@ -7,6 +7,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
+import fr.xephi.authme.output.LogFilterService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -36,6 +37,8 @@ public class OnStartupTasks {
     private BukkitService bukkitService;
     @Inject
     private Messages messages;
+    @Inject
+    private LogFilterService logFilterService;
 
     OnStartupTasks() {
     }
@@ -61,7 +64,7 @@ public class OnStartupTasks {
      * @param settings the settings
      * @param logger   the plugin logger
      */
-    public static void setupConsoleFilter(Settings settings, Logger logger) {
+    public void setupConsoleFilter(Settings settings, Logger logger) {
         // Try to set the log4j filter
         try {
             Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
@@ -69,7 +72,7 @@ public class OnStartupTasks {
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             // log4j is not available
             ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
-            ConsoleFilter filter = new ConsoleFilter();
+            ConsoleFilter filter = new ConsoleFilter(logFilterService);
             logger.setFilter(filter);
             Bukkit.getLogger().setFilter(filter);
             Logger.getLogger("Minecraft").setFilter(filter);
@@ -77,10 +80,10 @@ public class OnStartupTasks {
     }
 
     // Set the console filter to remove the passwords
-    private static void setLog4JFilter() {
+    private void setLog4JFilter() {
         org.apache.logging.log4j.core.Logger logger;
         logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-        logger.addFilter(new Log4JFilter());
+        logger.addFilter(new Log4JFilter(logFilterService));
     }
 
     /**
