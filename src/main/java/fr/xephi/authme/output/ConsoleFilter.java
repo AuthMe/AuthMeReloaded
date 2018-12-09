@@ -1,5 +1,7 @@
 package fr.xephi.authme.output;
 
+import fr.xephi.authme.service.LogFilterService;
+
 import java.util.logging.Filter;
 import java.util.logging.LogRecord;
 

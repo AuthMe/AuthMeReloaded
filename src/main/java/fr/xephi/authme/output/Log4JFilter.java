@@ -1,5 +1,6 @@
 package fr.xephi.authme.output;
 
+import fr.xephi.authme.service.LogFilterService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;

@@ -1,4 +1,4 @@
-package fr.xephi.authme.output;
+package fr.xephi.authme.service;
 
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.FoundCommandResult;
@@ -36,8 +36,7 @@ public class LogFilterService {
             case MISSING_BASE_COMMAND:
                 return false;
             default:
-                break;
+                return command.getCommandDescription().isSensitive();
         }
-        return command.getCommandDescription().isSensitive();
     }
 }

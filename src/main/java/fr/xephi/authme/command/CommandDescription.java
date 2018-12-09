@@ -302,13 +302,12 @@ public class CommandDescription {
         }
 
         /**
-         * Defines if the command contains sensitive data
+         * Defines that the command contains sensitive data
          *
-         * @param sensitive The sensitive data flag
          * @return The builder
          */
-        public CommandBuilder sensitive(boolean sensitive) {
-            this.sensitive = sensitive;
+        public CommandBuilder sensitive() {
+            this.sensitive = true;
             return this;
         }
     }

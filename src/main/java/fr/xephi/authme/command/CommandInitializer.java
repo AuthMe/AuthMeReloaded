@@ -94,7 +94,7 @@ public class CommandInitializer {
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .withArgument("password", "Login password", MANDATORY)
             .permission(PlayerPermission.LOGIN)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(LoginCommand.class)
             .register();
 
@@ -117,7 +117,7 @@ public class CommandInitializer {
             .withArgument("password", "Password", OPTIONAL)
             .withArgument("verifyPassword", "Verify password", OPTIONAL)
             .permission(PlayerPermission.REGISTER)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(RegisterCommand.class)
             .register();
 
@@ -141,7 +141,7 @@ public class CommandInitializer {
             .withArgument("oldPassword", "Old password", MANDATORY)
             .withArgument("newPassword", "New password", MANDATORY)
             .permission(PlayerPermission.CHANGE_PASSWORD)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(ChangePasswordCommand.class)
             .register();
 
@@ -200,7 +200,7 @@ public class CommandInitializer {
             .withArgument("player", "Player name", MANDATORY)
             .withArgument("password", "Password", MANDATORY)
             .permission(AdminPermission.REGISTER)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(RegisterAdminCommand.class)
             .register();
 
@@ -235,7 +235,7 @@ public class CommandInitializer {
             .withArgument("player", "Player name", MANDATORY)
             .withArgument("pwd", "New password", MANDATORY)
             .permission(AdminPermission.CHANGE_PASSWORD)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(ChangePasswordAdminCommand.class)
             .register();
 
@@ -545,7 +545,7 @@ public class CommandInitializer {
             .detailedDescription("Set a new password after successfully recovering your account.")
             .withArgument("password", "New password", MANDATORY)
             .permission(PlayerPermission.RECOVER_EMAIL)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(EmailSetPasswordCommand.class)
             .register();
 
@@ -574,7 +574,7 @@ public class CommandInitializer {
             .description("Command for logging in")
             .detailedDescription("Processes the two-factor authentication code during login.")
             .withArgument("code", "The TOTP code to use to log in", MANDATORY)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(TotpCodeCommand.class)
             .register();
 
@@ -596,7 +596,7 @@ public class CommandInitializer {
             .detailedDescription("Saves the generated TOTP secret after confirmation.")
             .withArgument("code", "Code from the given secret from /totp add", MANDATORY)
             .permission(PlayerPermission.ENABLE_TWO_FACTOR_AUTH)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(ConfirmTotpCommand.class)
             .register();
 
@@ -608,7 +608,7 @@ public class CommandInitializer {
             .detailedDescription("Disables two-factor authentication for your account.")
             .withArgument("code", "Current 2FA code", MANDATORY)
             .permission(PlayerPermission.DISABLE_TWO_FACTOR_AUTH)
-            .sensitive(true)
+            .sensitive()
             .executableCommand(RemoveTotpCommand.class)
             .register();
 
