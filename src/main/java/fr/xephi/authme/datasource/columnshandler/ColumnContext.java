@@ -2,8 +2,8 @@ package fr.xephi.authme.datasource.columnshandler;
 
 import fr.xephi.authme.settings.Settings;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Context for resolving the properties of {@link AuthMeColumns} entries.
@@ -11,7 +11,7 @@ import java.util.Map;
 public class ColumnContext {
 
     private final Settings settings;
-    private final Map<DataSourceColumn<?>, String> columnNames = new HashMap<>();
+    private final Map<DataSourceColumn<?>, String> columnNames = new ConcurrentHashMap<>();
     private final boolean hasDefaultSupport;
 
     /**
