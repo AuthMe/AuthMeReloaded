@@ -114,9 +114,6 @@ You can also create your own translation file and, if you want, you can share it
 
 ## Credits
 
-##### Sponsor:
-[FastVM.io](https://fastvm.io) is leader in VPS hosting solutions. With its own DataCenter offers Anti-DDoS solutions at affordable prices.
-
 ##### Contributors:
 Team members: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>
 
