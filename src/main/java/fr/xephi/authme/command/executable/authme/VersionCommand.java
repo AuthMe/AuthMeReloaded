@@ -36,7 +36,7 @@ public class VersionCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0"
             + ChatColor.GRAY + ChatColor.ITALIC + " (See LICENSE file)");
         sender.sendMessage(ChatColor.GOLD + "Copyright: " + ChatColor.WHITE
-            + "Copyright (c) AuthMe-Team 2019. All rights reserved.");
+            + "Copyright (c) AuthMe-Team 2019. Released under GPL v3 License.");
     }
 
     /**
