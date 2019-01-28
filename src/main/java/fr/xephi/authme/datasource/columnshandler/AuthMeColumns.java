@@ -47,27 +47,6 @@ public final class AuthMeColumns {
         DatabaseSettings.MYSQL_COL_REGISTER_DATE, PlayerAuth::getRegistrationDate);
 
     // --------
-    // Location columns
-    // --------
-    public static final PlayerAuthColumn<Double> LOCATION_X = createDouble(
-        DatabaseSettings.MYSQL_COL_LASTLOC_X, PlayerAuth::getQuitLocX);
-
-    public static final PlayerAuthColumn<Double> LOCATION_Y = createDouble(
-        DatabaseSettings.MYSQL_COL_LASTLOC_Y, PlayerAuth::getQuitLocY);
-
-    public static final PlayerAuthColumn<Double> LOCATION_Z = createDouble(
-        DatabaseSettings.MYSQL_COL_LASTLOC_Z, PlayerAuth::getQuitLocZ);
-
-    public static final PlayerAuthColumn<String> LOCATION_WORLD = createString(
-        DatabaseSettings.MYSQL_COL_LASTLOC_WORLD, PlayerAuth::getWorld);
-
-    public static final PlayerAuthColumn<Float> LOCATION_YAW = createFloat(
-        DatabaseSettings.MYSQL_COL_LASTLOC_YAW, PlayerAuth::getYaw);
-
-    public static final PlayerAuthColumn<Float> LOCATION_PITCH = createFloat(
-        DatabaseSettings.MYSQL_COL_LASTLOC_PITCH, PlayerAuth::getPitch);
-
-    // --------
     // Columns not on PlayerAuth
     // --------
     public static final DataSourceColumn<Integer> IS_LOGGED = createInteger(
@@ -75,7 +54,6 @@ public final class AuthMeColumns {
 
     public static final DataSourceColumn<Integer> HAS_SESSION = createInteger(
         DatabaseSettings.MYSQL_COL_HASSESSION);
-
 
     private AuthMeColumns() {
     }

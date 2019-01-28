@@ -60,11 +60,6 @@ public class AsynchronousLogout implements AsynchronousProcess {
         PlayerAuth auth = playerCache.getAuth(name);
         database.updateSession(auth);
         bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, name);
-        if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-            auth.setQuitLocation(player.getLocation());
-            database.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
-        }
 
         playerCache.removePlayer(name);
         codeManager.unverify(name);

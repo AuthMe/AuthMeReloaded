@@ -97,10 +97,10 @@ class SqLiteMigrater {
 
         try (Statement st = connection.createStatement()) {
             String copySql = "INSERT INTO $table ($id, $name, $realName, $password, $lastIp, $lastLogin, $regIp, "
-                + "$regDate, $locX, $locY, $locZ, $locWorld, $locPitch, $locYaw, $email, $isLogged)"
+                + "$regDate, $email, $isLogged)"
                 + "SELECT $id, $name, $realName,"
                 + " $password, CASE WHEN $lastIp = '127.0.0.1' OR $lastIp = '' THEN NULL else $lastIp END,"
-                + " $lastLogin, $regIp, $regDate, $locX, $locY, $locZ, $locWorld, $locPitch, $locYaw,"
+                + " $lastLogin, $regIp, $regDate,"
                 + " CASE WHEN $email = 'your@email.com' THEN NULL ELSE $email END, $isLogged"
                 + " FROM " + tempTable + ";";
             int insertedEntries = st.executeUpdate(replaceColumnVariables(copySql));
@@ -115,10 +115,7 @@ class SqLiteMigrater {
             .replace("$name", col.NAME).replace("$realName", col.REAL_NAME)
             .replace("$password", col.PASSWORD).replace("$lastIp", col.LAST_IP)
             .replace("$lastLogin", col.LAST_LOGIN).replace("$regIp", col.REGISTRATION_IP)
-            .replace("$regDate", col.REGISTRATION_DATE).replace("$locX", col.LASTLOC_X)
-            .replace("$locY", col.LASTLOC_Y).replace("$locZ", col.LASTLOC_Z)
-            .replace("$locWorld", col.LASTLOC_WORLD).replace("$locPitch", col.LASTLOC_PITCH)
-            .replace("$locYaw", col.LASTLOC_YAW).replace("$email", col.EMAIL)
+            .replace("$regDate", col.REGISTRATION_DATE).replace("$email", col.EMAIL)
             .replace("$isLogged", col.IS_LOGGED);
         if (replacedSql.contains("$")) {
             throw new IllegalStateException("SQL still statement still has '$' in it - was a tag not replaced?"

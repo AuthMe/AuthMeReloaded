@@ -139,30 +139,6 @@ public class SQLite extends AbstractSqlDataSource {
                 addRegistrationDateColumn(st);
             }
 
-            if (isColumnMissing(md, col.LASTLOC_X)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_X
-                    + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Y
-                    + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Z
-                    + " DOUBLE NOT NULL DEFAULT '0.0';");
-            }
-
-            if (isColumnMissing(md, col.LASTLOC_WORLD)) {
-                st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
-            }
-
-            if (isColumnMissing(md, col.LASTLOC_YAW)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                    + col.LASTLOC_YAW + " FLOAT;");
-            }
-
-            if (isColumnMissing(md, col.LASTLOC_PITCH)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                    + col.LASTLOC_PITCH + " FLOAT;");
-            }
-
             if (isColumnMissing(md, col.EMAIL)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.EMAIL + " VARCHAR(255);");
@@ -369,12 +345,6 @@ public class SQLite extends AbstractSqlDataSource {
             .lastIp(row.getString(col.LAST_IP))
             .registrationDate(row.getLong(col.REGISTRATION_DATE))
             .registrationIp(row.getString(col.REGISTRATION_IP))
-            .locX(row.getDouble(col.LASTLOC_X))
-            .locY(row.getDouble(col.LASTLOC_Y))
-            .locZ(row.getDouble(col.LASTLOC_Z))
-            .locWorld(row.getString(col.LASTLOC_WORLD))
-            .locYaw(row.getFloat(col.LASTLOC_YAW))
-            .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .build();
     }
 

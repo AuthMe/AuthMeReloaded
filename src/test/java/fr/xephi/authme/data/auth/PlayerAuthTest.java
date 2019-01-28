@@ -64,6 +64,5 @@ public class PlayerAuthTest {
         assertThat(auth.getLastLogin(), nullValue());
         assertThat(auth.getLastIp(), nullValue());
         assertThat(auth.getGroupId(), equalTo(19));
-        assertThat(auth.getPitch(), equalTo(123.004f));
     }
 }

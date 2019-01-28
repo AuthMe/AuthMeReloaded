@@ -274,69 +274,11 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportBackToPlayerAuthLocation() {
+    public void shouldTeleportWithLimboPlayer() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
 
         PlayerAuth auth = createAuthWithLocation();
-        auth.setWorld("myWorld");
-        World world = mock(World.class);
-        given(bukkitService.getWorld("myWorld")).willReturn(world);
-
-        Player player = mock(Player.class);
-        given(player.isOnline()).willReturn(true);
-        LimboPlayer limbo = mock(LimboPlayer.class);
-        Location limboLocation = mockLocation();
-        given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
-
-        // when
-        teleportationService.teleportOnLogin(player, auth, limbo);
-
-        // then
-        ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
-        verify(player).teleport(locationCaptor.capture());
-        assertCorrectLocation(locationCaptor.getValue(), auth, world);
-    }
-
-    @Test
-    public void shouldTeleportAccordingToPlayerAuthAndPlayerWorldAsFallback() {
-        // given
-        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
-
-        PlayerAuth auth = createAuthWithLocation();
-        auth.setWorld("myWorld");
-        given(bukkitService.getWorld("myWorld")).willReturn(null);
-
-        Player player = mock(Player.class);
-        given(player.isOnline()).willReturn(true);
-        World world = mock(World.class);
-        given(player.getWorld()).willReturn(world);
-        LimboPlayer limbo = mock(LimboPlayer.class);
-        Location limboLocation = mockLocation();
-        given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
-
-        // when
-        teleportationService.teleportOnLogin(player, auth, limbo);
-
-        // then
-        ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
-        verify(player).teleport(locationCaptor.capture());
-        assertCorrectLocation(locationCaptor.getValue(), auth, world);
-    }
-
-    @Test
-    public void shouldTeleportWithLimboPlayerIfAuthYCoordIsNotSet() {
-        // given
-        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
-
-        PlayerAuth auth = createAuthWithLocation();
-        auth.setQuitLocY(0.0);
-        auth.setWorld("authWorld");
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
         LimboPlayer limbo = mock(LimboPlayer.class);
@@ -353,30 +295,8 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportWithLimboPlayerIfSaveQuitLocIsDisabled() {
-        // given
-        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
-
-        PlayerAuth auth = createAuthWithLocation();
-        Player player = mock(Player.class);
-        given(player.isOnline()).willReturn(true);
-        LimboPlayer limbo = mock(LimboPlayer.class);
-        Location location = mockLocation();
-        given(limbo.getLocation()).willReturn(location);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
-
-        // when
-        teleportationService.teleportOnLogin(player, auth, limbo);
-
-        // then
-        verify(player).teleport(location);
-    }
-
-    @Test
     public void shouldNotTeleportForNullLocationInLimboPlayer() {
         // given
-        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
 
         PlayerAuth auth = PlayerAuth.builder().name("bobby").build();
@@ -389,13 +309,6 @@ public class TeleportationServiceTest {
         // then
         verifyZeroInteractions(player);
         verify(limbo, times(2)).getLocation();
-    }
-
-    private static void assertCorrectLocation(Location location, PlayerAuth auth, World world) {
-        assertThat(location.getX(), equalTo(auth.getQuitLocX()));
-        assertThat(location.getY(), equalTo(auth.getQuitLocY()));
-        assertThat(location.getZ(), equalTo(auth.getQuitLocZ()));
-        assertThat(location.getWorld(), equalTo(world));
     }
 
     // We check that the World in Location is set, this method creates a mock World in Location for us

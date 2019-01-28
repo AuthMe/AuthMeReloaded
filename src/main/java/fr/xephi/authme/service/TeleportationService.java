@@ -137,11 +137,7 @@ public class TeleportationService implements Reloadable {
             ConsoleLogger.debug("Teleporting `{0}` to spawn because of 'force-spawn after login'", player.getName());
             teleportToSpawn(player, true);
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
-            if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && auth.getQuitLocY() != 0) {
-                Location location = buildLocationFromAuth(player, auth);
-                ConsoleLogger.debug("Teleporting `{0}` after login, based on the player auth", player.getName());
-                teleportBackFromSpawn(player, location);
-            } else if (limbo != null && limbo.getLocation() != null) {
+            if (limbo != null && limbo.getLocation() != null) {
                 ConsoleLogger.debug("Teleporting `{0}` after login, based on the limbo player", player.getName());
                 teleportBackFromSpawn(player, limbo.getLocation());
             }
@@ -151,15 +147,6 @@ public class TeleportationService implements Reloadable {
     private boolean mustForceSpawnAfterLogin(String worldName) {
         return worldName != null && settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)
             && spawnOnLoginWorlds.contains(worldName);
-    }
-
-    private Location buildLocationFromAuth(Player player, PlayerAuth auth) {
-        World world = bukkitService.getWorld(auth.getWorld());
-        if (world == null) {
-            world = player.getWorld();
-        }
-        return new Location(world, auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(),
-            auth.getYaw(), auth.getPitch());
     }
 
     private void teleportBackFromSpawn(final Player player, final Location location) {

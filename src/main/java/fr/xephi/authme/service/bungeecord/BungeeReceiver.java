@@ -78,7 +78,6 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
                 dataSource.invalidateCache(argument);
                 break;
             case REFRESH_PASSWORD:
-            case REFRESH_QUITLOC:
             case REFRESH_EMAIL:
             case REFRESH:
                 dataSource.refreshCache(argument);

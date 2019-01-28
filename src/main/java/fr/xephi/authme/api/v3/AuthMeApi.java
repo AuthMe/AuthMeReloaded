@@ -12,6 +12,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.util.PlayerUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -122,14 +123,11 @@ public class AuthMeApi {
      *
      * @param player The player to process
      * @return The location of the player
+     * @deprecated No longer implemented
      */
+    @Deprecated
     public Location getLastLocation(Player player) {
-        PlayerAuth auth = playerCache.getAuth(player.getName());
-        if (auth != null) {
-            return new Location(Bukkit.getWorld(auth.getWorld()),
-                auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getYaw(), auth.getPitch());
-        }
-        return null;
+        throw new NotImplementedException();
     }
 
     /**

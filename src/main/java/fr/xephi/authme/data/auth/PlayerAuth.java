@@ -33,13 +33,6 @@ public class PlayerAuth {
     private Long lastLogin;
     private String registrationIp;
     private long registrationDate;
-    // Fields storing the player's quit location
-    private double x;
-    private double y;
-    private double z;
-    private String world;
-    private float yaw;
-    private float pitch;
 
     /**
      * Hidden constructor.
@@ -68,53 +61,6 @@ public class PlayerAuth {
 
     public int getGroupId() {
         return groupId;
-    }
-
-    public void setQuitLocation(Location location) {
-        x = location.getBlockX();
-        y = location.getBlockY();
-        z = location.getBlockZ();
-        world = location.getWorld().getName();
-    }
-
-    public double getQuitLocX() {
-        return x;
-    }
-
-    public void setQuitLocX(double d) {
-        this.x = d;
-    }
-
-    public double getQuitLocY() {
-        return y;
-    }
-
-    public void setQuitLocY(double d) {
-        this.y = d;
-    }
-
-    public double getQuitLocZ() {
-        return z;
-    }
-
-    public void setQuitLocZ(double d) {
-        this.z = d;
-    }
-
-    public String getWorld() {
-        return world;
-    }
-
-    public void setWorld(String world) {
-        this.world = world;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public float getPitch() {
-        return pitch;
     }
 
     public String getLastIp() {
@@ -191,7 +137,6 @@ public class PlayerAuth {
         return "Player : " + nickname + " | " + realName
             + " ! IP : " + lastIp
             + " ! LastLogin : " + lastLogin
-            + " ! LastPosition : " + x + "," + y + "," + z + "," + world
             + " ! Email : " + email
             + " ! Password : {" + password.getHash() + ", " + password.getSalt() + "}";
     }
@@ -236,13 +181,6 @@ public class PlayerAuth {
             auth.lastLogin = isEqualTo(lastLogin, DB_LAST_LOGIN_DEFAULT) ? null : lastLogin;
             auth.registrationIp = registrationIp;
             auth.registrationDate = registrationDate == null ? System.currentTimeMillis() : registrationDate;
-
-            auth.x = x;
-            auth.y = y;
-            auth.z = z;
-            auth.world = Optional.ofNullable(world).orElse("world");
-            auth.yaw = yaw;
-            auth.pitch = pitch;
             return auth;
         }
 

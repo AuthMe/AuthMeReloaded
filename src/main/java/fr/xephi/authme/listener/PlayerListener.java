@@ -471,15 +471,6 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
         Location spawn = spawnLoader.getSpawnLocation(player);
-        if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && dataSource.isAuthAvailable(name)) {
-            PlayerAuth auth = PlayerAuth.builder()
-                .name(name)
-                .realName(player.getName())
-                .location(spawn)
-                .build();
-            dataSource.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
-        }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);
         }

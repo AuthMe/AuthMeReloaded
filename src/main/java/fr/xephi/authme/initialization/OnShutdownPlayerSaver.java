@@ -58,21 +58,7 @@ public class OnShutdownPlayerSaver {
         }
         if (limboService.hasLimboPlayer(name)) {
             limboService.restoreData(player);
-        } else {
-            saveLoggedinPlayer(player);
         }
         playerCache.removePlayer(name);
-    }
-
-    private void saveLoggedinPlayer(Player player) {
-        if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-            Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
-            final PlayerAuth auth = PlayerAuth.builder()
-                .name(player.getName().toLowerCase())
-                .realName(player.getName())
-                .location(loc).build();
-            dataSource.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, player.getName());
-        }
     }
 }

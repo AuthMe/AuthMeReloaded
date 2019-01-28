@@ -104,14 +104,6 @@ public interface DataSource extends Reloadable {
     boolean removeAuth(String user);
 
     /**
-     * Update the quit location of a PlayerAuth.
-     *
-     * @param auth The entry whose quit location should be updated
-     * @return True upon success, false upon failure
-     */
-    boolean updateQuitLoc(PlayerAuth auth);
-
-    /**
      * Return all usernames associated with the given IP address.
      *
      * @param ip The IP address to look up

@@ -81,11 +81,6 @@ public enum AdminPermission implements PermissionNode {
     PURGE("authme.admin.purge"),
 
     /**
-     * Administrator command to purge the last position of a user.
-     */
-    PURGE_LAST_POSITION("authme.admin.purgelastpos"),
-
-    /**
      * Administrator command to purge all data associated with banned players.
      */
     PURGE_BANNED_PLAYERS("authme.admin.purgebannedplayers"),

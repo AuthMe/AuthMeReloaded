@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
-import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static fr.xephi.authme.AuthMeMatchers.hasRegistrationInfo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -101,14 +100,12 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(invalidAuth, nullValue());
 
         assertThat(bobbyAuth, hasAuthBasicData("bobby", "Bobby", null, "123.45.67.89"));
-        assertThat(bobbyAuth, hasAuthLocation(1.05, 2.1, 4.2, "world", -0.44f, 2.77f));
         assertThat(bobbyAuth, hasRegistrationInfo("127.0.4.22", 1436778723L));
         assertThat(bobbyAuth.getLastLogin(), equalTo(1449136800L));
         assertThat(bobbyAuth.getPassword(), equalToHash("$SHA$11aa0706173d7272$dbba966"));
         assertThat(bobbyAuth.getTotpKey(), equalTo("JBSWY3DPEHPK3PXP"));
 
         assertThat(userAuth, hasAuthBasicData("user", "user", "user@example.org", "34.56.78.90"));
-        assertThat(userAuth, hasAuthLocation(124.1, 76.3, -127.8, "nether", 0.23f, 4.88f));
         assertThat(userAuth, hasRegistrationInfo(null, 0));
         assertThat(userAuth.getLastLogin(), equalTo(1453242857L));
         assertThat(userAuth.getPassword(), equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
@@ -233,22 +230,6 @@ public abstract class AbstractDataSourceIntegrationTest {
         PlayerAuth result = dataSource.getAuth("bobby");
         assertThat(result, hasAuthBasicData("bobby", "BOBBY", null, "12.12.12.12"));
         assertThat(result.getLastLogin(), equalTo(123L));
-    }
-
-    @Test
-    public void shouldUpdateLastLoc() {
-        // given
-        DataSource dataSource = getDataSource();
-        PlayerAuth user = PlayerAuth.builder()
-            .name("user").locX(143).locY(-42.12).locZ(29.47)
-            .locWorld("the_end").locYaw(2.2f).locPitch(0.45f).build();
-
-        // when
-        boolean response = dataSource.updateQuitLoc(user);
-
-        // then
-        assertThat(response, equalTo(true));
-        assertThat(dataSource.getAuth("user"), hasAuthLocation(user));
     }
 
     @Test

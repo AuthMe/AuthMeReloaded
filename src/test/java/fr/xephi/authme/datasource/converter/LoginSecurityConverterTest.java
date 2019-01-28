@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
-import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
@@ -84,7 +83,6 @@ public class LoginSecurityConverterTest {
 
         assertThat(captor.getAllValues().get(2).getRealName(), equalTo("Player3"));
         assertThat(captor.getAllValues().get(2).getPassword(), equalToHash("$2a$10$WFui8KSXMLDOVXKFpCLyPukPi4M82w1cv/rNojsAnwJjba3pp8sba"));
-        assertThat(captor.getAllValues().get(2), hasAuthLocation(14.24, 67.99, -12.83, "hubb", -10f, 185f));
         assertThat(captor.getAllValues().get(2).getLastIp(), nullValue());
         assertIsCloseTo(captor.getAllValues().get(2).getRegistrationDate(), System.currentTimeMillis(), 500L);
     }
@@ -118,7 +116,6 @@ public class LoginSecurityConverterTest {
 
         assertThat(captor.getAllValues().get(2).getRealName(), equalTo("Player3"));
         assertThat(captor.getAllValues().get(2).getPassword(), equalToHash("$2a$10$WFui8KSXMLDOVXKFpCLyPukPi4M82w1cv/rNojsAnwJjba3pp8sba"));
-        assertThat(captor.getAllValues().get(2), hasAuthLocation(14.24, 67.99, -12.83, "hubb", -10f, 185f));
     }
 
     private Connection initializeMySqlTable() throws IOException, SQLException {

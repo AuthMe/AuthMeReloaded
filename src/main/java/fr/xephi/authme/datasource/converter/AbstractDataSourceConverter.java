@@ -63,7 +63,6 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
                 adaptPlayerAuth(auth);
                 destination.saveAuth(auth);
                 destination.updateSession(auth);
-                destination.updateQuitLoc(auth);
             }
         }
 

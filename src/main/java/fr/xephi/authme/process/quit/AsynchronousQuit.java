@@ -72,14 +72,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
         final boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
         if (wasLoggedIn) {
-            if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-                Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
-                PlayerAuth auth = PlayerAuth.builder()
-                    .name(name).location(loc)
-                    .realName(player.getName()).build();
-                database.updateQuitLoc(auth);
-            }
-
             final String ip = PlayerUtils.getPlayerIp(player);
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
@@ -88,7 +80,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip

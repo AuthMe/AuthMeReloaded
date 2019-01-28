@@ -68,8 +68,6 @@ class PlayerAuthViewer implements DebugSection {
     private void displayAuthToSender(PlayerAuth auth, CommandSender sender) {
         sender.sendMessage(ChatColor.BLUE + "[AuthMe] Player " + auth.getNickname() + " / " + auth.getRealName());
         sender.sendMessage("Email: " + auth.getEmail() + ". IP: " + auth.getLastIp() + ". Group: " + auth.getGroupId());
-        sender.sendMessage("Quit location: "
-            + formatLocation(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld()));
         sender.sendMessage("Last login: " + formatDate(auth.getLastLogin()));
         sender.sendMessage("Registration: " + formatDate(auth.getRegistrationDate())
             + " with IP " + auth.getRegistrationIp());

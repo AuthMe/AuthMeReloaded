@@ -14,7 +14,6 @@ import fr.xephi.authme.command.executable.authme.GetIpCommand;
 import fr.xephi.authme.command.executable.authme.LastLoginCommand;
 import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
 import fr.xephi.authme.command.executable.authme.PurgeCommand;
-import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
 import fr.xephi.authme.command.executable.authme.PurgePlayerCommand;
 import fr.xephi.authme.command.executable.authme.RecentPlayersCommand;
 import fr.xephi.authme.command.executable.authme.RegisterAdminCommand;
@@ -361,18 +360,6 @@ public class CommandInitializer {
             .detailedDescription("Creates a backup of the registered users.")
             .permission(AdminPermission.BACKUP)
             .executableCommand(BackupCommand.class)
-            .register();
-
-        // Register the purgelastposition command
-        CommandDescription.builder()
-            .parent(authmeBase)
-            .labels("resetpos", "purgelastposition", "purgelastpos", "resetposition",
-                "resetlastposition", "resetlastpos")
-            .description("Purge player's last position")
-            .detailedDescription("Purge the last know position of the specified player or all of them.")
-            .withArgument("player/*", "Player name or * for all players", MANDATORY)
-            .permission(AdminPermission.PURGE_LAST_POSITION)
-            .executableCommand(PurgeLastPositionCommand.class)
             .register();
 
         // Register the purgebannedplayers command

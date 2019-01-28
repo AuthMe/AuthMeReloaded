@@ -5,7 +5,6 @@ import java.util.Optional;
 public enum MessageType {
     REFRESH_PASSWORD("refresh.password", true, true),
     REFRESH_SESSION("refresh.session", true, true),
-    REFRESH_QUITLOC("refresh.quitloc", true, true),
     REFRESH_EMAIL("refresh.email", true, true),
     REFRESH("refresh", true, true),
     REGISTER("register", true),

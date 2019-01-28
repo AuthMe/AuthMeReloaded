@@ -99,7 +99,6 @@ public class AbstractDataSourceConverterTest {
         verify(destination, times(3)).isAuthAvailable(anyString());
         verify(destination, times(2)).saveAuth(any(PlayerAuth.class));
         verify(destination, times(2)).updateSession(any(PlayerAuth.class));
-        verify(destination, times(2)).updateQuitLoc(any(PlayerAuth.class));
         verifyNoMoreInteractions(destination);
         verify(sender).sendMessage(argThat(containsString(auths.get(0).getNickname())));
         verify(sender).sendMessage(argThat(containsString("successfully converted")));

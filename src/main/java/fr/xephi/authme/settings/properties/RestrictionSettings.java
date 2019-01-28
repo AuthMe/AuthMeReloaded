@@ -66,10 +66,6 @@ public final class RestrictionSettings implements SettingsHolder {
         newListProperty("settings.restrictions.ForceSpawnLocOnJoin.worlds",
             "world", "world_nether", "world_the_end");
 
-    @Comment("This option will save the quit location of the players.")
-    public static final Property<Boolean> SAVE_QUIT_LOCATION =
-        newProperty("settings.restrictions.SaveQuitLocation", false);
-
     @Comment({
         "To activate the restricted user feature you need",
         "to enable this option and configure the AllowedRestrictedUser field."})

@@ -124,38 +124,6 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldGetLastLocation() {
-        // given
-        String name = "Gary";
-        Player player = mockPlayerWithName(name);
-        PlayerAuth auth = PlayerAuth.builder().name(name)
-            .locWorld("world")
-            .locX(12.4)
-            .locY(24.6)
-            .locZ(-438.2)
-            .locYaw(3.41f)
-            .locPitch(0.29f)
-            .build();
-        given(playerCache.getAuth(name)).willReturn(auth);
-        Server server = mock(Server.class);
-        ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        World world = mock(World.class);
-        given(server.getWorld(auth.getWorld())).willReturn(world);
-
-        // when
-        Location result = api.getLastLocation(player);
-
-        // then
-        assertThat(result, not(nullValue()));
-        assertThat(result.getX(), equalTo(auth.getQuitLocX()));
-        assertThat(result.getY(), equalTo(auth.getQuitLocY()));
-        assertThat(result.getZ(), equalTo(auth.getQuitLocZ()));
-        assertThat(result.getWorld(), equalTo(world));
-        assertThat(result.getYaw(), equalTo(auth.getYaw()));
-        assertThat(result.getPitch(), equalTo(auth.getPitch()));
-    }
-
-    @Test
     public void shouldGetLastIp() {
         // given
         String name = "Gabriel";
@@ -255,20 +223,6 @@ public class AuthMeApiTest {
         // then
         assertThat(result, nullValue());
         verify(dataSource).getAuth(name);
-    }
-
-    @Test
-    public void shouldReturnNullForUnavailablePlayer() {
-        // given
-        String name = "Numan";
-        Player player = mockPlayerWithName(name);
-        given(playerCache.getAuth(name)).willReturn(null);
-
-        // when
-        Location result = api.getLastLocation(player);
-
-        // then
-        assertThat(result, nullValue());
     }
 
     @Test

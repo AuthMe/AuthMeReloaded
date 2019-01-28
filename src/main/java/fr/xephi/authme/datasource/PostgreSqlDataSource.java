@@ -200,28 +200,6 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
                     + " ADD COLUMN " + col.REGISTRATION_IP + " VARCHAR(40);");
             }
 
-            if (isColumnMissing(md, col.LASTLOC_X)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                    + col.LASTLOC_X + " DOUBLE PRECISION NOT NULL DEFAULT '0.0' , ADD "
-                    + col.LASTLOC_Y + " DOUBLE PRECISION NOT NULL DEFAULT '0.0' , ADD "
-                    + col.LASTLOC_Z + " DOUBLE PRECISION NOT NULL DEFAULT '0.0';");
-            }
-
-            if (isColumnMissing(md, col.LASTLOC_WORLD)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                    + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
-            }
-
-            if (isColumnMissing(md, col.LASTLOC_YAW)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                    + col.LASTLOC_YAW + " FLOAT;");
-            }
-
-            if (isColumnMissing(md, col.LASTLOC_PITCH)) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                    + col.LASTLOC_PITCH + " FLOAT;");
-            }
-
             if (isColumnMissing(md, col.EMAIL)) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
                     + col.EMAIL + " VARCHAR(255);");
@@ -444,12 +422,6 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             .registrationDate(row.getLong(col.REGISTRATION_DATE))
             .registrationIp(row.getString(col.REGISTRATION_IP))
             .groupId(group)
-            .locWorld(row.getString(col.LASTLOC_WORLD))
-            .locX(row.getDouble(col.LASTLOC_X))
-            .locY(row.getDouble(col.LASTLOC_Y))
-            .locZ(row.getDouble(col.LASTLOC_Z))
-            .locYaw(row.getFloat(col.LASTLOC_YAW))
-            .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .build();
     }
 }

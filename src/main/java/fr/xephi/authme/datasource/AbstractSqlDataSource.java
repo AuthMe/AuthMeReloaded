@@ -85,13 +85,6 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateQuitLoc(PlayerAuth auth) {
-        return columnsHandler.update(auth,
-            AuthMeColumns.LOCATION_X, AuthMeColumns.LOCATION_Y, AuthMeColumns.LOCATION_Z,
-            AuthMeColumns.LOCATION_WORLD, AuthMeColumns.LOCATION_YAW, AuthMeColumns.LOCATION_PITCH);
-    }
-
-    @Override
     public List<String> getAllAuthsByIp(String ip) {
         try {
             return columnsHandler.retrieve(eq(AuthMeColumns.LAST_IP, ip), AuthMeColumns.NAME);

@@ -135,15 +135,6 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateQuitLoc(final PlayerAuth auth) {
-        boolean result = source.updateQuitLoc(auth);
-        if (result) {
-            cachedAuths.refresh(auth.getNickname());
-        }
-        return result;
-    }
-
-    @Override
     public Set<String> getRecordsToPurge(long until) {
         return source.getRecordsToPurge(until);
     }

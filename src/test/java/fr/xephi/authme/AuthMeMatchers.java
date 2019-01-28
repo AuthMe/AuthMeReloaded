@@ -91,33 +91,6 @@ public final class AuthMeMatchers {
         };
     }
 
-    public static Matcher<? super PlayerAuth> hasAuthLocation(PlayerAuth auth) {
-        return hasAuthLocation(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(),
-            auth.getYaw(), auth.getPitch());
-    }
-
-    public static Matcher<? super PlayerAuth> hasAuthLocation(double x, double y, double z,
-                                                              String world, float yaw, float pitch) {
-        return new TypeSafeMatcher<PlayerAuth>() {
-            @Override
-            public boolean matchesSafely(PlayerAuth item) {
-                return Objects.equals(x, item.getQuitLocX())
-                    && Objects.equals(y, item.getQuitLocY())
-                    && Objects.equals(z, item.getQuitLocZ())
-                    && Objects.equals(world, item.getWorld())
-                    && Objects.equals(yaw, item.getYaw())
-                    && Objects.equals(pitch, item.getPitch());
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendValue(
-                    String.format("PlayerAuth with quit location (x: %f, y: %f, z: %f, world: %s, yaw: %f, pitch: %f)",
-                        x, y, z, world, yaw, pitch));
-            }
-        };
-    }
-
     public static Matcher<String> stringWithLength(int length) {
         return new TypeSafeMatcher<String>() {
             @Override
