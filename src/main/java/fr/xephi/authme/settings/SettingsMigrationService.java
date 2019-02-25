@@ -4,6 +4,7 @@ import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyReader;
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
@@ -51,7 +52,8 @@ public class SettingsMigrationService extends PlainMigrationService {
      * it will be moved into the "legacy hashes" property and the default will be used instead.
      * Note: do not add PLAINTEXT to this set as it is handled elsewhere (force-migration).
      */
-    private static final EnumSet<HashAlgorithm> DEPRECATED_ARGUMENTS =
+    @VisibleForTesting
+    static final Set<HashAlgorithm> DEPRECATED_ARGUMENTS =
         EnumSet.of(DOUBLEMD5, MD5, SHA1, SHA512, TWO_FACTOR, WHIRLPOOL);
 
     private final File pluginFolder;

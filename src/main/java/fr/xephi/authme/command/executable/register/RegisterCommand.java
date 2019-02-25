@@ -59,7 +59,7 @@ public class RegisterCommand extends PlayerCommand {
         // Check if we are migrating from old 2FA -> we reuse this method for simplicity but in reality if we match
         // this condition the user is already registered and we override the password with the given one
         if (limbo != null && limbo.getState() == LimboPlayerState.NEW_PASSWORD_FOR_TWO_FACTOR_MIGRATION_REQUIRED) {
-            handleNewPasswordInMigration(player, arguments);
+            handleNewPasswordFromTwoFactorMigration(player, arguments);
             return;
         }
 
@@ -208,13 +208,13 @@ public class RegisterCommand extends PlayerCommand {
     }
 
     /**
-     * Handles the input arguments for a forced password migration. Two arguments are expected, password
-     * and password confirmation.
+     * Handles the input arguments for a forced password migration from the old two factor hash.
+     * Two arguments are expected, password and password confirmation.
      *
      * @param player the player
      * @param arguments the arguments supplied to the command
      */
-    private void handleNewPasswordInMigration(Player player, List<String> arguments) {
+    private void handleNewPasswordFromTwoFactorMigration(Player player, List<String> arguments) {
         if (arguments.size() != 2) {
             player.sendMessage("Expected two arguments! /register <password> <confirmPassword>");
         } else if (!arguments.get(0).equals(arguments.get(1))) {
