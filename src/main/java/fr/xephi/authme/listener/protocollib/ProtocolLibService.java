@@ -58,8 +58,9 @@ public class ProtocolLibService implements SettingsDependent {
         // Set up packet adapters
         if (protectInvBeforeLogin) {
             if (inventoryPacketAdapter == null) {
+                // register the packet listener and start hiding it for all already online players (reload)
                 inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache);
-                inventoryPacketAdapter.register();
+                inventoryPacketAdapter.register(bukkitService, true);
             }
         } else if (inventoryPacketAdapter != null) {
             inventoryPacketAdapter.unregister();

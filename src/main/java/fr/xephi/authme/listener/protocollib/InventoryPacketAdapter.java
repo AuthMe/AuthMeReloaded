@@ -27,6 +27,8 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.service.BukkitService;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -63,8 +65,14 @@ class InventoryPacketAdapter extends PacketAdapter {
         }
     }
 
-    public void register() {
+    public void register(BukkitService bukkitService, boolean hideNow) {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
+
+        if (hideNow) {
+            bukkitService.getOnlinePlayers().stream()
+                    .filter(player -> playerCache.isAuthenticated(player.getName()))
+                    .forEach(this::sendBlankInventoryPacket);
+        }
     }
 
     public void unregister() {

@@ -110,6 +110,4 @@ public interface PermissionHandler {
     default void loadUserData(UUID uuid) throws PermissionLoadUserException {
     }
 
-    default void loadUserData(String name) throws PermissionLoadUserException {
-    }
 }

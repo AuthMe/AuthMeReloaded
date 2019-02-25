@@ -6,13 +6,12 @@
 
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
-    <version>5.5.0-SNAPSHOT</version>
+    <version>5.5.1-SNAPSHOT</version>
 
     <name>AuthMeReloaded</name>
     <description>The first authentication plugin for the Bukkit API!</description>
     <inceptionYear>2013</inceptionYear>
-    <url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
-    <!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
+    <url>https://github.com/AuthMe/AuthMeReloaded</url>
 
     <organization>
         <name>AuthMe-Team</name>
@@ -55,30 +54,30 @@
     </licenses>
 
     <properties>
-        <!-- Project properties -->
+        <!-- Build cycle properties -->
+        <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
+
+        <!-- Environment properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jdk.version>1.8</jdk.version>
+        <java.version>1.8</java.version>
+        <maven.minimumVersion>3.3.9</maven.minimumVersion>
 
-        <!-- Output properties -->
+        <!-- Dependencies versions -->
+        <spigot.version>1.13.2-R0.1-SNAPSHOT</spigot.version>
+
+        <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
         <project.buildNumber>CUSTOM</project.buildNumber>
-        <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
         <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
+        <project.finalNameBase>${project.outputName}-${project.version}</project.finalNameBase>
 
-        <!-- BukkitPlugin properties -->
-        <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
-        <bukkitplugin.version>${project.versionCode}</bukkitplugin.version>
-        <bukkitplugin.main>${project.groupId}.${project.artifactId}.${bukkitplugin.name}</bukkitplugin.main>
-        <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</bukkitplugin.authors>
-
-        <!-- Change Bukkit Version HERE! -->
-        <bukkit.version>1.13-R0.1-SNAPSHOT</bukkit.version>
+        <!-- Plugin description file properties -->
+        <pluginDescription.name>${project.outputName}</pluginDescription.name>
+        <pluginDescription.version>${project.versionCode}</pluginDescription.version>
+        <pluginDescription.main>${project.groupId}.${project.artifactId}.${pluginDescription.name}</pluginDescription.main>
+        <pluginDescription.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</pluginDescription.authors>
     </properties>
-
-    <prerequisites>
-        <maven>3.3.9</maven>
-    </prerequisites>
 
     <!-- Jenkins profile -->
     <profiles>
@@ -109,8 +108,9 @@
     </profiles>
 
     <build>
-        <defaultGoal>clean install</defaultGoal>
-        <finalName>${project.outputName}-${project.version}-noshade</finalName>
+        <defaultGoal>clean package</defaultGoal>
+        <!-- Little hack to make the shade plugin output a file with the right name -->
+        <finalName>${project.finalNameBase}-noshade</finalName>
 
         <resources>
             <resource>
@@ -132,29 +132,55 @@
         </resources>
 
         <plugins>
+            <!-- Enforce build environment -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-environment</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>${maven.minimumVersion}</version>
+                                </requireMavenVersion>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Clean the target folder content -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.1.0</version>
             </plugin>
+            <!-- Include resource files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.1.0</version>
             </plugin>
+            <!-- Compile and include classes -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <!-- Generate test coverage reports -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.2</version>
+                <version>0.8.3</version>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -170,10 +196,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Unit testing -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>2.22.1</version>
                 <configuration>
                     <!-- Force the right file encoding during unit testing -->
                     <!-- Set language to English in order to get consistent results for localized time formatting -->
@@ -181,17 +208,24 @@
                     <systemPropertyVariables>
                         <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
                     </systemPropertyVariables>
+                    <!-- Don't trim stack traces -->
+                    <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
+            <!-- Generate a jar containing classes and resources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
             </plugin>
+            <!-- Generate a jar containing the source javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.0.1</version>
+                <configuration>
+                    <finalName>${project.finalNameBase}</finalName>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadoc</id>
@@ -199,23 +233,16 @@
                             <goal>jar</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>aggregate-javadoc</id>
-                        <goals>
-                            <goal>aggregate</goal>
-                        </goals>
-                    </execution>
                 </executions>
-                <configuration>
-                    <finalName>${project.outputName}-${project.version}</finalName>
-                    <show>public</show>
-                    <failOnError>false</failOnError>
-                </configuration>
             </plugin>
+            <!-- Generate a jar containing the java sources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.0.1</version>
+                <configuration>
+                    <finalName>${project.finalNameBase}</finalName>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -224,14 +251,12 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <finalName>${project.outputName}-${project.version}</finalName>
-                </configuration>
             </plugin>
+            <!-- Generate a jar containing classes, resources and shaded libraries -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -241,20 +266,18 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <!-- Deploy the non shaded jar as main artifact -->
                     <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <finalName>${project.outputName}-${project.version}</finalName>
+                    <!-- Use the base jar name, to help server owners download the right jar -->
+                    <finalName>${project.finalNameBase}</finalName>
 
                     <!--
                     Relocate all lib we use in order to fix class loading errors if we use different versions
-                    than already loaded libs (i.e. by Mojang -> gson)
+                    than already loaded libs
                     -->
                     <relocations>
-                        <!-- Include all google libraries, because they are not available before 1.12 -->
-                        <relocation>
-                            <pattern>com.google</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.google</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>ch.jalu</pattern>
                             <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
@@ -299,14 +322,14 @@
                             <pattern>at.favre.lib</pattern>
                             <shadedPattern>fr.xephi.authme.libs.at.favre.lib</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.postgresql</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.org.postgresql</shadedPattern>
+                        </relocation>
                         <!-- bStats metrics class -->
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.postgresql</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.postgresql</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -323,27 +346,31 @@
                     </filters>
                 </configuration>
             </plugin>
+            <!-- Install the jars as artifacts into the local repository -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5.2</version>
             </plugin>
+            <!-- Deploy the jars as artifacts into the remote repository -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
             </plugin>
+            <!-- Handle documentation generation, required by other plugins -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.7.1</version>
             </plugin>
+            <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.3.0</version>
                 <configuration>
-                    <!-- The secret token is provided with a command-line parameter! -->
+                    <!-- The secret token is provided with a command-line parameter -->
                     <failOnServiceError>false</failOnServiceError>
                 </configuration>
             </plugin>
@@ -357,10 +384,16 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
 
-        <!-- Essentials Repo -->
+        <!-- CodeMC Repo (Contains many required libraries) -->
         <repository>
-            <id>ess-repo</id>
-            <url>http://repo.ess3.net/content/groups/essentials</url>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
+
+        <!-- EssentialsX Repo -->
+        <repository>
+            <id>enderzone-repo</id>
+            <url>https://ci.ender.zone/plugin/repository/everything</url>
         </repository>
 
         <!-- ProtocolLib Repo -->
@@ -379,18 +412,6 @@
         <repository>
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
-        </repository>
-
-        <!-- Our Repo (Many libs) -->
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
-        </repository>
-
-        <!-- bStats Repo -->
-        <repository>
-            <id>bstats-repo</id>
-            <url>http://repo.bstats.org/content/groups/public</url>
         </repository>
     </repositories>
 
@@ -413,22 +434,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- GSON (required to provide 1.7.10 and below compatibility) -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Guava (required to allow compatibility with any version since 1.7.10) -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- MaxMind GEO IP with our modifications to use GSON in replacement of the big Jackson dependency -->
         <!-- GSON is already included and therefore it reduces the file size in comparison to the original version -->
         <dependency>
@@ -436,6 +441,12 @@
             <artifactId>maxmind-db-gson</artifactId>
             <version>2.0.2-SNAPSHOT</version>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Library for tar archives -->
@@ -466,7 +477,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.1</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -479,7 +490,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.26</version>
             <optional>true</optional>
         </dependency>
 
@@ -495,7 +506,7 @@
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
-            <version>2.4</version>
+            <version>2.5</version>
             <optional>true</optional>
         </dependency>
 
@@ -511,7 +522,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>${bukkit.version}</version>
+            <version>${spigot.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -519,22 +530,28 @@
                     <groupId>junit</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>persistence-api</artifactId>
-                    <groupId>javax.persistence</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>bungeecord-chat</artifactId>
                     <groupId>net.md-5</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>gson</artifactId>
-                    <groupId>com.google.code.gson</groupId>
+                    <groupId>com.googlecode.json-simple</groupId>
+                    <artifactId>json-simple</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!--  Keep in sync with spigot 1.8.8  -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>17.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--  Keep in sync with spigot 1.8.8  -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Bukkit Libraries  -->
@@ -557,7 +574,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.2</version>
+            <version>1.4</version>
             <optional>true</optional>
         </dependency>
 
@@ -565,7 +582,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
-            <version>4.3.0</version>
+            <version>4.4.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -583,7 +600,7 @@
         <dependency>
             <groupId>me.lucko.luckperms</groupId>
             <artifactId>luckperms-api</artifactId>
-            <version>4.2</version>
+            <version>4.3</version>
             <scope>provided</scope>
         </dependency>
 
@@ -766,29 +783,19 @@
             </exclusions>
         </dependency>
 
-        <!-- Essentials plugin -->
+        <!-- EssentialsX plugin -->
         <dependency>
             <groupId>net.ess3</groupId>
-            <artifactId>Essentials</artifactId>
-            <version>2.13.1</version>
+            <artifactId>EssentialsX</artifactId>
+            <version>2.15.0</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>craftbukkit</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- BCrypt implementation -->
         <dependency>
             <groupId>at.favre.lib</groupId>
             <artifactId>bcrypt</artifactId>
-            <version>0.5.0</version>
+            <version>0.7.0</version>
             <optional>true</optional>
         </dependency>
 
@@ -867,7 +874,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>2.22.0</version>
+            <version>2.24.5</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -876,17 +883,25 @@
             </exclusions>
         </dependency>
 
+        <!-- Required to mock the LuckPerms API-->
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>2.6.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- JDBC drivers for datasource integration tests -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.23.1</version>
+            <version>3.25.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.197</version>
+            <version>1.4.198</version>
             <scope>test</scope>
         </dependency>
 

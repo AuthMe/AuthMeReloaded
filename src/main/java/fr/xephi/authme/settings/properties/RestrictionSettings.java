@@ -181,6 +181,18 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Set<String>> UNRESTRICTED_NAMES =
         newLowercaseStringSetProperty("settings.unrestrictions.UnrestrictedName");
 
+    @Comment({
+        "Below you can list all inventories names that AuthMe will ignore",
+        "for registration or login. Configure it at your own risk!!",
+        "This option adds compatibility with some mods.",
+        "It is case-insensitive! Example:",
+        "UnrestrictedInventories:",
+        "- 'myCustomInventory1'",
+        "- 'myCustomInventory2'"
+    })
+    public static final Property<Set<String>> UNRESTRICTED_INVENTORIES =
+        newLowercaseStringSetProperty("settings.unrestrictions.UnrestrictedInventories");
+
     private RestrictionSettings() {
     }
 

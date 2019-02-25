@@ -38,6 +38,7 @@ import static fr.xephi.authme.permission.PermissionsSystemType.LUCK_PERMS;
 import static fr.xephi.authme.permission.PermissionsSystemType.PERMISSIONS_EX;
 import static fr.xephi.authme.permission.PermissionsSystemType.VAULT;
 import static fr.xephi.authme.permission.PermissionsSystemType.Z_PERMISSIONS;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -89,6 +90,7 @@ public class PermissionsManagerInitializationTest {
         // then
         PermissionHandler handler = getHandlerFieldValue();
         assertThat(handler, instanceOf(expectedHandlerType));
+        assertThat(handler.getPermissionSystem(), equalTo(permissionsSystemType));
     }
 
     @Test

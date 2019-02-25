@@ -14,7 +14,7 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * Permission node to bypass BungeeCord server teleportation.
      */
-    BYPASS_BUNGEE_SEND("authme.bypassbungeesend", DefaultPermission.OP_ONLY),
+    BYPASS_BUNGEE_SEND("authme.bypassbungeesend", DefaultPermission.NOT_ALLOWED),
 
     /**
      * Permission for users to bypass force-survival mode.

@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission.handlers;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import net.milkbowl.vault.permission.Permission;
@@ -8,6 +9,7 @@ import org.bukkit.Server;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,7 +26,15 @@ public class VaultHandler implements PermissionHandler {
         this.vaultProvider = getVaultPermission(server);
     }
 
-    private static Permission getVaultPermission(Server server) throws PermissionHandlerException {
+    /**
+     * Returns the Vault Permission interface.
+     *
+     * @param server the bukkit server instance
+     * @return the vault permission instance
+     * @throws PermissionHandlerException if the vault permission instance cannot be retrieved
+     */
+    @VisibleForTesting
+    Permission getVaultPermission(Server server) throws PermissionHandlerException {
         // Get the permissions provider service
         RegisteredServiceProvider<Permission> permissionProvider = server
             .getServicesManager().getRegistration(Permission.class);
@@ -76,7 +86,8 @@ public class VaultHandler implements PermissionHandler {
 
     @Override
     public List<String> getGroups(OfflinePlayer player) {
-        return Arrays.asList(vaultProvider.getPlayerGroups(null, player));
+        String[] groups = vaultProvider.getPlayerGroups(null, player);
+        return groups == null ? Collections.emptyList() : Arrays.asList(groups);
     }
 
     @Override

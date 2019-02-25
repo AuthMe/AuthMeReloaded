@@ -2,7 +2,6 @@ package fr.xephi.authme.service;
 
 import com.google.common.collect.Iterables;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -20,11 +19,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -41,14 +37,12 @@ public class BukkitService implements SettingsDependent {
     public static final int TICKS_PER_MINUTE = 60 * TICKS_PER_SECOND;
 
     private final AuthMe authMe;
-    private final boolean getOnlinePlayersIsCollection;
     private Method getOnlinePlayers;
     private boolean useAsyncTasks;
 
     @Inject
     BukkitService(AuthMe authMe, Settings settings) {
         this.authMe = authMe;
-        getOnlinePlayersIsCollection = doesOnlinePlayersMethodReturnCollection();
         reload(settings);
     }
 
@@ -237,40 +231,12 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Safe way to retrieve the list of online players from the server. Depending on the
-     * implementation of the server, either an array of {@link Player} instances is being returned,
-     * or a Collection. Always use this wrapper to retrieve online players instead of {@link
-     * Bukkit#getOnlinePlayers()} directly.
+     * Gets a view of all currently online players.
      *
      * @return collection of online players
-     *
-     * @see <a href="https://www.spigotmc.org/threads/solved-cant-use-new-getonlineplayers.33061/">SpigotMC
-     * forum</a>
-     * @see <a href="http://stackoverflow.com/questions/32130851/player-changed-from-array-to-collection">StackOverflow</a>
      */
-    @SuppressWarnings("unchecked")
     public Collection<? extends Player> getOnlinePlayers() {
-        if (getOnlinePlayersIsCollection) {
-            return Bukkit.getOnlinePlayers();
-        }
-        try {
-            // The lookup of a method via Reflections is rather expensive, so we keep a reference to it
-            if (getOnlinePlayers == null) {
-                getOnlinePlayers = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
-            }
-            Object obj = getOnlinePlayers.invoke(null);
-            if (obj instanceof Collection<?>) {
-                return (Collection<? extends Player>) obj;
-            } else if (obj instanceof Player[]) {
-                return Arrays.asList((Player[]) obj);
-            } else {
-                String type = (obj == null) ? "null" : obj.getClass().getName();
-                ConsoleLogger.warning("Unknown list of online players of type " + type);
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            ConsoleLogger.logException("Could not retrieve list of online players:", e);
-        }
-        return Collections.emptyList();
+        return Bukkit.getOnlinePlayers();
     }
 
     /**
@@ -344,23 +310,6 @@ public class BukkitService implements SettingsDependent {
         if (player != null) {
             player.sendPluginMessage(authMe, "BungeeCord", bytes);
         }
-    }
-
-    /**
-     * Method run upon initialization to verify whether or not the Bukkit implementation
-     * returns the online players as a {@link Collection}.
-     *
-     * @return true if a collection is returned by the bukkit implementation, false otherwise
-     * @see #getOnlinePlayers()
-     */
-    private static boolean doesOnlinePlayersMethodReturnCollection() {
-        try {
-            Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
-            return method.getReturnType() == Collection.class;
-        } catch (NoSuchMethodException e) {
-            ConsoleLogger.warning("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
-        }
-        return false;
     }
 
     /**

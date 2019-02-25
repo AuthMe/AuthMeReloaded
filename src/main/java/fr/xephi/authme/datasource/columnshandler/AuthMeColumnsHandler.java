@@ -78,7 +78,7 @@ public final class AuthMeColumnsHandler {
      */
     public <T> boolean update(String name, DataSourceColumn<T> column, T value) {
         try {
-            return internalHandler.update(name, column, value);
+            return internalHandler.update(name.toLowerCase(), column, value);
         } catch (SQLException e) {
             logSqlException(e);
             return false;

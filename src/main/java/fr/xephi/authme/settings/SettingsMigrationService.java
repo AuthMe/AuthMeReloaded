@@ -4,7 +4,6 @@ import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyReader;
-import com.google.common.base.MoreObjects;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
@@ -23,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
@@ -229,7 +229,7 @@ public class SettingsMigrationService extends PlainMigrationService {
         final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
         if (!newProperty.isPresent(reader) && reader.contains(oldPath)) {
             ConsoleLogger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
-            boolean oldValue = MoreObjects.firstNonNull(reader.getBoolean(oldPath), false);
+            boolean oldValue = Optional.ofNullable(reader.getBoolean(oldPath)).orElse(false);
             LogLevel level = oldValue ? LogLevel.INFO : LogLevel.FINE;
             configData.setValue(newProperty, level);
             return true;

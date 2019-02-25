@@ -59,47 +59,9 @@ final class MySqlMigrater {
             columnType = rs.getInt("DATA_TYPE");
         }
 
-        if (columnType == Types.TIMESTAMP) {
-            migrateLastLoginColumnFromTimestamp(st, tableName, col);
-        } else if (columnType == Types.INTEGER) {
+        if (columnType == Types.INTEGER) {
             migrateLastLoginColumnFromInt(st, tableName, col);
         }
-    }
-
-    /**
-     * Performs conversion of lastlogin column from timestamp type to bigint.
-     *
-     * @param st Statement object to the database
-     * @param tableName the table name
-     * @param col the column names configuration
-     * @see <a href="https://github.com/AuthMe/AuthMeReloaded/issues/477">#477</a>
-     */
-    private static void migrateLastLoginColumnFromTimestamp(Statement st, String tableName,
-                                                            Columns col) throws SQLException {
-        ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
-        final String lastLoginOld = col.LAST_LOGIN + "_old";
-
-        // Rename lastlogin to lastlogin_old
-        String sql = String.format("ALTER TABLE %s CHANGE COLUMN %s %s BIGINT",
-            tableName, col.LAST_LOGIN, lastLoginOld);
-        st.execute(sql);
-
-        // Create lastlogin column
-        sql = String.format("ALTER TABLE %s ADD COLUMN %s "
-                + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
-            tableName, col.LAST_LOGIN, col.LAST_IP);
-        st.execute(sql);
-
-        // Set values of lastlogin based on lastlogin_old
-        sql = String.format("UPDATE %s SET %s = UNIX_TIMESTAMP(%s) * 1000",
-            tableName, col.LAST_LOGIN, lastLoginOld);
-        st.execute(sql);
-
-        // Drop lastlogin_old
-        sql = String.format("ALTER TABLE %s DROP COLUMN %s",
-            tableName, lastLoginOld);
-        st.execute(sql);
-        ConsoleLogger.info("Finished migration of lastlogin (timestamp to bigint)");
     }
 
     /**

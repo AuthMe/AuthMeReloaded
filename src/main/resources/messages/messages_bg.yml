@@ -7,16 +7,16 @@
 registration:
     disabled: '&cРегистрациите са изключени!'
     name_taken: '&cПотребителското име е заетo!'
-    register_request: '&3Моля регистрирайте се с: /register парола парола'
+    register_request: '&3Моля регистрирайте се с: /register парола парола.'
     command_usage: '&cКоманда: /register парола парола'
     reg_only: '&4Само регистрирани потребители могат да влизат в сървъра! Моля посетете http://example.com, за да се регистрирате!'
     success: '&2Успешна регистрация!'
-    kicked_admin_registered: 'Ти беше регистриран от администратора, моля влезте отново'
+    kicked_admin_registered: 'Вие бяхте регистриран от администратора, моля да влезете отново!'
 
 # Password errors on registration
 password:
     match_error: '&cПаролите не съвпадат, провете ги отново!'
-    name_in_password: '&cНе можеш да използваш потребителското си име за парола, моля изберете друга парола.'
+    name_in_password: '&cНе можете да използвате потребителското си име за парола, моля изберете друга парола.'
     unsafe_password: '&cИзбраната парола не е безопасна, моля изберете друга парола.'
     forbidden_characters: '&4Паролата съдържа непозволени символи. Позволени символи: %valid_chars'
     wrong_length: '&cПаролата е твърде къса или прекалено дълга! Моля опитайте с друга парола.'
@@ -26,25 +26,25 @@ login:
     command_usage: '&cКоманда: /login парола'
     wrong_password: '&cГрешна парола!'
     success: '&2Успешен вход!'
-    login_request: '&cМоля влезте с: /login парола'
-    timeout_error: '&4Времето за вход изтече, беше кикнат от сървъра. Моля опитайте отново!'
+    login_request: '&cМоля влезте с: /login парола !'
+    timeout_error: '&4Времето за вход изтече, бяхте кикнат от сървъра. Моля опитайте отново!'
 
 # Errors
 error:
-    denied_command: '&cЗа да използваш тази команда трябва да си си влезнал в акаунта!'
-    denied_chat: '&cЗа да пишеш в чата трябва даи сиси влезнал в акаунта!'
+    denied_command: '&cЗа да използвате тази команда трябва да сте си влезли в акаунта!'
+    denied_chat: '&cЗа да пишете в чата трябва да сте си влезли в акаунта!'
     unregistered_user: '&cПотребителското име не е регистрирано!'
-    not_logged_in: '&cНе си влязъл!'
-    no_permission: '&4Нямаш нужните права за това действие!'
+    not_logged_in: '&cНе сте влезли!'
+    no_permission: '&4Нямате нужните права за това действие!'
     unexpected_error: '&4Получи се неочаквана грешка, моля свържете се с администратора!'
-    max_registration: '&cТи си достигнал максималният брой регистрации (%reg_count/%max_acc %reg_names)!'
-    logged_in: '&cВече си вписан!'
-    kick_for_vip: '&3VIP потребител влезе докато сървъра беше пълен, ти беше изгонен!'
-    tempban_max_logins: '&cТи беше баннат временно, понеже си сгрешил паролата прекалено много пъти.'
+    max_registration: '&cВие сте достигнали максималният брой регистрации (%reg_count/%max_acc %reg_names)!'
+    logged_in: '&cВече сте влезли!'
+    kick_for_vip: '&3VIP потребител влезе докато сървъра беше пълен, вие бяхте изгонен!'
+    tempban_max_logins: '&cВие бяхте баннат временно, понеже сте си сгрешили паролата прекалено много пъти.'
 
 # AntiBot
 antibot:
-    kick_antibot: 'Защитата от ботове е включена! Трябва да изчакаш няколко минути преди да влезеш в сървъра.'
+    kick_antibot: 'Защитата от ботове е включена! Трябва да изчакате няколко минути преди да влезете в сървъра.'
     auto_enabled: '&4Защитата за ботове е включена заради потенциална атака!'
     auto_disabled: '&2Защитата за ботове ще се изключи след %m минута/и!'
 
@@ -55,12 +55,12 @@ unregister:
 
 # Other messages
 misc:
-    account_not_activated: '&cТвоят акаунт все още не е актириван, моля провете своят email адрес!'
+    account_not_activated: '&cВашият акаунт все още не е актириван, моля провете своят email адрес!'
     password_changed: '&2Паротала е променена успешно!'
     logout: '&2Излязохте успешно!'
     reload: '&2Конфигурацията и база данните бяха презаредени правилно!'
     usage_change_password: '&cКоманда: /changepassword Стара-Парола Нова-Парола'
-    accounts_owned_self: 'Претежаваш %count акаунт/а:'
+    accounts_owned_self: 'Притежавате %count акаунт/а:'
     accounts_owned_other: 'Потребителят %name има %count акаунт/а:'
 
 # Session messages
@@ -71,14 +71,14 @@ session:
 # Error messages when joining
 on_join_validation:
     same_ip_online: 'Вече има потребител със същото IP в сървъра!'
-    same_nick_online: '&4Вече има потребител, който играете в сървъра със същото потребителско име!'
-    name_length: '&4Потребителското име е прекалено късо или дълга. Моля опитайте с друго потребителско име!'
+    same_nick_online: '&4Вече има потребител, който играе в сървъра със същото потребителско име!'
+    name_length: '&4Потребителското име е прекалено късо или дълго. Моля опитайте с друго потребителско име!'
     characters_in_name: '&4Потребителското име съдържа забранени знаци. Позволени знаци: %valid_chars'
     kick_full_server: '&4Сървъра е пълен, моля опитайте отново!'
     country_banned: '&4Твоята държава е забранена в този сървър!'
     not_owner_error: 'Ти не си собственика на този акаунт. Моля избери друго потребителско име!'
-    invalid_name_case: 'Трябва да влезеш с %valid, а не с %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    invalid_name_case: 'Трябва да влезеш с %valid, а не с %invalid!'
+    quick_command: 'Използвате команди твърде бързо! Моля, влезте отново в сървъра и изчакайте малко преди да използвате команди.'
 
 # Email
 email:
@@ -89,17 +89,17 @@ email:
     old_email_invalid: '&cСтарият имейл е грешен, опитайте отново!'
     invalid: '&cИмейла е невалиден, опитайте с друг!'
     added: '&2Имейл адреса е добавен!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    request_confirmation: '&cМоля потвърди своя имейл адрес!'
+    add_not_allowed: '&cДобавянето на имейл не е разрешено!'
+    request_confirmation: '&cМоля потвърдете своя имейл адрес!'
     changed: '&2Имейл адреса е сменен!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
-    email_show: '&2Твоят имейл адрес е: &f%email'
+    change_not_allowed: '&cСмяната на имейл адреса не е разрешена!'
+    email_show: '&2Вашият имейл адрес е: &f%email'
     no_email_for_account: '&2Няма добавен имейл адрес към акаунта.'
     already_used: '&4Имейл адреса вече се използва, опитайте с друг.'
     incomplete_settings: 'Грешка: Не всички настройки са написани за изпращане на имейл адрес. Моля свържете се с администратора!'
     send_failure: 'Съобщението не беше изпратено. Моля свържете се с администратора.'
-    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
-    email_cooldown_error: '&cВече е бил изпратен имейл адрес. Трябва а изчакаш %time преди да пратиш нов.'
+    change_password_expired: 'Вече не е възможно да смените паролата си с тази команда.'
+    email_cooldown_error: '&cВече е бил изпратен имейл адрес. Трябва а изчакате %time преди да изпратите нов.'
 
 # Password recovery by email
 recovery:
@@ -107,29 +107,29 @@ recovery:
     command_usage: '&cКоманда: /email recovery имейл'
     email_sent: '&2Възстановяващият имейл е изпратен успешно. Моля провете пощата си!'
     code:
-        code_sent: 'Възстановяващият код беше изпратен на твоят email адрес.'
-        incorrect: 'Възстановяващият код е неправилен! Използвайте: /email recovery имейл, за да генерирате нов'
-        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-        # TODO correct: 'Recovery code entered correctly!'
-        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
+        code_sent: 'Възстановяващият код беше изпратен на вашият email адрес.'
+        incorrect: 'Възстановяващият код е неправилен! Използвайте: /email recovery имейл, за да генерирате нов.'
+        tries_exceeded: 'Вие надвишихте максималният брой опити да въведете кода за възстановяване. Използвайте "/email recovery имейл" за да генерирате нов.'
+        correct: 'Кода за възстановяване е успешно въведен!'
+        change_password: 'Моля използвайте командата /email setpassword нова-парола за да смените Вашата парола веднага.'
 
 # Captcha
 captcha:
-    usage_captcha: '&3Моля въведе цифрите/буквите от капчата: /captcha %captcha_code'
+    usage_captcha: '&3Моля въведе цифрите/буквите от кода за сигурност: /captcha %captcha_code'
     wrong_captcha: '&cКода е грешен, използвайте: "/captcha %captcha_code" в чата!'
-    valid_captcha: '&2Кода е  валиден!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    valid_captcha: '&2Кода е валиден!'
+    captcha_for_registration: 'За да се регистрирате, трябва да въведете цифрите / буквите от кода за сигурност, използвайте командата: /captcha %captcha_code'
+    register_captcha_valid: '&2Кода е валиден! Вие вече може да се регистрирате с команда /register'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    code_required: '&3Тази команда е чувствителна и изисква потвърждение по имейл! Моля проверете си имейла и следвайте инструкциите в него.'
+    command_usage: '&cКоманда: /verification код'
+    incorrect_code: '&cНеправилен код, моля използвайте "/verification код" като използвате кода, който сте получили на Вашият имейл.'
+    success: '&2Вашата самоличност е потвърдена! Вие може да използвате всички команди в текущата Ви сесия!'
+    already_verified: '&2Вие вече можете да изпълнявате чувствителни команди в текущата Ви сесия!'
+    code_expired: '&3Вашият код е изтекъл. Изпълнете друга чувствителна команда за да генерирате нов код!'
+    email_needed: '&3За да потвърдите Вашата самоличност е необходимо да добавите имейл адрес към Вашият акаунт!!'
 
 # Time units
 time:
@@ -140,17 +140,17 @@ time:
     hour: 'час'
     hours: 'часа'
     day: 'ден'
-    days: 'дена'
+    days: 'дни'
 
 # Two-factor authentication
 two_factor:
-    code_created: '&2Кода е %code. Можеш да го провериш оттука: %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    code_created: '&2Кода е %code. Можете да го проверите от тук: %url'
+    confirmation_required: 'Моля потвърдете Вашият код с команда /2fa confirm <код>'
+    code_required: 'Моля изпратете Вашият секретен код с команда /2fa code <код>'
+    already_enabled: 'Използването на секретен код е вече включено за Вашият акаунт!'
+    enable_error_no_code: 'Нямате добавен секретен код или кода е изтекъл. Моля изпълнете команда /2fa add'
+    enable_success: 'Успешно активирахте защита със секретен код за Вашият акаунт.'
+    enable_error_wrong_code: 'Грешен секретен код или е изтекъл. Моля изпълнете команда /2fa add'
+    not_enabled_error: 'Защитата със секретен код не е включена за Вашият акаунт. Моля изпълнете команда /2fa add'
+    removed_success: 'Успешно изключихте защитата със секретен код от Вашият акаунт!'
+    invalid_code: 'Невалиден код!'

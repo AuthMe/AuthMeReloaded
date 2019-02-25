@@ -2,6 +2,7 @@
 # %nl% - Goes to new line.
 # %username% - Replaces the username of the player receiving the message.
 # %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+# Edited: 2018/09/16 MCBBS ID:CH1
 
 # Registration
 registration:
@@ -78,7 +79,7 @@ on_join_validation:
     country_banned: '这个服务器禁止该国家登陆'
     not_owner_error: '&8[&6玩家系统&8] &4警告！ &c你并不是此帐户持有人，请立即登出。 '
     invalid_name_case: '&8[&6玩家系统&8] &c你应该使用「%valid」而并非「%invalid」登入游戏。 '
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: '&8[&6玩家系统&8] &c您发送命令的速度太快了，请重新加入服务器等待一会后再使用命令'
 
 # Email
 email:
@@ -144,13 +145,13 @@ time:
 
 # Two-factor authentication
 two_factor:
-    code_created: '&8[&6玩家系统&8] &2你的代码是 %code，你可以使用 %url 来扫描'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    code_created: '&8[&6玩家系统&8] &a你的代码是 %code，你可以使用 %url 来进行扫描'
+    confirmation_required: '&8[&6玩家系统&8] &3请输入 &a/2fa confirm <验证码> &3来确认两步验证'
+    code_required: '&8[&6玩家系统&8] &c请输入 &a/2fa code <验证码> &c来提交两步验证验证码'
+    already_enabled: '&8[&6玩家系统&8] &a两步验证码已在您的账号上启用'
+    enable_error_no_code: '&8[&6玩家系统&8] &c两步验证密钥不存在或已过期，请输入 &a/2fa add &c来添加'
+    enable_success: '&8[&6玩家系统&8] &a已成功启用两步验证码'
+    enable_error_wrong_code: '&8[&6玩家系统&8] &c两步验证代码错误或者已经过期，请重新执行 &a/2fa add'
+    not_enabled_error: '&8[&6玩家系统&8] &c两步验证码未在您的账号上启用，请使用 &a/2fa add &c来启用'
+    removed_success: '&8[&6玩家系统&8] &c两步验证码已从您的账号上删除'
+    invalid_code: '&8[&6玩家系统&8] &c无效的验证码'

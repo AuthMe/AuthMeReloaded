@@ -1,9 +1,9 @@
-name: ${bukkitplugin.name}
-authors: [${bukkitplugin.authors}]
+name: ${pluginDescription.name}
+authors: [${pluginDescription.authors}]
 website: ${project.url}
 description: ${project.description}
-main: ${bukkitplugin.main}
-version: ${bukkitplugin.version}
+main: ${pluginDescription.main}
+version: ${pluginDescription.version}
 api-version: 1.13
 softdepend:
     - Vault
@@ -170,7 +170,7 @@ permissions:
     default: op
   authme.bypassbungeesend:
     description: Permission node to bypass BungeeCord server teleportation.
-    default: op
+    default: false
   authme.bypassantibot:
     description: Permission node to bypass AntiBot protection.
     default: op

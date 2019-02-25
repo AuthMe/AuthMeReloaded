@@ -5,8 +5,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import javax.annotation.Nullable;
-
 /**
  * This event is called when a player adds or changes his email address.
  */
@@ -26,7 +24,7 @@ public class EmailChangedEvent extends CustomEvent implements Cancellable {
      *                the email is trying to set.
      * @param isAsync should this event be called asynchronously?
      */
-    public EmailChangedEvent(Player player, @Nullable String oldEmail, String newEmail, boolean isAsync) {
+    public EmailChangedEvent(Player player, String oldEmail, String newEmail, boolean isAsync) {
         super(isAsync);
         this.player = player;
         this.oldEmail = oldEmail;
@@ -52,7 +50,7 @@ public class EmailChangedEvent extends CustomEvent implements Cancellable {
      *
      * @return old email stored on file. Can be null when user never had an email and adds a new one.
      */
-    public @Nullable String getOldEmail() {
+    public String getOldEmail() {
         return this.oldEmail;
     }
 

@@ -5,14 +5,14 @@
 common:
     header: '==========[ AuthMeReloaded ABI ]=========='
     optional: 'Valikuline'
-    hasPermission: 'Sul ei ole õigust'
-    noPermission: 'Õigus puudub'
+    hasPermission: 'Sul on õigus'
+    noPermission: 'Pole õigust'
     default: 'Vaikimisi'
     result: 'Tulemus'
     defaultPermissions:
         notAllowed: 'Pole õigust'
-        opOnly: 'Ainult operaatoritele'
-        allowed: 'Kõigile lubatud'
+        opOnly: 'Ainult operaatorid'
+        allowed: 'Õigus kõigil'
 
 # -------------------------------------------------------
 # Titles of the individual help sections
@@ -20,8 +20,8 @@ common:
 #   alternatives: ''
 section:
     command: 'Käsklus'
-    description: 'Lühike selgitus'
-    detailedDescription: 'Detailne selgitus'
+    description: 'Lühike kirjeldus'
+    detailedDescription: 'Detailne kirjeldus'
     arguments: 'Argumendid'
     permissions: 'Õigused'
     alternatives: 'Alternatiivid'
@@ -39,7 +39,7 @@ commands:
         detailedDescription: 'Registreeri valitud mängija valitud parooliga.'
         arg1:
             label: 'mängija'
-            description: 'mängija nimi'
+            description: 'Mängija nimi'
         arg2:
             label: 'parool'
-            description: 'parool'
+            description: 'Parool'

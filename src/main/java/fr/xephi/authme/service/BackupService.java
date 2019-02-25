@@ -83,8 +83,6 @@ public class BackupService {
     private boolean doBackup() {
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
         switch (dataSourceType) {
-            case FILE:
-                return performFileBackup("auths.db");
             case MYSQL:
                 return performMySqlBackup();
             case SQLITE:

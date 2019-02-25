@@ -4,8 +4,8 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
 import java.util.Objects;
+import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
@@ -227,8 +227,8 @@ public class PlayerAuth {
         public PlayerAuth build() {
             PlayerAuth auth = new PlayerAuth();
             auth.nickname = checkNotNull(name).toLowerCase();
-            auth.realName = firstNonNull(realName, "Player");
-            auth.password = firstNonNull(password, new HashedPassword(""));
+            auth.realName = Optional.ofNullable(realName).orElse("Player");
+            auth.password = Optional.ofNullable(password).orElse(new HashedPassword(""));
             auth.totpKey = totpKey;
             auth.email = DB_EMAIL_DEFAULT.equals(email) ? null : email;
             auth.lastIp = lastIp; // Don't check against default value 127.0.0.1 as it may be a legit value
@@ -240,7 +240,7 @@ public class PlayerAuth {
             auth.x = x;
             auth.y = y;
             auth.z = z;
-            auth.world = firstNonNull(world, "world");
+            auth.world = Optional.ofNullable(world).orElse("world");
             auth.yaw = yaw;
             auth.pitch = pitch;
             return auth;

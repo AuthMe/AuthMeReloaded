@@ -37,35 +37,6 @@ public class PlayerUtilsTest {
     }
 
     @Test
-    public void shouldGetUuid() {
-        // given
-        UUID uuid = UUID.randomUUID();
-        Player player = mock(Player.class);
-        given(player.getUniqueId()).willReturn(uuid);
-
-        // when
-        String result = PlayerUtils.getUuidOrName(player);
-
-        // then
-        assertThat(result, equalTo(uuid.toString()));
-    }
-
-    @Test
-    public void shouldFallbackToName() {
-        // given
-        Player player = mock(Player.class);
-        doThrow(NoSuchMethodError.class).when(player).getUniqueId();
-        String name = "Bobby12";
-        given(player.getName()).willReturn(name);
-
-        // when
-        String result = PlayerUtils.getUuidOrName(player);
-
-        // then
-        assertThat(result, equalTo(name));
-    }
-
-    @Test
     public void shouldHaveHiddenConstructor() {
         // given / when / then
         TestHelper.validateHasOnlyPrivateEmptyConstructor(PlayerUtils.class);
