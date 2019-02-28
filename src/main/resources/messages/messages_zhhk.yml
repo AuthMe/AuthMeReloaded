@@ -136,7 +136,7 @@ verification:
 
 # Two-factor authentication
 two_factor:
-    code_created: '&8[&6用戶系統&8] &b你的登入金鑰為&9〔 %c%code&9 〕&b，掃描連結為：%nl%&c %url'
+    code_created: '&8[&6用戶系統&8] &b你的登入金鑰為&9〔 &c%code&9 〕&b，掃描連結為：%nl%&c %url'
     confirmation_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa confirm <驗證碼>&b 》以確認你的身份。'
     code_required: '&8[&6用戶系統&8] &b請使用指令《 &f/2fa code <驗證碼>&b 》以驗證你的帳戶。'
     already_enabled: '&8[&6用戶系統&8] &2嗯...這個帳戶已經啓用了兩步驗證功能，毋須再次啓用。'
