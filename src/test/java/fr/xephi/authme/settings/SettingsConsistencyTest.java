@@ -120,7 +120,9 @@ public class SettingsConsistencyTest {
      */
     private static Class<? extends Enum<?>> getEnumClass(Property<?> property) {
         if (property instanceof EnumProperty<?>) {
-            return getFieldValue(EnumProperty.class, (EnumProperty<?>) property, "clazz");
+            Class clazz = property.getDefaultValue().getClass();
+            // Check if is anonymous class in case enum implements methods, e.g. AllowFlightRestoreType
+            return clazz.isAnonymousClass() ? clazz.getEnclosingClass() : clazz;
         } else if (property instanceof EnumSetProperty<?>) {
             return getFieldValue(EnumSetProperty.class, (EnumSetProperty<?>) property, "enumClass");
         }

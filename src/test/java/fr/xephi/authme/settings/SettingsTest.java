@@ -2,6 +2,7 @@ package fr.xephi.authme.settings;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
+import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.TestConfiguration;
@@ -14,9 +15,12 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -50,7 +54,7 @@ public class SettingsTest {
         createFile(emailFile);
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
-        PropertyResource resource = mock(PropertyResource.class, RETURNS_DEEP_STUBS);
+        PropertyResource resource = mockPropertyResourceAndReader();
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
@@ -68,7 +72,7 @@ public class SettingsTest {
         createFile(emailFile);
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
-        PropertyResource resource = mock(PropertyResource.class, RETURNS_DEEP_STUBS);
+        PropertyResource resource = mockPropertyResourceAndReader();
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
@@ -86,7 +90,7 @@ public class SettingsTest {
         createFile(emailFile);
         Files.write(emailFile.toPath(), emailMessage.getBytes());
 
-        PropertyResource resource = mock(PropertyResource.class, RETURNS_DEEP_STUBS);
+        PropertyResource resource = mockPropertyResourceAndReader();
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when
@@ -94,6 +98,14 @@ public class SettingsTest {
 
         // then
         assertThat(result, equalTo(emailMessage));
+    }
+
+    private static PropertyResource mockPropertyResourceAndReader() {
+        PropertyReader reader = mock(PropertyReader.class, RETURNS_DEEP_STUBS);
+        given(reader.getList(anyString())).willReturn(Collections.emptyList());
+        PropertyResource resource = mock(PropertyResource.class);
+        given(resource.createReader()).willReturn(reader);
+        return resource;
     }
 
     private static void createFile(File file) {
