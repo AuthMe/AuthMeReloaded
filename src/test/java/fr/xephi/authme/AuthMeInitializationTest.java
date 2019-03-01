@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
@@ -34,12 +35,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -91,8 +94,12 @@ public class AuthMeInitializationTest {
     @Test
     public void shouldInitializeAllServices() {
         // given
-        Settings settings =
-            new Settings(dataFolder, mock(PropertyResource.class, RETURNS_DEEP_STUBS), null, buildConfigurationData());
+        PropertyReader reader = mock(PropertyReader.class, RETURNS_DEEP_STUBS);
+        given(reader.getList(anyString())).willReturn(Collections.emptyList());
+        PropertyResource resource = mock(PropertyResource.class);
+        given(resource.createReader()).willReturn(reader);
+
+        Settings settings = new Settings(dataFolder, resource, null, buildConfigurationData());
 
         Injector injector = new InjectorBuilder()
             .addDefaultHandlers("fr.xephi.authme")
