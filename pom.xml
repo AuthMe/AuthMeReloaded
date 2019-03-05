@@ -498,7 +498,7 @@
         <dependency>
             <groupId>de.rtner</groupId>
             <artifactId>PBKDF2</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.4</version>
             <optional>true</optional>
         </dependency>
 
