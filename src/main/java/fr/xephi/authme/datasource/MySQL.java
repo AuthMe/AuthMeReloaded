@@ -34,6 +34,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 public class MySQL extends AbstractSqlDataSource {
 
     private boolean useSsl;
+    private boolean serverCertificateVerification;
     private String host;
     private String port;
     private String username;
@@ -103,6 +104,7 @@ public class MySQL extends AbstractSqlDataSource {
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
+        this.serverCertificateVerification = settings.getProperty(DatabaseSettings.MYSQL_CHECK_SERVER_CERTIFICATE);
     }
 
     /**
@@ -125,6 +127,11 @@ public class MySQL extends AbstractSqlDataSource {
 
         // Request mysql over SSL
         ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
+
+        // Disabling server certificate verification on need
+        if (!serverCertificateVerification) {
+            ds.addDataSourceProperty("verifyServerCertificate", String.valueOf(false));
+        }
 
         // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
