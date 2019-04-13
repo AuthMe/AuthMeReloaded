@@ -3,29 +3,29 @@
 # -------------------------------------------------------
 # List of texts used in the help section
 common:
-    header: '==========[ AuthMeReloaded HELP ]=========='
-    optional: 'Optional'
-    hasPermission: 'You have permission'
-    noPermission: 'No permission'
-    default: 'Default'
-    result: 'Result'
+    header: '==========[ AuthMeReloaded POMOĆ ]=========='
+    optional: 'Opcionalno'
+    hasPermission: 'Imate dozvola'
+    noPermission: 'Nemate dozvola'
+    default: 'Uobičajen'
+    result: 'Rezultat'
     defaultPermissions:
-        notAllowed: 'No permission'
-        opOnly: 'OP''s only'
-        allowed: 'Everyone allowed'
+        notAllowed: 'Nemate dozvola'
+        opOnly: 'Samo OP-ovi'
+        allowed: 'Dozvoljeno svima'
 
 # -------------------------------------------------------
 # Titles of the individual help sections
 # Set the translation text to empty text to disable the section, e.g. to hide alternatives:
 #   alternatives: ''
 section:
-    command: 'Command'
-    description: 'Short description'
-    detailedDescription: 'Detailed description'
-    arguments: 'Arguments'
-    permissions: 'Permissions'
-    alternatives: 'Alternatives'
-    children: 'Commands'
+    command: 'Komanda'
+    description: 'Kratak opis'
+    detailedDescription: 'Detaljan opis'
+    arguments: 'Argumenti'
+    permissions: 'Dozvole'
+    alternatives: 'Alternative'
+    children: 'Komande'
 
 # -------------------------------------------------------
 # You can translate the data for all commands using the below pattern.
@@ -35,11 +35,11 @@ section:
 # Important: Put main commands like "authme" before their children (e.g. "authme.reload")
 commands:
     authme.register:
-        description: 'Register a player'
-        detailedDescription: 'Register the specified player with the specified password.'
+        description: 'Registrujte igrača'
+        detailedDescription: 'Registrujte specifičnog igrača specifičnom lozinkom.'
         arg1:
-            label: 'player'
-            description: 'Player name'
+            label: 'igrač'
+            description: 'Ime igrača'
         arg2:
-            label: 'password'
-            description: 'Password'
+            label: 'lozinka'
+            description: 'Lozinka'
