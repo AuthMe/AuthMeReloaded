@@ -1,9 +1,9 @@
-# List of global tags:
-# %nl% - Goes to new line.
-# %username% - Replaces the username of the player receiving the message.
-# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+# Lista globalnih tagova:
+# %nl% - Nova linija.
+# %username% - Zamenjuje ime igrača kome se šalje poruka.
+# %displayname% - Zamenjuje nadimak (i boje) igrača kome se šalje poruka.
 
-# Registration
+# Registracija
 registration:
   register_request: '&3Molimo Vas, registrujte se na server komandom: /register <lozinka> <PotvrditeLozinku>'
   command_usage: '&cUpotreba: /register <lozinka> <PotvrditeLozinku>'
@@ -13,7 +13,7 @@ registration:
   disabled: '&cRegistracija u igri je isključena!'
   name_taken: '&cKorisnik je već registrovan!'
 
-# Password errors on registration
+# Greške lozinki i registracije
 password:
   match_error: '&cLozinke se nisu složile, proverite ih ponovo!'
   name_in_password: '&cNe možete koristiti svoje ime za lozinku, molimo vas da izaberete drugu...'
@@ -21,7 +21,7 @@ password:
   forbidden_characters: '&4Vaša lozinka sadrži nedozvoljene karaktere. Dozvoljeni karakteri: %valid_chars'
   wrong_length: '&cVaša lozinka je prekratka ili predugačka! Molimo Vas da probate drugu!'
 
-# Login
+# Ulogovanje
 login:
   command_usage: '&cUpotreba: /login <lozinka>'
   wrong_password: '&cPogrešna lozinka!'
@@ -29,7 +29,7 @@ login:
   login_request: '&cMolimo Vas, ulogujte se komandom: /login <lozinka>'
   timeout_error: '&4Vreme za login isteklo, izbačeni ste sa servera, molimo Vas da pokušate ponovo!'
 
-# Errors
+# Greške
 error:
   unregistered_user: '&cKorisnik nije registrovan!'
   denied_command: '&cDa biste koristili komande morate se autentifikovati!'
@@ -52,7 +52,7 @@ unregister:
   success: '&cUspešno odregistrovani!'
   command_usage: '&cUpotreba: /unregister <lozinka>'
 
-# Other messages
+# Ostale poruke
 misc:
   accounts_owned_self: 'Vi imate %count naloga:'
   accounts_owned_other: 'Igrač %name ima %count naloga:'
@@ -62,12 +62,12 @@ misc:
   reload: '&2Konfiguracija i databaza su uspešno osveženi!'
   usage_change_password: '&cUpotreba: /changepassword <staraLozinka> <novaLozinka>'
 
-# Session messages
+# Poruke vezane za sesiju
 session:
   invalid_session: '&cVaš IP je promenjen i vaši podaci o sesiji su istekli!'
   valid_session: '&2Ulogovani ste zbog ponovnog povezivanja sesije.'
 
-# Error messages when joining
+# Greške pri povezivanju
 on_join_validation:
   name_length: '&4Vaše korisničko ime je prekratko ili predugačko!'
   characters_in_name: '&4Vaše korisničko ime sadrži nedozvoljene karaktere. Dozvoljeni karakteri: %valid_chars'
@@ -100,7 +100,7 @@ email:
   add_not_allowed: '&cDodavanje emaila nije dozvoljeno'
   change_not_allowed: '&cPromena emaila nije dozvoljena'
 
-# Password recovery by email
+# Povratak lozinke putem emaila
 recovery:
   forgot_password_hint: '&3Zaboravili ste lozinku? Molimo Vas ukucajte komandu: /email recovery <vašEmail>'
   command_usage: '&cUpotreba: /email recovery <Email>'
@@ -120,7 +120,7 @@ captcha:
   captcha_for_registration: 'Da biste se registrovali morate rešiti captcha kod, molimo Vas iskoristite komandu: /captcha %captcha_code'
   register_captcha_valid: '&2Ispravna captcha! Sada se možete registrovati koristeći /register'
 
-# Verification code
+# Verifikacioni kod
 verification:
   code_required: '&3Ova komanda je osetljiva i zahteva verifikaciju emaila! Molimo Vas proverite svoj inbox i pratite instrukcije u emailu.'
   command_usage: '&cUpotreba: /verification <kod>'
@@ -142,7 +142,7 @@ two_factor:
   removed_success: 'Uspešno ste uklonili dvo-faktornu autentifikaciju sa vašeg naloga'
   invalid_code: 'Nevažeći kod!'
 
-# Time units
+# Vremenske odredbe
 time:
   second: 'sekund'
   seconds: 'sekundi'
