@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 22 11:00:10 CEST 2018. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Fri Apr 19 17:16:04 CEST 2019. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -104,4 +104,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 22 11:00:10 CEST 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 19 17:16:04 CEST 2019

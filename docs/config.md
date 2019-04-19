@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Mon May 21 09:08:25 CEST 2018. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Fri Apr 19 17:16:04 CEST 2019. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -7,66 +7,69 @@ with which you can configure various settings. This following is the initial con
 the generated config.yml file.
 
 ```yml
-
 DataSource:
     # What type of database do you want to use?
-    # Valid values: SQLITE, MYSQL
-    backend: 'SQLITE'
+    # Valid values: SQLITE, MYSQL, POSTGRESQL
+    backend: SQLITE
     # Enable the database caching system, should be disabled on bungeecord environments
     # or when a website integration is being used.
     caching: true
     # Database host address
-    mySQLHost: '127.0.0.1'
+    mySQLHost: 127.0.0.1
     # Database port
     mySQLPort: '3306'
     # Connect to MySQL database over SSL
     mySQLUseSSL: true
+    # Verification of server's certificate.
+    # We would not recommend to set this option to false.
+    # Set this option to false at your own risk if and only if you know what you're doing
+    mySQLCheckServerCertificate: true
     # Username to connect to the MySQL database
-    mySQLUsername: 'authme'
+    mySQLUsername: authme
     # Password to connect to the MySQL database
     mySQLPassword: '12345'
     # Database Name, use with converters or as SQLITE database name
-    mySQLDatabase: 'authme'
+    mySQLDatabase: authme
     # Table of the database
-    mySQLTablename: 'authme'
+    mySQLTablename: authme
     # Column of IDs to sort data
-    mySQLColumnId: 'id'
+    mySQLColumnId: id
     # Column for storing or checking players nickname
-    mySQLColumnName: 'username'
+    mySQLColumnName: username
     # Column for storing or checking players RealName
-    mySQLRealName: 'realname'
+    mySQLRealName: realname
     # Column for storing players passwords
-    mySQLColumnPassword: 'password'
+    mySQLColumnPassword: password
     # Column for storing players passwords salts
     mySQLColumnSalt: ''
     # Column for storing players emails
-    mySQLColumnEmail: 'email'
+    mySQLColumnEmail: email
     # Column for storing if a player is logged in or not
-    mySQLColumnLogged: 'isLogged'
+    mySQLColumnLogged: isLogged
     # Column for storing if a player has a valid session or not
-    mySQLColumnHasSession: 'hasSession'
+    mySQLColumnHasSession: hasSession
     # Column for storing a player's TOTP key (for two-factor authentication)
-    mySQLtotpKey: 'totp'
+    mySQLtotpKey: totp
     # Column for storing the player's last IP
-    mySQLColumnIp: 'ip'
+    mySQLColumnIp: ip
     # Column for storing players lastlogins
-    mySQLColumnLastLogin: 'lastlogin'
+    mySQLColumnLastLogin: lastlogin
     # Column storing the registration date
-    mySQLColumnRegisterDate: 'regdate'
+    mySQLColumnRegisterDate: regdate
     # Column for storing the IP address at the time of registration
-    mySQLColumnRegisterIp: 'regip'
+    mySQLColumnRegisterIp: regip
     # Column for storing player LastLocation - X
-    mySQLlastlocX: 'x'
+    mySQLlastlocX: x
     # Column for storing player LastLocation - Y
-    mySQLlastlocY: 'y'
+    mySQLlastlocY: y
     # Column for storing player LastLocation - Z
-    mySQLlastlocZ: 'z'
+    mySQLlastlocZ: z
     # Column for storing player LastLocation - World Name
-    mySQLlastlocWorld: 'world'
+    mySQLlastlocWorld: world
     # Column for storing player LastLocation - Yaw
-    mySQLlastlocYaw: 'yaw'
+    mySQLlastlocYaw: yaw
     # Column for storing player LastLocation - Pitch
-    mySQLlastlocPitch: 'pitch'
+    mySQLlastlocPitch: pitch
     # Overrides the size of the DB Connection Pool, default = 10
     poolSize: 10
     # The maximum lifetime of a connection in the pool, default = 1800 seconds
@@ -84,19 +87,19 @@ ExternalBoardOptions:
     # How much log2 rounds needed in BCrypt (do not change if you do not know what it does)
     bCryptLog2Round: 10
     # phpBB table prefix defined during the phpBB installation process
-    phpbbTablePrefix: 'phpbb_'
+    phpbbTablePrefix: phpbb_
     # phpBB activated group ID; 2 is the default registered group defined by phpBB
     phpbbActivatedGroupId: 2
     # IP Board table prefix defined during the IP Board installation process
-    IPBTablePrefix: 'ipb_'
+    IPBTablePrefix: ipb_
     # IP Board default group ID; 3 is the default registered group defined by IP Board
     IPBActivatedGroupId: 3
     # Xenforo table prefix defined during the Xenforo installation process
-    XFTablePrefix: 'xf_'
+    XFTablePrefix: xf_
     # XenForo default group ID; 2 is the default registered group defined by Xenforo
     XFActivatedGroupId: 2
     # Wordpress prefix defined during WordPress installation
-    wordpressTablePrefix: 'wp_'
+    wordpressTablePrefix: wp_
 settings:
     sessions:
         # Do you want to enable the session feature?
@@ -111,13 +114,13 @@ settings:
         timeout: 10
     # Message language, available languages:
     # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md
-    messagesLanguage: 'en'
+    messagesLanguage: en
     # Forces authme to hook into Vault instead of a specific permission handler system.
     forceVaultHook: false
     # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
     # FINE for some additional detailed ones (like password failed),
     # and DEBUG for debugging
-    logLevel: 'FINE'
+    logLevel: FINE
     # By default we schedule async tasks when talking to the database. If you want
     # typical communication with the database to happen synchronously, set this to false
     useAsyncTasks: true
@@ -134,14 +137,14 @@ settings:
         hideChat: false
         # Allowed commands for unauthenticated players
         allowCommands: 
-        - '/login'
-        - '/register'
-        - '/l'
-        - '/reg'
-        - '/email'
-        - '/captcha'
-        - '/2fa'
-        - '/totp'
+        - /login
+        - /register
+        - /l
+        - /reg
+        - /email
+        - /captcha
+        - /2fa
+        - /totp
         # Max number of allowed registrations per IP
         # The value 0 means an unlimited number of registrations!
         maxRegPerIp: 1
@@ -163,9 +166,9 @@ settings:
             # WorldNames where we need to force the spawn location
             # Case-sensitive!
             worlds: 
-            - 'world'
-            - 'world_nether'
-            - 'world_the_end'
+            - world
+            - world_nether
+            - world_the_end
         # This option will save the quit location of the players.
         SaveQuitLocation: false
         # To activate the restricted user feature you need
@@ -207,7 +210,7 @@ settings:
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
         # Spawn priority; values: authme, essentials, cmi, multiverse, default
-        spawnPriority: 'authme,essentials,cmi,multiverse,default'
+        spawnPriority: authme,essentials,cmi,multiverse,default
         # Maximum Login authorized by IP
         maxLoginPerIp: 0
         # Maximum Join authorized by IP
@@ -230,6 +233,14 @@ settings:
         # - 'npcPlayer'
         # - 'npcPlayer2'
         UnrestrictedName: []
+        # Below you can list all inventories names that AuthMe will ignore
+        # for registration or login. Configure it at your own risk!!
+        # This option adds compatibility with some mods.
+        # It is case-insensitive! Example:
+        # UnrestrictedInventories:
+        # - 'myCustomInventory1'
+        # - 'myCustomInventory2'
+        UnrestrictedInventories: []
     security:
         # Minimum length of password
         minPasswordLength: 5
@@ -240,7 +251,7 @@ settings:
         # PBKDF2DJANGO, WORDPRESS, ROYALAUTH, ARGON2, CUSTOM (for developers only). See full list at
         # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md
         # If you use ARGON2, check that you have the argon2 c library on your system
-        passwordHash: 'SHA256'
+        passwordHash: SHA256
         # If a password check fails, AuthMe will also try to check with the following hash methods.
         # Use this setting when you change from one hash method to another.
         # AuthMe will update the password to the new hash. Example:
@@ -259,12 +270,12 @@ settings:
         # - 'help'
         unsafePasswords: 
         - '123456'
-        - 'password'
-        - 'qwerty'
+        - password
+        - qwerty
         - '12345'
         - '54321'
         - '123456789'
-        - 'help'
+        - help
     registration:
         # Enable registration on the server?
         enabled: true
@@ -278,12 +289,12 @@ settings:
         # PASSWORD = account is registered with a password supplied by the user;
         # EMAIL = password is generated and sent to the email provided by the user.
         # More info at https://github.com/AuthMe/AuthMeReloaded/wiki/Registration
-        type: 'PASSWORD'
+        type: PASSWORD
         # Second argument the /register command should take: NONE = no 2nd argument
         # CONFIRMATION = must repeat first argument (pass or email)
         # EMAIL_OPTIONAL = for password register: 2nd argument can be empty or have email address
         # EMAIL_MANDATORY = for password register: 2nd argument MUST be an email address
-        secondArg: 'CONFIRMATION'
+        secondArg: CONFIRMATION
         # Do we force kick a player after a successful registration?
         # Do not use with login feature below
         forceKickAfterRegister: false
@@ -339,7 +350,7 @@ GroupOptions:
     unregisteredPlayerGroup: ''
 Email:
     # Email SMTP server host
-    mailSMTP: 'smtp.gmail.com'
+    mailSMTP: smtp.gmail.com
     # Email SMTP server port
     mailPort: 465
     # Only affects port 25: enable TLS/STARTTLS?
@@ -355,7 +366,7 @@ Email:
     # Recovery password length
     RecoveryPasswordLength: 8
     # Mail Subject
-    mailSubject: 'Your new AuthMe password'
+    mailSubject: Your new AuthMe password
     # Like maxRegPerIP but with email
     maxRegPerEmail: 1
     # Recall players to add an email?
@@ -364,7 +375,7 @@ Email:
     delayRecall: 5
     # Blacklist these domains for emails
     emailBlacklisted: 
-    - '10minutemail.com'
+    - 10minutemail.com
     # Whitelist ONLY these domains for emails
     emailWhitelisted: []
     # Send the new password drawn in an image?
@@ -389,14 +400,16 @@ Protection:
     enableProtectionRegistered: true
     # Countries allowed to join the server and register. For country codes, see
     # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
+    # Use "LOCALHOST" for local addresses.
     # PLEASE USE QUOTES!
     countries: 
-    - 'US'
-    - 'GB'
+    - US
+    - GB
+    - LOCALHOST
     # Countries not allowed to join the server and register
     # PLEASE USE QUOTES!
     countriesBlacklist: 
-    - 'A1'
+    - A1
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
     # The interval in seconds
@@ -421,7 +434,7 @@ Purge:
     # Do we need to remove the Essentials/userdata/player.yml file during purge process?
     removeEssentialsFile: false
     # World in which the players.dat are stored
-    defaultWorld: 'world'
+    defaultWorld: world
     # Remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge?
     removeLimitedCreativesInventories: false
     # Do we need to remove the AntiXRayData/PlayerData/player file during purge process?
@@ -498,7 +511,7 @@ limbo:
         # DISABLED: no disk storage,
         # INDIVIDUAL_FILES: each player data in its own file,
         # DISTRIBUTED_FILES: distributes players into different files based on their UUID, see below
-        type: 'INDIVIDUAL_FILES'
+        type: INDIVIDUAL_FILES
         # This setting only affects DISTRIBUTED_FILES persistence. The distributed file
         # persistence attempts to reduce the number of files by distributing players into various
         # buckets based on their UUID. This setting defines into how many files the players should
@@ -508,20 +521,20 @@ limbo:
         # 6.25 players per file (100 / 16).
         # Note: if you change this setting all data will be migrated. If you have a lot of data,
         # change this setting only on server restart, not with /authme reload.
-        distributionSize: 'SIXTEEN'
+        distributionSize: SIXTEEN
     # Whether the player is allowed to fly: RESTORE, ENABLE, DISABLE, NOTHING.
     # RESTORE sets back the old property from the player. NOTHING will prevent AuthMe
     # from modifying the 'allow flight' property on the player.
-    restoreAllowFlight: 'RESTORE'
+    restoreAllowFlight: RESTORE
     # Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # RESTORE: restore the speed the player had;
     # DEFAULT: always set to default speed;
     # MAX_RESTORE: take the maximum of the player's current speed and the previous one
     # RESTORE_NO_ZERO: Like 'restore' but sets speed to default if the player's speed was 0
-    restoreFlySpeed: 'RESTORE_NO_ZERO'
+    restoreFlySpeed: RESTORE_NO_ZERO
     # Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
     # See above for a description of the values.
-    restoreWalkSpeed: 'RESTORE_NO_ZERO'
+    restoreWalkSpeed: RESTORE_NO_ZERO
 BackupSystem:
     # General configuration for backups: if false, no backups are possible
     ActivateBackup: false
@@ -530,19 +543,19 @@ BackupSystem:
     # Create backup at every stop of server
     OnServerStop: true
     # Windows only: MySQL installation path
-    MysqlWindowsPath: 'C:\Program Files\MySQL\MySQL Server 5.1\'
+    MysqlWindowsPath: C:\Program Files\MySQL\MySQL Server 5.1\
 # Converter settings: see https://github.com/AuthMe/AuthMeReloaded/wiki/Converters
 Converter:
     Rakamak:
         # Rakamak file name
-        fileName: 'users.rak'
+        fileName: users.rak
         # Rakamak use IP?
         useIP: false
         # Rakamak IP file name
-        ipFileName: 'UsersIp.rak'
+        ipFileName: UsersIp.rak
     CrazyLogin:
         # CrazyLogin database file name
-        fileName: 'accounts.db'
+        fileName: accounts.db
     loginSecurity:
         # LoginSecurity: convert from SQLite; if false we use MySQL
         useSqlite: true
@@ -555,6 +568,7 @@ Converter:
             user: ''
             # LoginSecurity MySQL: password for database user
             password: ''
+
 ```
 
 To change settings on a running server, save your changes to config.yml and use 
@@ -562,4 +576,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon May 21 09:08:25 CEST 2018
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 19 17:16:04 CEST 2019

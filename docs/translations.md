@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 14 11:09:15 CEST 2019. See docs/translations/translations.tpl.md -->
+<!-- File auto-generated on Fri Apr 19 17:16:06 CEST 2019. See docs/translations/translations.tpl.md -->
 
 # AuthMe Translations
 The following translations are available in AuthMe. Set `messagesLanguage` to the language code
@@ -39,6 +39,7 @@ Code | Language | Translated | &nbsp;
 [zhmc](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhmc.yml) | Chinese (Macau) | 65% | <img src="https://via.placeholder.com/65x7/bb7700?text=%20" alt="65" />
 [zhtw](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhtw.yml) | Chinese (Taiwan) | 87% | <img src="https://via.placeholder.com/87x7/99bb22?text=%20" alt="87" />
 
+
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 14 11:09:15 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 19 17:16:06 CEST 2019
