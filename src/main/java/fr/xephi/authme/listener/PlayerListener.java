@@ -36,7 +36,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -391,12 +391,12 @@ public class PlayerListener implements Listener {
         }
     }
 
-    private boolean isInventoryWhitelisted(Inventory inventory) {
+    private boolean isInventoryWhitelisted(InventoryView inventory) {
         if (inventory == null) {
             return false;
         }
         Set<String> whitelist = settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES);
-        return whitelist.contains(ChatColor.stripColor(inventory.getName()));
+        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -404,7 +404,7 @@ public class PlayerListener implements Listener {
         final HumanEntity player = event.getPlayer();
 
         if (listenerService.shouldCancelEvent(player)
-            && !isInventoryWhitelisted(event.getInventory())) {
+            && !isInventoryWhitelisted(event.getView())) {
             event.setCancelled(true);
 
             /*
@@ -418,7 +418,7 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
         if (listenerService.shouldCancelEvent(event.getWhoClicked())
-            && !isInventoryWhitelisted(event.getClickedInventory())) {
+            && !isInventoryWhitelisted(event.getView())) {
             event.setCancelled(true);
         }
     }

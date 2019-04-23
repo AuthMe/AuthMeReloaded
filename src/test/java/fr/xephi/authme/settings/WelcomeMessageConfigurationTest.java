@@ -9,6 +9,7 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -96,7 +97,7 @@ public class WelcomeMessageConfigurationTest {
         given(player.getName()).willReturn("Bobby");
         TestHelper.mockPlayerIp(player, "123.45.66.77");
         given(geoIpService.getCountryName("123.45.66.77")).willReturn("Syldavia");
-        given(server.getServerName()).willReturn("CrazyServer");
+        given(service.getProperty(PluginSettings.SERVER_NAME)).willReturn("CrazyServer");
 
         // when
         List<String> result = welcomeMessageConfiguration.getWelcomeMessage(player);
@@ -106,8 +107,7 @@ public class WelcomeMessageConfigurationTest {
         assertThat(result.get(0), equalTo("Hello Bobby, your IP is 123.45.66.77"));
         assertThat(result.get(1), equalTo("Your country is Syldavia."));
         assertThat(result.get(2), equalTo("Welcome to CrazyServer!"));
-        verify(server, only()).getServerName();
-        verifyZeroInteractions(playerCache);
+        verifyZeroInteractions(server, playerCache);
     }
 
     @Test

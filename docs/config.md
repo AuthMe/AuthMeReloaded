@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Apr 19 17:16:04 CEST 2019. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Apr 23 17:17:02 CEST 2019. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -128,6 +128,8 @@ settings:
     # but it is incompatible with any permission plugin not included in our compatibility list.
     # If you have issues with permission checks on player join please disable this option.
     useAsyncPreLoginEvent: true
+    # The name of the server, used in some placeholders.
+    serverName: Your Minecraft Server
     restrictions:
         # Can not authenticated players chat?
         # Keep in mind that this feature also blocks all commands not
@@ -576,4 +578,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 19 17:16:04 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 23 17:17:02 CEST 2019

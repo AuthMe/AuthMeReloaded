@@ -4,11 +4,11 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.FileUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.bukkit.Server;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -23,14 +23,12 @@ import java.io.IOException;
 public class EmailService {
 
     private final File dataFolder;
-    private final String serverName;
     private final Settings settings;
     private final SendMailSsl sendMailSsl;
 
     @Inject
-    EmailService(@DataFolder File dataFolder, Server server, Settings settings, SendMailSsl sendMailSsl) {
+    EmailService(@DataFolder File dataFolder, Settings settings, SendMailSsl sendMailSsl) {
         this.dataFolder = dataFolder;
-        this.serverName = server.getServerName();
         this.settings = settings;
         this.sendMailSsl = sendMailSsl;
     }
@@ -146,14 +144,14 @@ public class EmailService {
     private String replaceTagsForPasswordMail(String mailText, String name, String newPass) {
         return mailText
             .replace("<playername />", name)
-            .replace("<servername />", serverName)
+            .replace("<servername />", settings.getProperty(PluginSettings.SERVER_NAME))
             .replace("<generatedpass />", newPass);
     }
 
     private String replaceTagsForVerificationEmail(String mailText, String name, String code, int minutesValid) {
         return mailText
             .replace("<playername />", name)
-            .replace("<servername />", serverName)
+            .replace("<servername />", settings.getProperty(PluginSettings.SERVER_NAME))
             .replace("<generatedcode />", code)
             .replace("<minutesvalid />", String.valueOf(minutesValid));
     }
@@ -161,7 +159,7 @@ public class EmailService {
     private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {
         return mailText
             .replace("<playername />", name)
-            .replace("<servername />", serverName)
+            .replace("<servername />", settings.getProperty(PluginSettings.SERVER_NAME))
             .replace("<recoverycode />", code)
             .replace("<hoursvalid />", String.valueOf(hoursValid));
     }

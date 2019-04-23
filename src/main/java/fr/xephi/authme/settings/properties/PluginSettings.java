@@ -90,6 +90,9 @@ public final class PluginSettings implements SettingsHolder {
     public static final Property<Boolean> USE_ASYNC_PRE_LOGIN_EVENT =
         newProperty("settings.useAsyncPreLoginEvent", true);
 
+    @Comment("The name of the server, used in some placeholders.")
+    public static final Property<String> SERVER_NAME = newProperty("settings.serverName", "Your Minecraft Server");
+
     private PluginSettings() {
     }
 

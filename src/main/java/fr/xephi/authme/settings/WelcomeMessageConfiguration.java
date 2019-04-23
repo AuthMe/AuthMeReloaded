@@ -7,6 +7,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.lazytags.Tag;
@@ -65,7 +66,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
         createTag("{IP}",          PlayerUtils::getPlayerIp),
         createTag("{LOGINS}",      () -> Integer.toString(playerCache.getLogged())),
         createTag("{WORLD}",       pl -> pl.getWorld().getName()),
-        createTag("{SERVER}",      () -> server.getServerName()),
+        createTag("{SERVER}",      () -> service.getProperty(PluginSettings.SERVER_NAME)),
         createTag("{VERSION}",     () -> server.getBukkitVersion()),
         createTag("{COUNTRY}",     pl -> geoIpService.getCountryName(PlayerUtils.getPlayerIp(pl))));
 

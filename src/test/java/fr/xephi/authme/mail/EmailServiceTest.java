@@ -7,10 +7,10 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.bukkit.Server;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,8 +46,6 @@ public class EmailServiceTest {
     @Mock
     private Settings settings;
     @Mock
-    private Server server;
-    @Mock
     private SendMailSsl sendMailSsl;
     @DataFolder
     private File dataFolder;
@@ -63,7 +61,7 @@ public class EmailServiceTest {
     @BeforeInjecting
     public void initFields() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        given(server.getServerName()).willReturn("serverName");
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("serverName");
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         given(sendMailSsl.hasAllInformation()).willReturn(true);
