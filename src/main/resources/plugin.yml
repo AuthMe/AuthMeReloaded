@@ -4,7 +4,7 @@ website: ${project.url}
 description: ${project.description}
 main: ${pluginDescription.main}
 version: ${pluginDescription.version}
-api-version: 1.14
+api-version: 1.13
 softdepend:
     - Vault
     - LuckPerms
