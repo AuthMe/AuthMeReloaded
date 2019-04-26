@@ -5,10 +5,10 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,12 +19,12 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link NoOpExtension}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NoOpExtensionTest {
 
     private NoOpExtension extension;
 
-    @Before
+    @BeforeEach
     public void createExtension() {
         Settings settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);

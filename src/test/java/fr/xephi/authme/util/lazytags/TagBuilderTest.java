@@ -1,7 +1,7 @@
 package fr.xephi.authme.util.lazytags;
 
 import fr.xephi.authme.TestHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

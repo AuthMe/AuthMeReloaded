@@ -4,7 +4,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;

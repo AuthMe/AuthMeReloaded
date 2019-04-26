@@ -3,7 +3,7 @@ package fr.xephi.authme.permission.handlers;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

@@ -12,11 +12,10 @@ import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -48,11 +47,10 @@ public class MessagesIntegrationTest {
     private Messages messages;
     private MessagesFileHandler messagesFileHandler;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         TestHelper.setupLogger();
     }
@@ -65,9 +63,8 @@ public class MessagesIntegrationTest {
      * Similarly, the {@code messages_default.yml} from the test resources represents a default
      * file that should contain all messages, but again, for testing, it just contains a few.
      */
-    @Before
+    @BeforeEach
     public void setUpMessages() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
         File testFile = new File(dataFolder, "messages/messages_test.yml");
         new File(dataFolder, "messages").mkdirs();
         FileUtils.create(testFile);

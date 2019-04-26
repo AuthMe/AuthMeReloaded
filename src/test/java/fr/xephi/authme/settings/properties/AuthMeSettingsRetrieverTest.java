@@ -2,7 +2,7 @@ package fr.xephi.authme.settings.properties;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import fr.xephi.authme.TestHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.closeTo;
 import static org.junit.Assert.assertThat;

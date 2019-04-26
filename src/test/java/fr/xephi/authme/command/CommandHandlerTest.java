@@ -11,13 +11,13 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -51,7 +51,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 // Justification: It's more readable to use asList() everywhere in the test when we often generated two lists where one
 // often consists of only one element, e.g. myMethod(asList("authme"), asList("my", "args"), ...)
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CommandHandlerTest {
 
     private CommandHandler handler;
@@ -69,7 +69,7 @@ public class CommandHandlerTest {
 
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void initializeCommandMapper() {
         given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(

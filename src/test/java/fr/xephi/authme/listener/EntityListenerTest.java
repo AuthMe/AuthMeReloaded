@@ -13,11 +13,11 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static org.hamcrest.Matchers.equalTo;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link EntityListener}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EntityListenerTest {
 
     @InjectMocks

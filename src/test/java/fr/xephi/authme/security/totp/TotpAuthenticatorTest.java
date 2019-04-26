@@ -5,11 +5,11 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link TotpAuthenticator}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TotpAuthenticatorTest {
 
     private TotpAuthenticator totpAuthenticator;
@@ -35,7 +35,7 @@ public class TotpAuthenticatorTest {
     @Mock
     private IGoogleAuthenticator googleAuthenticator;
 
-    @Before
+    @BeforeEach
     public void initializeTotpAuthenticator() {
         totpAuthenticator = new TotpAuthenticatorTestImpl(bukkitService);
     }

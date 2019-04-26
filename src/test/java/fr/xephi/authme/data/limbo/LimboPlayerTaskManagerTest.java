@@ -13,12 +13,12 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link LimboPlayerTaskManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LimboPlayerTaskManagerTest {
 
     @InjectMocks
@@ -60,7 +60,7 @@ public class LimboPlayerTaskManagerTest {
     @Mock
     private RegistrationCaptchaManager registrationCaptchaManager;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupLogger() {
         TestHelper.setupLogger();
     }

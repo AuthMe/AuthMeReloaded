@@ -8,8 +8,8 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.Location;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
  */
 public class DebugSectionUtilsTest {
 
-    @Before
+    @BeforeEach
     public void initMockLogger() {
         TestHelper.setupLogger();
     }

@@ -6,10 +6,9 @@ import ch.jalu.configme.resource.YamlFileReader;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static fr.xephi.authme.TestHelper.createFile;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -29,10 +29,10 @@ public class MessageUpdaterTest {
 
     private MessageUpdater messageUpdater = new MessageUpdater();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File temporaryFolder;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -41,7 +41,7 @@ public class MessageUpdaterTest {
     public void shouldNotUpdateDefaultFile() throws IOException {
         // given
         String messagesFilePath = "messages/messages_en.yml";
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "fffff");
         Files.copy(TestHelper.getJarFile("/" + messagesFilePath), messagesFile);
         long modifiedDate = messagesFile.lastModified();
 
@@ -56,7 +56,7 @@ public class MessageUpdaterTest {
     @Test
     public void shouldAddMissingKeys() throws IOException {
         // given
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "file");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test.yml"), messagesFile);
         
         // when
@@ -76,7 +76,7 @@ public class MessageUpdaterTest {
     @Test
     public void shouldMigrateOldEntries() throws IOException {
         // given
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "messages.yml");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_en_old.yml"), messagesFile);
 
         // when
@@ -102,7 +102,7 @@ public class MessageUpdaterTest {
     @Test
     public void shouldPerformNewerMigrations() throws IOException {
         // given
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "newFile");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test2.yml"), messagesFile);
 
         // when

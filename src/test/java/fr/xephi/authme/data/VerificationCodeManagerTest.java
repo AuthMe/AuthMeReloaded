@@ -8,11 +8,11 @@ import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link VerificationCodeManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class VerificationCodeManagerTest {
 
     @Mock
@@ -40,7 +40,7 @@ public class VerificationCodeManagerTest {
     @Mock
     private PermissionsManager permissionsManager;
 
-    @Before
+    @BeforeEach
     public void setUpBasicBehavior() {
         given(emailService.hasAllInformation()).willReturn(true);
         given(settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES)).willReturn(1);

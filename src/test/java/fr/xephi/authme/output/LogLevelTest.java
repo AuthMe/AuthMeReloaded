@@ -1,6 +1,6 @@
 package fr.xephi.authme.output;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.equalTo;

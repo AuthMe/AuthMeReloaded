@@ -2,7 +2,7 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.util.ConcurrentModificationException;

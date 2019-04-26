@@ -2,10 +2,9 @@ package fr.xephi.authme.util;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,19 +23,18 @@ public class FileUtilsTest {
     /** Regex that matches timestamps such as 20180211_1048. */
     private static final String BACKUP_TIMESTAMP_PATTERN = "20\\d{6}_\\d{4}";
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File temporaryFolder;
 
     @Test
     public void shouldNotCopyFile() throws IOException {
         // given
-        File folder = temporaryFolder.newFolder();
-        File file = new File(folder, "config.yml");
+        File file = new File(temporaryFolder, "config.yml");
         // purposely don't copy config.yml to verify that config.yml isn't copied by the method
         File emailJarFile = TestHelper.getJarFile("/email.html");
         Files.copy(emailJarFile, file);
@@ -52,8 +50,7 @@ public class FileUtilsTest {
     @Test
     public void shouldCopyFileFromJar() throws IOException {
         // given
-        File folder = temporaryFolder.newFolder();
-        File file = new File(folder, "some/folders/welcome.txt");
+        File file = new File(temporaryFolder, "some/folders/welcome.txt");
 
         // when
         boolean result = FileUtils.copyFileFromResource(file, "welcome.txt");
@@ -68,8 +65,7 @@ public class FileUtilsTest {
     @Test
     public void shouldReturnFalseForInvalidJarFile() throws IOException {
         // given
-        File folder = temporaryFolder.newFolder();
-        File file = new File(folder, "bogus");
+        File file = new File(temporaryFolder, "bogus");
 
         // when
         boolean result = FileUtils.copyFileFromResource(file, "does-not-exist");
@@ -82,9 +78,8 @@ public class FileUtilsTest {
     @Test
     public void shouldReturnFalseForParentInvalidParentFolders() throws IOException {
         // given
-        File folder = temporaryFolder.newFolder();
-        new File(folder, "hello").createNewFile();
-        File fileToCreate = new File(folder, "hello/test");
+        new File(temporaryFolder, "hello").createNewFile();
+        File fileToCreate = new File(temporaryFolder, "hello/test");
 
         // when
         boolean result = FileUtils.copyFileFromResource(fileToCreate, "welcome.txt");
@@ -96,28 +91,27 @@ public class FileUtilsTest {
     @Test
     public void shouldPurgeDirectory() throws IOException {
         // given
-        File root = temporaryFolder.newFolder();
-        File file1 = new File(root, "a/b/c/test.html");
-        File file2 = new File(root, "a/b/f/toast.txt");
-        File file3 = new File(root, "a/g/rest.png");
-        File file4 = new File(root, "j/l/roast.tiff");
+        File file1 = new File(temporaryFolder, "a/b/c/test.html");
+        File file2 = new File(temporaryFolder, "a/b/f/toast.txt");
+        File file3 = new File(temporaryFolder, "a/g/rest.png");
+        File file4 = new File(temporaryFolder, "j/l/roast.tiff");
         createFiles(file1, file2, file3, file4);
 
         // when
-        FileUtils.purgeDirectory(new File(root, "a"));
+        FileUtils.purgeDirectory(new File(temporaryFolder, "a"));
 
         // then
         assertThat(file1.exists(), equalTo(false));
         assertThat(file2.exists(), equalTo(false));
         assertThat(file3.exists(), equalTo(false));
         assertThat(file4.exists(), equalTo(true));
-        assertThat(new File(root, "a").exists(), equalTo(true));
+        assertThat(new File(temporaryFolder, "a").exists(), equalTo(true));
     }
 
     @Test
     public void shouldDeleteFile() throws IOException {
         // given
-        File file = temporaryFolder.newFile();
+        File file = TestHelper.createFile(temporaryFolder, "tempFile");
         assertThat(file.exists(), equalTo(true));
 
         // when
@@ -156,10 +150,9 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldCreateDirectory() throws IOException {
+    public void shouldCreateDirectory() {
         // given
-        File root = temporaryFolder.newFolder();
-        File dir = new File(root, "folder/folder2/myFolder");
+        File dir = new File(temporaryFolder, "folder/folder2/myFolder");
 
         // when
         boolean result = FileUtils.createDirectory(dir);
@@ -173,8 +166,7 @@ public class FileUtilsTest {
     @Test
     public void shouldReturnFalseOnDirectoryCreateFail() throws IOException {
         // given
-        File root = temporaryFolder.newFolder();
-        File dirAsFile = new File(root, "file");
+        File dirAsFile = new File(temporaryFolder, "file");
         dirAsFile.createNewFile();
 
         // when
@@ -221,5 +213,4 @@ public class FileUtilsTest {
             }
         }
     }
-
 }

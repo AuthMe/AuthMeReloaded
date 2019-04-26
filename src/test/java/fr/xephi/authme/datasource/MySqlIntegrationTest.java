@@ -6,9 +6,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,7 +35,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     /**
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
-    @BeforeClass
+    @BeforeAll
     public static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an H2 driver
         Class.forName("org.h2.jdbcx.JdbcDataSource");
@@ -50,7 +50,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile));
     }
 
-    @Before
+    @BeforeEach
     public void initializeConnectionAndTable() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
@@ -70,7 +70,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         hikariSource = ds;
     }
 
-    @After
+    @AfterEach
     public void closeConnection() {
         silentClose(hikariSource);
     }

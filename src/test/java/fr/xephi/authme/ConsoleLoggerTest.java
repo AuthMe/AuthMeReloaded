@@ -4,15 +4,14 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,22 +38,21 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link ConsoleLogger}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ConsoleLoggerTest {
 
     @Mock
     private Logger logger;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File tempFolder;
 
     private File logFile;
 
-    @Before
+    @BeforeEach
     public void setMockLogger() throws IOException {
         ConsoleLogger.setLogger(logger);
-        File folder = temporaryFolder.newFolder();
-        File logFile = new File(folder, "authme.log");
+        File logFile = new File(tempFolder, "authme.log");
         if (!logFile.createNewFile()) {
             throw new IOException("Could not create file '" + logFile.getPath() + "'");
         }
@@ -62,7 +60,7 @@ public class ConsoleLoggerTest {
         this.logFile = logFile;
     }
 
-    @After
+    @AfterEach
     public void closeFileHandlers() {
         ConsoleLogger.close();
     }

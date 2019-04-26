@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -144,5 +145,11 @@ public final class TestHelper {
     public static void returnDefaultsForAllProperties(Settings settings) {
         given(settings.getProperty(any(Property.class)))
             .willAnswer(invocation -> ((Property<?>) invocation.getArgument(0)).getDefaultValue());
+    }
+
+    public static File createFile(File folder, String filename) throws IOException {
+        File file = new File(folder, filename);
+        file.createNewFile();
+        return file;
     }
 }

@@ -7,14 +7,13 @@ import fr.xephi.authme.service.BukkitServiceTestHelper;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link CommandManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CommandManagerTest {
 
     private static final String TEST_FILES_FOLDER = "/fr/xephi/authme/settings/commandconfig/";
@@ -52,14 +51,11 @@ public class CommandManagerTest {
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File testFolder;
 
-    private File testFolder;
-
-    @Before
-    public void setup() throws IOException {
-        testFolder = temporaryFolder.newFolder();
+    @BeforeEach
+    public void setup() {
         player = mockPlayer();
         BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
     }

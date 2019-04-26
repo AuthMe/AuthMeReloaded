@@ -9,10 +9,10 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SqlDataSourceTestUtil;
 import fr.xephi.authme.settings.Settings;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link MySqlDefaultChanger}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MySqlDefaultChangerTest {
 
     @Mock

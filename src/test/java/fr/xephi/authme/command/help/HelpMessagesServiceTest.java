@@ -10,10 +10,9 @@ import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,13 +36,11 @@ public class HelpMessagesServiceTest {
 
     private HelpMessagesService helpMessagesService;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
 
-    @Before
+    @BeforeEach
     public void initializeHandler() throws IOException, InstantiationException, IllegalAccessException {
-        dataFolder = temporaryFolder.newFolder();
         new File(dataFolder, "messages").mkdirs();
         File messagesFile = new File(dataFolder, "messages/help_test.yml");
         Files.copy(TestHelper.getJarFile(TEST_FILE), messagesFile);

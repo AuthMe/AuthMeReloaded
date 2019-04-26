@@ -1,7 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;

@@ -5,10 +5,10 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,7 +38,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     /**
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
-    @BeforeClass
+    @BeforeAll
     public static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an implementation for SQLite
         Class.forName("org.sqlite.JDBC");
@@ -55,7 +55,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile)).split(";(\\r?)\\n");
     }
 
-    @Before
+    @BeforeEach
     public void initializeConnectionAndTable() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         try (Statement st = connection.createStatement()) {
@@ -67,7 +67,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         con = connection;
     }
 
-    @After
+    @AfterEach
     public void closeConnection() {
         silentClose(con);
     }

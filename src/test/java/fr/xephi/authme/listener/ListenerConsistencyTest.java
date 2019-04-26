@@ -6,8 +6,8 @@ import fr.xephi.authme.TestHelper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -34,7 +34,7 @@ public final class ListenerConsistencyTest {
         "PlayerListener#onJoinMessage", "PlayerListener#onAsyncPlayerPreLoginEvent",
         "PlayerListener19Spigot#onPlayerSpawn");
 
-    @BeforeClass
+    @BeforeAll
     public static void collectListenerClasses() {
         ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "listener");
         classes = collector.collectClasses(Listener.class);

@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.help;
 
 import fr.xephi.authme.util.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;

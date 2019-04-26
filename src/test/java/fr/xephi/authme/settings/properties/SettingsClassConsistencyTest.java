@@ -6,8 +6,8 @@ import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -29,7 +29,7 @@ public class SettingsClassConsistencyTest {
     private static final String SETTINGS_FOLDER = TestHelper.PROJECT_ROOT + "settings/properties";
     private static List<Class<? extends SettingsHolder>> classes;
 
-    @BeforeClass
+    @BeforeAll
     public static void scanForSettingsClasses() {
         ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, SETTINGS_FOLDER);
         classes = collector.collectClasses(SettingsHolder.class);

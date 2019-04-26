@@ -16,7 +16,7 @@ import fr.xephi.authme.security.crypts.Whirlpool;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import fr.xephi.authme.util.expiring.ExpiringSet;
 import fr.xephi.authme.util.expiring.TimedCounter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.lang.reflect.Field;

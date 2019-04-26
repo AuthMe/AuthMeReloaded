@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -40,7 +40,7 @@ public class PluginHookServiceTest {
     /** The plugin name of Multiverse-Core. */
     private static final String MULTIVERSE = "Multiverse-Core";
 
-    @BeforeClass
+    @BeforeAll
     public static void setLogger() {
         TestHelper.setupLogger();
     }

@@ -5,7 +5,7 @@ import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;

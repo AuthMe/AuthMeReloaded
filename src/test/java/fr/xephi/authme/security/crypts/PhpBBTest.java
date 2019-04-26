@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 

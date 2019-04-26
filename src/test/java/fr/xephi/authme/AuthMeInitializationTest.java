@@ -24,14 +24,13 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +50,7 @@ import static org.mockito.Mockito.mock;
  * Integration test verifying that all services can be initialized in {@link AuthMe}
  * with the {@link Injector}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AuthMeInitializationTest {
 
     @Mock
@@ -61,19 +60,16 @@ public class AuthMeInitializationTest {
     private PluginManager pluginManager;
 
     private AuthMe authMe;
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
-    @Before
+    @BeforeEach
     public void initAuthMe() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
         File settingsFile = new File(dataFolder, "config.yml");
         JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);

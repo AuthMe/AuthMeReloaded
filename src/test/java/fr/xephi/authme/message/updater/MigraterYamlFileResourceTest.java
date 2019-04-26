@@ -7,9 +7,8 @@ import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.resource.PropertyReader;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +25,8 @@ public class MigraterYamlFileResourceTest {
 
     private static final String CHINESE_MESSAGES_FILE = TestHelper.PROJECT_ROOT + "message/chinese_texts.yml";
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File temporaryFolder;
 
     @Test
     public void shouldReadChineseFile() {
@@ -47,7 +46,7 @@ public class MigraterYamlFileResourceTest {
     @Test
     public void shouldWriteWithCorrectCharset() throws IOException {
         // given
-        File file = temporaryFolder.newFile();
+        File file = TestHelper.createFile(temporaryFolder, "messages");
         Files.copy(TestHelper.getJarFile(CHINESE_MESSAGES_FILE), file);
         MigraterYamlFileResource resource = new MigraterYamlFileResource(file);
         ConfigurationData configurationData = buildConfigurationData();

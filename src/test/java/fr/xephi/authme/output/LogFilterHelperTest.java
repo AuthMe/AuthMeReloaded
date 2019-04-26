@@ -3,7 +3,7 @@ package fr.xephi.authme.output;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;

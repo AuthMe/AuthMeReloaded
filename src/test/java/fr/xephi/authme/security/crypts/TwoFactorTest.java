@@ -1,8 +1,8 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
  */
 public class TwoFactorTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }

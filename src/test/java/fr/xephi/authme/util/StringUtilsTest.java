@@ -1,7 +1,7 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.TestHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;

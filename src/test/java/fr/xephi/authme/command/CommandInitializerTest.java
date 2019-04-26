@@ -1,8 +1,8 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.util.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +32,7 @@ public class CommandInitializerTest {
 
     private static Collection<CommandDescription> commands;
 
-    @BeforeClass
+    @BeforeAll
     public static void initializeCommandCollection() {
         CommandInitializer commandInitializer = new CommandInitializer();
         commands = commandInitializer.getCommands();

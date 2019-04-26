@@ -4,8 +4,8 @@ import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.event.Event;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -23,7 +23,7 @@ public class EventsConsistencyTest {
     private static final String EVENTS_FOLDER = TestHelper.PROJECT_ROOT + "events/";
     private static List<Class<? extends Event>> classes;
 
-    @BeforeClass
+    @BeforeAll
     public static void scanEventClasses() {
         ClassCollector classCollector = new ClassCollector(TestHelper.SOURCES_FOLDER, EVENTS_FOLDER);
         classes = classCollector.collectClasses(Event.class);

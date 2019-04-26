@@ -2,7 +2,7 @@ package fr.xephi.authme.service.yaml;
 
 import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.parser.ParserException;
 
 import java.io.File;

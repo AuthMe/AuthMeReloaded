@@ -3,7 +3,7 @@ package fr.xephi.authme.datasource;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.runners.Parameterized;
 
 import java.lang.reflect.Method;
@@ -29,7 +29,7 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
         super(method, name);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void initializeSettings() {
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);

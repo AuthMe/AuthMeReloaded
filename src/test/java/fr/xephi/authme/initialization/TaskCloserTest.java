@@ -9,12 +9,12 @@ import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitWorker;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link TaskCloser}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TaskCloserTest {
 
     private static final int[] ACTIVE_WORKERS_ID = {2, 5};
@@ -50,7 +50,7 @@ public class TaskCloserTest {
     @Mock
     private DataSource dataSource;
 
-    @Before
+    @BeforeEach
     public void initAuthMe() {
         Server server = mock(Server.class);
         given(server.getScheduler()).willReturn(bukkitScheduler);

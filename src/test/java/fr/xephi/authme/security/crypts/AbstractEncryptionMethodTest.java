@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -96,7 +96,7 @@ public abstract class AbstractEncryptionMethodTest {
             GIVEN_PASSWORDS[3], result3);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setupLogger() {
         TestHelper.setupLogger();
     }

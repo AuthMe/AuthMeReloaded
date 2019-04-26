@@ -1,7 +1,7 @@
 package fr.xephi.authme.message.updater;
 
 import fr.xephi.authme.message.MessageKey;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;

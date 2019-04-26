@@ -1,8 +1,8 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.TestHelper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -25,7 +26,7 @@ public class SqlDataSourceUtilsTest {
 
     private Logger logger;
 
-    @Before
+    @BeforeEach
     public void initLogger() {
         logger = TestHelper.setupLogger();
     }
@@ -84,7 +85,7 @@ public class SqlDataSourceUtilsTest {
         assertThat(result, equalTo(false));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowForUnknownColumnInNullableCheck() throws SQLException {
         // given
         String tableName = "data";
@@ -94,10 +95,9 @@ public class SqlDataSourceUtilsTest {
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         given(metaData.getColumns(null, null, tableName, columnName)).willReturn(resultSet);
 
-        // when
-        SqlDataSourceUtils.isNotNullColumn(metaData, tableName, columnName);
-
-        // then - expect exception
+        // when / then
+        assertThrows(IllegalStateException.class,
+            () -> SqlDataSourceUtils.isNotNullColumn(metaData, tableName, columnName));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class SqlDataSourceUtilsTest {
         assertThat(defaultValue, equalTo("Literature"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowForUnknownColumnInDefaultValueRetrieval() throws SQLException {
         // given
         String tableName = "data";
@@ -128,10 +128,9 @@ public class SqlDataSourceUtilsTest {
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         given(metaData.getColumns(null, null, tableName, columnName)).willReturn(resultSet);
 
-        // when
-        SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, columnName);
-
-        // then - expect exception
+        // when / then
+        assertThrows(IllegalStateException.class,
+            () -> SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, columnName));
     }
 
     @Test

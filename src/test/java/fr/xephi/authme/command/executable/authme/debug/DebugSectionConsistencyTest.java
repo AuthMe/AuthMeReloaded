@@ -2,8 +2,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -24,7 +24,7 @@ public class DebugSectionConsistencyTest {
     private static List<Class<?>> debugClasses;
     private static List<DebugSection> debugSections;
 
-    @BeforeClass
+    @BeforeAll
     public static void collectClasses() {
         // TODO ljacqu 20171021: Improve ClassCollector (pass pkg by class, improve #getInstancesOfType's instantiation)
         ClassCollector classCollector = new ClassCollector(

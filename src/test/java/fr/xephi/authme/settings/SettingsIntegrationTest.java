@@ -11,11 +11,9 @@ import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,19 +38,12 @@ public class SettingsIntegrationTest {
     private static ConfigurationData CONFIG_DATA =
         ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File testPluginFolder;
 
-    private File testPluginFolder;
-
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
-    }
-
-    @Before
-    public void setUpTestPluginFolder() throws IOException {
-        testPluginFolder = temporaryFolder.newFolder();
     }
 
     @Test
@@ -60,7 +51,7 @@ public class SettingsIntegrationTest {
         // given
         PropertyResource resource = new YamlFileResource(copyFileFromResources(COMPLETE_FILE));
         // Pass another, non-existent file to check if the settings had to be rewritten
-        File newFile = temporaryFolder.newFile();
+        File newFile = TestHelper.createFile(testPluginFolder, "newfile");
 
         // when / then
         Settings settings = new Settings(testPluginFolder, resource,
@@ -119,7 +110,7 @@ public class SettingsIntegrationTest {
     @Test
     public void shouldReloadSettings() throws IOException {
         // given
-        File configFile = temporaryFolder.newFile();
+        File configFile = TestHelper.createFile(testPluginFolder, "settings");
         PropertyResource resource = new YamlFileResource(configFile);
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
@@ -135,7 +126,7 @@ public class SettingsIntegrationTest {
     private File copyFileFromResources(String path) {
         try {
             File source = getJarFile(path);
-            File destination = temporaryFolder.newFile();
+            File destination = TestHelper.createFile(testPluginFolder, "fileFromJar");
             Files.copy(source, destination);
             return destination;
         } catch (IOException e) {

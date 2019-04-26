@@ -4,12 +4,12 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.help.HelpMessagesService;
 import fr.xephi.authme.service.HelpTranslationGenerator;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link UpdateHelpMessagesCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UpdateHelpMessagesCommandTest {
 
     @InjectMocks
@@ -34,7 +34,7 @@ public class UpdateHelpMessagesCommandTest {
     @Mock
     private HelpMessagesService helpMessagesService;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }

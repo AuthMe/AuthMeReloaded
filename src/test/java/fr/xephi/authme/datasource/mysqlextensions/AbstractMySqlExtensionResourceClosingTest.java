@@ -4,7 +4,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.AbstractResourceClosingTest;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.settings.Settings;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.runners.Parameterized;
 
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
         super(method, name);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void initSettings() {
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);

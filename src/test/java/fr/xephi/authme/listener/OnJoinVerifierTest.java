@@ -20,14 +20,14 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link OnJoinVerifier}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OnJoinVerifierTest {
 
     @InjectMocks
@@ -72,7 +72,7 @@ public class OnJoinVerifierTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
