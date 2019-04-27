@@ -8,8 +8,9 @@ import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.bukkit.entity.Player;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -51,11 +52,14 @@ public class CommandManagerTest {
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
-    @TempDir
-    File testFolder;
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    private File testFolder;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        testFolder = temporaryFolder.newFolder();
         player = mockPlayer();
         BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
     }
