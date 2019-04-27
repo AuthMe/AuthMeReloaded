@@ -4,7 +4,7 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +70,7 @@ public class ConsoleLoggerTest {
      * is that we no longer enable logging to a file as the log file we've supplied will no longer
      * be around after this test class has finished.
      */
-    @AfterClass
+    @AfterAll
     public static void resetConsoleToDefault() {
         ConsoleLogger.setLoggingOptions(newSettings(false, LogLevel.FINE));
     }
@@ -95,7 +95,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldNotLogToFile() throws IOException {
+    public void shouldNotLogToFile() {
         // given
         ConsoleLogger.setLoggingOptions(newSettings(false, LogLevel.DEBUG));
 
