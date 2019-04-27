@@ -14,12 +14,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link BukkitService}.
  */
-@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class) // Blocked by Mockito/#1540
 public class BukkitServiceTest {
 
     private BukkitService bukkitService;
@@ -50,7 +50,7 @@ public class BukkitServiceTest {
     @Mock
     private PluginManager pluginManager;
 
-    @BeforeEach
+    @Before
     public void constructBukkitService() {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         given(server.getScheduler()).willReturn(scheduler);

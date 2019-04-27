@@ -56,15 +56,13 @@ public class AsyncRegisterTest {
         String name = "robert";
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(true);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        singletonStoreWillReturn(registrationExecutorStore, executor);
 
         // when
         asyncRegister.register(RegistrationMethod.PASSWORD_REGISTRATION, PasswordRegisterParams.of(player, "abc", null));
 
         // then
         verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-        verifyZeroInteractions(dataSource, executor);
+        verifyZeroInteractions(dataSource, registrationExecutorStore);
     }
 
     @Test
@@ -74,15 +72,13 @@ public class AsyncRegisterTest {
         Player player = mockPlayerWithName(name);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(false);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        singletonStoreWillReturn(registrationExecutorStore, executor);
 
         // when
         asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, TwoFactorRegisterParams.of(player));
 
         // then
         verify(commonService).send(player, MessageKey.REGISTRATION_DISABLED);
-        verifyZeroInteractions(dataSource, executor);
+        verifyZeroInteractions(dataSource, registrationExecutorStore);
     }
 
     @Test
@@ -93,8 +89,6 @@ public class AsyncRegisterTest {
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
         given(dataSource.isAuthAvailable(name)).willReturn(true);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        singletonStoreWillReturn(registrationExecutorStore, executor);
 
         // when
         asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, TwoFactorRegisterParams.of(player));
@@ -102,7 +96,7 @@ public class AsyncRegisterTest {
         // then
         verify(commonService).send(player, MessageKey.NAME_ALREADY_REGISTERED);
         verify(dataSource, only()).isAuthAvailable(name);
-        verifyZeroInteractions(executor);
+        verifyZeroInteractions(registrationExecutorStore);
     }
 
     @Test
@@ -111,13 +105,10 @@ public class AsyncRegisterTest {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
-        TestHelper.mockPlayerIp(player, "33.44.55.66");
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
         given(dataSource.isAuthAvailable(name)).willReturn(false);
-        RegistrationExecutor executor = mock(RegistrationExecutor.class);
         TwoFactorRegisterParams params = TwoFactorRegisterParams.of(player);
-        singletonStoreWillReturn(registrationExecutorStore, executor);
 
         AuthMeAsyncPreRegisterEvent canceledEvent = new AuthMeAsyncPreRegisterEvent(player, true);
         canceledEvent.setCanRegister(false);
@@ -128,6 +119,7 @@ public class AsyncRegisterTest {
 
         // then
         verify(dataSource, only()).isAuthAvailable(name);
+        verifyZeroInteractions(registrationExecutorStore);
     }
 
     @Test

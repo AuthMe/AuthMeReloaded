@@ -112,6 +112,7 @@ public class PurgeTaskTest {
         // given (3)
         // Third round: no more OfflinePlayer objects, but some names remain
         reset(purgeService, permissionsManager);
+        given(permissionsManager.hasPermissionOffline(anyString(), eq(BYPASS_NODE))).willReturn(false);
         given(permissionsManager.hasPermissionOffline("india", BYPASS_NODE)).willReturn(true);
 
         // when (3)

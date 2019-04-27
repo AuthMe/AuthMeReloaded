@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link GenerateTotpService}.
@@ -71,6 +70,7 @@ public class GenerateTotpServiceTest {
         generateTotpService.generateTotpKey(player);
         String validCode = "928374";
         given(totpAuthenticator.checkCode(generatedKey, validCode)).willReturn(true);
+        given(totpAuthenticator.checkCode(generatedKey, "000000")).willReturn(false);
 
         // when
         boolean invalidCodeResult = generateTotpService.isTotpCodeCorrectForGeneratedTotpKey(player, "000000");
@@ -81,8 +81,6 @@ public class GenerateTotpServiceTest {
         assertThat(invalidCodeResult, equalTo(false));
         assertThat(validCodeResult, equalTo(true));
         assertThat(unknownPlayerResult, equalTo(false));
-        verify(totpAuthenticator).checkCode(generatedKey, "000000");
-        verify(totpAuthenticator).checkCode(generatedKey, validCode);
     }
 
     @Test

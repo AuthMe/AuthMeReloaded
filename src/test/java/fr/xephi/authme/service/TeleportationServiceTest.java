@@ -11,13 +11,13 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link TeleportationService}.
  */
-@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class) // Blocked by Mockito/#1540
 public class TeleportationServiceTest {
 
     @InjectMocks
@@ -55,7 +55,7 @@ public class TeleportationServiceTest {
     @Mock
     private PlayerCache playerCache;
 
-    @BeforeEach
+    @Before
     public void setUpForcedWorlds() {
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
             .willReturn(Arrays.asList("forced1", "OtherForced"));
