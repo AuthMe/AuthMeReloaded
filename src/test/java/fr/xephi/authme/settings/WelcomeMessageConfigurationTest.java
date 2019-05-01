@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -14,10 +14,9 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -38,7 +37,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link WelcomeMessageConfiguration}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class WelcomeMessageConfigurationTest {
 
     @InjectDelayed
@@ -54,16 +53,13 @@ public class WelcomeMessageConfigurationTest {
     @Mock
     private CommonService service;
     @DataFolder
-    private File testPluginFolder;
+    @TempDir
+    File testPluginFolder;
 
     private File welcomeFile;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     @BeforeInjecting
     public void createPluginFolder() throws IOException {
-        testPluginFolder = temporaryFolder.newFolder();
         welcomeFile = new File(testPluginFolder, "welcome.txt");
         welcomeFile.createNewFile();
         given(service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)).willReturn(true);

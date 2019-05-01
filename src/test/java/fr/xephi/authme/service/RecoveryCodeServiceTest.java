@@ -1,14 +1,14 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.ExpiringMap;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 /**
  * Test for {@link RecoveryCodeService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class RecoveryCodeServiceTest {
 
     @InjectDelayed

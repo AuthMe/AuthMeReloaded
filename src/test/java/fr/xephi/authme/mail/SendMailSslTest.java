@@ -1,7 +1,7 @@
 package fr.xephi.authme.mail;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.output.LogLevel;
@@ -10,14 +10,11 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -30,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 /**
  * Test for {@link SendMailSsl}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class SendMailSslTest {
 
     @InjectDelayed
@@ -39,16 +36,13 @@ public class SendMailSslTest {
     @Mock
     private Settings settings;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void initFields() throws IOException {
+    public void initFields() {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);

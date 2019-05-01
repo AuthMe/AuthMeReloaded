@@ -1,7 +1,7 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
@@ -16,11 +16,10 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -36,7 +35,7 @@ import static org.mockito.BDDMockito.given;
 /**
  * Integration test for {@link HelpTranslationGenerator}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class HelpTranslationGeneratorIntegrationTest {
 
     @InjectDelayed
@@ -49,23 +48,20 @@ public class HelpTranslationGeneratorIntegrationTest {
     private CommandInitializer commandInitializer;
 
     @DataFolder
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
     private File helpMessagesFile;
 
     @Mock
     private Settings settings;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
     public void setUpClasses() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
         File messagesFolder = new File(dataFolder, "messages");
         messagesFolder.mkdir();
         helpMessagesFile = new File(messagesFolder, "help_test.yml");

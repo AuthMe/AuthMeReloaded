@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.help;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.FoundCommandResult;
@@ -12,9 +12,9 @@ import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link HelpProvider}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class HelpProviderTest {
 
     private static Collection<CommandDescription> commands;
@@ -64,7 +64,7 @@ public class HelpProviderTest {
     @Mock
     private CommandSender sender;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpCommands() {
         commands = TestCommandsUtil.generateCommands();
     }

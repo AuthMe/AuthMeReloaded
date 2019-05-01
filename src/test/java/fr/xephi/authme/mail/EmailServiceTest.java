@@ -1,7 +1,7 @@
 package fr.xephi.authme.mail;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.initialization.DataFolder;
@@ -11,16 +11,14 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -37,7 +35,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link EmailService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class EmailServiceTest {
 
     @InjectDelayed
@@ -48,19 +46,16 @@ public class EmailServiceTest {
     @Mock
     private SendMailSsl sendMailSsl;
     @DataFolder
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void initFields() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
+    public void initFields() {
         given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("serverName");
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");

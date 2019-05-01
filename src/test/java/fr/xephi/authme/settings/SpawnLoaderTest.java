@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
@@ -11,10 +11,9 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link SpawnLoader}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class SpawnLoaderTest {
 
     @InjectDelayed
@@ -40,16 +39,13 @@ public class SpawnLoaderTest {
     @Mock
     private PluginHookService pluginHookService;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     @DataFolder
-    private File testFolder;
+    @TempDir
+    File testFolder;
 
     @BeforeInjecting
     public void setup() throws IOException {
         // Copy test config into a new temporary folder
-        testFolder = temporaryFolder.newFolder();
         File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/spawn-firstspawn.yml");
         File destination = new File(testFolder, "spawn.yml");
         Files.copy(source, destination);

@@ -1,7 +1,7 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -10,9 +10,9 @@ import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import java.util.function.Function;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 /**
  * Test for {@link SessionService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class SessionServiceTest {
 
     @InjectDelayed
@@ -44,7 +44,7 @@ public class SessionServiceTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }

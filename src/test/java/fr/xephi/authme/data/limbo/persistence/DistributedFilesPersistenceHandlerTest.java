@@ -1,7 +1,7 @@
 package fr.xephi.authme.data.limbo.persistence;
 
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
@@ -14,11 +14,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matcher;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link DistributedFilesPersistenceHandler}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class DistributedFilesPersistenceHandlerTest {
 
     /** Player is in seg32-10110 and should be migrated into seg16-f. */
@@ -77,14 +76,12 @@ public class DistributedFilesPersistenceHandlerTest {
     private Settings settings;
     @Mock
     private BukkitService bukkitService;
+    @TempDir
     @DataFolder
-    private File dataFolder;
+    File dataFolder;
     private File playerDataFolder;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -92,7 +89,6 @@ public class DistributedFilesPersistenceHandlerTest {
     @BeforeInjecting
     public void setUpClasses() throws IOException {
         given(settings.getProperty(LimboSettings.DISTRIBUTION_SIZE)).willReturn(SegmentSize.SIXTEEN);
-        dataFolder = temporaryFolder.newFolder();
         playerDataFolder = new File(dataFolder, "playerdata");
         playerDataFolder.mkdir();
 
