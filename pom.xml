@@ -612,14 +612,6 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.gravitydevelopment.updater</groupId>
-                    <artifactId>updater</artifactId>
-                </exclusion>
-                <exclusion>
                     <artifactId>commons-dbcp</artifactId>
                     <groupId>commons-dbcp</groupId>
                 </exclusion>
@@ -759,42 +751,8 @@
         <dependency>
             <groupId>de.luricos.bukkit</groupId>
             <artifactId>xAuth</artifactId>
-            <version>2.6</version>
+            <version>2.6.1-SNAPSHOT</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>craftbukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>updater</artifactId>
-                    <groupId>net.gravitydevelopment.updater</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>lombok</artifactId>
-                    <groupId>org.projectlombok</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>EssentialsGroupManager</artifactId>
-                    <groupId>net.ess3</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>PermissionsEx</artifactId>
-                    <groupId>ru.tehkode</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>AccountsClient</artifactId>
-                    <groupId>com.mojang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j-core</artifactId>
-                    <groupId>org.apache.logging.log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
