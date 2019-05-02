@@ -4,7 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.listener.JoiningPlayer;
-import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandlerException;
@@ -139,8 +138,6 @@ public class PermissionsManager implements Reloadable {
                 return new ZPermissionsHandler();
             case VAULT:
                 return new VaultHandler(server);
-            case B_PERMISSIONS:
-                return new BPermissionsHandler();
             default:
                 throw new IllegalStateException("Unhandled permission type '" + type + "'");
         }

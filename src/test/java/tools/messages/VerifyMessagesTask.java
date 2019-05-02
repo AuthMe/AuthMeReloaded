@@ -1,10 +1,10 @@
 package tools.messages;
 
 import com.google.common.collect.Multimap;
-import de.bananaco.bpermissions.imp.YamlConfiguration;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
