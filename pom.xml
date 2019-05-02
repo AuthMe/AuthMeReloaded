@@ -624,7 +624,7 @@
                     <groupId>commons-dbcp</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>AccountsClient</artifactId>
+                    <artifactId>accounts-client</artifactId>
                     <groupId>com.mojang</groupId>
                 </exclusion>
             </exclusions>
