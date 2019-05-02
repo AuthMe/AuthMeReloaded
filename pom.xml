@@ -648,56 +648,12 @@
         <dependency>
             <groupId>org.tyrannyofheaven.bukkit</groupId>
             <artifactId>zPermissions</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4.3-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sk89q</groupId>
-                    <artifactId>worldguard</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sk89q</groupId>
-                    <artifactId>worldedit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>VaultAPI</artifactId>
-                    <groupId>net.milkbowl.vault</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>uuidprovider</artifactId>
-                    <groupId>net.kaikk.mc</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>ToHPluginUtils</artifactId>
-                    <groupId>org.tyrannyofheaven.bukkit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Residence</artifactId>
-                    <groupId>com.bekvon.bukkit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Factions</artifactId>
-                    <groupId>com.massivecraft</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>mcore</artifactId>
-                    <groupId>com.massivecraft</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Factoid</artifactId>
-                    <groupId>me.tabinol.factoid</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>ebean</artifactId>
                     <groupId>org.avaje</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>persistence-api</artifactId>
-                    <groupId>javax.persistence</groupId>
+                    <artifactId>ebean</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
