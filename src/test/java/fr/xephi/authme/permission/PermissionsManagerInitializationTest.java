@@ -3,7 +3,6 @@ package fr.xephi.authme.permission;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionsExHandler;
@@ -34,7 +33,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static fr.xephi.authme.permission.PermissionsSystemType.B_PERMISSIONS;
 import static fr.xephi.authme.permission.PermissionsSystemType.LUCK_PERMS;
 import static fr.xephi.authme.permission.PermissionsSystemType.PERMISSIONS_EX;
 import static fr.xephi.authme.permission.PermissionsSystemType.VAULT;
@@ -141,7 +139,6 @@ class PermissionsManagerInitializationTest {
         Map<PermissionsSystemType, Class<?>> handlersByPermissionSystemType = ImmutableMap.of(
             LUCK_PERMS, LuckPermsHandler.class,
             PERMISSIONS_EX, PermissionsExHandler.class,
-            B_PERMISSIONS, BPermissionsHandler.class,
             Z_PERMISSIONS, ZPermissionsHandler.class,
             VAULT, VaultHandler.class);
 
@@ -169,7 +166,7 @@ class PermissionsManagerInitializationTest {
             given(servicesManager.load(ZPermissionsService.class)).willReturn(zPermissionsService);
         } else if (permissionsSystemType == VAULT) {
             setUpForVault();
-        } else if (permissionsSystemType != B_PERMISSIONS) {
+        } else {
             throw new IllegalStateException("Unhandled permission systems type: " + permissionsSystemType);
         }
     }

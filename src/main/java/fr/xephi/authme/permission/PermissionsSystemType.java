@@ -16,11 +16,6 @@ public enum PermissionsSystemType {
     PERMISSIONS_EX("PermissionsEx", "PermissionsEx"),
 
     /**
-     * bPermissions.
-     */
-    B_PERMISSIONS("bPermissions", "bPermissions"),
-
-    /**
      * zPermissions.
      */
     Z_PERMISSIONS("zPermissions", "zPermissions"),

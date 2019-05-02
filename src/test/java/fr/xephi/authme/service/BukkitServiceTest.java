@@ -313,12 +313,4 @@ public class BukkitServiceTest {
         // then
         assertThat(result, equalTo(ip));
     }
-
-    // Note: This method is used through reflections
-    public static Player[] onlinePlayersImpl() {
-        return new Player[]{
-            mock(Player.class), mock(Player.class)
-        };
-    }
-
 }
