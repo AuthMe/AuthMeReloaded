@@ -153,10 +153,10 @@ public class DistributedFilesPersistenceHandlerTest {
     public void shouldAddPlayer() {
         // given
         Player uuidToAdd1 = mockPlayerWithUuid(UNKNOWN_UUID);
-        Location location1 = mockLocation("1world", 120, 60, -80, 0.42345f, 120.32f);
+        Location location1 = mockLocation("1world");
         LimboPlayer limbo1 = new LimboPlayer(location1, false, Collections.singletonList("group-1"), true, 0.1f, 0.2f);
         Player uuidToAdd2 = mockPlayerWithUuid(UNKNOWN_UUID2);
-        Location location2 = mockLocation("2world", -40, 20, 33, 4.235f, 8.32299f);
+        Location location2 = mockLocation("2world");
         LimboPlayer limbo2 = new LimboPlayer(location2, true, Collections.emptyList(), false, 0.0f, 0.25f);
 
         // when
@@ -204,7 +204,7 @@ public class DistributedFilesPersistenceHandlerTest {
         return world;
     }
 
-    private static Location mockLocation(String worldName, int x, int y, int z, float yaw,float pitch) {
+    private static Location mockLocation(String worldName) {
         World world = mockWorldWithName(worldName);
         Location location = mock(Location.class);
         given(location.getWorld()).willReturn(world);
