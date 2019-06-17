@@ -225,6 +225,8 @@
                 <version>3.1.0</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
+                    <!-- In sync with the source/target properties of the maven-compiler-plugin -->
+                    <source>8</source>
                 </configuration>
                 <executions>
                     <execution>
