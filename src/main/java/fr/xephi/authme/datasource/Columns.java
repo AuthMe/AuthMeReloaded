@@ -30,6 +30,7 @@ public final class Columns {
     public final String HAS_SESSION;
     public final String REGISTRATION_DATE;
     public final String REGISTRATION_IP;
+    public final String PLAYER_UUID;
 
     public Columns(Settings settings) {
         NAME              = settings.getProperty(DatabaseSettings.MYSQL_COL_NAME);
@@ -52,6 +53,7 @@ public final class Columns {
         HAS_SESSION       = settings.getProperty(DatabaseSettings.MYSQL_COL_HASSESSION);
         REGISTRATION_DATE = settings.getProperty(DatabaseSettings.MYSQL_COL_REGISTER_DATE);
         REGISTRATION_IP   = settings.getProperty(DatabaseSettings.MYSQL_COL_REGISTER_IP);
+        PLAYER_UUID       = settings.getProperty(DatabaseSettings.MYSQL_COL_PLAYER_UUID);
     }
 
 }
