@@ -23,7 +23,7 @@ public class VersionCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName()
             + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");
-        Collection<? extends Player> onlinePlayers = bukkitService.getOnlinePlayers();
+        Collection<Player> onlinePlayers = bukkitService.getOnlinePlayers();
         printDeveloper(sender, "Alexandre Vanhecke", "xephi59", "Original Author", onlinePlayers);
         printDeveloper(sender, "Lucas J.", "ljacqu", "Main Developer", onlinePlayers);
         printDeveloper(sender, "Gnat008", "gnat008", "Developer", onlinePlayers);
@@ -49,7 +49,7 @@ public class VersionCommand implements ExecutableCommand {
      * @param onlinePlayers The list of online players
      */
     private static void printDeveloper(CommandSender sender, String name, String minecraftName, String function,
-                                       Collection<? extends Player> onlinePlayers) {
+                                       Collection<Player> onlinePlayers) {
         // Print the name
         StringBuilder msg = new StringBuilder();
         msg.append(" ")
@@ -77,7 +77,7 @@ public class VersionCommand implements ExecutableCommand {
      *
      * @return True if the player is online, false otherwise
      */
-    private static boolean isPlayerOnline(String minecraftName, Collection<? extends Player> onlinePlayers) {
+    private static boolean isPlayerOnline(String minecraftName, Collection<Player> onlinePlayers) {
         for (Player player : onlinePlayers) {
             if (player.getName().equalsIgnoreCase(minecraftName)) {
                 return true;

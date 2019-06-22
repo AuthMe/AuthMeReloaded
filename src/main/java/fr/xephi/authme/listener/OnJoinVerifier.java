@@ -128,7 +128,7 @@ public class OnJoinVerifier implements Reloadable {
         }
 
         // Server is full and player is VIP; attempt to kick a non-VIP player to make room
-        Collection<? extends Player> onlinePlayers = bukkitService.getOnlinePlayers();
+        Collection<Player> onlinePlayers = bukkitService.getOnlinePlayers();
         if (onlinePlayers.size() < server.getMaxPlayers()) {
             event.allow();
             return false;
@@ -207,7 +207,7 @@ public class OnJoinVerifier implements Reloadable {
      *
      * @return the player to kick, or null if none applicable
      */
-    private Player generateKickPlayer(Collection<? extends Player> onlinePlayers) {
+    private Player generateKickPlayer(Collection<Player> onlinePlayers) {
         for (Player player : onlinePlayers) {
             if (!permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
                 return player;
