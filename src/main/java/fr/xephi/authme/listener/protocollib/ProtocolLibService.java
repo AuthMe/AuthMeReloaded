@@ -4,6 +4,7 @@ import ch.jalu.injector.annotations.NoFieldScan;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
@@ -28,12 +29,15 @@ public class ProtocolLibService implements SettingsDependent {
     private AuthMe plugin;
     private BukkitService bukkitService;
     private PlayerCache playerCache;
+    private DataSource dataSource;
 
     @Inject
-    ProtocolLibService(AuthMe plugin, Settings settings, BukkitService bukkitService, PlayerCache playerCache) {
+    ProtocolLibService(AuthMe plugin, Settings settings, BukkitService bukkitService, PlayerCache playerCache,
+                       DataSource dataSource) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         this.playerCache = playerCache;
+        this.dataSource = dataSource;
         reload(settings);
     }
 
@@ -59,8 +63,8 @@ public class ProtocolLibService implements SettingsDependent {
         if (protectInvBeforeLogin) {
             if (inventoryPacketAdapter == null) {
                 // register the packet listener and start hiding it for all already online players (reload)
-                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache);
-                inventoryPacketAdapter.register(bukkitService, true);
+                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache, dataSource);
+                inventoryPacketAdapter.register(bukkitService);
             }
         } else if (inventoryPacketAdapter != null) {
             inventoryPacketAdapter.unregister();
