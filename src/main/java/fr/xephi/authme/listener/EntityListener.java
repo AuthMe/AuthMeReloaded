@@ -56,7 +56,7 @@ public class EntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
-        if (listenerService.shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event.getTarget())) {
             event.setTarget(null);
             event.setCancelled(true);
         }

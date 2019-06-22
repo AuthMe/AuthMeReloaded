@@ -45,7 +45,6 @@ public class EntityListenerTest {
     @Test
     public void shouldHandleSimpleEvents() {
         withServiceMock(listenerService)
-            .check(listener::onEntityTarget, EntityTargetEvent.class)
             .check(listener::onFoodLevelChange, FoodLevelChangeEvent.class)
             .check(listener::onShoot, EntityShootBowEvent.class)
             .check(listener::onEntityInteract, EntityInteractEvent.class)
@@ -215,5 +214,37 @@ public class EntityListenerTest {
         // then
         verify(listenerService).shouldCancelEvent(shooter);
         assertThat(event.isCancelled(), equalTo(true));
+    }
+
+    @Test
+    public void shouldCancelEntityTargetEvent() {
+        // given
+        EntityTargetEvent event = mock(EntityTargetEvent.class);
+        Entity target = mock(Entity.class);
+        given(event.getTarget()).willReturn(target);
+        given(listenerService.shouldCancelEvent(target)).willReturn(true);
+
+        // when
+        listener.onEntityTarget(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(target);
+        verify(event).setCancelled(true);
+    }
+
+    @Test
+    public void shouldNotCancelEntityTargetEvent() {
+        // given
+        EntityTargetEvent event = mock(EntityTargetEvent.class);
+        Entity target = mock(Entity.class);
+        given(event.getTarget()).willReturn(target);
+        given(listenerService.shouldCancelEvent(target)).willReturn(false);
+
+        // when
+        listener.onEntityTarget(event);
+
+        // then
+        verify(listenerService).shouldCancelEvent(target);
+        verify(event, only()).getTarget();
     }
 }
