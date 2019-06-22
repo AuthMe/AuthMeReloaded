@@ -5,6 +5,8 @@ import fr.xephi.authme.message.updater.MessageUpdater;
 
 import javax.inject.Inject;
 
+import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
+
 /**
  * File handler for the messages_xx.yml resource.
  */
@@ -38,6 +40,6 @@ public class MessagesFileHandler extends AbstractMessageFileHandler {
 
     @Override
     protected String createFilePath(String language) {
-        return "messages/messages_" + language + ".yml";
+        return MessagePathHelper.createMessageFilePath(language);
     }
 }

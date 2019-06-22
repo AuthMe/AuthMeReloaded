@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
+
 /**
  * File handler for the help_xx.yml resource.
  */
@@ -57,6 +59,6 @@ public class HelpMessagesFileHandler extends AbstractMessageFileHandler {
 
     @Override
     protected String createFilePath(String language) {
-        return "messages/help_" + language + ".yml";
+        return MessagePathHelper.createHelpMessageFilePath(language);
     }
 }

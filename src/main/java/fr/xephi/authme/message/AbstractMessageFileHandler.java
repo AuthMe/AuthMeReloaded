@@ -14,12 +14,12 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 
+import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
+
 /**
  * Handles a YAML message file with a default file fallback.
  */
 public abstract class AbstractMessageFileHandler implements Reloadable {
-
-    protected static final String DEFAULT_LANGUAGE = "en";
 
     @DataFolder
     @Inject

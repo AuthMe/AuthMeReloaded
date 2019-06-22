@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.UUID;
 
+import static fr.xephi.authme.TestHelper.PROJECT_ROOT;
+import static fr.xephi.authme.TestHelper.TEST_RESOURCES_FOLDER;
 import static fr.xephi.authme.data.limbo.LimboPlayerMatchers.hasLocation;
 import static fr.xephi.authme.data.limbo.LimboPlayerMatchers.isLimbo;
 import static java.util.UUID.fromString;
@@ -96,7 +98,7 @@ public class DistributedFilesPersistenceHandlerTest {
         playerDataFolder = new File(dataFolder, "playerdata");
         playerDataFolder.mkdir();
 
-        File limboFilesFolder = new File("src/test/resources/fr/xephi/authme/data/limbo");
+        File limboFilesFolder = new File(TEST_RESOURCES_FOLDER + PROJECT_ROOT + "data/limbo");
         for (File file : limboFilesFolder.listFiles()) {
             File from = new File(playerDataFolder, file.getName());
             Files.copy(file, from);

@@ -8,6 +8,7 @@ import fr.xephi.authme.command.help.HelpMessage;
 import fr.xephi.authme.command.help.HelpMessagesService;
 import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -49,7 +50,7 @@ public class HelpTranslationGenerator {
      */
     public File updateHelpFile() throws IOException {
         String languageCode = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
-        File helpFile = new File(dataFolder, "messages/help_" + languageCode + ".yml");
+        File helpFile = new File(dataFolder, MessagePathHelper.createHelpMessageFilePath(languageCode));
         Map<String, Object> helpEntries = generateHelpMessageEntries();
 
         String helpEntriesYaml = exportToYaml(helpEntries);
