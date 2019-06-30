@@ -1,9 +1,12 @@
 package fr.xephi.authme.security.totp;
 
+import com.google.common.collect.Table;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,24 +66,26 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldCheckCode() {
+    public void shouldCheckCodeAndDeclareItValidOnlyOnce() {
         // given
         String secret = "the_secret";
         int code = 21398;
         given(googleAuthenticator.authorize(secret, code)).willReturn(true);
 
         // when
-        boolean result = totpAuthenticator.checkCode(secret, Integer.toString(code));
+        boolean result1 = totpAuthenticator.checkCode("pl", secret, Integer.toString(code));
+        boolean result2 = totpAuthenticator.checkCode("pl", secret, Integer.toString(code));
 
         // then
-        assertThat(result, equalTo(true));
+        assertThat(result1, equalTo(true));
+        assertThat(result2, equalTo(false));
         verify(googleAuthenticator).authorize(secret, code);
     }
 
     @Test
     public void shouldHandleInvalidNumberInput() {
         // given / when
-        boolean result = totpAuthenticator.checkCode("Some_Secret", "123ZZ");
+        boolean result = totpAuthenticator.checkCode("foo", "Some_Secret", "123ZZ");
 
         // then
         assertThat(result, equalTo(false));
@@ -96,7 +101,7 @@ public class TotpAuthenticatorTest {
             .totpKey(totpKey)
             .build();
         String inputCode = "408435";
-        given(totpAuthenticator.checkCode(totpKey, inputCode)).willReturn(true);
+        given(totpAuthenticator.checkCode("Maya", totpKey, inputCode)).willReturn(true);
 
         // when
         boolean result = totpAuthenticator.checkCode(auth, inputCode);
@@ -104,6 +109,23 @@ public class TotpAuthenticatorTest {
         // then
         assertThat(result, equalTo(true));
         verify(googleAuthenticator).authorize(totpKey, 408435);
+    }
+
+    @Test
+    public void shouldRemoveOldEntries() {
+        // given
+        Table<String, Integer, Long> usedCodes = ReflectionTestUtils.getFieldValue(
+            TotpAuthenticator.class, totpAuthenticator, "usedCodes");
+        usedCodes.put("bobby", 414213, System.currentTimeMillis());
+        usedCodes.put("charlie", 732050, System.currentTimeMillis() - 6 * Utils.MILLIS_PER_MINUTE);
+        usedCodes.put("bobby", 236067, System.currentTimeMillis() - 9 * Utils.MILLIS_PER_MINUTE);
+
+        // when
+        totpAuthenticator.performCleanup();
+
+        // then
+        assertThat(usedCodes.size(), equalTo(1));
+        assertThat(usedCodes.contains("bobby", 414213), equalTo(true));
     }
 
     private final class TotpAuthenticatorTestImpl extends TotpAuthenticator {

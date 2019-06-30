@@ -70,7 +70,7 @@ public class GenerateTotpServiceTest {
         given(totpAuthenticator.generateTotpKey(player)).willReturn(givenGenerationResult);
         generateTotpService.generateTotpKey(player);
         String validCode = "928374";
-        given(totpAuthenticator.checkCode(generatedKey, validCode)).willReturn(true);
+        given(totpAuthenticator.checkCode("Aria", generatedKey, validCode)).willReturn(true);
 
         // when
         boolean invalidCodeResult = generateTotpService.isTotpCodeCorrectForGeneratedTotpKey(player, "000000");
@@ -81,8 +81,8 @@ public class GenerateTotpServiceTest {
         assertThat(invalidCodeResult, equalTo(false));
         assertThat(validCodeResult, equalTo(true));
         assertThat(unknownPlayerResult, equalTo(false));
-        verify(totpAuthenticator).checkCode(generatedKey, "000000");
-        verify(totpAuthenticator).checkCode(generatedKey, validCode);
+        verify(totpAuthenticator).checkCode("Aria", generatedKey, "000000");
+        verify(totpAuthenticator).checkCode("Aria", generatedKey, validCode);
     }
 
     @Test
