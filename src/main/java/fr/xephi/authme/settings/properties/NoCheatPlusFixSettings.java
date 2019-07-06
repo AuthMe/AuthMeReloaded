@@ -8,7 +8,9 @@ import ch.jalu.configme.properties.Property;
 
 public class NoCheatPlusFixSettings implements SettingsHolder {
 
-	@Comment("Set this to true if players get kicked for flying when they try to login")
-	public static final Property<Boolean> ENABLE_FIX = newProperty("NoCheatPlus.fixKickForFlying", false);
+    @Comment("Set this to true if players get kicked for flying when they try to login")
+    public static final Property<Boolean> ENABLE_FIX = newProperty("NoCheatPlus.fixKickForFlying", false);
 
+    private NoCheatPlusFixSettings() {
+    }
 }

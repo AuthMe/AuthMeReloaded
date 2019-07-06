@@ -136,8 +136,9 @@ public class AuthMe extends JavaPlugin {
         }
         
         // Check if NoCheatPlus is enabled and the fly bug needs to be fixed
-        if (!getServer().getPluginManager().isPluginEnabled("NoCheatPlus") && NoCheatPlusFixSettings.ENABLE_FIX.isValidValue(true)) {
-        	 ConsoleLogger.warning("You enabled the NoCheatPlus fly kick fix, but NoCheatPlus is not enabled.");
+        if (!getServer().getPluginManager().isPluginEnabled("NoCheatPlus")
+                && NoCheatPlusFixSettings.ENABLE_FIX.isValidValue(true)) {
+            ConsoleLogger.warning("You enabled the NoCheatPlus fly kick fix, but NoCheatPlus is not enabled.");
         }
 
         // Initialize the plugin
@@ -296,8 +297,9 @@ public class AuthMe extends JavaPlugin {
         }
         
         // NoCheatPlus kick for fly fix
-        if (getServer().getPluginManager().isPluginEnabled("NoCheatPlus") && NoCheatPlusFixSettings.ENABLE_FIX.isValidValue(true)) {
-        	pluginManager.registerEvents(injector.getSingleton(NoCheatPlusListener.class), this);
+        if (getServer().getPluginManager().isPluginEnabled("NoCheatPlus")
+                && NoCheatPlusFixSettings.ENABLE_FIX.isValidValue(true)) {
+            pluginManager.registerEvents(injector.getSingleton(NoCheatPlusListener.class), this);
         }
     }
 

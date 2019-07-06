@@ -15,32 +15,37 @@ import fr.xephi.authme.events.LoginEvent;
 
 public class NoCheatPlusListener implements Listener {
 
-	private HashMap<Player, List<CheckType>> exempted;
+    private HashMap<Player, List<CheckType>> exempted;
 
-	public NoCheatPlusListener() {
-		exempted = new HashMap<Player, List<CheckType>>();
-	}
+    public NoCheatPlusListener() {
+        exempted = new HashMap<Player, List<CheckType>>();
+    }
 
-	@EventHandler(ignoreCancelled = true)
-	public void onLogin(LoginEvent event) {
-		Player player = event.getPlayer();
-		for (CheckType type : exempted.get(player))
-			if (NCPExemptionManager.isExempted(player, type))
-				NCPExemptionManager.unexempt(player, type);
-	}
+    @EventHandler(ignoreCancelled = true)
+    public void onLogin(LoginEvent event) {
+        Player player = event.getPlayer();
+        for (CheckType type : exempted.get(player)) {
+            if (NCPExemptionManager.isExempted(player, type)) {
+                NCPExemptionManager.unexempt(player, type);
+            }
+        }
+    }
 
-	@EventHandler(ignoreCancelled = true)
-	public void onJoin(PlayerJoinEvent event) {
-		if (NCPExemptionManager.isExempted(event.getPlayer(), CheckType.ALL))
-			return;
+    @EventHandler(ignoreCancelled = true)
+    public void onJoin(PlayerJoinEvent event) {
+        if (NCPExemptionManager.isExempted(event.getPlayer(), CheckType.ALL)) {
+            return;
+        }
 
-		List<CheckType> exemptions = new ArrayList<CheckType>();
+        List<CheckType> exemptions = new ArrayList<CheckType>();
 
-		for (CheckType type : CheckType.values())
-			if (NCPExemptionManager.isExempted(event.getPlayer(), type))
-				exemptions.add(type);
+        for (CheckType type : CheckType.values()) {
+            if (NCPExemptionManager.isExempted(event.getPlayer(), type)) {
+                exemptions.add(type);
+            }
+        }
 
-		NCPExemptionManager.exemptPermanently(event.getPlayer());
-		exempted.put(event.getPlayer(), exemptions);
-	}
+        NCPExemptionManager.exemptPermanently(event.getPlayer());
+        exempted.put(event.getPlayer(), exemptions);
+    }
 }
