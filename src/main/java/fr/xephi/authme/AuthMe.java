@@ -14,6 +14,7 @@ import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.NoCheatPlusListener;
 import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerListener111;
 import fr.xephi.authme.listener.PlayerListener19;
@@ -27,6 +28,7 @@ import fr.xephi.authme.service.bungeecord.BungeeReceiver;
 import fr.xephi.authme.service.yaml.YamlParseException;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsWarner;
+import fr.xephi.authme.settings.properties.NoCheatPlusFixSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
@@ -131,6 +133,11 @@ public class AuthMe extends JavaPlugin {
                 + "causing exploit issues, please use AuthMeBungee instead! Aborting!");
             stopOrUnload();
             return;
+        }
+        
+        // Check if NoCheatPlus is enabled and the fly bug needs to be fixed
+        if (!getServer().getPluginManager().isPluginEnabled("NoCheatPlus") && NoCheatPlusFixSettings.ENABLE_FIX.isValidValue(true)) {
+        	 ConsoleLogger.warning("You enabled the NoCheatPlus fly kick fix, but NoCheatPlus is not enabled.");
         }
 
         // Initialize the plugin
@@ -286,6 +293,11 @@ public class AuthMe extends JavaPlugin {
         // Register listener for 1.11 events if available
         if (isClassLoaded("org.bukkit.event.entity.EntityAirChangeEvent")) {
             pluginManager.registerEvents(injector.getSingleton(PlayerListener111.class), this);
+        }
+        
+        // NoCheatPlus kick for fly fix
+        if (getServer().getPluginManager().isPluginEnabled("NoCheatPlus") && NoCheatPlusFixSettings.ENABLE_FIX.isValidValue(true)) {
+        	pluginManager.registerEvents(injector.getSingleton(NoCheatPlusListener.class), this);
         }
     }
 

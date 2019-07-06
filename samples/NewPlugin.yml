@@ -13,6 +13,7 @@ softdepend:
     - Essentials
     - EssentialsSpawn
     - ProtocolLib
+    - NoCheatPlus
 commands:
     authme:
         description: AuthMe admin commands

@@ -570,6 +570,10 @@ Converter:
             user: ''
             # LoginSecurity MySQL: password for database user
             password: ''
+# NoCheatPlus settings
+NoCheatPlusKickFix:
+	# Set this to true if players get kicked for flying when they try to login
+	fixKickForFlying: false
 
 ```
 
