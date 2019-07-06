@@ -572,8 +572,8 @@ Converter:
             password: ''
 # NoCheatPlus settings
 NoCheatPlusKickFix:
-	# Set this to true if players get kicked for flying when they try to login
-	fixKickForFlying: false
+    # Set this to true if players get kicked for flying when they try to login
+    fixKickForFlying: false
 
 ```
 
