@@ -9,7 +9,8 @@ import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.initialization.HasCleanup;
-import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -24,13 +25,13 @@ public class TotpAuthenticator implements HasCleanup {
     private static final int CODE_RETENTION_MINUTES = 5;
 
     private final IGoogleAuthenticator authenticator;
-    private final BukkitService bukkitService;
+    private final Settings settings;
     private final Table<String, Integer, Long> usedCodes = HashBasedTable.create();
 
     @Inject
-    TotpAuthenticator(BukkitService bukkitService) {
+    TotpAuthenticator(Settings settings) {
         this.authenticator = createGoogleAuthenticator();
-        this.bukkitService = bukkitService;
+        this.settings = settings;
     }
 
     /**
@@ -66,7 +67,7 @@ public class TotpAuthenticator implements HasCleanup {
     public TotpGenerationResult generateTotpKey(Player player) {
         GoogleAuthenticatorKey credentials = authenticator.createCredentials();
         String qrCodeUrl = GoogleAuthenticatorQRGenerator.getOtpAuthURL(
-            bukkitService.getIp(), player.getName(), credentials);
+            settings.getProperty(PluginSettings.SERVER_NAME), player.getName(), credentials);
         return new TotpGenerationResult(credentials.getKey(), qrCodeUrl);
     }
 
