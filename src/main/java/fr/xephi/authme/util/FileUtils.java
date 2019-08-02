@@ -3,6 +3,7 @@ package fr.xephi.authme.util;
 import com.google.common.io.Files;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,8 @@ public final class FileUtils {
     private static final DateTimeFormatter CURRENT_DATE_STRING_FORMATTER =
         DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
 
+    private static ConsoleLogger logger = ConsoleLoggerFactory.get(FileUtils.class);
+
     // Utility class
     private FileUtils() {
     }
@@ -36,20 +39,20 @@ public final class FileUtils {
         if (destinationFile.exists()) {
             return true;
         } else if (!createDirectory(destinationFile.getParentFile())) {
-            ConsoleLogger.warning("Cannot create parent directories for '" + destinationFile + "'");
+            logger.warning("Cannot create parent directories for '" + destinationFile + "'");
             return false;
         }
 
         try (InputStream is = getResourceFromJar(resourcePath)) {
             if (is == null) {
-                ConsoleLogger.warning(format("Cannot copy resource '%s' to file '%s': cannot load resource",
+                logger.warning(format("Cannot copy resource '%s' to file '%s': cannot load resource",
                     resourcePath, destinationFile.getPath()));
             } else {
                 java.nio.file.Files.copy(is, destinationFile.toPath());
                 return true;
             }
         } catch (IOException e) {
-            ConsoleLogger.logException(format("Cannot copy resource '%s' to file '%s':",
+            logger.logException(format("Cannot copy resource '%s' to file '%s':",
                 resourcePath, destinationFile.getPath()), e);
         }
         return false;
@@ -63,7 +66,7 @@ public final class FileUtils {
      */
     public static boolean createDirectory(File dir) {
         if (!dir.exists() && !dir.mkdirs()) {
-            ConsoleLogger.warning("Could not create directory '" + dir + "'");
+            logger.warning("Could not create directory '" + dir + "'");
             return false;
         }
         return dir.isDirectory();
@@ -112,7 +115,7 @@ public final class FileUtils {
         if (file != null) {
             boolean result = file.delete();
             if (!result) {
-                ConsoleLogger.warning("Could not delete file '" + file + "'");
+                logger.warning("Could not delete file '" + file + "'");
             }
         }
     }

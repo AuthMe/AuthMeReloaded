@@ -38,7 +38,7 @@ public class EncryptionMethodInfoGatherer {
     private Map<HashAlgorithm, MethodDescription> descriptions;
 
     public EncryptionMethodInfoGatherer() {
-        ConsoleLogger.setLogger(Logger.getAnonymousLogger()); // set logger because of Argon2.isLibraryLoaded()
+        ConsoleLogger.initialize(Logger.getAnonymousLogger(), null); // set logger because of Argon2.isLibraryLoaded()
         descriptions = new LinkedHashMap<>();
         constructDescriptions();
     }

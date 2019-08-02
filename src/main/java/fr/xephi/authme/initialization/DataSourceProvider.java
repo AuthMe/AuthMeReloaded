@@ -9,6 +9,7 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.PostgreSqlDataSource;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -16,7 +17,6 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -25,6 +25,8 @@ import java.sql.SQLException;
 public class DataSourceProvider implements Provider<DataSource> {
 
     private static final int SQLITE_MAX_SIZE = 4000;
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(DataSourceProvider.class);
 
     @Inject
     @DataFolder
@@ -46,7 +48,7 @@ public class DataSourceProvider implements Provider<DataSource> {
         try {
             return createDataSource();
         } catch (Exception e) {
-            ConsoleLogger.logException("Could not create data source:", e);
+            logger.logException("Could not create data source:", e);
             throw new IllegalStateException("Error during initialization of data source", e);
         }
     }
@@ -54,11 +56,10 @@ public class DataSourceProvider implements Provider<DataSource> {
     /**
      * Sets up the data source.
      *
-     * @return the constructed datasource
-     * @throws SQLException           when initialization of a SQL datasource failed
-     * @throws IOException            if flat file cannot be read
+     * @return the constructed data source
+     * @throws SQLException when initialization of a SQL data source failed
      */
-    private DataSource createDataSource() throws SQLException, IOException {
+    private DataSource createDataSource() throws SQLException {
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
         DataSource dataSource;
         switch (dataSourceType) {
@@ -88,7 +89,7 @@ public class DataSourceProvider implements Provider<DataSource> {
         bukkitService.runTaskAsynchronously(() -> {
             int accounts = dataSource.getAccountsRegistered();
             if (accounts >= SQLITE_MAX_SIZE) {
-                ConsoleLogger.warning("YOU'RE USING THE SQLITE DATABASE WITH "
+                logger.warning("YOU'RE USING THE SQLITE DATABASE WITH "
                     + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
             }
         });

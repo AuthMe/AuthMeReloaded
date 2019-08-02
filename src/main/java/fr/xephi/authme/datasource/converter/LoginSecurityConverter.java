@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
@@ -29,6 +30,7 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
  */
 public class LoginSecurityConverter implements Converter {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(LoginSecurityConverter.class);
     private final File dataFolder;
     private final DataSource dataSource;
 
@@ -58,7 +60,7 @@ public class LoginSecurityConverter implements Converter {
             }
         } catch (SQLException e) {
             sender.sendMessage("Failed to convert from SQLite. Please see the log for more info");
-            ConsoleLogger.logException("Could not fetch or migrate data:", e);
+            logger.logException("Could not fetch or migrate data:", e);
         }
     }
 
@@ -185,7 +187,7 @@ public class LoginSecurityConverter implements Converter {
             return DriverManager.getConnection(
                 "jdbc:sqlite:" + path, "trump", "donald");
         } catch (SQLException e) {
-            ConsoleLogger.logException("Could not connect to SQLite database", e);
+            logger.logException("Could not connect to SQLite database", e);
             return null;
         }
     }
@@ -195,7 +197,7 @@ public class LoginSecurityConverter implements Converter {
             return DriverManager.getConnection(
                 "jdbc:mysql://" + mySqlHost + "/" + mySqlDatabase, mySqlUser, mySqlPassword);
         } catch (SQLException e) {
-            ConsoleLogger.logException("Could not connect to SQLite database", e);
+            logger.logException("Could not connect to SQLite database", e);
             return null;
         }
     }

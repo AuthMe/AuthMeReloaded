@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.Location;
 
 import java.lang.reflect.Field;
@@ -19,6 +20,7 @@ import java.util.function.Function;
  */
 final class DebugSectionUtils {
 
+    private static ConsoleLogger logger = ConsoleLoggerFactory.get(DebugSectionUtils.class);
     private static Field limboEntriesField;
 
     private DebugSectionUtils() {
@@ -72,7 +74,7 @@ final class DebugSectionUtils {
                 field.setAccessible(true);
                 limboEntriesField = field;
             } catch (Exception e) {
-                ConsoleLogger.logException("Could not retrieve LimboService entries field:", e);
+                logger.logException("Could not retrieve LimboService entries field:", e);
             }
         }
         return limboEntriesField;
@@ -95,7 +97,7 @@ final class DebugSectionUtils {
             try {
                 return function.apply((Map) limboEntriesField.get(limboService));
             } catch (Exception e) {
-                ConsoleLogger.logException("Could not retrieve LimboService values:", e);
+                logger.logException("Could not retrieve LimboService values:", e);
             }
         }
         return null;
@@ -119,7 +121,7 @@ final class DebugSectionUtils {
                 source.setAccessible(true);
                 return (DataSource) source.get(dataSource);
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                ConsoleLogger.logException("Could not get source of CacheDataSource:", e);
+                logger.logException("Could not get source of CacheDataSource:", e);
                 return null;
             }
         }

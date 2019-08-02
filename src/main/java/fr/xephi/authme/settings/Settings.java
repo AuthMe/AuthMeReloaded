@@ -6,6 +6,7 @@ import ch.jalu.configme.migration.MigrationService;
 import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
  */
 public class Settings extends SettingsManagerImpl {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(Settings.class);
     private final File pluginFolder;
     private String passwordEmailMessage;
     private String verificationEmailMessage;
@@ -89,10 +91,10 @@ public class Settings extends SettingsManagerImpl {
             try {
                 return Files.asCharSource(file, StandardCharsets.UTF_8).read();
             } catch (IOException e) {
-                ConsoleLogger.logException("Failed to read file '" + filename + "':", e);
+                logger.logException("Failed to read file '" + filename + "':", e);
             }
         } else {
-            ConsoleLogger.warning("Failed to copy file '" + filename + "' from JAR");
+            logger.warning("Failed to copy file '" + filename + "' from JAR");
         }
         return "";
     }

@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme.debug;
 import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.SendMailSsl;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
@@ -21,6 +22,8 @@ import java.util.List;
  * Sends out a test email.
  */
 class TestEmailSender implements DebugSection {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(TestEmailSender.class);
 
     @Inject
     private DataSource dataSource;
@@ -110,7 +113,7 @@ class TestEmailSender implements DebugSection {
         try {
             htmlEmail = sendMailSsl.initializeMail(email);
         } catch (EmailException e) {
-            ConsoleLogger.logException("Failed to create email for sample email:", e);
+            logger.logException("Failed to create email for sample email:", e);
             return false;
         }
 

@@ -5,6 +5,7 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.totp.TotpAuthenticator;
@@ -17,6 +18,8 @@ import java.util.List;
  * Command for a player to remove 2FA authentication.
  */
 public class RemoveTotpCommand extends PlayerCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(RemoveTotpCommand.class);
 
     @Inject
     private DataSource dataSource;
@@ -51,7 +54,7 @@ public class RemoveTotpCommand extends PlayerCommand {
             auth.setTotpKey(null);
             playerCache.updatePlayer(auth);
             messages.send(player, MessageKey.TWO_FACTOR_REMOVED_SUCCESS);
-            ConsoleLogger.info("Player '" + player.getName() + "' removed their TOTP key");
+            logger.info("Player '" + player.getName() + "' removed their TOTP key");
         } else {
             messages.send(player, MessageKey.ERROR);
         }

@@ -4,6 +4,7 @@ import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import org.bukkit.entity.Player;
@@ -14,6 +15,8 @@ import javax.inject.Inject;
  * Handles the persistence of LimboPlayers.
  */
 public class LimboPersistence implements SettingsDependent {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(LimboPersistence.class);
 
     private final Factory<LimboPersistenceHandler> handlerFactory;
 
@@ -35,7 +38,7 @@ public class LimboPersistence implements SettingsDependent {
         try {
             return handler.getLimboPlayer(player);
         } catch (Exception e) {
-            ConsoleLogger.logException("Could not get LimboPlayer for '" + player.getName() + "'", e);
+            logger.logException("Could not get LimboPlayer for '" + player.getName() + "'", e);
         }
         return null;
     }
@@ -50,7 +53,7 @@ public class LimboPersistence implements SettingsDependent {
         try {
             handler.saveLimboPlayer(player, limbo);
         } catch (Exception e) {
-            ConsoleLogger.logException("Could not save LimboPlayer for '" + player.getName() + "'", e);
+            logger.logException("Could not save LimboPlayer for '" + player.getName() + "'", e);
         }
     }
 
@@ -63,7 +66,7 @@ public class LimboPersistence implements SettingsDependent {
         try {
             handler.removeLimboPlayer(player);
         } catch (Exception e) {
-            ConsoleLogger.logException("Could not remove LimboPlayer for '" + player.getName() + "'", e);
+            logger.logException("Could not remove LimboPlayer for '" + player.getName() + "'", e);
         }
     }
 
@@ -72,7 +75,7 @@ public class LimboPersistence implements SettingsDependent {
         LimboPersistenceType persistenceType = settings.getProperty(LimboSettings.LIMBO_PERSISTENCE_TYPE);
         // If we're changing from an existing handler, output a quick hint that nothing is converted.
         if (handler != null && handler.getType() != persistenceType) {
-            ConsoleLogger.info("Limbo persistence type has changed! Note that the data is not converted.");
+            logger.info("Limbo persistence type has changed! Note that the data is not converted.");
         }
         handler = handlerFactory.newInstance(persistenceType.getImplementationClass());
     }

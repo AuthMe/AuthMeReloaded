@@ -16,8 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import java.util.logging.Logger;
-
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -105,7 +103,7 @@ public class LimboPersistenceTest {
     public void shouldHandleExceptionWhenGettingLimbo() {
         // given
         Player player = mock(Player.class);
-        Logger logger = TestHelper.setupLogger();
+        java.util.logging.Logger logger = TestHelper.setupLogger();
         LimboPersistenceHandler handler = getHandler();
         doThrow(RuntimeException.class).when(handler).getLimboPlayer(player);
 
@@ -122,7 +120,7 @@ public class LimboPersistenceTest {
         // given
         Player player = mock(Player.class);
         LimboPlayer limbo = mock(LimboPlayer.class);
-        Logger logger = TestHelper.setupLogger();
+        java.util.logging.Logger logger = TestHelper.setupLogger();
         LimboPersistenceHandler handler = getHandler();
         doThrow(IllegalStateException.class).when(handler).saveLimboPlayer(player, limbo);
 
@@ -137,7 +135,7 @@ public class LimboPersistenceTest {
     public void shouldHandleExceptionWhenRemovingLimbo() {
         // given
         Player player = mock(Player.class);
-        Logger logger = TestHelper.setupLogger();
+        java.util.logging.Logger logger = TestHelper.setupLogger();
         LimboPersistenceHandler handler = getHandler();
         doThrow(UnsupportedOperationException.class).when(handler).removeLimboPlayer(player);
 

@@ -5,6 +5,7 @@ import de.rtner.misc.BinTools;
 import de.rtner.security.auth.spi.PBKDF2Engine;
 import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 public class Pbkdf2 extends HexSaltedMethod {
 
     private static final int DEFAULT_ROUNDS = 10_000;
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(Pbkdf2.class);
     private int numberOfRounds;
 
     @Inject
@@ -41,7 +43,7 @@ public class Pbkdf2 extends HexSaltedMethod {
         }
         Integer iterations = Ints.tryParse(line[1]);
         if (iterations == null) {
-            ConsoleLogger.warning("Cannot read number of rounds for Pbkdf2: '" + line[1] + "'");
+            logger.warning("Cannot read number of rounds for Pbkdf2: '" + line[1] + "'");
             return false;
         }
 

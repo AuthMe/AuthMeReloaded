@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.entity.Player;
@@ -20,6 +21,8 @@ import java.nio.charset.StandardCharsets;
  */
 class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(IndividualFilesPersistenceHandler.class);
+
     private final Gson gson;
     private final File cacheDir;
 
@@ -27,7 +30,7 @@ class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
     IndividualFilesPersistenceHandler(@DataFolder File dataFolder, BukkitService bukkitService) {
         cacheDir = new File(dataFolder, "playerdata");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
-            ConsoleLogger.warning("Failed to create playerdata directory '" + cacheDir + "'");
+            logger.warning("Failed to create playerdata directory '" + cacheDir + "'");
         }
         gson = new GsonBuilder()
             .registerTypeAdapter(LimboPlayer.class, new LimboPlayerSerializer())
@@ -48,7 +51,7 @@ class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
             String str = Files.asCharSource(file, StandardCharsets.UTF_8).read();
             return gson.fromJson(str, LimboPlayer.class);
         } catch (IOException e) {
-            ConsoleLogger.logException("Could not read player data on disk for '" + player.getName() + "'", e);
+            logger.logException("Could not read player data on disk for '" + player.getName() + "'", e);
             return null;
         }
     }
@@ -62,7 +65,7 @@ class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
             Files.touch(file);
             Files.write(gson.toJson(limboPlayer), file, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            ConsoleLogger.logException("Failed to write " + player.getName() + " data:", e);
+            logger.logException("Failed to write " + player.getName() + " data:", e);
         }
     }
 

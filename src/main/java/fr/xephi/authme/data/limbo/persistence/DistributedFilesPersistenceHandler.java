@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
@@ -33,6 +34,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
 
     private static final Type LIMBO_MAP_TYPE = new TypeToken<Map<String, LimboPlayer>>(){}.getType();
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(DistributedFilesPersistenceHandler.class);
     private final File cacheFolder;
     private final Gson gson;
     private final SegmentNameBuilder segmentNameBuilder;
@@ -103,7 +105,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
         try (FileWriter fw = new FileWriter(file)) {
             gson.toJson(entries, fw);
         } catch (Exception e) {
-            ConsoleLogger.logException("Could not write to '" + file + "':", e);
+            logger.logException("Could not write to '" + file + "':", e);
         }
     }
 
@@ -115,7 +117,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
         try {
             return gson.fromJson(Files.asCharSource(file, StandardCharsets.UTF_8).read(), LIMBO_MAP_TYPE);
         } catch (Exception e) {
-            ConsoleLogger.logException("Failed reading '" + file + "':", e);
+            logger.logException("Failed reading '" + file + "':", e);
         }
         return null;
     }
@@ -164,7 +166,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
     private void saveToNewSegments(Map<String, LimboPlayer> limbosFromOldSegments) {
         Map<String, Map<String, LimboPlayer>> limboBySegment = groupBySegment(limbosFromOldSegments);
 
-        ConsoleLogger.info("Saving " + limbosFromOldSegments.size() + " LimboPlayers from old segments into "
+        logger.info("Saving " + limbosFromOldSegments.size() + " LimboPlayers from old segments into "
             + limboBySegment.size() + " current segments");
         for (Map.Entry<String, Map<String, LimboPlayer>> entry : limboBySegment.entrySet()) {
             File file = getSegmentFile(entry.getKey());
@@ -203,7 +205,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
             .filter(f -> isLimboJsonFile(f) && f.length() < 3)
             .peek(FileUtils::delete)
             .count();
-        ConsoleLogger.debug("Limbo: Deleted {0} empty segment files", deletedFiles);
+        logger.debug("Limbo: Deleted {0} empty segment files", deletedFiles);
     }
 
     /**
@@ -215,10 +217,10 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
         return name.startsWith("seg") && name.endsWith("-limbo.json");
     }
 
-    private static File[] listFiles(File folder) {
+    private File[] listFiles(File folder) {
         File[] files = folder.listFiles();
         if (files == null) {
-            ConsoleLogger.warning("Could not get files of '" + folder + "'");
+            logger.warning("Could not get files of '" + folder + "'");
             return new File[0];
         }
         return files;

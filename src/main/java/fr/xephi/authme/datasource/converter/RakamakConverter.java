@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
@@ -25,6 +26,7 @@ import java.util.Map.Entry;
  */
 public class RakamakConverter implements Converter {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(RakamakConverter.class);
     private final DataSource database;
     private final Settings settings;
     private final File pluginFolder;
@@ -88,7 +90,7 @@ public class RakamakConverter implements Converter {
             }
             Utils.logAndSendMessage(sender, "Rakamak database has been imported successfully");
         } catch (IOException ex) {
-            ConsoleLogger.logException("Can't open the rakamak database file! Does it exist?", ex);
+            logger.logException("Can't open the rakamak database file! Does it exist?", ex);
         }
     }
 }

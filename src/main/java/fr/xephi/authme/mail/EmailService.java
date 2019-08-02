@@ -2,6 +2,7 @@ package fr.xephi.authme.mail;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -21,6 +22,8 @@ import java.io.IOException;
  * Creates emails and sends them.
  */
 public class EmailService {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(EmailService.class);
 
     private final File dataFolder;
     private final Settings settings;
@@ -48,7 +51,7 @@ public class EmailService {
      */
     public boolean sendPasswordMail(String name, String mailAddress, String newPass) {
         if (!hasAllInformation()) {
-            ConsoleLogger.warning("Cannot perform email registration: not all email settings are complete");
+            logger.warning("Cannot perform email registration: not all email settings are complete");
             return false;
         }
 
@@ -56,7 +59,7 @@ public class EmailService {
         try {
             email = sendMailSsl.initializeMail(mailAddress);
         } catch (EmailException e) {
-            ConsoleLogger.logException("Failed to create email with the given settings:", e);
+            logger.logException("Failed to create email with the given settings:", e);
             return false;
         }
 
@@ -68,7 +71,7 @@ public class EmailService {
                 file = generatePasswordImage(name, newPass);
                 mailText = embedImageIntoEmailContent(file, email, mailText);
             } catch (IOException | EmailException e) {
-                ConsoleLogger.logException(
+                logger.logException(
                     "Unable to send new password as image for email " + mailAddress + ":", e);
             }
         }
@@ -88,7 +91,7 @@ public class EmailService {
      */
     public boolean sendVerificationMail(String name, String mailAddress, String code) {
         if (!hasAllInformation()) {
-            ConsoleLogger.warning("Cannot send verification email: not all email settings are complete");
+            logger.warning("Cannot send verification email: not all email settings are complete");
             return false;
         }
 
@@ -96,7 +99,7 @@ public class EmailService {
         try {
             email = sendMailSsl.initializeMail(mailAddress);
         } catch (EmailException e) {
-            ConsoleLogger.logException("Failed to create verification email with the given settings:", e);
+            logger.logException("Failed to create verification email with the given settings:", e);
             return false;
         }
 
@@ -118,7 +121,7 @@ public class EmailService {
         try {
             htmlEmail = sendMailSsl.initializeMail(email);
         } catch (EmailException e) {
-            ConsoleLogger.logException("Failed to create email for recovery code:", e);
+            logger.logException("Failed to create email for recovery code:", e);
             return false;
         }
 

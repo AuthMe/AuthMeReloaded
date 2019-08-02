@@ -7,6 +7,7 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.Settings;
@@ -22,6 +23,8 @@ import java.util.List;
  * The reload command.
  */
 public class ReloadCommand implements ExecutableCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ReloadCommand.class);
 
     @Inject
     private AuthMe plugin;
@@ -48,7 +51,7 @@ public class ReloadCommand implements ExecutableCommand {
     public void executeCommand(CommandSender sender, List<String> arguments) {
         try {
             settings.reload();
-            ConsoleLogger.setLoggingOptions(settings);
+            ConsoleLoggerFactory.reloadSettings(settings);
             settingsWarner.logWarningsForMisconfigurations();
 
             // We do not change database type for consistency issues, but we'll output a note in the logs
@@ -59,7 +62,7 @@ public class ReloadCommand implements ExecutableCommand {
             commonService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
             sender.sendMessage("Error occurred during reload of AuthMe: aborting");
-            ConsoleLogger.logException("Aborting! Encountered exception during reload of AuthMe:", e);
+            logger.logException("Aborting! Encountered exception during reload of AuthMe:", e);
             plugin.stopOrUnload();
         }
     }

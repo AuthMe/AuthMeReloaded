@@ -3,6 +3,7 @@ package fr.xephi.authme.security.crypts;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import at.favre.lib.crypto.bcrypt.IllegalBCryptFormatException;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -19,6 +20,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @HasSalt(value = SaltType.TEXT, length = SALT_LENGTH_ENCODED)
 public class Wbb4 implements EncryptionMethod {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(Wbb4.class);
     private BCryptHasher bCryptHasher = new BCryptHasher(BCrypt.Version.VERSION_2A, 8);
     private SecureRandom random = new SecureRandom();
 
@@ -44,7 +46,7 @@ public class Wbb4 implements EncryptionMethod {
             String computedHash = hashInternal(password, salt);
             return isEqual(hashedPassword.getHash(), computedHash);
         } catch (IllegalBCryptFormatException | IllegalArgumentException e) {
-            ConsoleLogger.logException("Invalid WBB4 hash:", e);
+            logger.logException("Invalid WBB4 hash:", e);
         }
         return false;
     }

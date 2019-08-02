@@ -2,6 +2,7 @@ package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
@@ -21,6 +22,8 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
  * Initiates purge tasks.
  */
 public class PurgeService {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PurgeService.class);
 
     @Inject
     private BukkitService bukkitService;
@@ -51,11 +54,11 @@ public class PurgeService {
         if (!settings.getProperty(PurgeSettings.USE_AUTO_PURGE)) {
             return;
         } else if (daysBeforePurge <= 0) {
-            ConsoleLogger.warning("Did not run auto purge: configured days before purging must be positive");
+            logger.warning("Did not run auto purge: configured days before purging must be positive");
             return;
         }
 
-        ConsoleLogger.info("Automatically purging the database...");
+        logger.info("Automatically purging the database...");
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -daysBeforePurge);
         long until = calendar.getTimeInMillis();

@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -18,8 +19,10 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
  */
 public abstract class AbstractDataSourceConverter<S extends DataSource> implements Converter {
 
-    private DataSource destination;
-    private DataSourceType destinationType;
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlToSqlite.class);
+
+    private final DataSource destination;
+    private final DataSourceType destinationType;
 
     /**
      * Constructor.
@@ -51,7 +54,7 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
             source = getSource();
         } catch (Exception e) {
             logAndSendMessage(sender, "The data source to convert from could not be initialized");
-            ConsoleLogger.logException("Could not initialize source:", e);
+            logger.logException("Could not initialize source:", e);
             return;
         }
 
@@ -60,7 +63,6 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
             if (destination.isAuthAvailable(auth.getNickname())) {
                 skippedPlayers.add(auth.getNickname());
             } else {
-                adaptPlayerAuth(auth);
                 destination.saveAuth(auth);
                 destination.updateSession(auth);
                 destination.updateQuitLoc(auth);
@@ -73,15 +75,6 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
         }
         logAndSendMessage(sender, "Database successfully converted from " + source.getType()
             + " to " + destinationType);
-    }
-
-    /**
-     * Adapts the PlayerAuth from the source before it is saved in the destination.
-     *
-     * @param auth the auth from the source
-     */
-    protected void adaptPlayerAuth(PlayerAuth auth) {
-        // noop
     }
 
     /**

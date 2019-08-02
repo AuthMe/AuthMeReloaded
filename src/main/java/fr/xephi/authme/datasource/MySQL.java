@@ -8,6 +8,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -32,6 +33,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class MySQL extends AbstractSqlDataSource {
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(MySQL.class);
 
     private boolean useSsl;
     private boolean serverCertificateVerification;
@@ -56,14 +58,14 @@ public class MySQL extends AbstractSqlDataSource {
             this.setConnectionArguments();
         } catch (RuntimeException e) {
             if (e instanceof IllegalArgumentException) {
-                ConsoleLogger.warning("Invalid database arguments! Please check your configuration!");
-                ConsoleLogger.warning("If this error persists, please report it to the developer!");
+                logger.warning("Invalid database arguments! Please check your configuration!");
+                logger.warning("If this error persists, please report it to the developer!");
             }
             if (e instanceof PoolInitializationException) {
-                ConsoleLogger.warning("Can't initialize database connection! Please check your configuration!");
-                ConsoleLogger.warning("If this error persists, please report it to the developer!");
+                logger.warning("Can't initialize database connection! Please check your configuration!");
+                logger.warning("If this error persists, please report it to the developer!");
             }
-            ConsoleLogger.warning("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
+            logger.warning("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
             throw e;
         }
 
@@ -72,8 +74,8 @@ public class MySQL extends AbstractSqlDataSource {
             checkTablesAndColumns();
         } catch (SQLException e) {
             closeConnection();
-            ConsoleLogger.logException("Can't initialize the MySQL database:", e);
-            ConsoleLogger.warning("Please check your database settings in the config.yml file!");
+            logger.logException("Can't initialize the MySQL database:", e);
+            logger.warning("Please check your database settings in the config.yml file!");
             throw e;
         }
     }
@@ -147,7 +149,7 @@ public class MySQL extends AbstractSqlDataSource {
         ds.addDataSourceProperty("prepStmtCacheSize", "275");
         ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
-        ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
+        logger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
     @Override
@@ -156,7 +158,7 @@ public class MySQL extends AbstractSqlDataSource {
             ds.close();
         }
         setConnectionArguments();
-        ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
+        logger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
     private Connection getConnection() throws SQLException {
@@ -265,7 +267,7 @@ public class MySQL extends AbstractSqlDataSource {
                     + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
             }
         }
-        ConsoleLogger.info("MySQL setup finished");
+        logger.info("MySQL setup finished");
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
