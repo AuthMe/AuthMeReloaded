@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
  * Utility class for various operations used in the codebase.
  */
 public final class Utils {
-    
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
 
     /** Number of milliseconds in a minute. */
     public static final long MILLIS_PER_MINUTE = 60_000L;
+
+    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
 
     // Utility class
     private Utils() {
