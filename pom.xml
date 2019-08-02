@@ -222,7 +222,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                     <!-- In sync with the source/target properties of the maven-compiler-plugin -->
@@ -364,7 +364,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.2</version>
             </plugin>
             <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
             <plugin>
@@ -726,7 +726,7 @@
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
-            <version>3.0.0</version>
+            <version>4.0.1</version>
             <type>jar</type>
             <scope>provided</scope>
             <exclusions>
@@ -876,7 +876,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>2.28.2</version>
+            <version>3.0.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -889,7 +889,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>2.9.0</version>
+            <version>2.10.0</version>
             <scope>test</scope>
         </dependency>
 
