@@ -41,10 +41,10 @@ public class RegistrationCaptchaManager implements CaptchaManager, SettingsDepen
 
     @Override
     public boolean checkCode(Player player, String code) {
-        String nameLower = player.getName().toLowerCase();
-        boolean isCodeCorrect = captchaCodeStorage.checkCode(nameLower, code);
+        String name = player.getName();
+        boolean isCodeCorrect = captchaCodeStorage.checkCode(name, code);
         if (isCodeCorrect) {
-            verifiedNamesForRegistration.add(nameLower);
+            verifiedNamesForRegistration.add(name.toLowerCase());
         }
         return isCodeCorrect;
     }

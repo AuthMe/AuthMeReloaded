@@ -216,13 +216,12 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        String name = player.getName().toLowerCase();
         String joinMsg = event.getJoinMessage();
 
         // Remove the join message while the player isn't logging in
         if (joinMsg != null) {
             event.setJoinMessage(null);
-            joinMessageService.putMessage(name, joinMsg);
+            joinMessageService.putMessage(player.getName().toLowerCase(), joinMsg);
         }
     }
 
@@ -488,12 +487,12 @@ public class PlayerListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
         Location spawn = spawnLoader.getSpawnLocation(player);
         if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && dataSource.isAuthAvailable(name)) {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
-                .realName(player.getName())
+                .realName(name)
                 .location(spawn)
                 .build();
             dataSource.updateQuitLoc(auth);

@@ -68,7 +68,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         if (player == null || validationService.isUnrestricted(player.getName())) {
             return;
         }
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         final boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
         if (wasLoggedIn) {

@@ -23,7 +23,7 @@ final class PlayerAuthBuilderHelper {
      */
     static PlayerAuth createPlayerAuth(Player player, HashedPassword hashedPassword, String email) {
         return PlayerAuth.builder()
-            .name(player.getName().toLowerCase())
+            .name(player.getName())
             .realName(player.getName())
             .password(hashedPassword)
             .email(email)

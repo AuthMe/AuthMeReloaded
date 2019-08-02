@@ -203,8 +203,7 @@ public class AuthMeApi {
      * @return true if player is registered, false otherwise
      */
     public boolean isRegistered(String playerName) {
-        String player = playerName.toLowerCase();
-        return dataSource.isAuthAvailable(player);
+        return dataSource.isAuthAvailable(playerName);
     }
 
     /**
@@ -227,13 +226,12 @@ public class AuthMeApi {
      * @return true if the player was registered successfully
      */
     public boolean registerPlayer(String playerName, String password) {
-        String name = playerName.toLowerCase();
-        if (isRegistered(name)) {
+        if (isRegistered(playerName)) {
             return false;
         }
-        HashedPassword result = passwordSecurity.computeHash(password, name);
+        HashedPassword result = passwordSecurity.computeHash(password, playerName);
         PlayerAuth auth = PlayerAuth.builder()
-            .name(name)
+            .name(playerName)
             .password(result)
             .realName(playerName)
             .registrationDate(System.currentTimeMillis())

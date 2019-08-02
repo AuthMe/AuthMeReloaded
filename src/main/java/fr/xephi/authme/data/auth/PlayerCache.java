@@ -20,7 +20,7 @@ public class PlayerCache {
      * @param auth the player auth object to save
      */
     public void updatePlayer(PlayerAuth auth) {
-        cache.put(auth.getNickname().toLowerCase(), auth);
+        cache.put(auth.getNickname(), auth);
     }
 
     /**

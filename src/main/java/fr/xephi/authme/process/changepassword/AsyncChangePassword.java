@@ -44,9 +44,9 @@ public class AsyncChangePassword implements AsynchronousProcess {
      * @param newPassword the new password chosen by the player
      */
     public void changePassword(final Player player, String oldPassword, String newPassword) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         PlayerAuth auth = playerCache.getAuth(name);
-        if (passwordSecurity.comparePassword(oldPassword, auth.getPassword(), player.getName())) {
+        if (passwordSecurity.comparePassword(oldPassword, auth.getPassword(), name)) {
             HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, name);
             auth.setPassword(hashedPassword);
 
@@ -72,30 +72,29 @@ public class AsyncChangePassword implements AsynchronousProcess {
      * @param newPassword the new password chosen for the player
      */
     public void changePasswordAsAdmin(CommandSender sender, final String playerName, String newPassword) {
-        final String lowerCaseName = playerName.toLowerCase();
-        if (!(playerCache.isAuthenticated(lowerCaseName) || dataSource.isAuthAvailable(lowerCaseName))) {
+        if (!(playerCache.isAuthenticated(playerName) || dataSource.isAuthAvailable(playerName))) {
             if (sender == null) {
-                ConsoleLogger.warning("Tried to change password for user " + lowerCaseName + " but it doesn't exist!");
+                ConsoleLogger.warning("Tried to change password for user " + playerName + " but it doesn't exist!");
             } else {
                 commonService.send(sender, MessageKey.UNKNOWN_USER);
             }
             return;
         }
 
-        HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, lowerCaseName);
-        if (dataSource.updatePassword(lowerCaseName, hashedPassword)) {
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_PASSWORD, lowerCaseName);
+        HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, playerName);
+        if (dataSource.updatePassword(playerName, hashedPassword)) {
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_PASSWORD, playerName);
             if (sender != null) {
                 commonService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
-                ConsoleLogger.info(sender.getName() + " changed password of " + lowerCaseName);
+                ConsoleLogger.info(sender.getName() + " changed password of " + playerName);
             } else {
-                ConsoleLogger.info("Changed password of " + lowerCaseName);
+                ConsoleLogger.info("Changed password of " + playerName);
             }
         } else {
             if (sender != null) {
                 commonService.send(sender, MessageKey.ERROR);
             }
-            ConsoleLogger.warning("An error occurred while changing password for user " + lowerCaseName + "!");
+            ConsoleLogger.warning("An error occurred while changing password for user " + playerName + "!");
         }
     }
 }

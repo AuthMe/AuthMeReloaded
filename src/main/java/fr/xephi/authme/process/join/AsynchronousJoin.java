@@ -78,10 +78,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param player the player to process
      */
     public void processJoin(final Player player) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         final String ip = PlayerUtils.getPlayerIp(player);
 
-        if (service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name)) {
+        if (validationService.isUnrestricted(name)) {
             return;
         }
 
@@ -112,7 +112,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     isAsync -> new ProtectInventoryEvent(player, isAsync));
                 if (ev.isCancelled()) {
                     player.updateInventory();
-                    ConsoleLogger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
+                    ConsoleLogger.fine("ProtectInventoryEvent has been cancelled for " + name + "...");
                 }
             }
 

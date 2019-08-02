@@ -76,10 +76,10 @@ public class CaptchaCodeStorage {
      * @return true if the code matches, false otherwise
      */
     public boolean checkCode(String name, String code) {
-        String nameLowerCase = name.toLowerCase();
-        String savedCode = captchaCodes.get(nameLowerCase);
+        String lowerCaseName = name.toLowerCase();
+        String savedCode = captchaCodes.get(lowerCaseName);
         if (savedCode != null && savedCode.equalsIgnoreCase(code)) {
-            captchaCodes.remove(nameLowerCase);
+            captchaCodes.remove(lowerCaseName);
             return true;
         } else {
             generateCode(name);

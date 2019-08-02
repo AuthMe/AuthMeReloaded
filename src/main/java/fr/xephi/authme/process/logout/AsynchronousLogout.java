@@ -51,7 +51,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
      * @param player the player wanting to log out
      */
     public void logout(Player player) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         if (!playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.NOT_LOGGED_IN);
             return;

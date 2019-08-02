@@ -124,7 +124,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *         (e.g. because he is already logged in)
      */
     private PlayerAuth getPlayerAuth(Player player) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
@@ -169,7 +169,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *         false otherwise
      */
     private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         // If captcha is required send a message to the player and deny to log in
         if (loginCaptchaManager.isCaptchaRequired(name)) {
@@ -183,7 +183,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         loginCaptchaManager.increaseLoginFailureCount(name);
         tempbanManager.increaseCount(ip, name);
 
-        if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
+        if (passwordSecurity.comparePassword(password, auth.getPassword(), name)) {
             return true;
         } else {
             handleWrongPassword(player, auth, ip);
@@ -336,7 +336,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(onlinePlayer))
                 && !onlinePlayer.getName().equals(name)
-                && dataSource.isLogged(onlinePlayer.getName().toLowerCase())) {
+                && dataSource.isLogged(onlinePlayer.getName())) {
                 ++count;
             }
         }

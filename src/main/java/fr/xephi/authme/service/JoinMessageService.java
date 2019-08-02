@@ -28,7 +28,7 @@ public class JoinMessageService {
      * @param string     the join message
      */
     public void putMessage(String playerName, String string) {
-        joinMessages.put(playerName, string);
+        joinMessages.put(playerName.toLowerCase(), string);
     }
 
     /**
@@ -37,7 +37,7 @@ public class JoinMessageService {
      * @param playerName the player name
      */
     public void sendMessage(String playerName) {
-        String joinMessage = joinMessages.remove(playerName);
+        String joinMessage = joinMessages.remove(playerName.toLowerCase());
         if (!StringUtils.isEmpty(joinMessage)) {
             bukkitService.broadcastMessage(joinMessage);
         }

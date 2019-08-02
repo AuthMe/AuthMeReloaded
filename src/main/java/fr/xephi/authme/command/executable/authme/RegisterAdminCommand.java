@@ -42,7 +42,6 @@ public class RegisterAdminCommand implements ExecutableCommand {
         // Get the player name and password
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
-        final String playerNameLowerCase = playerName.toLowerCase();
 
         // Command logic
         ValidationResult passwordValidation = validationService.validatePassword(playerPass, playerName);
@@ -52,13 +51,13 @@ public class RegisterAdminCommand implements ExecutableCommand {
         }
 
         bukkitService.runTaskOptionallyAsync(() -> {
-            if (dataSource.isAuthAvailable(playerNameLowerCase)) {
+            if (dataSource.isAuthAvailable(playerName)) {
                 commonService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
                 return;
             }
-            HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
+            HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerName);
             PlayerAuth auth = PlayerAuth.builder()
-                .name(playerNameLowerCase)
+                .name(playerName)
                 .realName(playerName)
                 .password(hashedPassword)
                 .registrationDate(System.currentTimeMillis())

@@ -52,17 +52,17 @@ public class LimboService {
      * @param isRegistered whether or not the player is registered
      */
     public void createLimboPlayer(Player player, boolean isRegistered) {
-        final String name = player.getName().toLowerCase();
+        final String lowerCaseName = player.getName().toLowerCase();
 
         LimboPlayer limboFromDisk = persistence.getLimboPlayer(player);
         if (limboFromDisk != null) {
-            ConsoleLogger.debug("LimboPlayer for `{0}` already exists on disk", name);
+            ConsoleLogger.debug("LimboPlayer for `{0}` already exists on disk", lowerCaseName);
         }
 
-        LimboPlayer existingLimbo = entries.remove(name);
+        LimboPlayer existingLimbo = entries.remove(lowerCaseName);
         if (existingLimbo != null) {
             existingLimbo.clearTasks();
-            ConsoleLogger.debug("LimboPlayer for `{0}` already present in memory", name);
+            ConsoleLogger.debug("LimboPlayer for `{0}` already present in memory", lowerCaseName);
         }
 
         Location location = spawnLoader.getPlayerLocationOrSpawn(player);
@@ -75,7 +75,7 @@ public class LimboService {
         helper.revokeLimboStates(player);
         authGroupHandler.setGroup(player, limboPlayer,
             isRegistered ? AuthGroupType.REGISTERED_UNAUTHENTICATED : AuthGroupType.UNREGISTERED);
-        entries.put(name, limboPlayer);
+        entries.put(lowerCaseName, limboPlayer);
         persistence.saveLimboPlayer(player, limboPlayer);
     }
 

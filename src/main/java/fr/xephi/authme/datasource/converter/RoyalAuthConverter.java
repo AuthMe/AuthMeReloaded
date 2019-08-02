@@ -31,8 +31,8 @@ public class RoyalAuthConverter implements Converter {
     public void execute(CommandSender sender) {
         for (OfflinePlayer player : plugin.getServer().getOfflinePlayers()) {
             try {
-                String name = player.getName().toLowerCase();
-                File file = new File(makePath(".", "plugins", "RoyalAuth", "userdata", name + ".yml"));
+                String name = player.getName();
+                File file = new File(makePath(".", "plugins", "RoyalAuth", "userdata", name.toLowerCase() + ".yml"));
 
                 if (dataSource.isAuthAvailable(name) || !file.exists()) {
                     continue;
@@ -42,7 +42,7 @@ public class RoyalAuthConverter implements Converter {
                     .name(name)
                     .password(configuration.getString(PASSWORD_PATH), null)
                     .lastLogin(configuration.getLong(LAST_LOGIN_PATH))
-                    .realName(player.getName())
+                    .realName(name)
                     .build();
 
                 dataSource.saveAuth(auth);

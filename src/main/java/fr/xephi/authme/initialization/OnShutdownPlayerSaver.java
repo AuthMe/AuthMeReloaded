@@ -52,7 +52,7 @@ public class OnShutdownPlayerSaver {
     }
 
     private void savePlayer(Player player) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         if (PlayerUtils.isNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
@@ -68,7 +68,7 @@ public class OnShutdownPlayerSaver {
         if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
             Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
             final PlayerAuth auth = PlayerAuth.builder()
-                .name(player.getName().toLowerCase())
+                .name(player.getName())
                 .realName(player.getName())
                 .location(loc).build();
             dataSource.updateQuitLoc(auth);
