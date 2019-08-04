@@ -93,15 +93,21 @@ class LimboPlayerTaskManager {
      * @return the message key to display to the user
      */
     private MessageResult getMessageKey(String name, LimboMessageType messageType) {
-        if (messageType == LimboMessageType.LOG_IN) {
-            return new MessageResult(MessageKey.LOGIN_MESSAGE);
-        } else if (messageType == LimboMessageType.TOTP_CODE) {
-            return new MessageResult(MessageKey.TWO_FACTOR_CODE_REQUIRED);
-        } else if (registrationCaptchaManager.isCaptchaRequired(name)) {
-            final String captchaCode = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(name);
-            return new MessageResult(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captchaCode);
-        } else {
-            return new MessageResult(MessageKey.REGISTER_MESSAGE);
+        switch (messageType) {
+            case LOG_IN:
+                return new MessageResult(MessageKey.LOGIN_MESSAGE);
+            case TOTP_CODE:
+                return new MessageResult(MessageKey.TWO_FACTOR_CODE_REQUIRED);
+            case NEW_PASSWORD_REQUIRED:
+                return new MessageResult(MessageKey.NEW_PASSWORD_REQUIRED);
+            case REGISTER:
+                if (registrationCaptchaManager.isCaptchaRequired(name)) {
+                    final String captchaCode = registrationCaptchaManager.getCaptchaCodeOrGenerateNew(name);
+                    return new MessageResult(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captchaCode);
+                }
+                return new MessageResult(MessageKey.REGISTER_MESSAGE);
+            default:
+                throw new IllegalStateException("Unhandled message type '" + messageType + "'");
         }
     }
 

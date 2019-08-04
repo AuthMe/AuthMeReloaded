@@ -20,12 +20,6 @@ public final class RegistrationMethod<P extends RegistrationParameters> {
         new RegistrationMethod<>(PasswordRegisterExecutor.class);
 
     /**
-     * Registration with two-factor authentication as login means.
-     */
-    public static final RegistrationMethod<TwoFactorRegisterParams> TWO_FACTOR_REGISTRATION =
-        new RegistrationMethod<>(TwoFactorRegisterExecutor.class);
-
-    /**
      * Email registration: an email address is provided, to which a generated password is sent.
      */
     public static final RegistrationMethod<EmailRegisterParams> EMAIL_REGISTRATION =

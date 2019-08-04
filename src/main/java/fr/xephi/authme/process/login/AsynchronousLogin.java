@@ -19,6 +19,8 @@ import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
+import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.PasswordCheckResult;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
@@ -92,11 +94,15 @@ public class AsynchronousLogin implements AsynchronousProcess {
      */
     public void login(Player player, String password) {
         PlayerAuth auth = getPlayerAuth(player);
-        if (auth != null && checkPlayerInfo(player, auth, password)) {
-            if (auth.getTotpKey() != null) {
-                limboService.resetMessageTask(player, LimboMessageType.TOTP_CODE);
-                limboService.getLimboPlayer(player.getName()).setState(LimboPlayerState.TOTP_REQUIRED);
-                // TODO #1141: Check if we should check limbo state before processing password
+        if (auth == null) {
+            return;
+        }
+
+        PasswordVerification passwordVerification = checkPlayerInfo(player, auth, password);
+        if (passwordVerification.isSuccessful()) {
+            if (passwordVerification.hasLimboFollowUpState()) {
+                limboService.transitionToState(player, passwordVerification.getNextLimboState(),
+                    passwordVerification.getMessageType());
             } else {
                 performLogin(player, auth);
             }
@@ -165,16 +171,15 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param player the player requesting to log in
      * @param auth the PlayerAuth object of the player
      * @param password the password supplied by the player
-     * @return true if the password matches and all other conditions are met (e.g. no captcha required),
-     *         false otherwise
+     * @return password verification result
      */
-    private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password) {
+    private PasswordVerification checkPlayerInfo(Player player, PlayerAuth auth, String password) {
         final String name = player.getName().toLowerCase();
 
         // If captcha is required send a message to the player and deny to log in
         if (loginCaptchaManager.isCaptchaRequired(name)) {
             service.send(player, MessageKey.USAGE_CAPTCHA, loginCaptchaManager.getCaptchaCodeOrGenerateNew(name));
-            return false;
+            return PasswordVerification.failed();
         }
 
         final String ip = PlayerUtils.getPlayerIp(player);
@@ -183,11 +188,24 @@ public class AsynchronousLogin implements AsynchronousProcess {
         loginCaptchaManager.increaseLoginFailureCount(name);
         tempbanManager.increaseCount(ip, name);
 
-        if (passwordSecurity.comparePassword(password, auth.getPassword(), player.getName())) {
-            return true;
+        PasswordCheckResult result = passwordSecurity.verifyPassword(password, auth.getPassword(), player.getName());
+        if (result.isSuccessful()) {
+            return createVerificationResultForCorrectPassword(result, auth);
         } else {
             handleWrongPassword(player, auth, ip);
-            return false;
+            return PasswordVerification.failed();
+        }
+    }
+
+    private PasswordVerification createVerificationResultForCorrectPassword(PasswordCheckResult passwordCheckResult,
+                                                                            PlayerAuth auth) {
+        if (passwordCheckResult.getLegacyHash() == HashAlgorithm.TWO_FACTOR) {
+            return PasswordVerification.forSuccess(LimboPlayerState.NEW_PASSWORD_FOR_TWO_FACTOR_MIGRATION_REQUIRED,
+                LimboMessageType.NEW_PASSWORD_REQUIRED);
+        } else if (auth.getTotpKey() != null) {
+            return PasswordVerification.forSuccess(LimboPlayerState.TOTP_REQUIRED, LimboMessageType.TOTP_CODE);
+        } else {
+            return PasswordVerification.forSuccess(null, null);
         }
     }
 
@@ -341,5 +359,60 @@ public class AsynchronousLogin implements AsynchronousProcess {
             }
         }
         return count >= service.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP);
+    }
+
+    private static final class PasswordVerification {
+
+        private final boolean isSuccessful;
+        private final LimboPlayerState nextLimboState;
+        private final LimboMessageType messageType;
+
+        private PasswordVerification(boolean isSuccessful, LimboPlayerState nextLimboState,
+                                     LimboMessageType messageType) {
+            checkStateAndMessageBothNullOrNotNull(nextLimboState, messageType);
+            this.isSuccessful = isSuccessful;
+            this.nextLimboState = nextLimboState;
+            this.messageType = messageType;
+        }
+
+        static PasswordVerification failed() {
+            return new PasswordVerification(false, null, null);
+        }
+
+        static PasswordVerification forSuccess(LimboPlayerState nextLimboState, LimboMessageType messageType) {
+            return new PasswordVerification(true, nextLimboState, messageType);
+        }
+
+        /**
+         * @return true if the supplied password was correct, false otherwise
+         */
+        boolean isSuccessful() {
+            return isSuccessful;
+        }
+
+        /**
+         * @return true if the player needs to be transitioned to a new limbo player state and cannot be logged in yet,
+         *         false otherwise (i.e. if the player may be logged in).
+         */
+        boolean hasLimboFollowUpState() {
+            return nextLimboState != null;
+        }
+
+        LimboPlayerState getNextLimboState() {
+            return nextLimboState;
+        }
+
+        LimboMessageType getMessageType() {
+            return messageType;
+        }
+
+        private static void checkStateAndMessageBothNullOrNotNull(LimboPlayerState nextLimboState,
+                                                                  LimboMessageType messageType) {
+            boolean isStateNull = nextLimboState == null;
+            boolean isMessageNull = messageType == null;
+            if (isStateNull != isMessageNull) {
+                throw new IllegalStateException("Limbo state and message both have to be either null or not null");
+            }
+        }
     }
 }

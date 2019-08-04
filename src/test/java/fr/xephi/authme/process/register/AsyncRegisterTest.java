@@ -6,10 +6,10 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreRegisterEvent;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.process.register.executors.EmailRegisterParams;
 import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
-import fr.xephi.authme.process.register.executors.TwoFactorRegisterParams;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -78,7 +78,8 @@ public class AsyncRegisterTest {
         singletonStoreWillReturn(registrationExecutorStore, executor);
 
         // when
-        asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, TwoFactorRegisterParams.of(player));
+        asyncRegister.register(RegistrationMethod.EMAIL_REGISTRATION,
+            EmailRegisterParams.of(player, "bogus@example.org"));
 
         // then
         verify(commonService).send(player, MessageKey.REGISTRATION_DISABLED);
@@ -97,7 +98,8 @@ public class AsyncRegisterTest {
         singletonStoreWillReturn(registrationExecutorStore, executor);
 
         // when
-        asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, TwoFactorRegisterParams.of(player));
+        asyncRegister.register(RegistrationMethod.EMAIL_REGISTRATION,
+            EmailRegisterParams.of(player, "bogus@example.org"));
 
         // then
         verify(commonService).send(player, MessageKey.NAME_ALREADY_REGISTERED);
@@ -116,7 +118,7 @@ public class AsyncRegisterTest {
         given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
         given(dataSource.isAuthAvailable(name)).willReturn(false);
         RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        TwoFactorRegisterParams params = TwoFactorRegisterParams.of(player);
+        EmailRegisterParams params = EmailRegisterParams.of(player, "playermail@example.com");
         singletonStoreWillReturn(registrationExecutorStore, executor);
 
         AuthMeAsyncPreRegisterEvent canceledEvent = new AuthMeAsyncPreRegisterEvent(player, true);
@@ -124,7 +126,7 @@ public class AsyncRegisterTest {
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(canceledEvent);
 
         // when
-        asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, params);
+        asyncRegister.register(RegistrationMethod.EMAIL_REGISTRATION, params);
 
         // then
         verify(dataSource, only()).isAuthAvailable(name);
@@ -142,7 +144,7 @@ public class AsyncRegisterTest {
         given(commonService.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP)).willReturn(0);
         given(dataSource.isAuthAvailable(name)).willReturn(false);
         RegistrationExecutor executor = mock(RegistrationExecutor.class);
-        TwoFactorRegisterParams params = TwoFactorRegisterParams.of(player);
+        EmailRegisterParams params = EmailRegisterParams.of(player, "playermail@example.com");
         given(executor.isRegistrationAdmitted(params)).willReturn(false);
         singletonStoreWillReturn(registrationExecutorStore, executor);
 
@@ -150,7 +152,7 @@ public class AsyncRegisterTest {
             .willReturn(new AuthMeAsyncPreRegisterEvent(player, false));
 
         // when
-        asyncRegister.register(RegistrationMethod.TWO_FACTOR_REGISTRATION, params);
+        asyncRegister.register(RegistrationMethod.EMAIL_REGISTRATION, params);
 
         // then
         verify(dataSource, only()).isAuthAvailable(name);

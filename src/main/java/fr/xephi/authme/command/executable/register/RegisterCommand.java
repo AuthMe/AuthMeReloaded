@@ -3,6 +3,9 @@ package fr.xephi.authme.command.executable.register;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
+import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.LimboPlayerState;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -11,13 +14,11 @@ import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.process.register.executors.EmailRegisterParams;
 import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
-import fr.xephi.authme.process.register.executors.TwoFactorRegisterParams;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.ValidationService.ValidationResult;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -49,18 +50,24 @@ public class RegisterCommand extends PlayerCommand {
     @Inject
     private RegistrationCaptchaManager registrationCaptchaManager;
 
+    @Inject
+    private LimboService limboService;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
+        final LimboPlayer limbo = limboService.getLimboPlayer(player.getName());
+        // Check if we are migrating from old 2FA -> we reuse this method for simplicity but in reality if we match
+        // this condition the user is already registered and we override the password with the given one
+        if (limbo != null && limbo.getState() == LimboPlayerState.NEW_PASSWORD_FOR_TWO_FACTOR_MIGRATION_REQUIRED) {
+            handleNewPasswordFromTwoFactorMigration(player, arguments);
+            return;
+        }
+
         if (!isCaptchaFulfilled(player)) {
             return; // isCaptchaFulfilled handles informing the player on failure
         }
 
-        if (commonService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
-            //for two factor auth we don't need to check the usage
-            management.performRegister(RegistrationMethod.TWO_FACTOR_REGISTRATION,
-                TwoFactorRegisterParams.of(player));
-            return;
-        } else if (arguments.size() < 1) {
+        if (arguments.size() < 1) {
             commonService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
@@ -197,6 +204,31 @@ public class RegisterCommand extends PlayerCommand {
             }
         } else {
             throw new IllegalStateException("Unknown secondary argument type '" + secondArgType + "'");
+        }
+    }
+
+    /**
+     * Handles the input arguments for a forced password migration from the old two factor hash.
+     * Two arguments are expected, password and password confirmation.
+     *
+     * @param player the player
+     * @param arguments the arguments supplied to the command
+     */
+    private void handleNewPasswordFromTwoFactorMigration(Player player, List<String> arguments) {
+        if (arguments.size() != 2) {
+            player.sendMessage("Expected two arguments! /register <password> <confirmPassword>");
+        } else if (!arguments.get(0).equals(arguments.get(1))) {
+            player.sendMessage("Invalid password confirmation. Usage: /register <password> <confirmPassword>");
+        } else {
+            ValidationResult passwordValidation =
+                validationService.validatePassword(arguments.get(0), player.getName());
+            if (passwordValidation.hasError()) {
+                commonService.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
+            } else {
+                ConsoleLogger.info("Using new password from '" + player.getName() + "' to migrate from old 2FA");
+                management.performPasswordChangeAsAdmin(player, player.getName(), arguments.get(0));
+                player.kickPlayer(commonService.retrieveSingleMessage(player, MessageKey.REGISTER_SUCCESS));
+            }
         }
     }
 }

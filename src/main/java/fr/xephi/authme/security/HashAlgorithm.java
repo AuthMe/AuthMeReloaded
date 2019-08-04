@@ -26,7 +26,6 @@ public enum HashAlgorithm {
     SALTEDSHA512(fr.xephi.authme.security.crypts.SaltedSha512.class),
     SHA256(fr.xephi.authme.security.crypts.Sha256.class),
     SMF(fr.xephi.authme.security.crypts.Smf.class),
-    TWO_FACTOR(fr.xephi.authme.security.crypts.TwoFactor.class),
     WBB3(fr.xephi.authme.security.crypts.Wbb3.class),
     WBB4(fr.xephi.authme.security.crypts.Wbb4.class),
     WORDPRESS(fr.xephi.authme.security.crypts.Wordpress.class),
@@ -39,6 +38,7 @@ public enum HashAlgorithm {
     @Deprecated PLAINTEXT(null),
     @Deprecated SHA1(fr.xephi.authme.security.crypts.Sha1.class),
     @Deprecated SHA512(fr.xephi.authme.security.crypts.Sha512.class),
+    @Deprecated TWO_FACTOR(fr.xephi.authme.security.crypts.TwoFactor.class),
     @Deprecated WHIRLPOOL(fr.xephi.authme.security.crypts.Whirlpool.class);
 
     private final Class<? extends EncryptionMethod> clazz;

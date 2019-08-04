@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static fr.xephi.authme.IsEqualByReflectionMatcher.hasEqualValuesOnAllFields;
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -197,4 +198,41 @@ public class LimboPlayerTaskManagerTest {
         verify(messages).retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
     }
 
+    @Test
+    public void shouldInitializeMessageTaskWithTotpMessage() {
+        // given
+        String name = "e-40";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList("grp"), false, 0.1f, 0.0f);
+        given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
+        given(messages.retrieveSingle(player, MessageKey.TWO_FACTOR_CODE_REQUIRED)).willReturn("2fa required");
+
+        // when
+        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.TOTP_CODE);
+
+        // then
+        assertThat(limboPlayer.getMessageTask(), not(nullValue()));
+        verify(messages).retrieveSingle(player, MessageKey.TWO_FACTOR_CODE_REQUIRED);
+    }
+
+    @Test
+    public void shouldInitializeMessageTaskWithPasswordMigrationMessage() {
+        // given
+        String name = "e-40";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList("grp"), false, 0.1f, 0.0f);
+        given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
+        given(messages.retrieveSingle(player, MessageKey.NEW_PASSWORD_REQUIRED)).willReturn("new pw required");
+
+        // when
+        limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.NEW_PASSWORD_REQUIRED);
+
+        // then
+        assertThat(limboPlayer.getMessageTask(), not(nullValue()));
+        verify(messages).retrieveSingle(player, MessageKey.NEW_PASSWORD_REQUIRED);
+        MessageTask expectedTask = new MessageTask(player, new String[]{"new pw required"});
+        assertThat(limboPlayer.getMessageTask(), hasEqualValuesOnAllFields(expectedTask));
+    }
 }

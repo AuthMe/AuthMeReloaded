@@ -19,9 +19,12 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
 import static fr.xephi.authme.settings.properties.DatabaseSettings.MYSQL_COL_SALT;
@@ -114,6 +117,23 @@ public class SettingsMigrationServiceTest {
         assertThat(migrationService.hasOldOtherAccountsCommand(), equalTo(true));
         assertThat(migrationService.getOldOtherAccountsCommand(), equalTo("msg admin %playername% has a lot of accounts!"));
         assertThat(migrationService.getOldOtherAccountsCommandThreshold(), equalTo(5));
+    }
+
+    @Test
+    public void shouldHaveDeprecatedEnumEntries() throws NoSuchFieldException {
+        // given
+        Set<HashAlgorithm> deprecatedEntries = EnumSet.noneOf(HashAlgorithm.class);
+        for (HashAlgorithm algorithm : HashAlgorithm.values()) {
+            if (algorithm != HashAlgorithm.PLAINTEXT) {
+                Field algorithmField = HashAlgorithm.class.getDeclaredField(algorithm.name());
+                if (algorithmField.isAnnotationPresent(Deprecated.class)) {
+                    deprecatedEntries.add(algorithm);
+                }
+            }
+        }
+
+        // when / then
+        assertThat(SettingsMigrationService.DEPRECATED_ARGUMENTS, equalTo(deprecatedEntries));
     }
 
     private void verifyHasUpToDateSettings(Settings settings, File dataFolder) throws IOException {

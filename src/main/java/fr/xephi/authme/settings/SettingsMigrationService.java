@@ -4,6 +4,7 @@ import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyReader;
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +29,12 @@ import java.util.Set;
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 import static fr.xephi.authme.settings.properties.DatabaseSettings.MYSQL_POOL_SIZE;
+import static fr.xephi.authme.security.HashAlgorithm.DOUBLEMD5;
+import static fr.xephi.authme.security.HashAlgorithm.MD5;
+import static fr.xephi.authme.security.HashAlgorithm.SHA1;
+import static fr.xephi.authme.security.HashAlgorithm.SHA512;
+import static fr.xephi.authme.security.HashAlgorithm.TWO_FACTOR;
+import static fr.xephi.authme.security.HashAlgorithm.WHIRLPOOL;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.DELAY_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_LEAVE_MESSAGE;
@@ -38,6 +46,15 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
  * Service for verifying that the configuration is up-to-date.
  */
 public class SettingsMigrationService extends PlainMigrationService {
+
+    /**
+     * Hash algorithms which cannot be used actively anymore. If any of these algorithms is configured
+     * it will be moved into the "legacy hashes" property and the default will be used instead.
+     * Note: do not add PLAINTEXT to this set as it is handled elsewhere (force-migration).
+     */
+    @VisibleForTesting
+    static final Set<HashAlgorithm> DEPRECATED_ARGUMENTS =
+        EnumSet.of(DOUBLEMD5, MD5, SHA1, SHA512, TWO_FACTOR, WHIRLPOOL);
 
     private final File pluginFolder;
 
@@ -310,18 +327,14 @@ public class SettingsMigrationService extends PlainMigrationService {
     private static boolean moveDeprecatedHashAlgorithmIntoLegacySection(PropertyReader reader,
                                                                         ConfigurationData configData) {
         HashAlgorithm currentHash = SecuritySettings.PASSWORD_HASH.determineValue(reader);
-        // Skip CUSTOM (has no class) and PLAINTEXT (is force-migrated later on in the startup process)
-        if (currentHash != HashAlgorithm.CUSTOM && currentHash != HashAlgorithm.PLAINTEXT) {
-            Class<?> encryptionClass = currentHash.getClazz();
-            if (encryptionClass.isAnnotationPresent(Deprecated.class)) {
-                configData.setValue(SecuritySettings.PASSWORD_HASH, HashAlgorithm.SHA256);
-                Set<HashAlgorithm> legacyHashes = SecuritySettings.LEGACY_HASHES.determineValue(reader);
-                legacyHashes.add(currentHash);
-                configData.setValue(SecuritySettings.LEGACY_HASHES, legacyHashes);
-                ConsoleLogger.warning("The hash algorithm '" + currentHash
-                    + "' is no longer supported for active use. New hashes will be in SHA256.");
-                return true;
-            }
+        if (DEPRECATED_ARGUMENTS.contains(currentHash)) {
+            configData.setValue(SecuritySettings.PASSWORD_HASH, HashAlgorithm.SHA256);
+            Set<HashAlgorithm> legacyHashes = SecuritySettings.LEGACY_HASHES.determineValue(reader);
+            legacyHashes.add(currentHash);
+            configData.setValue(SecuritySettings.LEGACY_HASHES, legacyHashes);
+            ConsoleLogger.warning("The hash algorithm '" + currentHash
+                + "' is no longer supported for active use. New hashes will be in SHA256.");
+            return true;
         }
         return false;
     }

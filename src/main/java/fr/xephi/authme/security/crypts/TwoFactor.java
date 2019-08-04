@@ -24,7 +24,8 @@ import java.util.concurrent.TimeUnit;
  *
  * @see <a href="http://thegreyblog.blogspot.com/2011/12/google-authenticator-using-it-in-your.html">Original source</a>
  */
-@Recommendation(Usage.DOES_NOT_WORK)
+@Deprecated
+@Recommendation(Usage.DEPRECATED)
 @HasSalt(SaltType.NONE)
 public class TwoFactor extends UnsaltedMethod {
 

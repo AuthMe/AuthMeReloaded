@@ -2,6 +2,9 @@ package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
+import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.LimboPlayerState;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -10,12 +13,10 @@ import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.process.register.executors.EmailRegisterParams;
 import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
-import fr.xephi.authme.process.register.executors.TwoFactorRegisterParams;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.ValidationService.ValidationResult;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,6 +37,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -64,6 +66,9 @@ public class RegisterCommandTest {
     @Mock
     private RegistrationCaptchaManager registrationCaptchaManager;
 
+    @Mock
+    private LimboService limboService;
+
     @BeforeClass
     public static void setup() {
         TestHelper.setupLogger();
@@ -71,7 +76,6 @@ public class RegisterCommandTest {
 
     @Before
     public void linkMocksAndProvideSettingDefaults() {
-        given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
     }
@@ -87,22 +91,6 @@ public class RegisterCommandTest {
         // then
         verify(sender).sendMessage(argThat(containsString("Player only!")));
         verifyZeroInteractions(management, emailService);
-    }
-
-    @Test
-    public void shouldForwardToManagementForTwoFactor() {
-        // given
-        given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.TWO_FACTOR);
-        Player player = mockPlayerWithName("test2");
-
-        // when
-        command.executeCommand(player, Collections.emptyList());
-
-        // then
-        verify(registrationCaptchaManager).isCaptchaRequired("test2");
-        verify(management).performRegister(eq(RegistrationMethod.TWO_FACTOR_REGISTRATION),
-            argThat(hasEqualValuesOnAllFields(TwoFactorRegisterParams.of(player))));
-        verifyZeroInteractions(emailService);
     }
 
     @Test
@@ -322,6 +310,67 @@ public class RegisterCommandTest {
         verify(registrationCaptchaManager).isCaptchaRequired(name);
         verify(commonService).send(player, MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha);
         verifyZeroInteractions(management, validationService);
+    }
+
+    @Test
+    public void shouldHandleForcedMigration() {
+        // given
+        String name = "Kandy";
+        Player player = mockPlayerWithName(name);
+        LimboPlayer limbo = mock(LimboPlayer.class);
+        given(limbo.getState()).willReturn(LimboPlayerState.NEW_PASSWORD_FOR_TWO_FACTOR_MIGRATION_REQUIRED);
+        given(limboService.getLimboPlayer(name)).willReturn(limbo);
+        String password = "pass1";
+        given(validationService.validatePassword(password, name)).willReturn(new ValidationResult());
+        given(commonService.retrieveSingleMessage(player, MessageKey.REGISTER_SUCCESS)).willReturn("reg success");
+
+        // when
+        command.executeCommand(player, Arrays.asList(password, password));
+
+        // then
+        verify(management).performPasswordChangeAsAdmin(player, name, password);
+        verify(validationService).validatePassword(password, name);
+        verify(player).kickPlayer("reg success");
+    }
+
+    @Test
+    public void shouldHandleInvalidPasswordWithinForcedMigration() {
+        // given
+        String name = "Kandy";
+        Player player = mockPlayerWithName(name);
+        LimboPlayer limbo = mock(LimboPlayer.class);
+        given(limbo.getState()).willReturn(LimboPlayerState.NEW_PASSWORD_FOR_TWO_FACTOR_MIGRATION_REQUIRED);
+        given(limboService.getLimboPlayer(name)).willReturn(limbo);
+        String password = "pass1";
+        given(validationService.validatePassword(password, name)).willReturn(new ValidationResult(MessageKey.ERROR));
+
+        // when
+        command.executeCommand(player, Arrays.asList(password, password));
+
+        // then
+        verify(validationService).validatePassword(password, name);
+        verifyZeroInteractions(management);
+        verify(commonService).send(player, MessageKey.ERROR, new String[]{});
+        verify(player, never()).kickPlayer(anyString());
+    }
+
+    @Test
+    public void shouldHandleWrongConfirmationWithinForcedMigration() {
+        // given
+        String name = "Kandy";
+        Player player = mockPlayerWithName(name);
+        LimboPlayer limbo = mock(LimboPlayer.class);
+        given(limbo.getState()).willReturn(LimboPlayerState.NEW_PASSWORD_FOR_TWO_FACTOR_MIGRATION_REQUIRED);
+        given(limboService.getLimboPlayer(name)).willReturn(limbo);
+        String password = "pass1";
+
+        // when
+        command.executeCommand(player, Arrays.asList(password, password.toUpperCase()));
+
+        // then
+        verifyZeroInteractions(management, validationService);
+        verify(player).sendMessage(argThat(containsString("Invalid password confirmation")));
+        verify(player, never()).kickPlayer(anyString());
     }
 
     private static Player mockPlayerWithName(String name) {

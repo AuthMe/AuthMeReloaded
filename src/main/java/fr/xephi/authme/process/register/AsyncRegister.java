@@ -99,8 +99,8 @@ public class AsyncRegister implements AsynchronousProcess {
      * @param executor   the executor to perform the registration process with
      * @param <P>        registration params type
      */
-    private <P extends RegistrationParameters>
-    void executeRegistration(P parameters, RegistrationExecutor<P> executor) {
+    private <P extends RegistrationParameters> void executeRegistration(P parameters,
+                                                                        RegistrationExecutor<P> executor) {
         PlayerAuth auth = executor.buildPlayerAuth(parameters);
         if (database.saveAuth(auth)) {
             executor.executePostPersistAction(parameters);
