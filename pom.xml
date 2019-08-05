@@ -65,6 +65,7 @@
 
         <!-- Dependencies versions -->
         <spigot.version>1.14.2-R0.1-SNAPSHOT</spigot.version>
+        <javadoc.plugin.version>3.1.1</javadoc.plugin.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -104,6 +105,25 @@
             <properties>
                 <project.skipExtendedHashTests>true</project.skipExtendedHashTests>
             </properties>
+        </profile>
+        <!-- Skip javadoc generation for faster local build -->
+        <profile>
+            <id>skipJavadocGeneration</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${javadoc.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadoc</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
@@ -222,7 +242,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>${javadoc.plugin.version}</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                     <!-- In sync with the source/target properties of the maven-compiler-plugin -->
