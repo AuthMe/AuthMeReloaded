@@ -92,7 +92,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         if (commonService.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
             restoreInventory(player);
         }
-        if(!commonService.getProperty(ALLOW_UNAUTHED_MOVEMENT)) {
+        if (!commonService.getProperty(ALLOW_UNAUTHED_MOVEMENT)) {
             protocolLibService.sendUnFreezePacket(player);
         }
 

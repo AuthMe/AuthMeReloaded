@@ -58,8 +58,8 @@ public class ProtocolLibService implements SettingsDependent {
             }
 
             if (freezePlayerBeforeLogin) {
-                ConsoleLogger.warning("WARNING! In oder to prevent player movements in a nicer way consider" +
-                    " installing ProtocolLib!");
+                ConsoleLogger.warning("WARNING! In oder to prevent player movements in a nicer way consider"
+                    + " installing ProtocolLib!");
             }
 
             this.isEnabled = false;
@@ -156,8 +156,8 @@ public class ProtocolLibService implements SettingsDependent {
 
     @Override
     public void reload(Settings settings) {
-        boolean oldProtectInventory = this.protectInvBeforeLogin;
-        boolean oldFreezePlayer = this.freezePlayerBeforeLogin;
+        final boolean oldProtectInventory = this.protectInvBeforeLogin;
+        final boolean oldFreezePlayer = this.freezePlayerBeforeLogin;
 
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);

@@ -39,6 +39,9 @@ import java.util.List;
 
 class FreezePacketAdapter extends PacketAdapter {
 
+    private static final String ATTRIBUTE_MOVEMENT_SPEED = "generic.movementSpeed";
+    private static final String ATTRIBUTE_FLYING_SPEED = "generic.flyingSpeed";
+
     private final PlayerCache playerCache;
     private final DataSource dataSource;
 
@@ -64,8 +67,8 @@ class FreezePacketAdapter extends PacketAdapter {
 
         List<WrappedAttribute> newAttributes = new ArrayList<>();
         for (WrappedAttribute attribute : packet.getAttributeCollectionModifier().read(0)) {
-            if ("generic.movementSpeed".equals(attribute.getAttributeKey()) ||
-                "generic.flyingSpeed".equals(attribute.getAttributeKey())) {
+            if (ATTRIBUTE_MOVEMENT_SPEED.equals(attribute.getAttributeKey())
+                || ATTRIBUTE_FLYING_SPEED.equals(attribute.getAttributeKey())) {
                 newAttributes.add(WrappedAttribute.newBuilder(attribute)
                     .baseValue(0.0f).modifiers(Collections.emptyList()).build());
             } else {
@@ -75,7 +78,7 @@ class FreezePacketAdapter extends PacketAdapter {
         packet.getAttributeCollectionModifier().write(0, newAttributes);
     }
 
-    public void register(BukkitService bukkitService) {
+    protected void register(BukkitService bukkitService) {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
 
         bukkitService.getOnlinePlayers().stream()
@@ -91,7 +94,7 @@ class FreezePacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().removePacketListener(this);
     }
 
-    public void sendFreezePacket(Player player) {
+    protected void sendFreezePacket(Player player) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer attributesPacket = protocolManager.createPacket(PacketType.Play.Server.UPDATE_ATTRIBUTES);
 
@@ -99,12 +102,12 @@ class FreezePacketAdapter extends PacketAdapter {
         attributesPacket.getAttributeCollectionModifier().write(0, Arrays.asList(
             WrappedAttribute.newBuilder()
                 .packet(attributesPacket)
-                .attributeKey("generic.movementSpeed")
+                .attributeKey(ATTRIBUTE_MOVEMENT_SPEED)
                 .baseValue(0.0f)
                 .build(),
             WrappedAttribute.newBuilder()
                 .packet(attributesPacket)
-                .attributeKey("generic.flyingSpeed")
+                .attributeKey(ATTRIBUTE_FLYING_SPEED)
                 .baseValue(0.0f)
                 .build()
         ));
