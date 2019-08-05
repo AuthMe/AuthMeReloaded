@@ -56,11 +56,6 @@ class LimboServiceHelper {
         player.setOp(false);
         settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)
             .processPlayer(player);
-
-        if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
-            player.setFlySpeed(0.0f);
-            player.setWalkSpeed(0.0f);
-        }
     }
 
     /**
