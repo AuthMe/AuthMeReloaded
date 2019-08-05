@@ -5,7 +5,8 @@ import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
-import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -33,25 +35,25 @@ public class TotpAuthenticatorTest {
     private TotpAuthenticator totpAuthenticator;
 
     @Mock
-    private BukkitService bukkitService;
+    private Settings settings;
 
     @Mock
     private IGoogleAuthenticator googleAuthenticator;
 
     @Before
     public void initializeTotpAuthenticator() {
-        totpAuthenticator = new TotpAuthenticatorTestImpl(bukkitService);
+        totpAuthenticator = new TotpAuthenticatorTestImpl(settings);
     }
 
     @Test
     public void shouldGenerateTotpKey() {
         // given
         // Use the GoogleAuthenticator instance the TotpAuthenticator normally creates to test its parameters
-        totpAuthenticator = new TotpAuthenticator(bukkitService);
+        totpAuthenticator = new TotpAuthenticator(settings);
 
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Bobby");
-        given(bukkitService.getIp()).willReturn("127.48.44.4");
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("MCtopia");
 
         // when
         TotpGenerationResult key1 = totpAuthenticator.generateTotpKey(player);
@@ -61,6 +63,7 @@ public class TotpAuthenticatorTest {
         assertThat(key1.getTotpKey(), stringWithLength(16));
         assertThat(key2.getTotpKey(), stringWithLength(16));
         assertThat(key1.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
+        assertThat(key1.getAuthenticatorQrCodeUrl(), containsString("MCtopia"));
         assertThat(key2.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
         assertThat(key1.getTotpKey(), not(equalTo(key2.getTotpKey())));
     }
@@ -130,8 +133,8 @@ public class TotpAuthenticatorTest {
 
     private final class TotpAuthenticatorTestImpl extends TotpAuthenticator {
 
-        TotpAuthenticatorTestImpl(BukkitService bukkitService) {
-            super(bukkitService);
+        TotpAuthenticatorTestImpl(Settings settings) {
+            super(settings);
         }
 
         @Override
