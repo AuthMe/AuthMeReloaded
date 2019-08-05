@@ -105,6 +105,21 @@
                 <project.skipExtendedHashTests>true</project.skipExtendedHashTests>
             </properties>
         </profile>
+        <!-- Skip javadoc generation for faster local build -->
+        <profile>
+            <id>skipJavadocGeneration</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -130,6 +145,16 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
         <plugins>
             <!-- Enforce build environment -->
@@ -222,7 +247,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                     <!-- In sync with the source/target properties of the maven-compiler-plugin -->

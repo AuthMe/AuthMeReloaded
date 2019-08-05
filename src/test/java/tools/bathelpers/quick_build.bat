@@ -3,4 +3,4 @@ if "%jarfile%" == "" (
   call setvars.bat
 )
 
-mvn install -o -f "%pomfile%" -Dmaven.test.skip
+mvn install -o -f "%pomfile%" -Dmaven.test.skip -PskipJavadocGeneration
