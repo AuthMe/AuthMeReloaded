@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Apr 19 17:16:06 CEST 2019. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Fri Aug 02 16:25:54 CEST 2019. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -28,6 +28,8 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.admin.setspawn** – Administrator command to set the AuthMe spawn.
 - **authme.admin.spawn** – Administrator command to teleport to the AuthMe spawn.
 - **authme.admin.switchantibot** – Administrator command to toggle the AntiBot protection status.
+- **authme.admin.totpdisable** – Administrator command to disable the two-factor auth of a user.
+- **authme.admin.totpviewstatus** – Administrator command to see whether a player has enabled two-factor authentication.
 - **authme.admin.unregister** – Administrator command to unregister an existing user.
 - **authme.admin.updatemessages** – Permission to use the update messages command.
 - **authme.allowchatbeforelogin** – Permission to send chat messages before being logged in.
@@ -71,4 +73,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 19 17:16:06 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Aug 02 16:25:54 CEST 2019
