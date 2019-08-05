@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Apr 23 17:17:02 CEST 2019. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Mon Aug 05 18:57:10 CEST 2019. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
@@ -501,7 +501,7 @@ Security:
         # Minutes after which a verification code will expire
         verificationCodeExpiration: 10
 # Before a user logs in, various properties are temporarily removed from the player,
-# such as OP status, ability to fly, and walk/fly speed.
+# such as OP status and the ability to fly.
 # Once the user is logged in, we add back the properties we previously saved.
 # In this section, you may define how these properties should be handled.
 # Read more at https://github.com/AuthMe/AuthMeReloaded/wiki/Limbo-players
@@ -509,7 +509,7 @@ limbo:
     persistence:
         # Besides storing the data in memory, you can define if/how the data should be persisted
         # on disk. This is useful in case of a server crash, so next time the server starts we can
-        # properly restore things like OP status, ability to fly, and walk/fly speed.
+        # properly restore things like OP status and the ability to fly
         # DISABLED: no disk storage,
         # INDIVIDUAL_FILES: each player data in its own file,
         # DISTRIBUTED_FILES: distributes players into different files based on their UUID, see below
@@ -528,15 +528,6 @@ limbo:
     # RESTORE sets back the old property from the player. NOTHING will prevent AuthMe
     # from modifying the 'allow flight' property on the player.
     restoreAllowFlight: RESTORE
-    # Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
-    # RESTORE: restore the speed the player had;
-    # DEFAULT: always set to default speed;
-    # MAX_RESTORE: take the maximum of the player's current speed and the previous one
-    # RESTORE_NO_ZERO: Like 'restore' but sets speed to default if the player's speed was 0
-    restoreFlySpeed: RESTORE_NO_ZERO
-    # Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.
-    # See above for a description of the values.
-    restoreWalkSpeed: RESTORE_NO_ZERO
 BackupSystem:
     # General configuration for backups: if false, no backups are possible
     ActivateBackup: false
@@ -578,4 +569,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 23 17:17:02 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Aug 05 18:57:10 CEST 2019

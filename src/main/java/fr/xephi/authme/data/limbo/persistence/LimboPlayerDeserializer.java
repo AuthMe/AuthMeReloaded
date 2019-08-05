@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.CAN_FLY;
-import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.FLY_SPEED;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.GROUPS;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.IS_OP;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOCATION;
@@ -28,7 +27,6 @@ import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_X
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Y;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_YAW;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Z;
-import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.WALK_SPEED;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -56,10 +54,8 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
 
         Collection<String> groups = getLimboGroups(jsonObject);
         boolean canFly = getBoolean(jsonObject, CAN_FLY);
-        float walkSpeed = getFloat(jsonObject, WALK_SPEED, LimboPlayer.DEFAULT_WALK_SPEED);
-        float flySpeed = getFloat(jsonObject, FLY_SPEED, LimboPlayer.DEFAULT_FLY_SPEED);
 
-        return new LimboPlayer(loc, operator, groups, canFly, walkSpeed, flySpeed);
+        return new LimboPlayer(loc, operator, groups, canFly);
     }
 
     private Location deserializeLocation(JsonObject jsonObject) {

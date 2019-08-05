@@ -78,8 +78,6 @@ public class IndividualFilesPersistenceHandlerTest {
         assertThat(data, not(nullValue()));
         assertThat(data.isOperator(), equalTo(true));
         assertThat(data.isCanFly(), equalTo(true));
-        assertThat(data.getWalkSpeed(), equalTo(0.2f));
-        assertThat(data.getFlySpeed(), equalTo(0.1f));
         assertThat(data.getGroups(), contains("players"));
         Location location = data.getLocation();
         assertThat(location.getX(), equalTo(-113.219));
@@ -114,7 +112,7 @@ public class IndividualFilesPersistenceHandlerTest {
         World world = mock(World.class);
         given(world.getName()).willReturn("player-world");
         Location location = new Location(world, 0.2, 102.25, -89.28, 3.02f, 90.13f);
-        LimboPlayer limbo = new LimboPlayer(location, true, Collections.singletonList("primary-grp"), true, 1.2f, 0.8f);
+        LimboPlayer limbo = new LimboPlayer(location, true, Collections.singletonList("primary-grp"), true);
 
         // when
         handler.saveLimboPlayer(player, limbo);

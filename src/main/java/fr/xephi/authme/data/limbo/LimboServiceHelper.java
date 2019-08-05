@@ -37,13 +37,11 @@ class LimboServiceHelper {
         // For safety reasons an unregistered player should not have OP status after registration
         boolean isOperator = isRegistered && player.isOp();
         boolean flyEnabled = player.getAllowFlight();
-        float walkSpeed = player.getWalkSpeed();
-        float flySpeed = player.getFlySpeed();
         Collection<String> playerGroups = permissionsManager.hasGroupSupport()
             ? permissionsManager.getGroups(player) : Collections.emptyList();
         ConsoleLogger.debug("Player `{0}` has groups `{1}`", player.getName(), String.join(", ", playerGroups));
 
-        return new LimboPlayer(location, isOperator, playerGroups, flyEnabled, walkSpeed, flySpeed);
+        return new LimboPlayer(location, isOperator, playerGroups, flyEnabled);
     }
 
     /**
@@ -69,7 +67,6 @@ class LimboServiceHelper {
      * Merges two existing LimboPlayer instances of a player. Merging is done the following way:
      * <ul>
      *  <li><code>isOperator, allowFlight</code>: true if either limbo has true</li>
-     *  <li><code>flySpeed, walkSpeed</code>: maximum value of either limbo player</li>
      *  <li><code>groups, location</code>: from old limbo if not empty/null, otherwise from new limbo</li>
      * </ul>
      *
@@ -86,12 +83,10 @@ class LimboServiceHelper {
 
         boolean isOperator = newLimbo.isOperator() || oldLimbo.isOperator();
         boolean canFly = newLimbo.isCanFly() || oldLimbo.isCanFly();
-        float flySpeed = Math.max(newLimbo.getFlySpeed(), oldLimbo.getFlySpeed());
-        float walkSpeed = Math.max(newLimbo.getWalkSpeed(), oldLimbo.getWalkSpeed());
         Collection<String> groups = getLimboGroups(oldLimbo.getGroups(), newLimbo.getGroups());
         Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 
-        return new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed);
+        return new LimboPlayer(location, isOperator, groups, canFly);
     }
 
     private static Location firstNotNull(Location first, Location second) {
