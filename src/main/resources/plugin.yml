@@ -18,7 +18,7 @@ softdepend:
 commands:
   authme:
     description: AuthMe op commands
-    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|recent|debug
+    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|totp|disabletotp|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|recent|debug
   email:
     description: Add email or recover password
     usage: /email show|add|change|recover|code|setpassword
@@ -85,6 +85,8 @@ permissions:
       authme.admin.setspawn: true
       authme.admin.spawn: true
       authme.admin.switchantibot: true
+      authme.admin.totpdisable: true
+      authme.admin.totpviewstatus: true
       authme.admin.unregister: true
       authme.admin.updatemessages: true
   authme.admin.accounts:
@@ -155,6 +157,13 @@ permissions:
     default: op
   authme.admin.switchantibot:
     description: Administrator command to toggle the AntiBot protection status.
+    default: op
+  authme.admin.totpdisable:
+    description: Administrator command to disable the two-factor auth of a user.
+    default: op
+  authme.admin.totpviewstatus:
+    description: Administrator command to see whether a player has enabled two-factor
+      authentication.
     default: op
   authme.admin.unregister:
     description: Administrator command to unregister an existing user.
