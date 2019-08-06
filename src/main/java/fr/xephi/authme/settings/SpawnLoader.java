@@ -232,6 +232,7 @@ public class SpawnLoader implements Reloadable {
         }
         return true;
     }
+
     /**
      * Save the location under the given prefix.
      *
