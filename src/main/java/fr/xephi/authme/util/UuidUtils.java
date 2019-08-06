@@ -12,15 +12,15 @@ public final class UuidUtils {
     }
 
     /**
-     * Returns whether the given string as an UUID or null
+     * Returns the given string as an UUID or null.
      *
      * @param string the uuid to parse
-     * @return parsed UUID if succeed or null
+     * @return parsed UUID if succeeded or null
      */
     public static UUID parseUuidSafely(String string) {
         try {
-            return UUID.fromString(string);
-        } catch (IllegalArgumentException | NullPointerException ex) {
+            return string == null ? null : UUID.fromString(string);
+        } catch (IllegalArgumentException ex) {
             return null;
         }
     }
