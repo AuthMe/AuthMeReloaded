@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.FileUtils;
@@ -20,6 +21,8 @@ import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
  * Handles a YAML message file with a default file fallback.
  */
 public abstract class AbstractMessageFileHandler implements Reloadable {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AbstractMessageFileHandler.class);
 
     @DataFolder
     @Inject
@@ -116,8 +119,7 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
         if (FileUtils.copyFileFromResource(file, defaultFile)) {
             return file;
         } else {
-            ConsoleLogger.warning("Wanted to copy default messages file '" + defaultFile
-                + "' from JAR but it didn't exist");
+            logger.warning("Wanted to copy default messages file '" + defaultFile + "' from JAR but it didn't exist");
             return null;
         }
     }

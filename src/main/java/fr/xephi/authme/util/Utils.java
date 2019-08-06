@@ -1,6 +1,7 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -15,8 +16,8 @@ public final class Utils {
 
     /** Number of milliseconds in a minute. */
     public static final long MILLIS_PER_MINUTE = 60_000L;
-    /** Number of milliseconds in an hour. */
-    public static final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
+
+    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
 
     // Utility class
     private Utils() {
@@ -33,7 +34,7 @@ public final class Utils {
         try {
             return Pattern.compile(pattern);
         } catch (Exception e) {
-            ConsoleLogger.warning("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
+            logger.warning("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
             return Pattern.compile(".*?");
         }
     }
@@ -63,7 +64,7 @@ public final class Utils {
      * @param message the message to log and send
      */
     public static void logAndSendMessage(CommandSender sender, String message) {
-        ConsoleLogger.info(message);
+        logger.info(message);
         // Make sure sender is not console user, which will see the message from ConsoleLogger already
         if (sender != null && !(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(message);
@@ -79,7 +80,7 @@ public final class Utils {
      * @param message the warning to log and send
      */
     public static void logAndSendWarning(CommandSender sender, String message) {
-        ConsoleLogger.warning(message);
+        logger.warning(message);
         // Make sure sender is not console user, which will see the message from ConsoleLogger already
         if (sender != null && !(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(ChatColor.RED + message);

@@ -3,6 +3,7 @@ package fr.xephi.authme.message.updater;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyReader;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.util.FileUtils;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.InputStream;
  */
 public class JarMessageSource {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(JarMessageSource.class);
     private final PropertyReader localJarMessages;
     private final PropertyReader defaultJarMessages;
 
@@ -42,15 +44,15 @@ public class JarMessageSource {
         return reader == null ? null : reader.getString(path);
     }
 
-    private static MessageMigraterPropertyReader loadJarFile(String jarPath) {
+    private MessageMigraterPropertyReader loadJarFile(String jarPath) {
         try (InputStream stream = FileUtils.getResourceFromJar(jarPath)) {
             if (stream == null) {
-                ConsoleLogger.debug("Could not load '" + jarPath + "' from JAR");
+                logger.debug("Could not load '" + jarPath + "' from JAR");
                 return null;
             }
             return MessageMigraterPropertyReader.loadFromStream(stream);
         } catch (IOException e) {
-            ConsoleLogger.logException("Exception while handling JAR path '" + jarPath + "'", e);
+            logger.logException("Exception while handling JAR path '" + jarPath + "'", e);
         }
         return null;
     }

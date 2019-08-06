@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
@@ -18,6 +19,8 @@ import java.io.IOException;
  * Converter for CrazyLogin to AuthMe.
  */
 public class CrazyLoginConverter implements Converter {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(CrazyLoginConverter.class);
 
     private final DataSource database;
     private final Settings settings;
@@ -46,10 +49,10 @@ public class CrazyLoginConverter implements Converter {
                     migrateAccount(line);
                 }
             }
-            ConsoleLogger.info("CrazyLogin database has been imported correctly");
+            logger.info("CrazyLogin database has been imported correctly");
         } catch (IOException ex) {
-            ConsoleLogger.warning("Can't open the crazylogin database file! Does it exist?");
-            ConsoleLogger.logException("Encountered", ex);
+            logger.warning("Can't open the crazylogin database file! Does it exist?");
+            logger.logException("Encountered", ex);
         }
     }
 

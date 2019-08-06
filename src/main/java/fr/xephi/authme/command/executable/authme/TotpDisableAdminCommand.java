@@ -6,6 +6,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +19,8 @@ import java.util.List;
  * Command to disable two-factor authentication for a user.
  */
 public class TotpDisableAdminCommand implements ExecutableCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(TotpDisableAdminCommand.class);
 
     @Inject
     private DataSource dataSource;
@@ -45,7 +48,7 @@ public class TotpDisableAdminCommand implements ExecutableCommand {
     private void removeTotpKey(CommandSender sender, String player) {
         if (dataSource.removeTotpKey(player)) {
             sender.sendMessage("Disabled two-factor authentication successfully for '" + player + "'");
-            ConsoleLogger.info(sender.getName() + " disable two-factor authentication for '" + player + "'");
+            logger.info(sender.getName() + " disable two-factor authentication for '" + player + "'");
 
             Player onlinePlayer = bukkitService.getPlayerExact(player);
             if (onlinePlayer != null) {

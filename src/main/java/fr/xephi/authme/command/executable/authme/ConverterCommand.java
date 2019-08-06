@@ -14,6 +14,7 @@ import fr.xephi.authme.datasource.converter.RoyalAuthConverter;
 import fr.xephi.authme.datasource.converter.SqliteToSql;
 import fr.xephi.authme.datasource.converter.VAuthConverter;
 import fr.xephi.authme.datasource.converter.XAuthConverter;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
@@ -30,6 +31,8 @@ public class ConverterCommand implements ExecutableCommand {
 
     @VisibleForTesting
     static final Map<String, Class<? extends Converter>> CONVERTERS = getConverters();
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ConverterCommand.class);
 
     @Inject
     private CommonService commonService;
@@ -59,7 +62,7 @@ public class ConverterCommand implements ExecutableCommand {
                     converter.execute(sender);
                 } catch (Exception e) {
                     commonService.send(sender, MessageKey.ERROR);
-                    ConsoleLogger.logException("Error during conversion:", e);
+                    logger.logException("Error during conversion:", e);
                 }
             }
         });

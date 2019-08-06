@@ -6,6 +6,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -15,6 +16,8 @@ import javax.inject.Inject;
 
 @NoFieldScan
 public class ProtocolLibService implements SettingsDependent {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ProtocolLibService.class);
 
     /* Packet Adapters */
     private InventoryPacketAdapter inventoryPacketAdapter;
@@ -26,10 +29,10 @@ public class ProtocolLibService implements SettingsDependent {
 
     /* Service */
     private boolean isEnabled;
-    private AuthMe plugin;
-    private BukkitService bukkitService;
-    private PlayerCache playerCache;
-    private DataSource dataSource;
+    private final AuthMe plugin;
+    private final BukkitService bukkitService;
+    private final PlayerCache playerCache;
+    private final DataSource dataSource;
 
     @Inject
     ProtocolLibService(AuthMe plugin, Settings settings, BukkitService bukkitService, PlayerCache playerCache,
@@ -48,11 +51,11 @@ public class ProtocolLibService implements SettingsDependent {
         // Check if ProtocolLib is enabled on the server.
         if (!plugin.getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
             if (protectInvBeforeLogin) {
-                ConsoleLogger.warning("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
+                logger.warning("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
             }
 
             if (denyTabCompleteBeforeLogin) {
-                ConsoleLogger.warning("WARNING! The denyTabComplete feature requires ProtocolLib! Disabling it...");
+                logger.warning("WARNING! The denyTabComplete feature requires ProtocolLib! Disabling it...");
             }
 
             this.isEnabled = false;

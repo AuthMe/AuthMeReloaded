@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.entity.Player;
 
 /**
@@ -15,14 +16,14 @@ public enum WalkFlySpeedRestoreType {
     RESTORE {
         @Override
         public void restoreFlySpeed(Player player, LimboPlayer limbo) {
-            ConsoleLogger.debug("Restoring fly speed for LimboPlayer " + player.getName() + " to "
+            logger.debug(() -> "Restoring fly speed for LimboPlayer " + player.getName() + " to "
                 + limbo.getFlySpeed() + " (RESTORE mode)");
             player.setFlySpeed(limbo.getFlySpeed());
         }
 
         @Override
         public void restoreWalkSpeed(Player player, LimboPlayer limbo) {
-            ConsoleLogger.debug("Restoring walk speed for LimboPlayer " + player.getName() + " to "
+            logger.debug(() -> "Restoring walk speed for LimboPlayer " + player.getName() + " to "
                 + limbo.getWalkSpeed() + " (RESTORE mode)");
             player.setWalkSpeed(limbo.getWalkSpeed());
         }
@@ -36,11 +37,11 @@ public enum WalkFlySpeedRestoreType {
         public void restoreFlySpeed(Player player, LimboPlayer limbo) {
             float limboFlySpeed = limbo.getFlySpeed();
             if (limboFlySpeed > 0.01f) {
-                ConsoleLogger.debug("Restoring fly speed for LimboPlayer " + player.getName() + " to "
+                logger.debug(() -> "Restoring fly speed for LimboPlayer " + player.getName() + " to "
                     + limboFlySpeed + " (RESTORE_NO_ZERO mode)");
                 player.setFlySpeed(limboFlySpeed);
             } else {
-                ConsoleLogger.debug("Restoring fly speed for LimboPlayer " + player.getName()
+                logger.debug(() -> "Restoring fly speed for LimboPlayer " + player.getName()
                     + " to DEFAULT, it was 0! (RESTORE_NO_ZERO mode)");
                 player.setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
             }
@@ -50,11 +51,11 @@ public enum WalkFlySpeedRestoreType {
         public void restoreWalkSpeed(Player player, LimboPlayer limbo) {
             float limboWalkSpeed = limbo.getWalkSpeed();
             if (limboWalkSpeed > 0.01f) {
-                ConsoleLogger.debug("Restoring walk speed for LimboPlayer " + player.getName() + " to "
+                logger.debug(() -> "Restoring walk speed for LimboPlayer " + player.getName() + " to "
                     + limboWalkSpeed + " (RESTORE_NO_ZERO mode)");
                 player.setWalkSpeed(limboWalkSpeed);
             } else {
-                ConsoleLogger.debug("Restoring walk speed for LimboPlayer " + player.getName() + ""
+                logger.debug(() -> "Restoring walk speed for LimboPlayer " + player.getName() + ""
                     + " to DEFAULT, it was 0! (RESTORE_NO_ZERO mode)");
                 player.setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
             }
@@ -68,7 +69,7 @@ public enum WalkFlySpeedRestoreType {
         @Override
         public void restoreFlySpeed(Player player, LimboPlayer limbo) {
             float newSpeed = Math.max(player.getFlySpeed(), limbo.getFlySpeed());
-            ConsoleLogger.debug("Restoring fly speed for LimboPlayer " + player.getName() + " to " + newSpeed
+            logger.debug(() -> "Restoring fly speed for LimboPlayer " + player.getName() + " to " + newSpeed
                 + " (Current: " + player.getFlySpeed() + ", Limbo: " + limbo.getFlySpeed() + ") (MAX_RESTORE mode)");
             player.setFlySpeed(newSpeed);
         }
@@ -76,7 +77,7 @@ public enum WalkFlySpeedRestoreType {
         @Override
         public void restoreWalkSpeed(Player player, LimboPlayer limbo) {
             float newSpeed = Math.max(player.getWalkSpeed(), limbo.getWalkSpeed());
-            ConsoleLogger.debug("Restoring walk speed for LimboPlayer " + player.getName() + " to " + newSpeed
+            logger.debug(() -> "Restoring walk speed for LimboPlayer " + player.getName() + " to " + newSpeed
                 + " (Current: " + player.getWalkSpeed() + ", Limbo: " + limbo.getWalkSpeed() + ") (MAX_RESTORE mode)");
             player.setWalkSpeed(newSpeed);
         }
@@ -88,18 +89,20 @@ public enum WalkFlySpeedRestoreType {
     DEFAULT {
         @Override
         public void restoreFlySpeed(Player player, LimboPlayer limbo) {
-            ConsoleLogger.debug("Restoring fly speed for LimboPlayer " + player.getName()
+            logger.debug(() -> "Restoring fly speed for LimboPlayer " + player.getName()
                 + " to DEFAULT (DEFAULT mode)");
             player.setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
         }
 
         @Override
         public void restoreWalkSpeed(Player player, LimboPlayer limbo) {
-            ConsoleLogger.debug("Restoring walk speed for LimboPlayer " + player.getName()
+            logger.debug(() -> "Restoring walk speed for LimboPlayer " + player.getName()
                 + " to DEFAULT (DEFAULT mode)");
             player.setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
         }
     };
+
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(WalkFlySpeedRestoreType.class);
 
     /**
      * Restores the fly speed from Limbo to Player according to the restoration type.

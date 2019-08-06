@@ -15,6 +15,7 @@ import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.InternetProtocolUtils;
 
@@ -61,6 +62,7 @@ public class GeoIpService {
     // but every HTTP implementation have to support  RFC 1023
     private static final String TIME_RFC_1023 = "EEE, dd-MMM-yy HH:mm:ss zzz";
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(GeoIpService.class);
     private final Path dataFile;
     private final BukkitService bukkitService;
 
@@ -109,10 +111,10 @@ public class GeoIpService {
                     // don't fire the update task - we are up to date
                     return true;
                 } else {
-                    ConsoleLogger.debug("GEO IP database is older than " + UPDATE_INTERVAL_DAYS + " Days");
+                    logger.debug("GEO IP database is older than " + UPDATE_INTERVAL_DAYS + " Days");
                 }
             } catch (IOException ioEx) {
-                ConsoleLogger.logException("Failed to load GeoLiteAPI database", ioEx);
+                logger.logException("Failed to load GeoLiteAPI database", ioEx);
                 return false;
             }
         }
@@ -130,7 +132,7 @@ public class GeoIpService {
      * Tries to update the database by downloading a new version from the website.
      */
     private void updateDatabase() {
-        ConsoleLogger.info("Downloading GEO IP database, because the old database is older than "
+        logger.info("Downloading GEO IP database, because the old database is older than "
                 + UPDATE_INTERVAL_DAYS + " days or doesn't exist");
 
         Path tempFile = null;
@@ -138,7 +140,7 @@ public class GeoIpService {
             // download database to temporarily location
             tempFile = Files.createTempFile(ARCHIVE_FILE, null);
             if (!downloadDatabaseArchive(tempFile)) {
-                ConsoleLogger.info("There is no newer GEO IP database uploaded to MaxMind. Using the old one for now.");
+                logger.info("There is no newer GEO IP database uploaded to MaxMind. Using the old one for now.");
                 startReading();
                 return;
             }
@@ -151,10 +153,10 @@ public class GeoIpService {
             extractDatabase(tempFile, dataFile);
 
             //only set this value to false on success otherwise errors could lead to endless download triggers
-            ConsoleLogger.info("Successfully downloaded new GEO IP database to " + dataFile);
+            logger.info("Successfully downloaded new GEO IP database to " + dataFile);
             startReading();
         } catch (IOException ioEx) {
-            ConsoleLogger.logException("Could not download GeoLiteAPI database", ioEx);
+            logger.logException("Could not download GeoLiteAPI database", ioEx);
         } finally {
             // clean up
             if (tempFile != null) {
@@ -165,7 +167,7 @@ public class GeoIpService {
 
     private void startReading() throws IOException {
         databaseReader = new Reader(dataFile.toFile(), FileMode.MEMORY, new CHMCache());
-        ConsoleLogger.info(LICENSE);
+        logger.info(LICENSE);
 
         // clear downloading flag, because we now have working reader instance
         downloading = false;
@@ -315,7 +317,7 @@ public class GeoIpService {
             // Ignore invalid ip addresses
             // Legacy GEO IP Database returned a unknown country object with Country-Code: '--' and Country-Name: 'N/A'
         } catch (IOException ioEx) {
-            ConsoleLogger.logException("Cannot lookup country for " + ip + " at GEO IP database", ioEx);
+            logger.logException("Cannot lookup country for " + ip + " at GEO IP database", ioEx);
         }
 
         return Optional.empty();

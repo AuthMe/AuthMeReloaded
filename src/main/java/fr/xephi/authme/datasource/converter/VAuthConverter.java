@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -18,6 +19,7 @@ import static fr.xephi.authme.util.FileUtils.makePath;
 
 public class VAuthConverter implements Converter {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(VAuthConverter.class);
     private final DataSource dataSource;
     private final File vAuthPasswordsFile;
 
@@ -58,7 +60,7 @@ public class VAuthConverter implements Converter {
                 dataSource.saveAuth(auth);
             }
         } catch (IOException e) {
-            ConsoleLogger.logException("Error while trying to import some vAuth data", e);
+            logger.logException("Error while trying to import some vAuth data", e);
         }
     }
 
