@@ -11,6 +11,7 @@ import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.util.UuidUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
@@ -264,6 +266,11 @@ public class MySQL extends AbstractSqlDataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
             }
+
+            if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PLAYER_UUID + " VARCHAR(36)");
+            }
         }
         ConsoleLogger.info("MySQL setup finished");
     }
@@ -454,6 +461,8 @@ public class MySQL extends AbstractSqlDataSource {
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);
+        UUID uuid = col.PLAYER_UUID.isEmpty()
+            ? null : UuidUtils.parseUuidSafely(row.getString(col.PLAYER_UUID));
         return PlayerAuth.builder()
             .name(row.getString(col.NAME))
             .realName(row.getString(col.REAL_NAME))
@@ -471,6 +480,7 @@ public class MySQL extends AbstractSqlDataSource {
             .locZ(row.getDouble(col.LASTLOC_Z))
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
+            .uuid(uuid)
             .build();
     }
 }

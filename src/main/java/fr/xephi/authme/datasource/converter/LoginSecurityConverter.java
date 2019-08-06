@@ -7,6 +7,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
+import fr.xephi.authme.util.UuidUtils;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static fr.xephi.authme.util.Utils.logAndSendMessage;
 
@@ -119,6 +121,7 @@ public class LoginSecurityConverter implements Converter {
             .map(Timestamp::getTime).orElse(null);
         long regDate = Optional.ofNullable(resultSet.getDate("registration_date"))
             .map(Date::getTime).orElse(System.currentTimeMillis());
+        UUID uuid = UuidUtils.parseUuidSafely(resultSet.getString("unique_user_id"));
         return PlayerAuth.builder()
             .name(name)
             .realName(name)
@@ -132,6 +135,7 @@ public class LoginSecurityConverter implements Converter {
             .locWorld(resultSet.getString("world"))
             .locYaw(resultSet.getFloat("yaw"))
             .locPitch(resultSet.getFloat("pitch"))
+            .uuid(uuid)
             .build();
     }
 
