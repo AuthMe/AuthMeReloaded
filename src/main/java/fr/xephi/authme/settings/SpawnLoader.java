@@ -180,6 +180,16 @@ public class SpawnLoader implements Reloadable {
             switch (priority.toLowerCase().trim()) {
                 case "default":
                     if (world.getSpawnLocation() != null) {
+                        if (!isValidSpawnPoint(world.getSpawnLocation())) {
+                            for (World spawnWorld : Bukkit.getWorlds()) {
+                                if (isValidSpawnPoint(spawnWorld.getSpawnLocation())) {
+                                    world = spawnWorld;
+                                    break;
+                                }
+                            }
+                            logger.warning("Seems like AuthMe is unable to find a proper spawn location. "
+                                + "Set a location with the command '/authme setspawn'");
+                        }
                         spawnLoc = world.getSpawnLocation();
                     }
                     break;
@@ -205,17 +215,8 @@ public class SpawnLoader implements Reloadable {
                 return spawnLoc;
             }
         }
-        if (!isValidSpawnPoint(world.getSpawnLocation())) {
-            for (World spawnWorld : Bukkit.getWorlds()) {
-                if (isValidSpawnPoint(spawnWorld.getSpawnLocation())) {
-                    world = spawnWorld;
-                    break;
-                }
-            }
-        }
         logger.debug("Fall back to default world spawn location. World: `{0}`", world.getName());
-        logger.warning("Seems like AuthMe is unable to find a proper spawn location. "
-            + "Set a location with the command '/authme setspawn'");
+
         return world.getSpawnLocation(); // return default location
     }
 
