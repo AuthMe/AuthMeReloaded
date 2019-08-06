@@ -180,6 +180,16 @@ public class SpawnLoader implements Reloadable {
             switch (priority.toLowerCase().trim()) {
                 case "default":
                     if (world.getSpawnLocation() != null) {
+                        if (!isValidSpawnPoint(world.getSpawnLocation())) {
+                            for (World spawnWorld : Bukkit.getWorlds()) {
+                                if (isValidSpawnPoint(spawnWorld.getSpawnLocation())) {
+                                    world = spawnWorld;
+                                    break;
+                                }
+                            }
+                            logger.warning("Seems like AuthMe is unable to find a proper spawn location. "
+                                + "Set a location with the command '/authme setspawn'");
+                        }
                         spawnLoc = world.getSpawnLocation();
                     }
                     break;
@@ -206,7 +216,22 @@ public class SpawnLoader implements Reloadable {
             }
         }
         logger.debug("Fall back to default world spawn location. World: `{0}`", world.getName());
+
         return world.getSpawnLocation(); // return default location
+    }
+
+    /**
+     * Checks if a given location is a valid spawn point [!= (0,0,0)].
+     *
+     * @param location The location to check
+     *
+     * @return True upon success, false otherwise
+     */
+    private boolean isValidSpawnPoint(Location location) {
+        if (location.getX() == 0 && location.getY() == 0 && location.getZ() == 0) {
+            return false;
+        }
+        return true;
     }
 
     /**
