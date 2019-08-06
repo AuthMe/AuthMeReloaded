@@ -61,7 +61,7 @@ public class ProtocolLibService implements SettingsDependent {
             }
 
             if (freezePlayerBeforeLogin) {
-                ConsoleLogger.warning("WARNING! In oder to prevent player movements in a nicer way consider"
+                logger.warning("WARNING! In oder to prevent player movements in a nicer way consider"
                     + " installing ProtocolLib!");
             }
 

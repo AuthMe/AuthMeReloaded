@@ -28,6 +28,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.entity.Player;
 
@@ -38,6 +39,8 @@ import java.util.Collections;
 import java.util.List;
 
 class FreezePacketAdapter extends PacketAdapter {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(FreezePacketAdapter.class);
 
     private static final String ATTRIBUTE_MOVEMENT_SPEED = "generic.movementSpeed";
     private static final String ATTRIBUTE_FLYING_SPEED = "generic.flyingSpeed";
@@ -115,7 +118,7 @@ class FreezePacketAdapter extends PacketAdapter {
         try {
             protocolManager.sendServerPacket(player, attributesPacket, false);
         } catch (InvocationTargetException invocationExc) {
-            ConsoleLogger.logException("Error during sending freeze packet", invocationExc);
+            logger.logException("Error during sending freeze packet", invocationExc);
         }
     }
 
