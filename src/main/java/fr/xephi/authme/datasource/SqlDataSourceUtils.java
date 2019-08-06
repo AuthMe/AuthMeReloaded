@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -11,6 +12,8 @@ import java.sql.SQLException;
  */
 public final class SqlDataSourceUtils {
 
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(SqlDataSourceUtils.class);
+
     private SqlDataSourceUtils() {
     }
 
@@ -20,7 +23,7 @@ public final class SqlDataSourceUtils {
      * @param e the exception to log
      */
     public static void logSqlException(SQLException e) {
-        ConsoleLogger.logException("Error during SQL operation:", e);
+        logger.logException("Error during SQL operation:", e);
     }
 
     /**
@@ -58,7 +61,7 @@ public final class SqlDataSourceUtils {
             if (nullableCode == DatabaseMetaData.columnNoNulls) {
                 return true;
             } else if (nullableCode == DatabaseMetaData.columnNullableUnknown) {
-                ConsoleLogger.warning("Unknown nullable status for column '" + columnName + "'");
+                logger.warning("Unknown nullable status for column '" + columnName + "'");
             }
         }
         return false;

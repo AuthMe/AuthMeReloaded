@@ -3,6 +3,8 @@ package fr.xephi.authme.service;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.BackupSettings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -25,9 +27,12 @@ import static fr.xephi.authme.util.Utils.logAndSendWarning;
  */
 public class BackupService {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(EmailService.class);
+
     private final File dataFolder;
     private final File backupFolder;
     private final Settings settings;
+
 
     /**
      * Constructor.
@@ -89,7 +94,7 @@ public class BackupService {
                 String dbName = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
                 return performFileBackup(dbName + ".db");
             default:
-                ConsoleLogger.warning("Unknown data source type '" + dataSourceType + "' for backup");
+                logger.warning("Unknown data source type '" + dataSourceType + "' for backup");
         }
 
         return false;
@@ -114,13 +119,13 @@ public class BackupService {
             Process runtimeProcess = Runtime.getRuntime().exec(backupCommand);
             int processComplete = runtimeProcess.waitFor();
             if (processComplete == 0) {
-                ConsoleLogger.info("Backup created successfully. (Using Windows = " + isUsingWindows + ")");
+                logger.info("Backup created successfully. (Using Windows = " + isUsingWindows + ")");
                 return true;
             } else {
-                ConsoleLogger.warning("Could not create the backup! (Using Windows = " + isUsingWindows + ")");
+                logger.warning("Could not create the backup! (Using Windows = " + isUsingWindows + ")");
             }
         } catch (IOException | InterruptedException e) {
-            ConsoleLogger.logException("Error during backup (using Windows = " + isUsingWindows + "):", e);
+            logger.logException("Error during backup (using Windows = " + isUsingWindows + "):", e);
         }
         return false;
     }
@@ -133,7 +138,7 @@ public class BackupService {
             copy(new File(dataFolder, filename), backupFile);
             return true;
         } catch (IOException ex) {
-            ConsoleLogger.logException("Encountered an error during file backup:", ex);
+            logger.logException("Encountered an error during file backup:", ex);
         }
         return false;
     }
@@ -145,13 +150,13 @@ public class BackupService {
      * @param windowsPath The path to check
      * @return True if the path is correct, false if it is incorrect or the OS is not Windows
      */
-    private static boolean useWindowsCommand(String windowsPath) {
+    private boolean useWindowsCommand(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
         if (isWin.contains("win")) {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
                 return true;
             } else {
-                ConsoleLogger.warning("Mysql Windows Path is incorrect. Please check it");
+                logger.warning("Mysql Windows Path is incorrect. Please check it");
                 return false;
             }
         }

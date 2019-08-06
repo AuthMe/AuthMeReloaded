@@ -2,6 +2,7 @@ package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
@@ -19,6 +20,8 @@ import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_ALLOW_FL
  * put in which have joined but not yet logged in.
  */
 public class LimboService {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(LimboService.class);
 
     private final Map<String, LimboPlayer> entries = new ConcurrentHashMap<>();
 
@@ -54,13 +57,13 @@ public class LimboService {
 
         LimboPlayer limboFromDisk = persistence.getLimboPlayer(player);
         if (limboFromDisk != null) {
-            ConsoleLogger.debug("LimboPlayer for `{0}` already exists on disk", name);
+            logger.debug("LimboPlayer for `{0}` already exists on disk", name);
         }
 
         LimboPlayer existingLimbo = entries.remove(name);
         if (existingLimbo != null) {
             existingLimbo.clearTasks();
-            ConsoleLogger.debug("LimboPlayer for `{0}` already present in memory", name);
+            logger.debug("LimboPlayer for `{0}` already present in memory", name);
         }
 
         Location location = spawnLoader.getPlayerLocationOrSpawn(player);
@@ -110,12 +113,12 @@ public class LimboService {
         LimboPlayer limbo = entries.remove(lowerName);
 
         if (limbo == null) {
-            ConsoleLogger.debug("No LimboPlayer found for `{0}` - cannot restore", lowerName);
+            logger.debug("No LimboPlayer found for `{0}` - cannot restore", lowerName);
         } else {
             player.setOp(limbo.isOperator());
             settings.getProperty(RESTORE_ALLOW_FLIGHT).restoreAllowFlight(player, limbo);
             limbo.clearTasks();
-            ConsoleLogger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
+            logger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
             persistence.removeLimboPlayer(player);
         }
         authGroupHandler.setGroup(player, limbo, AuthGroupType.LOGGED_IN);
@@ -173,7 +176,7 @@ public class LimboService {
     private Optional<LimboPlayer> getLimboOrLogError(Player player, String context) {
         LimboPlayer limbo = entries.get(player.getName().toLowerCase());
         if (limbo == null) {
-            ConsoleLogger.debug("No LimboPlayer found for `{0}`. Action: {1}", player.getName(), context);
+            logger.debug("No LimboPlayer found for `{0}`. Action: {1}", player.getName(), context);
         }
         return Optional.ofNullable(limbo);
     }

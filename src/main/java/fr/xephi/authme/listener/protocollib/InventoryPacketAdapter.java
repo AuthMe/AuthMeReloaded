@@ -28,8 +28,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -48,6 +48,7 @@ class InventoryPacketAdapter extends PacketAdapter {
     private static final int MAIN_SIZE = 27;
     private static final int HOTBAR_SIZE = 9;
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(InventoryPacketAdapter.class);
     private final PlayerCache playerCache;
     private final DataSource dataSource;
 
@@ -106,7 +107,7 @@ class InventoryPacketAdapter extends PacketAdapter {
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);
         } catch (InvocationTargetException invocationExc) {
-            ConsoleLogger.logException("Error during sending blank inventory", invocationExc);
+            logger.logException("Error during sending blank inventory", invocationExc);
         }
     }
 }

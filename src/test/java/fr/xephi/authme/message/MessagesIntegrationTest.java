@@ -12,6 +12,7 @@ import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -76,6 +77,11 @@ public class MessagesIntegrationTest {
 
         messagesFileHandler = createMessagesFileHandler();
         messages = new Messages(messagesFileHandler);
+    }
+
+    @AfterClass
+    public static void removeLoggerReferences() {
+        ConsoleLogger.initialize(null, null);
     }
 
     @Test
@@ -216,7 +222,7 @@ public class MessagesIntegrationTest {
     public void shouldLogErrorForInvalidReplacementCount() {
         // given
         Logger logger = mock(Logger.class);
-        ConsoleLogger.setLogger(logger);
+        ConsoleLogger.initialize(logger, null);
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");
@@ -232,7 +238,7 @@ public class MessagesIntegrationTest {
     public void shouldSendErrorForReplacementsOnKeyWithNoTags() {
         // given
         Logger logger = mock(Logger.class);
-        ConsoleLogger.setLogger(logger);
+        ConsoleLogger.initialize(logger, null);
         MessageKey key = MessageKey.UNKNOWN_USER;
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");

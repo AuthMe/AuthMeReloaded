@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -68,6 +69,8 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
  * Listener class for player events.
  */
 public class PlayerListener implements Listener {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PlayerListener.class);
 
     @Inject
     private Settings settings;
@@ -289,7 +292,7 @@ public class PlayerListener implements Listener {
         try {
             permissionsManager.loadUserData(event.getUniqueId());
         } catch (PermissionLoadUserException e) {
-            ConsoleLogger.logException("Unable to load the permission data of user " + name, e);
+            logger.logException("Unable to load the permission data of user " + name, e);
         }
 
         // getAddress() sometimes returning null if not yet resolved

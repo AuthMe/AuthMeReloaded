@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
@@ -17,6 +18,8 @@ import static fr.xephi.authme.util.Utils.isCollectionEmpty;
  * Helper class for the LimboService.
  */
 class LimboServiceHelper {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(LimboServiceHelper.class);
 
     @Inject
     private PermissionsManager permissionsManager;
@@ -38,7 +41,7 @@ class LimboServiceHelper {
         boolean flyEnabled = player.getAllowFlight();
         Collection<String> playerGroups = permissionsManager.hasGroupSupport()
             ? permissionsManager.getGroups(player) : Collections.emptyList();
-        ConsoleLogger.debug("Player `{0}` has groups `{1}`", player.getName(), String.join(", ", playerGroups));
+        logger.debug("Player `{0}` has groups `{1}`", player.getName(), String.join(", ", playerGroups));
 
         return new LimboPlayer(location, isOperator, playerGroups, flyEnabled);
     }
@@ -87,9 +90,8 @@ class LimboServiceHelper {
         return first == null ? second : first;
     }
 
-    private static Collection<String> getLimboGroups(Collection<String> oldLimboGroups,
-                                                     Collection<String> newLimboGroups) {
-        ConsoleLogger.debug("Limbo merge: new and old groups are `{0}` and `{1}`", newLimboGroups, oldLimboGroups);
+    private Collection<String> getLimboGroups(Collection<String> oldLimboGroups, Collection<String> newLimboGroups) {
+        logger.debug("Limbo merge: new and old groups are `{0}` and `{1}`", newLimboGroups, oldLimboGroups);
         return isCollectionEmpty(oldLimboGroups) ? newLimboGroups : oldLimboGroups;
     }
 }

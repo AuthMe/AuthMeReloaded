@@ -10,6 +10,7 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -28,6 +29,8 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.TELEPORT_U
  * Handles teleportation (placement of player to spawn).
  */
 public class TeleportationService implements Reloadable {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(TeleportationService.class);
 
     @Inject
     private Settings settings;
@@ -64,7 +67,7 @@ public class TeleportationService implements Reloadable {
     public void teleportOnJoin(final Player player) {
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
-            ConsoleLogger.debug("Teleport on join for player `{0}`", player.getName());
+            logger.debug("Teleport on join for player `{0}`", player.getName());
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
     }
@@ -88,7 +91,7 @@ public class TeleportationService implements Reloadable {
                 return null;
             }
 
-            ConsoleLogger.debug("Returning custom location for >1.9 join event for player `{0}`", player.getName());
+            logger.debug("Returning custom location for >1.9 join event for player `{0}`", player.getName());
             return location;
         }
         return null;
@@ -110,7 +113,7 @@ public class TeleportationService implements Reloadable {
         }
 
         if (!player.hasPlayedBefore() || !dataSource.isAuthAvailable(player.getName())) {
-            ConsoleLogger.debug("Attempting to teleport player `{0}` to first spawn", player.getName());
+            logger.debug("Attempting to teleport player `{0}` to first spawn", player.getName());
             performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
         }
     }
@@ -134,15 +137,15 @@ public class TeleportationService implements Reloadable {
 
         // The world in LimboPlayer is from where the player comes, before any teleportation by AuthMe
         if (mustForceSpawnAfterLogin(worldName)) {
-            ConsoleLogger.debug("Teleporting `{0}` to spawn because of 'force-spawn after login'", player.getName());
+            logger.debug("Teleporting `{0}` to spawn because of 'force-spawn after login'", player.getName());
             teleportToSpawn(player, true);
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && auth.getQuitLocY() != 0) {
                 Location location = buildLocationFromAuth(player, auth);
-                ConsoleLogger.debug("Teleporting `{0}` after login, based on the player auth", player.getName());
+                logger.debug("Teleporting `{0}` after login, based on the player auth", player.getName());
                 teleportBackFromSpawn(player, location);
             } else if (limbo != null && limbo.getLocation() != null) {
-                ConsoleLogger.debug("Teleporting `{0}` after login, based on the limbo player", player.getName());
+                logger.debug("Teleporting `{0}` after login, based on the limbo player", player.getName());
                 teleportBackFromSpawn(player, limbo.getLocation());
             }
         }

@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -12,6 +13,8 @@ import java.sql.Types;
  * Performs migrations on the MySQL data source if necessary.
  */
 final class MySqlMigrater {
+    
+    private static ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlMigrater.class);
 
     private MySqlMigrater() {
     }
@@ -35,7 +38,7 @@ final class MySqlMigrater {
             String sql = String.format("ALTER TABLE %s MODIFY %s VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin",
                 tableName, col.LAST_IP);
             st.execute(sql);
-            ConsoleLogger.info("Changed last login column to allow NULL values. Please verify the registration feature "
+            logger.info("Changed last login column to allow NULL values. Please verify the registration feature "
                 + "if you are hooking into a forum.");
         }
     }
@@ -53,7 +56,7 @@ final class MySqlMigrater {
         final int columnType;
         try (ResultSet rs = metaData.getColumns(null, null, tableName, col.LAST_LOGIN)) {
             if (!rs.next()) {
-                ConsoleLogger.warning("Could not get LAST_LOGIN meta data. This should never happen!");
+                logger.warning("Could not get LAST_LOGIN meta data. This should never happen!");
                 return;
             }
             columnType = rs.getInt("DATA_TYPE");
@@ -75,7 +78,7 @@ final class MySqlMigrater {
      */
     private static void migrateLastLoginColumnFromInt(Statement st, String tableName, Columns col) throws SQLException {
         // Change from int to bigint
-        ConsoleLogger.info("Migrating lastlogin column from int to bigint");
+        logger.info("Migrating lastlogin column from int to bigint");
         String sql = String.format("ALTER TABLE %s MODIFY %s BIGINT;", tableName, col.LAST_LOGIN);
         st.execute(sql);
 
@@ -86,7 +89,7 @@ final class MySqlMigrater {
             tableName, col.LAST_LOGIN, col.LAST_LOGIN, col.LAST_LOGIN, rangeStart, col.LAST_LOGIN, rangeEnd);
         int changedRows = st.executeUpdate(sql);
 
-        ConsoleLogger.warning("You may have entries with invalid timestamps. Please check your data "
+        logger.warning("You may have entries with invalid timestamps. Please check your data "
             + "before purging. " + changedRows + " rows were migrated from seconds to milliseconds.");
     }
 
@@ -107,7 +110,7 @@ final class MySqlMigrater {
         long currentTimestamp = System.currentTimeMillis();
         int updatedRows = st.executeUpdate(String.format("UPDATE %s SET %s = %d;",
             tableName, col.REGISTRATION_DATE, currentTimestamp));
-        ConsoleLogger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
+        logger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
             + currentTimestamp + ", to all " + updatedRows + " rows");
     }
 }

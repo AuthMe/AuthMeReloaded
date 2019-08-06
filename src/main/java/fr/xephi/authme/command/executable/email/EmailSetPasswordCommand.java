@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.email;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -19,6 +20,8 @@ import java.util.List;
  * Command for changing password following successful recovery.
  */
 public class EmailSetPasswordCommand extends PlayerCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(EmailSetPasswordCommand.class);
 
     @Inject
     private DataSource dataSource;
@@ -46,7 +49,7 @@ public class EmailSetPasswordCommand extends PlayerCommand {
                 HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
                 dataSource.updatePassword(name, hashedPassword);
                 recoveryService.removeFromSuccessfulRecovery(player);
-                ConsoleLogger.info("Player '" + name + "' has changed their password from recovery");
+                logger.info("Player '" + name + "' has changed their password from recovery");
                 commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             } else {
                 commonService.send(player, result.getMessageKey(), result.getArgs());

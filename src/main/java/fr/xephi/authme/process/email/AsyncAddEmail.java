@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.EmailChangedEvent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
@@ -21,6 +22,8 @@ import javax.inject.Inject;
  * Async task to add an email to an account.
  */
 public class AsyncAddEmail implements AsynchronousProcess {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsyncAddEmail.class);
 
     @Inject
     private CommonService service;
@@ -65,7 +68,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
                     -> new EmailChangedEvent(player, null, email, isAsync));
                 if (event.isCancelled()) {
-                    ConsoleLogger.info("Could not add email to player '" + player + "' – event was cancelled");
+                    logger.info("Could not add email to player '" + player + "' – event was cancelled");
                     service.send(player, MessageKey.EMAIL_ADD_NOT_ALLOWED);
                     return;
                 }
@@ -75,7 +78,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
                     bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
                     service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
-                    ConsoleLogger.warning("Could not save email for player '" + player + "'");
+                    logger.warning("Could not save email for player '" + player + "'");
                     service.send(player, MessageKey.ERROR);
                 }
             }

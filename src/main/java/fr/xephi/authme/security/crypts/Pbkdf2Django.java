@@ -4,6 +4,7 @@ import com.google.common.primitives.Ints;
 import de.rtner.security.auth.spi.PBKDF2Engine;
 import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 
 import java.util.Base64;
@@ -12,6 +13,7 @@ import java.util.Base64;
 public class Pbkdf2Django extends HexSaltedMethod {
 
     private static final int DEFAULT_ITERATIONS = 24000;
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(Pbkdf2Django.class);
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -30,7 +32,7 @@ public class Pbkdf2Django extends HexSaltedMethod {
         }
         Integer iterations = Ints.tryParse(line[1]);
         if (iterations == null) {
-            ConsoleLogger.warning("Cannot read number of rounds for Pbkdf2Django: '" + line[1] + "'");
+            logger.warning("Cannot read number of rounds for Pbkdf2Django: '" + line[1] + "'");
             return false;
         }
 

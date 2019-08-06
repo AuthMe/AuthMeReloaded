@@ -8,4 +8,4 @@ if [ -z $jarfile ];
        ./setvars.sh
 fi
 
-mvn install -f $pomfile -Dmaven.test.skip
+mvn install -f $pomfile -Dmaven.test.skip -PskipJavadocGeneration

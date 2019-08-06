@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
 
@@ -24,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class CacheDataSource implements DataSource {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(CacheDataSource.class);
 
     private final DataSource source;
     private final PlayerCache playerCache;
@@ -164,7 +167,7 @@ public class CacheDataSource implements DataSource {
         try {
             executorService.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            ConsoleLogger.logException("Could not close executor service:", e);
+            logger.logException("Could not close executor service:", e);
         }
         cachedAuths.invalidateAll();
         source.closeConnection();

@@ -3,6 +3,8 @@ package fr.xephi.authme.datasource.columnshandler;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
+import java.util.UUID;
+
 import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.ColumnOptions.DEFAULT_FOR_NULL;
 import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.ColumnOptions.OPTIONAL;
 import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.createDouble;
@@ -46,6 +48,11 @@ public final class AuthMeColumns {
     public static final PlayerAuthColumn<Long> REGISTRATION_DATE = createLong(
         DatabaseSettings.MYSQL_COL_REGISTER_DATE, PlayerAuth::getRegistrationDate);
 
+    public static final PlayerAuthColumn<String> UUID = createString(
+        DatabaseSettings.MYSQL_COL_PLAYER_UUID,
+        auth -> ( auth.getUuid() == null ? null : auth.getUuid().toString()),
+        OPTIONAL);
+
     // --------
     // Location columns
     // --------
@@ -75,7 +82,6 @@ public final class AuthMeColumns {
 
     public static final DataSourceColumn<Integer> HAS_SESSION = createInteger(
         DatabaseSettings.MYSQL_COL_HASSESSION);
-
 
     private AuthMeColumns() {
     }

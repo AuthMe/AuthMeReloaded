@@ -5,6 +5,7 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.totp.GenerateTotpService;
@@ -18,6 +19,8 @@ import java.util.List;
  * Command to enable TOTP by supplying the proper code as confirmation.
  */
 public class ConfirmTotpCommand extends PlayerCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ConfirmTotpCommand.class);
 
     @Inject
     private GenerateTotpService generateTotpService;
@@ -63,7 +66,7 @@ public class ConfirmTotpCommand extends PlayerCommand {
             messages.send(player, MessageKey.TWO_FACTOR_ENABLE_SUCCESS);
             auth.setTotpKey(totpDetails.getTotpKey());
             playerCache.updatePlayer(auth);
-            ConsoleLogger.info("Player '" + player.getName() + "' has successfully added a TOTP key to their account");
+            logger.info("Player '" + player.getName() + "' has successfully added a TOTP key to their account");
         } else {
             messages.send(player, MessageKey.ERROR);
         }

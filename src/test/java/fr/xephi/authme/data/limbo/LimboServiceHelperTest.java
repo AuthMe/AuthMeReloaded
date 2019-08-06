@@ -1,6 +1,8 @@
 package fr.xephi.authme.data.limbo;
 
+import fr.xephi.authme.TestHelper;
 import org.bukkit.Location;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,6 +27,11 @@ public class LimboServiceHelperTest {
 
     @InjectMocks
     private LimboServiceHelper limboServiceHelper;
+
+    @BeforeClass
+    public static void initLogger() {
+        TestHelper.setupLogger();
+    }
 
     @Test
     public void shouldMergeLimboPlayers() {

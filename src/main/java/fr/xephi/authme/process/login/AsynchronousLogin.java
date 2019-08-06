@@ -12,6 +12,7 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.events.FailedLoginEvent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AdminPermission;
@@ -44,6 +45,8 @@ import java.util.List;
  * Asynchronous task for a player login.
  */
 public class AsynchronousLogin implements AsynchronousProcess {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousLogin.class);
 
     @Inject
     private DataSource dataSource;
@@ -199,7 +202,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param ip the ip address of the player
      */
     private void handleWrongPassword(Player player, PlayerAuth auth, String ip) {
-        ConsoleLogger.fine(player.getName() + " used the wrong password");
+        logger.fine(player.getName() + " used the wrong password");
 
         bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
         if (tempbanManager.shouldTempban(ip)) {
@@ -256,7 +259,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
-            ConsoleLogger.fine(player.getName() + " logged in!");
+            logger.fine(player.getName() + " logged in!");
 
             // makes player loggedin
             playerCache.updatePlayer(auth);
@@ -270,7 +273,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // processed in other order.
             syncProcessManager.processSyncPlayerLogin(player, isFirstLogin, auths);
         } else {
-            ConsoleLogger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");
+            logger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");
         }
     }
 
@@ -297,8 +300,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
         String message = ChatColor.GRAY + String.join(", ", formattedNames) + ".";
 
-        ConsoleLogger.fine("The user " + player.getName() + " has " + auths.size() + " accounts:");
-        ConsoleLogger.fine(message);
+        logger.fine("The user " + player.getName() + " has " + auths.size() + " accounts:");
+        logger.fine(message);
 
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.getName().equalsIgnoreCase(player.getName())

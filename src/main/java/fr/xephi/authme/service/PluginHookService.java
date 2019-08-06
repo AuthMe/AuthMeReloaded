@@ -5,6 +5,7 @@ import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import java.io.File;
 @NoFieldScan
 public class PluginHookService {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PluginHookService.class);
     private final PluginManager pluginManager;
     private Essentials essentials;
     private Plugin cmi;
@@ -182,11 +184,11 @@ public class PluginHookService {
     // Helpers
     // ------
 
-    private static <T extends Plugin> T getPlugin(PluginManager pluginManager, String name, Class<T> clazz)
+    private <T extends Plugin> T getPlugin(PluginManager pluginManager, String name, Class<T> clazz)
         throws Exception, NoClassDefFoundError {
         if (pluginManager.isPluginEnabled(name)) {
             T plugin = clazz.cast(pluginManager.getPlugin(name));
-            ConsoleLogger.info("Hooked successfully into " + name);
+            logger.info("Hooked successfully into " + name);
             return plugin;
         }
         return null;

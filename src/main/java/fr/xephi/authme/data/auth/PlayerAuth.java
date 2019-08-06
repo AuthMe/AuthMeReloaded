@@ -5,6 +5,7 @@ import org.bukkit.Location;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,6 +41,7 @@ public class PlayerAuth {
     private String world;
     private float yaw;
     private float pitch;
+    private UUID uuid;
 
     /**
      * Hidden constructor.
@@ -169,6 +171,14 @@ public class PlayerAuth {
         this.totpKey = totpKey;
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerAuth)) {
@@ -193,7 +203,8 @@ public class PlayerAuth {
             + " ! LastLogin : " + lastLogin
             + " ! LastPosition : " + x + "," + y + "," + z + "," + world
             + " ! Email : " + email
-            + " ! Password : {" + password.getHash() + ", " + password.getSalt() + "}";
+            + " ! Password : {" + password.getHash() + ", " + password.getSalt() + "}"
+            + " ! UUID : " + uuid;
     }
 
     public static Builder builder() {
@@ -218,6 +229,7 @@ public class PlayerAuth {
         private String world;
         private float yaw;
         private float pitch;
+        private UUID uuid;
 
         /**
          * Creates a PlayerAuth object.
@@ -243,6 +255,7 @@ public class PlayerAuth {
             auth.world = Optional.ofNullable(world).orElse("world");
             auth.yaw = yaw;
             auth.pitch = pitch;
+            auth.uuid = uuid;
             return auth;
         }
 
@@ -347,6 +360,11 @@ public class PlayerAuth {
 
         public Builder registrationDate(long date) {
             this.registrationDate = date;
+            return this;
+        }
+
+        public Builder uuid(UUID uuid) {
+            this.uuid = uuid;
             return this;
         }
     }
