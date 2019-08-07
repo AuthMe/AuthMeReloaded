@@ -56,6 +56,9 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
         if (service.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
             protocolLibService.sendBlankInventoryPacket(player);
         }
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)){
+            protocolLibService.sendFreezePacket(player);
+        }
 
         applyLogoutEffect(player);
         commandManager.runCommandsOnLogout(player);

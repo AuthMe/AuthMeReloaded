@@ -22,10 +22,12 @@ public class ProtocolLibService implements SettingsDependent {
     /* Packet Adapters */
     private InventoryPacketAdapter inventoryPacketAdapter;
     private TabCompletePacketAdapter tabCompletePacketAdapter;
+    private FreezePacketAdapter freezePacketAdapter;
 
     /* Settings */
     private boolean protectInvBeforeLogin;
     private boolean denyTabCompleteBeforeLogin;
+    private boolean freezePlayerBeforeLogin;
 
     /* Service */
     private boolean isEnabled;
@@ -58,6 +60,11 @@ public class ProtocolLibService implements SettingsDependent {
                 logger.warning("WARNING! The denyTabComplete feature requires ProtocolLib! Disabling it...");
             }
 
+            if (freezePlayerBeforeLogin) {
+                logger.warning("WARNING! In oder to prevent player movements in a nicer way consider"
+                    + " installing ProtocolLib!");
+            }
+
             this.isEnabled = false;
             return;
         }
@@ -84,6 +91,16 @@ public class ProtocolLibService implements SettingsDependent {
             tabCompletePacketAdapter = null;
         }
 
+        if (freezePlayerBeforeLogin) {
+            if (freezePacketAdapter == null) {
+                freezePacketAdapter = new FreezePacketAdapter(plugin, playerCache, dataSource);
+                freezePacketAdapter.register(bukkitService);
+            }
+        } else if (freezePacketAdapter != null) {
+            freezePacketAdapter.unregister();
+            freezePacketAdapter = null;
+        }
+
         this.isEnabled = true;
     }
 
@@ -101,6 +118,10 @@ public class ProtocolLibService implements SettingsDependent {
             tabCompletePacketAdapter.unregister();
             tabCompletePacketAdapter = null;
         }
+        if (freezePacketAdapter != null) {
+            freezePacketAdapter.unregister();
+            freezePacketAdapter = null;
+        }
     }
 
     /**
@@ -114,12 +135,36 @@ public class ProtocolLibService implements SettingsDependent {
         }
     }
 
+    /**
+     * Send a packet to the player to freeze any movement.
+     *
+     * @param player The player to send the packet to.
+     */
+    public void sendFreezePacket(Player player) {
+        if (isEnabled && freezePacketAdapter != null) {
+            freezePacketAdapter.sendFreezePacket(player);
+        }
+    }
+
+    /**
+     * Send a packet to the player to unfreeze movements.
+     *
+     * @param player The player to send the packet to.
+     */
+    public void sendUnFreezePacket(Player player) {
+        if (isEnabled && freezePacketAdapter != null) {
+            freezePacketAdapter.sendUnFreezePacket(player);
+        }
+    }
+
     @Override
     public void reload(Settings settings) {
-        boolean oldProtectInventory = this.protectInvBeforeLogin;
+        final boolean oldProtectInventory = this.protectInvBeforeLogin;
+        final boolean oldFreezePlayer = this.freezePlayerBeforeLogin;
 
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
+        this.freezePlayerBeforeLogin = !settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT);
 
         //it was true and will be deactivated now, so we need to restore the inventory for every player
         if (oldProtectInventory && !protectInvBeforeLogin && inventoryPacketAdapter != null) {
@@ -127,6 +172,14 @@ public class ProtocolLibService implements SettingsDependent {
             for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
                 if (!playerCache.isAuthenticated(onlinePlayer.getName())) {
                     onlinePlayer.updateInventory();
+                }
+            }
+        }
+        if (oldFreezePlayer && !freezePlayerBeforeLogin && freezePacketAdapter != null) {
+            freezePacketAdapter.unregister();
+            for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
+                if (!playerCache.isAuthenticated(onlinePlayer.getName())) {
+                    freezePacketAdapter.sendUnFreezePacket(onlinePlayer);
                 }
             }
         }
