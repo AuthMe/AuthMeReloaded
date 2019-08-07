@@ -40,11 +40,10 @@ import java.util.List;
 
 class FreezePacketAdapter extends PacketAdapter {
 
-    private final ConsoleLogger logger = ConsoleLoggerFactory.get(FreezePacketAdapter.class);
-
     private static final String ATTRIBUTE_MOVEMENT_SPEED = "generic.movementSpeed";
     private static final String ATTRIBUTE_FLYING_SPEED = "generic.flyingSpeed";
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(FreezePacketAdapter.class);
     private final PlayerCache playerCache;
     private final DataSource dataSource;
 
