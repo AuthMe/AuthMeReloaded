@@ -19,37 +19,29 @@ package fr.xephi.authme.listener.protocollib;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedAttribute;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 class FreezePacketAdapter extends PacketAdapter {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(FreezePacketAdapter.class);
 
-    private static final String ATTRIBUTE_MOVEMENT_SPEED = "generic.movementSpeed";
-    private static final String ATTRIBUTE_FLYING_SPEED = "generic.flyingSpeed";
-
     private final PlayerCache playerCache;
     private final DataSource dataSource;
 
     FreezePacketAdapter(AuthMe plugin, PlayerCache playerCache, DataSource dataSource) {
-        super(plugin, PacketType.Play.Server.UPDATE_ATTRIBUTES);
+        super(plugin, PacketType.Play.Server.ABILITIES);
         this.playerCache = playerCache;
         this.dataSource = dataSource;
     }
@@ -59,26 +51,13 @@ class FreezePacketAdapter extends PacketAdapter {
         Player player = packetEvent.getPlayer();
         PacketContainer packet = packetEvent.getPacket();
 
-        int entityId = packet.getIntegers().read(0);
-        if (entityId != player.getEntityId()) {
-            return;
-        }
-
         if (!shouldFreeze(player.getName())) {
             return;
         }
+        logger.warning("Overwriting packet abilities for player " + player.getName());
 
-        List<WrappedAttribute> newAttributes = new ArrayList<>();
-        for (WrappedAttribute attribute : packet.getAttributeCollectionModifier().read(0)) {
-            if (ATTRIBUTE_MOVEMENT_SPEED.equals(attribute.getAttributeKey())
-                || ATTRIBUTE_FLYING_SPEED.equals(attribute.getAttributeKey())) {
-                newAttributes.add(WrappedAttribute.newBuilder(attribute)
-                    .baseValue(0.0f).modifiers(Collections.emptyList()).build());
-            } else {
-                newAttributes.add(attribute);
-            }
-        }
-        packet.getAttributeCollectionModifier().write(0, newAttributes);
+        packet.getFloat().write(0, 0.0f)
+            .write(1, 0.0f);
     }
 
     protected void register(BukkitService bukkitService) {
@@ -98,31 +77,25 @@ class FreezePacketAdapter extends PacketAdapter {
     }
 
     protected void sendFreezePacket(Player player) {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        PacketContainer attributesPacket = protocolManager.createPacket(PacketType.Play.Server.UPDATE_ATTRIBUTES);
+        logger.warning("Freezing " + player.getName());
 
-        attributesPacket.getIntegers().write(0, player.getEntityId());
-        attributesPacket.getAttributeCollectionModifier().write(0, Arrays.asList(
-            WrappedAttribute.newBuilder()
-                .packet(attributesPacket)
-                .attributeKey(ATTRIBUTE_MOVEMENT_SPEED)
-                .baseValue(0.0f)
-                .build(),
-            WrappedAttribute.newBuilder()
-                .packet(attributesPacket)
-                .attributeKey(ATTRIBUTE_FLYING_SPEED)
-                .baseValue(0.0f)
-                .build()
-        ));
+        PacketContainer abilitiesPacket = new PacketContainer(PacketType.Play.Server.ABILITIES);
+        abilitiesPacket.getBooleans().write(0, player.isInvulnerable())
+            .write(1, player.isFlying())
+            .write(2, player.getAllowFlight())
+            .write(3, player.getGameMode() == GameMode.CREATIVE);
+        abilitiesPacket.getFloat().write(0, 0.0f)
+            .write(1, 0.0f);
 
         try {
-            protocolManager.sendServerPacket(player, attributesPacket, false);
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, abilitiesPacket, false);
         } catch (InvocationTargetException invocationExc) {
             logger.logException("Error during sending freeze packet", invocationExc);
         }
     }
 
     public void sendUnFreezePacket(Player player) {
+        logger.warning("UnFreezing " + player.getName());
         player.setWalkSpeed(player.getWalkSpeed());
         player.setFlySpeed(player.getFlySpeed());
     }
