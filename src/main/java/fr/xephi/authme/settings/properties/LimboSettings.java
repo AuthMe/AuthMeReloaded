@@ -5,6 +5,7 @@ import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.data.limbo.AllowFlightRestoreType;
+import fr.xephi.authme.data.limbo.WalkFlySpeedRestoreType;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistenceType;
 import fr.xephi.authme.data.limbo.persistence.SegmentSize;
 
@@ -18,7 +19,7 @@ public final class LimboSettings implements SettingsHolder {
     @Comment({
         "Besides storing the data in memory, you can define if/how the data should be persisted",
         "on disk. This is useful in case of a server crash, so next time the server starts we can",
-        "properly restore things like OP status and the ability to fly",
+        "properly restore things like OP status, ability to fly, and walk/fly speed.",
         "DISABLED: no disk storage,",
         "INDIVIDUAL_FILES: each player data in its own file,",
         "DISTRIBUTED_FILES: distributes players into different files based on their UUID, see below"
@@ -48,6 +49,23 @@ public final class LimboSettings implements SettingsHolder {
     public static final Property<AllowFlightRestoreType> RESTORE_ALLOW_FLIGHT =
         newProperty(AllowFlightRestoreType.class, "limbo.restoreAllowFlight", AllowFlightRestoreType.RESTORE);
 
+    @Comment({
+        "Restore fly speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.",
+        "RESTORE: restore the speed the player had;",
+        "DEFAULT: always set to default speed;",
+        "MAX_RESTORE: take the maximum of the player's current speed and the previous one",
+        "RESTORE_NO_ZERO: Like 'restore' but sets speed to default if the player's speed was 0"
+    })
+    public static final Property<WalkFlySpeedRestoreType> RESTORE_FLY_SPEED =
+        newProperty(WalkFlySpeedRestoreType.class, "limbo.restoreFlySpeed", WalkFlySpeedRestoreType.RESTORE_NO_ZERO);
+
+    @Comment({
+        "Restore walk speed: RESTORE, DEFAULT, MAX_RESTORE, RESTORE_NO_ZERO.",
+        "See above for a description of the values."
+    })
+    public static final Property<WalkFlySpeedRestoreType> RESTORE_WALK_SPEED =
+        newProperty(WalkFlySpeedRestoreType.class, "limbo.restoreWalkSpeed", WalkFlySpeedRestoreType.RESTORE_NO_ZERO);
+
     private LimboSettings() {
     }
 
@@ -55,7 +73,7 @@ public final class LimboSettings implements SettingsHolder {
     public void registerComments(CommentsConfiguration conf) {
         String[] limboExplanation = {
             "Before a user logs in, various properties are temporarily removed from the player,",
-            "such as OP status and the ability to fly.",
+            "such as OP status, ability to fly, and walk/fly speed.",
             "Once the user is logged in, we add back the properties we previously saved.",
             "In this section, you may define how these properties should be handled.",
             "Read more at https://github.com/AuthMe/AuthMeReloaded/wiki/Limbo-players"

@@ -9,5 +9,7 @@
   },
   "operator": true,
   "can-fly": true,
+  "walk-speed": 0.2,
+  "fly-speed": 0.1,
   "group": "players"
 }

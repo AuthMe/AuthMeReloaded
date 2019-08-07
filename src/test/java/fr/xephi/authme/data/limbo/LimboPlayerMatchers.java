@@ -22,28 +22,32 @@ public final class LimboPlayerMatchers {
 
     public static Matcher<LimboPlayer> isLimbo(LimboPlayer limbo) {
         String[] groups = limbo.getGroups().toArray(new String[limbo.getGroups().size()]);
-        return isLimbo(limbo.isOperator(), limbo.isCanFly(), groups);
+        return isLimbo(limbo.isOperator(), limbo.isCanFly(), limbo.getWalkSpeed(), limbo.getFlySpeed(), groups);
     }
 
-    public static Matcher<LimboPlayer> isLimbo(boolean isOp, boolean canFly, String... groups) {
+    public static Matcher<LimboPlayer> isLimbo(boolean isOp, boolean canFly, float walkSpeed, float flySpeed,
+                                               String... groups) {
         return new TypeSafeMatcher<LimboPlayer>() {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
                 return item.isOperator() == isOp
                     && collectionContains(item.getGroups(), groups)
-                    && item.isCanFly() == canFly;
+                    && item.isCanFly() == canFly
+                    && walkSpeed == item.getWalkSpeed()
+                    && flySpeed == item.getFlySpeed();
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s",
-                    isOp, String.join(" ,", groups), canFly));
+                description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s, walkSpeed=%f, flySpeed=%f",
+                    isOp, String.join(" ,", groups), canFly, walkSpeed, flySpeed));
             }
 
             @Override
             public void describeMismatchSafely(LimboPlayer item, Description description) {
-                description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s",
-                    item.isOperator(), String.join(" ,", item.getGroups()), item.isCanFly()));
+                description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s, walkSpeed=%f, flySpeed=%f",
+                    item.isOperator(), String.join(" ,", item.getGroups()), item.isCanFly(),
+                    item.getWalkSpeed(), item.getFlySpeed()));
             }
         };
     }

@@ -10,6 +10,8 @@
     },
     "group": "",
     "operator": false,
-    "can-fly": false
+    "can-fly": false,
+    "walk-speed": 0.2,
+    "fly-speed": 0.1
   }
 }

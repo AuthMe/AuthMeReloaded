@@ -68,7 +68,9 @@ class LimboPlayerViewer implements DebugSection {
         sender.sendMessage(ChatColor.BLUE + "Player / limbo / disk limbo info for '" + arguments.get(0) + "'");
         new InfoDisplayer(sender, player, memoryLimbo, diskLimbo)
             .sendEntry("Is op", Player::isOp, LimboPlayer::isOperator)
+            .sendEntry("Walk speed", Player::getWalkSpeed, LimboPlayer::getWalkSpeed)
             .sendEntry("Can fly", Player::getAllowFlight, LimboPlayer::isCanFly)
+            .sendEntry("Fly speed", Player::getFlySpeed, LimboPlayer::getFlySpeed)
             .sendEntry("Location", p -> formatLocation(p.getLocation()), l -> formatLocation(l.getLocation()))
             .sendEntry("Prim. group",
                 p -> permissionsManager.hasGroupSupport() ? permissionsManager.getPrimaryGroup(p) : "N/A",
