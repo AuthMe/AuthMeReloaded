@@ -12,19 +12,27 @@ import java.util.Collection;
  */
 public class LimboPlayer {
 
+    public static final float DEFAULT_WALK_SPEED = 0.2f;
+    public static final float DEFAULT_FLY_SPEED = 0.1f;
+
     private final boolean canFly;
     private final boolean operator;
     private final Collection<String> groups;
     private final Location loc;
+    private final float walkSpeed;
+    private final float flySpeed;
     private BukkitTask timeoutTask = null;
     private MessageTask messageTask = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
 
-    public LimboPlayer(Location loc, boolean operator, Collection<String> groups, boolean fly) {
+    public LimboPlayer(Location loc, boolean operator, Collection<String> groups, boolean fly, float walkSpeed,
+                       float flySpeed) {
         this.loc = loc;
         this.operator = operator;
         this.groups = groups;
         this.canFly = fly;
+        this.walkSpeed = walkSpeed;
+        this.flySpeed = flySpeed;
     }
 
     /**
@@ -56,6 +64,14 @@ public class LimboPlayer {
 
     public boolean isCanFly() {
         return canFly;
+    }
+
+    public float getWalkSpeed() {
+        return walkSpeed;
+    }
+
+    public float getFlySpeed() {
+        return flySpeed;
     }
 
     /**

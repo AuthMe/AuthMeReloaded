@@ -13,7 +13,9 @@
       "mod"
     ],
     "operator": true,
-    "can-fly": false
+    "can-fly": false,
+    "walk-speed": 0.3,
+    "fly-speed": 0.1
   },
   "8c679491-1234-abcd-9102-1fa6e0cc3f81": {
     "location": {
@@ -26,6 +28,8 @@
     },
     "group": "primary",
     "operator": false,
-    "can-fly": true
+    "can-fly": true,
+    "walk-speed": 0.1,
+    "fly-speed": 0.0
   }
 }
