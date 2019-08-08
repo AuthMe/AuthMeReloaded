@@ -2,6 +2,7 @@ package tools.docs.hashmethods;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
@@ -15,7 +16,6 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.settings.Settings;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class EncryptionMethodInfoGatherer {
     private Map<HashAlgorithm, MethodDescription> descriptions;
 
     public EncryptionMethodInfoGatherer() {
-        ConsoleLogger.setLogger(Logger.getAnonymousLogger()); // set logger because of Argon2.isLibraryLoaded()
+        ConsoleLogger.initialize(Logger.getAnonymousLogger(), null); // set logger because of Argon2.isLibraryLoaded()
         descriptions = new LinkedHashMap<>();
         constructDescriptions();
     }
@@ -171,7 +171,7 @@ public class EncryptionMethodInfoGatherer {
         @Override
         public String computeHash(String password) {
             // Argon2 produces hashes of 96 characters -> return dummy value with this length
-            return String.join("", Collections.nCopies(96, "."));
+            return Strings.repeat(".", 96);
         }
     }
 }

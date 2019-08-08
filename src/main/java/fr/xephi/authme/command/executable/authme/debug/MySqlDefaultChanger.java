@@ -5,6 +5,7 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MySQL;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.settings.Settings;
@@ -42,6 +43,8 @@ class MySqlDefaultChanger implements DebugSection {
 
     private static final String NOT_NULL_SUFFIX = ChatColor.DARK_AQUA + "@" + ChatColor.RESET;
     private static final String DEFAULT_VALUE_SUFFIX = ChatColor.GOLD + "#" + ChatColor.RESET;
+
+    private ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlDefaultChanger.class);
 
     @Inject
     private Settings settings;
@@ -98,7 +101,7 @@ class MySqlDefaultChanger implements DebugSection {
                         throw new IllegalStateException("Unknown operation '" + operation + "'");
                 }
             } catch (SQLException | IllegalStateException e) {
-                ConsoleLogger.logException("Failed to perform MySQL default altering operation:", e);
+                logger.logException("Failed to perform MySQL default altering operation:", e);
             }
         }
     }
@@ -134,7 +137,7 @@ class MySqlDefaultChanger implements DebugSection {
         }
 
         // Log success message
-        ConsoleLogger.info("Changed MySQL column '" + columnName + "' to be NOT NULL, as initiated by '"
+        logger.info("Changed MySQL column '" + columnName + "' to be NOT NULL, as initiated by '"
             + sender.getName() + "'");
     }
 
@@ -168,7 +171,7 @@ class MySqlDefaultChanger implements DebugSection {
             + "') to be NULL, modifying " + updatedRows + " entries");
 
         // Log success message
-        ConsoleLogger.info("Changed MySQL column '" + columnName + "' to allow NULL, as initiated by '"
+        logger.info("Changed MySQL column '" + columnName + "' to allow NULL, as initiated by '"
             + sender.getName() + "'");
     }
 
@@ -191,7 +194,7 @@ class MySqlDefaultChanger implements DebugSection {
                     + " (" + columnName + "): " + isNullText + ", " + defaultText);
             }
         } catch (SQLException e) {
-            ConsoleLogger.logException("Failed while showing column details:", e);
+            logger.logException("Failed while showing column details:", e);
             sender.sendMessage("Failed while showing column details. See log for info");
         }
 
@@ -228,7 +231,7 @@ class MySqlDefaultChanger implements DebugSection {
             }
             return String.join(ChatColor.RESET + ", ", formattedColumns);
         } catch (SQLException e) {
-            ConsoleLogger.logException("Failed to construct column list:", e);
+            logger.logException("Failed to construct column list:", e);
             return ChatColor.RED + "An error occurred! Please see the console for details.";
         }
     }

@@ -1,10 +1,11 @@
 package tools.messages;
 
 import com.google.common.collect.Multimap;
-import de.bananaco.bpermissions.imp.YamlConfiguration;
+import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -15,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.regex.Pattern;
 
+import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_MESSAGES_FILE;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
@@ -25,11 +26,7 @@ import static tools.utils.FileIoUtils.listFilesOrThrow;
 public final class VerifyMessagesTask implements ToolTask {
 
     /** The folder containing the message files. */
-    private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
-    /** Pattern of the message file names. */
-    private static final Pattern MESSAGE_FILE_PATTERN = Pattern.compile("messages_[a-z]{2,7}\\.yml");
-    /** File to get default messages from (assumes that it is complete). */
-    private static final String DEFAULT_MESSAGES_FILE = MESSAGES_FOLDER + "messages_en.yml";
+    private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + MessagePathHelper.MESSAGES_FOLDER;
 
     @Override
     public String getTaskName() {
@@ -50,7 +47,7 @@ public final class VerifyMessagesTask implements ToolTask {
         if (StringUtils.isEmpty(inputFile)) {
             messageFiles = getMessagesFiles();
         } else {
-            File customFile = new File(MESSAGES_FOLDER, "messages_" + inputFile + ".yml");
+            File customFile = new File(ToolsConstants.MAIN_RESOURCES_ROOT, MessagePathHelper.createMessageFilePath(inputFile));
             messageFiles = Collections.singletonList(customFile);
         }
 
@@ -118,7 +115,7 @@ public final class VerifyMessagesTask implements ToolTask {
         File[] files = listFilesOrThrow(new File(MESSAGES_FOLDER));
         List<File> messageFiles = new ArrayList<>();
         for (File file : files) {
-            if (MESSAGE_FILE_PATTERN.matcher(file.getName()).matches()) {
+            if (MessagePathHelper.isMessagesFile(file.getName())) {
                 messageFiles.add(file);
             }
         }

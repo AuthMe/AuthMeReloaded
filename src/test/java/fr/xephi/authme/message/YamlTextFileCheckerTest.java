@@ -11,10 +11,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.function.Predicate;
 
+import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
 import static org.junit.Assert.fail;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
@@ -23,52 +23,50 @@ import static tools.utils.FileIoUtils.listFilesOrThrow;
  */
 public class YamlTextFileCheckerTest {
 
-    /** Path in the resources folder where the message files are located. */
-    private static final String MESSAGES_FOLDER = "/messages/";
     /** Contains all files of the MESSAGES_FOLDER. */
-    private static List<File> messageFiles;
+    private static File[] messageFiles;
 
     @BeforeClass
     public static void loadMessagesFiles() {
-        File folder = TestHelper.getJarFile(MESSAGES_FOLDER);
-        messageFiles = Arrays.asList(listFilesOrThrow(folder));
+        File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
+        messageFiles = listFilesOrThrow(folder);
     }
 
     @Test
     public void testAllMessagesYmlFiles() {
         checkFiles(
-            Pattern.compile("messages_\\w+\\.yml"),
+            MessagePathHelper::isMessagesFile,
             MessageKey.LOGIN_MESSAGE.getKey());
     }
 
     @Test
     public void testAllHelpYmlFiles() {
         checkFiles(
-            Pattern.compile("help_\\w+\\.yml"),
+            MessagePathHelper::isHelpFile,
             HelpSection.ALTERNATIVES.getKey());
     }
 
     /**
      * Checks all files in the messages folder that match the given pattern.
      *
-     * @param pattern the pattern the file name needs to match
+     * @param isRelevantFilePredicate predicate determining which files should be tested
      * @param mandatoryKey key present in all matched files
      */
-    private void checkFiles(Pattern pattern, String mandatoryKey) {
+    private void checkFiles(Predicate<String> isRelevantFilePredicate, String mandatoryKey) {
         List<String> errors = new ArrayList<>();
 
         boolean hasMatch = false;
         for (File file : messageFiles) {
-            if (pattern.matcher(file.getName()).matches()) {
+            if (isRelevantFilePredicate.test(file.getName())) {
                 checkFile(file, mandatoryKey, errors);
                 hasMatch = true;
             }
         }
 
         if (!errors.isEmpty()) {
-            fail("Errors while checking files matching '" + pattern + "':\n-" + String.join("\n-", errors));
+            fail("Errors while checking files\n-" + String.join("\n-", errors));
         } else if (!hasMatch) {
-            fail("Could not find any files satisfying pattern '" + pattern + "'");
+            fail("Could not find any files matching criteria");
         }
     }
 

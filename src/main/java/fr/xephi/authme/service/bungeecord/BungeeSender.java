@@ -6,6 +6,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 
 public class BungeeSender implements SettingsDependent {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(BungeeSender.class);
     private final AuthMe plugin;
     private final BukkitService bukkitService;
     private final DataSource dataSource;
@@ -97,7 +99,7 @@ public class BungeeSender implements SettingsDependent {
     public void sendAuthMeBungeecordMessage(final MessageType type, final String playerName) {
         if (isEnabled) {
             if (!plugin.isEnabled()) {
-                ConsoleLogger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
+                logger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
                 return;
             }
             if (type.isRequiresCaching() && !dataSource.isCached()) {

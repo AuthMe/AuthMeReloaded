@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.UUID;
 
+import static fr.xephi.authme.TestHelper.PROJECT_ROOT;
+import static fr.xephi.authme.TestHelper.TEST_RESOURCES_FOLDER;
 import static fr.xephi.authme.data.limbo.LimboPlayerMatchers.hasLocation;
 import static fr.xephi.authme.data.limbo.LimboPlayerMatchers.isLimbo;
 import static java.util.UUID.fromString;
@@ -96,7 +98,7 @@ public class DistributedFilesPersistenceHandlerTest {
         playerDataFolder = new File(dataFolder, "playerdata");
         playerDataFolder.mkdir();
 
-        File limboFilesFolder = new File("src/test/resources/fr/xephi/authme/data/limbo");
+        File limboFilesFolder = new File(TEST_RESOURCES_FOLDER + PROJECT_ROOT + "data/limbo");
         for (File file : limboFilesFolder.listFiles()) {
             File from = new File(playerDataFolder, file.getName());
             Files.copy(file, from);
@@ -153,10 +155,10 @@ public class DistributedFilesPersistenceHandlerTest {
     public void shouldAddPlayer() {
         // given
         Player uuidToAdd1 = mockPlayerWithUuid(UNKNOWN_UUID);
-        Location location1 = new Location(mockWorldWithName("1world"), 120, 60, -80, 0.42345f, 120.32f);
+        Location location1 = mockLocation("1world");
         LimboPlayer limbo1 = new LimboPlayer(location1, false, Collections.singletonList("group-1"), true, 0.1f, 0.2f);
         Player uuidToAdd2 = mockPlayerWithUuid(UNKNOWN_UUID2);
-        Location location2 = new Location(mockWorldWithName("2world"), -40, 20, 33, 4.235f, 8.32299f);
+        Location location2 = mockLocation("2world");
         LimboPlayer limbo2 = new LimboPlayer(location2, true, Collections.emptyList(), false, 0.0f, 0.25f);
 
         // when
@@ -202,5 +204,12 @@ public class DistributedFilesPersistenceHandlerTest {
         World world = mock(World.class);
         given(world.getName()).willReturn(name);
         return world;
+    }
+
+    private static Location mockLocation(String worldName) {
+        World world = mockWorldWithName(worldName);
+        Location location = mock(Location.class);
+        given(location.getWorld()).willReturn(world);
+        return location;
     }
 }

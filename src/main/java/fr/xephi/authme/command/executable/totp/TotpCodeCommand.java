@@ -8,6 +8,7 @@ import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.LimboPlayerState;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.login.AsynchronousLogin;
@@ -21,6 +22,8 @@ import java.util.List;
  * TOTP code command for processing the 2FA code during the login process.
  */
 public class TotpCodeCommand extends PlayerCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(TotpCodeCommand.class);
 
     @Inject
     private LimboService limboService;
@@ -57,7 +60,7 @@ public class TotpCodeCommand extends PlayerCommand {
         if (limbo != null && limbo.getState() == LimboPlayerState.TOTP_REQUIRED) {
             processCode(player, auth, arguments.get(0));
         } else {
-            ConsoleLogger.debug(() -> "Aborting TOTP check for player '" + player.getName()
+            logger.debug(() -> "Aborting TOTP check for player '" + player.getName()
                 + "'. Invalid limbo state: " + (limbo == null ? "no limbo" : limbo.getState()));
             messages.send(player, MessageKey.LOGIN_MESSAGE);
         }
@@ -66,10 +69,10 @@ public class TotpCodeCommand extends PlayerCommand {
     private void processCode(Player player, PlayerAuth auth, String inputCode) {
         boolean isCodeValid = totpAuthenticator.checkCode(auth, inputCode);
         if (isCodeValid) {
-            ConsoleLogger.debug("Successfully checked TOTP code for `{0}`", player.getName());
+            logger.debug("Successfully checked TOTP code for `{0}`", player.getName());
             asynchronousLogin.performLogin(player, auth);
         } else {
-            ConsoleLogger.debug("Input TOTP code was invalid for player `{0}`", player.getName());
+            logger.debug("Input TOTP code was invalid for player `{0}`", player.getName());
             messages.send(player, MessageKey.TWO_FACTOR_INVALID_CODE);
         }
     }

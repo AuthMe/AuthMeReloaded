@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -30,6 +31,8 @@ import java.util.regex.Pattern;
  * Service for performing various verifications when a player joins.
  */
 public class OnJoinVerifier implements Reloadable {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(OnJoinVerifier.class);
 
     @Inject
     private Settings settings;
@@ -128,7 +131,7 @@ public class OnJoinVerifier implements Reloadable {
         }
 
         // Server is full and player is VIP; attempt to kick a non-VIP player to make room
-        Collection<? extends Player> onlinePlayers = bukkitService.getOnlinePlayers();
+        Collection<Player> onlinePlayers = bukkitService.getOnlinePlayers();
         if (onlinePlayers.size() < server.getMaxPlayers()) {
             event.allow();
             return false;
@@ -139,7 +142,7 @@ public class OnJoinVerifier implements Reloadable {
             event.allow();
             return false;
         } else {
-            ConsoleLogger.info("VIP player " + player.getName() + " tried to join, but the server was full");
+            logger.info("VIP player " + player.getName() + " tried to join, but the server was full");
             event.setKickMessage(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER));
             return true;
         }
@@ -207,7 +210,7 @@ public class OnJoinVerifier implements Reloadable {
      *
      * @return the player to kick, or null if none applicable
      */
-    private Player generateKickPlayer(Collection<? extends Player> onlinePlayers) {
+    private Player generateKickPlayer(Collection<Player> onlinePlayers) {
         for (Player player : onlinePlayers) {
             if (!permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
                 return player;

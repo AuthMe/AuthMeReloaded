@@ -6,7 +6,7 @@
 
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
-    <version>5.5.1-SNAPSHOT</version>
+    <version>5.6.0-SNAPSHOT</version>
 
     <name>AuthMeReloaded</name>
     <description>The first authentication plugin for the Bukkit API!</description>
@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.3.9</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.13.2-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.14.2-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -105,6 +105,21 @@
                 <project.skipExtendedHashTests>true</project.skipExtendedHashTests>
             </properties>
         </profile>
+        <!-- Skip javadoc generation for faster local build -->
+        <profile>
+            <id>skipJavadocGeneration</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -130,6 +145,16 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
         <plugins>
             <!-- Enforce build environment -->
@@ -170,7 +195,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -180,7 +205,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.2</version>
+                <version>0.8.4</version>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -200,7 +225,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
+                <version>2.22.2</version>
                 <configuration>
                     <!-- Force the right file encoding during unit testing -->
                     <!-- Set language to English in order to get consistent results for localized time formatting -->
@@ -216,15 +241,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.2</version>
             </plugin>
             <!-- Generate a jar containing the source javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
+                    <!-- In sync with the source/target properties of the maven-compiler-plugin -->
+                    <source>8</source>
                 </configuration>
                 <executions>
                     <execution>
@@ -239,7 +265,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.0</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                 </configuration>
@@ -362,7 +388,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.2</version>
             </plugin>
             <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
             <plugin>
@@ -382,36 +408,102 @@
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
         <!-- CodeMC Repo (Contains many required libraries) -->
         <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.org/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
         <!-- EssentialsX Repo -->
         <repository>
             <id>enderzone-repo</id>
-            <url>https://ci.ender.zone/plugin/repository/everything</url>
+            <url>https://ci.ender.zone/plugin/repository/everything/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
         <!-- ProtocolLib Repo -->
         <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
+            <id>dmulloy2-repo-releases</id>
+            <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>dmulloy2-repo-snapshots</id>
+            <url>http://repo.dmulloy2.net/nexus/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
         <!-- Multiverse Repo -->
         <repository>
-            <id>onarandombox-repo</id>
-            <url>http://repo.onarandombox.com/content/groups/public</url>
+            <id>onarandombox-repo-releases</id>
+            <url>http://repo.onarandombox.com/content/repositories/multiverse/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>onarandombox-repo-snapshots</id>
+            <url>http://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
         <!-- Vault Repo -->
         <repository>
-            <id>vault-repo</id>
+            <id>vault-repo-releases</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>vault-repo-snapshots</id>
+            <url>http://nexus.hc.to/content/repositories/pub_snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -477,7 +569,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.1</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -490,7 +582,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.27</version>
             <optional>true</optional>
         </dependency>
 
@@ -498,7 +590,7 @@
         <dependency>
             <groupId>de.rtner</groupId>
             <artifactId>PBKDF2</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.4</version>
             <optional>true</optional>
         </dependency>
 
@@ -560,7 +652,7 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.0</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -600,7 +692,7 @@
         <dependency>
             <groupId>me.lucko.luckperms</groupId>
             <artifactId>luckperms-api</artifactId>
-            <version>4.3</version>
+            <version>4.4</version>
             <scope>provided</scope>
         </dependency>
 
@@ -612,34 +704,12 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.gravitydevelopment.updater</groupId>
-                    <artifactId>updater</artifactId>
-                </exclusion>
-                <exclusion>
                     <artifactId>commons-dbcp</artifactId>
                     <groupId>commons-dbcp</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>AccountsClient</artifactId>
+                    <artifactId>accounts-client</artifactId>
                     <groupId>com.mojang</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- bPermissions plugin -->
-        <dependency>
-            <groupId>de.bananaco</groupId>
-            <artifactId>bPermissions</artifactId>
-            <version>2.12-DEV</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -648,56 +718,12 @@
         <dependency>
             <groupId>org.tyrannyofheaven.bukkit</groupId>
             <artifactId>zPermissions</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4.3-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sk89q</groupId>
-                    <artifactId>worldguard</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sk89q</groupId>
-                    <artifactId>worldedit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>VaultAPI</artifactId>
-                    <groupId>net.milkbowl.vault</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>uuidprovider</artifactId>
-                    <groupId>net.kaikk.mc</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>ToHPluginUtils</artifactId>
-                    <groupId>org.tyrannyofheaven.bukkit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Residence</artifactId>
-                    <groupId>com.bekvon.bukkit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Factions</artifactId>
-                    <groupId>com.massivecraft</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>mcore</artifactId>
-                    <groupId>com.massivecraft</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Factoid</artifactId>
-                    <groupId>me.tabinol.factoid</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>ebean</artifactId>
                     <groupId>org.avaje</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>persistence-api</artifactId>
-                    <groupId>javax.persistence</groupId>
+                    <artifactId>ebean</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -724,7 +750,7 @@
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
-            <version>2.6.0</version>
+            <version>4.0.1</version>
             <type>jar</type>
             <scope>provided</scope>
             <exclusions>
@@ -787,15 +813,49 @@
         <dependency>
             <groupId>net.ess3</groupId>
             <artifactId>EssentialsX</artifactId>
-            <version>2.15.0</version>
+            <version>2.16.1</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.papermc</groupId>
+                    <artifactId>paperlib</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>NMSProvider</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>UpdatedMetaProvider</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>1_8_R1Provider</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>1_8_R2Provider</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>LegacyProvider</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>ReflectionProvider</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>FlattenedProvider</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- BCrypt implementation -->
         <dependency>
             <groupId>at.favre.lib</groupId>
             <artifactId>bcrypt</artifactId>
-            <version>0.6.0</version>
+            <version>0.8.0</version>
             <optional>true</optional>
         </dependency>
 
@@ -803,42 +863,8 @@
         <dependency>
             <groupId>de.luricos.bukkit</groupId>
             <artifactId>xAuth</artifactId>
-            <version>2.6</version>
+            <version>2.6.1-SNAPSHOT</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>craftbukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>updater</artifactId>
-                    <groupId>net.gravitydevelopment.updater</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>lombok</artifactId>
-                    <groupId>org.projectlombok</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>EssentialsGroupManager</artifactId>
-                    <groupId>net.ess3</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>PermissionsEx</artifactId>
-                    <groupId>ru.tehkode</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>AccountsClient</artifactId>
-                    <groupId>com.mojang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j-core</artifactId>
-                    <groupId>org.apache.logging.log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -851,7 +877,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.5</version>
+            <version>42.2.6</version>
         </dependency>
 
         <!-- Unit Testing Libraries -->
@@ -874,7 +900,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>2.23.4</version>
+            <version>3.0.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -887,7 +913,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>2.5.8</version>
+            <version>2.10.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -895,13 +921,13 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.25.2</version>
+            <version>3.28.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.197</version>
+            <version>1.4.199</version>
             <scope>test</scope>
         </dependency>
 

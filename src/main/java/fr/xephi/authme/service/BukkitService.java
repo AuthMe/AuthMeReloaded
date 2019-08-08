@@ -19,7 +19,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
@@ -37,7 +36,6 @@ public class BukkitService implements SettingsDependent {
     public static final int TICKS_PER_MINUTE = 60 * TICKS_PER_SECOND;
 
     private final AuthMe authMe;
-    private Method getOnlinePlayers;
     private boolean useAsyncTasks;
 
     @Inject
@@ -235,8 +233,9 @@ public class BukkitService implements SettingsDependent {
      *
      * @return collection of online players
      */
-    public Collection<? extends Player> getOnlinePlayers() {
-        return Bukkit.getOnlinePlayers();
+    @SuppressWarnings("unchecked")
+    public Collection<Player> getOnlinePlayers() {
+        return (Collection<Player>) Bukkit.getOnlinePlayers();
     }
 
     /**

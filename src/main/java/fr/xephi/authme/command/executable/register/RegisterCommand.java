@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.register;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
@@ -33,6 +34,8 @@ import static fr.xephi.authme.settings.properties.RegistrationSettings.REGISTER_
  * Command for /register.
  */
 public class RegisterCommand extends PlayerCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(RegisterCommand.class);
 
     @Inject
     private Management management;
@@ -155,7 +158,7 @@ public class RegisterCommand extends PlayerCommand {
     private void handleEmailRegistration(Player player, List<String> arguments) {
         if (!emailService.hasAllInformation()) {
             commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
-            ConsoleLogger.warning("Cannot register player '" + player.getName() + "': no email or password is set "
+            logger.warning("Cannot register player '" + player.getName() + "': no email or password is set "
                 + "to send emails from. Please adjust your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
             return;
         }

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_MESSAGES_FILE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -40,7 +41,7 @@ public class MessageUpdaterTest {
     @Test
     public void shouldNotUpdateDefaultFile() throws IOException {
         // given
-        String messagesFilePath = "messages/messages_en.yml";
+        String messagesFilePath = DEFAULT_MESSAGES_FILE;
         File messagesFile = temporaryFolder.newFile();
         Files.copy(TestHelper.getJarFile("/" + messagesFilePath), messagesFile);
         long modifiedDate = messagesFile.lastModified();
@@ -60,7 +61,7 @@ public class MessageUpdaterTest {
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test.yml"), messagesFile);
         
         // when
-        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "does-not-exist", "messages/messages_en.yml");
+        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "does-not-exist", DEFAULT_MESSAGES_FILE);
 
         // then
         assertThat(wasChanged, equalTo(true));
@@ -80,7 +81,7 @@ public class MessageUpdaterTest {
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_en_old.yml"), messagesFile);
 
         // when
-        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "messages/messages_en.yml", "messages/messages_en.yml");
+        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, DEFAULT_MESSAGES_FILE, DEFAULT_MESSAGES_FILE);
 
         // then
         assertThat(wasChanged, equalTo(true));
@@ -106,7 +107,7 @@ public class MessageUpdaterTest {
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test2.yml"), messagesFile);
 
         // when
-        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "messages/messages_en.yml", "messages/messages_en.yml");
+        boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, DEFAULT_MESSAGES_FILE, DEFAULT_MESSAGES_FILE);
 
         // then
         assertThat(wasChanged, equalTo(true));

@@ -12,6 +12,7 @@ import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -44,7 +45,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  */
 public class MessagesIntegrationTest {
 
-    private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + "message/messages_test.yml";
+    private static final String TEST_MESSAGES_LOCAL_PATH = "message/messages_test.yml";
+    private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + TEST_MESSAGES_LOCAL_PATH;
     private Messages messages;
     private MessagesFileHandler messagesFileHandler;
 
@@ -68,13 +70,18 @@ public class MessagesIntegrationTest {
     @Before
     public void setUpMessages() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        File testFile = new File(dataFolder, "messages/messages_test.yml");
-        new File(dataFolder, "messages").mkdirs();
+        File testFile = new File(dataFolder, MessagePathHelper.createMessageFilePath("test"));
+        new File(dataFolder, MessagePathHelper.MESSAGES_FOLDER).mkdirs();
         FileUtils.create(testFile);
         Files.copy(TestHelper.getJarFile(YML_TEST_FILE), testFile);
 
         messagesFileHandler = createMessagesFileHandler();
         messages = new Messages(messagesFileHandler);
+    }
+
+    @AfterClass
+    public static void removeLoggerReferences() {
+        ConsoleLogger.initialize(null, null);
     }
 
     @Test
@@ -215,7 +222,7 @@ public class MessagesIntegrationTest {
     public void shouldLogErrorForInvalidReplacementCount() {
         // given
         Logger logger = mock(Logger.class);
-        ConsoleLogger.setLogger(logger);
+        ConsoleLogger.initialize(logger, null);
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");
@@ -231,7 +238,7 @@ public class MessagesIntegrationTest {
     public void shouldSendErrorForReplacementsOnKeyWithNoTags() {
         // given
         Logger logger = mock(Logger.class);
-        ConsoleLogger.setLogger(logger);
+        ConsoleLogger.initialize(logger, null);
         MessageKey key = MessageKey.UNKNOWN_USER;
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");
@@ -276,8 +283,8 @@ public class MessagesIntegrationTest {
     public void shouldFormatDurationObjects() throws IOException {
         // given
         // Use the JAR's messages_en.yml file for this, so copy to the file we're using and reload the file handler
-        File testFile = new File(dataFolder, "messages/messages_test.yml");
-        Files.copy(TestHelper.getJarFile("/messages/messages_en.yml"), testFile);
+        File testFile = new File(dataFolder, MessagePathHelper.createMessageFilePath("test"));
+        Files.copy(TestHelper.getJarFile("/" + MessagePathHelper.DEFAULT_MESSAGES_FILE), testFile);
         messagesFileHandler.reload();
 
         Map<Duration, String> expectedTexts = ImmutableMap.<Duration, String>builder()

@@ -3,8 +3,8 @@ package fr.xephi.authme.permission;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.listener.JoiningPlayer;
-import fr.xephi.authme.permission.handlers.BPermissionsHandler;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandlerException;
@@ -41,6 +41,7 @@ import java.util.UUID;
  */
 public class PermissionsManager implements Reloadable {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PermissionsManager.class);
     private final Server server;
     private final PluginManager pluginManager;
     private final Settings settings;
@@ -79,11 +80,11 @@ public class PermissionsManager implements Reloadable {
                 if (handler != null) {
                     // Show a success message and return
                     this.handler = handler;
-                    ConsoleLogger.info("Hooked into " + PermissionsSystemType.VAULT.getDisplayName() + "!");
+                    logger.info("Hooked into " + PermissionsSystemType.VAULT.getDisplayName() + "!");
                     return;
                 }
             } catch (PermissionHandlerException e) {
-                ConsoleLogger.logException("Failed to create Vault hook (forced):", e);
+                logger.logException("Failed to create Vault hook (forced):", e);
             }
         } else {
             // Loop through all the available permissions system types
@@ -93,18 +94,18 @@ public class PermissionsManager implements Reloadable {
                     if (handler != null) {
                         // Show a success message and return
                         this.handler = handler;
-                        ConsoleLogger.info("Hooked into " + type.getDisplayName() + "!");
+                        logger.info("Hooked into " + type.getDisplayName() + "!");
                         return;
                     }
                 } catch (Exception ex) {
                     // An error occurred, show a warning message
-                    ConsoleLogger.logException("Error while hooking into " + type.getDisplayName(), ex);
+                    logger.logException("Error while hooking into " + type.getDisplayName(), ex);
                 }
             }
         }
 
         // No recognized permissions system found, show a message and return
-        ConsoleLogger.info("No supported permissions system found! Permissions are disabled!");
+        logger.info("No supported permissions system found! Permissions are disabled!");
     }
 
     /**
@@ -126,7 +127,7 @@ public class PermissionsManager implements Reloadable {
 
         // Make sure the plugin is enabled before hooking
         if (!plugin.isEnabled()) {
-            ConsoleLogger.info("Not hooking into " + type.getDisplayName() + " because it's disabled!");
+            logger.info("Not hooking into " + type.getDisplayName() + " because it's disabled!");
             return null;
         }
 
@@ -139,8 +140,6 @@ public class PermissionsManager implements Reloadable {
                 return new ZPermissionsHandler();
             case VAULT:
                 return new VaultHandler(server);
-            case B_PERMISSIONS:
-                return new BPermissionsHandler();
             default:
                 throw new IllegalStateException("Unhandled permission type '" + type + "'");
         }
@@ -154,7 +153,7 @@ public class PermissionsManager implements Reloadable {
         this.handler = null;
 
         // Print a status message to the console
-        ConsoleLogger.info("Unhooked from Permissions!");
+        logger.info("Unhooked from Permissions!");
     }
 
     /**
@@ -177,7 +176,7 @@ public class PermissionsManager implements Reloadable {
     public void onPluginEnable(String pluginName) {
         // Check if any known permissions system is enabling
         if (PermissionsSystemType.isPermissionSystem(pluginName)) {
-            ConsoleLogger.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
+            logger.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
             setup();
         }
     }
@@ -190,7 +189,7 @@ public class PermissionsManager implements Reloadable {
     public void onPluginDisable(String pluginName) {
         // Check if any known permission system is being disabled
         if (PermissionsSystemType.isPermissionSystem(pluginName)) {
-            ConsoleLogger.info(pluginName + " plugin disabled, updating hooks!");
+            logger.info(pluginName + " plugin disabled, updating hooks!");
             setup();
         }
     }
@@ -457,7 +456,7 @@ public class PermissionsManager implements Reloadable {
         try {
             loadUserData(offlinePlayer.getUniqueId());
         } catch (PermissionLoadUserException e) {
-            ConsoleLogger.logException("Unable to load the permission data of user " + offlinePlayer.getName(), e);
+            logger.logException("Unable to load the permission data of user " + offlinePlayer.getName(), e);
             return false;
         }
         return true;

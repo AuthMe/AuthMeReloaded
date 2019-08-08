@@ -9,6 +9,7 @@ import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.FileUtils;
 
@@ -28,6 +29,8 @@ import static java.util.Collections.singletonList;
  * Migrates the used messages file to a complete, up-to-date version when necessary.
  */
 public class MessageUpdater {
+
+    private ConsoleLogger logger = ConsoleLoggerFactory.get(MessageUpdater.class);
 
     /**
      * Applies any necessary migrations to the user's messages file and saves it if it has been modified.
@@ -68,7 +71,7 @@ public class MessageUpdater {
             backupMessagesFile(userFile);
 
             userResource.exportProperties(configurationData);
-            ConsoleLogger.debug("Successfully saved {0}", userFile);
+            logger.debug("Successfully saved {0}", userFile);
             return true;
         }
         return false;
@@ -91,7 +94,7 @@ public class MessageUpdater {
     private boolean migrateOldKeys(PropertyReader propertyReader, MessageKeyConfigurationData configurationData) {
         boolean hasChange = OldMessageKeysMigrater.migrateOldPaths(propertyReader, configurationData);
         if (hasChange) {
-            ConsoleLogger.info("Old keys have been moved to the new ones in your messages_xx.yml file");
+            logger.info("Old keys have been moved to the new ones in your messages_xx.yml file");
         }
         return hasChange;
     }
@@ -106,7 +109,7 @@ public class MessageUpdater {
             }
         }
         if (!addedKeys.isEmpty()) {
-            ConsoleLogger.info(
+            logger.info(
                 "Added " + addedKeys.size() + " missing keys to your messages_xx.yml file: " + addedKeys);
             return true;
         }

@@ -1,6 +1,7 @@
 package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import org.bukkit.Bukkit;
@@ -19,6 +20,7 @@ class PurgeTask extends BukkitRunnable {
     //how many players we should check for each tick
     private static final int INTERVAL_CHECK = 5;
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PurgeTask.class);
     private final PurgeService purgeService;
     private final PermissionsManager permissionsManager;
     private final UUID sender;
@@ -74,7 +76,7 @@ class PurgeTask extends BukkitRunnable {
             OfflinePlayer offlinePlayer = offlinePlayers[nextPosition];
             if (offlinePlayer.getName() != null && toPurge.remove(offlinePlayer.getName().toLowerCase())) {
                 if (!permissionsManager.loadUserData(offlinePlayer)) {
-                    ConsoleLogger.warning("Unable to check if the user " + offlinePlayer.getName() + " can be purged!");
+                    logger.warning("Unable to check if the user " + offlinePlayer.getName() + " can be purged!");
                     continue;
                 }
                 if (!permissionsManager.hasPermissionOffline(offlinePlayer, PlayerStatePermission.BYPASS_PURGE)) {
@@ -85,7 +87,7 @@ class PurgeTask extends BukkitRunnable {
         }
 
         if (!toPurge.isEmpty() && playerPortion.isEmpty()) {
-            ConsoleLogger.info("Finished lookup of offlinePlayers. Begin looking purging player names only");
+            logger.info("Finished lookup of offlinePlayers. Begin looking purging player names only");
 
             //we went through all offlineplayers but there are still names remaining
             for (String name : toPurge) {
@@ -110,7 +112,7 @@ class PurgeTask extends BukkitRunnable {
         // Show a status message
         sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged successfully");
 
-        ConsoleLogger.info("Purge finished!");
+        logger.info("Purge finished!");
         purgeService.setPurging(false);
     }
 

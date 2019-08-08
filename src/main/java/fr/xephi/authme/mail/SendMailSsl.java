@@ -1,6 +1,7 @@
 package fr.xephi.authme.mail;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
@@ -25,6 +26,8 @@ import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
  * Sends emails to players on behalf of the server.
  */
 public class SendMailSsl {
+
+    private ConsoleLogger logger = ConsoleLoggerFactory.get(SendMailSsl.class);
 
     @Inject
     private Settings settings;
@@ -96,14 +99,14 @@ public class SendMailSsl {
             email.setHtmlMsg(content);
             email.setTextMsg(content);
         } catch (EmailException e) {
-            ConsoleLogger.logException("Your email.html config contains an error and cannot be sent:", e);
+            logger.logException("Your email.html config contains an error and cannot be sent:", e);
             return false;
         }
         try {
             email.send();
             return true;
         } catch (EmailException e) {
-            ConsoleLogger.logException("Failed to send a mail to " + email.getToAddresses() + ":", e);
+            logger.logException("Failed to send a mail to " + email.getToAddresses() + ":", e);
             return false;
         }
     }

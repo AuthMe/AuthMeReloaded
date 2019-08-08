@@ -31,6 +31,12 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<Boolean> MYSQL_USE_SSL =
         newProperty("DataSource.mySQLUseSSL", true);
 
+    @Comment({"Verification of server's certificate.",
+        "We would not recommend to set this option to false.",
+        "Set this option to false at your own risk if and only if you know what you're doing"})
+    public static final Property<Boolean> MYSQL_CHECK_SERVER_CERTIFICATE =
+        newProperty( "DataSource.mySQLCheckServerCertificate", true );
+
     @Comment("Username to connect to the MySQL database")
     public static final Property<String> MYSQL_USERNAME =
         newProperty("DataSource.mySQLUsername", "authme");
@@ -122,6 +128,10 @@ public final class DatabaseSettings implements SettingsHolder {
     @Comment("Column for storing player LastLocation - Pitch")
     public static final Property<String> MYSQL_COL_LASTLOC_PITCH =
         newProperty("DataSource.mySQLlastlocPitch", "pitch");
+
+    @Comment("Column for storing players uuids (optional)")
+    public static final Property<String> MYSQL_COL_PLAYER_UUID =
+        newProperty( "DataSource.mySQLPlayerUUID", "" );
 
     @Comment("Column for storing players groups")
     public static final Property<String> MYSQL_COL_GROUP =

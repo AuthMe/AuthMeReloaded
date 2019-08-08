@@ -6,6 +6,7 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyReader;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -38,7 +39,8 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
  * Service for verifying that the configuration is up-to-date.
  */
 public class SettingsMigrationService extends PlainMigrationService {
-
+    
+    private static ConsoleLogger logger = ConsoleLoggerFactory.get(SettingsMigrationService.class);
     private final File pluginFolder;
 
     // Stores old "other accounts command" config if present.
@@ -141,7 +143,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             try (FileWriter fw = new FileWriter(emailFile)) {
                 fw.write(mailText);
             } catch (IOException e) {
-                ConsoleLogger.logException("Could not create email.html configuration file:", e);
+                logger.logException("Could not create email.html configuration file:", e);
             }
         }
         return true;
@@ -160,7 +162,7 @@ public class SettingsMigrationService extends PlainMigrationService {
         boolean hasMigrated = moveProperty(oldDelayJoinProperty, DELAY_JOIN_MESSAGE, reader, configData);
 
         if (hasMigrated) {
-            ConsoleLogger.info(String.format("Note that we now also have the settings %s and %s",
+            logger.info(String.format("Note that we now also have the settings %s and %s",
                 REMOVE_JOIN_MESSAGE.getPath(), REMOVE_LEAVE_MESSAGE.getPath()));
         }
         return hasMigrated;
@@ -213,7 +215,7 @@ public class SettingsMigrationService extends PlainMigrationService {
         final String oldPath = "Security.console.noConsoleSpam";
         final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
         if (!newProperty.isPresent(reader) && reader.contains(oldPath)) {
-            ConsoleLogger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
+            logger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
             boolean oldValue = Optional.ofNullable(reader.getBoolean(oldPath)).orElse(false);
             LogLevel level = oldValue ? LogLevel.INFO : LogLevel.FINE;
             configData.setValue(newProperty, level);
@@ -224,7 +226,7 @@ public class SettingsMigrationService extends PlainMigrationService {
 
     private static boolean hasOldHelpHeaderProperty(PropertyReader reader) {
         if (reader.contains("settings.helpHeader")) {
-            ConsoleLogger.warning("Help header setting is now in messages/help_xx.yml, "
+            logger.warning("Help header setting is now in messages/help_xx.yml, "
                 + "please check the file to set it again");
             return true;
         }
@@ -234,7 +236,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     private static boolean hasSupportOldPasswordProperty(PropertyReader reader) {
         String path = "settings.security.supportOldPasswordHash";
         if (reader.contains(path)) {
-            ConsoleLogger.warning("Property '" + path + "' is no longer supported. "
+            logger.warning("Property '" + path + "' is no longer supported. "
                 + "Use '" + SecuritySettings.LEGACY_HASHES.getPath() + "' instead.");
             return true;
         }
@@ -265,7 +267,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             ? RegisterSecondaryArgument.CONFIRMATION
             : RegisterSecondaryArgument.NONE;
 
-        ConsoleLogger.warning("Merging old registration settings into '"
+        logger.warning("Merging old registration settings into '"
             + RegistrationSettings.REGISTRATION_TYPE.getPath() + "'");
         configData.setValue(RegistrationSettings.REGISTRATION_TYPE, registrationType);
         configData.setValue(RegistrationSettings.REGISTER_SECOND_ARGUMENT, secondaryArgument);
@@ -318,7 +320,7 @@ public class SettingsMigrationService extends PlainMigrationService {
                 Set<HashAlgorithm> legacyHashes = SecuritySettings.LEGACY_HASHES.determineValue(reader);
                 legacyHashes.add(currentHash);
                 configData.setValue(SecuritySettings.LEGACY_HASHES, legacyHashes);
-                ConsoleLogger.warning("The hash algorithm '" + currentHash
+                logger.warning("The hash algorithm '" + currentHash
                     + "' is no longer supported for active use. New hashes will be in SHA256.");
                 return true;
             }
@@ -372,9 +374,9 @@ public class SettingsMigrationService extends PlainMigrationService {
                                               ConfigurationData configData) {
         if (reader.contains(oldProperty.getPath())) {
             if (reader.contains(newProperty.getPath())) {
-                ConsoleLogger.info("Detected deprecated property " + oldProperty.getPath());
+                logger.info("Detected deprecated property " + oldProperty.getPath());
             } else {
-                ConsoleLogger.info("Renaming " + oldProperty.getPath() + " to " + newProperty.getPath());
+                logger.info("Renaming " + oldProperty.getPath() + " to " + newProperty.getPath());
                 configData.setValue(newProperty, oldProperty.determineValue(reader));
             }
             return true;

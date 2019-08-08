@@ -1,7 +1,6 @@
 package tools.helptranslation;
 
 import com.google.common.collect.Sets;
-import de.bananaco.bpermissions.imp.YamlConfiguration;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandUtils;
@@ -9,6 +8,7 @@ import fr.xephi.authme.command.help.HelpMessage;
 import fr.xephi.authme.command.help.HelpSection;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;

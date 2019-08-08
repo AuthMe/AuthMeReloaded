@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -123,7 +122,7 @@ public class OnJoinVerifierTest {
         List<Player> onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
         given(permissionsManager.hasPermission(onlinePlayers.get(1), PlayerStatePermission.IS_VIP)).willReturn(false);
-        returnGivenOnlinePlayers(bukkitService, onlinePlayers);
+        given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
         given(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
 
@@ -147,7 +146,7 @@ public class OnJoinVerifierTest {
         given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
         List<Player> onlinePlayers = Collections.singletonList(mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
-        returnGivenOnlinePlayers(bukkitService, onlinePlayers);
+        given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
         given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
 

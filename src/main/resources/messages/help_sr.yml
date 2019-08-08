@@ -1,0 +1,45 @@
+# Konfiguracija za prevođenje pomoći AuthMe, primer kada kucate /authme help ili /authme help register
+
+# -------------------------------------------------------
+# Lista of teksta u pomoćnoj sekciji
+common:
+    header: '==========[ AuthMeReloaded POMOĆ ]=========='
+    optional: 'Opcionalno'
+    hasPermission: 'Imate dozvola'
+    noPermission: 'Nemate dozvola'
+    default: 'Početan'
+    result: 'Rezultat'
+    defaultPermissions:
+        notAllowed: 'Nemate dozvola'
+        opOnly: 'Samo OP-ovi'
+        allowed: 'Dozvoljeno svima'
+
+# -------------------------------------------------------
+# Naslovi pojedinih sekcija pomoći
+# Izbrišite deo teksta ako želite da iskjučite to, primer da sakrijte alternative:
+#   alternatives: ''
+section:
+    command: 'Komanda'
+    description: 'Kratak opis'
+    detailedDescription: 'Detaljan opis'
+    arguments: 'Argumenti'
+    permissions: 'Dozvole'
+    alternatives: 'Alternative'
+    children: 'Komande'
+
+# -------------------------------------------------------
+# Možete prevesti podatke svih komandi koristeći uzorak ispod.
+# Na primer da prevedete /authme reload, napravite sekciju "authme.reload", ili "login" za /login
+# Ako komanda ima argumente, možete koristiti arg1 kao što je prikazano ispod za prvi argument, itd
+# Prevodi ne moraju biti kompletni; sve sekcije koje nedostaju će biti uklonjene iz početnog tiho
+# Važno: Postavite glavne komande kao što su "authme" pre njihovih sledbenika (primer "authme.reload")
+commands:
+    authme.register:
+        description: 'Registrujte igrača'
+        detailedDescription: 'Registrujte specifičnog igrača specifičnom lozinkom.'
+        arg1:
+            label: 'igrač'
+            description: 'Ime igrača'
+        arg2:
+            label: 'lozinka'
+            description: 'Lozinka'

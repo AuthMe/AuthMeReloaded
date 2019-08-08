@@ -1,5 +1,6 @@
 package tools.messages;
 
+import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.message.MessageKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,7 +16,8 @@ import java.util.List;
  */
 public class AddJavaDocToMessageEnumTask implements AutoToolTask {
 
-    private static final String MESSAGES_FILE = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/messages_en.yml";
+    private static final String MESSAGES_FILE =
+        ToolsConstants.MAIN_RESOURCES_ROOT + MessagePathHelper.DEFAULT_MESSAGES_FILE;
 
     private FileConfiguration configuration;
 

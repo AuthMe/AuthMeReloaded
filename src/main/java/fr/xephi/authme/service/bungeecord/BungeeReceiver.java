@@ -6,6 +6,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
@@ -18,6 +19,8 @@ import javax.inject.Inject;
 import java.util.Optional;
 
 public class BungeeReceiver implements PluginMessageListener, SettingsDependent {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(BungeeReceiver.class);
 
     private final AuthMe plugin;
     private final BukkitService bukkitService;
@@ -59,7 +62,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         final String typeId = dataIn.readUTF();
         final Optional<MessageType> type = MessageType.fromId(typeId);
         if (!type.isPresent()) {
-            ConsoleLogger.debug("Received unsupported forwarded bungeecord message type! ({0})", typeId);
+            logger.debug("Received unsupported forwarded bungeecord message type! ({0})", typeId);
             return;
         }
 
@@ -68,7 +71,8 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         try {
             argument = dataIn.readUTF();
         } catch (IllegalStateException e) {
-            ConsoleLogger.warning("Received invalid forwarded plugin message of type " + type.get().name() + ": argument is missing!");
+            logger.warning("Received invalid forwarded plugin message of type " + type.get().name()
+                + ": argument is missing!");
             return;
         }
 
@@ -92,7 +96,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         final String typeId = in.readUTF();
         final Optional<MessageType> type = MessageType.fromId(typeId);
         if (!type.isPresent()) {
-            ConsoleLogger.debug("Received unsupported bungeecord message type! ({0})", typeId);
+            logger.debug("Received unsupported bungeecord message type! ({0})", typeId);
             return;
         }
 
@@ -101,7 +105,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         try {
             argument = in.readUTF();
         } catch (IllegalStateException e) {
-            ConsoleLogger.warning("Received invalid plugin message of type " + type.get().name()
+            logger.warning("Received invalid plugin message of type " + type.get().name()
                 + ": argument is missing!");
             return;
         }
@@ -136,7 +140,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
             management.forceLogin(player);
-            ConsoleLogger.info("The user " + player.getName() + " has been automatically logged in, "
+            logger.info("The user " + player.getName() + " has been automatically logged in, "
                 + "as requested via plugin messaging.");
         }
     }

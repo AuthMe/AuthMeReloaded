@@ -8,7 +8,7 @@ registration:
   register_request: '&3Palun registreeri käsklusega: /register <parool> <KinnitaParool>'
   command_usage: '&cKasutus: /register <parool> <KinnitaParool>'
   reg_only: '&4Vaid registreeritud mängijad saavad liituda serveriga! Külasta http://example.com enda kasutaja registreerimiseks!'
-  kicked_admin_registered: 'Administraator registreeris teie kasutaja, palun logige uuesti sisse.'
+  kicked_admin_registered: 'Administraator registreeris su kasutaja, palun logi uuesti sisse.'
   success: '&2Edukalt registreeritud!'
   disabled: '&cMängusisene registreerimine on välja lülitatud!'
   name_taken: '&cSee kasutaja on juba registreeritud!'
@@ -18,7 +18,7 @@ password:
   match_error: '&cParoolid ei kattu, palun proovi uuesti!'
   name_in_password: '&cSa ei saa kasutada oma kasutajanime paroolina, palun vali mõni teine parool.'
   unsafe_password: '&cSee parool ei ole turvaline, palun vali mõni teine parool.'
-  forbidden_characters: '&4Teie parool sisaldab keelatud tähemärke. Lubatud tähemärgid: %valid_chars'
+  forbidden_characters: '&4Su parool sisaldab keelatud tähemärke. Lubatud tähemärgid: %valid_chars'
   wrong_length: '&cSu parool on liiga pikk või lühike, palun vali mõni teine parool.'
 
 # Login
@@ -90,7 +90,7 @@ email:
   request_confirmation: '&cPalun kinnita oma meiliaadress!'
   changed: '&2Meiliaadress edukalt muudetud!'
   email_show: '&2Su praegune meiliaadress on: &f%email'
-  incomplete_settings: 'Error: meili saatmiseks pole kõik vajalikud seaded seadistatud. Teata sellest administraatorile.'
+  incomplete_settings: 'Viga: meili saatmiseks pole kõik vajalikud seaded seadistatud. Teata sellest administraatorile.'
   already_used: '&4See meiliaadress on juba kasutuses!'
   send_failure: 'Meili ei õnnestunud saata. Teata sellest administraatorile.'
   no_email_for_account: '&2Selle kasutajaga ei ole seotud ühtegi meiliaadressi.'
@@ -114,7 +114,7 @@ recovery:
 
 # Captcha
 captcha:
-  usage_captcha: '&3Sisselogimiseks lahenda captha käsklusega: /captcha %captcha_code'
+  usage_captcha: '&3Sisselogimiseks lahenda captcha käsklusega: /captcha %captcha_code'
   wrong_captcha: '&cVale captcha, kasuta käsklust "/captcha %captcha_code"!'
   valid_captcha: '&2Captcha lahendatud!'
   captcha_for_registration: 'Registreerimiseks lahenda captcha kasutades käsklust: /captcha %captcha_code'

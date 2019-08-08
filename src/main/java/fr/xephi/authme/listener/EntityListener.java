@@ -1,6 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -22,18 +23,21 @@ import java.lang.reflect.Method;
 
 public class EntityListener implements Listener {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(EntityListener.class);
     private final ListenerService listenerService;
+
     private Method getShooter;
     private boolean shooterIsLivingEntity;
 
     @Inject
     EntityListener(ListenerService listenerService) {
         this.listenerService = listenerService;
+
         try {
             getShooter = Projectile.class.getDeclaredMethod("getShooter");
             shooterIsLivingEntity = getShooter.getReturnType() == LivingEntity.class;
         } catch (NoSuchMethodException | SecurityException e) {
-            ConsoleLogger.logException("Cannot load getShooter() method on Projectile class", e);
+            logger.logException("Cannot load getShooter() method on Projectile class", e);
         }
     }
 
@@ -56,7 +60,7 @@ public class EntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
-        if (listenerService.shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event.getTarget())) {
             event.setTarget(null);
             event.setCancelled(true);
         }
@@ -107,7 +111,7 @@ public class EntityListener implements Listener {
                 }
                 shooterRaw = getShooter.invoke(projectile);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                ConsoleLogger.logException("Error getting shooter", e);
+                logger.logException("Error getting shooter", e);
             }
         } else {
             shooterRaw = projectile.getShooter();

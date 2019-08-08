@@ -2,6 +2,7 @@ package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -25,6 +26,8 @@ import java.util.Collections;
  * be in at least one group, this will mean that the player is not removed from his primary group.
  */
 class AuthGroupHandler implements Reloadable {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AuthGroupHandler.class);
 
     @Inject
     private PermissionsManager permissionsManager;
@@ -78,7 +81,7 @@ class AuthGroupHandler implements Reloadable {
                 throw new IllegalStateException("Encountered unhandled auth group type '" + groupType + "'");
         }
 
-        ConsoleLogger.debug(() -> player.getName() + " changed to "
+        logger.debug(() -> player.getName() + " changed to "
             + groupType + ": has groups " + permissionsManager.getGroups(player));
     }
 
@@ -95,7 +98,7 @@ class AuthGroupHandler implements Reloadable {
 
         // Make sure group support is available
         if (!permissionsManager.hasGroupSupport()) {
-            ConsoleLogger.warning("The current permissions system doesn't have group support, unable to set group!");
+            logger.warning("The current permissions system doesn't have group support, unable to set group!");
             return false;
         }
         return true;

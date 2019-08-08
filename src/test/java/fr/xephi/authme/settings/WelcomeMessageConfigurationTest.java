@@ -9,6 +9,7 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -25,15 +26,12 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
@@ -96,7 +94,7 @@ public class WelcomeMessageConfigurationTest {
         given(player.getName()).willReturn("Bobby");
         TestHelper.mockPlayerIp(player, "123.45.66.77");
         given(geoIpService.getCountryName("123.45.66.77")).willReturn("Syldavia");
-        given(server.getServerName()).willReturn("CrazyServer");
+        given(service.getProperty(PluginSettings.SERVER_NAME)).willReturn("CrazyServer");
 
         // when
         List<String> result = welcomeMessageConfiguration.getWelcomeMessage(player);
@@ -106,8 +104,7 @@ public class WelcomeMessageConfigurationTest {
         assertThat(result.get(0), equalTo("Hello Bobby, your IP is 123.45.66.77"));
         assertThat(result.get(1), equalTo("Your country is Syldavia."));
         assertThat(result.get(2), equalTo("Welcome to CrazyServer!"));
-        verify(server, only()).getServerName();
-        verifyZeroInteractions(playerCache);
+        verifyZeroInteractions(server, playerCache);
     }
 
     @Test
@@ -115,7 +112,7 @@ public class WelcomeMessageConfigurationTest {
         // given
         String welcomeMessage = "{ONLINE}/{MAXPLAYERS} online\n{LOGINS} logged in\nYour world is {WORLD}\nServer: {VERSION}";
         setWelcomeMessageAndReload(welcomeMessage);
-        returnGivenOnlinePlayers(bukkitService, Arrays.asList(mock(Player.class), mock(Player.class)));
+        given(bukkitService.getOnlinePlayers()).willReturn(Arrays.asList(mock(Player.class), mock(Player.class)));
         given(server.getMaxPlayers()).willReturn(20);
         given(playerCache.getLogged()).willReturn(1);
         given(server.getBukkitVersion()).willReturn("Bukkit-456.77.8");

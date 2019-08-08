@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.EmailChangedEvent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
@@ -20,6 +21,8 @@ import javax.inject.Inject;
  * Async task for changing the email.
  */
 public class AsyncChangeEmail implements AsynchronousProcess {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsyncChangeEmail.class);
 
     @Inject
     private CommonService service;
@@ -83,7 +86,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         EmailChangedEvent event = bukkitService.createAndCallEvent(isAsync
             -> new EmailChangedEvent(player, oldEmail, newEmail, isAsync));
         if (event.isCancelled()) {
-            ConsoleLogger.info("Could not change email for player '" + player + "' – event was cancelled");
+            logger.info("Could not change email for player '" + player + "' – event was cancelled");
             service.send(player, MessageKey.EMAIL_CHANGE_NOT_ALLOWED);
             return;
         }

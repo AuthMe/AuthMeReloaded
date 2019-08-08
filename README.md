@@ -90,6 +90,23 @@ You can also create your own translation file and, if you want, you can share it
 - **Dev resources:**
   - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
   - <a href="http://repo.codemc.org/repository/maven-public/">Maven Repository</a>
+  ```xml
+    <repositories>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.xephi</groupId>
+            <artifactId>authme</artifactId>
+            <version>5.6.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+  ```
 
 - **Statistics:**
     ![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)
@@ -113,9 +130,6 @@ You can also create your own translation file and, if you want, you can share it
 >- ProtocolLib (optional, required by some features)
 
 ## Credits
-
-##### Sponsor:
-[FastVM.io](https://fastvm.io) is leader in VPS hosting solutions. With its own DataCenter offers Anti-DDoS solutions at affordable prices.
 
 ##### Contributors:
 Team members: <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Development-team">developers</a>, <a href="https://github.com/AuthMe/AuthMeReloaded/wiki/Translators">translators</a>

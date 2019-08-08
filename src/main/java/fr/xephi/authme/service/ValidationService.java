@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -33,6 +34,8 @@ import static fr.xephi.authme.util.StringUtils.isInsideString;
  * Validation service.
  */
 public class ValidationService implements Reloadable {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ValidationService.class);
 
     @Inject
     private Settings settings;
@@ -125,7 +128,7 @@ public class ValidationService implements Reloadable {
         String countryCode = geoIpService.getCountryCode(hostAddress);
         boolean isCountryAllowed = validateWhitelistAndBlacklist(countryCode,
             ProtectionSettings.COUNTRIES_WHITELIST, ProtectionSettings.COUNTRIES_BLACKLIST);
-        ConsoleLogger.debug("Country code `{0}` for `{1}` is allowed: {2}", countryCode, hostAddress, isCountryAllowed);
+        logger.debug("Country code `{0}` for `{1}` is allowed: {2}", countryCode, hostAddress, isCountryAllowed);
         return isCountryAllowed;
     }
 
@@ -211,7 +214,7 @@ public class ValidationService implements Reloadable {
                 String[] data = restriction.split(";");
                 restrictions.put(data[0].toLowerCase(), data[1]);
             } else {
-                ConsoleLogger.warning("Restricted user rule must have a ';' separating name from restriction,"
+                logger.warning("Restricted user rule must have a ';' separating name from restriction,"
                     + " but found: '" + restriction + "'");
             }
         }

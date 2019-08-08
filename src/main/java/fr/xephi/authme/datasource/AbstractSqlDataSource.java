@@ -53,7 +53,8 @@ public abstract class AbstractSqlDataSource implements DataSource {
     public boolean saveAuth(PlayerAuth auth) {
         return columnsHandler.insert(auth,
             AuthMeColumns.NAME, AuthMeColumns.NICK_NAME, AuthMeColumns.PASSWORD, AuthMeColumns.SALT,
-            AuthMeColumns.EMAIL, AuthMeColumns.REGISTRATION_DATE, AuthMeColumns.REGISTRATION_IP);
+            AuthMeColumns.EMAIL, AuthMeColumns.REGISTRATION_DATE, AuthMeColumns.REGISTRATION_IP,
+            AuthMeColumns.UUID);
     }
 
     @Override

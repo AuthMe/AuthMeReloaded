@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.PlayerUtils;
@@ -19,6 +20,7 @@ import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
  */
 public class SessionService implements Reloadable {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(SessionService.class);
     private final CommonService service;
     private final BukkitService bukkitService;
     private final DataSource database;
@@ -68,7 +70,7 @@ public class SessionService implements Reloadable {
      */
     private SessionState fetchSessionStatus(PlayerAuth auth, Player player) {
         if (auth == null) {
-            ConsoleLogger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
+            logger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
             return SessionState.NOT_VALID;
         } else if (auth.getLastLogin() == null) {
             return SessionState.NOT_VALID;

@@ -3,6 +3,7 @@ package fr.xephi.authme.security.crypts;
 import de.mkammerer.argon2.Argon2Constants;
 import de.mkammerer.argon2.Argon2Factory;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -13,6 +14,8 @@ import fr.xephi.authme.security.crypts.description.Usage;
 // Note: Argon2 is actually a salted algorithm but salt generation is handled internally
 // and isn't exposed to the outside, so we treat it as an unsalted implementation
 public class Argon2 extends UnsaltedMethod {
+
+    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Argon2.class);
 
     private de.mkammerer.argon2.Argon2 argon2;
 
@@ -30,7 +33,7 @@ public class Argon2 extends UnsaltedMethod {
             System.loadLibrary("argon2");
             return true;
         } catch (UnsatisfiedLinkError e) {
-            ConsoleLogger.logException(
+            logger.logException(
                 "Cannot find argon2 library: https://github.com/AuthMe/AuthMeReloaded/wiki/Argon2-as-Password-Hash", e);
         }
         return false;

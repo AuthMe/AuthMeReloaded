@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -35,8 +36,27 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.inventory.InventoryView;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -49,6 +69,8 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
  * Listener class for player events.
  */
 public class PlayerListener implements Listener {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PlayerListener.class);
 
     @Inject
     private Settings settings;
@@ -270,7 +292,7 @@ public class PlayerListener implements Listener {
         try {
             permissionsManager.loadUserData(event.getUniqueId());
         } catch (PermissionLoadUserException e) {
-            ConsoleLogger.logException("Unable to load the permission data of user " + name, e);
+            logger.logException("Unable to load the permission data of user " + name, e);
         }
 
         // getAddress() sometimes returning null if not yet resolved
@@ -391,12 +413,12 @@ public class PlayerListener implements Listener {
         }
     }
 
-    private boolean isInventoryWhitelisted(Inventory inventory) {
+    private boolean isInventoryWhitelisted(InventoryView inventory) {
         if (inventory == null) {
             return false;
         }
         Set<String> whitelist = settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES);
-        return whitelist.contains(ChatColor.stripColor(inventory.getName()));
+        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -404,7 +426,7 @@ public class PlayerListener implements Listener {
         final HumanEntity player = event.getPlayer();
 
         if (listenerService.shouldCancelEvent(player)
-            && !isInventoryWhitelisted(event.getInventory())) {
+            && !isInventoryWhitelisted(event.getView())) {
             event.setCancelled(true);
 
             /*
@@ -418,7 +440,7 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
         if (listenerService.shouldCancelEvent(event.getWhoClicked())
-            && !isInventoryWhitelisted(event.getClickedInventory())) {
+            && !isInventoryWhitelisted(event.getView())) {
             event.setCancelled(true);
         }
     }

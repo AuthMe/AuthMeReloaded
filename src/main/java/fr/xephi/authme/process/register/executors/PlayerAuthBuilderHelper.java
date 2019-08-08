@@ -29,6 +29,7 @@ final class PlayerAuthBuilderHelper {
             .email(email)
             .registrationIp(PlayerUtils.getPlayerIp(player))
             .registrationDate(System.currentTimeMillis())
+            .uuid(player.getUniqueId())
             .build();
     }
 }

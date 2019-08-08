@@ -5,6 +5,7 @@ import ch.jalu.configme.resource.YamlFileReader;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
+import fr.xephi.authme.message.MessagePathHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,7 +26,8 @@ import static org.junit.Assert.assertThat;
  */
 public class HelpMessagesConsistencyTest {
 
-    private static final File DEFAULT_MESSAGES_FILE = TestHelper.getJarFile("/messages/help_en.yml");
+    private static final File DEFAULT_MESSAGES_FILE =
+        TestHelper.getJarFile("/" + MessagePathHelper.createHelpMessageFilePath(MessagePathHelper.DEFAULT_LANGUAGE));
 
     @Test
     public void shouldHaveIdenticalTexts() {

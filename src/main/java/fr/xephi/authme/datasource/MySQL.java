@@ -8,9 +8,11 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.util.UuidUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -23,6 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
@@ -32,8 +35,10 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class MySQL extends AbstractSqlDataSource {
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(MySQL.class);
 
     private boolean useSsl;
+    private boolean serverCertificateVerification;
     private String host;
     private String port;
     private String username;
@@ -55,14 +60,14 @@ public class MySQL extends AbstractSqlDataSource {
             this.setConnectionArguments();
         } catch (RuntimeException e) {
             if (e instanceof IllegalArgumentException) {
-                ConsoleLogger.warning("Invalid database arguments! Please check your configuration!");
-                ConsoleLogger.warning("If this error persists, please report it to the developer!");
+                logger.warning("Invalid database arguments! Please check your configuration!");
+                logger.warning("If this error persists, please report it to the developer!");
             }
             if (e instanceof PoolInitializationException) {
-                ConsoleLogger.warning("Can't initialize database connection! Please check your configuration!");
-                ConsoleLogger.warning("If this error persists, please report it to the developer!");
+                logger.warning("Can't initialize database connection! Please check your configuration!");
+                logger.warning("If this error persists, please report it to the developer!");
             }
-            ConsoleLogger.warning("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
+            logger.warning("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
             throw e;
         }
 
@@ -71,8 +76,8 @@ public class MySQL extends AbstractSqlDataSource {
             checkTablesAndColumns();
         } catch (SQLException e) {
             closeConnection();
-            ConsoleLogger.logException("Can't initialize the MySQL database:", e);
-            ConsoleLogger.warning("Please check your database settings in the config.yml file!");
+            logger.logException("Can't initialize the MySQL database:", e);
+            logger.warning("Please check your database settings in the config.yml file!");
             throw e;
         }
     }
@@ -103,6 +108,7 @@ public class MySQL extends AbstractSqlDataSource {
         this.poolSize = settings.getProperty(DatabaseSettings.MYSQL_POOL_SIZE);
         this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
+        this.serverCertificateVerification = settings.getProperty(DatabaseSettings.MYSQL_CHECK_SERVER_CERTIFICATE);
     }
 
     /**
@@ -126,6 +132,11 @@ public class MySQL extends AbstractSqlDataSource {
         // Request mysql over SSL
         ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
 
+        // Disabling server certificate verification on need
+        if (!serverCertificateVerification) {
+            ds.addDataSourceProperty("verifyServerCertificate", String.valueOf(false));
+        }
+
         // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
         ds.addDataSourceProperty("encoding", "UTF-8");
@@ -140,7 +151,7 @@ public class MySQL extends AbstractSqlDataSource {
         ds.addDataSourceProperty("prepStmtCacheSize", "275");
         ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
-        ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
+        logger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
     @Override
@@ -149,7 +160,7 @@ public class MySQL extends AbstractSqlDataSource {
             ds.close();
         }
         setConnectionArguments();
-        ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
+        logger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
     private Connection getConnection() throws SQLException {
@@ -257,8 +268,13 @@ public class MySQL extends AbstractSqlDataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
             }
+
+            if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PLAYER_UUID + " VARCHAR(36)");
+            }
         }
-        ConsoleLogger.info("MySQL setup finished");
+        logger.info("MySQL setup finished");
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
@@ -447,6 +463,8 @@ public class MySQL extends AbstractSqlDataSource {
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);
+        UUID uuid = col.PLAYER_UUID.isEmpty()
+            ? null : UuidUtils.parseUuidSafely(row.getString(col.PLAYER_UUID));
         return PlayerAuth.builder()
             .name(row.getString(col.NAME))
             .realName(row.getString(col.REAL_NAME))
@@ -464,6 +482,7 @@ public class MySQL extends AbstractSqlDataSource {
             .locZ(row.getDouble(col.LASTLOC_Z))
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
+            .uuid(uuid)
             .build();
     }
 }

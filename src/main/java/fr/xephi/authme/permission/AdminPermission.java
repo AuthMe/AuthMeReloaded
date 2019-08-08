@@ -46,6 +46,16 @@ public enum AdminPermission implements PermissionNode {
     CHANGE_EMAIL("authme.admin.changemail"),
 
     /**
+     * Administrator command to see whether a player has enabled two-factor authentication.
+     */
+    VIEW_TOTP_STATUS("authme.admin.totpviewstatus"),
+
+    /**
+     * Administrator command to disable the two-factor auth of a user.
+     */
+    DISABLE_TOTP("authme.admin.totpdisable"),
+
+    /**
      * Administrator command to get the last known IP of a user.
      */
     GET_IP("authme.admin.getip"),
