@@ -33,5 +33,4 @@ public class PlayerListener19Spigot implements Listener {
             event.setSpawnLocation(customSpawnLocation);
         }
     }
-
 }

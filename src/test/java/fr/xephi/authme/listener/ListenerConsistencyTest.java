@@ -1,8 +1,8 @@
 package fr.xephi.authme.listener;
 
-import com.google.common.collect.Sets;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,13 +26,6 @@ import static org.junit.Assert.fail;
 public final class ListenerConsistencyTest {
 
     private static List<Class<? extends Listener>> classes;
-
-    private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet(
-        "PlayerListener#onPlayerJoin", "PlayerListener#onPlayerLogin",
-        "PlayerListener#onPlayerQuit", "ServerListener#onPluginDisable",
-        "ServerListener#onServerPing", "ServerListener#onPluginEnable",
-        "PlayerListener#onJoinMessage", "PlayerListener#onAsyncPlayerPreLoginEvent",
-        "PlayerListener19Spigot#onPlayerSpawn");
 
     @BeforeClass
     public static void collectListenerClasses() {
@@ -84,7 +77,7 @@ public final class ListenerConsistencyTest {
         Method[] methods = listenerClass.getDeclaredMethods();
         for (Method method : methods) {
             if (isTestableMethod(method) && method.isAnnotationPresent(EventHandler.class)) {
-                if (CANCELED_EXCEPTIONS.contains(clazz + "#" + method.getName())) {
+                if (!method.getParameterTypes()[0].isAssignableFrom(Cancellable.class)) {
                     continue;
                 }
 

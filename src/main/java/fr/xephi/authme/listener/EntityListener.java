@@ -41,7 +41,6 @@ public class EntityListener implements Listener {
         }
     }
 
-    // Note #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
@@ -81,6 +80,7 @@ public class EntityListener implements Listener {
         }
     }
 
+    // TODO: does it still make sense?
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
@@ -97,11 +97,8 @@ public class EntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        if (event.getEntity() == null) {
-            return;
-        }
+        final Projectile projectile = event.getEntity();
 
-        Projectile projectile = event.getEntity();
         // In the Bukkit API prior to 1.7, getShooter() returns a LivingEntity instead of a ProjectileSource
         Object shooterRaw = null;
         if (shooterIsLivingEntity) {
@@ -127,5 +124,4 @@ public class EntityListener implements Listener {
             event.setCancelled(true);
         }
     }
-
 }
