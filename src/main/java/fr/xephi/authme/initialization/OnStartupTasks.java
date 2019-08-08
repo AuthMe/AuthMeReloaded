@@ -66,7 +66,7 @@ public class OnStartupTasks {
      *
      * @param logger the plugin logger
      */
-    public void setupConsoleFilter(Settings settings, Logger logger) {
+    public void setupConsoleFilter(Logger logger) {
         // Try to set the log4j filter
         try {
             Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");

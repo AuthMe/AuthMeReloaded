@@ -219,7 +219,7 @@ public class AuthMe extends JavaPlugin {
         ConsoleLoggerFactory.reloadSettings(settings);
         logger = ConsoleLoggerFactory.get(AuthMe.class);
         OnStartupTasks onStartupTasks = injector.newInstance(OnStartupTasks.class);
-        onStartupTasks.setupConsoleFilter(settings, getLogger());
+        onStartupTasks.setupConsoleFilter(getLogger());
 
         // Set all service fields on the AuthMe class
         instantiateServices(injector);
