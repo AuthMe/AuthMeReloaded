@@ -80,7 +80,7 @@ public class EntityListener implements Listener {
         }
     }
 
-    // TODO: does it still make sense?
+    //TODO sgdc3 20190808: Does it still make sense?
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
