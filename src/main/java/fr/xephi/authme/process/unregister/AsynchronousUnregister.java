@@ -128,7 +128,6 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
             teleportationService.teleportOnJoin(player);
-            player.saveData();
 
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
                 limboService.createLimboPlayer(player, false);

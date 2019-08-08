@@ -41,7 +41,6 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
         limboService.replaceTasksAfterRegistration(player);
 
-        player.saveData();
         bukkitService.callEvent(new RegisterEvent(player));
         logger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
     }

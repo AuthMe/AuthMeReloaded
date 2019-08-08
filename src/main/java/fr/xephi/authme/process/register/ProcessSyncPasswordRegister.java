@@ -67,7 +67,6 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
             service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
         }
 
-        player.saveData();
         bukkitService.callEvent(new RegisterEvent(player));
         logger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
 

@@ -100,7 +100,6 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         // The Login event now fires (as intended) after everything is processed
         bukkitService.callEvent(new LoginEvent(player));
-        player.saveData();
 
         // Login is done, display welcome message
         welcomeMessageConfiguration.sendWelcomeMessage(player);
