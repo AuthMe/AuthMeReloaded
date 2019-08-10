@@ -1,12 +1,10 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
@@ -15,7 +13,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -65,8 +62,6 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
  */
 public class PlayerListener implements Listener {
 
-    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PlayerListener.class);
-
     @Inject
     private Settings settings;
     @Inject
@@ -95,8 +90,6 @@ public class PlayerListener implements Listener {
     private PermissionsManager permissionsManager;
     @Inject
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
-    @Inject
-    private BungeeSender bungeeSender;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -150,11 +143,10 @@ public class PlayerListener implements Listener {
             final PlayerAuth auth = dataSource.getAuth(name);
             final boolean isAuthAvailable = auth != null;
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
-            final JoiningPlayer joiningPlayer = JoiningPlayer.fromName(name);
-            onJoinVerifier.checkAntibot(joiningPlayer, isAuthAvailable);
+            onJoinVerifier.checkAntibot(name, isAuthAvailable);
             onJoinVerifier.checkNameCasing(name, auth);
             final String ip = event.getAddress().getHostAddress();
-            onJoinVerifier.checkPlayerCountry(joiningPlayer, ip, isAuthAvailable);
+            onJoinVerifier.checkPlayerCountry(name, ip, isAuthAvailable);
         } catch (FailedVerificationException e) {
             event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);

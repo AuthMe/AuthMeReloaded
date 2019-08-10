@@ -1,6 +1,5 @@
 package fr.xephi.authme.permission;
 
-import fr.xephi.authme.listener.JoiningPlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,13 +12,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link PermissionsManager}.
@@ -153,27 +147,5 @@ public class PermissionsManagerTest {
 
         // then
         assertThat(result, equalTo(true));
-    }
-
-    @Test
-    public void shouldHandleJoiningPlayerPermissionChecksWithProperMethod() {
-        // given
-        Player player = mock(Player.class);
-        JoiningPlayer fromPlayer = JoiningPlayer.fromPlayerObject(player);
-        JoiningPlayer fromName = JoiningPlayer.fromName("Chris");
-
-        PermissionsManager permManagerSpy = spy(permissionsManager);
-        given(permManagerSpy.hasPermission(any(Player.class), eq(PlayerPermission.LOGIN))).willReturn(true);
-        given(permManagerSpy.hasPermissionOffline(anyString(), eq(PlayerPermission.UNREGISTER))).willReturn(true);
-
-        // when
-        boolean resultFromPlayer = permManagerSpy.hasPermission(fromPlayer, PlayerPermission.LOGIN);
-        boolean resultFromName = permManagerSpy.hasPermission(fromName, PlayerPermission.UNREGISTER);
-
-        // then
-        assertThat(resultFromPlayer, equalTo(true));
-        assertThat(resultFromName, equalTo(true));
-        verify(permManagerSpy).hasPermission(player, PlayerPermission.LOGIN);
-        verify(permManagerSpy).hasPermissionOffline(fromName.getName(), PlayerPermission.UNREGISTER);
     }
 }
