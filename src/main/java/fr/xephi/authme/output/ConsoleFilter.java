@@ -1,5 +1,7 @@
 package fr.xephi.authme.output;
 
+import fr.xephi.authme.service.LogFilterService;
+
 import java.util.logging.Filter;
 import java.util.logging.LogRecord;
 
@@ -10,13 +12,19 @@ import java.util.logging.LogRecord;
  */
 public class ConsoleFilter implements Filter {
 
+    private LogFilterService filterService;
+
+    public ConsoleFilter(LogFilterService filterService) {
+        this.filterService = filterService;
+    }
+
     @Override
     public boolean isLoggable(LogRecord record) {
         if (record == null || record.getMessage() == null) {
             return true;
         }
 
-        if (LogFilterHelper.isSensitiveAuthMeCommand(record.getMessage())) {
+        if (filterService.isSensitiveAuthMeCommand(record.getMessage())) {
             String playerName = record.getMessage().split(" ")[0];
             record.setMessage(playerName + " issued an AuthMe command");
         }

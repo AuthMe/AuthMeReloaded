@@ -1,5 +1,6 @@
 package fr.xephi.authme.output;
 
+import fr.xephi.authme.service.LogFilterService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;
@@ -16,6 +17,12 @@ public class Log4JFilter extends AbstractFilter {
 
     private static final long serialVersionUID = -5594073755007974254L;
 
+    private LogFilterService filterService;
+
+    public Log4JFilter(LogFilterService filterService) {
+        this.filterService = filterService;
+    }
+
     /**
      * Validates a Message instance and returns the {@link Result} value
      * depending on whether the message contains sensitive AuthMe data.
@@ -24,7 +31,7 @@ public class Log4JFilter extends AbstractFilter {
      *
      * @return The Result value
      */
-    private static Result validateMessage(Message message) {
+    private Result validateMessage(Message message) {
         if (message == null) {
             return Result.NEUTRAL;
         }
@@ -39,8 +46,8 @@ public class Log4JFilter extends AbstractFilter {
      *
      * @return The Result value
      */
-    private static Result validateMessage(String message) {
-        return LogFilterHelper.isSensitiveAuthMeCommand(message)
+    private Result validateMessage(String message) {
+        return filterService.isSensitiveAuthMeCommand(message)
             ? Result.DENY
             : Result.NEUTRAL;
     }
