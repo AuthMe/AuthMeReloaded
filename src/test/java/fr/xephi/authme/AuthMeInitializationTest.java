@@ -24,8 +24,8 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Integration test verifying that all services can be initialized in {@link AuthMe}
@@ -65,11 +66,6 @@ public class AuthMeInitializationTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
-    public static void setUpLogger() {
-        TestHelper.setupLogger();
-    }
 
     @Before
     public void initAuthMe() throws IOException {
@@ -98,8 +94,9 @@ public class AuthMeInitializationTest {
         given(reader.getList(anyString())).willReturn(Collections.emptyList());
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.createReader()).willReturn(reader);
-
         Settings settings = new Settings(dataFolder, resource, null, buildConfigurationData());
+
+        TestHelper.setupLogger();
 
         Injector injector = new InjectorBuilder()
             .addDefaultHandlers("fr.xephi.authme")
@@ -129,5 +126,21 @@ public class AuthMeInitializationTest {
         assertThat(injector.getIfAvailable(PermissionsManager.class), not(nullValue()));
         assertThat(injector.getIfAvailable(ProcessSyncPlayerLogin.class), not(nullValue()));
         assertThat(injector.getIfAvailable(PurgeService.class), not(nullValue()));
+    }
+
+    @Test
+    public void shouldHandlePrematureShutdownGracefully() {
+        // given
+        BukkitScheduler scheduler = mock(BukkitScheduler.class);
+        given(server.getScheduler()).willReturn(scheduler);
+
+        // Make sure ConsoleLogger has no logger reference since that may happen on unexpected stops
+        ReflectionTestUtils.setField(ConsoleLogger.class, null, "logger", null);
+
+        // when
+        authMe.onDisable();
+
+        // then - no exceptions
+        verify(scheduler).getActiveWorkers(); // via TaskCloser
     }
 }
