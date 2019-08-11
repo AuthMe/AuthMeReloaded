@@ -38,6 +38,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -72,7 +73,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
@@ -189,7 +189,8 @@ public class PlayerListenerTest {
             .check(listener::onPlayerConsumeItem, PlayerItemConsumeEvent.class)
             .check(listener::onPlayerInteract, PlayerInteractEvent.class)
             .check(listener::onPlayerPickupItem, PlayerPickupItemEvent.class)
-            .check(listener::onPlayerInteractEntity, PlayerInteractEntityEvent.class);
+            .check(listener::onPlayerInteractEntity, PlayerInteractEntityEvent.class)
+            .check(listener::onPlayerHeldItem, PlayerItemHeldEvent.class);
     }
 
     @Test
