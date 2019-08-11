@@ -41,6 +41,7 @@ error:
   unexpected_error: '&4An unexpected error occurred, please contact an administrator!'
   kick_for_vip: '&3A VIP player has joined the server when it was full!'
   logged_in: '&cYou''re already logged in!'
+  kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
 
 # AntiBot
 antibot:

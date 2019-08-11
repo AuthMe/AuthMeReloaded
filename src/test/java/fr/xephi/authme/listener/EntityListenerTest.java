@@ -1,6 +1,5 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -200,8 +199,6 @@ public class EntityListenerTest {
     @Test
     public void shouldHandleOldShooterMethod() {
         // given
-        ReflectionTestUtils.setField(listener, "shooterIsLivingEntity", true);
-        ReflectionTestUtils.setField(listener, "getShooter", null);
         Projectile projectile = mock(Projectile.class);
         Player shooter = mock(Player.class);
         given(projectile.getShooter()).willReturn(shooter);

@@ -4,7 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
-import fr.xephi.authme.listener.JoiningPlayer;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandlerException;
@@ -225,18 +224,6 @@ public class PermissionsManager implements Reloadable {
 
         Player player = (Player) sender;
         return player.hasPermission(permissionNode.getNode());
-    }
-
-    /**
-     * Check if the given player has permission for the given permission node.
-     *
-     * @param joiningPlayer  The player to check
-     * @param permissionNode The permission node to verify
-     *
-     * @return true if the player has permission, false otherwise
-     */
-    public boolean hasPermission(JoiningPlayer joiningPlayer, PermissionNode permissionNode) {
-        return joiningPlayer.getPermissionLookupFunction().apply(this, permissionNode);
     }
 
     /**

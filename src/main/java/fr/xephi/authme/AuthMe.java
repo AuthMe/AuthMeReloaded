@@ -125,8 +125,10 @@ public class AuthMe extends JavaPlugin {
         logger = ConsoleLoggerFactory.get(AuthMe.class);
 
         // Check server version
-        if (!isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
-            logger.warning("You are running an unsupported server version! AuthMe requires MC 1.8.X or later!");
+        if (!isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")
+            || !isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
+            logger.warning("You are running an unsupported server version!"
+                + "AuthMe requires Spigot 1.8.X or later!");
             stopOrUnload();
             return;
         }

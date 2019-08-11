@@ -32,11 +32,6 @@ public class ServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
-        // Make sure the plugin instance isn't null
-        if (event.getPlugin() == null) {
-            return;
-        }
-
         final String pluginName = event.getPlugin().getName();
 
         // Call the onPluginDisable method in the permissions manager
@@ -63,11 +58,6 @@ public class ServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
-        // Make sure the plugin instance isn't null
-        if (event.getPlugin() == null) {
-            return;
-        }
-
         final String pluginName = event.getPlugin().getName();
 
         // Call the onPluginEnable method in the permissions manager

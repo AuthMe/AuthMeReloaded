@@ -25,5 +25,4 @@ public class BlockListener implements Listener {
             event.setCancelled(true);
         }
     }
-
 }

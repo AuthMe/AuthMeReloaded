@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * Service for performing various verifications when a player joins.
  */
 public class OnJoinVerifier implements Reloadable {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(OnJoinVerifier.class);
 
     @Inject
@@ -67,16 +67,16 @@ public class OnJoinVerifier implements Reloadable {
     /**
      * Checks if Antibot is enabled.
      *
-     * @param joiningPlayer   the joining player to check
+     * @param name            the joining player name to check
      * @param isAuthAvailable whether or not the player is registered
      * @throws FailedVerificationException if the verification fails
      */
-    public void checkAntibot(JoiningPlayer joiningPlayer, boolean isAuthAvailable) throws FailedVerificationException {
-        if (isAuthAvailable || permissionsManager.hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_ANTIBOT)) {
+    public void checkAntibot(String name, boolean isAuthAvailable) throws FailedVerificationException {
+        if (isAuthAvailable || permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT)) {
             return;
         }
         if (antiBotService.shouldKick()) {
-            antiBotService.addPlayerKick(joiningPlayer.getName());
+            antiBotService.addPlayerKick(name);
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }
     }
@@ -170,16 +170,16 @@ public class OnJoinVerifier implements Reloadable {
     /**
      * Checks that the player's country is admitted.
      *
-     * @param joiningPlayer   the joining player to verify
+     * @param name            the joining player name to verify
      * @param address         the player address
      * @param isAuthAvailable whether or not the user is registered
      * @throws FailedVerificationException if the verification fails
      */
-    public void checkPlayerCountry(JoiningPlayer joiningPlayer, String address,
+    public void checkPlayerCountry(String name, String address,
                                    boolean isAuthAvailable) throws FailedVerificationException {
         if ((!isAuthAvailable || settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED))
             && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)
-            && !permissionsManager.hasPermission(joiningPlayer, PlayerStatePermission.BYPASS_COUNTRY_CHECK)
+            && !permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_COUNTRY_CHECK)
             && !validationService.isCountryAdmitted(address)) {
                 throw new FailedVerificationException(MessageKey.COUNTRY_BANNED_ERROR);
         }
