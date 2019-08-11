@@ -41,6 +41,10 @@ public final class ConsoleLoggerFactory {
             .forEach(logger -> logger.initializeSettings(settings));
     }
 
+    public static int getTotalLoggers() {
+        return consoleLoggers.size();
+    }
+
     private static ConsoleLogger createLogger(String name) {
         ConsoleLogger logger = new ConsoleLogger(name);
         if (settings != null) {
