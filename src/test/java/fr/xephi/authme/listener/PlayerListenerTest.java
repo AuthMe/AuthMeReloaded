@@ -645,9 +645,9 @@ public class PlayerListenerTest {
         // then
         verify(validationService).isUnrestricted(name);
         verify(onJoinVerifier).checkKickNonRegistered(true);
-        verify(onJoinVerifier).checkAntibot(name, eq(true));
+        verify(onJoinVerifier).checkAntibot(name, true);
         verify(onJoinVerifier).checkNameCasing(name, auth);
-        verify(onJoinVerifier).checkPlayerCountry(name, eq(ip), eq(true));
+        verify(onJoinVerifier).checkPlayerCountry(name, ip, true);
         verifyNoModifyingCalls(preLoginEvent);
     }
 

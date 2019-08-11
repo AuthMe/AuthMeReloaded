@@ -200,8 +200,6 @@ public class EntityListenerTest {
     @Test
     public void shouldHandleOldShooterMethod() {
         // given
-        ReflectionTestUtils.setField(listener, "shooterIsLivingEntity", true);
-        ReflectionTestUtils.setField(listener, "getShooter", null);
         Projectile projectile = mock(Projectile.class);
         Player shooter = mock(Player.class);
         given(projectile.getShooter()).willReturn(shooter);
