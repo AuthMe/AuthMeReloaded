@@ -8,6 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
 import org.bukkit.ChatColor;
@@ -54,6 +55,7 @@ class DataStatistics implements DebugSection {
 
         outputDatabaseStats(sender);
         outputInjectorStats(sender);
+        sender.sendMessage("Total logger instances: " + ConsoleLoggerFactory.getTotalLoggers());
     }
 
     @Override

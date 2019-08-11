@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.contains;
@@ -156,22 +154,22 @@ public class ConsoleLoggerTest {
 
         // when
         consoleLogger.debug("Got {0} entries", 17);
-        consoleLogger.debug("Player `{0}` is in world `{1}`", "Bobby", new World("world"));
+        consoleLogger.debug("Player `{0}` is in world `{1}`", "Bobby", new WorldDummy("world"));
         consoleLogger.debug("{0} quick {1} jump over {2} lazy {3} (reason: {4})", 5, "foxes", 3, "dogs", null);
         consoleLogger.debug(() -> "Too little too late");
 
         // then
-        verify(logger).log(Level.INFO, "[DEBUG] Got {0} entries", 17);
-        verify(logger).log(Level.INFO, "[DEBUG] Player `{0}` is in world `{1}`", new Object[]{"Bobby", new World("world")});
-        verify(logger).log(Level.INFO, "[DEBUG] {0} quick {1} jump over {2} lazy {3} (reason: {4})",
-            new Object[]{5, "foxes", 3, "dogs", null});
+        verify(logger).info("[DEBUG] Got 17 entries");
+        verify(logger).info("[DEBUG] Player `Bobby` is in world `w[world]`");
+        verify(logger).info("[DEBUG] 5 quick foxes jump over 3 lazy dogs (reason: null)");
         verify(logger).info("[DEBUG] Too little too late");
+        verifyNoMoreInteractions(logger);
 
         List<String> loggedLines = Files.readAllLines(logFile.toPath(), StandardCharsets.UTF_8);
         assertThat(loggedLines, contains(
-            containsString("[DEBUG] Got {0} entries {17}"),
-            containsString("[DEBUG] Player `{0}` is in world `{1}` {Bobby, w[world]}"),
-            containsString("[DEBUG] {0} quick {1} jump over {2} lazy {3} (reason: {4}) {5, foxes, 3, dogs, null}"),
+            containsString("[DEBUG] Got 17 entries"),
+            containsString("[DEBUG] Player `Bobby` is in world `w[world]`"),
+            containsString("[DEBUG] 5 quick foxes jump over 3 lazy dogs (reason: null)"),
             containsString("[DEBUG] Too little too late")));
     }
 
@@ -214,24 +212,16 @@ public class ConsoleLoggerTest {
         return settings;
     }
 
-    private static final class World {
+    private static final class WorldDummy {
         private final String name;
 
-        World(String name) {
+        WorldDummy(String name) {
             this.name = name;
         }
 
         @Override
         public String toString() {
             return "w[" + name + "]";
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other instanceof World) {
-                return Objects.equals(this.name, ((World) other).name);
-            }
-            return false;
         }
     }
 }

@@ -14,7 +14,6 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
@@ -62,7 +61,7 @@ public class ConsoleLoggerFactoryTest {
         ConsoleLogger logger3 = ConsoleLoggerFactory.get(String.class);
 
         // then
-        assertThat(getConsoleLoggerMap().keySet(), containsInAnyOrder("java.lang.String", "java.lang.Number"));
+        assertThat(ConsoleLoggerFactory.getTotalLoggers(), equalTo(2));
         assertThat(logger3, sameInstance(logger1));
         assertThat(logger2, not(sameInstance(logger1)));
     }

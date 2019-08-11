@@ -53,7 +53,7 @@ public final class VerifyMessagesTask implements ToolTask {
 
         FileConfiguration defaultFileConfiguration = null;
         if (addMissingKeys) {
-            defaultFileConfiguration = YamlConfiguration.loadConfiguration(new File(DEFAULT_MESSAGES_FILE));
+            defaultFileConfiguration = YamlConfiguration.loadConfiguration(new File(ToolsConstants.MAIN_RESOURCES_ROOT, DEFAULT_MESSAGES_FILE));
         }
 
         // Verify the given files

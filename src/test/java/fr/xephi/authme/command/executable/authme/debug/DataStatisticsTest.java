@@ -12,6 +12,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -22,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +73,11 @@ public class DataStatisticsTest {
         given(dataSource.getAccountsRegistered()).willReturn(219);
         given(playerCache.getLogged()).willReturn(12);
 
+        // Clear any loggers that might exist and trigger the generation of two loggers
+        Map loggers = ReflectionTestUtils.getFieldValue(ConsoleLoggerFactory.class, null, "consoleLoggers");
+        loggers.clear();
+        ConsoleLoggerFactory.get(String.class);
+        ConsoleLoggerFactory.get(Integer.class);
 
         // when
         dataStatistics.execute(sender, Collections.emptyList());
@@ -86,7 +91,8 @@ public class DataStatisticsTest {
             "(Reloadable: 4 / SettingsDependent: 3 / HasCleanup: 2)",
             "LimboPlayers in memory: 1",
             "Total players in DB: 219",
-            "PlayerCache size: 12 (= logged in players)"));
+            "PlayerCache size: 12 (= logged in players)",
+            "Total logger instances: 2"));
     }
 
     @Test
@@ -110,10 +116,6 @@ public class DataStatisticsTest {
 
     private static <T> List<T> mockListOfSize(Class<T> mockClass, int size) {
         T mock = mock(mockClass);
-        List<T> mocks = new ArrayList<>(size);
-        for (int i = 0; i < size; ++i) {
-            mocks.add(mock);
-        }
-        return mocks;
+        return Collections.nCopies(size, mock);
     }
 }

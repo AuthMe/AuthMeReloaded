@@ -1,7 +1,6 @@
 package fr.xephi.authme;
 
 import com.google.common.base.Throwables;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -14,14 +13,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * AuthMe logger.
@@ -29,7 +27,12 @@ import java.util.stream.Collectors;
 public final class ConsoleLogger {
 
     private static final String NEW_LINE = System.getProperty("line.separator");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("[MM-dd HH:mm:ss]");
+    /** Formatter which formats dates to something like "[08-16 21:18:46]" for any given LocalDateTime. */
+    private static final DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder()
+        .appendLiteral('[')
+        .appendPattern("MM-dd HH:mm:ss")
+        .appendLiteral(']')
+        .toFormatter();
 
     // Outside references
     private static File logFile;
@@ -157,22 +160,7 @@ public final class ConsoleLogger {
      */
     public void debug(String message) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + message;
-            logger.info(debugMessage);
-            writeLog(debugMessage);
-        }
-    }
-
-    /**
-     * Log the DEBUG message from the supplier if enabled.
-     *
-     * @param msgSupplier the message supplier
-     */
-    public void debug(Supplier<String> msgSupplier) {
-        if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + msgSupplier.get();
-            logger.info(debugMessage);
-            writeLog(debugMessage);
+            logAndWriteWithDebugPrefix(message);
         }
     }
 
@@ -182,11 +170,10 @@ public final class ConsoleLogger {
      * @param message the message
      * @param param1 parameter to replace in the message
      */
+    // Avoids array creation if DEBUG level is disabled
     public void debug(String message, Object param1) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + message;
-            logger.log(Level.INFO, debugMessage, param1);
-            writeLog(debugMessage + " {" + param1 + "}");
+            debug(message, new Object[]{param1});
         }
     }
 
@@ -212,11 +199,25 @@ public final class ConsoleLogger {
      */
     public void debug(String message, Object... params) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + message;
-            logger.log(Level.INFO, debugMessage, params);
-            writeLog(debugMessage + " {"
-                + Arrays.stream(params).map(String::valueOf).collect(Collectors.joining(", ")) + "}");
+            logAndWriteWithDebugPrefix(MessageFormat.format(message, params));
         }
+    }
+
+    /**
+     * Log the DEBUG message from the supplier if enabled.
+     *
+     * @param msgSupplier the message supplier
+     */
+    public void debug(Supplier<String> msgSupplier) {
+        if (logLevel.includes(LogLevel.DEBUG)) {
+            logAndWriteWithDebugPrefix(msgSupplier.get());
+        }
+    }
+
+    private void logAndWriteWithDebugPrefix(String message) {
+        String debugMessage = "[DEBUG] " + message;
+        logger.info(debugMessage);
+        writeLog(debugMessage);
     }
 
     // --------
@@ -232,7 +233,7 @@ public final class ConsoleLogger {
                 fileWriter.flush();
             } catch (IOException ignored) {
             } finally {
-                closeSilently(fileWriter);
+                closeSafely(fileWriter);
                 fileWriter = null;
             }
         }
@@ -245,10 +246,7 @@ public final class ConsoleLogger {
      */
     private static void writeLog(String message) {
         if (fileWriter != null) {
-            String dateTime;
-            synchronized (DATE_FORMAT) {
-                dateTime = DATE_FORMAT.format(new Date());
-            }
+            String dateTime = DATE_FORMAT.format(LocalDateTime.now());
             try {
                 fileWriter.write(dateTime);
                 fileWriter.write(": ");
@@ -260,11 +258,12 @@ public final class ConsoleLogger {
         }
     }
 
-    private static void closeSilently(Closeable closeable) {
+    private static void closeSafely(Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Failed to close resource", e);
             }
         }
     }
@@ -280,9 +279,8 @@ public final class ConsoleLogger {
                 fos = new FileOutputStream(logFile, true);
                 fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             } catch (Exception e) {
-                closeSilently(fos);
-                ConsoleLoggerFactory.get(ConsoleLogger.class)
-                    .logException("Failed to create the log file:", e);
+                closeSafely(fos);
+                logger.log(Level.SEVERE, "Failed to create writer to AuthMe log file", e);
             }
         }
     }
