@@ -40,6 +40,7 @@ error:
     max_registration: '&fSinulla ei ole oikeuksia tehdä enempää pelaajatilejä!'
     logged_in: '&cOlet jo kirjautunut!'
     kick_for_vip: '&cVIP pelaaja liittyi täyteen palvelimeen!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 
 # AntiBot

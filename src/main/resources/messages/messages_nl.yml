@@ -40,6 +40,7 @@ error:
     max_registration: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
     logged_in: '&cJe bent al ingelogd!'
     kick_for_vip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cJe bent tijdelijk gebanned omdat het inloggen te vaak mislukt is.'
 
 # AntiBot

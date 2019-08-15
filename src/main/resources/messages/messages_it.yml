@@ -41,6 +41,7 @@ error:
     max_registration: '&cHai raggiunto il numero massimo di registrazioni (%reg_count/%max_acc %reg_names) per questo indirizzo IP!'
     logged_in: '&cHai già eseguito l''autenticazione!'
     kick_for_vip: '&3Un utente VIP è entrato mentre il server era pieno e ha preso il tuo posto!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cSei stato temporaneamente bandito per aver fallito l''autenticazione troppe volte.'
 
 # AntiBot

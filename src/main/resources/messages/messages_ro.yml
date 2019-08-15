@@ -40,6 +40,7 @@ error:
     max_registration: '&cTe-ai inregistrat cu prea multe conturi pe acelasi ip! (%reg_count/%max_acc %reg_names)'
     logged_in: '&cEsti deja autentificat!'
     kick_for_vip: '&3Un V.I.P a intrat pe server cand era plin!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cAi fost interzis temporar deoarece ai esuat sa te autentifici de prea multe ori.'
 
 # AntiBot

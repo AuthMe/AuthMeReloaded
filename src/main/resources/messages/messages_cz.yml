@@ -40,6 +40,7 @@ error:
     max_registration: '&cPřekročil(a) jsi limit pro počet účtů (%reg_count/%max_acc %reg_names) z jedné IP adresy.'
     logged_in: '&cJsi již přihlášen!'
     kick_for_vip: '&cOmlouváme se, ale VIP hráč se připojil na plný server!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cByl jsi dočasně zabanován za příliš mnoho neúspěšných pokusů o přihlášení.'
 
 # AntiBot

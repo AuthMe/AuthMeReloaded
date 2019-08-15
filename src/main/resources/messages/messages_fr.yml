@@ -6,7 +6,7 @@
 # %username% - Affiche le pseudo du joueur recevant le message.
 # %displayname% - Affiche le pseudo, avec couleurs, du joueur recevant le message.
 
-# Enregistrement
+# Registration
 registration:
     disabled: '&cL''inscription est désactivée.'
     name_taken: '&cUtilisateur déjà inscrit.'
@@ -16,7 +16,7 @@ registration:
     success: '&aInscription effectuée !'
     kicked_admin_registered: 'Un admin vient de vous inscrire, veuillez vous reconnecter.'
 
-# Erreurs de mot de passe lors de l'enregistrement
+# Password errors on registration
 password:
     match_error: '&cLe mot de passe de confirmation ne correspond pas.'
     name_in_password: '&cVous ne pouvez pas utiliser votre pseudo comme mot de passe.'
@@ -24,7 +24,7 @@ password:
     forbidden_characters: '&cVotre mot de passe contient des caractères non autorisés. Caractères permis : %valid_chars'
     wrong_length: '&cVotre mot de passe est trop court ou trop long !'
 
-# Identification
+# Login
 login:
     command_usage: '&cUsage: /login <MotDePasse>'
     wrong_password: '&cMauvais mot de passe !'
@@ -32,7 +32,7 @@ login:
     login_request: '&cPour vous identifier, utilisez "/login <MotDePasse>"'
     timeout_error: 'Vous avez été expulsé car vous êtes trop lent pour vous enregistrer/identifier !'
 
-# Erreurs
+# Errors
 error:
     denied_command: '&cVous devez être connecté pour pouvoir utiliser cette commande.'
     denied_chat: '&cVous devez être connecté pour pouvoir écrire dans le chat.'
@@ -43,6 +43,7 @@ error:
     max_registration: 'Vous avez atteint la limite d''inscription !%nl%&cVous avez %reg_count sur %max_acc : %reg_names'
     logged_in: '&aVous êtes déjà connecté.'
     kick_for_vip: 'Un joueur VIP a rejoint le serveur à votre place (serveur plein).'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cVous êtes temporairement banni suite à plusieurs échecs de connexions !'
 
 # AntiBot
@@ -51,12 +52,12 @@ antibot:
     auto_enabled: 'L''AntiBot a été activé automatiquement à cause de nombreuses connexions !'
     auto_disabled: 'L''AntiBot a été désactivé automatiquement après %m minutes, espérons que l''invasion se soit arrêtée !'
 
-# Dé-enregistrement
+# Unregister
 unregister:
     success: '&aCompte supprimé !'
     command_usage: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'
 
-# Messages divers
+# Other messages
 misc:
     account_not_activated: '&fCe compte n''est pas actif, consultez vos mails !'
     password_changed: '&aMot de passe changé avec succès !'
@@ -66,12 +67,12 @@ misc:
     accounts_owned_self: 'Vous avez %count comptes:'
     accounts_owned_other: 'Le joueur %name a %count comptes:'
 
-# Messages de sessions
+# Session messages
 session:
     valid_session: '&aVous avez été automatiquement connecté !'
     invalid_session: 'Session expirée suite à un changement d''IP.'
 
-# Messages d'erreurs lors de la connexion
+# Error messages when joining
 on_join_validation:
     same_ip_online: 'Un joueur avec la même adresse IP joue déjà !'
     same_nick_online: 'Un joueur ayant le même pseudo est déjà connecté.'
@@ -104,7 +105,7 @@ email:
     change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cette commande.'
     email_cooldown_error: '&cUn mail de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
 
-# Récupération de mot de passe par mail
+# Password recovery by email
 recovery:
     forgot_password_hint: '&cVous avez oublié votre Mot de Passe? Utilisez "/email recovery <votreEmail>"'
     command_usage: '&fUsage: /email recovery <Email>'
@@ -124,7 +125,7 @@ captcha:
     captcha_for_registration: 'Avant de vous inscrire veuillez rentrer un captcha en faisant "/captcha %captcha_code"'
     register_captcha_valid: '&aCaptcha validé! Vous pouvez maintenant vous inscrire.'
 
-# Code de vérification
+# Verification code
 verification:
     code_required: '&cCette commande est sensible, elle nécessite donc une confirmation par email.%nl%&cVeuillez suivre les instructions qui viennent de vous être envoyées par email.'
     command_usage: '&cUsage: /verification <code>'
@@ -134,20 +135,7 @@ verification:
     code_expired: '&cVotre code d''identification a expiré !%nl%&cVeuillez re-exécuter une commande sensible pour recevoir un nouveau code.'
     email_needed: '&cAfin de vérifier votre identité, vous devez avoir un email lié à votre compte.%nl%&cPour cela, faites "/email add <Email> <ConfirmerEmail>"'
 
-# Authentification à double facteur
-two_factor:
-    code_created: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
-    code_required: 'Veuillez indiquer votre code secret en écrivant "/2fa code <Code>"'
-    confirmation_required: 'Veuillez confirmer votre code secret en écrivant "/2fa confirm <Code>"'
-    already_enabled: '&aL''authentification à double facteur est déjà active !'
-    enable_error_no_code: '&cAucun code secret n''a été généré ou bien celui-ci a expiré. Veuillez écrire "/2fa add"'
-    enable_success: '&aL''authentification à double facteur a été activé pour votre compte !'
-    enable_error_wrong_code: '&cLe code secret est faux ou bien celui-ci a expiré. Veuillez écrire "/2fa add"'
-    not_enabled_error: '&cL''authentification à double facteur n''est pas active sur votre compte. Faites "/2fa add" pour l''activer.'
-    removed_success: '&cL''authentification à double facteur a été désactivé pour votre compte !'
-    invalid_code: '&cCode secret invalide !'
-    
-# Unités de temps
+# Time units
 time:
     second: 'seconde'
     seconds: 'secondes'
@@ -157,3 +145,16 @@ time:
     hours: 'heures'
     day: 'jour'
     days: 'jours'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
+    confirmation_required: 'Veuillez confirmer votre code secret en écrivant "/2fa confirm <Code>"'
+    code_required: 'Veuillez indiquer votre code secret en écrivant "/2fa code <Code>"'
+    already_enabled: '&aL''authentification à double facteur est déjà active !'
+    enable_error_no_code: '&cAucun code secret n''a été généré ou bien celui-ci a expiré. Veuillez écrire "/2fa add"'
+    enable_success: '&aL''authentification à double facteur a été activé pour votre compte !'
+    enable_error_wrong_code: '&cLe code secret est faux ou bien celui-ci a expiré. Veuillez écrire "/2fa add"'
+    not_enabled_error: '&cL''authentification à double facteur n''est pas active sur votre compte. Faites "/2fa add" pour l''activer.'
+    removed_success: '&cL''authentification à double facteur a été désactivé pour votre compte !'
+    invalid_code: '&cCode secret invalide !'

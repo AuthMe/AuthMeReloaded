@@ -40,6 +40,7 @@ error:
     max_registration: '&cDu hast die maximale Anzahl an Accounts erreicht (%reg_count/%max_acc %reg_names).'
     logged_in: '&cBereits eingeloggt!'
     kick_for_vip: '&3Ein VIP-Spieler hat den vollen Server betreten!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cDu bist wegen zu vielen fehlgeschlagenen Login-Versuchen temporär gebannt!'
 
 # AntiBot

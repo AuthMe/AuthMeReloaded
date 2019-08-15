@@ -42,6 +42,7 @@ error:
     max_registration: '&b【AuthMe】&6您的 IP 位置所註冊的帳號數量已經達到最大。'
     logged_in: '&b【AuthMe】&6您已經登入了!'
     kick_for_vip: '&b【AuthMe】&6您已經被請出。&c原因 : 有 VIP 玩家登入伺服器'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&b【AuthMe】&c您已被暫時封鎖IP位置，因為您登入失敗太多次.'
 
 # AntiBot

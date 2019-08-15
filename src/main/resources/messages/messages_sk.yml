@@ -46,6 +46,7 @@ error:
     max_registration: '&fPrekročil si maximum registrovaných účtov(%reg_count/%max_acc|%reg_names).'
     logged_in: '&cAktuálne si už prihlásený!'
     kick_for_vip: '&3Uvoľnil si miesto pre VIP hráča!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cBol si dočasne zabanovaný za opakované zadanie zlého hesla.'
 
 # AntiBot

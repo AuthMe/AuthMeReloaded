@@ -40,6 +40,7 @@ error:
     max_registration: '&c您已超過註冊的最大數量(%reg_count/%max_acc %reg_names)!'
     logged_in: '&c您已經登錄!'
     kick_for_vip: '&3一名VIP玩家在服務器已滿時已加入伺服器!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&c由於登錄失敗次數過多，您已被暫時禁止。'
 
 # AntiBot

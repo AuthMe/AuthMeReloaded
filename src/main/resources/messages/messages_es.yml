@@ -41,6 +41,7 @@ error:
     max_registration: '&fHas excedido la cantidad máxima de registros para tu cuenta'
     logged_in: '&c¡Ya has iniciado sesión!'
     kick_for_vip: '&c¡Un jugador VIP ha ingresado al servidor lleno!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cHas sido expulsado temporalmente por intentar iniciar sesión demasiadas veces.'
 
 # AntiBot

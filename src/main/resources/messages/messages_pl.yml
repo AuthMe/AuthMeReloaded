@@ -40,6 +40,7 @@ error:
     max_registration: '&cPrzekroczyłeś limit zarejestrowanych kont na serwerze &8(&e%reg_count/%max_acc %reg_names&8) &cdla twojego połączenia.'
     logged_in: '&fJesteś już zalogowany!'
     kick_for_vip: '&cGracz VIP dołączył do gry!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cZostałeś tymczasowo zbanowany za dużą liczbę nieudanych logowań!'
 
 # AntiBot

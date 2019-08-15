@@ -40,6 +40,7 @@ error:
     max_registration: '&fExcediches o máximo de rexistros para a túa Conta'
     logged_in: '&cXa estás identificado!'
     kick_for_vip: '&cUn xogador VIP uniuse ao servidor cheo!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 
 # AntiBot
