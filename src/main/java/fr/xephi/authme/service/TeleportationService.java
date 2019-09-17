@@ -13,6 +13,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -65,6 +66,12 @@ public class TeleportationService implements Reloadable {
      * @param player the player to process
      */
     public void teleportOnJoin(final Player player) {
+    	if (!settings.getProperty(RegistrationSettings.FORCE) 
+    			&& !dataSource.isAuthAvailable(player.getName())) {
+    		logger.debug("`{0}` is not registered, thus he will not get teleported on join.", player.getName());
+    		return;
+    	}
+    	
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             logger.debug("Teleport on join for player `{0}`", player.getName());
@@ -80,6 +87,12 @@ public class TeleportationService implements Reloadable {
      * @return the custom spawn location, null if the player should spawn at the original location
      */
     public Location prepareOnJoinSpawnLocation(final Player player) {
+    	if (!settings.getProperty(RegistrationSettings.FORCE) 
+    			&& !dataSource.isAuthAvailable(player.getName())) {
+    		logger.debug("`{0}` is not registered, thus he will not get teleported on join.", player.getName());
+    		return null;
+    	}
+    	
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             final Location location = spawnLoader.getSpawnLocation(player);
