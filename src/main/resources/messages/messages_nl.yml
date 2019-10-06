@@ -40,8 +40,7 @@ error:
     max_registration: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
     logged_in: '&cJe bent al ingelogd!'
     kick_for_vip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
-    # TODO (Translator): Het onderste bericht is lastig te vertalen, moeten we 'computernaam' of 'hostname' gebruiken? Welke structuur kunnen wij het beste gebruiken voor 'unresolved'?
-    kick_unresolved_hostname: '&cEr heeft een fout plaatsgevonden: computernaam van de speler kon niet worden opgehaald!'
+    kick_unresolved_hostname: '&cEr heeft een fout plaatsgevonden: hostname van de speler kon niet gevonden worden!'
     tempban_max_logins: '&cJe bent tijdelijk gebanned omdat het inloggen te vaak mislukt is.'
 
 # AntiBot
@@ -120,8 +119,7 @@ captcha:
     usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha %captcha_code'
     wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha %captcha_code" in de chat!'
     valid_captcha: '&2De captcha-code is geldig!'
-    # TODO (Translator): Moeten wij het woord 'captcha' laten staan? Of is puzzel een betere verwoording?
-    captcha_for_registration: 'Om je te registreren moet je eerst een puzzel oplossen. Gebruik alsjeblieft het volgende commando: /captcha %captcha_code'
+    captcha_for_registration: 'Om je te registreren moet je eerst een captcha oplossen. Gebruik alsjeblieft het volgende commando: /captcha %captcha_code'
     register_captcha_valid: 'Valide puzzel! Je mag je nu registreren met /register'
 
 # Verification code
