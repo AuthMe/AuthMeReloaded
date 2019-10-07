@@ -598,7 +598,7 @@
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
-            <version>2.5</version>
+            <version>2.6</version>
             <optional>true</optional>
         </dependency>
 
@@ -900,7 +900,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -913,7 +913,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>2.11.0</version>
+            <version>2.11.1</version>
             <scope>test</scope>
         </dependency>
 
