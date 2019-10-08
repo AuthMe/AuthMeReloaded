@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
@@ -28,20 +28,17 @@ import static org.junit.Assert.assertThat;
  */
 public class HelpMessageConsistencyTest {
 
-    private static final String MESSAGES_FOLDER = "/messages";
-    private static final Pattern HELP_MESSAGES_FILE = Pattern.compile("help_[a-z]+\\.yml");
-
     private List<File> helpFiles;
 
     @BeforeEach
     public void findHelpMessagesFiles() {
-        File folder = TestHelper.getJarFile(MESSAGES_FOLDER);
+        File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
         File[] files = folder.listFiles();
         if (files == null || files.length == 0) {
             throw new IllegalStateException("Could not get files from '" + MESSAGES_FOLDER + "'");
         }
         helpFiles = Arrays.stream(files)
-            .filter(file -> HELP_MESSAGES_FILE.matcher(file.getName()).matches())
+            .filter(file -> MessagePathHelper.isHelpFile(file.getName()))
             .collect(Collectors.toList());
     }
 

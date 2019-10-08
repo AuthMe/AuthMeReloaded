@@ -1,9 +1,13 @@
 package fr.xephi.authme.security.totp;
 
+import com.google.common.collect.Table;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
-import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -30,25 +35,25 @@ public class TotpAuthenticatorTest {
     private TotpAuthenticator totpAuthenticator;
 
     @Mock
-    private BukkitService bukkitService;
+    private Settings settings;
 
     @Mock
     private IGoogleAuthenticator googleAuthenticator;
 
     @BeforeEach
     public void initializeTotpAuthenticator() {
-        totpAuthenticator = new TotpAuthenticatorTestImpl(bukkitService);
+        totpAuthenticator = new TotpAuthenticatorTestImpl(settings);
     }
 
     @Test
     public void shouldGenerateTotpKey() {
         // given
         // Use the GoogleAuthenticator instance the TotpAuthenticator normally creates to test its parameters
-        totpAuthenticator = new TotpAuthenticator(bukkitService);
+        totpAuthenticator = new TotpAuthenticator(settings);
 
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Bobby");
-        given(bukkitService.getIp()).willReturn("127.48.44.4");
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("MCtopia");
 
         // when
         TotpGenerationResult key1 = totpAuthenticator.generateTotpKey(player);
@@ -58,29 +63,32 @@ public class TotpAuthenticatorTest {
         assertThat(key1.getTotpKey(), stringWithLength(16));
         assertThat(key2.getTotpKey(), stringWithLength(16));
         assertThat(key1.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
+        assertThat(key1.getAuthenticatorQrCodeUrl(), containsString("MCtopia"));
         assertThat(key2.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
         assertThat(key1.getTotpKey(), not(equalTo(key2.getTotpKey())));
     }
 
     @Test
-    public void shouldCheckCode() {
+    public void shouldCheckCodeAndDeclareItValidOnlyOnce() {
         // given
         String secret = "the_secret";
         int code = 21398;
         given(googleAuthenticator.authorize(secret, code)).willReturn(true);
 
         // when
-        boolean result = totpAuthenticator.checkCode(secret, Integer.toString(code));
+        boolean result1 = totpAuthenticator.checkCode("pl", secret, Integer.toString(code));
+        boolean result2 = totpAuthenticator.checkCode("pl", secret, Integer.toString(code));
 
         // then
-        assertThat(result, equalTo(true));
+        assertThat(result1, equalTo(true));
+        assertThat(result2, equalTo(false));
         verify(googleAuthenticator).authorize(secret, code);
     }
 
     @Test
     public void shouldHandleInvalidNumberInput() {
         // given / when
-        boolean result = totpAuthenticator.checkCode("Some_Secret", "123ZZ");
+        boolean result = totpAuthenticator.checkCode("foo", "Some_Secret", "123ZZ");
 
         // then
         assertThat(result, equalTo(false));
@@ -96,7 +104,7 @@ public class TotpAuthenticatorTest {
             .totpKey(totpKey)
             .build();
         String inputCode = "408435";
-        given(totpAuthenticator.checkCode(totpKey, inputCode)).willReturn(true);
+        given(totpAuthenticator.checkCode("Maya", totpKey, inputCode)).willReturn(true);
 
         // when
         boolean result = totpAuthenticator.checkCode(auth, inputCode);
@@ -106,10 +114,27 @@ public class TotpAuthenticatorTest {
         verify(googleAuthenticator).authorize(totpKey, 408435);
     }
 
+    @Test
+    public void shouldRemoveOldEntries() {
+        // given
+        Table<String, Integer, Long> usedCodes = ReflectionTestUtils.getFieldValue(
+            TotpAuthenticator.class, totpAuthenticator, "usedCodes");
+        usedCodes.put("bobby", 414213, System.currentTimeMillis());
+        usedCodes.put("charlie", 732050, System.currentTimeMillis() - 6 * Utils.MILLIS_PER_MINUTE);
+        usedCodes.put("bobby", 236067, System.currentTimeMillis() - 9 * Utils.MILLIS_PER_MINUTE);
+
+        // when
+        totpAuthenticator.performCleanup();
+
+        // then
+        assertThat(usedCodes.size(), equalTo(1));
+        assertThat(usedCodes.contains("bobby", 414213), equalTo(true));
+    }
+
     private final class TotpAuthenticatorTestImpl extends TotpAuthenticator {
 
-        TotpAuthenticatorTestImpl(BukkitService bukkitService) {
-            super(bukkitService);
+        TotpAuthenticatorTestImpl(Settings settings) {
+            super(settings);
         }
 
         @Override

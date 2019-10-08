@@ -2,6 +2,7 @@ package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.PluginHookService;
@@ -21,6 +22,8 @@ import static fr.xephi.authme.util.FileUtils.makePath;
  * Executes the purge operations.
  */
 public class PurgeExecutor {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PurgeExecutor.class);
 
     @Inject
     private Settings settings;
@@ -85,7 +88,7 @@ public class PurgeExecutor {
             }
         }
 
-        ConsoleLogger.info("AutoPurge: Removed " + i + " AntiXRayData Files");
+        logger.info("AutoPurge: Removed " + i + " AntiXRayData Files");
     }
 
     /**
@@ -96,7 +99,7 @@ public class PurgeExecutor {
     synchronized void purgeFromAuthMe(Collection<String> names) {
         dataSource.purgeRecords(names);
         //TODO ljacqu 20160717: We shouldn't output namedBanned.size() but the actual total that was deleted
-        ConsoleLogger.info(ChatColor.GOLD + "Deleted " + names.size() + " user accounts");
+        logger.info(ChatColor.GOLD + "Deleted " + names.size() + " user accounts");
     }
 
     /**
@@ -141,7 +144,7 @@ public class PurgeExecutor {
                 }
             }
         }
-        ConsoleLogger.info("AutoPurge: Removed " + i + " LimitedCreative Survival, Creative and Adventure files");
+        logger.info("AutoPurge: Removed " + i + " LimitedCreative Survival, Creative and Adventure files");
     }
 
     /**
@@ -165,7 +168,7 @@ public class PurgeExecutor {
             }
         }
 
-        ConsoleLogger.info("AutoPurge: Removed " + i + " .dat Files");
+        logger.info("AutoPurge: Removed " + i + " .dat Files");
     }
 
     /**
@@ -180,7 +183,7 @@ public class PurgeExecutor {
 
         File essentialsDataFolder = pluginHookService.getEssentialsDataFolder();
         if (essentialsDataFolder == null) {
-            ConsoleLogger.info("Cannot purge Essentials: plugin is not loaded");
+            logger.info("Cannot purge Essentials: plugin is not loaded");
             return;
         }
 
@@ -197,7 +200,7 @@ public class PurgeExecutor {
             }
         }
 
-        ConsoleLogger.info("AutoPurge: Removed " + deletedFiles + " EssentialsFiles");
+        logger.info("AutoPurge: Removed " + deletedFiles + " EssentialsFiles");
     }
 
     /**
@@ -212,12 +215,12 @@ public class PurgeExecutor {
 
         for (OfflinePlayer offlinePlayer : cleared) {
             if (!permissionsManager.loadUserData(offlinePlayer)) {
-                ConsoleLogger.warning("Unable to purge the permissions of user " + offlinePlayer + "!");
+                logger.warning("Unable to purge the permissions of user " + offlinePlayer + "!");
                 continue;
             }
             permissionsManager.removeAllGroups(offlinePlayer);
         }
 
-        ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
+        logger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }
 }

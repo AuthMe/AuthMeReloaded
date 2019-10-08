@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -109,7 +108,7 @@ public class WelcomeMessageConfigurationTest {
         // given
         String welcomeMessage = "{ONLINE}/{MAXPLAYERS} online\n{LOGINS} logged in\nYour world is {WORLD}\nServer: {VERSION}";
         setWelcomeMessageAndReload(welcomeMessage);
-        returnGivenOnlinePlayers(bukkitService, Arrays.asList(mock(Player.class), mock(Player.class)));
+        given(bukkitService.getOnlinePlayers()).willReturn(Arrays.asList(mock(Player.class), mock(Player.class)));
         given(server.getMaxPlayers()).willReturn(20);
         given(playerCache.getLogged()).willReturn(1);
         given(server.getBukkitVersion()).willReturn("Bukkit-456.77.8");

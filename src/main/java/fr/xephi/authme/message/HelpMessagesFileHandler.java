@@ -1,6 +1,7 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,10 +10,14 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
+
 /**
  * File handler for the help_xx.yml resource.
  */
 public class HelpMessagesFileHandler extends AbstractMessageFileHandler {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(HelpMessagesFileHandler.class);
 
     private FileConfiguration defaultConfiguration;
 
@@ -31,7 +36,7 @@ public class HelpMessagesFileHandler extends AbstractMessageFileHandler {
         String message = getMessageIfExists(key);
 
         if (message == null) {
-            ConsoleLogger.warning("Error getting message with key '" + key + "'. "
+            logger.warning("Error getting message with key '" + key + "'. "
                 + "Please update your config file '" + getFilename() + "' or run /authme messages help");
             return getDefault(key);
         }
@@ -57,6 +62,6 @@ public class HelpMessagesFileHandler extends AbstractMessageFileHandler {
 
     @Override
     protected String createFilePath(String language) {
-        return "messages/help_" + language + ".yml";
+        return MessagePathHelper.createHelpMessageFilePath(language);
     }
 }

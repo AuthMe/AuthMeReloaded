@@ -118,9 +118,8 @@ public class ReloadCommandTest {
         verify(authMe).stopOrUnload();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void shouldIssueWarningForChangedDatasourceSetting() {
+    public void shouldIssueWarningForChangedDataSourceSetting() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);

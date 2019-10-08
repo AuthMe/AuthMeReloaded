@@ -3,6 +3,7 @@ package fr.xephi.authme.process.register;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.RegisterEvent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
@@ -16,6 +17,8 @@ import javax.inject.Inject;
  * Performs synchronous tasks after a successful {@link RegistrationType#EMAIL email registration}.
  */
 public class ProcessSyncEmailRegister implements SynchronousProcess {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ProcessSyncEmailRegister.class);
 
     @Inject
     private BukkitService bukkitService;
@@ -38,9 +41,8 @@ public class ProcessSyncEmailRegister implements SynchronousProcess {
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
         limboService.replaceTasksAfterRegistration(player);
 
-        player.saveData();
         bukkitService.callEvent(new RegisterEvent(player));
-        ConsoleLogger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
+        logger.fine(player.getName() + " registered " + PlayerUtils.getPlayerIp(player));
     }
 
 }

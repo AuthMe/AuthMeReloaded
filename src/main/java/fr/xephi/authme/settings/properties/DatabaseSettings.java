@@ -129,6 +129,10 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_LASTLOC_PITCH =
         newProperty("DataSource.mySQLlastlocPitch", "pitch");
 
+    @Comment("Column for storing players uuids (optional)")
+    public static final Property<String> MYSQL_COL_PLAYER_UUID =
+        newProperty( "DataSource.mySQLPlayerUUID", "" );
+
     @Comment("Column for storing players groups")
     public static final Property<String> MYSQL_COL_GROUP =
         newProperty("ExternalBoardOptions.mySQLColumnGroup", "");

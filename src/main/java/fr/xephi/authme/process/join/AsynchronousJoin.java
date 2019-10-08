@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
@@ -35,6 +36,8 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
  * Asynchronous process for when a player joins.
  */
 public class AsynchronousJoin implements AsynchronousProcess {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousJoin.class);
 
     @Inject
     private Server server;
@@ -86,8 +89,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
+            && player.getGameMode() != GameMode.SURVIVAL
             && !service.hasPermission(player, PlayerStatePermission.BYPASS_FORCE_SURVIVAL)) {
-            bukkitService.runTask(() -> player.setGameMode(GameMode.SURVIVAL));
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> player.setGameMode(GameMode.SURVIVAL));
         }
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
@@ -112,7 +116,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     isAsync -> new ProtectInventoryEvent(player, isAsync));
                 if (ev.isCancelled()) {
                     player.updateInventory();
-                    ConsoleLogger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
+                    logger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                 }
             }
 

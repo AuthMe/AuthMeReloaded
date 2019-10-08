@@ -43,6 +43,7 @@ error:
     max_registration: '&8[&6用戶系統&8] &f你的IP地址已達到註冊數上限。 &7(info: %reg_count/%max_acc %reg_names)'
     logged_in: '&8[&6用戶系統&8] &c你已經登入過了。'
     kick_for_vip: '&c喔 ！因為有VIP玩家登入了伺服器。'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&8[&6用戶系統&8] &c因為多次登入失敗，你已被暫時封禁。'
 
 # AntiBot
@@ -134,6 +135,17 @@ verification:
     code_expired: '&8[&6用戶系統&8] &c你的驗證碼已經過期，請執行另一個高等魔法指令以觸發新的身份驗證挑戰。'
     email_needed: '&8[&6用戶系統&8] &c嗯... 你的帳戶沒有已經連結的電郵地址，不能使用電郵驗證功能。'
 
+# Time units
+time:
+    second: '秒'
+    seconds: '秒'
+    minute: '分'
+    minutes: '分'
+    hour: '小時'
+    hours: '小時'
+    day: '日'
+    days: '日'
+
 # Two-factor authentication
 two_factor:
     code_created: '&8[&6用戶系統&8] &b你的登入金鑰為&9〔 &c%code&9 〕&b，掃描連結為：%nl%&c %url'
@@ -146,14 +158,3 @@ two_factor:
     not_enabled_error: '&8[&6用戶系統&8] &c你的帳戶尚未啓用兩步驗證功能 ！ &f你可以使用指令《 /2fa add 》以啓用此功能。'
     removed_success: '&8[&6用戶系統&8] &2你已成功關閉兩步驗證功能；&c為保障帳戶安全，請儘快於可行的情況下重新啟用本功能。'
     invalid_code: '&8[&6用戶系統&8] &c無效的兩步驗證碼 ！'
-
-# Time units
-time:
-    second: '秒'
-    seconds: '秒'
-    minute: '分'
-    minutes: '分'
-    hour: '小時'
-    hours: '小時'
-    day: '日'
-    days: '日'

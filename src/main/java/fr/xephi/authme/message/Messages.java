@@ -2,6 +2,8 @@ package fr.xephi.authme.message;
 
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -36,6 +38,8 @@ public class Messages {
         .put(TimeUnit.MINUTES, MessageKey.MINUTES)
         .put(TimeUnit.HOURS, MessageKey.HOURS)
         .put(TimeUnit.DAYS, MessageKey.DAYS).build();
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(EmailService.class);
 
     private MessagesFileHandler messagesFileHandler;
 
@@ -162,7 +166,7 @@ public class Messages {
                 message = message.replace(tags[i], replacements[i]);
             }
         } else {
-            ConsoleLogger.warning("Invalid number of replacements for message key '" + key + "'");
+            logger.warning("Invalid number of replacements for message key '" + key + "'");
         }
         return message;
     }
@@ -185,7 +189,7 @@ public class Messages {
                 message = message.replace(tags[i], replacements[i]);
             }
         } else {
-            ConsoleLogger.warning("Invalid number of replacements for message key '" + key + "'");
+            logger.warning("Invalid number of replacements for message key '" + key + "'");
         }
         return message;
     }

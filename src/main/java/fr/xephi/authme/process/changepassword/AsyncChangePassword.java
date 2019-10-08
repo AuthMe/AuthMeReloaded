@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -17,6 +18,8 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 
 public class AsyncChangePassword implements AsynchronousProcess {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsyncChangePassword.class);
 
     @Inject
     private DataSource dataSource;
@@ -58,7 +61,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
 
             playerCache.updatePlayer(auth);
             commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
-            ConsoleLogger.info(player.getName() + " changed his password");
+            logger.info(player.getName() + " changed his password");
         } else {
             commonService.send(player, MessageKey.WRONG_PASSWORD);
         }
@@ -75,7 +78,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
         final String lowerCaseName = playerName.toLowerCase();
         if (!(playerCache.isAuthenticated(lowerCaseName) || dataSource.isAuthAvailable(lowerCaseName))) {
             if (sender == null) {
-                ConsoleLogger.warning("Tried to change password for user " + lowerCaseName + " but it doesn't exist!");
+                logger.warning("Tried to change password for user " + lowerCaseName + " but it doesn't exist!");
             } else {
                 commonService.send(sender, MessageKey.UNKNOWN_USER);
             }
@@ -87,15 +90,15 @@ public class AsyncChangePassword implements AsynchronousProcess {
             bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_PASSWORD, lowerCaseName);
             if (sender != null) {
                 commonService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
-                ConsoleLogger.info(sender.getName() + " changed password of " + lowerCaseName);
+                logger.info(sender.getName() + " changed password of " + lowerCaseName);
             } else {
-                ConsoleLogger.info("Changed password of " + lowerCaseName);
+                logger.info("Changed password of " + lowerCaseName);
             }
         } else {
             if (sender != null) {
                 commonService.send(sender, MessageKey.ERROR);
             }
-            ConsoleLogger.warning("An error occurred while changing password for user " + lowerCaseName + "!");
+            logger.warning("An error occurred while changing password for user " + lowerCaseName + "!");
         }
     }
 }

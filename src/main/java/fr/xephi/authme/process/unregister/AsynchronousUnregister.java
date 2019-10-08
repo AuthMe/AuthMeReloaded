@@ -7,6 +7,7 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.UnregisterByAdminEvent;
 import fr.xephi.authme.events.UnregisterByPlayerEvent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -28,6 +29,8 @@ import javax.inject.Inject;
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 public class AsynchronousUnregister implements AsynchronousProcess {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousUnregister.class);
 
     @Inject
     private DataSource dataSource;
@@ -72,7 +75,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         if (passwordSecurity.comparePassword(password, cachedAuth.getPassword(), name)) {
             if (dataSource.removeAuth(name)) {
                 performPostUnregisterActions(name, player);
-                ConsoleLogger.info(name + " unregistered himself");
+                logger.info(name + " unregistered himself");
                 bukkitService.createAndCallEvent(isAsync -> new UnregisterByPlayerEvent(player, isAsync));
             } else {
                 service.send(player, MessageKey.ERROR);
@@ -97,9 +100,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
             bukkitService.createAndCallEvent(isAsync -> new UnregisterByAdminEvent(player, name, isAsync, initiator));
 
             if (initiator == null) {
-                ConsoleLogger.info(name + " was unregistered");
+                logger.info(name + " was unregistered");
             } else {
-                ConsoleLogger.info(name + " was unregistered by " + initiator.getName());
+                logger.info(name + " was unregistered by " + initiator.getName());
                 service.send(initiator, MessageKey.UNREGISTERED_SUCCESS);
             }
         } else if (initiator != null) {
@@ -125,7 +128,6 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
             teleportationService.teleportOnJoin(player);
-            player.saveData();
 
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
                 limboService.createLimboPlayer(player, false);

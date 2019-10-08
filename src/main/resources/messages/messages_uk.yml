@@ -40,6 +40,7 @@ error:
     max_registration: '&cВичерпано ліміт реєстрацій (%reg_count/%max_acc %reg_names) для вашого підключення!'
     logged_in: '&cВи вже авторизовані!'
     kick_for_vip: '&3Вас кікнуто, внаслідок того, що VIP гравець зайшов на сервер коли небуло вільних місць.'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cВаш IP тимчасово заблоковано, із‒за багатократного введення хибного пароля.'
 
 # AntiBot

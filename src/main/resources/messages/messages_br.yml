@@ -43,6 +43,7 @@ error:
     max_registration: '&cVocê excedeu o número máximo de inscrições (%reg_count/%max_acc %reg_names) do seu IP!'
     logged_in: '&cVocê já está logado!'
     kick_for_vip: '&3Um jogador VIP juntou-se ao servidor enquanto ele estava cheio!'
+    kick_unresolved_hostname: '&cErro: hostname do jogador não resolvido!'
     tempban_max_logins: '&cVocê foi temporariamente banido por tentar logar muitas vezes.'
 
 # AntiBot
@@ -81,7 +82,7 @@ on_join_validation:
     country_banned: '&4O seu país está banido neste servidor!'
     not_owner_error: 'Você não é o proprietário da conta. Por favor, escolha outro nome!'
     invalid_name_case: 'Você deve se juntar usando nome de usuário %valid, não %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Você usou o comando muito rápido! Por favor, entre no servidor novamente e espere antes de usar um comando novamente.'
 
 # Email
 email:
@@ -92,10 +93,10 @@ email:
     old_email_invalid: '&cE-mail velho inválido, tente novamente!'
     invalid: '&E-mail inválido, tente novamente!'
     added: '&2Email adicionado com sucesso à sua conta!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cAdicionar e-mail não é permitido.'
     request_confirmation: '&cPor favor confirme seu endereço de email!'
     changed: '&2Troca de email com sucesso.!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&cAlterar e-mail não é permitido.'
     email_show: '&2O seu endereço de e-mail atual é: &f%email'
     no_email_for_account: '&2Você atualmente não têm endereço de e-mail associado a esta conta.'
     already_used: '&4O endereço de e-mail já está sendo usado'

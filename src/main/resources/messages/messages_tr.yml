@@ -40,6 +40,7 @@ error:
     max_registration: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
     logged_in: '&cZaten giris yaptin!'
     kick_for_vip: '&3Bir VIP oyuna giris yaptigi icin atildin!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cBir cok kez yanlis giris yaptiginiz icin gecici olarak banlandiniz.'
 
 # AntiBot
@@ -112,7 +113,7 @@ recovery:
         tries_exceeded: 'Kurtarma kodu icin girilen maksimum sayisi astiniz. "/email recovery [email]" komutunu kullanarak yeni bir tane olusturabilirsiniz.'
         correct: 'Kurtarma kodu dogru sekilde girildi!'
         change_password: 'Lutfen sifrenizi degistirmek icin /email setpassword <yeni sifre> komutunu kullanin.'
-        
+
 # Captcha
 captcha:
     usage_captcha: '&3Giris yapmak icin guvenlik kodunu komut yazarak girin "/captcha %captcha_code"'

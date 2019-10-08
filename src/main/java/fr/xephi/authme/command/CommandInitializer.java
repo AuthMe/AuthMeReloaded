@@ -24,6 +24,8 @@ import fr.xephi.authme.command.executable.authme.SetFirstSpawnCommand;
 import fr.xephi.authme.command.executable.authme.SetSpawnCommand;
 import fr.xephi.authme.command.executable.authme.SpawnCommand;
 import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
+import fr.xephi.authme.command.executable.authme.TotpDisableAdminCommand;
+import fr.xephi.authme.command.executable.authme.TotpViewStatusCommand;
 import fr.xephi.authme.command.executable.authme.UnregisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.UpdateHelpMessagesCommand;
 import fr.xephi.authme.command.executable.authme.VersionCommand;
@@ -288,6 +290,28 @@ public class CommandInitializer {
             .withArgument("player", "Player name", MANDATORY)
             .permission(AdminPermission.GET_IP)
             .executableCommand(GetIpCommand.class)
+            .register();
+
+        // Register totp command
+        CommandDescription.builder()
+            .parent(authmeBase)
+            .labels("totp", "2fa")
+            .description("See if a player has enabled TOTP")
+            .detailedDescription("Returns whether the specified player has enabled two-factor authentication.")
+            .withArgument("player", "Player name", MANDATORY)
+            .permission(AdminPermission.VIEW_TOTP_STATUS)
+            .executableCommand(TotpViewStatusCommand.class)
+            .register();
+
+        // Register disable totp command
+        CommandDescription.builder()
+            .parent(authmeBase)
+            .labels("disabletotp", "disable2fa", "deletetotp", "delete2fa")
+            .description("Delete TOTP token of a player")
+            .detailedDescription("Disable two-factor authentication for a player.")
+            .withArgument("player", "Player name", MANDATORY)
+            .permission(AdminPermission.DISABLE_TOTP)
+            .executableCommand(TotpDisableAdminCommand.class)
             .register();
 
         // Register the spawn command

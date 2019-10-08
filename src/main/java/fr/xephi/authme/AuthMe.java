@@ -6,8 +6,20 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.*;
-import fr.xephi.authme.listener.*;
+import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.initialization.DataSourceProvider;
+import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
+import fr.xephi.authme.initialization.OnStartupTasks;
+import fr.xephi.authme.initialization.SettingsProvider;
+import fr.xephi.authme.initialization.TaskCloser;
+import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.listener.PlayerListener111;
+import fr.xephi.authme.listener.PlayerListener19;
+import fr.xephi.authme.listener.PlayerListener19Spigot;
+import fr.xephi.authme.listener.ServerListener;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -31,6 +43,7 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.util.Utils.isClassLoaded;
@@ -45,7 +58,7 @@ public class AuthMe extends JavaPlugin {
     private static final String LOG_FILENAME = "authme.log";
     private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
 
-    // Default version and build number values
+    // Version and build number values
     private static String pluginVersion = "N/D";
     private static String pluginBuildNumber = "Unknown";
 
@@ -56,6 +69,7 @@ public class AuthMe extends JavaPlugin {
     private BukkitService bukkitService;
     private Injector injector;
     private BackupService backupService;
+    private ConsoleLogger logger;
 
     /**
      * Constructor.
@@ -67,8 +81,7 @@ public class AuthMe extends JavaPlugin {
      * Constructor for unit testing.
      */
     @VisibleForTesting
-    @SuppressWarnings("deprecation") // the super constructor is deprecated to mark it for unit testing only
-    protected AuthMe(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+    AuthMe(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }
 
@@ -107,16 +120,22 @@ public class AuthMe extends JavaPlugin {
         // Load the plugin version data from the plugin description file
         loadPluginInfo(getDescription().getVersion());
 
+        // Set the Logger instance and log file path
+        ConsoleLogger.initialize(getLogger(), new File(getDataFolder(), LOG_FILENAME));
+        logger = ConsoleLoggerFactory.get(AuthMe.class);
+
         // Check server version
-        if (!isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
-            ConsoleLogger.warning("You are running an unsupported server version! AuthMe requires MC 1.8.X or later!");
+        if (!isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")
+            || !isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
+            logger.warning("You are running an unsupported server version!"
+                + "AuthMe requires Spigot 1.8.X or later!");
             stopOrUnload();
             return;
         }
 
         // Prevent running AuthMeBridge due to major exploit issues
         if (getServer().getPluginManager().isPluginEnabled("AuthMeBridge")) {
-            ConsoleLogger.warning("Detected AuthMeBridge, support for it has been dropped as it was "
+            logger.warning("Detected AuthMeBridge, support for it has been dropped as it was "
                 + "causing exploit issues, please use AuthMeBungee instead! Aborting!");
             stopOrUnload();
             return;
@@ -128,9 +147,10 @@ public class AuthMe extends JavaPlugin {
         } catch (Throwable th) {
             YamlParseException yamlParseException = ExceptionUtils.findThrowableInCause(YamlParseException.class, th);
             if (yamlParseException == null) {
-                ConsoleLogger.logException("Aborting initialization of AuthMe:", th);
+                logger.logException("Aborting initialization of AuthMe:", th);
+                th.printStackTrace();
             } else {
-                ConsoleLogger.logException("File '" + yamlParseException.getFile() + "' contains invalid YAML. "
+                logger.logException("File '" + yamlParseException.getFile() + "' contains invalid YAML. "
                     + "Please run its contents through http://yamllint.com", yamlParseException);
             }
             stopOrUnload();
@@ -140,6 +160,10 @@ public class AuthMe extends JavaPlugin {
         // Show settings warnings
         injector.getSingleton(SettingsWarner.class).logWarningsForMisconfigurations();
 
+        // Schedule clean up task
+        CleanupTask cleanupTask = injector.getSingleton(CleanupTask.class);
+        cleanupTask.runTaskTimerAsynchronously(this, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
+
         // Do a backup on start
         backupService.doBackup(BackupService.BackupCause.START);
 
@@ -147,16 +171,11 @@ public class AuthMe extends JavaPlugin {
         OnStartupTasks.sendMetrics(this, settings);
 
         // Successful message
-        ConsoleLogger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber()
-            + " correctly enabled!");
+        logger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber() + " successfully enabled!");
 
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);
         purgeService.runAutoPurge();
-
-        // Schedule clean up task
-        CleanupTask cleanupTask = injector.getSingleton(CleanupTask.class);
-        cleanupTask.runTaskTimerAsynchronously(this, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
     }
 
     /**
@@ -179,10 +198,6 @@ public class AuthMe extends JavaPlugin {
      * Initialize the plugin and all the services.
      */
     private void initialize() {
-        // Set the Logger instance and log file path
-        ConsoleLogger.setLogger(getLogger());
-        ConsoleLogger.setLogFile(new File(getDataFolder(), LOG_FILENAME));
-
         // Check java version
         if (!SystemUtils.isJavaVersionAtLeast(1.8f)) {
             throw new IllegalStateException("You need Java 1.8 or above to run this plugin!");
@@ -205,8 +220,8 @@ public class AuthMe extends JavaPlugin {
 
         // Get settings and set up logger
         settings = injector.getSingleton(Settings.class);
-        ConsoleLogger.setLoggingOptions(settings);
-        OnStartupTasks.setupConsoleFilter(settings, getLogger());
+        ConsoleLoggerFactory.reloadSettings(settings);
+        OnStartupTasks.setupConsoleFilter(getLogger());
 
         // Set all service fields on the AuthMe class
         instantiateServices(injector);
@@ -214,7 +229,6 @@ public class AuthMe extends JavaPlugin {
         // Convert deprecated PLAINTEXT hash entries
         MigrationService.changePlainTextToSha256(settings, database, new Sha256());
 
-        //TODO: does this still make sense? -sgdc3
         // If the server is empty (fresh start) just set all the players as unlogged
         if (bukkitService.getOnlinePlayers().isEmpty()) {
             database.purgeLogged();
@@ -282,7 +296,7 @@ public class AuthMe extends JavaPlugin {
      */
     public void stopOrUnload() {
         if (settings == null || settings.getProperty(SecuritySettings.STOP_SERVER_ON_PROBLEM)) {
-            ConsoleLogger.warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
+            getLogger().warning("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
             setEnabled(false);
             getServer().shutdown();
         } else {
@@ -309,8 +323,9 @@ public class AuthMe extends JavaPlugin {
         new TaskCloser(this, database).run();
 
         // Disabled correctly
-        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
-        ConsoleLogger.close();
+        Consumer<String> infoLogMethod = logger == null ? getLogger()::info : logger::info;
+        infoLogMethod.accept("AuthMe " + this.getDescription().getVersion() + " disabled!");
+        ConsoleLogger.closeFileWriter();
     }
 
     /**

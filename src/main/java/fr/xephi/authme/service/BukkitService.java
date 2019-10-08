@@ -233,8 +233,9 @@ public class BukkitService implements SettingsDependent {
      *
      * @return collection of online players
      */
-    public Collection<? extends Player> getOnlinePlayers() {
-        return Bukkit.getOnlinePlayers();
+    @SuppressWarnings("unchecked")
+    public Collection<Player> getOnlinePlayers() {
+        return (Collection<Player>) Bukkit.getOnlinePlayers();
     }
 
     /**

@@ -3,6 +3,7 @@ package fr.xephi.authme.process.logout;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.LogoutEvent;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -22,6 +23,8 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 
 public class ProcessSyncPlayerLogout implements SynchronousProcess {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ProcessSyncPlayerLogout.class);
 
     @Inject
     private CommonService service;
@@ -61,7 +64,7 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
         bukkitService.callEvent(new LogoutEvent(player));
 
         service.send(player, MessageKey.LOGOUT_SUCCESS);
-        ConsoleLogger.info(player.getName() + " logged out");
+        logger.info(player.getName() + " logged out");
     }
 
     private void applyLogoutEffect(Player player) {

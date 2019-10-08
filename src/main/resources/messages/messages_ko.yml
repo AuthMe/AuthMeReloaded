@@ -42,6 +42,7 @@ error:
     max_registration: '&c당신은 가입할 수 있는 계정 한도를 초과했습니다 (%reg_count/%max_acc %reg_names)!'
     logged_in: '&c이미 로그인되어 있습니다!'
     kick_for_vip: '&3서버가 꽉 차있을 때는 VIP 플레이어만 접속이 가능합니다!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&c너무 많이 로그인에 실패하여 잠시 서버에서 차단되었습니다.'
 
 # AntiBot

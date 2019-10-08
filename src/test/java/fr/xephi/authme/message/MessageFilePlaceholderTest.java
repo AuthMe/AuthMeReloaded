@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
 import static org.junit.Assert.fail;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
@@ -24,12 +24,6 @@ import static tools.utils.FileIoUtils.listFilesOrThrow;
  * that are defined for the given message.
  */
 class MessageFilePlaceholderTest {
-
-    /** Path in the resources folder where the message files are located. */
-    private static final String MESSAGES_FOLDER = "/messages/";
-
-    /** Pattern for detecting messages files. */
-    private static final Pattern IS_MESSAGES_FILE = Pattern.compile("messages_.*?\\.yml");
 
     /** Defines exclusions: a (key, tag) pair in this map will not be checked in the test. */
     private static final Multimap<MessageKey, String> EXCLUSIONS = ImmutableMultimap.<MessageKey, String>builder()
@@ -70,10 +64,10 @@ class MessageFilePlaceholderTest {
     }
 
     private static List<Object[]> buildParams() {
-        File folder = TestHelper.getJarFile(MESSAGES_FOLDER);
+        File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
 
         List<Object[]> messageFiles = Arrays.stream(listFilesOrThrow(folder))
-            .filter(file -> IS_MESSAGES_FILE.matcher(file.getName()).matches())
+            .filter(file -> MessagePathHelper.isMessagesFile(file.getName()))
             .map(file -> new Object[]{file, file.getName()})
             .collect(Collectors.toList());
         if (messageFiles.isEmpty()) {

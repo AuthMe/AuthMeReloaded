@@ -40,6 +40,7 @@ error:
     max_registration: '&cВие сте достигнали максималният брой регистрации (%reg_count/%max_acc %reg_names)!'
     logged_in: '&cВече сте влезли!'
     kick_for_vip: '&3VIP потребител влезе докато сървъра беше пълен, вие бяхте изгонен!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cВие бяхте баннат временно, понеже сте си сгрешили паролата прекалено много пъти.'
 
 # AntiBot

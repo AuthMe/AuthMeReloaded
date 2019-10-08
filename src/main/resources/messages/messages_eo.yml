@@ -40,6 +40,7 @@ error:
     max_registration: 'Vi superis la maksimuman nombron de enregistroj (%reg_count/%max_acc %reg_names) pro via ligo!'
     logged_in: '&cVi jam estas ensalutinta!'
     kick_for_vip: '&3VIP ludanto aliĝis al la servilo kiam ĝi pleniĝis!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cVi estis portempe malpermesita por ne ensaluti tro multajn fojojn.'
 
 # AntiBot

@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
@@ -21,6 +22,8 @@ import java.util.List;
  * Command for password recovery by email.
  */
 public class RecoverEmailCommand extends PlayerCommand {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(RecoverEmailCommand.class);
 
     @Inject
     private CommonService commonService;
@@ -49,7 +52,7 @@ public class RecoverEmailCommand extends PlayerCommand {
         final String playerName = player.getName();
 
         if (!emailService.hasAllInformation()) {
-            ConsoleLogger.warning("Mail API is not set");
+            logger.warning("Mail API is not set");
             commonService.send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
             return;
         }

@@ -7,6 +7,7 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.message.AbstractMessageFileHandler;
 import fr.xephi.authme.message.HelpMessagesFileHandler;
+import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.mock;
  */
 public class HelpMessagesServiceTest {
 
-    private static final String TEST_FILE = "/fr/xephi/authme/command/help/help_test.yml";
+    private static final String TEST_FILE = TestHelper.PROJECT_ROOT + "command/help/help_test.yml";
     private static final Collection<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
 
     private HelpMessagesService helpMessagesService;
@@ -40,9 +41,9 @@ public class HelpMessagesServiceTest {
     File dataFolder;
 
     @BeforeEach
-    public void initializeHandler() throws IOException, InstantiationException, IllegalAccessException {
+    public void initializeHandler() throws IOException {
         new File(dataFolder, "messages").mkdirs();
-        File messagesFile = new File(dataFolder, "messages/help_test.yml");
+        File messagesFile = new File(dataFolder, MessagePathHelper.createHelpMessageFilePath("test"));
         Files.copy(TestHelper.getJarFile(TEST_FILE), messagesFile);
 
         HelpMessagesFileHandler helpMessagesFileHandler = createMessagesFileHandler();
@@ -143,7 +144,7 @@ public class HelpMessagesServiceTest {
         assertThat(description, equalTo(command.getDescription()));
     }
 
-    private HelpMessagesFileHandler createMessagesFileHandler() throws IllegalAccessException, InstantiationException {
+    private HelpMessagesFileHandler createMessagesFileHandler() {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
 

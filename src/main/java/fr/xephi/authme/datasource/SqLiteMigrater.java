@@ -2,6 +2,7 @@ package fr.xephi.authme.datasource;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.util.FileUtils;
@@ -19,6 +20,7 @@ import java.sql.Statement;
  */
 class SqLiteMigrater {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(SqLiteMigrater.class);
     private final File dataFolder;
     private final String databaseName;
     private final String tableName;
@@ -53,13 +55,13 @@ class SqLiteMigrater {
      * @param sqLite the instance to migrate
      */
     void performMigration(SQLite sqLite) throws SQLException {
-        ConsoleLogger.warning("YOUR SQLITE DATABASE NEEDS MIGRATING! DO NOT TURN OFF YOUR SERVER");
+        logger.warning("YOUR SQLITE DATABASE NEEDS MIGRATING! DO NOT TURN OFF YOUR SERVER");
 
         String backupName = createBackup();
-        ConsoleLogger.info("Made a backup of your database at 'backups/" + backupName + "'");
+        logger.info("Made a backup of your database at 'backups/" + backupName + "'");
 
         recreateDatabaseWithNewDefinitions(sqLite);
-        ConsoleLogger.info("SQLite database migrated successfully");
+        logger.info("SQLite database migrated successfully");
     }
 
     private String createBackup() {
@@ -104,7 +106,7 @@ class SqLiteMigrater {
                 + " CASE WHEN $email = 'your@email.com' THEN NULL ELSE $email END, $isLogged"
                 + " FROM " + tempTable + ";";
             int insertedEntries = st.executeUpdate(replaceColumnVariables(copySql));
-            ConsoleLogger.info("Copied over " + insertedEntries + " from the old table to the new one");
+            logger.info("Copied over " + insertedEntries + " from the old table to the new one");
 
             st.execute("DROP TABLE " + tempTable + ";");
         }

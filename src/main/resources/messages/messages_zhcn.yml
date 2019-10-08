@@ -41,6 +41,7 @@ error:
     max_registration: '&8[&6玩家系统&8] &f你不允许再为你的IP在服务器注册更多用户了！'
     logged_in: '&8[&6玩家系统&8] &c你已经登陆过了！'
     kick_for_vip: '&8[&6玩家系统&8] &cA VIP玩家加入了已满的服务器!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&c由于您登录失败次数过多，已被暂时禁止登录。'
 
 # AntiBot

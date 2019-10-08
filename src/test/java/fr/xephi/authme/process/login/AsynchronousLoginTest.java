@@ -29,7 +29,6 @@ import org.mockito.stubbing.Answer;
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.xephi.authme.service.BukkitServiceTestHelper.returnGivenOnlinePlayers;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -268,6 +267,6 @@ public class AsynchronousLoginTest {
         TestHelper.mockPlayerIp(playerF, "3.3.3.3");
 
         List<Player> onlinePlayers = Arrays.asList(playerA, playerB, playerC, playerD, playerE, playerF);
-        returnGivenOnlinePlayers(bukkitService, onlinePlayers);
+        given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
     }
 }

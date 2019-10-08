@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
@@ -30,6 +31,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
 public class SQLite extends AbstractSqlDataSource {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(SQLite.class);
     private final Settings settings;
     private final File dataFolder;
     private final String database;
@@ -57,7 +59,7 @@ public class SQLite extends AbstractSqlDataSource {
             this.setup();
             this.migrateIfNeeded();
         } catch (Exception ex) {
-            ConsoleLogger.logException("Error during SQLite initialization:", ex);
+            logger.logException("Error during SQLite initialization:", ex);
             throw ex;
         }
     }
@@ -85,7 +87,7 @@ public class SQLite extends AbstractSqlDataSource {
             throw new IllegalStateException("Failed to load SQLite JDBC class", e);
         }
 
-        ConsoleLogger.debug("SQLite driver loaded");
+        logger.debug("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
         this.columnsHandler = AuthMeColumnsHandler.createForSqlite(con, settings);
     }
@@ -182,8 +184,13 @@ public class SQLite extends AbstractSqlDataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
             }
+
+            if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PLAYER_UUID + " VARCHAR(36)");
+            }
         }
-        ConsoleLogger.info("SQLite Setup finished");
+        logger.info("SQLite Setup finished");
     }
 
     /**
@@ -214,7 +221,7 @@ public class SQLite extends AbstractSqlDataSource {
             this.setup();
             this.migrateIfNeeded();
         } catch (SQLException ex) {
-            ConsoleLogger.logException("Error while reloading SQLite:", ex);
+            logger.logException("Error while reloading SQLite:", ex);
         }
     }
 
@@ -393,7 +400,7 @@ public class SQLite extends AbstractSqlDataSource {
         long currentTimestamp = System.currentTimeMillis();
         int updatedRows = st.executeUpdate(String.format("UPDATE %s SET %s = %d;",
             tableName, col.REGISTRATION_DATE, currentTimestamp));
-        ConsoleLogger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
+        logger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
             + currentTimestamp + ", to all " + updatedRows + " rows");
     }
 

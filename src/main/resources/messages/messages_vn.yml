@@ -40,6 +40,7 @@ error:
     max_registration: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
     logged_in: '&cBạn đã đăng nhập!'
     kick_for_vip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cBạn đã bị tạm thời khóa truy cập do đăng nhập sai nhiều lần.'
 
 # AntiBot

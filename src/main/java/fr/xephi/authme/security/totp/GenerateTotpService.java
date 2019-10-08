@@ -59,7 +59,7 @@ public class GenerateTotpService implements HasCleanup {
      */
     public boolean isTotpCodeCorrectForGeneratedTotpKey(Player player, String totpCode) {
         TotpGenerationResult totpDetails = totpKeys.get(player.getName().toLowerCase());
-        return totpDetails != null && totpAuthenticator.checkCode(totpDetails.getTotpKey(), totpCode);
+        return totpDetails != null && totpAuthenticator.checkCode(player.getName(), totpDetails.getTotpKey(), totpCode);
     }
 
     @Override

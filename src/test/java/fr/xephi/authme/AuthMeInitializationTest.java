@@ -24,7 +24,7 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.junit.jupiter.api.BeforeAll;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +45,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Integration test verifying that all services can be initialized in {@link AuthMe}
@@ -56,17 +57,9 @@ public class AuthMeInitializationTest {
     @Mock
     private Server server;
 
-    @Mock
-    private PluginManager pluginManager;
-
     private AuthMe authMe;
     @TempDir
     File dataFolder;
-
-    @BeforeAll
-    public static void setUpLogger() {
-        TestHelper.setupLogger();
-    }
 
     @BeforeEach
     public void initAuthMe() throws IOException {
@@ -77,7 +70,6 @@ public class AuthMeInitializationTest {
         // Mock / wire various Bukkit components
         given(server.getLogger()).willReturn(Logger.getAnonymousLogger());
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        given(server.getPluginManager()).willReturn(pluginManager);
 
         // PluginDescriptionFile is final: need to create a sample one
         PluginDescriptionFile descriptionFile = new PluginDescriptionFile(
@@ -94,8 +86,11 @@ public class AuthMeInitializationTest {
         given(reader.getList(anyString())).willReturn(Collections.emptyList());
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.createReader()).willReturn(reader);
-
         Settings settings = new Settings(dataFolder, resource, null, buildConfigurationData());
+
+        PluginManager pluginManager = mock(PluginManager.class);
+        given(server.getPluginManager()).willReturn(pluginManager);
+        TestHelper.setupLogger();
 
         Injector injector = new InjectorBuilder()
             .addDefaultHandlers("fr.xephi.authme")
@@ -125,5 +120,21 @@ public class AuthMeInitializationTest {
         assertThat(injector.getIfAvailable(PermissionsManager.class), not(nullValue()));
         assertThat(injector.getIfAvailable(ProcessSyncPlayerLogin.class), not(nullValue()));
         assertThat(injector.getIfAvailable(PurgeService.class), not(nullValue()));
+    }
+
+    @Test
+    public void shouldHandlePrematureShutdownGracefully() {
+        // given
+        BukkitScheduler scheduler = mock(BukkitScheduler.class);
+        given(server.getScheduler()).willReturn(scheduler);
+
+        // Make sure ConsoleLogger has no logger reference since that may happen on unexpected stops
+        ReflectionTestUtils.setField(ConsoleLogger.class, null, "logger", null);
+
+        // when
+        authMe.onDisable();
+
+        // then - no exceptions
+        verify(scheduler).getActiveWorkers(); // via TaskCloser
     }
 }

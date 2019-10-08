@@ -7,75 +7,91 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ExceptionUtils;
 
+import java.io.Closeable;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
- * The plugin's static logger.
+ * AuthMe logger.
  */
 public final class ConsoleLogger {
 
     private static final String NEW_LINE = System.getProperty("line.separator");
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("[MM-dd HH:mm:ss]");
-    private static Logger logger;
-    private static LogLevel logLevel = LogLevel.INFO;
-    private static boolean useLogging = false;
-    private static File logFile;
-    private static FileWriter fileWriter;
+    /** Formatter which formats dates to something like "[08-16 21:18:46]" for any given LocalDateTime. */
+    private static final DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder()
+        .appendLiteral('[')
+        .appendPattern("MM-dd HH:mm:ss")
+        .appendLiteral(']')
+        .toFormatter();
 
-    private ConsoleLogger() {
+    // Outside references
+    private static File logFile;
+    private static Logger logger;
+
+    // Shared state
+    private static OutputStreamWriter fileWriter;
+
+    // Individual state
+    private final String name;
+    private LogLevel logLevel = LogLevel.INFO;
+
+    /**
+     * Constructor.
+     *
+     * @param name the name of this logger (the fully qualified class name using it)
+     */
+    public ConsoleLogger(String name) {
+        this.name = name;
     }
 
     // --------
     // Configurations
     // --------
 
-    /**
-     * Set the logger to use.
-     *
-     * @param logger The logger
-     */
-    public static void setLogger(Logger logger) {
+    public static void initialize(Logger logger, File logFile) {
         ConsoleLogger.logger = logger;
-    }
-
-    /**
-     * Set the file to log to if enabled.
-     *
-     * @param logFile The log file
-     */
-    public static void setLogFile(File logFile) {
         ConsoleLogger.logFile = logFile;
     }
 
     /**
-     * Load the required settings.
+     * Sets logging settings which are shared by all logger instances.
      *
-     * @param settings The settings instance
+     * @param settings the settings to read from
      */
-    public static void setLoggingOptions(Settings settings) {
-        ConsoleLogger.logLevel = settings.getProperty(PluginSettings.LOG_LEVEL);
-        ConsoleLogger.useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
+    public static void initializeSharedSettings(Settings settings) {
+        boolean useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
         if (useLogging) {
-            if (fileWriter == null) {
-                try {
-                    fileWriter = new FileWriter(logFile, true);
-                } catch (IOException e) {
-                    ConsoleLogger.logException("Failed to create the log file:", e);
-                }
-            }
+            initializeFileWriter();
         } else {
-            close();
+            closeFileWriter();
         }
+    }
+
+    /**
+     * Sets logging settings which are individual to all loggers.
+     *
+     * @param settings the settings to read from
+     */
+    public void initializeSettings(Settings settings) {
+        this.logLevel = settings.getProperty(PluginSettings.LOG_LEVEL);
+    }
+
+    public LogLevel getLogLevel() {
+        return logLevel;
+    }
+
+    public String getName() {
+        return name;
     }
 
 
@@ -88,7 +104,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public static void warning(String message) {
+    public void warning(String message) {
         logger.warning(message);
         writeLog("[WARN] " + message);
     }
@@ -100,7 +116,7 @@ public final class ConsoleLogger {
      * @param message The message to accompany the exception
      * @param th      The Throwable to log
      */
-    public static void logException(String message, Throwable th) {
+    public void logException(String message, Throwable th) {
         warning(message + " " + ExceptionUtils.formatException(th));
         writeLog(Throwables.getStackTraceAsString(th));
     }
@@ -110,7 +126,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public static void info(String message) {
+    public void info(String message) {
         logger.info(message);
         writeLog("[INFO] " + message);
     }
@@ -123,7 +139,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public static void fine(String message) {
+    public void fine(String message) {
         if (logLevel.includes(LogLevel.FINE)) {
             logger.info(message);
             writeLog("[FINE] " + message);
@@ -142,24 +158,9 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public static void debug(String message) {
+    public void debug(String message) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + message;
-            logger.info(debugMessage);
-            writeLog(debugMessage);
-        }
-    }
-
-    /**
-     * Log the DEBUG message from the supplier if enabled.
-     *
-     * @param msgSupplier the message supplier
-     */
-    public static void debug(Supplier<String> msgSupplier) {
-        if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + msgSupplier.get();
-            logger.info(debugMessage);
-            writeLog(debugMessage);
+            logAndWriteWithDebugPrefix(message);
         }
     }
 
@@ -169,11 +170,10 @@ public final class ConsoleLogger {
      * @param message the message
      * @param param1 parameter to replace in the message
      */
-    public static void debug(String message, Object param1) {
+    // Avoids array creation if DEBUG level is disabled
+    public void debug(String message, Object param1) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + message;
-            logger.log(Level.INFO, debugMessage, param1);
-            writeLog(debugMessage + " {" + param1 + "}");
+            debug(message, new Object[]{param1});
         }
     }
 
@@ -185,7 +185,7 @@ public final class ConsoleLogger {
      * @param param2 second param to replace in message
      */
     // Avoids array creation if DEBUG level is disabled
-    public static void debug(String message, Object param1, Object param2) {
+    public void debug(String message, Object param1, Object param2) {
         if (logLevel.includes(LogLevel.DEBUG)) {
             debug(message, new Object[]{param1, param2});
         }
@@ -197,30 +197,44 @@ public final class ConsoleLogger {
      * @param message the message
      * @param params the params to replace in the message
      */
-    public static void debug(String message, Object... params) {
+    public void debug(String message, Object... params) {
         if (logLevel.includes(LogLevel.DEBUG)) {
-            String debugMessage = "[DEBUG] " + message;
-            logger.log(Level.INFO, debugMessage, params);
-            writeLog(debugMessage + " {"
-                + Arrays.stream(params).map(String::valueOf).collect(Collectors.joining(", ")) + "}");
+            logAndWriteWithDebugPrefix(MessageFormat.format(message, params));
         }
     }
 
+    /**
+     * Log the DEBUG message from the supplier if enabled.
+     *
+     * @param msgSupplier the message supplier
+     */
+    public void debug(Supplier<String> msgSupplier) {
+        if (logLevel.includes(LogLevel.DEBUG)) {
+            logAndWriteWithDebugPrefix(msgSupplier.get());
+        }
+    }
+
+    private void logAndWriteWithDebugPrefix(String message) {
+        String debugMessage = "[DEBUG] " + message;
+        logger.info(debugMessage);
+        writeLog(debugMessage);
+    }
 
     // --------
     // Helpers
     // --------
 
     /**
-     * Close all file handles.
+     * Closes the file writer.
      */
-    public static void close() {
+    public static void closeFileWriter() {
         if (fileWriter != null) {
             try {
                 fileWriter.flush();
-                fileWriter.close();
-                fileWriter = null;
             } catch (IOException ignored) {
+            } finally {
+                closeSafely(fileWriter);
+                fileWriter = null;
             }
         }
     }
@@ -231,11 +245,8 @@ public final class ConsoleLogger {
      * @param message The message to write to the log
      */
     private static void writeLog(String message) {
-        if (useLogging) {
-            String dateTime;
-            synchronized (DATE_FORMAT) {
-                dateTime = DATE_FORMAT.format(new Date());
-            }
+        if (fileWriter != null) {
+            String dateTime = DATE_FORMAT.format(LocalDateTime.now());
             try {
                 fileWriter.write(dateTime);
                 fileWriter.write(": ");
@@ -243,6 +254,33 @@ public final class ConsoleLogger {
                 fileWriter.write(NEW_LINE);
                 fileWriter.flush();
             } catch (IOException ignored) {
+            }
+        }
+    }
+
+    private static void closeSafely(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Failed to close resource", e);
+            }
+        }
+    }
+
+    /**
+     * Populates the {@link #fileWriter} field if it is null, handling any exceptions that might
+     * arise during its creation.
+     */
+    private static void initializeFileWriter() {
+        if (fileWriter == null) {
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(logFile, true);
+                fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                closeSafely(fos);
+                logger.log(Level.SEVERE, "Failed to create writer to AuthMe log file", e);
             }
         }
     }

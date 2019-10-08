@@ -81,7 +81,7 @@ public final class TestHelper {
      */
     public static Logger setupLogger() {
         Logger logger = Mockito.mock(Logger.class);
-        ConsoleLogger.setLogger(logger);
+        ConsoleLogger.initialize(logger, null);
         return logger;
     }
 
@@ -92,7 +92,7 @@ public final class TestHelper {
      */
     public static Logger setRealLogger() {
         Logger logger = Logger.getAnonymousLogger();
-        ConsoleLogger.setLogger(logger);
+        ConsoleLogger.initialize(logger, null);
         return logger;
     }
 

@@ -40,6 +40,7 @@ error:
     max_registration: '&cJus pasiekete maksimalu registraciju skaiciu.'
     logged_in: '&cTu aju prisijunges!'
     kick_for_vip: '&cA VIP prisijunge i pilna serveri!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
 
 # AntiBot

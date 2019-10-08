@@ -8,6 +8,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -32,6 +33,8 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
  */
 public class PostgreSqlDataSource extends AbstractSqlDataSource {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PostgreSqlDataSource.class);
+
     private String host;
     private String port;
     private String username;
@@ -53,14 +56,14 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             this.setConnectionArguments();
         } catch (RuntimeException e) {
             if (e instanceof IllegalArgumentException) {
-                ConsoleLogger.warning("Invalid database arguments! Please check your configuration!");
-                ConsoleLogger.warning("If this error persists, please report it to the developer!");
+                logger.warning("Invalid database arguments! Please check your configuration!");
+                logger.warning("If this error persists, please report it to the developer!");
             }
             if (e instanceof PoolInitializationException) {
-                ConsoleLogger.warning("Can't initialize database connection! Please check your configuration!");
-                ConsoleLogger.warning("If this error persists, please report it to the developer!");
+                logger.warning("Can't initialize database connection! Please check your configuration!");
+                logger.warning("If this error persists, please report it to the developer!");
             }
-            ConsoleLogger.warning("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
+            logger.warning("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
             throw e;
         }
 
@@ -69,8 +72,8 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             checkTablesAndColumns();
         } catch (SQLException e) {
             closeConnection();
-            ConsoleLogger.logException("Can't initialize the PostgreSQL database:", e);
-            ConsoleLogger.warning("Please check your database settings in the config.yml file!");
+            logger.logException("Can't initialize the PostgreSQL database:", e);
+            logger.warning("Please check your database settings in the config.yml file!");
             throw e;
         }
     }
@@ -129,7 +132,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
         ds.addDataSourceProperty("cachePrepStmts", "true");
         ds.addDataSourceProperty("preparedStatementCacheQueries", "275");
 
-        ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
+        logger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
     @Override
@@ -138,7 +141,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             ds.close();
         }
         setConnectionArguments();
-        ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
+        logger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
     private Connection getConnection() throws SQLException {
@@ -241,8 +244,13 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
             }
+
+            if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PLAYER_UUID + " VARCHAR(36)");
+            }
         }
-        ConsoleLogger.info("PostgreSQL setup finished");
+        logger.info("PostgreSQL setup finished");
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {

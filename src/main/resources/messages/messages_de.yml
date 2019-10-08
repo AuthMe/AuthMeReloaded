@@ -40,6 +40,7 @@ error:
     max_registration: '&cDu hast die maximale Anzahl an Accounts erreicht (%reg_count/%max_acc %reg_names).'
     logged_in: '&cBereits eingeloggt!'
     kick_for_vip: '&3Ein VIP-Spieler hat den vollen Server betreten!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cDu bist wegen zu vielen fehlgeschlagenen Login-Versuchen temporär gebannt!'
 
 # AntiBot
@@ -78,7 +79,7 @@ on_join_validation:
     country_banned: '&4Dein Land ist gesperrt!'
     not_owner_error: 'Du bist nicht der Besitzer dieses Accounts. Bitte wähle einen anderen Namen!'
     invalid_name_case: 'Dein registrierter Benutzername ist &2%valid&f - nicht &4%invalid&f.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Du hast einen Befehl zu schnell benutzt! Bitte trete dem Server erneut bei und warte, bevor du irgendeinen Befehl nutzt.'
 
 # Email
 email:
@@ -89,10 +90,10 @@ email:
     old_email_invalid: '&cDie alte E-Mail ist ungültig!'
     invalid: '&cUngültige E-Mail!'
     added: '&2E-Mail hinzugefügt!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cHinzufügen einer E-Mail nicht gestattet!'
     request_confirmation: '&cBitte bestätige deine E-Mail!'
     changed: '&2E-Mail aktualisiert!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&cBearbeiten einer E-Mail nicht gestattet!'
     email_show: '&2Deine aktuelle E-Mail-Adresse ist: &f%email'
     no_email_for_account: '&2Du hast zur Zeit keine E-Mail-Adresse für deinen Account hinterlegt.'
     already_used: '&4Diese E-Mail-Adresse wird bereits genutzt.'
@@ -118,18 +119,18 @@ captcha:
     usage_captcha: '&3Um dich einzuloggen, tippe dieses Captcha so ein: /captcha %captcha_code'
     wrong_captcha: '&cFalsches Captcha, bitte nutze: /captcha %captcha_code'
     valid_captcha: '&2Das Captcha ist korrekt!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Um dich zu registrieren, musst du erst ein Captcha lösen, bitte nutze den Befehl: /captcha %captcha_code'
+    register_captcha_valid: '&2Captcha richtig! Du kannst dich jetzt registrieren mit: /register'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    code_required: '&3Dieser Befehl ist sensibel und erfordert eine E-Mail-Verifizierung! Überprüfe deinen Posteingang und folge den Anweisungen der E-Mail.'
+    command_usage: '&cBenutze: /verification <code>'
+    incorrect_code: '&Falscher Code, bitte gib "/verification <code>" in den Chat ein, und verwende den Code, den Du per E-Mail erhalten hast.'
+    success: '&2Deine Identität wurde verifiziert! Du kannst nun alle Befehle innerhalb der aktuellen Sitzung ausführen!'
+    already_verified: '&2Du kannst bereits jeden sensiblen Befehl innerhalb der aktuellen Sitzung ausführen!'
+    code_expired: '&3Dein Code ist abgelaufen! Führe einen weiteren sensiblen Befehl aus, um einen neuen Code zu erhalten!'
+    email_needed: '&3Um deine Identität zu überprüfen, musst Du eine E-Mail-Adresse mit deinem Konto verknüpfen!'
 
 # Time units
 time:
@@ -145,12 +146,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Dein geheimer Code ist %code. Du kannst ihn hier abfragen: %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Bitte bestätige deinen Code mit /2fa confirm <code>'
+    code_required: 'Bitte übermittle deinen Zwei-Faktor-Authentifizierungscode mit /2fa code <code>'
+    already_enabled: 'Die Zwei-Faktor-Authentifizierung ist für dein Konto bereits aktiviert!'
+    enable_error_no_code: 'Es wurde kein 2FA-Schlüssel für dich generiert oder er ist abgelaufen. Bitte nutze /2fa add'
+    enable_success: 'Zwei-Faktor-Authentifizierung für dein Konto erfolgreich aktiviert'
+    enable_error_wrong_code: 'Code falsch oder abgelaufen. Bitte nutze /2fa add'
+    not_enabled_error: 'Die Zwei-Faktor-Authentifizierung ist für dein Konto nicht aktiviert. Benutze /2fa add'
+    removed_success: 'Die Zwei-Faktor-Authentifizierung wurde erfolgreich von deinem Konto entfernt'
+    invalid_code: 'Ungültiger Code!'

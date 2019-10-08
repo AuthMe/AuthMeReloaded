@@ -40,6 +40,7 @@ error:
     max_registration: '&Kamu telah mencapai batas maksimum pendaftaran di server ini!'
     logged_in: '&cKamu telah login!'
     kick_for_vip: '&3Player VIP mencoba masuk pada saat server sedang penuh!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cKamu untuk sementara diblokir karena terlalu sering salah saat login.'
 
 # AntiBot

@@ -146,6 +146,9 @@ public enum MessageKey {
     /** The server is full, try again later! */
     KICK_FULL_SERVER("on_join_validation.kick_full_server"),
 
+    /** An error occurred: unresolved player hostname! **/
+    KICK_UNRESOLVED_HOSTNAME("error.kick_unresolved_hostname"),
+
     /** Usage: /email add &lt;email&gt; &lt;confirmEmail&gt; */
     USAGE_ADD_EMAIL("email.usage_email_add"),
 

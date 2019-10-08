@@ -1,6 +1,7 @@
 package fr.xephi.authme.permission.handlers;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import me.lucko.luckperms.LuckPerms;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
  */
 public class LuckPermsHandler implements PermissionHandler {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(LuckPermsHandler.class);
     private LuckPermsApi luckPermsApi;
 
     public LuckPermsHandler() throws PermissionHandlerException {
@@ -79,7 +81,7 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean hasPermissionOffline(String name, PermissionNode node) {
         User user = luckPermsApi.getUser(name);
         if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to check permission for offline user "
+            logger.warning("LuckPermsHandler: tried to check permission for offline user "
                 + name + " but it isn't loaded!");
             return false;
         }
@@ -96,7 +98,7 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean isInGroup(OfflinePlayer player, String group) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to check group for offline user "
+            logger.warning("LuckPermsHandler: tried to check group for offline user "
                 + player.getName() + " but it isn't loaded!");
             return false;
         }
@@ -112,7 +114,7 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean removeFromGroup(OfflinePlayer player, String group) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to remove group for offline user "
+            logger.warning("LuckPermsHandler: tried to remove group for offline user "
                 + player.getName() + " but it isn't loaded!");
             return false;
         }
@@ -133,7 +135,7 @@ public class LuckPermsHandler implements PermissionHandler {
     public boolean setGroup(OfflinePlayer player, String group) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to set group for offline user "
+            logger.warning("LuckPermsHandler: tried to set group for offline user "
                 + player.getName() + " but it isn't loaded!");
             return false;
         }
@@ -157,7 +159,7 @@ public class LuckPermsHandler implements PermissionHandler {
     public List<String> getGroups(OfflinePlayer player) {
         User user = luckPermsApi.getUser(player.getName());
         if (user == null) {
-            ConsoleLogger.warning("LuckPermsHandler: tried to get groups for offline user "
+            logger.warning("LuckPermsHandler: tried to get groups for offline user "
                 + player.getName() + " but it isn't loaded!");
             return Collections.emptyList();
         }

@@ -40,6 +40,7 @@ error:
     max_registration: 'Je hebt het maximum aantal registraties overschreden (%reg_count/%max_acc: %reg_names).'
     logged_in: '&cJe bent al ingelogd!'
     kick_for_vip: '&cEen VIP-gebruiker heeft ingelogd toen de server vol was!'
+    kick_unresolved_hostname: '&cEr heeft een fout plaatsgevonden: hostname van de speler kon niet gevonden worden!'
     tempban_max_logins: '&cJe bent tijdelijk gebanned omdat het inloggen te vaak mislukt is.'
 
 # AntiBot
@@ -78,7 +79,7 @@ on_join_validation:
     country_banned: '&4Jouw land is gebanned op deze server!'
     not_owner_error: 'Jij bent niet de eigenaar van dit account. Kies alsjeblieft een andere naam!'
     invalid_name_case: 'Verbind je alsjeblieft als %valid, niet als %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Je voerde te snel een commando uit! Verbind alsjeblieft opnieuw met de server en wacht langer voor het gebruiken van een commando.'
 
 # Email
 email:
@@ -89,10 +90,10 @@ email:
     old_email_invalid: '&cOngeldig oud e-mailadres, probeer het opnieuw!'
     invalid: '&cOngeldig E-mailadres, probeer het opnieuw!'
     added: '&2Het e-mailadres is succesvol toegevoegd aan je account!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cEen e-mailadres toevoegen is niet toegestaan'
     request_confirmation: '&cVerifiëer je e-mailadres alsjeblieft!'
     changed: '&2Het e-mailadres is succesvol veranderd!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&cEen e-mailadres wijzigen is niet toegestaan'
     email_show: '&2Jouw huidige e-mailadres is: %email'
     no_email_for_account: '&2Je hebt nog geen e-mailadres toegevoegd aan dit account.'
     already_used: '&4Dit e-mailadres wordt al gebruikt'
@@ -118,18 +119,18 @@ captcha:
     usage_captcha: '&3Om in te loggen moet je een captcha-code oplossen, gebruik het commando: /captcha %captcha_code'
     wrong_captcha: '&cVerkeerde captcha-code, typ alsjeblieft "/captcha %captcha_code" in de chat!'
     valid_captcha: '&2De captcha-code is geldig!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Om je te registreren moet je eerst een captcha oplossen. Gebruik alsjeblieft het volgende commando: /captcha %captcha_code'
+    register_captcha_valid: 'Valide puzzel! Je mag je nu registreren met /register'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    code_required: '&3Dit commando is gevoelig en vereist een e-mail verificatie! Bekijk je inbox en volg de opgegeven instructies.'
+    command_usage: '&cGebruik: /verification <code>'
+    incorrect_code: '&cIncorrecte code, type alsjeblieft "/verification <code>" in de chat met de code die je hebt ontvangen in je email'
+    success: '&2Je identiteit is vastgesteld! Je kan nu alle commandos uitvoeren tijdens deze sessie!'
+    already_verified: '&2Je kan momenteel alle gevoelige commandos al uitvoeren!'
+    code_expired: '&3Je code is verlopen! Voer een nieuw gevoelig commando uit om een nieuwe code te ontvangen!'
+    email_needed: '&3Om je identiteit vast te stellen moet je een e-mailadres verbinden aan je account!!'
 
 # Time units
 time:
@@ -145,12 +146,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Je geheime code is %code. Je kunt hem scannen op %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Verifieer alsjeblieft je code met /2fa confirm <code>'
+    code_required: 'Stuur alsjeblieft je twee-factor authenticatie code met /2fa code <code>'
+    already_enabled: 'Twee-factor authenticatie is al aangezet voor jouw account!'
+    enable_error_no_code: 'Geen 2fa-sleutel is voor jou gegenereerd. Of hij is verlopen. Voer alsjeblieft "/2fa add" uit'
+    enable_success: 'Je hebt successvol twee-factor authenticatie ingeschakelt voor jou account'
+    enable_error_wrong_code: 'Foutieve, of verlopen code. Voer alsjeblieft "/2fa add" uit.'
+    not_enabled_error: 'Twee-factor authenticatie is uitgeschakeld voor jou account. Voer "/2fa add" uit'
+    removed_success: 'Twee-factor authenticatie is met succes van jouw account verwijderd.'
+    invalid_code: 'Ongeldige code!'

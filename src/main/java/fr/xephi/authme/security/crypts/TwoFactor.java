@@ -5,6 +5,7 @@ import com.google.common.io.BaseEncoding;
 import com.google.common.net.UrlEscapers;
 import com.google.common.primitives.Ints;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -34,6 +35,8 @@ public class TwoFactor extends UnsaltedMethod {
 
     private static final int TIME_PRECISION = 3;
     private static final String CRYPTO_ALGO = "HmacSHA1";
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(TwoFactor.class);
 
     /**
      * Creates a link to a QR barcode with the provided secret.
@@ -71,7 +74,7 @@ public class TwoFactor extends UnsaltedMethod {
         try {
             return checkPassword(hashedPassword.getHash(), password);
         } catch (Exception e) {
-            ConsoleLogger.logException("Failed to verify two auth code:", e);
+            logger.logException("Failed to verify two auth code:", e);
             return false;
         }
     }

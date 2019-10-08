@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
@@ -35,6 +36,8 @@ import static fr.xephi.authme.util.lazytags.TagBuilder.createTag;
  * Configuration for the welcome message (welcome.txt).
  */
 public class WelcomeMessageConfiguration implements Reloadable {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(WelcomeMessageConfiguration.class);
 
     @DataFolder
     @Inject
@@ -125,10 +128,10 @@ public class WelcomeMessageConfiguration implements Reloadable {
             try {
                 return Files.readAllLines(welcomeFile.toPath(), StandardCharsets.UTF_8);
             } catch (IOException e) {
-                ConsoleLogger.logException("Failed to read welcome.txt file:", e);
+                logger.logException("Failed to read welcome.txt file:", e);
             }
         } else {
-            ConsoleLogger.warning("Failed to copy welcome.txt from JAR");
+            logger.warning("Failed to copy welcome.txt from JAR");
         }
         return Collections.emptyList();
     }

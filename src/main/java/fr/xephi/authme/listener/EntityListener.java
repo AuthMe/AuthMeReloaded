@@ -1,7 +1,5 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.ConsoleLogger;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -15,29 +13,19 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.projectiles.ProjectileSource;
 
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class EntityListener implements Listener {
 
     private final ListenerService listenerService;
-    private Method getShooter;
-    private boolean shooterIsLivingEntity;
 
     @Inject
     EntityListener(ListenerService listenerService) {
         this.listenerService = listenerService;
-        try {
-            getShooter = Projectile.class.getDeclaredMethod("getShooter");
-            shooterIsLivingEntity = getShooter.getReturnType() == LivingEntity.class;
-        } catch (NoSuchMethodException | SecurityException e) {
-            ConsoleLogger.logException("Cannot load getShooter() method on Projectile class", e);
-        }
     }
 
-    // Note #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
@@ -56,7 +44,7 @@ public class EntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
-        if (listenerService.shouldCancelEvent(event)) {
+        if (listenerService.shouldCancelEvent(event.getTarget())) {
             event.setTarget(null);
             event.setCancelled(true);
         }
@@ -77,6 +65,7 @@ public class EntityListener implements Listener {
         }
     }
 
+    //TODO sgdc3 20190808: We listen at the same event twice, does it make any sense?
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
@@ -93,26 +82,10 @@ public class EntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        if (event.getEntity() == null) {
-            return;
-        }
+        final Projectile projectile = event.getEntity();
 
-        Projectile projectile = event.getEntity();
-        // In the Bukkit API prior to 1.7, getShooter() returns a LivingEntity instead of a ProjectileSource
-        Object shooterRaw = null;
-        if (shooterIsLivingEntity) {
-            try {
-                if (getShooter == null) {
-                    getShooter = Projectile.class.getMethod("getShooter");
-                }
-                shooterRaw = getShooter.invoke(projectile);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                ConsoleLogger.logException("Error getting shooter", e);
-            }
-        } else {
-            shooterRaw = projectile.getShooter();
-        }
-        if (shooterRaw instanceof Player && listenerService.shouldCancelEvent((Player) shooterRaw)) {
+        ProjectileSource shooter = projectile.getShooter();
+        if (shooter instanceof Player && listenerService.shouldCancelEvent((Player) shooter)) {
             event.setCancelled(true);
         }
     }
@@ -123,5 +96,4 @@ public class EntityListener implements Listener {
             event.setCancelled(true);
         }
     }
-
 }

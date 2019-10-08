@@ -40,6 +40,7 @@ error:
     max_registration: '&cAtingiu o numero máximo de %reg_count contas registas, maximo de contas %max_acc'
     logged_in: '&cJá se encontra autenticado!'
     kick_for_vip: '&cUm jogador VIP entrou no servidor cheio!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cVocê foi temporariamente banido por falhar muitas vezes o login.'
 
 # AntiBot
@@ -89,8 +90,10 @@ email:
     old_email_invalid: 'Email antigo inválido!'
     invalid: 'Email inválido!'
     added: 'Email adicionado com sucesso!'
+    add_not_allowed: '&cAdicionar e-mail não é permitido'
     request_confirmation: 'Confirme o seu email!'
     changed: 'Email alterado com sucesso!'
+    change_not_allowed: '&cAlterar e-mail não é permitido'
     email_show: '&2O seu endereço de email atual é &f%email'
     no_email_for_account: '&2Você atualmente não tem um endereço de email associado a essa conta.'
     already_used: '&4O endereço de e-mail já está sendo usado'
@@ -98,8 +101,6 @@ email:
     send_failure: 'Não foi possivel enviar o email. Por favor contate um administrador.'
     change_password_expired: 'Você não pode mais alterar a sua password usando este comando.'
     email_cooldown_error: '&cUm email já foi enviado recentemente.Por favor, espere %time antes de enviar novamente'
-    add_not_allowed: '&cAdicionar e-mail não é permitido'
-    change_not_allowed: '&cAlterar e-mail não é permitido'
 
 # Password recovery by email
 recovery:

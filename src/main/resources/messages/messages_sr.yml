@@ -3,152 +3,155 @@
 # %username% - Zamenjuje ime igrača kome se šalje poruka.
 # %displayname% - Zamenjuje nadimak (i boje) igrača kome se šalje poruka.
 
-# Registracija
+# Registration
 registration:
-  register_request: '&3Molimo Vas, registrujte se na server komandom: /register <lozinka> <PotvrditeLozinku>'
-  command_usage: '&cUpotreba: /register <lozinka> <PotvrditeLozinku>'
-  reg_only: '&4Samo registrovani igrači mogu ući na server! Molimo Vas posetite http://example.com da biste se registrovali!'
-  kicked_admin_registered: 'Admin vas je upravo registrovao; molimo Vas uđite ponovo'
-  success: '&2Uspešno registrovani!'
-  disabled: '&cRegistracija u igri je isključena!'
-  name_taken: '&cKorisnik je već registrovan!'
+    disabled: '&cRegistracija u igri je isključena!'
+    name_taken: '&cKorisnik je već registrovan!'
+    register_request: '&3Molimo Vas, registrujte se na server komandom: /register <lozinka> <PotvrditeLozinku>'
+    command_usage: '&cUpotreba: /register <lozinka> <PotvrditeLozinku>'
+    reg_only: '&4Samo registrovani igrači mogu ući na server! Molimo Vas posetite http://example.com da biste se registrovali!'
+    success: '&2Uspešno registrovani!'
+    kicked_admin_registered: 'Admin vas je upravo registrovao; molimo Vas uđite ponovo'
 
-# Greške lozinki i registracije
+# Password errors on registration
 password:
-  match_error: '&cLozinke se nisu složile, proverite ih ponovo!'
-  name_in_password: '&cNe možete koristiti svoje ime za lozinku, molimo vas da izaberete drugu...'
-  unsafe_password: '&cIzabrana lozinka nije bezbedna, molimo vas da izaberete drugu...'
-  forbidden_characters: '&4Vaša lozinka sadrži nedozvoljene karaktere. Dozvoljeni karakteri: %valid_chars'
-  wrong_length: '&cVaša lozinka je prekratka ili predugačka! Molimo Vas da probate drugu!'
+    match_error: '&cLozinke se nisu složile, proverite ih ponovo!'
+    name_in_password: '&cNe možete koristiti svoje ime za lozinku, molimo vas da izaberete drugu...'
+    unsafe_password: '&cIzabrana lozinka nije bezbedna, molimo vas da izaberete drugu...'
+    forbidden_characters: '&4Vaša lozinka sadrži nedozvoljene karaktere. Dozvoljeni karakteri: %valid_chars'
+    wrong_length: '&cVaša lozinka je prekratka ili predugačka! Molimo Vas da probate drugu!'
 
-# Ulogovanje
+# Login
 login:
-  command_usage: '&cUpotreba: /login <lozinka>'
-  wrong_password: '&cPogrešna lozinka!'
-  success: '&2Uspešno ste se ulogovali!'
-  login_request: '&cMolimo Vas, ulogujte se komandom: /login <lozinka>'
-  timeout_error: '&4Vreme za login isteklo, izbačeni ste sa servera, molimo Vas da pokušate ponovo!'
+    command_usage: '&cUpotreba: /login <lozinka>'
+    wrong_password: '&cPogrešna lozinka!'
+    success: '&2Uspešno ste se ulogovali!'
+    login_request: '&cMolimo Vas, ulogujte se komandom: /login <lozinka>'
+    timeout_error: '&4Vreme za login isteklo, izbačeni ste sa servera, molimo Vas da pokušate ponovo!'
 
-# Greške
+# Errors
 error:
-  unregistered_user: '&cKorisnik nije registrovan!'
-  denied_command: '&cDa biste koristili komande morate se autentifikovati!'
-  denied_chat: '&cDa biste koristili čet morate se autentifikovati!'
-  not_logged_in: '&cNiste ulogovani!'
-  tempban_max_logins: '&cPrivremeno ste banovani zbog previše pogrešnih pokušaja ulogovanja.'
-  max_registration: '&cDostigli ste maksimalan broj registracija (%reg_count/%max_acc %reg_names) za vaše povezivanje!'
-  no_permission: '&4Nemate dovoljno dozvola da uradite to!'
-  unexpected_error: '&4Pojavila se neočekivana greška, molimo Vas kontaktirajte administratora!'
-  kick_for_vip: '&3VIP igrač je ušao na server dok je bio pun!'
-  logged_in: '&cVeć ste ulogovani!'
+    denied_command: '&cDa biste koristili komande morate se autentifikovati!'
+    denied_chat: '&cDa biste koristili čet morate se autentifikovati!'
+    unregistered_user: '&cKorisnik nije registrovan!'
+    not_logged_in: '&cNiste ulogovani!'
+    no_permission: '&4Nemate dovoljno dozvola da uradite to!'
+    unexpected_error: '&4Pojavila se neočekivana greška, molimo Vas kontaktirajte administratora!'
+    max_registration: '&cDostigli ste maksimalan broj registracija (%reg_count/%max_acc %reg_names) za vaše povezivanje!'
+    logged_in: '&cVeć ste ulogovani!'
+    kick_for_vip: '&3VIP igrač je ušao na server dok je bio pun!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+    tempban_max_logins: '&cPrivremeno ste banovani zbog previše pogrešnih pokušaja ulogovanja.'
 
 # AntiBot
 antibot:
-  kick_antibot: 'AntiBot mod zaštite je aktiviran! Morate sačekati par minuta pre povezivanja na server.'
-  auto_enabled: '&4[AntiBotSlužba] AntiBot je aktiviran zbog prevelikog broja povezivanja!'
-  auto_disabled: '&2[AntiBotSlužba] AntiBot je isključen posle %m minut(a)!'
+    kick_antibot: 'AntiBot mod zaštite je aktiviran! Morate sačekati par minuta pre povezivanja na server.'
+    auto_enabled: '&4[AntiBotSlužba] AntiBot je aktiviran zbog prevelikog broja povezivanja!'
+    auto_disabled: '&2[AntiBotSlužba] AntiBot je isključen posle %m minut(a)!'
 
+# Unregister
 unregister:
-  success: '&cUspešno odregistrovani!'
-  command_usage: '&cUpotreba: /unregister <lozinka>'
+    success: '&cUspešno odregistrovani!'
+    command_usage: '&cUpotreba: /unregister <lozinka>'
 
-# Ostale poruke
+# Other messages
 misc:
-  accounts_owned_self: 'Vi imate %count naloga:'
-  accounts_owned_other: 'Igrač %name ima %count naloga:'
-  account_not_activated: '&cVaš nalog još uvek nije aktiviran, molimo Vas proverite svoj email!'
-  password_changed: '&2Lozinka uspešno promenjena!'
-  logout: '&2Uspešno ste se odlogovali!'
-  reload: '&2Konfiguracija i databaza su uspešno osveženi!'
-  usage_change_password: '&cUpotreba: /changepassword <staraLozinka> <novaLozinka>'
+    account_not_activated: '&cVaš nalog još uvek nije aktiviran, molimo Vas proverite svoj email!'
+    password_changed: '&2Lozinka uspešno promenjena!'
+    logout: '&2Uspešno ste se odlogovali!'
+    reload: '&2Konfiguracija i databaza su uspešno osveženi!'
+    usage_change_password: '&cUpotreba: /changepassword <staraLozinka> <novaLozinka>'
+    accounts_owned_self: 'Vi imate %count naloga:'
+    accounts_owned_other: 'Igrač %name ima %count naloga:'
 
-# Poruke vezane za sesiju
+# Session messages
 session:
-  invalid_session: '&cVaš IP je promenjen i vaši podaci o sesiji su istekli!'
-  valid_session: '&2Ulogovani ste zbog ponovnog povezivanja sesije.'
+    valid_session: '&2Ulogovani ste zbog ponovnog povezivanja sesije.'
+    invalid_session: '&cVaš IP je promenjen i vaši podaci o sesiji su istekli!'
 
-# Greške pri povezivanju
+# Error messages when joining
 on_join_validation:
-  name_length: '&4Vaše korisničko ime je prekratko ili predugačko!'
-  characters_in_name: '&4Vaše korisničko ime sadrži nedozvoljene karaktere. Dozvoljeni karakteri: %valid_chars'
-  country_banned: '&4Vaša država je banovana sa ovog servera!'
-  not_owner_error: 'Ne posedujete ovaj nalog. Molimo Vas izaberite drugo ime!'
-  kick_full_server: '&4Server je pun, probajte ponovo kasnije!'
-  same_nick_online: '&4Isto korisničko ime već igra na serveru!'
-  invalid_name_case: 'Morate ući sa korisničkim imenom %valid, umesto %invalid.'
-  same_ip_online: 'Igrač sa istim IP-em je već u igri!'
-  quick_command: 'Iskoristili ste komandu previše brzo! Molimo Vas, uđite opet na server i sačekajte malo pre korišćenja komandi.'
+    same_ip_online: 'Igrač sa istim IP-em je već u igri!'
+    same_nick_online: '&4Isto korisničko ime već igra na serveru!'
+    name_length: '&4Vaše korisničko ime je prekratko ili predugačko!'
+    characters_in_name: '&4Vaše korisničko ime sadrži nedozvoljene karaktere. Dozvoljeni karakteri: %valid_chars'
+    kick_full_server: '&4Server je pun, probajte ponovo kasnije!'
+    country_banned: '&4Vaša država je banovana sa ovog servera!'
+    not_owner_error: 'Ne posedujete ovaj nalog. Molimo Vas izaberite drugo ime!'
+    invalid_name_case: 'Morate ući sa korisničkim imenom %valid, umesto %invalid.'
+    quick_command: 'Iskoristili ste komandu previše brzo! Molimo Vas, uđite opet na server i sačekajte malo pre korišćenja komandi.'
 
 # Email
 email:
-  usage_email_add: '&cUpotreba: /email add <email> <potvrditeEmail>'
-  usage_email_change: '&cUpotreba: /email change <stariEmail> <noviEmail>'
-  new_email_invalid: '&cNevažeći email, pokušajte ponovo!'
-  old_email_invalid: '&cNevažeći stari email, pokušajte ponovo!'
-  invalid: '&cNevažeći email, pokušajte ponovo!'
-  added: '&2Email adresa je uspešno dodata na vaš nalog!'
-  request_confirmation: '&cMolimo Vas podvrdite svoju email adresu!'
-  changed: '&2Email adresa uspešno promenjena!'
-  email_show: '&2Vaša email adresa je: &f%email'
-  incomplete_settings: 'Greška: nisu postavljena potrebna podešavanja za slanje emaila. Molimo Vas da kontaktirate admina.'
-  already_used: '&4Email adresa je već u upotrebi'
-  send_failure: 'Email se nije mogao poslati. Molimo Vas da kontaktirate administratora.'
-  no_email_for_account: '&2Trenutno nemate email adresu povezanu sa svojim nalogom.'
-  add_email_request: '&3Molimo Vas dodajte email adresu na vaš nalog komandom: /email add <vašEmail> <potvrditeEmail>'
-  change_password_expired: 'Ne možete više promeniti svoju lozinku koristeći ovu komandu.'
-  email_cooldown_error: '&cEmail je već poslat. Morate sačekati %time pre nego što možete poslati drugi.'
-  add_not_allowed: '&cDodavanje emaila nije dozvoljeno'
-  change_not_allowed: '&cPromena emaila nije dozvoljena'
+    add_email_request: '&3Molimo Vas dodajte email adresu na vaš nalog komandom: /email add <vašEmail> <potvrditeEmail>'
+    usage_email_add: '&cUpotreba: /email add <email> <potvrditeEmail>'
+    usage_email_change: '&cUpotreba: /email change <stariEmail> <noviEmail>'
+    new_email_invalid: '&cNevažeći email, pokušajte ponovo!'
+    old_email_invalid: '&cNevažeći stari email, pokušajte ponovo!'
+    invalid: '&cNevažeći email, pokušajte ponovo!'
+    added: '&2Email adresa je uspešno dodata na vaš nalog!'
+    add_not_allowed: '&cDodavanje emaila nije dozvoljeno'
+    request_confirmation: '&cMolimo Vas podvrdite svoju email adresu!'
+    changed: '&2Email adresa uspešno promenjena!'
+    change_not_allowed: '&cPromena emaila nije dozvoljena'
+    email_show: '&2Vaša email adresa je: &f%email'
+    no_email_for_account: '&2Trenutno nemate email adresu povezanu sa svojim nalogom.'
+    already_used: '&4Email adresa je već u upotrebi'
+    incomplete_settings: 'Greška: nisu postavljena potrebna podešavanja za slanje emaila. Molimo Vas da kontaktirate admina.'
+    send_failure: 'Email se nije mogao poslati. Molimo Vas da kontaktirate administratora.'
+    change_password_expired: 'Ne možete više promeniti svoju lozinku koristeći ovu komandu.'
+    email_cooldown_error: '&cEmail je već poslat. Morate sačekati %time pre nego što možete poslati drugi.'
 
-# Povratak lozinke putem emaila
+# Password recovery by email
 recovery:
-  forgot_password_hint: '&3Zaboravili ste lozinku? Molimo Vas ukucajte komandu: /email recovery <vašEmail>'
-  command_usage: '&cUpotreba: /email recovery <Email>'
-  email_sent: '&2Email za povratak je poslat uspešno! Molimo Vas proverite inbox svog emaila!'
-  code:
-    code_sent: 'Povratni kod za resetovanje vaše lozinke je poslat na vaš email.'
-    incorrect: 'Povratni kod nije tačan! Imate još %count pokušaja.'
-    tries_exceeded: 'Dostigli ste maksimalni broj pokušaja povratka sa kodom. Koristite "/email recovery [email]" da generišite nov.'
-    correct: 'Povratni kod uspešno unesen!'
-    change_password: 'Molimo Vas iskoristite komandu /email setpassword <nova lozinka> da odmah promenite svoju lozinku.'
+    forgot_password_hint: '&3Zaboravili ste lozinku? Molimo Vas ukucajte komandu: /email recovery <vašEmail>'
+    command_usage: '&cUpotreba: /email recovery <Email>'
+    email_sent: '&2Email za povratak je poslat uspešno! Molimo Vas proverite inbox svog emaila!'
+    code:
+        code_sent: 'Povratni kod za resetovanje vaše lozinke je poslat na vaš email.'
+        incorrect: 'Povratni kod nije tačan! Imate još %count pokušaja.'
+        tries_exceeded: 'Dostigli ste maksimalni broj pokušaja povratka sa kodom. Koristite "/email recovery [email]" da generišite nov.'
+        correct: 'Povratni kod uspešno unesen!'
+        change_password: 'Molimo Vas iskoristite komandu /email setpassword <nova lozinka> da odmah promenite svoju lozinku.'
 
 # Captcha
 captcha:
-  usage_captcha: '&3Da biste se ulogovali morate rešiti captcha kod, molimo Vas iskoristite komandu: /captcha %captcha_code'
-  wrong_captcha: '&cPogrešna captcha, molimo Vas kucajte "/captcha %captcha_code" u četu!'
-  valid_captcha: '&2Captcha kod uspešno unesen!'
-  captcha_for_registration: 'Da biste se registrovali morate rešiti captcha kod, molimo Vas iskoristite komandu: /captcha %captcha_code'
-  register_captcha_valid: '&2Ispravna captcha! Sada se možete registrovati koristeći /register'
+    usage_captcha: '&3Da biste se ulogovali morate rešiti captcha kod, molimo Vas iskoristite komandu: /captcha %captcha_code'
+    wrong_captcha: '&cPogrešna captcha, molimo Vas kucajte "/captcha %captcha_code" u četu!'
+    valid_captcha: '&2Captcha kod uspešno unesen!'
+    captcha_for_registration: 'Da biste se registrovali morate rešiti captcha kod, molimo Vas iskoristite komandu: /captcha %captcha_code'
+    register_captcha_valid: '&2Ispravna captcha! Sada se možete registrovati koristeći /register'
 
-# Verifikacioni kod
+# Verification code
 verification:
-  code_required: '&3Ova komanda je osetljiva i zahteva verifikaciju emaila! Molimo Vas proverite svoj inbox i pratite instrukcije u emailu.'
-  command_usage: '&cUpotreba: /verification <kod>'
-  incorrect_code: '&cNeispravan kod, molimo Vas unesite "/verification <code>" u čet, koristeći kod koji ste dobili u emailu'
-  success: '&2Vaš identitet je verifikovan! Sada možete koristiti sve komande u trenutnoj sesiji!'
-  already_verified: '&2Već možete koristiti sve osetljive komande u trenutnoj sesiji!'
-  code_expired: '&3Vaš kod je istekao! Iskoristite drugu osetljivu komandu da dobijete kod!'
-  email_needed: '&3Da biste verifikovali svoj identitet morate da povežete svoju email adresu sa svojim nalogom!!'
+    code_required: '&3Ova komanda je osetljiva i zahteva verifikaciju emaila! Molimo Vas proverite svoj inbox i pratite instrukcije u emailu.'
+    command_usage: '&cUpotreba: /verification <kod>'
+    incorrect_code: '&cNeispravan kod, molimo Vas unesite "/verification <code>" u čet, koristeći kod koji ste dobili u emailu'
+    success: '&2Vaš identitet je verifikovan! Sada možete koristiti sve komande u trenutnoj sesiji!'
+    already_verified: '&2Već možete koristiti sve osetljive komande u trenutnoj sesiji!'
+    code_expired: '&3Vaš kod je istekao! Iskoristite drugu osetljivu komandu da dobijete kod!'
+    email_needed: '&3Da biste verifikovali svoj identitet morate da povežete svoju email adresu sa svojim nalogom!!'
 
-two_factor:
-  code_created: '&2Vaš tajni kod je %code. Možete ga skenirati sa %url'
-  confirmation_required: 'Molimo Vas potvrdite svoj kod koristeći /2fa confirm <code>'
-  code_required: 'Molimo Vas unesite svoj autentifikacioni kod dva-faktora koristeći /2fa code <kod>'
-  already_enabled: 'Autentifikacioni dupli-faktor je već aktiviran za vaš nalog!'
-  enable_error_no_code: 'Nijedan 2fa ključ nije generisan za vas ili je istekao. Molimo Vas kucajte /2fa add'
-  enable_success: 'Uspešno ste aktivirali dvo-faktornu autentifikaciju za vaš nalog'
-  enable_error_wrong_code: 'Pogrešan kod ili je kod istekao. Molimo Vas kucajte /2fa add'
-  not_enabled_error: 'Dvo-faktorna autentifikacija nije aktivirana za vaš nalog. Kucajte /2fa add'
-  removed_success: 'Uspešno ste uklonili dvo-faktornu autentifikaciju sa vašeg naloga'
-  invalid_code: 'Nevažeći kod!'
-
-# Vremenske odredbe
+# Time units
 time:
-  second: 'sekund'
-  seconds: 'sekundi'
-  minute: 'minut'
-  minutes: 'minuta'
-  hour: 'čas'
-  hours: 'časova'
-  day: 'dan'
-  days: 'dana'
+    second: 'sekund'
+    seconds: 'sekundi'
+    minute: 'minut'
+    minutes: 'minuta'
+    hour: 'čas'
+    hours: 'časova'
+    day: 'dan'
+    days: 'dana'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Vaš tajni kod je %code. Možete ga skenirati sa %url'
+    confirmation_required: 'Molimo Vas potvrdite svoj kod koristeći /2fa confirm <code>'
+    code_required: 'Molimo Vas unesite svoj autentifikacioni kod dva-faktora koristeći /2fa code <kod>'
+    already_enabled: 'Autentifikacioni dupli-faktor je već aktiviran za vaš nalog!'
+    enable_error_no_code: 'Nijedan 2fa ključ nije generisan za vas ili je istekao. Molimo Vas kucajte /2fa add'
+    enable_success: 'Uspešno ste aktivirali dvo-faktornu autentifikaciju za vaš nalog'
+    enable_error_wrong_code: 'Pogrešan kod ili je kod istekao. Molimo Vas kucajte /2fa add'
+    not_enabled_error: 'Dvo-faktorna autentifikacija nije aktivirana za vaš nalog. Kucajte /2fa add'
+    removed_success: 'Uspešno ste uklonili dvo-faktornu autentifikaciju sa vašeg naloga'
+    invalid_code: 'Nevažeći kod!'

@@ -1,6 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.PluginHookService;
@@ -14,8 +15,11 @@ import org.bukkit.event.server.PluginEnableEvent;
 import javax.inject.Inject;
 
 /**
+ * Listener for server events.
  */
 public class ServerListener implements Listener {
+    
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(ServerListener.class);
 
     @Inject
     private PluginHookService pluginHookService;
@@ -28,11 +32,6 @@ public class ServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
-        // Make sure the plugin instance isn't null
-        if (event.getPlugin() == null) {
-            return;
-        }
-
         final String pluginName = event.getPlugin().getName();
 
         // Call the onPluginDisable method in the permissions manager
@@ -40,30 +39,25 @@ public class ServerListener implements Listener {
 
         if ("Essentials".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookEssentials();
-            ConsoleLogger.info("Essentials has been disabled: unhooking");
+            logger.info("Essentials has been disabled: unhooking");
         } else if ("CMI".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookCmi();
             spawnLoader.unloadCmiSpawn();
-            ConsoleLogger.info("CMI has been disabled: unhooking");
+            logger.info("CMI has been disabled: unhooking");
         } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
             pluginHookService.unhookMultiverse();
-            ConsoleLogger.info("Multiverse-Core has been disabled: unhooking");
+            logger.info("Multiverse-Core has been disabled: unhooking");
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.unloadEssentialsSpawn();
-            ConsoleLogger.info("EssentialsSpawn has been disabled: unhooking");
+            logger.info("EssentialsSpawn has been disabled: unhooking");
         } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
             protocolLibService.disable();
-            ConsoleLogger.warning("ProtocolLib has been disabled, unhooking packet adapters!");
+            logger.warning("ProtocolLib has been disabled, unhooking packet adapters!");
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
-        // Make sure the plugin instance isn't null
-        if (event.getPlugin() == null) {
-            return;
-        }
-
         final String pluginName = event.getPlugin().getName();
 
         // Call the onPluginEnable method in the permissions manager

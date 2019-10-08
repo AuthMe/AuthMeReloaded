@@ -27,8 +27,9 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -47,11 +48,14 @@ class InventoryPacketAdapter extends PacketAdapter {
     private static final int MAIN_SIZE = 27;
     private static final int HOTBAR_SIZE = 9;
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(InventoryPacketAdapter.class);
     private final PlayerCache playerCache;
+    private final DataSource dataSource;
 
-    InventoryPacketAdapter(AuthMe plugin, PlayerCache playerCache) {
+    InventoryPacketAdapter(AuthMe plugin, PlayerCache playerCache, DataSource dataSource) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
         this.playerCache = playerCache;
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -59,20 +63,22 @@ class InventoryPacketAdapter extends PacketAdapter {
         Player player = packetEvent.getPlayer();
         PacketContainer packet = packetEvent.getPacket();
 
-        byte windowId = packet.getIntegers().read(0).byteValue();
-        if (windowId == PLAYER_INVENTORY && !playerCache.isAuthenticated(player.getName())) {
+        int windowId = packet.getIntegers().read(0);
+        if (windowId == PLAYER_INVENTORY && shouldHideInventory(player.getName())) {
             packetEvent.setCancelled(true);
         }
     }
 
-    public void register(BukkitService bukkitService, boolean hideNow) {
+    public void register(BukkitService bukkitService) {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
 
-        if (hideNow) {
-            bukkitService.getOnlinePlayers().stream()
-                    .filter(player -> playerCache.isAuthenticated(player.getName()))
-                    .forEach(this::sendBlankInventoryPacket);
-        }
+        bukkitService.getOnlinePlayers().stream()
+            .filter(player -> shouldHideInventory(player.getName()))
+            .forEach(this::sendBlankInventoryPacket);
+    }
+
+    private boolean shouldHideInventory(String playerName) {
+        return !playerCache.isAuthenticated(playerName) && dataSource.isAuthAvailable(playerName);
     }
 
     public void unregister() {
@@ -101,7 +107,7 @@ class InventoryPacketAdapter extends PacketAdapter {
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);
         } catch (InvocationTargetException invocationExc) {
-            ConsoleLogger.logException("Error during sending blank inventory", invocationExc);
+            logger.logException("Error during sending blank inventory", invocationExc);
         }
     }
 }

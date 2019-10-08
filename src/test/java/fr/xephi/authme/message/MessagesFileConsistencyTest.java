@@ -19,11 +19,11 @@ import static org.junit.Assert.fail;
  */
 public class MessagesFileConsistencyTest {
 
-    private static final String MESSAGES_FILE = "/messages/messages_en.yml";
+    private static final String MESSAGES_FILE = MessagePathHelper.DEFAULT_MESSAGES_FILE;
 
     @Test
     public void shouldHaveAllMessages() {
-        File file = TestHelper.getJarFile(MESSAGES_FILE);
+        File file = TestHelper.getJarFile("/" + MESSAGES_FILE);
         PropertyReader reader = new YamlFileReader(file);
         List<String> errors = new ArrayList<>();
         for (MessageKey messageKey : MessageKey.values()) {

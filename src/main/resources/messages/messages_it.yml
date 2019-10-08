@@ -1,8 +1,8 @@
 # Lingua Italiana creata da Maxetto.
 # Tag globali disponibili:
 # %nl% - Vai a capo.
-# %username% - Sostituisce il nome dell'utente che riceve il messaggio.
-# %displayname% - Sostituisce il nickname (e i colori) dell'utente che riceve il messaggio.
+# %username% - Sostituisce il nome del giocatore che riceve il messaggio.
+# %displayname% - Sostituisce il nickname (e i colori) del giocatore che riceve il messaggio.
 
 # Registration
 registration:
@@ -40,7 +40,8 @@ error:
     unexpected_error: '&4Qualcosa è andato storto, riporta questo errore ad un amministratore!'
     max_registration: '&cHai raggiunto il numero massimo di registrazioni (%reg_count/%max_acc %reg_names) per questo indirizzo IP!'
     logged_in: '&cHai già eseguito l''autenticazione!'
-    kick_for_vip: '&3Un utente VIP è entrato mentre il server era pieno e ha preso il tuo posto!'
+    kick_for_vip: '&3Un giocatore VIP è entrato mentre il server era pieno e ha preso il tuo posto!'
+    kick_unresolved_hostname: '&cQualcosa è andato storto: hostname del giocatore irrisolvibile!'
     tempban_max_logins: '&cSei stato temporaneamente bandito per aver fallito l''autenticazione troppe volte.'
 
 # AntiBot

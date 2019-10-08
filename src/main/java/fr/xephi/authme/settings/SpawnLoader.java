@@ -3,6 +3,7 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -29,6 +30,8 @@ import java.io.IOException;
  */
 public class SpawnLoader implements Reloadable {
 
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(SpawnLoader.class);
+    
     private final File authMeConfigurationFile;
     private final Settings settings;
     private final PluginHookService pluginHookService;
@@ -120,7 +123,7 @@ public class SpawnLoader implements Reloadable {
                 YamlConfiguration.loadConfiguration(essentialsSpawnFile), "spawns.default");
         } else {
             essentialsSpawn = null;
-            ConsoleLogger.info("Essentials spawn file not found: '" + essentialsSpawnFile.getAbsolutePath() + "'");
+            logger.info("Essentials spawn file not found: '" + essentialsSpawnFile.getAbsolutePath() + "'");
         }
     }
 
@@ -145,7 +148,7 @@ public class SpawnLoader implements Reloadable {
             cmiSpawn = getLocationFromCmiConfiguration(YamlConfiguration.loadConfiguration(cmiConfig));
         } else {
             cmiSpawn = null;
-            ConsoleLogger.info("CMI config file not found: '" + cmiConfig.getAbsolutePath() + "'");
+            logger.info("CMI config file not found: '" + cmiConfig.getAbsolutePath() + "'");
         }
     }
 
@@ -177,6 +180,16 @@ public class SpawnLoader implements Reloadable {
             switch (priority.toLowerCase().trim()) {
                 case "default":
                     if (world.getSpawnLocation() != null) {
+                        if (!isValidSpawnPoint(world.getSpawnLocation())) {
+                            for (World spawnWorld : Bukkit.getWorlds()) {
+                                if (isValidSpawnPoint(spawnWorld.getSpawnLocation())) {
+                                    world = spawnWorld;
+                                    break;
+                                }
+                            }
+                            logger.warning("Seems like AuthMe is unable to find a proper spawn location. "
+                                + "Set a location with the command '/authme setspawn'");
+                        }
                         spawnLoc = world.getSpawnLocation();
                     }
                     break;
@@ -198,12 +211,27 @@ public class SpawnLoader implements Reloadable {
                     // ignore
             }
             if (spawnLoc != null) {
-                ConsoleLogger.debug("Spawn location determined as `{0}` for world `{1}`", spawnLoc, world.getName());
+                logger.debug("Spawn location determined as `{0}` for world `{1}`", spawnLoc, world.getName());
                 return spawnLoc;
             }
         }
-        ConsoleLogger.debug("Fall back to default world spawn location. World: `{0}`", world.getName());
+        logger.debug("Fall back to default world spawn location. World: `{0}`", world.getName());
+
         return world.getSpawnLocation(); // return default location
+    }
+
+    /**
+     * Checks if a given location is a valid spawn point [!= (0,0,0)].
+     *
+     * @param location The location to check
+     *
+     * @return True upon success, false otherwise
+     */
+    private boolean isValidSpawnPoint(Location location) {
+        if (location.getX() == 0 && location.getY() == 0 && location.getZ() == 0) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -232,7 +260,7 @@ public class SpawnLoader implements Reloadable {
             authMeConfiguration.save(authMeConfigurationFile);
             return true;
         } catch (IOException e) {
-            ConsoleLogger.logException("Could not save spawn config (" + authMeConfigurationFile + ")", e);
+            logger.logException("Could not save spawn config (" + authMeConfigurationFile + ")", e);
         }
         return false;
     }

@@ -82,14 +82,6 @@ public final class PluginSettings implements SettingsHolder {
     public static final Property<Boolean> USE_ASYNC_TASKS =
         newProperty("settings.useAsyncTasks", true);
 
-    @Comment({
-        "By default we handle the AsyncPlayerPreLoginEvent which makes the plugin faster",
-        "but it is incompatible with any permission plugin not included in our compatibility list.",
-        "If you have issues with permission checks on player join please disable this option."
-    })
-    public static final Property<Boolean> USE_ASYNC_PRE_LOGIN_EVENT =
-        newProperty("settings.useAsyncPreLoginEvent", true);
-
     @Comment("The name of the server, used in some placeholders.")
     public static final Property<String> SERVER_NAME = newProperty("settings.serverName", "Your Minecraft Server");
 

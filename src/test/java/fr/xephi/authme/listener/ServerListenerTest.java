@@ -81,19 +81,6 @@ public class ServerListenerTest {
         checkDisableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
     }
 
-    @Test
-    public void shouldHandlePluginWithNullName() {
-        PluginEnableEvent enableEvent = mock(PluginEnableEvent.class);
-        given(enableEvent.getPlugin()).willReturn(null);
-        serverListener.onPluginEnable(enableEvent);
-        verifyNoMoreInteractionsAndReset();
-
-        PluginDisableEvent disableEvent = mock(PluginDisableEvent.class);
-        given(disableEvent.getPlugin()).willReturn(null);
-        serverListener.onPluginDisable(disableEvent);
-        verifyNoMoreInteractionsAndReset();
-    }
-
     private void checkEnableHandling(String pluginName, Runnable verifier) {
         PluginEnableEvent event = mockEventWithPluginName(PluginEnableEvent.class, pluginName);
         serverListener.onPluginEnable(event);
