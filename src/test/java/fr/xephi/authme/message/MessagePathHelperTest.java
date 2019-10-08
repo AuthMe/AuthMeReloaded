@@ -1,7 +1,7 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;

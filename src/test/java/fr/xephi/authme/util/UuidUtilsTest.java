@@ -1,6 +1,6 @@
 package fr.xephi.authme.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 

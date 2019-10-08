@@ -121,6 +121,7 @@ public class ConsoleLoggerTest {
     public void shouldLogStackTraceToFile() throws IOException {
         // given
         Settings settings = newSettings(true, LogLevel.INFO);
+        settings.getProperty(PluginSettings.LOG_LEVEL); // dummy code to avoid Mockito from complaining about the log level being stubbed
         ConsoleLogger.initializeSharedSettings(settings);
         Exception e = new IllegalStateException("Test exception message");
 
