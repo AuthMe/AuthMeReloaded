@@ -14,8 +14,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_ALLOW_FLIGHT;
-import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_FLY_SPEED;
-import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_WALK_SPEED;
 
 /**
  * Service for managing players that are in "limbo," a temporary state players are
@@ -119,8 +117,6 @@ public class LimboService {
         } else {
             player.setOp(limbo.isOperator());
             settings.getProperty(RESTORE_ALLOW_FLIGHT).restoreAllowFlight(player, limbo);
-            settings.getProperty(RESTORE_FLY_SPEED).restoreFlySpeed(player, limbo);
-            settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);
             limbo.clearTasks();
             logger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
             persistence.removeLimboPlayer(player);

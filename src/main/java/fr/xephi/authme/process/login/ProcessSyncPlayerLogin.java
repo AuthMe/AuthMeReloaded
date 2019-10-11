@@ -6,6 +6,7 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
+import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -23,6 +24,7 @@ import org.bukkit.potion.PotionEffectType;
 import javax.inject.Inject;
 import java.util.List;
 
+import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
@@ -57,6 +59,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private PermissionsManager permissionsManager;
 
+    @Inject
+    private ProtocolLibService protocolLibService;
+
     ProcessSyncPlayerLogin() {
     }
 
@@ -86,6 +91,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         if (commonService.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
             restoreInventory(player);
+        }
+        if (!commonService.getProperty(ALLOW_UNAUTHED_MOVEMENT)) {
+            protocolLibService.sendUnFreezePacket(player);
         }
 
         final PlayerAuth auth = dataSource.getAuth(name);
