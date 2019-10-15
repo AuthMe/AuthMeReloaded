@@ -440,7 +440,7 @@
             </snapshots>
         </repository>
 
-        <!-- ProtocolLib Repo -->
+        <!-- ProtocolLib Repo (offline atm, using codemc)
         <repository>
             <id>dmulloy2-repo-releases</id>
             <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
@@ -461,6 +461,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        -->
 
         <!-- Multiverse Repo -->
         <repository>

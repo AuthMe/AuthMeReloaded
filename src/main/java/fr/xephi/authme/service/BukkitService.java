@@ -44,6 +44,10 @@ public class BukkitService implements SettingsDependent {
         reload(settings);
     }
 
+    public boolean isUseAsyncTasks() {
+        return useAsyncTasks;
+    }
+
     /**
      * Schedules a once off task to occur as soon as possible.
      * <p>
