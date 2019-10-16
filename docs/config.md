@@ -2,7 +2,7 @@
 <!-- File auto-generated on Tue Apr 23 17:17:02 CEST 2019. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
-The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder, 
+The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
 with which you can configure various settings. This following is the initial contents of
 the generated config.yml file.
 
@@ -138,7 +138,7 @@ settings:
         # Hide the chat log from players who are not authenticated?
         hideChat: false
         # Allowed commands for unauthenticated players
-        allowCommands: 
+        allowCommands:
         - /login
         - /register
         - /l
@@ -167,7 +167,7 @@ settings:
             enabled: false
             # WorldNames where we need to force the spawn location
             # Case-sensitive!
-            worlds: 
+            worlds:
             - world
             - world_nether
             - world_the_end
@@ -270,7 +270,7 @@ settings:
         # - '123456'
         # - 'password'
         # - 'help'
-        unsafePasswords: 
+        unsafePasswords:
         - '123456'
         - password
         - qwerty
@@ -327,7 +327,7 @@ settings:
     removeJoinMessage: false
     # Should we remove leave messages altogether?
     removeLeaveMessage: false
-    # Do we need to add potion effect Blinding before login/reigster?
+    # Do we need to add potion effect Blinding before login/register?
     applyBlindEffect: false
     # Do we need to prevent people to login with another case?
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
@@ -376,7 +376,7 @@ Email:
     # Delay in minute for the recall scheduler
     delayRecall: 5
     # Blacklist these domains for emails
-    emailBlacklisted: 
+    emailBlacklisted:
     - 10minutemail.com
     # Whitelist ONLY these domains for emails
     emailWhitelisted: []
@@ -404,13 +404,13 @@ Protection:
     # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # Use "LOCALHOST" for local addresses.
     # PLEASE USE QUOTES!
-    countries: 
+    countries:
     - US
     - GB
     - LOCALHOST
     # Countries not allowed to join the server and register
     # PLEASE USE QUOTES!
-    countriesBlacklist: 
+    countriesBlacklist:
     - A1
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
@@ -573,7 +573,7 @@ Converter:
 
 ```
 
-To change settings on a running server, save your changes to config.yml and use 
+To change settings on a running server, save your changes to config.yml and use
 `/authme reload`.
 
 ---
