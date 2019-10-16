@@ -112,8 +112,10 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param player the player to log in
      */
     public void forceLogin(Player player) {
+        logger.warning("FORCED LOGIN REQUEST");
         PlayerAuth auth = getPlayerAuth(player);
         if (auth != null) {
+            logger.warning("FORCED LOGIN");
             performLogin(player, auth);
         }
     }
@@ -129,6 +131,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private PlayerAuth getPlayerAuth(Player player) {
         final String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
+            logger.warning("PLAYER WAS ALREADY LOGGED IN CACHE!");
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
         }
@@ -149,6 +152,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
         final String ip = PlayerUtils.getPlayerIp(player);
         if (hasReachedMaxLoggedInPlayersForIp(player, ip)) {
+            logger.warning("REACHED MAX LOGGED IN PLAYERS FOR IP!");
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
         }
@@ -262,6 +266,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             logger.fine(player.getName() + " logged in!");
 
             // makes player loggedin
+            logger.warning(player.getName() + " BEING ADDED TO CACHE AS LOGGED IN");
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
             sessionService.grantSession(name);

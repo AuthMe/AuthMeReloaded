@@ -231,9 +231,11 @@ public class PlayerListener implements Listener {
         }
 
         if (antiBotService.wasPlayerKicked(player.getName())) {
+            System.err.println(player.getName() + " QUIT PROCESS SKIPPED DUE TO ANTIBOT");
             return;
         }
 
+        System.err.println(player.getName() + " STARTING QUIT PROCESS DUE TO QUIT");
         management.performQuit(player);
     }
 
@@ -249,6 +251,7 @@ public class PlayerListener implements Listener {
 
         final Player player = event.getPlayer();
         if (!antiBotService.wasPlayerKicked(player.getName())) {
+            System.err.println(player.getName() + " STARTING QUIT PROCESS DUE TO KICK");
             management.performQuit(player);
         }
     }

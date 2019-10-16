@@ -66,6 +66,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
             bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
 
+        System.err.println(player.getName() + " BEING REMOVED FROM CACHE DUE TO LOGOUT");
         playerCache.removePlayer(name);
         codeManager.unverify(name);
         database.setUnlogged(name);

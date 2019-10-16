@@ -68,6 +68,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         if (player == null || validationService.isUnrestricted(player.getName())) {
             return;
         }
+        System.err.println(player.getName() + " QUIT PROCESS STARTED");
         final String name = player.getName().toLowerCase();
         final boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
@@ -92,6 +93,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip
+        System.err.println(player.getName() + " BEING REMOVED FROM CACHE DUE TO QUIT");
         playerCache.removePlayer(name);
         codeManager.unverify(name);
 

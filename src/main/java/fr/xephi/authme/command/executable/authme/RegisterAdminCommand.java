@@ -6,6 +6,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.process.AsyncUserScheduler;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
@@ -40,6 +41,9 @@ public class RegisterAdminCommand implements ExecutableCommand {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private AsyncUserScheduler asyncUserScheduler;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player name and password
@@ -54,7 +58,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
             return;
         }
 
-        bukkitService.runTaskOptionallyAsync(() -> {
+        asyncUserScheduler.runTask(playerName, () -> {
             if (dataSource.isAuthAvailable(playerNameLowerCase)) {
                 commonService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
                 return;

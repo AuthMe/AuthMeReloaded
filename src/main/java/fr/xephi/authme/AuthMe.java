@@ -20,6 +20,7 @@ import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.process.AsyncUserScheduler;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -67,6 +68,7 @@ public class AuthMe extends JavaPlugin {
     private Settings settings;
     private DataSource database;
     private BukkitService bukkitService;
+    private AsyncUserScheduler asyncUserScheduler;
     private Injector injector;
     private BackupService backupService;
     private ConsoleLogger logger;
@@ -250,6 +252,7 @@ public class AuthMe extends JavaPlugin {
     void instantiateServices(Injector injector) {
         database = injector.getSingleton(DataSource.class);
         bukkitService = injector.getSingleton(BukkitService.class);
+        asyncUserScheduler = injector.getSingleton(AsyncUserScheduler.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         backupService = injector.getSingleton(BackupService.class);
 
