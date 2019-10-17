@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Apr 23 17:17:02 CEST 2019. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Thu Oct 17 08:29:25 CEST 2019. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
-with which you can configure various settings. This following is the initial contents of
+with which you can configure various settings. The following is the initial contents of
 the generated config.yml file.
 
 ```yml
@@ -70,6 +70,8 @@ DataSource:
     mySQLlastlocYaw: yaw
     # Column for storing player LastLocation - Pitch
     mySQLlastlocPitch: pitch
+    # Column for storing players uuids (optional)
+    mySQLPlayerUUID: ''
     # Overrides the size of the DB Connection Pool, default = 10
     poolSize: 10
     # The maximum lifetime of a connection in the pool, default = 1800 seconds
@@ -124,10 +126,6 @@ settings:
     # By default we schedule async tasks when talking to the database. If you want
     # typical communication with the database to happen synchronously, set this to false
     useAsyncTasks: true
-    # By default we handle the AsyncPlayerPreLoginEvent which makes the plugin faster
-    # but it is incompatible with any permission plugin not included in our compatibility list.
-    # If you have issues with permission checks on player join please disable this option.
-    useAsyncPreLoginEvent: true
     # The name of the server, used in some placeholders.
     serverName: Your Minecraft Server
     restrictions:
@@ -138,7 +136,7 @@ settings:
         # Hide the chat log from players who are not authenticated?
         hideChat: false
         # Allowed commands for unauthenticated players
-        allowCommands:
+        allowCommands: 
         - /login
         - /register
         - /l
@@ -167,7 +165,7 @@ settings:
             enabled: false
             # WorldNames where we need to force the spawn location
             # Case-sensitive!
-            worlds:
+            worlds: 
             - world
             - world_nether
             - world_the_end
@@ -270,7 +268,7 @@ settings:
         # - '123456'
         # - 'password'
         # - 'help'
-        unsafePasswords:
+        unsafePasswords: 
         - '123456'
         - password
         - qwerty
@@ -376,7 +374,7 @@ Email:
     # Delay in minute for the recall scheduler
     delayRecall: 5
     # Blacklist these domains for emails
-    emailBlacklisted:
+    emailBlacklisted: 
     - 10minutemail.com
     # Whitelist ONLY these domains for emails
     emailWhitelisted: []
@@ -404,13 +402,13 @@ Protection:
     # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # Use "LOCALHOST" for local addresses.
     # PLEASE USE QUOTES!
-    countries:
+    countries: 
     - US
     - GB
     - LOCALHOST
     # Countries not allowed to join the server and register
     # PLEASE USE QUOTES!
-    countriesBlacklist:
+    countriesBlacklist: 
     - A1
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
@@ -578,4 +576,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 23 17:17:02 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Oct 17 08:29:25 CEST 2019
