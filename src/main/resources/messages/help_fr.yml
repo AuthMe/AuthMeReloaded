@@ -30,7 +30,7 @@ section:
 # -------------------------------------------------------
 # Vous pouvez traduire tous les textes d'aide en utilisant la syntaxe ci-dessous.
 # Par exemple, pour traduire l'aide du "/authme reload" créez une section nommée "authme.reload", ou "login" pour "/login".
-# Si la commande a des arguments, vour pouvez utiliser "arg1" pour traduire le premier argument, "arg2" pour le 2ème, ainsi de suite.
+# Si la commande a des arguments, vous pouvez utiliser "arg1" pour traduire le premier argument, "arg2" pour le 2ème, ainsi de suite.
 # Les sections non traduites auront leur texte par défaut (en anglais), il n'est donc pas obligatoire de tout traduire.
 # Important: Il faut mettre la commande principale (authme) avant sa sous-commande (ex. "authme.register" pour "/authme register")
 commands:
