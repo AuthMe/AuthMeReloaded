@@ -82,7 +82,7 @@ on_join_validation:
     country_banned: 'Votre pays est banni de ce serveur.'
     not_owner_error: 'Vous n''êtes pas le propriétaire de ce compte. Veuillez utiliser un autre pseudo !'
     invalid_name_case: 'Veuillez vous connecter avec "%valid" et non pas avec "%invalid".'
-    quick_command: '&cUtilisation trop rapide de commande! Veuillez vous reconnecter et attendre un peu avant d''executer une commande.'
+    quick_command: '&cUtilisation trop rapide de commande! Veuillez vous reconnecter et attendre un peu avant d''exécuter une commande.'
 
 # Email
 email:
@@ -122,7 +122,7 @@ captcha:
     usage_captcha: '&cTrop de tentatives de connexion ont échoué, faites: /captcha %captcha_code'
     wrong_captcha: '&cCaptcha incorrect, écrivez de nouveau: /captcha %captcha_code'
     valid_captcha: '&aCaptcha validé! Vous pouvez maintenant réessayer de vous connecter.'
-    captcha_for_registration: 'Avant de vous inscrire veuillez rentrer un captcha en faisant "/captcha %captcha_code"'
+    captcha_for_registration: 'Avant de vous inscrire, veuillez rentrer un captcha en faisant "/captcha %captcha_code"'
     register_captcha_valid: '&aCaptcha validé! Vous pouvez maintenant vous inscrire.'
 
 # Verification code
