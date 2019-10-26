@@ -62,9 +62,9 @@ public class TotpAuthenticatorTest {
         // then
         assertThat(key1.getTotpKey(), stringWithLength(16));
         assertThat(key2.getTotpKey(), stringWithLength(16));
-        assertThat(key1.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
+        assertThat(key1.getAuthenticatorQrCodeUrl(), startsWith("https://api.qrserver.com/v1/create-qr-code/?data="));
         assertThat(key1.getAuthenticatorQrCodeUrl(), containsString("MCtopia"));
-        assertThat(key2.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
+        assertThat(key2.getAuthenticatorQrCodeUrl(), startsWith("https://api.qrserver.com/v1/create-qr-code/?data="));
         assertThat(key1.getTotpKey(), not(equalTo(key2.getTotpKey())));
     }
 
