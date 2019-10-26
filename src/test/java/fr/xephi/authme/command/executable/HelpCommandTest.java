@@ -33,7 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -64,7 +64,7 @@ public class HelpCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("Could not get base command")));
-        verifyZeroInteractions(helpProvider);
+        verifyNoInteractions(helpProvider);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class HelpCommandTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
         assertThat(removeColors(captor.getValue()), containsString("Unknown command"));
-        verifyZeroInteractions(helpProvider);
+        verifyNoInteractions(helpProvider);
     }
 
     @Test

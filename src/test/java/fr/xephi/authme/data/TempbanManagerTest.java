@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link TempbanManager}.
@@ -139,7 +139,7 @@ public class TempbanManagerTest {
         manager.tempbanPlayer(player);
 
         // then
-        verifyZeroInteractions(player, bukkitService);
+        verifyNoInteractions(player, bukkitService);
     }
 
     @Test

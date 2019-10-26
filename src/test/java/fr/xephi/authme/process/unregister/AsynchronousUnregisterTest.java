@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link AsynchronousUnregister}.
@@ -94,7 +94,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(service).send(player, MessageKey.WRONG_PASSWORD);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
-        verifyZeroInteractions(dataSource, limboService, teleportationService, bukkitService, bungeeSender);
+        verifyNoInteractions(dataSource, limboService, teleportationService, bukkitService, bungeeSender);
         verify(player, only()).getName();
     }
 
@@ -189,7 +189,7 @@ public class AsynchronousUnregisterTest {
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
-        verifyZeroInteractions(teleportationService, limboService);
+        verifyNoInteractions(teleportationService, limboService);
         verifyCalledUnregisterEventFor(player);
         verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(commandManager).runCommandsOnUnregister(player);
@@ -216,7 +216,7 @@ public class AsynchronousUnregisterTest {
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
         verify(service).send(player, MessageKey.ERROR);
-        verifyZeroInteractions(teleportationService, bukkitService, bungeeSender);
+        verifyNoInteractions(teleportationService, bukkitService, bungeeSender);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class AsynchronousUnregisterTest {
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
-        verifyZeroInteractions(teleportationService);
+        verifyNoInteractions(teleportationService);
         verifyCalledUnregisterEventFor(player);
         verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
@@ -285,7 +285,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(dataSource).removeAuth(name);
         verify(playerCache).removePlayer(name);
-        verifyZeroInteractions(teleportationService);
+        verifyNoInteractions(teleportationService);
         verifyCalledUnregisterEventFor(null);
         verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
@@ -303,7 +303,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(dataSource).removeAuth(name);
         verify(service).send(initiator, MessageKey.ERROR);
-        verifyZeroInteractions(playerCache, teleportationService, bukkitService, bungeeSender);
+        verifyNoInteractions(playerCache, teleportationService, bukkitService, bungeeSender);
     }
 
     @SuppressWarnings("unchecked")

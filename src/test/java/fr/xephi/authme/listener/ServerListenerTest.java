@@ -1,9 +1,9 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -20,8 +20,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link ServerListener}.
@@ -65,7 +65,7 @@ public class ServerListenerTest {
         });
         checkEnableHandling(MULTIVERSE,       () -> verify(pluginHookService).tryHookToMultiverse());
         checkEnableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).setup());
-        checkEnableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
+        checkEnableHandling("UnknownPlugin",  () -> verifyNoInteractions(pluginHookService, spawnLoader));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class ServerListenerTest {
         });
         checkDisableHandling(MULTIVERSE,       () -> verify(pluginHookService).unhookMultiverse());
         checkDisableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).disable());
-        checkDisableHandling("UnknownPlugin",  () -> verifyZeroInteractions(pluginHookService, spawnLoader));
+        checkDisableHandling("UnknownPlugin",  () -> verifyNoInteractions(pluginHookService, spawnLoader));
     }
 
     private void checkEnableHandling(String pluginName, Runnable verifier) {

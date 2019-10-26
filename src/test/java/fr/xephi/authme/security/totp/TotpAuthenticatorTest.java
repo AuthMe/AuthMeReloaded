@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link TotpAuthenticator}.
@@ -92,7 +92,7 @@ public class TotpAuthenticatorTest {
 
         // then
         assertThat(result, equalTo(false));
-        verifyZeroInteractions(googleAuthenticator);
+        verifyNoInteractions(googleAuthenticator);
     }
 
     @Test

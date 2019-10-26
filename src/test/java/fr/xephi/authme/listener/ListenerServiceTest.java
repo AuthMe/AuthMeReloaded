@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link ListenerService}.
@@ -91,7 +91,7 @@ public class ListenerServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(playerCache).isAuthenticated(playerName);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ListenerServiceTest {
         assertThat(result, equalTo(true));
         verify(playerCache).isAuthenticated(playerName);
         // makes sure the setting is checked first = avoid unnecessary DB operation
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class ListenerServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -182,7 +182,7 @@ public class ListenerServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(playerCache).isAuthenticated(playerName);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class ListenerServiceTest {
         // then
         assertThat(result, equalTo(true));
         verify(playerCache).isAuthenticated(playerName);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     private static Player mockPlayerWithName(String name) {

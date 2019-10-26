@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -60,7 +60,7 @@ public class UnregisterCommandTest {
         // then
         verify(playerCache).isAuthenticated(name);
         verify(commonService).send(player, MessageKey.NOT_LOGGED_IN);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class UnregisterCommandTest {
         verify(playerCache).isAuthenticated(name);
         verify(codeManager).codeExistOrGenerateNew(name);
         verify(commonService).send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class UnregisterCommandTest {
         command.executeCommand(sender, Collections.singletonList("password"));
 
         // then
-        verifyZeroInteractions(playerCache, management);
+        verifyNoInteractions(playerCache, management);
         verify(sender).sendMessage(argThat(containsString("/authme unregister <player>")));
     }
 

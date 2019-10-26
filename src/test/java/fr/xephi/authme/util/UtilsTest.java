@@ -16,11 +16,10 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link Utils}.
@@ -102,7 +101,7 @@ public class UtilsTest {
 
         // then
         verify(logger).info(message);
-        verifyZeroInteractions(sender);
+        verifyNoInteractions(sender);
     }
 
     @Test
@@ -144,7 +143,7 @@ public class UtilsTest {
 
         // then
         verify(logger).warning(message);
-        verifyZeroInteractions(sender);
+        verifyNoInteractions(sender);
     }
 
     @Test

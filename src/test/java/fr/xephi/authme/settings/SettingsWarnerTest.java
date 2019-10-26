@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 /**
@@ -76,6 +76,6 @@ public class SettingsWarnerTest {
         settingsWarner.logWarningsForMisconfigurations();
 
         // then
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 }

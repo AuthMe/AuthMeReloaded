@@ -22,8 +22,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link SetEmailCommand}.
@@ -63,7 +63,7 @@ public class SetEmailCommandTest {
         // then
         verify(validationService).validateEmail(email);
         verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class SetEmailCommandTest {
         verify(validationService).isEmailFreeForRegistration(email, sender);
         verify(commandService).send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
         verifyNoMoreInteractions(dataSource);
-        verifyZeroInteractions(auth);
+        verifyNoInteractions(auth);
     }
 
     @Test

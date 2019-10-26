@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link AllowFlightRestoreType}.
@@ -78,7 +78,7 @@ public class AllowFlightRestoreTypeTest {
         AllowFlightRestoreType.NOTHING.restoreAllowFlight(player2, limboWithoutFly);
 
         // then
-        verifyZeroInteractions(player1, player2);
+        verifyNoInteractions(player1, player2);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class AllowFlightRestoreTypeTest {
 
             // then
             if (type == noInteractionType) {
-                verifyZeroInteractions(player);
+                verifyNoInteractions(player);
             } else {
                 verify(player).setAllowFlight(false);
             }
