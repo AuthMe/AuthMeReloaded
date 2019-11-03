@@ -294,12 +294,6 @@ public class CommandManagerTest {
         verify(bukkitService).dispatchConsoleCommand("msg Bobby sad to see you go!");
     }
 
-    @Test
-    public void shouldHaveHiddenConstructorInSettingsHolderClass() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(CommandSettingsHolder.class);
-    }
-
     private void initManager() {
         manager = new CommandManager(testFolder, bukkitService, geoIpService, commandMigrationService);
     }

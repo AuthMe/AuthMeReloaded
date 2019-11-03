@@ -1,6 +1,5 @@
 package fr.xephi.authme.util.lazytags;
 
-import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import java.util.function.Function;
@@ -40,11 +39,4 @@ public class TagBuilderTest {
         assertThat(tag, instanceOf(DependentTag.class));
         assertThat(tag.getValue(24d), equalTo("26.4"));
     }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(TagBuilder.class);
-    }
-
 }

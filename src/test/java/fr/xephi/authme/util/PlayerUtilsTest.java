@@ -5,11 +5,9 @@ import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.UUID;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -34,12 +32,6 @@ public class PlayerUtilsTest {
 
         // then
         assertThat(result, equalTo(ip));
-    }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(PlayerUtils.class);
     }
 
     @Test

@@ -6,9 +6,6 @@ import org.bukkit.entity.Player;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -93,33 +90,6 @@ public final class TestHelper {
         Logger logger = Logger.getAnonymousLogger();
         ConsoleLogger.initialize(logger, null);
         return logger;
-    }
-
-    /**
-     * Check that a class only has a hidden, zero-argument constructor, preventing the
-     * instantiation of such classes (utility classes). Invokes the hidden constructor
-     * as to register the code coverage.
-     *
-     * @param clazz The class to validate
-     */
-    public static void validateHasOnlyPrivateEmptyConstructor(Class<?> clazz) {
-        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-        if (constructors.length > 1) {
-            throw new IllegalStateException("Class " + clazz.getSimpleName() + " has more than one constructor");
-        } else if (constructors[0].getParameterTypes().length != 0) {
-            throw new IllegalStateException("Constructor of " + clazz + " does not have empty parameter list");
-        } else if (!Modifier.isPrivate(constructors[0].getModifiers())) {
-            throw new IllegalStateException("Constructor of " + clazz + " is not private");
-        }
-
-        // Ugly hack to get coverage on the private constructors
-        // http://stackoverflow.com/questions/14077842/how-to-test-a-private-constructor-in-java-application
-        try {
-            constructors[0].setAccessible(true);
-            constructors[0].newInstance();
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new UnsupportedOperationException(e);
-        }
     }
 
     /**

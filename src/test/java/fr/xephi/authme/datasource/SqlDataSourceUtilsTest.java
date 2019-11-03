@@ -31,11 +31,6 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldHaveHiddenConstructor() {
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(SqlDataSourceUtils.class);
-    }
-
-    @Test
     public void shouldLogException() {
         // given
         String msg = "Hocus pocus did not work";

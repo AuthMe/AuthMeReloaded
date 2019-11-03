@@ -98,13 +98,6 @@ public class SettingsClassConsistencyTest {
             configData.getProperties(), hasSize((int) totalProperties));
     }
 
-    @Test
-    public void shouldHaveHiddenEmptyConstructorOnly() {
-        for (Class<?> clazz : classes) {
-            TestHelper.validateHasOnlyPrivateEmptyConstructor(clazz);
-        }
-    }
-
     private static boolean isValidConstantField(Field field) {
         int modifiers = field.getModifiers();
         return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);

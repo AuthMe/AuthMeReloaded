@@ -56,12 +56,6 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldHavePrivateConstructorOnly() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(Utils.class);
-    }
-
-    @Test
     public void shouldLogAndSendMessage() {
         // given
         Logger logger = TestHelper.setupLogger();

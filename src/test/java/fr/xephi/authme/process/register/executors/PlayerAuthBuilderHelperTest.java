@@ -38,10 +38,4 @@ public class PlayerAuthBuilderHelperTest {
         assertThat(Math.abs(auth.getRegistrationDate() - System.currentTimeMillis()), lessThan(1000L));
         assertThat(auth.getPassword(), equalToHash("myHash0001"));
     }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(PlayerAuthBuilderHelper.class);
-    }
-
 }
