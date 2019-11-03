@@ -170,6 +170,7 @@ public class MySQL extends AbstractSqlDataSource {
     /**
      * Creates the table or any of its required columns if they don't exist.
      */
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS"})
     private void checkTablesAndColumns() throws SQLException {
         try (Connection con = getConnection(); Statement st = con.createStatement()) {
             // Create table with ID column if it doesn't exist

@@ -1,13 +1,12 @@
 package tools.messages;
 
 import com.google.common.collect.Multimap;
-import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import tools.utils.ToolTask;
-import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import java.util.Set;
 
 import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_MESSAGES_FILE;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
+import static tools.utils.ToolsConstants.MAIN_RESOURCES_ROOT;
 
 /**
  * Task to verify the keys in the messages files.
@@ -26,7 +26,7 @@ import static tools.utils.FileIoUtils.listFilesOrThrow;
 public final class VerifyMessagesTask implements ToolTask {
 
     /** The folder containing the message files. */
-    private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + MessagePathHelper.MESSAGES_FOLDER;
+    private static final String MESSAGES_FOLDER = MAIN_RESOURCES_ROOT + MessagePathHelper.MESSAGES_FOLDER;
 
     @Override
     public String getTaskName() {
@@ -47,13 +47,14 @@ public final class VerifyMessagesTask implements ToolTask {
         if (StringUtils.isEmpty(inputFile)) {
             messageFiles = getMessagesFiles();
         } else {
-            File customFile = new File(ToolsConstants.MAIN_RESOURCES_ROOT, MessagePathHelper.createMessageFilePath(inputFile));
+            File customFile = new File(MAIN_RESOURCES_ROOT, MessagePathHelper.createMessageFilePath(inputFile));
             messageFiles = Collections.singletonList(customFile);
         }
 
         FileConfiguration defaultFileConfiguration = null;
         if (addMissingKeys) {
-            defaultFileConfiguration = YamlConfiguration.loadConfiguration(new File(ToolsConstants.MAIN_RESOURCES_ROOT, DEFAULT_MESSAGES_FILE));
+            defaultFileConfiguration = YamlConfiguration.loadConfiguration(
+                new File(MAIN_RESOURCES_ROOT, DEFAULT_MESSAGES_FILE));
         }
 
         // Verify the given files
