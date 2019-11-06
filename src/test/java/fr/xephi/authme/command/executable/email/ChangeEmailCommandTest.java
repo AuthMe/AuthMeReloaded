@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -52,7 +52,7 @@ public class ChangeEmailCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ChangeEmailCommandTest {
         // then
         verify(codeManager).codeExistOrGenerateNew(name);
         verify(commonService).send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test

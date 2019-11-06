@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link LimboServiceHelper}.
@@ -83,7 +83,7 @@ public class LimboServiceHelperTest {
         LimboPlayer result3 = limboServiceHelper.merge(null, null);
 
         // then
-        verifyZeroInteractions(limbo);
+        verifyNoInteractions(limbo);
         assertThat(result1, equalTo(limbo));
         assertThat(result2, equalTo(limbo));
         assertThat(result3, nullValue());

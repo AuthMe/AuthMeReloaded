@@ -38,7 +38,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.internal.verification.VerificationModeFactory.only;
 
 /**
@@ -81,7 +81,7 @@ public class AsynchronousLoginTest {
         // then
         verify(playerCache, only()).isAuthenticated(name);
         verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -200,7 +200,7 @@ public class AsynchronousLoginTest {
 
         // then
         assertThat(result, equalTo(false));
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test
@@ -216,7 +216,7 @@ public class AsynchronousLoginTest {
         // then
         assertThat(result, equalTo(false));
         verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test

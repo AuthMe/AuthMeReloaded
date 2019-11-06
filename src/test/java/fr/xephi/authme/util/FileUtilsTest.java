@@ -178,12 +178,6 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldHaveHiddenConstructor() {
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(FileUtils.class);
-    }
-
-
-    @Test
     public void shouldCreateCurrentTimestampString() {
         // given / when
         String currentTimeString = FileUtils.createCurrentTimeString();

@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.TestHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
@@ -84,11 +83,4 @@ public class RandomStringUtilsTest {
         assertThrows(IllegalArgumentException.class,
             () -> RandomStringUtils.generate(-3));
     }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(RandomStringUtils.class);
-    }
-
 }

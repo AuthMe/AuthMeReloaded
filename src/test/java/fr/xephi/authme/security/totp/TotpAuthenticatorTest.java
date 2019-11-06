@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link TotpAuthenticator}.
@@ -62,9 +62,9 @@ public class TotpAuthenticatorTest {
         // then
         assertThat(key1.getTotpKey(), stringWithLength(16));
         assertThat(key2.getTotpKey(), stringWithLength(16));
-        assertThat(key1.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
+        assertThat(key1.getAuthenticatorQrCodeUrl(), startsWith("https://api.qrserver.com/v1/create-qr-code/?data="));
         assertThat(key1.getAuthenticatorQrCodeUrl(), containsString("MCtopia"));
-        assertThat(key2.getAuthenticatorQrCodeUrl(), startsWith("https://chart.googleapis.com/chart?chs=200x200"));
+        assertThat(key2.getAuthenticatorQrCodeUrl(), startsWith("https://api.qrserver.com/v1/create-qr-code/?data="));
         assertThat(key1.getTotpKey(), not(equalTo(key2.getTotpKey())));
     }
 
@@ -92,7 +92,7 @@ public class TotpAuthenticatorTest {
 
         // then
         assertThat(result, equalTo(false));
-        verifyZeroInteractions(googleAuthenticator);
+        verifyNoInteractions(googleAuthenticator);
     }
 
     @Test

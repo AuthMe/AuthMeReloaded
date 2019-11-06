@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -45,7 +45,7 @@ public class PurgeCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("The value you've entered is invalid")));
-        verifyZeroInteractions(purgeService);
+        verifyNoInteractions(purgeService);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class PurgeCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("You can only purge data older than 30 days")));
-        verifyZeroInteractions(purgeService);
+        verifyNoInteractions(purgeService);
     }
 
     @Test

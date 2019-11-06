@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link RemoveTotpCommand}.
@@ -105,7 +105,7 @@ public class RemoveTotpCommandTest {
         command.runCommand(player, singletonList(inputCode));
 
         // then
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
         verify(messages, only()).send(player, MessageKey.TWO_FACTOR_INVALID_CODE);
         verify(playerCache, only()).getAuth(name);
     }
@@ -124,7 +124,7 @@ public class RemoveTotpCommandTest {
         command.runCommand(player, singletonList(inputCode));
 
         // then
-        verifyZeroInteractions(dataSource, totpAuthenticator);
+        verifyNoInteractions(dataSource, totpAuthenticator);
         verify(messages, only()).send(player, MessageKey.TWO_FACTOR_NOT_ENABLED_ERROR);
         verify(playerCache, only()).getAuth(name);
     }
@@ -142,7 +142,7 @@ public class RemoveTotpCommandTest {
         command.runCommand(player, singletonList(inputCode));
 
         // then
-        verifyZeroInteractions(dataSource, totpAuthenticator);
+        verifyNoInteractions(dataSource, totpAuthenticator);
         verify(messages, only()).send(player, MessageKey.NOT_LOGGED_IN);
         verify(playerCache, only()).getAuth(name);
     }

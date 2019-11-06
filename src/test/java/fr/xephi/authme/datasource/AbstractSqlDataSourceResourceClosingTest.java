@@ -8,9 +8,11 @@ import org.junit.jupiter.api.BeforeAll;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 
@@ -20,7 +22,7 @@ import static org.mockito.Mockito.mock;
 public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractResourceClosingTest {
 
     /** List of DataSource method names not to test. */
-    private static final Set<String> IGNORED_METHODS = ImmutableSet.of("reload", "getType");
+    private static final Set<String> IGNORED_METHODS = ImmutableSet.of("reload", "getType", "isCached");
 
     private static Settings settings;
 
@@ -58,12 +60,8 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
 
     /* Get all methods of the DataSource interface, minus the ones in the ignored list. */
     private static List<Method> getDataSourceMethods() {
-        List<Method> publicMethods = new ArrayList<>();
-        for (Method method : DataSource.class.getDeclaredMethods()) {
-            if (!IGNORED_METHODS.contains(method.getName()) && !method.isSynthetic()) {
-                publicMethods.add(method);
-            }
-        }
-        return publicMethods;
+        return Arrays.stream(DataSource.class.getDeclaredMethods())
+            .filter(method -> !IGNORED_METHODS.contains(method.getName()) && !method.isSynthetic())
+            .collect(Collectors.toList());
     }
 }

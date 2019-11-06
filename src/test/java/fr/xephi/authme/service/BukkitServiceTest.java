@@ -29,7 +29,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link BukkitService}.
@@ -127,7 +127,7 @@ public class BukkitServiceTest {
 
         // then
         verify(spy).scheduleSyncDelayedTask(task);
-        verifyZeroInteractions(task);
+        verifyNoInteractions(task);
     }
 
     @Test
@@ -188,7 +188,7 @@ public class BukkitServiceTest {
         spy.runTaskOptionallyAsync(task);
 
         // then
-        verifyZeroInteractions(task);
+        verifyNoInteractions(task);
         verify(spy).runTaskAsynchronously(task);
     }
 

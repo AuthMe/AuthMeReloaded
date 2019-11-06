@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link EntityListener}.
@@ -76,7 +76,7 @@ public class EntityListenerTest {
 
         // then
         verify(listenerService).shouldCancelEvent(event);
-        verifyZeroInteractions(event);
+        verifyNoInteractions(event);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class EntityListenerTest {
 
         // then
         verify(listenerService).shouldCancelEvent(event);
-        verifyZeroInteractions(event);
+        verifyNoInteractions(event);
     }
 
     @Test
@@ -156,7 +156,7 @@ public class EntityListenerTest {
         listener.onProjectileLaunch(event);
 
         // then
-        verifyZeroInteractions(listenerService);
+        verifyNoInteractions(listenerService);
         verify(event, never()).setCancelled(anyBoolean());
     }
 

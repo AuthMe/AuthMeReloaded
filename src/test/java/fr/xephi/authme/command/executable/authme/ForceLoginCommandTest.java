@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -53,7 +53,7 @@ public class ForceLoginCommandTest {
         // then
         verify(bukkitService).getPlayerExact(playerName);
         verify(sender).sendMessage("Player needs to be online!");
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class ForceLoginCommandTest {
         // then
         verify(bukkitService).getPlayerExact(playerName);
         verify(sender).sendMessage("Player needs to be online!");
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ForceLoginCommandTest {
         // then
         verify(bukkitService).getPlayerExact(playerName);
         verify(sender).sendMessage(argThat(containsString("You cannot force login the player")));
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test

@@ -30,8 +30,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link RecoverEmailCommand}.
@@ -89,7 +89,7 @@ public class RecoverEmailCommandTest {
 
         // then
         verify(commonService).send(sender, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
-        verifyZeroInteractions(dataSource, passwordSecurity);
+        verifyNoInteractions(dataSource, passwordSecurity);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class RecoverEmailCommandTest {
 
         // then
         verify(emailService).hasAllInformation();
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.ALREADY_LOGGED_IN_ERROR);
     }
 

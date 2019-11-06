@@ -59,11 +59,6 @@ public class DebugSectionUtilsTest {
     }
 
     @Test
-    public void shouldHaveHiddenConstructor() {
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(DebugSectionUtils.class);
-    }
-
-    @Test
     public void shouldFetchMapInLimboService() {
         // given
         LimboService limboService = mock(LimboService.class);

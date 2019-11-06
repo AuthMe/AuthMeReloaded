@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link ConfirmTotpCommand}.
@@ -98,7 +98,7 @@ public class ConfirmTotpCommandTest {
         verify(generateTotpService, never()).removeGenerateTotpKey(any(Player.class));
         verify(playerCache, only()).getAuth(playerName);
         verify(messages).send(player, MessageKey.TWO_FACTOR_ENABLE_ERROR_WRONG_CODE);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class ConfirmTotpCommandTest {
         verify(generateTotpService, only()).getGeneratedTotpKey(player);
         verify(playerCache, only()).getAuth(playerName);
         verify(messages).send(player, MessageKey.TWO_FACTOR_ENABLE_ERROR_NO_CODE);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -135,7 +135,7 @@ public class ConfirmTotpCommandTest {
 
         // then
         verify(playerCache, only()).getAuth(playerName);
-        verifyZeroInteractions(generateTotpService, dataSource);
+        verifyNoInteractions(generateTotpService, dataSource);
         verify(messages).send(player, MessageKey.TWO_FACTOR_ALREADY_ENABLED);
     }
 
@@ -152,7 +152,7 @@ public class ConfirmTotpCommandTest {
 
         // then
         verify(playerCache, only()).getAuth(playerName);
-        verifyZeroInteractions(generateTotpService, dataSource);
+        verifyNoInteractions(generateTotpService, dataSource);
         verify(messages).send(player, MessageKey.NOT_LOGGED_IN);
     }
 }

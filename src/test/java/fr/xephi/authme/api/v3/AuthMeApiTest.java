@@ -43,7 +43,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -478,7 +478,7 @@ public class AuthMeApiTest {
         // then
         assertThat(result, equalTo(false));
         verify(dataSource, only()).isAuthAvailable(name);
-        verifyZeroInteractions(management, passwordSecurity);
+        verifyNoInteractions(management, passwordSecurity);
     }
 
     @Test

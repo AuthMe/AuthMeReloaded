@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link EmailRegisterExecutor}.
@@ -158,7 +158,7 @@ public class EmailRegisterExecutorTest {
         // then
         verify(emailService).sendPasswordMail("Laleh", "test@example.com", password);
         verify(commonService).send(player, MessageKey.EMAIL_SEND_FAILURE);
-        verifyZeroInteractions(syncProcessManager);
+        verifyNoInteractions(syncProcessManager);
     }
 
     private static void assertIsCloseTo(long value1, long value2, long tolerance) {
