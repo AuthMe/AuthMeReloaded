@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link AsyncChangePassword}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AsyncChangePasswordTest {
+class AsyncChangePasswordTest {
 
     @InjectMocks
     private AsyncChangePassword asyncChangePassword;
@@ -42,12 +42,12 @@ public class AsyncChangePasswordTest {
     private BungeeSender bungeeSender;
 
     @BeforeEach
-    public void setUpLogger() {
+    void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRejectCommandForUnknownUser() {
+    void shouldRejectCommandForUnknownUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "player";
@@ -64,7 +64,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldUpdatePasswordOfLoggedInUser() {
+    void shouldUpdatePasswordOfLoggedInUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
@@ -85,7 +85,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldUpdatePasswordOfOfflineUser() {
+    void shouldUpdatePasswordOfOfflineUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
@@ -107,7 +107,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldReportWhenSaveFailed() {
+    void shouldReportWhenSaveFailed() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";

@@ -22,17 +22,17 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link SqlDataSourceUtils}.
  */
-public class SqlDataSourceUtilsTest {
+class SqlDataSourceUtilsTest {
 
     private Logger logger;
 
     @BeforeEach
-    public void initLogger() {
+    void initLogger() {
         logger = TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldLogException() {
+    void shouldLogException() {
         // given
         String msg = "Hocus pocus did not work";
         SQLException ex = new SQLException(msg);
@@ -45,7 +45,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldFetchNullableStatus() throws SQLException {
+    void shouldFetchNullableStatus() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "category";
@@ -63,7 +63,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseForUnknownNullableStatus() throws SQLException {
+    void shouldReturnFalseForUnknownNullableStatus() throws SQLException {
         // given
         String tableName = "comments";
         String columnName = "author";
@@ -81,7 +81,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldThrowForUnknownColumnInNullableCheck() throws SQLException {
+    void shouldThrowForUnknownColumnInNullableCheck() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "unknown";
@@ -96,7 +96,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldGetDefaultValue() throws SQLException {
+    void shouldGetDefaultValue() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "category";
@@ -114,7 +114,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldThrowForUnknownColumnInDefaultValueRetrieval() throws SQLException {
+    void shouldThrowForUnknownColumnInDefaultValueRetrieval() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "unknown";
@@ -129,7 +129,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldHandleNullDefaultValue() throws SQLException {
+    void shouldHandleNullDefaultValue() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "category";

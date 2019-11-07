@@ -38,7 +38,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link LimboPersistence}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class LimboPersistenceTest {
+class LimboPersistenceTest {
 
     @InjectDelayed
     private LimboPersistence limboPersistence;
@@ -50,26 +50,26 @@ public class LimboPersistenceTest {
     private Settings settings;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
     @SuppressWarnings("unchecked")
-    public void setUpMocks() {
+    void setUpMocks() {
         given(settings.getProperty(LimboSettings.LIMBO_PERSISTENCE_TYPE)).willReturn(LimboPersistenceType.DISABLED);
         given(handlerFactory.newInstance(any(Class.class)))
             .willAnswer(invocation -> mock(invocation.getArgument(0)));
     }
 
     @Test
-    public void shouldInitializeProperly() {
+    void shouldInitializeProperly() {
         // given / when / then
         assertThat(getHandler(), instanceOf(NoOpPersistenceHandler.class));
     }
 
     @Test
-    public void shouldDelegateToHandler() {
+    void shouldDelegateToHandler() {
         // given
         Player player = mock(Player.class);
         LimboPersistenceHandler handler = getHandler();
@@ -89,7 +89,7 @@ public class LimboPersistenceTest {
     }
 
     @Test
-    public void shouldReloadProperly() {
+    void shouldReloadProperly() {
         // given
         given(settings.getProperty(LimboSettings.LIMBO_PERSISTENCE_TYPE))
             .willReturn(LimboPersistenceType.INDIVIDUAL_FILES);
@@ -102,7 +102,7 @@ public class LimboPersistenceTest {
     }
 
     @Test
-    public void shouldHandleExceptionWhenGettingLimbo() {
+    void shouldHandleExceptionWhenGettingLimbo() {
         // given
         Player player = mock(Player.class);
         Logger logger = TestHelper.setupLogger();
@@ -118,7 +118,7 @@ public class LimboPersistenceTest {
     }
 
     @Test
-    public void shouldHandleExceptionWhenSavingLimbo() {
+    void shouldHandleExceptionWhenSavingLimbo() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limbo = mock(LimboPlayer.class);
@@ -134,7 +134,7 @@ public class LimboPersistenceTest {
     }
 
     @Test
-    public void shouldHandleExceptionWhenRemovingLimbo() {
+    void shouldHandleExceptionWhenRemovingLimbo() {
         // given
         Player player = mock(Player.class);
         Logger logger = TestHelper.setupLogger();

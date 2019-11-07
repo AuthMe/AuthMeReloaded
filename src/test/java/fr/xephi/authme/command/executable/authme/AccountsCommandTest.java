@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link AccountsCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AccountsCommandTest {
+class AccountsCommandTest {
 
     @InjectMocks
     private AccountsCommand command;
@@ -43,7 +43,7 @@ public class AccountsCommandTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldGetAccountsOfCurrentUser() {
+    void shouldGetAccountsOfCurrentUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");
@@ -62,7 +62,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnUnknownUserForNullAuth() {
+    void shouldReturnUnknownUserForNullAuth() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
@@ -78,7 +78,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnUnregisteredMessageForEmptyAuthList() {
+    void shouldReturnUnregisteredMessageForEmptyAuthList() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
@@ -95,7 +95,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnSingleAccountMessage() {
+    void shouldReturnSingleAccountMessage() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
@@ -115,7 +115,7 @@ public class AccountsCommandTest {
     // Query by IP
     // -----
     @Test
-    public void shouldReturnIpUnknown() {
+    void shouldReturnIpUnknown() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("123.45.67.89");
@@ -131,7 +131,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnSingleAccountForIpQuery() {
+    void shouldReturnSingleAccountForIpQuery() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("24.24.48.48");
@@ -147,7 +147,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnAccountListForIpQuery() {
+    void shouldReturnAccountListForIpQuery() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("98.76.41.122");

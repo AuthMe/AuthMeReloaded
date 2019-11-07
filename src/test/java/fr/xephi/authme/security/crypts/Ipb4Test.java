@@ -11,9 +11,9 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link Ipb4}.
  */
-public class Ipb4Test extends AbstractEncryptionMethodTest {
+class Ipb4Test extends AbstractEncryptionMethodTest {
 
-    public Ipb4Test() {
+    Ipb4Test() {
         super(new Ipb4(),
             new HashedPassword("$2a$13$leEvXu77OIwPwNvtZIJvaeAx8EItGHuR3nIlq8416g0gXeJaQdrr2", "leEvXu77OIwPwNvtZIJval"),  //password
             new HashedPassword("$2a$13$xyTTP9zhQQtRRKIJPv5AuuOGJ6Ni9FLbDhcuIAcPjt3XzCxIWe3Uu", "xyTTP9zhQQtRRKIJPv5Au3"),  //PassWord1
@@ -22,7 +22,7 @@ public class Ipb4Test extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldCreateHashesWith2aAndCostFactor13() {
+    void shouldCreateHashesWith2aAndCostFactor13() {
         // given
         Ipb4 hashMethod = new Ipb4();
 
@@ -35,7 +35,7 @@ public class Ipb4Test extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldThrowForInvalidSalt() {
+    void shouldThrowForInvalidSalt() {
         // given
         Ipb4 hashMethod = new Ipb4();
 

@@ -12,9 +12,9 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link BCrypt}.
  */
-public class BCryptTest extends AbstractEncryptionMethodTest {
+class BCryptTest extends AbstractEncryptionMethodTest {
 
-    public BCryptTest() {
+    BCryptTest() {
         super(new BCrypt(mockSettings()),
             "$2a$10$6iATmYgwJVc3YONhVcZFve3Cfb5GnwvKhJ20r.hMjmcNkIT9.Uh9K", // password
             "$2a$10$LOhUxhEcS0vgDPv/jkXvCurNb7LjP9xUlEolJGk.Uhgikqc6FtIOi", // PassWord1
@@ -24,7 +24,7 @@ public class BCryptTest extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldGenerateWith2aPrefix() {
+    void shouldGenerateWith2aPrefix() {
         // given
         BCrypt bCrypt = new BCrypt(mockSettings());
 

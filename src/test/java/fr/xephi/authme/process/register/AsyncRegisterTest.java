@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link AsyncRegister}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AsyncRegisterTest {
+class AsyncRegisterTest {
 
     @InjectMocks
     private AsyncRegister asyncRegister;
@@ -51,7 +51,7 @@ public class AsyncRegisterTest {
     private SingletonStore<RegistrationExecutor> registrationExecutorStore;
 
     @Test
-    public void shouldDetectAlreadyLoggedInPlayer() {
+    void shouldDetectAlreadyLoggedInPlayer() {
         // given
         String name = "robert";
         Player player = mockPlayerWithName(name);
@@ -66,7 +66,7 @@ public class AsyncRegisterTest {
     }
 
     @Test
-    public void shouldStopForDisabledRegistration() {
+    void shouldStopForDisabledRegistration() {
         // given
         String name = "albert";
         Player player = mockPlayerWithName(name);
@@ -82,7 +82,7 @@ public class AsyncRegisterTest {
     }
 
     @Test
-    public void shouldStopForAlreadyRegisteredName() {
+    void shouldStopForAlreadyRegisteredName() {
         // given
         String name = "dilbert";
         Player player = mockPlayerWithName(name);
@@ -101,7 +101,7 @@ public class AsyncRegisterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForCanceledEvent() {
+    void shouldStopForCanceledEvent() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
@@ -124,7 +124,7 @@ public class AsyncRegisterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForFailedExecutorCheck() {
+    void shouldStopForFailedExecutorCheck() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);

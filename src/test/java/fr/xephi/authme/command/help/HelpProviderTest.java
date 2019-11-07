@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link HelpProvider}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class HelpProviderTest {
+class HelpProviderTest {
 
     private static Collection<CommandDescription> commands;
 
@@ -65,17 +65,17 @@ public class HelpProviderTest {
     private CommandSender sender;
 
     @BeforeAll
-    public static void setUpCommands() {
+    static void setUpCommands() {
         commands = TestCommandsUtil.generateCommands();
     }
 
     @BeforeInjecting
-    public void setInitialSettings() {
+    void setInitialSettings() {
         setDefaultHelpMessages(helpMessagesService);
     }
 
     @Test
-    public void shouldShowLongDescription() {
+    void shouldShowLongDescription() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme", "login");
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
@@ -94,7 +94,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldShowArguments() {
+    void shouldShowArguments() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
@@ -112,7 +112,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldShowSpecifyIfArgumentIsOptional() {
+    void shouldShowSpecifyIfArgumentIsOptional() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "email");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("email"));
@@ -128,7 +128,7 @@ public class HelpProviderTest {
 
     /** Verifies that the "Arguments:" line is not shown if the command has no arguments. */
     @Test
-    public void shouldNotShowAnythingIfCommandHasNoArguments() {
+    void shouldNotShowAnythingIfCommandHasNoArguments() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
@@ -142,7 +142,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldShowAndEvaluatePermissions() {
+    void shouldShowAndEvaluatePermissions() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "unregister");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("unreg"));
@@ -164,7 +164,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldShowAndEvaluateForbiddenPermissions() {
+    void shouldShowAndEvaluateForbiddenPermissions() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "unregister");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("unregister"));
@@ -186,7 +186,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldNotShowAnythingForEmptyPermissions() {
+    void shouldNotShowAnythingForEmptyPermissions() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
@@ -200,7 +200,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldNotShowAnythingForNullPermissionsOnCommand() {
+    void shouldNotShowAnythingForNullPermissionsOnCommand() {
         // given
         CommandDescription command = mock(CommandDescription.class);
         given(command.getPermission()).willReturn(null);
@@ -216,7 +216,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldShowAlternatives() {
+    void shouldShowAlternatives() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
@@ -233,7 +233,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldNotShowAnythingIfHasNoAlternatives() {
+    void shouldNotShowAnythingIfHasNoAlternatives() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme", "login");
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
@@ -247,7 +247,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldShowChildren() {
+    void shouldShowChildren() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
@@ -268,7 +268,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldNotShowCommandsTitleForCommandWithNoChildren() {
+    void shouldNotShowCommandsTitleForCommandWithNoChildren() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
@@ -282,7 +282,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldHandleUnboundFoundCommandResult() {
+    void shouldHandleUnboundFoundCommandResult() {
         // given
         FoundCommandResult result = new FoundCommandResult(null, Arrays.asList("authme", "test"),
             Collections.emptyList(), 0.0, FoundResultStatus.UNKNOWN_LABEL);
@@ -301,7 +301,7 @@ public class HelpProviderTest {
      * (e.g. suggest "register command" for /authme ragister), we need to check the labels and construct a correct list
      */
     @Test
-    public void shouldShowCommandSyntaxWithCorrectLabels() {
+    void shouldShowCommandSyntaxWithCorrectLabels() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
         FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "ragister"));
@@ -317,7 +317,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldRetainCorrectLabels() {
+    void shouldRetainCorrectLabels() {
         // given
         List<String> labels = Arrays.asList("authme", "reg");
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
@@ -330,7 +330,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldReplaceIncorrectLabels() {
+    void shouldReplaceIncorrectLabels() {
         // given
         List<String> labels = Arrays.asList("authme", "wrong");
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
@@ -343,7 +343,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldDisableSectionsWithEmptyTranslations() {
+    void shouldDisableSectionsWithEmptyTranslations() {
         // given
         given(helpMessagesService.getMessage(HelpSection.DETAILED_DESCRIPTION)).willReturn("");
         given(helpMessagesService.getMessage(HelpSection.ALTERNATIVES)).willReturn("");
@@ -367,7 +367,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldNotReturnAnythingForAllDisabledSections() {
+    void shouldNotReturnAnythingForAllDisabledSections() {
         // given
         given(helpMessagesService.getMessage(HelpSection.COMMAND)).willReturn("");
         given(helpMessagesService.getMessage(HelpSection.ALTERNATIVES)).willReturn("");
@@ -384,7 +384,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldSkipEmptyHeader() {
+    void shouldSkipEmptyHeader() {
         // given
         given(helpMessagesService.getMessage(HelpMessage.HEADER)).willReturn("");
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
@@ -400,7 +400,7 @@ public class HelpProviderTest {
     }
 
     @Test
-    public void shouldShowAlternativesForRootCommand() {
+    void shouldShowAlternativesForRootCommand() {
         // given
         CommandDescription command = getCommandWithLabel(commands, "unregister");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("unreg"));

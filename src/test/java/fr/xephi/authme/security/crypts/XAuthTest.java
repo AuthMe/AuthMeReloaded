@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link XAuth}.
  */
-public class XAuthTest extends AbstractEncryptionMethodTest {
+class XAuthTest extends AbstractEncryptionMethodTest {
 
-    public XAuthTest() {
+    XAuthTest() {
         super(new XAuth(),
             "e54d4916577410d26d2f6e9362445463dab9ffdff9a67ed3b74d3f2312bc8fab84f653fcb88ad8338793ef8a6d0a1162105e46ec24f0dcb52355c634e3e6439f45444b09c715",  // password
             "d54489a4fd4732ee03d56810ab92944096e3d49335266adeecfbc12567abb3ff744761b33a1fcc4d04739e377775c788e4baace3caf35c7b9176b82b1fe3472e4cbdc5a43214",  // PassWord1

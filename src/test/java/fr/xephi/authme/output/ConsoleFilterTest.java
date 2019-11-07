@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link ConsoleFilter}.
  */
-public class ConsoleFilterTest {
+class ConsoleFilterTest {
 
     private final ConsoleFilter filter = new ConsoleFilter();
 
@@ -23,7 +23,7 @@ public class ConsoleFilterTest {
 
 
     @Test
-    public void shouldReplaceSensitiveRecord() {
+    void shouldReplaceSensitiveRecord() {
         // given
         LogRecord record = createRecord(SENSITIVE_COMMAND);
 
@@ -36,7 +36,7 @@ public class ConsoleFilterTest {
     }
 
     @Test
-    public void shouldNotFilterRegularCommand() {
+    void shouldNotFilterRegularCommand() {
         // given
         LogRecord record = createRecord(NORMAL_COMMAND);
 
@@ -49,7 +49,7 @@ public class ConsoleFilterTest {
     }
 
     @Test
-    public void shouldManageRecordWithNullMessage() {
+    void shouldManageRecordWithNullMessage() {
         // given
         LogRecord record = createRecord(null);
 

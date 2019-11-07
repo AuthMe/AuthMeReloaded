@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link TotpBaseCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class TotpBaseCommandTest {
+class TotpBaseCommandTest {
 
     @InjectMocks
     private TotpBaseCommand command;
@@ -31,7 +31,7 @@ public class TotpBaseCommandTest {
     private HelpProvider helpProvider;
 
     @Test
-    public void shouldOutputHelp() {
+    void shouldOutputHelp() {
         // given
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult mappingResult = mock(FoundCommandResult.class);

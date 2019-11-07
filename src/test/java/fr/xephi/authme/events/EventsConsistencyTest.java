@@ -18,13 +18,13 @@ import static org.junit.Assert.assertThat;
 /**
  * Checks the consistency of the AuthMe event classes.
  */
-public class EventsConsistencyTest {
+class EventsConsistencyTest {
 
     private static final String EVENTS_FOLDER = TestHelper.PROJECT_ROOT + "events/";
     private static List<Class<? extends Event>> classes;
 
     @BeforeAll
-    public static void scanEventClasses() {
+    static void scanEventClasses() {
         ClassCollector classCollector = new ClassCollector(TestHelper.SOURCES_FOLDER, EVENTS_FOLDER);
         classes = classCollector.collectClasses(Event.class);
 
@@ -34,7 +34,7 @@ public class EventsConsistencyTest {
     }
 
     @Test
-    public void shouldExtendFromCustomEvent() {
+    void shouldExtendFromCustomEvent() {
         for (Class<?> clazz : classes) {
             assertThat("Class " + clazz.getSimpleName() + " is subtype of CustomEvent",
                 CustomEvent.class.isAssignableFrom(clazz), equalTo(true));
@@ -47,7 +47,7 @@ public class EventsConsistencyTest {
      * is not instantiable (abstract class).
      */
     @Test
-    public void shouldHaveStaticEventHandlerMethod() {
+    void shouldHaveStaticEventHandlerMethod() {
         for (Class<?> clazz : classes) {
             Method handlerListMethod = MethodUtils.getAccessibleMethod(clazz, "getHandlerList", new Class<?>[]{});
             if (canBeInstantiated(clazz)) {

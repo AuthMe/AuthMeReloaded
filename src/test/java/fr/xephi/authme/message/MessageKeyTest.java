@@ -14,10 +14,10 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link MessageKey}.
  */
-public class MessageKeyTest {
+class MessageKeyTest {
 
     @Test
-    public void shouldHaveUniqueMessageKeys() {
+    void shouldHaveUniqueMessageKeys() {
         // given
         MessageKey[] messageKeys = MessageKey.values();
         Set<String> keys = new HashSet<>();
@@ -34,7 +34,7 @@ public class MessageKeyTest {
     }
 
     @Test
-    public void shouldHaveWellFormedPlaceholders() {
+    void shouldHaveWellFormedPlaceholders() {
         // given
         MessageKey[] messageKeys = MessageKey.values();
 

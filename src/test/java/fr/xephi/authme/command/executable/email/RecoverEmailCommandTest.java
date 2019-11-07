@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link RecoverEmailCommand}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class RecoverEmailCommandTest {
+class RecoverEmailCommandTest {
 
     private static final String DEFAULT_EMAIL = "your@email.com";
 
@@ -69,17 +69,17 @@ public class RecoverEmailCommandTest {
     private BukkitService bukkitService;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void initSettings() {
+    void initSettings() {
         given(commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS)).willReturn(40);
     }
 
     @Test
-    public void shouldHandleMissingMailProperties() {
+    void shouldHandleMissingMailProperties() {
         // given
         given(emailService.hasAllInformation()).willReturn(false);
         Player sender = mock(Player.class);
@@ -93,7 +93,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldShowErrorForAuthenticatedUser() {
+    void shouldShowErrorForAuthenticatedUser() {
         // given
         String name = "Bobby";
         Player sender = mock(Player.class);
@@ -111,7 +111,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldShowRegisterMessageForUnregisteredPlayer() {
+    void shouldShowRegisterMessageForUnregisteredPlayer() {
         // given
         String name = "Player123";
         Player sender = mock(Player.class);
@@ -131,7 +131,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldHandleDefaultEmail() {
+    void shouldHandleDefaultEmail() {
         // given
         String name = "Tract0r";
         Player sender = mock(Player.class);
@@ -151,7 +151,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldHandleInvalidEmailInput() {
+    void shouldHandleInvalidEmailInput() {
         // given
         String name = "Rapt0r";
         Player sender = mock(Player.class);
@@ -171,7 +171,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldGenerateRecoveryCode() {
+    void shouldGenerateRecoveryCode() {
         // given
         String name = "Vultur3";
         Player sender = mock(Player.class);
@@ -196,7 +196,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldGenerateNewPasswordWithoutRecoveryCode() {
+    void shouldGenerateNewPasswordWithoutRecoveryCode() {
         // given
         String name = "Vultur3";
         Player sender = mock(Player.class);
@@ -219,7 +219,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_RECOVER_EMAIL));
     }

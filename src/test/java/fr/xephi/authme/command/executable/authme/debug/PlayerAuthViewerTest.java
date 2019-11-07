@@ -25,7 +25,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PlayerAuthViewer}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PlayerAuthViewerTest {
+class PlayerAuthViewerTest {
 
     @InjectMocks
     private PlayerAuthViewer authViewer;
@@ -34,7 +34,7 @@ public class PlayerAuthViewerTest {
     private DataSource dataSource;
 
     @Test
-    public void shouldMakeExample() {
+    void shouldMakeExample() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -46,7 +46,7 @@ public class PlayerAuthViewerTest {
     }
 
     @Test
-    public void shouldHandleMissingPlayer() {
+    void shouldHandleMissingPlayer() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -59,7 +59,7 @@ public class PlayerAuthViewerTest {
     }
 
     @Test
-    public void shouldDisplayAuthInfo() {
+    void shouldDisplayAuthInfo() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder().name("george").realName("George")
@@ -82,7 +82,7 @@ public class PlayerAuthViewerTest {
     }
 
     @Test
-    public void shouldHandleCornerCases() {
+    void shouldHandleCornerCases() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder().name("tar")

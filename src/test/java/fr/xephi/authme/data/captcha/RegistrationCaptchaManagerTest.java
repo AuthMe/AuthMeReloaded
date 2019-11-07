@@ -16,10 +16,10 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link RegistrationCaptchaManager}.
  */
-public class RegistrationCaptchaManagerTest {
+class RegistrationCaptchaManagerTest {
 
     @Test
-    public void shouldBeDisabled() {
+    void shouldBeDisabled() {
         // given
         Settings settings = mock(Settings.class);
         // Return false first time, and true after that
@@ -37,7 +37,7 @@ public class RegistrationCaptchaManagerTest {
     }
 
     @Test
-    public void shouldVerifyCodeSuccessfully() {
+    void shouldVerifyCodeSuccessfully() {
         // given
         Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.ENABLE_CAPTCHA_FOR_REGISTRATION)).willReturn(true);
@@ -60,7 +60,7 @@ public class RegistrationCaptchaManagerTest {
     }
 
     @Test
-    public void shouldGenerateAndRetrieveCode() {
+    void shouldGenerateAndRetrieveCode() {
         // given
         Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.ENABLE_CAPTCHA_FOR_REGISTRATION)).willReturn(true);

@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link RegisterAdminCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class RegisterAdminCommandTest {
+class RegisterAdminCommandTest {
 
     @InjectMocks
     private RegisterAdminCommand command;
@@ -57,12 +57,12 @@ public class RegisterAdminCommandTest {
     private ValidationService validationService;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRejectInvalidPassword() {
+    void shouldRejectInvalidPassword() {
         // given
         String user = "tester";
         String password = "myPassword";
@@ -80,7 +80,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldRejectAlreadyRegisteredAccount() {
+    void shouldRejectAlreadyRegisteredAccount() {
         // given
         String user = "my_name55";
         String password = "@some-pass@";
@@ -99,7 +99,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldHandleSavingError() {
+    void shouldHandleSavingError() {
         // given
         String user = "test-test";
         String password = "afdjhfkt";
@@ -123,7 +123,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldRegisterOfflinePlayer() {
+    void shouldRegisterOfflinePlayer() {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
@@ -148,7 +148,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldRegisterOnlinePlayer() {
+    void shouldRegisterOnlinePlayer() {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";

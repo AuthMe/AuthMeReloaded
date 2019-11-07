@@ -26,7 +26,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PurgeCommandTest {
+class PurgeCommandTest {
 
     @InjectMocks
     private PurgeCommand command;
@@ -35,7 +35,7 @@ public class PurgeCommandTest {
     private PurgeService purgeService;
 
     @Test
-    public void shouldHandleInvalidNumber() {
+    void shouldHandleInvalidNumber() {
         // given
         String interval = "invalid";
         CommandSender sender = mock(CommandSender.class);
@@ -49,7 +49,7 @@ public class PurgeCommandTest {
     }
 
     @Test
-    public void shouldRejectTooSmallInterval() {
+    void shouldRejectTooSmallInterval() {
         // given
         String interval = "29";
         CommandSender sender = mock(CommandSender.class);
@@ -63,7 +63,7 @@ public class PurgeCommandTest {
     }
 
     @Test
-    public void shouldForwardToService() {
+    void shouldForwardToService() {
         // given
         String interval = "45";
         CommandSender sender = mock(CommandSender.class);

@@ -48,7 +48,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PasswordSecurity}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class PasswordSecurityTest {
+class PasswordSecurityTest {
 
     @InjectDelayed
     private PasswordSecurity passwordSecurity;
@@ -71,12 +71,12 @@ public class PasswordSecurityTest {
     private Class<?> caughtClassInEvent;
 
     @BeforeAll
-    public static void setUpTest() {
+    static void setUpTest() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void setUpMocks() {
+    void setUpMocks() {
         caughtClassInEvent = null;
 
         // When the password encryption event is emitted, replace the encryption method with our mock.
@@ -113,7 +113,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldReturnPasswordMatch() {
+    void shouldReturnPasswordMatch() {
         // given
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "Tester";
@@ -135,7 +135,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldReturnPasswordMismatch() {
+    void shouldReturnPasswordMismatch() {
         // given
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "My_PLayer";
@@ -156,7 +156,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldReturnFalseIfPlayerDoesNotExist() {
+    void shouldReturnFalseIfPlayerDoesNotExist() {
         // given
         String playerName = "bobby";
         String clearTextPass = "tables";
@@ -172,7 +172,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldTryOtherMethodsForFailedPassword() {
+    void shouldTryOtherMethodsForFailedPassword() {
         // given
         // BCRYPT hash for "Test"
         HashedPassword password =
@@ -205,7 +205,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldTryLegacyMethodsAndFail() {
+    void shouldTryLegacyMethodsAndFail() {
         // given
         HashedPassword password = new HashedPassword("hashNotMatchingAnyMethod", "someBogusSalt");
         String playerName = "asfd";
@@ -226,7 +226,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldHashPassword() {
+    void shouldHashPassword() {
         // given
         String password = "MyP@ssword";
         String username = "theUserInTest";
@@ -247,7 +247,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldSkipCheckIfMandatorySaltIsUnavailable() {
+    void shouldSkipCheckIfMandatorySaltIsUnavailable() {
         // given
         String password = "?topSecretPass\\";
         String username = "someone12";
@@ -268,7 +268,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldReloadSettings() {
+    void shouldReloadSettings() {
         // given
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
         given(settings.getProperty(SecuritySettings.LEGACY_HASHES))

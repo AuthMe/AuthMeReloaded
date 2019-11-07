@@ -11,10 +11,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link UuidUtils}.
  */
-public class UuidUtilsTest {
+class UuidUtilsTest {
 
     @Test
-    public void shouldParseUuidSafely() {
+    void shouldParseUuidSafely() {
         // given
         UUID correctUuid = UUID.fromString("8e0a9aaa-5eda-42ef-8daf-e6c6359f607e");
 

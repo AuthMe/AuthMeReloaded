@@ -13,7 +13,7 @@ import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
  * Test for {@link PlayerListener19}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PlayerListener19Test {
+class PlayerListener19Test {
 
     @InjectMocks
     private PlayerListener19 listener;
@@ -22,7 +22,7 @@ public class PlayerListener19Test {
     private ListenerService listenerService;
 
     @Test
-    public void shouldCancelEvent() {
+    void shouldCancelEvent() {
         withServiceMock(listenerService)
             .check(listener::onPlayerSwapHandItems, PlayerSwapHandItemsEvent.class);
     }

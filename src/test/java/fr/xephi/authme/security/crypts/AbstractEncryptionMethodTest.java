@@ -97,11 +97,11 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
     @BeforeAll
-    public static void setupLogger() {
+    static void setupLogger() {
         TestHelper.setupLogger();
     }
 
-    protected void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isConstructorWithSalt) {
+    void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isConstructorWithSalt) {
         if (isConstructorWithSalt && !method.hasSeparateSalt()) {
             throw new UnsupportedOperationException("Salt is not stored separately, so test should be initialized"
                 + " with the password hashes only. Use the other constructor");
@@ -112,7 +112,7 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void testGivenPasswords() {
+    void testGivenPasswords() {
         // Start with the 2nd to last password if we skip long tests
         int start = SKIP_LONG_TESTS ? GIVEN_PASSWORDS.length - 2 : 0;
         // Test entries in GIVEN_PASSWORDS except the last one
@@ -134,7 +134,7 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void testPasswordEquality() {
+    void testPasswordEquality() {
         List<String> internalPasswords = method.getClass().isAnnotationPresent(AsciiRestricted.class)
             ? INTERNAL_PASSWORDS.subList(0, INTERNAL_PASSWORDS.size() - 1)
             : INTERNAL_PASSWORDS;
@@ -167,7 +167,7 @@ public abstract class AbstractEncryptionMethodTest {
 
     /** Tests various strings to ensure that encryption methods don't rely on the hash's format too much. */
     @Test
-    public void testMalformedHashes() {
+    void testMalformedHashes() {
         assumeThat(SKIP_LONG_TESTS, equalTo(false));
         String salt = method.hasSeparateSalt() ? "testSalt" : null;
         for (String bogusHash : BOGUS_HASHES) {

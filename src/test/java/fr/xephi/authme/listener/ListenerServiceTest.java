@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link ListenerService}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class ListenerServiceTest {
+class ListenerServiceTest {
 
     @InjectDelayed
     private ListenerService listenerService;
@@ -46,12 +46,12 @@ public class ListenerServiceTest {
     private ValidationService validationService;
 
     @BeforeInjecting
-    public void initializeDefaultSettings() {
+    void initializeDefaultSettings() {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
     }
 
     @Test
-    public void shouldHandleEventWithNullEntity() {
+    void shouldHandleEventWithNullEntity() {
         // given
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(null);
@@ -64,7 +64,7 @@ public class ListenerServiceTest {
     }
 
     @Test
-    public void shouldHandleEntityEventWithNonPlayerEntity() {
+    void shouldHandleEntityEventWithNonPlayerEntity() {
         // given
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(mock(Entity.class));
@@ -77,7 +77,7 @@ public class ListenerServiceTest {
     }
 
     @Test
-    public void shouldAllowAuthenticatedPlayer() {
+    void shouldAllowAuthenticatedPlayer() {
         // given
         String playerName = "Bobby";
         Player player = mockPlayerWithName(playerName);
@@ -95,7 +95,7 @@ public class ListenerServiceTest {
     }
 
     @Test
-    public void shouldDenyUnLoggedPlayer() {
+    void shouldDenyUnLoggedPlayer() {
         // given
         String playerName = "Tester";
         Player player = mockPlayerWithName(playerName);
@@ -114,7 +114,7 @@ public class ListenerServiceTest {
     }
 
     @Test
-    public void shouldAllowUnloggedPlayerForOptionalRegistration() {
+    void shouldAllowUnloggedPlayerForOptionalRegistration() {
         // given
         String playerName = "myPlayer1";
         Player player = mockPlayerWithName(playerName);
@@ -134,7 +134,7 @@ public class ListenerServiceTest {
     }
 
     @Test
-    public void shouldAllowUnrestrictedName() {
+    void shouldAllowUnrestrictedName() {
         // given
         String playerName = "Npc2";
         Player player = mockPlayerWithName(playerName);
@@ -151,7 +151,7 @@ public class ListenerServiceTest {
     }
 
     @Test
-    public void shouldAllowNpcPlayer() {
+    void shouldAllowNpcPlayer() {
         // given
         String playerName = "other_npc";
         Player player = mockPlayerWithName(playerName);
@@ -169,7 +169,7 @@ public class ListenerServiceTest {
 
     @Test
     // This simply forwards to shouldCancelEvent(Player), so the rest is already tested
-    public void shouldHandlePlayerEvent() {
+    void shouldHandlePlayerEvent() {
         // given
         String playerName = "example";
         Player player = mockPlayerWithName(playerName);
@@ -186,7 +186,7 @@ public class ListenerServiceTest {
     }
 
     @Test
-    public void shouldHandlePlayerEventWithNullPlayer() {
+    void shouldHandlePlayerEventWithNullPlayer() {
         // given
         PlayerEvent event = new TestPlayerEvent(null);
 
@@ -199,7 +199,7 @@ public class ListenerServiceTest {
 
     @Test
     // The previous tests verify most of shouldCancelEvent(Player)
-    public void shouldVerifyBasedOnPlayer() {
+    void shouldVerifyBasedOnPlayer() {
         // given
         String playerName = "player";
         Player player = mockPlayerWithName(playerName);
@@ -223,7 +223,7 @@ public class ListenerServiceTest {
      * Test implementation of {@link PlayerEvent}.
      */
     private static final class TestPlayerEvent extends PlayerEvent {
-        public TestPlayerEvent(Player player) {
+        TestPlayerEvent(Player player) {
             super(player);
         }
 

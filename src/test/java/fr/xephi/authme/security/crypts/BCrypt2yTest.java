@@ -9,9 +9,9 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link BCrypt2y}.
  */
-public class BCrypt2yTest extends AbstractEncryptionMethodTest {
+class BCrypt2yTest extends AbstractEncryptionMethodTest {
 
-    public BCrypt2yTest() {
+    BCrypt2yTest() {
         super(new BCrypt2y(),
             "$2y$10$da641e404b982edf1c7c0uTU9BcKzfA2vWKV05q6r.dCvm/93wqVK",  // password
             "$2y$10$e52c48a76f5b86f5da899uiK/HYocyPsfQXESNbP278rIz08LKEP2",  // PassWord1
@@ -20,7 +20,7 @@ public class BCrypt2yTest extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldGenerateWith2yPrefixAndCostFactor10() {
+    void shouldGenerateWith2yPrefixAndCostFactor10() {
         // given
         BCrypt2y bCrypt2y = new BCrypt2y();
 

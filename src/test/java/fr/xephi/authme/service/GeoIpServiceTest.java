@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link GeoIpService}.
  */
 @ExtendWith(MockitoExtension.class)
-public class GeoIpServiceTest {
+class GeoIpServiceTest {
 
     private GeoIpService geoIpService;
     @TempDir
@@ -38,12 +38,12 @@ public class GeoIpServiceTest {
     private BukkitService bukkitService;
 
     @BeforeEach
-    public void initializeGeoLiteApi() {
+    void initializeGeoLiteApi() {
         geoIpService = new GeoIpService(dataFolder, bukkitService, lookupService);
     }
 
     @Test
-    public void shouldGetCountry() throws Exception {
+    void shouldGetCountry() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("123.45.67.89");
         String countryCode = "XX";
@@ -64,7 +64,7 @@ public class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldNotLookUpCountryForLocalhostIp() throws Exception  {
+    void shouldNotLookUpCountryForLocalhostIp() throws Exception  {
         // given
         String ip = "127.0.0.1";
 
@@ -77,7 +77,7 @@ public class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldLookUpCountryName() throws Exception {
+    void shouldLookUpCountryName() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("24.45.167.89");
         String countryName = "Ecuador";
@@ -98,7 +98,7 @@ public class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldNotLookUpCountryNameForLocalhostIp() throws Exception {
+    void shouldNotLookUpCountryNameForLocalhostIp() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("127.0.0.1");
 

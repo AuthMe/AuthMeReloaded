@@ -25,7 +25,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgePlayerCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PurgePlayerCommandTest {
+class PurgePlayerCommandTest {
 
     @InjectMocks
     private PurgePlayerCommand command;
@@ -40,7 +40,7 @@ public class PurgePlayerCommandTest {
     private DataSource dataSource;
 
     @Test
-    public void shouldNotExecutePurgeForRegisteredPlayer() {
+    void shouldNotExecutePurgeForRegisteredPlayer() {
         // given
         String name = "Bobby";
         given(dataSource.isAuthAvailable(name)).willReturn(true);
@@ -56,7 +56,7 @@ public class PurgePlayerCommandTest {
     }
 
     @Test
-    public void shouldExecutePurge() {
+    void shouldExecutePurge() {
         // given
         String name = "Frank";
         given(dataSource.isAuthAvailable(name)).willReturn(false);
@@ -74,7 +74,7 @@ public class PurgePlayerCommandTest {
     }
 
     @Test
-    public void shouldExecutePurgeOfRegisteredPlayer() {
+    void shouldExecutePurgeOfRegisteredPlayer() {
         // given
         String name = "GhiJKlmn7";
         OfflinePlayer player = mock(OfflinePlayer.class);

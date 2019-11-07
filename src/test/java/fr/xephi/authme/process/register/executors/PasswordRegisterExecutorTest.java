@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link PasswordRegisterExecutor}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PasswordRegisterExecutorTest {
+class PasswordRegisterExecutorTest {
 
     @InjectMocks
     private PasswordRegisterExecutor executor;
@@ -56,7 +56,7 @@ public class PasswordRegisterExecutorTest {
     private AsynchronousLogin asynchronousLogin;
 
     @Test
-    public void shouldCheckPasswordValidity() {
+    void shouldCheckPasswordValidity() {
         // given
         String password = "myPass";
         String name = "player040";
@@ -73,7 +73,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldDetectInvalidPasswordAndInformPlayer() {
+    void shouldDetectInvalidPasswordAndInformPlayer() {
         // given
         String password = "myPass";
         String name = "player040";
@@ -92,7 +92,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldCreatePlayerAuth() {
+    void shouldCreatePlayerAuth() {
         // given
         given(passwordSecurity.computeHash(anyString(), anyString())).willAnswer(
             invocation -> new HashedPassword(invocation.getArgument(0)));
@@ -111,7 +111,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldLogPlayerIn() {
+    void shouldLogPlayerIn() {
         // given
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(false);
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
@@ -128,7 +128,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldNotLogPlayerIn() {
+    void shouldNotLogPlayerIn() {
         // given
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(true);
         Player player = mock(Player.class);

@@ -40,7 +40,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link HelpCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class HelpCommandTest {
+class HelpCommandTest {
 
     @InjectMocks
     private HelpCommand command;
@@ -52,7 +52,7 @@ public class HelpCommandTest {
     private HelpProvider helpProvider;
 
     @Test
-    public void shouldHandleMissingBaseCommand() {
+    void shouldHandleMissingBaseCommand() {
         // given
         List<String> arguments = asList("some", "command");
         CommandSender sender = mock(CommandSender.class);
@@ -68,7 +68,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldHandleWrongCommandWithSuggestion() {
+    void shouldHandleWrongCommandWithSuggestion() {
         // given
         List<String> arguments = asList("authme", "ragister", "test");
         CommandSender sender = mock(CommandSender.class);
@@ -88,7 +88,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldHandleWrongCommandWithoutSuggestion() {
+    void shouldHandleWrongCommandWithoutSuggestion() {
         List<String> arguments = asList("authme", "ragister", "test");
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult foundCommandResult = new FoundCommandResult(null, asList("authme", "ragister"),
@@ -106,7 +106,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldShowChildrenOfBaseCommand() {
+    void shouldShowChildrenOfBaseCommand() {
         List<String> arguments = singletonList("authme");
         CommandSender sender = mock(CommandSender.class);
         CommandDescription commandDescription = mock(CommandDescription.class);
@@ -125,7 +125,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldShowDetailedHelpForChildCommand() {
+    void shouldShowDetailedHelpForChildCommand() {
         List<String> arguments = asList("authme", "getpos");
         CommandSender sender = mock(CommandSender.class);
         CommandDescription commandDescription = mock(CommandDescription.class);

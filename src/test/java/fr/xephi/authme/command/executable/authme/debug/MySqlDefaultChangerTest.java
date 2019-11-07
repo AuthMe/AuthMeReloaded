@@ -29,13 +29,13 @@ import static org.mockito.Mockito.verify;
  * Test for {@link MySqlDefaultChanger}.
  */
 @ExtendWith(MockitoExtension.class)
-public class MySqlDefaultChangerTest {
+class MySqlDefaultChangerTest {
 
     @Mock
     private Settings settings;
 
     @Test
-    public void shouldReturnMySqlConnection() throws SQLException {
+    void shouldReturnMySqlConnection() throws SQLException {
         // given
         Settings settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
@@ -54,7 +54,7 @@ public class MySqlDefaultChangerTest {
     }
 
     @Test
-    public void shouldSetMySqlFieldOnInitialization() {
+    void shouldSetMySqlFieldOnInitialization() {
         // given
         MySQL mySql = mock(MySQL.class);
         MySqlDefaultChanger defaultChanger = createDefaultChanger(mySql);
@@ -68,7 +68,7 @@ public class MySqlDefaultChangerTest {
     }
 
     @Test
-    public void shouldLeaveMySqlFieldToNullOnInitialization() {
+    void shouldLeaveMySqlFieldToNullOnInitialization() {
         // given
         DataSource dataSource = mock(DataSource.class);
         PlayerCache playerCache = mock(PlayerCache.class);

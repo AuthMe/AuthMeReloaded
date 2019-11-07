@@ -9,10 +9,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link LogLevel}.
  */
-public class LogLevelTest {
+class LogLevelTest {
 
     @Test
-    public void shouldIncludeProperLevels() {
+    void shouldIncludeProperLevels() {
         checkLevelInclusion(LogLevel.INFO, true, false, false);
         checkLevelInclusion(LogLevel.FINE, true, true, false);
         checkLevelInclusion(LogLevel.DEBUG, true, true, true);

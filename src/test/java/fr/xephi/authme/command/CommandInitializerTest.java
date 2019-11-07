@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
  */
-public class CommandInitializerTest {
+class CommandInitializerTest {
 
     /**
      * Defines the maximum allowed depths for nesting CommandDescription instances.
@@ -33,13 +33,13 @@ public class CommandInitializerTest {
     private static Collection<CommandDescription> commands;
 
     @BeforeAll
-    public static void initializeCommandCollection() {
+    static void initializeCommandCollection() {
         CommandInitializer commandInitializer = new CommandInitializer();
         commands = commandInitializer.getCommands();
     }
 
     @Test
-    public void shouldInitializeCommands() {
+    void shouldInitializeCommands() {
         // given/when/then
         // It obviously doesn't make sense to test much of the concrete data
         // that is being initialized; we just want to guarantee with this test
@@ -51,7 +51,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldNotBeNestedExcessively() {
+    void shouldNotBeNestedExcessively() {
         // given
         BiConsumer<CommandDescription, Integer> descriptionTester =
             (command, depth) -> assertThat(depth <= MAX_ALLOWED_DEPTH, equalTo(true));
@@ -62,7 +62,7 @@ public class CommandInitializerTest {
 
     /** Ensure that all children of a command stored the parent. */
     @Test
-    public void shouldHaveConnectionBetweenParentAndChild() {
+    void shouldHaveConnectionBetweenParentAndChild() {
         // given
         BiConsumer<CommandDescription, Integer> connectionTester = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -83,7 +83,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldUseProperLowerCaseLabels() {
+    void shouldUseProperLowerCaseLabels() {
         // given
         final Pattern invalidPattern = Pattern.compile("\\s");
         BiConsumer<CommandDescription, Integer> labelFormatTester = new BiConsumer<CommandDescription, Integer>() {
@@ -104,7 +104,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldNotDefineSameLabelTwice() {
+    void shouldNotDefineSameLabelTwice() {
         // given
         final Set<String> commandMappings = new HashSet<>();
         BiConsumer<CommandDescription, Integer> uniqueMappingTester = new BiConsumer<CommandDescription, Integer>() {
@@ -129,7 +129,7 @@ public class CommandInitializerTest {
      * detailed description should be longer and end with a period.
      */
     @Test
-    public void shouldHaveProperDescription() {
+    void shouldHaveProperDescription() {
         // given
         BiConsumer<CommandDescription, Integer> descriptionTester = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -152,7 +152,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
+    void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
         // given
         BiConsumer<CommandDescription, Integer> argumentOrderTester = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -178,7 +178,7 @@ public class CommandInitializerTest {
      * clash with the label of the child.
      */
     @Test
-    public void shouldNotHaveArgumentsIfCommandHasChildren() {
+    void shouldNotHaveArgumentsIfCommandHasChildren() {
         // given
         BiConsumer<CommandDescription, Integer> noArgumentForParentChecker = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -201,7 +201,7 @@ public class CommandInitializerTest {
      * count of arguments.
      */
     @Test
-    public void shouldPointToSameExecutableCommandWithConsistentArgumentCount() {
+    void shouldPointToSameExecutableCommandWithConsistentArgumentCount() {
         // given
         final Map<Class<? extends ExecutableCommand>, Integer> mandatoryArguments = new HashMap<>();
         final Map<Class<? extends ExecutableCommand>, Integer> totalArguments = new HashMap<>();

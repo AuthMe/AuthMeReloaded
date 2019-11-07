@@ -14,10 +14,10 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link SegmentSize}.
  */
-public class SegmentSizeTest {
+class SegmentSizeTest {
 
     @Test
-    public void shouldHaveDistributionThatIsPowerOf2() {
+    void shouldHaveDistributionThatIsPowerOf2() {
         // given
         Set<Integer> allowedDistributions = ImmutableSet.of(1, 2, 4, 8, 16);
 
@@ -30,7 +30,7 @@ public class SegmentSizeTest {
     }
 
     @Test
-    public void shouldHaveDifferentSegmentSizes() {
+    void shouldHaveDifferentSegmentSizes() {
         // given
         Set<Integer> segmentTotals = new HashSet<>();
 

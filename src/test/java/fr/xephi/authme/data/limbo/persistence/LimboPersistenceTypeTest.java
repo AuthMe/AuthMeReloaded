@@ -14,10 +14,10 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link LimboPersistenceType}.
  */
-public class LimboPersistenceTypeTest {
+class LimboPersistenceTypeTest {
 
     @Test
-    public void shouldHaveUniqueImplementationClasses() {
+    void shouldHaveUniqueImplementationClasses() {
         // given
         Set<Class<?>> classes = new HashSet<>();
 
@@ -31,7 +31,7 @@ public class LimboPersistenceTypeTest {
     }
 
     @Test
-    public void shouldHaveTypeReturnedFromImplementationClass() {
+    void shouldHaveTypeReturnedFromImplementationClass() {
         for (LimboPersistenceType persistenceType : LimboPersistenceType.values()) {
             // given
             LimboPersistenceHandler implementationMock = mock(persistenceType.getImplementationClass());

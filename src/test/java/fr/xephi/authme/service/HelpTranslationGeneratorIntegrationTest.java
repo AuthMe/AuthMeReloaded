@@ -36,7 +36,7 @@ import static org.mockito.BDDMockito.given;
  * Integration test for {@link HelpTranslationGenerator}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class HelpTranslationGeneratorIntegrationTest {
+class HelpTranslationGeneratorIntegrationTest {
 
     @InjectDelayed
     private HelpTranslationGenerator helpTranslationGenerator;
@@ -56,12 +56,12 @@ public class HelpTranslationGeneratorIntegrationTest {
     private Settings settings;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void setUpClasses() throws IOException {
+    void setUpClasses() throws IOException {
         File messagesFolder = new File(dataFolder, "messages");
         messagesFolder.mkdir();
         helpMessagesFile = new File(messagesFolder, "help_test.yml");
@@ -70,7 +70,7 @@ public class HelpTranslationGeneratorIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateCurrentHelpFile() throws IOException {
+    void shouldUpdateCurrentHelpFile() throws IOException {
         // given / when
         helpTranslationGenerator.updateHelpFile();
 

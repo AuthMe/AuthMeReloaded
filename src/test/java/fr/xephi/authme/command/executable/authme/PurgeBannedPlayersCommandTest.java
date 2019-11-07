@@ -26,7 +26,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeBannedPlayersCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PurgeBannedPlayersCommandTest {
+class PurgeBannedPlayersCommandTest {
 
     @InjectMocks
     private PurgeBannedPlayersCommand command;
@@ -38,7 +38,7 @@ public class PurgeBannedPlayersCommandTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldForwardRequestToService() {
+    void shouldForwardRequestToService() {
         // given
         String[] names = {"bannedPlayer", "other_banned", "evilplayer", "Someone"};
         OfflinePlayer[] players = offlinePlayersWithNames(names);

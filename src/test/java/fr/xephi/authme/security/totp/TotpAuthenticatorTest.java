@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link TotpAuthenticator}.
  */
 @ExtendWith(MockitoExtension.class)
-public class TotpAuthenticatorTest {
+class TotpAuthenticatorTest {
 
     private TotpAuthenticator totpAuthenticator;
 
@@ -41,12 +41,12 @@ public class TotpAuthenticatorTest {
     private IGoogleAuthenticator googleAuthenticator;
 
     @BeforeEach
-    public void initializeTotpAuthenticator() {
+    void initializeTotpAuthenticator() {
         totpAuthenticator = new TotpAuthenticatorTestImpl(settings);
     }
 
     @Test
-    public void shouldGenerateTotpKey() {
+    void shouldGenerateTotpKey() {
         // given
         // Use the GoogleAuthenticator instance the TotpAuthenticator normally creates to test its parameters
         totpAuthenticator = new TotpAuthenticator(settings);
@@ -69,7 +69,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldCheckCodeAndDeclareItValidOnlyOnce() {
+    void shouldCheckCodeAndDeclareItValidOnlyOnce() {
         // given
         String secret = "the_secret";
         int code = 21398;
@@ -86,7 +86,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldHandleInvalidNumberInput() {
+    void shouldHandleInvalidNumberInput() {
         // given / when
         boolean result = totpAuthenticator.checkCode("foo", "Some_Secret", "123ZZ");
 
@@ -96,7 +96,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldVerifyCode() {
+    void shouldVerifyCode() {
         // given
         String totpKey = "ASLO43KDF2J";
         PlayerAuth auth = PlayerAuth.builder()
@@ -115,7 +115,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldRemoveOldEntries() {
+    void shouldRemoveOldEntries() {
         // given
         Table<String, Integer, Long> usedCodes = ReflectionTestUtils.getFieldValue(
             TotpAuthenticator.class, totpAuthenticator, "usedCodes");

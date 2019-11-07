@@ -35,7 +35,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link ChangePasswordCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ChangePasswordCommandTest {
+class ChangePasswordCommandTest {
 
     @InjectMocks
     private ChangePasswordCommand command;
@@ -56,7 +56,7 @@ public class ChangePasswordCommandTest {
     private Management management;
 
     @Test
-    public void shouldRejectNonPlayerSender() {
+    void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
 
@@ -68,7 +68,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldRejectNotLoggedInPlayer() {
+    void shouldRejectNotLoggedInPlayer() {
         // given
         CommandSender sender = initPlayerWithName("name", false);
 
@@ -80,7 +80,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidPassword() {
+    void shouldRejectInvalidPassword() {
         // given
         Player sender = initPlayerWithName("abc12", true);
         String password = "newPW";
@@ -97,7 +97,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldForwardTheDataForValidPassword() {
+    void shouldForwardTheDataForValidPassword() {
         // given
         String oldPass = "oldpass";
         String newPass = "abc123";
@@ -116,7 +116,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_CHANGE_PASSWORD));
     }

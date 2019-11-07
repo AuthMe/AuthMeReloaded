@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link BackupCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class BackupCommandTest {
+class BackupCommandTest {
 
     @InjectMocks
     private BackupCommand command;
@@ -26,7 +26,7 @@ public class BackupCommandTest {
     private BackupService backupService;
 
     @Test
-    public void shouldStartBackup() {
+    void shouldStartBackup() {
         // given
         CommandSender sender = mock(CommandSender.class);
 

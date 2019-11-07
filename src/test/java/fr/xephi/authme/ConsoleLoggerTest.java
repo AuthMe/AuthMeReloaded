@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link ConsoleLogger}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ConsoleLoggerTest {
+class ConsoleLoggerTest {
 
     private ConsoleLogger consoleLogger;
 
@@ -53,7 +53,7 @@ public class ConsoleLoggerTest {
     private File logFile;
 
     @BeforeEach
-    public void setMockLogger() throws IOException {
+    void setMockLogger() throws IOException {
         File logFile = new File(tempFolder, "authme.log");
         if (!logFile.createNewFile()) {
             throw new IOException("Could not create file '" + logFile.getPath() + "'");
@@ -64,7 +64,7 @@ public class ConsoleLoggerTest {
     }
 
     @AfterEach
-    public void closeFileHandlers() {
+    void closeFileHandlers() {
         ConsoleLogger.closeFileWriter();
     }
 
@@ -74,12 +74,12 @@ public class ConsoleLoggerTest {
      * be around after this test class has finished.
      */
     @AfterAll
-    public static void resetConsoleToDefault() {
+    static void resetConsoleToDefault() {
         ConsoleLogger.initializeSharedSettings(newSettings(false, LogLevel.INFO));
     }
 
     @Test
-    public void shouldLogToFile() throws IOException {
+    void shouldLogToFile() throws IOException {
         // given
         Settings settings = newSettings(true, LogLevel.FINE);
         ConsoleLogger.initializeSharedSettings(settings);
@@ -100,7 +100,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldNotLogToFile() {
+    void shouldNotLogToFile() {
         // given
         Settings settings = newSettings(false, LogLevel.DEBUG);
         ConsoleLogger.initializeSharedSettings(settings);
@@ -118,7 +118,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldLogStackTraceToFile() throws IOException {
+    void shouldLogStackTraceToFile() throws IOException {
         // given
         Settings settings = newSettings(true, LogLevel.INFO);
         settings.getProperty(PluginSettings.LOG_LEVEL); // dummy code to avoid Mockito from complaining about the log level being stubbed
@@ -145,7 +145,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldSupportVariousDebugMethods() throws IOException {
+    void shouldSupportVariousDebugMethods() throws IOException {
         // given
         Settings settings = newSettings(true, LogLevel.DEBUG);
         ConsoleLogger.initializeSharedSettings(settings);
@@ -173,7 +173,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldCloseFileWriterDespiteExceptionOnFlush() throws IOException {
+    void shouldCloseFileWriterDespiteExceptionOnFlush() throws IOException {
         // given
         FileWriter fileWriter = mock(FileWriter.class);
         doThrow(new IOException("Error during flush")).when(fileWriter).flush();
@@ -189,7 +189,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldHandleExceptionOnFileWriterClose() throws IOException {
+    void shouldHandleExceptionOnFileWriterClose() throws IOException {
         // given
         FileWriter fileWriter = mock(FileWriter.class);
         doThrow(new IOException("Cannot close")).when(fileWriter).close();

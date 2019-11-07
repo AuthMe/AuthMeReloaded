@@ -33,7 +33,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link CrazyLoginConverter}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class CrazyLoginConverterTest {
+class CrazyLoginConverterTest {
 
     @InjectDelayed
     private CrazyLoginConverter crazyLoginConverter;
@@ -48,12 +48,12 @@ public class CrazyLoginConverterTest {
     private File dataFolder = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "/datasource/converter/");
 
     @BeforeAll
-    public static void initializeLogger() {
+    static void initializeLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldImportUsers() {
+    void shouldImportUsers() {
         // given
         given(settings.getProperty(ConverterSettings.CRAZYLOGIN_FILE_NAME)).willReturn("crazylogin.db");
         CommandSender sender = mock(CommandSender.class);
@@ -72,7 +72,7 @@ public class CrazyLoginConverterTest {
     }
 
     @Test
-    public void shouldStopForNonExistentFile() {
+    void shouldStopForNonExistentFile() {
         // given
         given(settings.getProperty(ConverterSettings.CRAZYLOGIN_FILE_NAME)).willReturn("invalid-file");
         CommandSender sender = mock(CommandSender.class);

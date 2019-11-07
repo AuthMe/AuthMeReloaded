@@ -14,10 +14,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link PermissionsSystemType}.
  */
-public class PermissionsSystemTypeTest {
+class PermissionsSystemTypeTest {
 
     @Test
-    public void shouldHaveDefinedAndUniqueNames() {
+    void shouldHaveDefinedAndUniqueNames() {
         // given / when / then
         List<String> names = new ArrayList<>(PermissionsSystemType.values().length);
         List<String> pluginNames = new ArrayList<>(PermissionsSystemType.values().length);
@@ -37,7 +37,7 @@ public class PermissionsSystemTypeTest {
     }
 
     @Test
-    public void shouldRecognizePermissionSystemType() {
+    void shouldRecognizePermissionSystemType() {
         assertThat(PermissionsSystemType.isPermissionSystem("bogus"), equalTo(false));
         assertThat(PermissionsSystemType.isPermissionSystem("PermissionsEx"), equalTo(true));
     }

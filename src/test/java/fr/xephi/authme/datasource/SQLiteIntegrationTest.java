@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 /**
  * Integration test for {@link SQLite}.
  */
-public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
+class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
     private static Settings settings;
@@ -39,7 +39,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
     @BeforeAll
-    public static void initializeSettings() throws IOException, ClassNotFoundException {
+    static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an implementation for SQLite
         Class.forName("org.sqlite.JDBC");
 
@@ -56,7 +56,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @BeforeEach
-    public void initializeConnectionAndTable() throws SQLException {
+    void initializeConnectionAndTable() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS authme");
@@ -68,12 +68,12 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @AfterEach
-    public void closeConnection() {
+    void closeConnection() {
         silentClose(con);
     }
 
     @Test
-    public void shouldSetUpTableIfMissing() throws SQLException {
+    void shouldSetUpTableIfMissing() throws SQLException {
         // given
         Statement st = con.createStatement();
         // table is absent
@@ -90,7 +90,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldCreateMissingColumns() throws SQLException {
+    void shouldCreateMissingColumns() throws SQLException {
         // given
         Statement st = con.createStatement();
         // drop table and create one with only some of the columns: SQLite doesn't support ALTER TABLE t DROP COLUMN c

@@ -21,7 +21,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link SetSpawnCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class SetSpawnCommandTest {
+class SetSpawnCommandTest {
 
     @InjectMocks
     private SetSpawnCommand command;
@@ -31,7 +31,7 @@ public class SetSpawnCommandTest {
 
 
     @Test
-    public void shouldSetSpawn() {
+    void shouldSetSpawn() {
         // given
         Player player = mock(Player.class);
         Location location = mock(Location.class);
@@ -47,7 +47,7 @@ public class SetSpawnCommandTest {
     }
 
     @Test
-    public void shouldHandleError() {
+    void shouldHandleError() {
         // given
         Player player = mock(Player.class);
         Location location = mock(Location.class);

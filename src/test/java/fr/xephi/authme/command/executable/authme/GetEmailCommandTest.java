@@ -23,7 +23,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link GetEmailCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class GetEmailCommandTest {
+class GetEmailCommandTest {
 
     @InjectMocks
     private GetEmailCommand command;
@@ -35,7 +35,7 @@ public class GetEmailCommandTest {
     private CommonService service;
 
     @Test
-    public void shouldReportUnknownUser() {
+    void shouldReportUnknownUser() {
         // given
         String user = "myTestUser";
         given(dataSource.getEmail(user)).willReturn(DataSourceValueImpl.unknownRow());
@@ -49,7 +49,7 @@ public class GetEmailCommandTest {
     }
 
     @Test
-    public void shouldReturnEmail() {
+    void shouldReturnEmail() {
         // given
         String user = "userToView";
         String email = "user.email@example.org";

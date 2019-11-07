@@ -21,7 +21,7 @@ import static org.mockito.BDDMockito.given;
  * Test for {@link RecoveryCodeService}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class RecoveryCodeServiceTest {
+class RecoveryCodeServiceTest {
 
     @InjectDelayed
     private RecoveryCodeService recoveryCodeService;
@@ -30,14 +30,14 @@ public class RecoveryCodeServiceTest {
     private Settings settings;
 
     @BeforeInjecting
-    public void initSettings() {
+    void initSettings() {
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(4);
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(5);
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_MAX_TRIES)).willReturn(3);
     }
 
     @Test
-    public void shouldBeDisabledForNonPositiveLength() {
+    void shouldBeDisabledForNonPositiveLength() {
         assertThat(recoveryCodeService.isRecoveryCodeNeeded(), equalTo(true));
 
         // given
@@ -51,7 +51,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void shouldGenerateAndStoreCode() {
+    void shouldGenerateAndStoreCode() {
         // given
         String name = "Bobbers";
 
@@ -64,7 +64,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void playerHasTriesLeft() {
+    void playerHasTriesLeft() {
         // given
         String player = "Dusty";
         recoveryCodeService.generateCode(player);
@@ -77,7 +77,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void playerHasNoTriesLeft() {
+    void playerHasNoTriesLeft() {
         // given
         String player = "Dusty";
         recoveryCodeService.generateCode(player);
@@ -93,7 +93,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void shouldRecognizeCorrectCode() {
+    void shouldRecognizeCorrectCode() {
         // given
         String player = "dragon";
         String code = recoveryCodeService.generateCode(player);
@@ -106,7 +106,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void shouldRemoveCode() {
+    void shouldRemoveCode() {
         // given
         String player = "Tester";
         String code = recoveryCodeService.generateCode(player);

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link ChangePasswordAdminCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ChangePasswordAdminCommandTest {
+class ChangePasswordAdminCommandTest {
 
     @InjectMocks
     private ChangePasswordAdminCommand command;
@@ -38,7 +38,7 @@ public class ChangePasswordAdminCommandTest {
     private Management management;
 
     @Test
-    public void shouldForwardRequestToManagement() {
+    void shouldForwardRequestToManagement() {
         // given
         String name = "theUser";
         String pass = "newPassword";
@@ -54,7 +54,7 @@ public class ChangePasswordAdminCommandTest {
     }
 
     @Test
-    public void shouldSendErrorToCommandSender() {
+    void shouldSendErrorToCommandSender() {
         // given
         String name = "theUser";
         String pass = "newPassword";

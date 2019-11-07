@@ -34,7 +34,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link HasPermissionChecker}.
  */
 @ExtendWith(MockitoExtension.class)
-public class HasPermissionCheckerTest {
+class HasPermissionCheckerTest {
 
     @InjectMocks
     private HasPermissionChecker hasPermissionChecker;
@@ -46,7 +46,7 @@ public class HasPermissionCheckerTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldListAllPermissionNodeClasses() {
+    void shouldListAllPermissionNodeClasses() {
         // given
         List<Class<? extends PermissionNode>> permissionClasses =
             new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT)
@@ -59,7 +59,7 @@ public class HasPermissionCheckerTest {
     }
 
     @Test
-    public void shouldShowUsageInfo() {
+    void shouldShowUsageInfo() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -75,7 +75,7 @@ public class HasPermissionCheckerTest {
     }
 
     @Test
-    public void shouldShowSuccessfulTestWithRegularPlayer() {
+    void shouldShowSuccessfulTestWithRegularPlayer() {
         // given
         String name = "Chuck";
         Player player = mock(Player.class);

@@ -24,7 +24,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link FirstSpawnCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class FirstSpawnCommandTest {
+class FirstSpawnCommandTest {
 
     @InjectMocks
     private FirstSpawnCommand command;
@@ -33,7 +33,7 @@ public class FirstSpawnCommandTest {
     private SpawnLoader spawnLoader;
 
     @Test
-    public void shouldTeleportToFirstSpawn() {
+    void shouldTeleportToFirstSpawn() {
         // given
         Location firstSpawn = mock(Location.class);
         given(spawnLoader.getFirstSpawn()).willReturn(firstSpawn);
@@ -48,7 +48,7 @@ public class FirstSpawnCommandTest {
     }
 
     @Test
-    public void shouldHandleMissingFirstSpawn() {
+    void shouldHandleMissingFirstSpawn() {
         // given
         given(spawnLoader.getFirstSpawn()).willReturn(null);
         Player player = mock(Player.class);

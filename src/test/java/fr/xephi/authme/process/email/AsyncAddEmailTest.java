@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link AsyncAddEmail}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AsyncAddEmailTest {
+class AsyncAddEmailTest {
 
     @InjectMocks
     private AsyncAddEmail asyncAddEmail;
@@ -58,12 +58,12 @@ public class AsyncAddEmailTest {
     private BukkitService bukkitService;
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldAddEmail() {
+    void shouldAddEmail() {
         // given
         String email = "my.mail@example.org";
         given(player.getName()).willReturn("testEr");
@@ -88,7 +88,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldReturnErrorWhenMailCannotBeSaved() {
+    void shouldReturnErrorWhenMailCannotBeSaved() {
         // given
         String email = "my.mail@example.org";
         given(player.getName()).willReturn("testEr");
@@ -111,7 +111,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddMailIfPlayerAlreadyHasEmail() {
+    void shouldNotAddMailIfPlayerAlreadyHasEmail() {
         // given
         given(player.getName()).willReturn("my_Player");
         given(playerCache.isAuthenticated("my_player")).willReturn(true);
@@ -128,7 +128,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddMailIfItIsInvalid() {
+    void shouldNotAddMailIfItIsInvalid() {
         // given
         String email = "invalid_mail";
         given(player.getName()).willReturn("my_Player");
@@ -147,7 +147,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddMailIfAlreadyUsed() {
+    void shouldNotAddMailIfAlreadyUsed() {
         // given
         String email = "player@mail.tld";
         given(player.getName()).willReturn("TestName");
@@ -167,7 +167,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldShowLoginMessage() {
+    void shouldShowLoginMessage() {
         // given
         given(player.getName()).willReturn("Username12");
         given(playerCache.isAuthenticated("username12")).willReturn(false);
@@ -182,7 +182,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldShowRegisterMessage() {
+    void shouldShowRegisterMessage() {
         // given
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
@@ -197,7 +197,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddOnCancelledEvent() {
+    void shouldNotAddOnCancelledEvent() {
         // given
         String email = "player@mail.tld";
         given(player.getName()).willReturn("TestName");

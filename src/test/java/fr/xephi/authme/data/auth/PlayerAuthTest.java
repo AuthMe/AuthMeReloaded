@@ -10,10 +10,10 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link PlayerAuth} and its builder.
  */
-public class PlayerAuthTest {
+class PlayerAuthTest {
 
     @Test
-    public void shouldRemoveDatabaseDefaults() {
+    void shouldRemoveDatabaseDefaults() {
         // given / when
         PlayerAuth auth = PlayerAuth.builder()
             .name("Bobby")
@@ -32,7 +32,7 @@ public class PlayerAuthTest {
     }
 
     @Test
-    public void shouldThrowForMissingName() {
+    void shouldThrowForMissingName() {
         try {
             // given / when
             PlayerAuth.builder()
@@ -48,7 +48,7 @@ public class PlayerAuthTest {
     }
 
     @Test
-    public void shouldCreatePlayerAuthWithNullValues() {
+    void shouldCreatePlayerAuthWithNullValues() {
         // given / when
         PlayerAuth auth = PlayerAuth.builder()
             .name("Charlie")

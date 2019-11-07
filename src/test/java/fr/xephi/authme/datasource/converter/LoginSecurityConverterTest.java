@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link LoginSecurityConverter}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class LoginSecurityConverterTest {
+class LoginSecurityConverterTest {
 
     @InjectDelayed
     private LoginSecurityConverter converter;
@@ -53,13 +53,13 @@ public class LoginSecurityConverterTest {
     private File dataFolder = new File("."); // not used but required for injection
 
     @BeforeInjecting
-    public void initMocks() {
+    void initMocks() {
         TestHelper.setupLogger();
         given(settings.getProperty(ConverterSettings.LOGINSECURITY_USE_SQLITE)).willReturn(true);
     }
 
     @Test
-    public void shouldConvertFromSqlite() throws SQLException {
+    void shouldConvertFromSqlite() throws SQLException {
         // given
         Connection connection = converter.createSqliteConnection(
             TestHelper.TEST_RESOURCES_FOLDER + TestHelper.PROJECT_ROOT + "datasource/converter/LoginSecurity.db");
@@ -94,7 +94,7 @@ public class LoginSecurityConverterTest {
     // For H2 it looks like Date#getTime returns the millis of the date at 12AM in the system's timezone,
     // so we check with a margin of 12 hours to cover most cases...
     @Test
-    public void shouldConvertFromMySql() throws IOException, SQLException {
+    void shouldConvertFromMySql() throws IOException, SQLException {
         // given
         Connection connection = initializeMySqlTable();
         CommandSender sender = mock(CommandSender.class);

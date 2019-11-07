@@ -10,10 +10,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link Duration}.
  */
-public class DurationTest {
+class DurationTest {
 
     @Test
-    public void shouldConvertToAppropriateTimeUnit() {
+    void shouldConvertToAppropriateTimeUnit() {
         check(Duration.createWithSuitableUnit(0, TimeUnit.HOURS),
             0, TimeUnit.SECONDS);
 

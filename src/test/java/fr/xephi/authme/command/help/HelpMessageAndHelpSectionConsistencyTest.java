@@ -13,10 +13,10 @@ import static org.junit.Assert.fail;
 /**
  * Test for enums {@link HelpMessage} and {@link HelpSection}.
  */
-public class HelpMessageAndHelpSectionConsistencyTest {
+class HelpMessageAndHelpSectionConsistencyTest {
 
     @Test
-    public void shouldHaveUniqueNonEmptyKeys() {
+    void shouldHaveUniqueNonEmptyKeys() {
         // given
         Set<String> keys = new HashSet<>();
 

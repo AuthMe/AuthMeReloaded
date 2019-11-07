@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link EmailRegisterExecutor}.
  */
 @ExtendWith(MockitoExtension.class)
-public class EmailRegisterExecutorTest {
+class EmailRegisterExecutorTest {
 
     @InjectMocks
     private EmailRegisterExecutor executor;
@@ -51,7 +51,7 @@ public class EmailRegisterExecutorTest {
     private PasswordSecurity passwordSecurity;
 
     @Test
-    public void shouldNotPassEmailValidation() {
+    void shouldNotPassEmailValidation() {
         // given
         given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         String email = "test@example.com";
@@ -70,7 +70,7 @@ public class EmailRegisterExecutorTest {
     }
 
     @Test
-    public void shouldPassVerificationForPlayerWithPermission() {
+    void shouldPassVerificationForPlayerWithPermission() {
         // given
         given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         Player player = mock(Player.class);
@@ -86,7 +86,7 @@ public class EmailRegisterExecutorTest {
     }
 
     @Test
-    public void shouldPassVerificationForPreviouslyUnregisteredIp() {
+    void shouldPassVerificationForPreviouslyUnregisteredIp() {
         // given
         given(commonService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(1);
         String email = "test@example.com";
@@ -104,7 +104,7 @@ public class EmailRegisterExecutorTest {
     }
 
     @Test
-    public void shouldCreatePlayerAuth() {
+    void shouldCreatePlayerAuth() {
         // given
         given(commonService.getProperty(EmailSettings.RECOVERY_PASSWORD_LENGTH)).willReturn(12);
         given(passwordSecurity.computeHash(anyString(), anyString())).willAnswer(
@@ -125,7 +125,7 @@ public class EmailRegisterExecutorTest {
     }
 
     @Test
-    public void shouldPerformActionAfterDataSourceSave() {
+    void shouldPerformActionAfterDataSourceSave() {
         // given
         given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         Player player = mock(Player.class);
@@ -143,7 +143,7 @@ public class EmailRegisterExecutorTest {
     }
 
     @Test
-    public void shouldHandleEmailSendingFailure() {
+    void shouldHandleEmailSendingFailure() {
         // given
         given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(false);
         Player player = mock(Player.class);

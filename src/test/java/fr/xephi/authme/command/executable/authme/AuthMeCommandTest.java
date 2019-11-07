@@ -16,10 +16,10 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link AuthMeCommand}.
  */
-public class AuthMeCommandTest {
+class AuthMeCommandTest {
 
     @Test
-    public void shouldDisplayInformation() {
+    void shouldDisplayInformation() {
         // given
         ExecutableCommand command = new AuthMeCommand();
         CommandSender sender = mock(CommandSender.class);

@@ -23,7 +23,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link LogoutCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class LogoutCommandTest {
+class LogoutCommandTest {
 
     @InjectMocks
     private LogoutCommand command;
@@ -33,7 +33,7 @@ public class LogoutCommandTest {
 
 
     @Test
-    public void shouldStopIfSenderIsNotAPlayer() {
+    void shouldStopIfSenderIsNotAPlayer() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
 
@@ -46,7 +46,7 @@ public class LogoutCommandTest {
     }
 
     @Test
-    public void shouldCallManagementForPlayerCaller() {
+    void shouldCallManagementForPlayerCaller() {
         // given
         Player sender = mock(Player.class);
 

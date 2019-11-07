@@ -57,7 +57,7 @@ public abstract class AbstractResourceClosingTest {
 
 
     @BeforeAll
-    public static void initializeLogger() {
+    static void initializeLogger() {
         TestHelper.setupLogger();
     }
 
@@ -69,7 +69,7 @@ public abstract class AbstractResourceClosingTest {
     @MethodSource("createParameters")
     // Note ljacqu 20160227: The name parameter is necessary as we pass it from the arguments source method;
     // we use the method name in the annotation to name the test sensibly
-    public void shouldCloseResources(Method method, String name) throws IllegalAccessException, InvocationTargetException {
+    void shouldCloseResources(Method method, String name) throws IllegalAccessException, InvocationTargetException {
         method.invoke(getObjectUnderTest(), buildParamListForMethod(method));
         verifyHaveMocksBeenClosed(method);
     }

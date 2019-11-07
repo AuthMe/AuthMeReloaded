@@ -13,10 +13,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link TagReplacer}.
  */
-public class TagReplacerTest {
+class TagReplacerTest {
 
     @Test
-    public void shouldReplaceTags() {
+    void shouldReplaceTags() {
         // given
         TestTagService tagService = new TestTagService();
         List<Tag<Integer>> tags = tagService.getAvailableTags();
@@ -35,7 +35,7 @@ public class TagReplacerTest {
     }
 
     @Test
-    public void shouldNotCallUnusedTags() {
+    void shouldNotCallUnusedTags() {
         // given
         TestTagService tagService = new TestTagService();
         List<Tag<Integer>> tags = tagService.getAvailableTags();

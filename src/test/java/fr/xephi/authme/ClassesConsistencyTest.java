@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 /**
  * Contains consistency tests across all AuthMe classes.
  */
-public class ClassesConsistencyTest {
+class ClassesConsistencyTest {
 
     /** Contains all production classes. */
     private static final List<Class<?>> ALL_CLASSES =
@@ -71,7 +71,7 @@ public class ClassesConsistencyTest {
      * Checks that there aren't two classes with the same name; this is confusing and should be avoided.
      */
     @Test
-    public void shouldNotHaveSameName() {
+    void shouldNotHaveSameName() {
         // given
         Set<String> names = new HashSet<>();
 
@@ -87,7 +87,7 @@ public class ClassesConsistencyTest {
      * Checks that fields of classes are either private or static final fields of an immutable type.
      */
     @Test
-    public void shouldHaveNonPrivateConstantsOnly() {
+    void shouldHaveNonPrivateConstantsOnly() {
         // given / when
         Set<String> invalidFields = ALL_CLASSES.stream()
             .filter(clz -> !CLASSES_EXCLUDED_FROM_VISIBILITY_TEST.contains(clz))
@@ -145,7 +145,7 @@ public class ClassesConsistencyTest {
      * interface to regularly clean up expired data.
      */
     @Test
-    public void shouldImplementHasCleanup() {
+    void shouldImplementHasCleanup() {
         // given / when / then
         for (Class<?> clazz : ALL_CLASSES) {
             if (hasExpiringCollectionAsField(clazz) && !EXPIRING_STRUCTURES.contains(clazz)) {

@@ -23,18 +23,18 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Note: some methods are tested directly where they are used via {@link LimboServiceTest}.
  */
 @ExtendWith(MockitoExtension.class)
-public class LimboServiceHelperTest {
+class LimboServiceHelperTest {
 
     @InjectMocks
     private LimboServiceHelper limboServiceHelper;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldMergeLimboPlayers() {
+    void shouldMergeLimboPlayers() {
         // given
         Location newLocation = mock(Location.class);
         LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList("grp-new"), false, 0.0f, 0.0f);
@@ -54,7 +54,7 @@ public class LimboServiceHelperTest {
     }
 
     @Test
-    public void shouldFallBackToNewLimboForMissingData() {
+    void shouldFallBackToNewLimboForMissingData() {
         // given
         Location newLocation = mock(Location.class);
         LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList("grp-new"), true, 0.3f, 0.0f);
@@ -73,7 +73,7 @@ public class LimboServiceHelperTest {
     }
 
     @Test
-    public void shouldHandleNullInputs() {
+    void shouldHandleNullInputs() {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
 

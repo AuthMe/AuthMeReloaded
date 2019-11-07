@@ -27,7 +27,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link GetIpCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class GetIpCommandTest {
+class GetIpCommandTest {
 
     @InjectMocks
     private GetIpCommand command;
@@ -40,7 +40,7 @@ public class GetIpCommandTest {
 
 
     @Test
-    public void shouldGetIpOfPlayer() {
+    void shouldGetIpOfPlayer() {
         // given
         given(bukkitService.getPlayerExact(anyString())).willReturn(null);
         given(dataSource.getAuth(anyString())).willReturn(null);
@@ -57,7 +57,7 @@ public class GetIpCommandTest {
     }
 
     @Test
-    public void shouldReturnIpAddressOfPlayer() {
+    void shouldReturnIpAddressOfPlayer() {
         // given
         String playerName = "charlie";
         String ip = "123.34.56.88";
@@ -78,7 +78,7 @@ public class GetIpCommandTest {
     }
 
     @Test
-    public void shouldHandleUnregisteredOnlinePlayer() {
+    void shouldHandleUnregisteredOnlinePlayer() {
         // given
         String playerName = "Test";
         String ip = "44.111.22.33";

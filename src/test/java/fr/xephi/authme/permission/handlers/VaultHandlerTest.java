@@ -17,12 +17,12 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link VaultHandler}.
  */
-public class VaultHandlerTest {
+class VaultHandlerTest {
 
     private VaultHandlerTestImpl vaultHandlerTest = VaultHandlerTestImpl.create();
 
     @Test
-    public void shouldReturnGroups() {
+    void shouldReturnGroups() {
         // given
         Permission permissionMock = vaultHandlerTest.permissionMock;
         Player player = mock(Player.class);
@@ -40,7 +40,7 @@ public class VaultHandlerTest {
      * Bug #1702: VaultHandler may return null for groups list.
      */
     @Test
-    public void shouldHandleNullAsGroups() {
+    void shouldHandleNullAsGroups() {
         // given
         Permission permissionMock = vaultHandlerTest.permissionMock;
         Player player = mock(Player.class);

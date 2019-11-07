@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  * Test for {@link CommandMapper}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class CommandMapperTest {
+class CommandMapperTest {
 
     private static List<CommandDescription> commands;
 
@@ -52,12 +52,12 @@ public class CommandMapperTest {
     private CommandInitializer commandInitializer;
 
     @BeforeAll
-    public static void setUpCommandHandler() {
+    static void setUpCommandHandler() {
         commands = TestCommandsUtil.generateCommands();
     }
 
     @BeforeInjecting
-    public void setUpMocks() {
+    void setUpMocks() {
         given(commandInitializer.getCommands()).willReturn(commands);
     }
 
@@ -65,7 +65,7 @@ public class CommandMapperTest {
     // mapPartsToCommand() tests
     // -----------
     @Test
-    public void shouldMapPartsToLoginChildCommand() {
+    void shouldMapPartsToLoginChildCommand() {
         // given
         List<String> parts = asList("authme", "login", "test1");
         CommandSender sender = mock(CommandSender.class);
@@ -84,7 +84,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldMapPartsToCommandWithNoCaseSensitivity() {
+    void shouldMapPartsToCommandWithNoCaseSensitivity() {
         // given
         List<String> parts = asList("Authme", "REG", "arg1", "arg2");
         CommandSender sender = mock(CommandSender.class);
@@ -102,7 +102,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldRejectCommandWithTooManyArguments() {
+    void shouldRejectCommandWithTooManyArguments() {
         // given
         List<String> parts = asList("authme", "register", "pass123", "pass123", "pass123");
         CommandSender sender = mock(CommandSender.class);
@@ -120,7 +120,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldRejectCommandWithTooFewArguments() {
+    void shouldRejectCommandWithTooFewArguments() {
         // given
         List<String> parts = asList("authme", "Reg");
         CommandSender sender = mock(CommandSender.class);
@@ -138,7 +138,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldSuggestCommandWithSimilarLabel() {
+    void shouldSuggestCommandWithSimilarLabel() {
         // given
         List<String> parts = asList("authme", "reh", "pass123", "pass123");
         CommandSender sender = mock(CommandSender.class);
@@ -157,7 +157,7 @@ public class CommandMapperTest {
 
     /** In contrast to the previous test, we test a command request with a very apart label. */
     @Test
-    public void shouldSuggestMostSimilarCommand() {
+    void shouldSuggestMostSimilarCommand() {
         // given
         List<String> parts = asList("authme", "asdfawetawty4asdca");
         CommandSender sender = mock(CommandSender.class);
@@ -175,7 +175,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldHandleBaseWithWrongArguments() {
+    void shouldHandleBaseWithWrongArguments() {
         // given
         List<String> parts = singletonList("unregister");
         CommandSender sender = mock(CommandSender.class);
@@ -193,7 +193,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldHandleUnknownBase() {
+    void shouldHandleUnknownBase() {
         // given
         List<String> parts = asList("bogus", "label1", "arg1");
         CommandSender sender = mock(CommandSender.class);
@@ -208,7 +208,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldHandleNullInput() {
+    void shouldHandleNullInput() {
         // given / when
         FoundCommandResult result = mapper.mapPartsToCommand(mock(CommandSender.class), null);
 
@@ -218,7 +218,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldMapToBaseWithProperArguments() {
+    void shouldMapToBaseWithProperArguments() {
         // given
         List<String> parts = asList("Unreg", "player1");
         CommandSender sender = mock(CommandSender.class);
@@ -236,7 +236,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldReturnChildlessBaseCommandWithArgCountError() {
+    void shouldReturnChildlessBaseCommandWithArgCountError() {
         // given
         List<String> parts = asList("unregistER", "player1", "wrongArg");
         CommandSender sender = mock(CommandSender.class);
@@ -254,7 +254,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldPassCommandPathAsArgumentsToHelpCommand() {
+    void shouldPassCommandPathAsArgumentsToHelpCommand() {
         // given
         List<String> parts = asList("email", "helptest", "arg1");
         CommandSender sender = mock(CommandSender.class);
@@ -272,7 +272,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldRecognizeMissingPermissionForCommand() {
+    void shouldRecognizeMissingPermissionForCommand() {
         // given
         List<String> parts = asList("authme", "login", "test1");
         CommandSender sender = mock(CommandSender.class);
@@ -291,7 +291,7 @@ public class CommandMapperTest {
     }
 
     @Test
-    public void shouldSupportAuthMePrefix() {
+    void shouldSupportAuthMePrefix() {
         // given
         List<String> parts = asList("authme:unregister", "Betty");
         CommandSender sender = mock(CommandSender.class);
@@ -307,7 +307,7 @@ public class CommandMapperTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldReturnExecutableCommandClasses() {
+    void shouldReturnExecutableCommandClasses() {
         // given / when
         Set<Class<? extends ExecutableCommand>> commandClasses = mapper.getCommandClasses();
 

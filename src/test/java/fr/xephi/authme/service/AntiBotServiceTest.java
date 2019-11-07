@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link AntiBotService}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class AntiBotServiceTest {
+class AntiBotServiceTest {
 
     @InjectDelayed
     private AntiBotService antiBotService;
@@ -50,7 +50,7 @@ public class AntiBotServiceTest {
     private BukkitService bukkitService;
 
     @BeforeInjecting
-    public void initSettings() {
+    void initSettings() {
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DURATION)).willReturn(10);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(5);
@@ -60,13 +60,13 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldStartListenerOnStartup() {
+    void shouldStartListenerOnStartup() {
         // given / when / then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
     @Test
-    public void shouldNotListenForDisabledSetting() {
+    void shouldNotListenForDisabledSetting() {
         // given
         reset(bukkitService);
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(false);
@@ -80,7 +80,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldActivateAntibot() {
+    void shouldActivateAntibot() {
         // given - listening antibot
         BukkitTask task = mock(BukkitTask.class);
         given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(task);
@@ -98,7 +98,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldNotActivateAntibotForDisabledSetting() {
+    void shouldNotActivateAntibotForDisabledSetting() {
         // given - disabled antibot
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(false);
         AntiBotService antiBotService = new AntiBotService(settings, messages, permissionsManager, bukkitService);
@@ -111,7 +111,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldKeepTrackOfKickedPlayers() {
+    void shouldKeepTrackOfKickedPlayers() {
         // given
         String name = "eratic";
         antiBotService.addPlayerKick(name);
@@ -126,7 +126,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldAcceptPlayerToJoin() {
+    void shouldAcceptPlayerToJoin() {
         // given / when
         boolean result = antiBotService.shouldKick();
 
@@ -135,7 +135,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldActivateAntibotAfterThreshold() {
+    void shouldActivateAntibotAfterThreshold() {
         // given
         int sensitivity = 10;
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(sensitivity);
@@ -154,7 +154,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldInformPlayersOnActivation() {
+    void shouldInformPlayersOnActivation() {
         // given - listening antibot
         List<Player> players = Arrays.asList(mock(Player.class), mock(Player.class));
         given(bukkitService.getOnlinePlayers()).willReturn(players);
@@ -171,7 +171,7 @@ public class AntiBotServiceTest {
     }
 
     @Test
-    public void shouldImmediatelyStartAfterFirstStartup() {
+    void shouldImmediatelyStartAfterFirstStartup() {
         // given - listening antibot
         given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(mock(BukkitTask.class));
         antiBotService.overrideAntiBotStatus(true);

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
  * Test for {@link GenerateTotpService}.
  */
 @ExtendWith(MockitoExtension.class)
-public class GenerateTotpServiceTest {
+class GenerateTotpServiceTest {
 
     @InjectMocks
     private GenerateTotpService generateTotpService;
@@ -31,7 +31,7 @@ public class GenerateTotpServiceTest {
     private TotpAuthenticator totpAuthenticator;
 
     @Test
-    public void shouldGenerateTotpKey() {
+    void shouldGenerateTotpKey() {
         // given
         TotpGenerationResult givenGenerationResult = new TotpGenerationResult("1234", "http://example.com/link/to/chart");
         Player player = mockPlayerWithName("Spencer");
@@ -46,7 +46,7 @@ public class GenerateTotpServiceTest {
     }
 
     @Test
-    public void shouldRemoveGeneratedTotpKey() {
+    void shouldRemoveGeneratedTotpKey() {
         // given
         TotpGenerationResult givenGenerationResult = new TotpGenerationResult("1234", "http://example.com/link/to/chart");
         Player player = mockPlayerWithName("Hanna");
@@ -61,7 +61,7 @@ public class GenerateTotpServiceTest {
     }
 
     @Test
-    public void shouldCheckGeneratedTotpKey() {
+    void shouldCheckGeneratedTotpKey() {
         // given
         String generatedKey = "ASLO43KDF2J";
         TotpGenerationResult givenGenerationResult = new TotpGenerationResult(generatedKey, "url");
@@ -84,7 +84,7 @@ public class GenerateTotpServiceTest {
     }
 
     @Test
-    public void shouldRemoveExpiredEntries() throws InterruptedException {
+    void shouldRemoveExpiredEntries() throws InterruptedException {
         // given
         TotpGenerationResult generationResult = new TotpGenerationResult("key", "url");
         ExpiringMap<String, TotpGenerationResult> generatedKeys =

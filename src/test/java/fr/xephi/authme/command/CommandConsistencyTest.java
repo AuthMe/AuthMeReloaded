@@ -23,10 +23,10 @@ import static org.junit.Assert.assertThat;
  * Checks that the commands declared in plugin.yml correspond
  * to the ones built by the {@link CommandInitializer}.
  */
-public class CommandConsistencyTest {
+class CommandConsistencyTest {
 
     @Test
-    public void shouldHaveEqualDefinitions() {
+    void shouldHaveEqualDefinitions() {
         // given
         Collection<List<String>> initializedCommands = initializeCommands();
         Map<String, List<String>> pluginFileLabels = getLabelsFromPluginFile();

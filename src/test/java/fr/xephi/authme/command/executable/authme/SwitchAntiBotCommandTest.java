@@ -26,7 +26,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link SwitchAntiBotCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class SwitchAntiBotCommandTest {
+class SwitchAntiBotCommandTest {
 
     @InjectMocks
     private SwitchAntiBotCommand command;
@@ -41,7 +41,7 @@ public class SwitchAntiBotCommandTest {
     private HelpProvider helpProvider;
 
     @Test
-    public void shouldReturnAntiBotState() {
+    void shouldReturnAntiBotState() {
         // given
         given(antiBot.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.ACTIVE);
         CommandSender sender = mock(CommandSender.class);
@@ -54,7 +54,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldActivateAntiBot() {
+    void shouldActivateAntiBot() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -67,7 +67,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldDeactivateAntiBot() {
+    void shouldDeactivateAntiBot() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -80,7 +80,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldShowHelpForUnknownState() {
+    void shouldShowHelpForUnknownState() {
         // given
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult foundCommandResult = mock(FoundCommandResult.class);

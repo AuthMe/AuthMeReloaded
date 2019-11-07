@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link Sha512}.
  */
-public class Sha512Test extends AbstractEncryptionMethodTest {
+class Sha512Test extends AbstractEncryptionMethodTest {
 
-    public Sha512Test() {
+    Sha512Test() {
         super(new Sha512(),
             "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86",  // password
             "ae9942149995a8171391625b36da134d5e288c721650d7c8d2d464fb49a49f3f551e4916ab1e097d9dd1201b01d69b1dccdefa3d2524a66092fb61b3df6e7e71",  // PassWord1

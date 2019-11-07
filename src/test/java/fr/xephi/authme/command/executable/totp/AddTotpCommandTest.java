@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link AddTotpCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AddTotpCommandTest {
+class AddTotpCommandTest {
 
     @InjectMocks
     private AddTotpCommand addTotpCommand;
@@ -37,7 +37,7 @@ public class AddTotpCommandTest {
     private Messages messages;
 
     @Test
-    public void shouldHandleNonLoggedInUser() {
+    void shouldHandleNonLoggedInUser() {
         // given
         Player player = mockPlayerWithName("bob");
         given(playerCache.getAuth("bob")).willReturn(null);
@@ -51,7 +51,7 @@ public class AddTotpCommandTest {
     }
 
     @Test
-    public void shouldNotAddCodeForAlreadyExistingTotp() {
+    void shouldNotAddCodeForAlreadyExistingTotp() {
         // given
         Player player = mockPlayerWithName("arend");
         PlayerAuth auth = PlayerAuth.builder().name("arend")
@@ -67,7 +67,7 @@ public class AddTotpCommandTest {
     }
 
     @Test
-    public void shouldGenerateTotpCode() {
+    void shouldGenerateTotpCode() {
         // given
         Player player = mockPlayerWithName("charles");
         PlayerAuth auth = PlayerAuth.builder().name("charles").build();

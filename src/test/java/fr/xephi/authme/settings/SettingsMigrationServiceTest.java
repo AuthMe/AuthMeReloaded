@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link SettingsMigrationService}.
  */
-public class SettingsMigrationServiceTest {
+class SettingsMigrationServiceTest {
 
     private static final String OLD_CONFIG_FILE = TestHelper.PROJECT_ROOT + "settings/config-old.yml";
 
@@ -51,13 +51,13 @@ public class SettingsMigrationServiceTest {
     File dataFolder;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     /* When settings are loaded, test that migrations are applied and immediately available in memory. */
     @Test
-    public void shouldPerformMigrationsInMemory() throws IOException {
+    void shouldPerformMigrationsInMemory() throws IOException {
         // given
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
@@ -77,7 +77,7 @@ public class SettingsMigrationServiceTest {
      * i.e. when the settings are loaded again from the file, no migrations should be necessary.
      */
     @Test
-    public void shouldPerformMigrationsAndPersistToDisk() throws IOException {
+    void shouldPerformMigrationsAndPersistToDisk() throws IOException {
         // given
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
@@ -96,7 +96,7 @@ public class SettingsMigrationServiceTest {
     }
 
     @Test
-    public void shouldKeepOldOtherAccountsSettings() throws IOException {
+    void shouldKeepOldOtherAccountsSettings() throws IOException {
         // given
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);

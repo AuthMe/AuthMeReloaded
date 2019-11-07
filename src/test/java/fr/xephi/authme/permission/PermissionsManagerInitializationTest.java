@@ -135,7 +135,7 @@ class PermissionsManagerInitializationTest {
         assertThat(getHandlerFieldValue(), nullValue());
     }
 
-    private static Collection<Object[]> createParameters() {
+    static Collection<Object[]> createParameters() {
         Map<PermissionsSystemType, Class<?>> handlersByPermissionSystemType = ImmutableMap.of(
             LUCK_PERMS, LuckPermsHandler.class,
             PERMISSIONS_EX, PermissionsExHandler.class,

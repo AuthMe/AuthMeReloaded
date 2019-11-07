@@ -13,10 +13,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link ExpiringMap}.
  */
-public class ExpiringMapTest {
+class ExpiringMapTest {
 
     @Test
-    public void shouldAddAndRetrieveEntries() {
+    void shouldAddAndRetrieveEntries() {
         // given
         ExpiringMap<String, Double> map = new ExpiringMap<>(3, TimeUnit.MINUTES);
 
@@ -29,7 +29,7 @@ public class ExpiringMapTest {
     }
 
     @Test
-    public void shouldRemoveEntry() {
+    void shouldRemoveEntry() {
         // given
         ExpiringMap<String, Boolean> map = new ExpiringMap<>(1, TimeUnit.HOURS);
         map.put("hi", true);
@@ -44,7 +44,7 @@ public class ExpiringMapTest {
     }
 
     @Test
-    public void shouldUpdateExpirationAndSupportNegativeValues() {
+    void shouldUpdateExpirationAndSupportNegativeValues() {
         // given
         ExpiringMap<Integer, Integer> map = new ExpiringMap<>(2, TimeUnit.DAYS);
         map.put(2, 4);
@@ -61,7 +61,7 @@ public class ExpiringMapTest {
     }
 
     @Test
-    public void shouldCleanUpExpiredEntries() throws InterruptedException {
+    void shouldCleanUpExpiredEntries() throws InterruptedException {
         // given
         ExpiringMap<Integer, Integer> map = new ExpiringMap<>(200, TimeUnit.MILLISECONDS);
         map.put(144, 12);
@@ -81,7 +81,7 @@ public class ExpiringMapTest {
     }
 
     @Test
-    public void shouldReturnIfIsEmpty() {
+    void shouldReturnIfIsEmpty() {
         // given
         ExpiringMap<String, String> map = new ExpiringMap<>(-8, TimeUnit.SECONDS);
 

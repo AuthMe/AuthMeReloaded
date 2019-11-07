@@ -12,10 +12,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link TagBuilder}.
  */
-public class TagBuilderTest {
+class TagBuilderTest {
 
     @Test
-    public void shouldCreateNoArgsTag() {
+    void shouldCreateNoArgsTag() {
         // given
         Supplier<String> supplier = () -> "hello";
 
@@ -28,7 +28,7 @@ public class TagBuilderTest {
     }
 
     @Test
-    public void shouldCreateDependentTag() {
+    void shouldCreateDependentTag() {
         // given
         Function<Double, String> function = d -> Double.toString(d + d/10);
 

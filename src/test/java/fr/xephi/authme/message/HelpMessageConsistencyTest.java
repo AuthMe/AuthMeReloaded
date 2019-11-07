@@ -26,12 +26,12 @@ import static org.junit.Assert.assertThat;
  * Tests that all help_xx.yml files contain all entries for
  * {@link HelpSection}, {@link HelpMessage} and {@link DefaultPermission}.
  */
-public class HelpMessageConsistencyTest {
+class HelpMessageConsistencyTest {
 
     private List<File> helpFiles;
 
     @BeforeEach
-    public void findHelpMessagesFiles() {
+    void findHelpMessagesFiles() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
         File[] files = folder.listFiles();
         if (files == null || files.length == 0) {
@@ -43,7 +43,7 @@ public class HelpMessageConsistencyTest {
     }
 
     @Test
-    public void shouldHaveRequiredEntries() {
+    void shouldHaveRequiredEntries() {
         for (File file : helpFiles) {
             // given
             PropertyReader reader = new YamlFileReader(file);

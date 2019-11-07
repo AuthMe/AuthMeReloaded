@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link MigraterYamlFileResource}.
  */
-public class MigraterYamlFileResourceTest {
+class MigraterYamlFileResourceTest {
 
     private static final String CHINESE_MESSAGES_FILE = TestHelper.PROJECT_ROOT + "message/chinese_texts.yml";
 
@@ -29,7 +29,7 @@ public class MigraterYamlFileResourceTest {
     File temporaryFolder;
 
     @Test
-    public void shouldReadChineseFile() {
+    void shouldReadChineseFile() {
         // given
         File file = TestHelper.getJarFile(CHINESE_MESSAGES_FILE);
         MigraterYamlFileResource resource = new MigraterYamlFileResource(file);
@@ -44,7 +44,7 @@ public class MigraterYamlFileResourceTest {
     }
 
     @Test
-    public void shouldWriteWithCorrectCharset() throws IOException {
+    void shouldWriteWithCorrectCharset() throws IOException {
         // given
         File file = TestHelper.createFile(temporaryFolder, "messages");
         Files.copy(TestHelper.getJarFile(CHINESE_MESSAGES_FILE), file);

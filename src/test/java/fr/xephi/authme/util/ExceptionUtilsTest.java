@@ -14,10 +14,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link ExceptionUtils}.
  */
-public class ExceptionUtilsTest {
+class ExceptionUtilsTest {
 
     @Test
-    public void shouldFindWantedThrowable() {
+    void shouldFindWantedThrowable() {
         // given
         ConcurrentModificationException initialCme = new ConcurrentModificationException();
         Throwable th = new Throwable(initialCme);
@@ -38,7 +38,7 @@ public class ExceptionUtilsTest {
     }
 
     @Test
-    public void shouldHandleCircularCausesGracefully() {
+    void shouldHandleCircularCausesGracefully() {
         // given
         IllegalStateException ise = new IllegalStateException();
         UnsupportedOperationException uoe = new UnsupportedOperationException(ise);
@@ -55,7 +55,7 @@ public class ExceptionUtilsTest {
     }
 
     @Test
-    public void shouldFormatException() {
+    void shouldFormatException() {
         // given
         MalformedURLException ex = new MalformedURLException("Unrecognized URL format");
 

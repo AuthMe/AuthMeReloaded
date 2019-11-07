@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link BlockListener}.
  */
 @ExtendWith(MockitoExtension.class)
-public class BlockListenerTest {
+class BlockListenerTest {
 
     @InjectMocks
     private BlockListener listener;
@@ -27,7 +27,7 @@ public class BlockListenerTest {
     private ListenerService listenerService;
 
     @Test
-    public void shouldAllowPlaceEvent() {
+    void shouldAllowPlaceEvent() {
         // given
         Player player = mock(Player.class);
         BlockPlaceEvent event = mock(BlockPlaceEvent.class);
@@ -43,7 +43,7 @@ public class BlockListenerTest {
     }
 
     @Test
-    public void shouldDenyPlaceEvent() {
+    void shouldDenyPlaceEvent() {
         // given
         Player player = mock(Player.class);
         BlockPlaceEvent event = mock(BlockPlaceEvent.class);
@@ -60,7 +60,7 @@ public class BlockListenerTest {
     }
 
     @Test
-    public void shouldAllowBreakEvent() {
+    void shouldAllowBreakEvent() {
         // given
         Player player = mock(Player.class);
         BlockBreakEvent event = mock(BlockBreakEvent.class);
@@ -76,7 +76,7 @@ public class BlockListenerTest {
     }
 
     @Test
-    public void shouldDenyBreakEvent() {
+    void shouldDenyBreakEvent() {
         // given
         Player player = mock(Player.class);
         BlockBreakEvent event = mock(BlockBreakEvent.class);

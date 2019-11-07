@@ -20,12 +20,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link NoOpExtension}.
  */
 @ExtendWith(MockitoExtension.class)
-public class NoOpExtensionTest {
+class NoOpExtensionTest {
 
     private NoOpExtension extension;
 
     @BeforeEach
-    public void createExtension() {
+    void createExtension() {
         Settings settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
         Columns columns = new Columns(settings);
@@ -33,7 +33,7 @@ public class NoOpExtensionTest {
     }
 
     @Test
-    public void shouldNotHaveAnyInteractionsWithConnection() throws SQLException {
+    void shouldNotHaveAnyInteractionsWithConnection() throws SQLException {
         // given
         Connection connection = mock(Connection.class);
         PlayerAuth auth = mock(PlayerAuth.class);

@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Integration test for {@link Settings} (ConfigMe integration).
  */
-public class SettingsIntegrationTest {
+class SettingsIntegrationTest {
 
     /** File name of the sample config including all {@link TestConfiguration} values. */
     private static final String COMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-sample-values.yml";
@@ -42,12 +42,12 @@ public class SettingsIntegrationTest {
     File testPluginFolder;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldLoadAndReadAllProperties() throws IOException {
+    void shouldLoadAndReadAllProperties() throws IOException {
         // given
         PropertyResource resource = new YamlFileResource(copyFileFromResources(COMPLETE_FILE));
         // Pass another, non-existent file to check if the settings had to be rewritten
@@ -76,7 +76,7 @@ public class SettingsIntegrationTest {
     }
 
     @Test
-    public void shouldWriteMissingProperties() {
+    void shouldWriteMissingProperties() {
         // given/when
         File file = copyFileFromResources(INCOMPLETE_FILE);
         PropertyResource resource = new YamlFileResource(file);
@@ -108,7 +108,7 @@ public class SettingsIntegrationTest {
     }
 
     @Test
-    public void shouldReloadSettings() throws IOException {
+    void shouldReloadSettings() throws IOException {
         // given
         File configFile = TestHelper.createFile(testPluginFolder, "settings");
         PropertyResource resource = new YamlFileResource(configFile);

@@ -25,7 +25,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link LoginCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class LoginCommandTest {
+class LoginCommandTest {
 
     @InjectMocks
     private LoginCommand command;
@@ -35,7 +35,7 @@ public class LoginCommandTest {
 
 
     @Test
-    public void shouldStopIfSenderIsNotAPlayer() {
+    void shouldStopIfSenderIsNotAPlayer() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
 
@@ -48,7 +48,7 @@ public class LoginCommandTest {
     }
 
     @Test
-    public void shouldCallManagementForPlayerCaller() {
+    void shouldCallManagementForPlayerCaller() {
         // given
         Player sender = mock(Player.class);
 
@@ -60,7 +60,7 @@ public class LoginCommandTest {
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_LOGIN));
     }

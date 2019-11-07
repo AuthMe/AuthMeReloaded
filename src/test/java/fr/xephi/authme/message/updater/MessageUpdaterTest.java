@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link MessageUpdater}.
  */
-public class MessageUpdaterTest {
+class MessageUpdaterTest {
 
     private MessageUpdater messageUpdater = new MessageUpdater();
 
@@ -34,12 +34,12 @@ public class MessageUpdaterTest {
     File temporaryFolder;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldNotUpdateDefaultFile() throws IOException {
+    void shouldNotUpdateDefaultFile() throws IOException {
         // given
         String messagesFilePath = DEFAULT_MESSAGES_FILE;
         File messagesFile = createFile(temporaryFolder, "fffff");
@@ -55,7 +55,7 @@ public class MessageUpdaterTest {
     }
     
     @Test
-    public void shouldAddMissingKeys() throws IOException {
+    void shouldAddMissingKeys() throws IOException {
         // given
         File messagesFile = createFile(temporaryFolder, "file");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test.yml"), messagesFile);
@@ -75,7 +75,7 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldMigrateOldEntries() throws IOException {
+    void shouldMigrateOldEntries() throws IOException {
         // given
         File messagesFile = createFile(temporaryFolder, "messages.yml");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_en_old.yml"), messagesFile);
@@ -101,7 +101,7 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldPerformNewerMigrations() throws IOException {
+    void shouldPerformNewerMigrations() throws IOException {
         // given
         File messagesFile = createFile(temporaryFolder, "newFile");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test2.yml"), messagesFile);
@@ -118,7 +118,7 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldHaveAllKeysInConfigurationData() {
+    void shouldHaveAllKeysInConfigurationData() {
         // given
         Set<String> messageKeysFromEnum = Arrays.stream(MessageKey.values())
             .map(MessageKey::getKey)
@@ -134,7 +134,7 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldHaveCommentForAllRootPathsInConfigurationData() {
+    void shouldHaveCommentForAllRootPathsInConfigurationData() {
         // given
         Set<String> rootPaths = Arrays.stream(MessageKey.values())
             .map(key -> key.getKey().split("\\.")[0])

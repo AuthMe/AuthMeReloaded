@@ -16,10 +16,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link WrappedTagReplacer}.
  */
-public class WrappedTagReplacerTest {
+class WrappedTagReplacerTest {
 
     @Test
-    public void shouldApplyTags() {
+    void shouldApplyTags() {
         // given
         TestTagService tagService = new TestTagService();
         List<Tag<Integer>> tags = tagService.getAvailableTags();

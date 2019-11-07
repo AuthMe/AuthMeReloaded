@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link LimboService}, and {@link LimboServiceHelper}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class LimboServiceTest {
+class LimboServiceTest {
 
     @InjectDelayed
     private LimboService limboService;
@@ -67,17 +67,17 @@ public class LimboServiceTest {
     private AuthGroupHandler authGroupHandler;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeEach
-    public void mockSettings() {
+    void mockSettings() {
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
     }
 
     @Test
-    public void shouldCreateLimboPlayer() {
+    void shouldCreateLimboPlayer() {
         // given
         Player player = newPlayer("Bobby", true, 0.3f, false, 0.2f);
         Location playerLoc = mock(Location.class);
@@ -109,7 +109,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldNotKeepOpStatusForUnregisteredPlayer() {
+    void shouldNotKeepOpStatusForUnregisteredPlayer() {
         // given
         Player player = newPlayer("CharleS", true, 0.1f, true, 0.4f);
         Location playerLoc = mock(Location.class);
@@ -140,7 +140,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldClearTasksOnAlreadyExistingLimbo() {
+    void shouldClearTasksOnAlreadyExistingLimbo() {
         // given
         LimboPlayer existingLimbo = mock(LimboPlayer.class);
         getLimboMap().put("carlos", existingLimbo);
@@ -159,7 +159,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldRestoreData() {
+    void shouldRestoreData() {
         // given
         LimboPlayer limbo = Mockito.spy(convertToLimboPlayer(
             newPlayer("John", true, 0.4f, false, 0.0f), null, Collections.emptyList()));
@@ -184,7 +184,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldHandleMissingLimboPlayerWhileRestoring() {
+    void shouldHandleMissingLimboPlayerWhileRestoring() {
         // given
         Player player = newPlayer("Test");
 
@@ -197,7 +197,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldReplaceTasks() {
+    void shouldReplaceTasks() {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
         getLimboMap().put("jeff", limbo);
@@ -214,7 +214,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldHandleMissingLimboForReplaceTasks() {
+    void shouldHandleMissingLimboForReplaceTasks() {
         // given
         Player player = newPlayer("ghost");
 

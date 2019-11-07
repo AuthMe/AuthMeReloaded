@@ -50,7 +50,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link AuthMeApi}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AuthMeApiTest {
+class AuthMeApiTest {
 
     @InjectMocks
     private AuthMeApi api;
@@ -71,7 +71,7 @@ public class AuthMeApiTest {
     private GeoIpService geoIpService;
 
     @Test
-    public void shouldReturnInstanceOrNull() {
+    void shouldReturnInstanceOrNull() {
         AuthMeApi result = AuthMeApi.getInstance();
         assertThat(result, sameInstance(api));
 
@@ -80,7 +80,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnIfPlayerIsAuthenticated() {
+    void shouldReturnIfPlayerIsAuthenticated() {
         // given
         String name = "Bobby";
         Player player = mockPlayerWithName(name);
@@ -95,7 +95,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnIfPlayerIsNpc() {
+    void shouldReturnIfPlayerIsNpc() {
         // given
         Player player = mock(Player.class);
         given(player.hasMetadata("NPC")).willReturn(true);
@@ -109,7 +109,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnIfPlayerIsUnrestricted() {
+    void shouldReturnIfPlayerIsUnrestricted() {
         // given
         String name = "Tester";
         Player player = mockPlayerWithName(name);
@@ -124,7 +124,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldGetLastLocation() {
+    void shouldGetLastLocation() {
         // given
         String name = "Gary";
         Player player = mockPlayerWithName(name);
@@ -156,7 +156,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldGetLastIp() {
+    void shouldGetLastIp() {
         // given
         String name = "Gabriel";
         Player player = mockPlayerWithName(name);
@@ -174,7 +174,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnNullAsLastIpForUnknownUser() {
+    void shouldReturnNullAsLastIpForUnknownUser() {
         // given
         String name = "Harrison";
         given(playerCache.getAuth(name)).willReturn(null);
@@ -190,7 +190,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldGetLastLogin() {
+    void shouldGetLastLogin() {
         // given
         String name = "David";
         PlayerAuth auth = PlayerAuth.builder().name(name)
@@ -207,7 +207,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldHandleNullLastLogin() {
+    void shouldHandleNullLastLogin() {
         // given
         String name = "John";
         PlayerAuth auth = PlayerAuth.builder().name(name)
@@ -224,7 +224,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldGetLastLoginTime() {
+    void shouldGetLastLoginTime() {
         // given
         String name = "David";
         PlayerAuth auth = PlayerAuth.builder().name(name)
@@ -241,7 +241,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldHandleNullLastLoginTime() {
+    void shouldHandleNullLastLoginTime() {
         // given
         String name = "John";
         PlayerAuth auth = PlayerAuth.builder().name(name)
@@ -258,7 +258,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnNullForUnavailablePlayer() {
+    void shouldReturnNullForUnavailablePlayer() {
         // given
         String name = "Numan";
         Player player = mockPlayerWithName(name);
@@ -272,7 +272,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldCheckForRegisteredName() {
+    void shouldCheckForRegisteredName() {
         // given
         String name = "toaster";
         given(dataSource.isAuthAvailable(name)).willReturn(true);
@@ -285,7 +285,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldCheckPassword() {
+    void shouldCheckPassword() {
         // given
         String playerName = "Robert";
         String password = "someSecretPhrase2983";
@@ -300,7 +300,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnAuthNames() {
+    void shouldReturnAuthNames() {
         // given
         String[] names = {"bobby", "peter", "elisabeth", "craig"};
         List<PlayerAuth> auths = Arrays.stream(names)
@@ -316,7 +316,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnAuthRealNames() {
+    void shouldReturnAuthRealNames() {
         // given
         String[] names = {"Bobby", "peter", "Elisabeth", "CRAIG"};
         List<PlayerAuth> auths = Arrays.stream(names)
@@ -332,7 +332,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldUnregisterPlayer() {
+    void shouldUnregisterPlayer() {
         // given
         Player player = mock(Player.class);
         String name = "Donald";
@@ -346,7 +346,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldUnregisterPlayerByName() {
+    void shouldUnregisterPlayerByName() {
         // given
         Server server = mock(Server.class);
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
@@ -362,7 +362,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldChangePassword() {
+    void shouldChangePassword() {
         // given
         String name = "Bobby12";
         String password = "resetPw!";
@@ -375,7 +375,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnAuthMeInstance() {
+    void shouldReturnAuthMeInstance() {
         // given / when
         AuthMe result = api.getPlugin();
 
@@ -384,7 +384,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnVersion() {
+    void shouldReturnVersion() {
         // given / when
         String result = api.getPluginVersion();
 
@@ -393,7 +393,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldForceLogin() {
+    void shouldForceLogin() {
         // given
         Player player = mock(Player.class);
 
@@ -405,7 +405,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldForceLogout() {
+    void shouldForceLogout() {
         // given
         Player player = mock(Player.class);
 
@@ -417,7 +417,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldForceRegister() {
+    void shouldForceRegister() {
         // given
         Player player = mock(Player.class);
         String pass = "test235";
@@ -431,7 +431,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldForceRegisterAndNotAutoLogin() {
+    void shouldForceRegisterAndNotAutoLogin() {
         // given
         Player player = mock(Player.class);
         String pass = "test235";
@@ -445,7 +445,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldRegisterPlayer() {
+    void shouldRegisterPlayer() {
         // given
         String name = "Marco";
         String password = "myP4ss";
@@ -467,7 +467,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldNotRegisterAlreadyRegisteredPlayer() {
+    void shouldNotRegisterAlreadyRegisteredPlayer() {
         // given
         String name = "jonah";
         given(dataSource.isAuthAvailable(name)).willReturn(true);
@@ -482,7 +482,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldGetNamesByIp() {
+    void shouldGetNamesByIp() {
         // given
         String ip = "123.123.123.123";
         List<String> names = Arrays.asList("Morgan", "Batista", "QUINN");
@@ -497,7 +497,7 @@ public class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnGeoIpInfo() {
+    void shouldReturnGeoIpInfo() {
         // given
         String ip = "127.127.12.1";
         given(geoIpService.getCountryCode(ip)).willReturn("XA");

@@ -16,12 +16,12 @@ import static org.junit.Assert.fail;
 /**
  * Consistency test for the CodeClimate configuration file.
  */
-public class CodeClimateConfigTest {
+class CodeClimateConfigTest {
 
     private static final String CONFIG_FILE = ".codeclimate.yml";
 
     @Test
-    public void shouldHaveExistingClassesInExclusions() {
+    void shouldHaveExistingClassesInExclusions() {
         // given / when
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(new File(CONFIG_FILE));
         List<String> excludePaths = configuration.getStringList("exclude_patterns");

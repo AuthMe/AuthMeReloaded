@@ -9,9 +9,9 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link Smf}.
  */
-public class SmfTest extends AbstractEncryptionMethodTest {
+class SmfTest extends AbstractEncryptionMethodTest {
 
-    public SmfTest() {
+    SmfTest() {
         super(new Smf(),
             "9b361c66977bb059d460a20d3c21fb3394772df5",  // password
             "31a560bdd095a837945d46add1605108ba87b268",  // PassWord1
@@ -20,14 +20,14 @@ public class SmfTest extends AbstractEncryptionMethodTest {
     }
 
     @Override
-    protected void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isSaltConstructor) {
+    void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isSaltConstructor) {
         // Smf declares to use a separate salt, but it's not used in the actual hashing mechanism, see Smf class Javadoc
         assertThat(method.hasSeparateSalt(), equalTo(true));
         assertThat(isSaltConstructor, equalTo(false));
     }
 
     @Test
-    public void shouldGenerateFourCharSalt() {
+    void shouldGenerateFourCharSalt() {
         // given
         EncryptionMethod method = new Smf();
 

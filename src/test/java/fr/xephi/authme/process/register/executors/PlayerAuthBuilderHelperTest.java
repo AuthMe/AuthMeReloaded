@@ -17,10 +17,10 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link PlayerAuthBuilderHelper}.
  */
-public class PlayerAuthBuilderHelperTest {
+class PlayerAuthBuilderHelperTest {
 
     @Test
-    public void shouldConstructPlayerAuth() {
+    void shouldConstructPlayerAuth() {
         // given
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Noah");

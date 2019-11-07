@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Test for {@link RandomStringUtils}.
  */
-public class RandomStringUtilsTest {
+class RandomStringUtilsTest {
 
     @Test
-    public void shouldGenerateRandomStrings() {
+    void shouldGenerateRandomStrings() {
         // given
         int[] lengths = {0, 1, 19, 142, 1872};
         Pattern badChars = Pattern.compile(".*[^0-9a-z].*");
@@ -30,7 +30,7 @@ public class RandomStringUtilsTest {
     }
 
     @Test
-    public void shouldGenerateRandomHexString() {
+    void shouldGenerateRandomHexString() {
         // given
         int[] lengths = {0, 1, 21, 160, 1784};
         Pattern badChars = Pattern.compile(".*[^0-9a-f].*");
@@ -46,7 +46,7 @@ public class RandomStringUtilsTest {
     }
 
     @Test
-    public void shouldGenerateRandomLowerUpperString() {
+    void shouldGenerateRandomLowerUpperString() {
         // given
         int[] lengths = {0, 1, 17, 143, 1808};
         Pattern badChars = Pattern.compile(".*[^0-9a-zA-Z].*");
@@ -62,7 +62,7 @@ public class RandomStringUtilsTest {
     }
 
     @Test
-    public void shouldGenerateRandomNumberString() {
+    void shouldGenerateRandomNumberString() {
         // given
         int[] lengths = {0, 1, 18, 147, 1833};
         Pattern badChars = Pattern.compile(".*[^0-9].*");
@@ -78,7 +78,7 @@ public class RandomStringUtilsTest {
     }
 
     @Test
-    public void shouldThrowForInvalidLength() {
+    void shouldThrowForInvalidLength() {
         // given / when / then
         assertThrows(IllegalArgumentException.class,
             () -> RandomStringUtils.generate(-3));

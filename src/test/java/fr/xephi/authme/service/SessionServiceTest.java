@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link SessionService}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class SessionServiceTest {
+class SessionServiceTest {
 
     @InjectDelayed
     private SessionService sessionService;
@@ -45,17 +45,17 @@ public class SessionServiceTest {
     private BukkitService bukkitService;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void setUpEnabledProperty() {
+    void setUpEnabledProperty() {
         given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
     }
 
     @Test
-    public void shouldCheckSessionsEnabledSetting() {
+    void shouldCheckSessionsEnabledSetting() {
         // given
         Player player = mock(Player.class);
         given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(false);
@@ -70,7 +70,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldCheckIfUserHasSession() {
+    void shouldCheckIfUserHasSession() {
         // given
         String name = "Bobby";
         Player player = mock(Player.class);
@@ -87,7 +87,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldCheckLastLoginDate() {
+    void shouldCheckLastLoginDate() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -112,7 +112,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldRefuseSessionForAuthWithNullLastLoginTimestamp() {
+    void shouldRefuseSessionForAuthWithNullLastLoginTimestamp() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -137,7 +137,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldCheckLastLoginIp() {
+    void shouldCheckLastLoginIp() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -163,7 +163,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldEmitEventForValidSession() {
+    void shouldEmitEventForValidSession() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -193,7 +193,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldHandleNullPlayerAuth() {
+    void shouldHandleNullPlayerAuth() {
         // given
         String name = "Bobby";
         Player player = mockPlayerWithNameAndIp(name, "127.3.12.15");
@@ -213,7 +213,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldHandlePlayerAuthWithNullLastIp() {
+    void shouldHandlePlayerAuthWithNullLastIp() {
         // given
         String name = "Charles";
         Player player = mockPlayerWithNameAndIp(name, "144.117.118.145");

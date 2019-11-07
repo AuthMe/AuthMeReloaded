@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link LogFilterHelper}.
  */
-public class LogFilterHelperTest {
+class LogFilterHelperTest {
 
     private static final List<CommandDescription> ALL_COMMANDS = new CommandInitializer().getCommands();
 
@@ -24,7 +24,7 @@ public class LogFilterHelperTest {
      * (commands with password argument).
      */
     @Test
-    public void shouldBlacklistAllSensitiveCommands() {
+    void shouldBlacklistAllSensitiveCommands() {
         // given
         List<CommandDescription> sensitiveCommands = Arrays.asList(
             getCommand("register"), getCommand("login"), getCommand("changepassword"), getCommand("unregister"),

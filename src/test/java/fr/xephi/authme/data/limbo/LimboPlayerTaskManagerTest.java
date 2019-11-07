@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link LimboPlayerTaskManager}.
  */
 @ExtendWith(MockitoExtension.class)
-public class LimboPlayerTaskManagerTest {
+class LimboPlayerTaskManagerTest {
 
     @InjectMocks
     private LimboPlayerTaskManager limboPlayerTaskManager;
@@ -61,12 +61,12 @@ public class LimboPlayerTaskManagerTest {
     private RegistrationCaptchaManager registrationCaptchaManager;
 
     @BeforeAll
-    public static void setupLogger() {
+    static void setupLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRegisterMessageTask() {
+    void shouldRegisterMessageTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -86,7 +86,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldNotScheduleTaskForZeroAsInterval() {
+    void shouldNotScheduleTaskForZeroAsInterval() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -101,7 +101,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldCancelExistingMessageTask() {
+    void shouldCancelExistingMessageTask() {
         // given
         String name = "rats";
         Player player = mock(Player.class);
@@ -124,7 +124,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldInitializeMessageTaskWithCaptchaMessage() {
+    void shouldInitializeMessageTaskWithCaptchaMessage() {
         // given
         String name = "race";
         Player player = mock(Player.class);
@@ -145,7 +145,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldRegisterTimeoutTask() {
+    void shouldRegisterTimeoutTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -163,7 +163,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldNotRegisterTimeoutTaskForZeroTimeout() {
+    void shouldNotRegisterTimeoutTaskForZeroTimeout() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -177,7 +177,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldCancelExistingTimeoutTask() {
+    void shouldCancelExistingTimeoutTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = new LimboPlayer(null, false, Collections.emptyList(), true, 0.3f, 0.1f);

@@ -28,7 +28,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
  * Test for {@link SettingsWarner}.
  */
 @ExtendWith(MockitoExtension.class)
-public class SettingsWarnerTest {
+class SettingsWarnerTest {
 
     @InjectMocks
     private SettingsWarner settingsWarner;
@@ -43,7 +43,7 @@ public class SettingsWarnerTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldLogWarnings() {
+    void shouldLogWarnings() {
         // given
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(false);
@@ -63,7 +63,7 @@ public class SettingsWarnerTest {
     }
 
     @Test
-    public void shouldNotLogAnyWarning() {
+    void shouldNotLogAnyWarning() {
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(25);

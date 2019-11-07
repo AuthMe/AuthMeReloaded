@@ -9,10 +9,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link AuthMeSettingsRetriever}.
  */
-public class AuthMeSettingsRetrieverTest {
+class AuthMeSettingsRetrieverTest {
 
     @Test
-    public void shouldReturnAllProperties() {
+    void shouldReturnAllProperties() {
         // given / when
         ConfigurationData configurationData = AuthMeSettingsRetriever.buildConfigurationData();
 

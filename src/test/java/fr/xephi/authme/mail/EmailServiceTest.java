@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link EmailService}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class EmailServiceTest {
+class EmailServiceTest {
 
     @InjectDelayed
     private EmailService emailService;
@@ -50,12 +50,12 @@ public class EmailServiceTest {
     File dataFolder;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void initFields() {
+    void initFields() {
         given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("serverName");
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
@@ -63,13 +63,13 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void shouldHaveAllInformation() {
+    void shouldHaveAllInformation() {
         // given / when / then
         assertThat(emailService.hasAllInformation(), equalTo(true));
     }
 
     @Test
-    public void shouldSendPasswordMail() throws EmailException {
+    void shouldSendPasswordMail() throws EmailException {
         // given
         given(settings.getPasswordEmailMessage())
             .willReturn("Hi <playername />, your new password for <servername /> is <generatedpass />");
@@ -91,7 +91,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void shouldHandleMailCreationError() throws EmailException {
+    void shouldHandleMailCreationError() throws EmailException {
         // given
         doThrow(EmailException.class).when(sendMailSsl).initializeMail(anyString());
 
@@ -105,7 +105,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void shouldHandleMailSendingFailure() throws EmailException {
+    void shouldHandleMailSendingFailure() throws EmailException {
         // given
         given(settings.getPasswordEmailMessage()).willReturn("Hi <playername />, your new pass is <generatedpass />");
         given(settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)).willReturn(false);
@@ -125,7 +125,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void shouldSendRecoveryCode() throws EmailException {
+    void shouldSendRecoveryCode() throws EmailException {
         // given
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(7);
         given(settings.getRecoveryCodeEmailMessage())
@@ -146,7 +146,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void shouldHandleMailCreationErrorForRecoveryCode() throws EmailException {
+    void shouldHandleMailCreationErrorForRecoveryCode() throws EmailException {
         // given
         given(sendMailSsl.initializeMail(anyString())).willThrow(EmailException.class);
 
@@ -160,7 +160,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void shouldHandleFailureToSendRecoveryCode() throws EmailException {
+    void shouldHandleFailureToSendRecoveryCode() throws EmailException {
         // given
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(7);
         given(settings.getRecoveryCodeEmailMessage()).willReturn("Hi <playername />, your code is <recoverycode />");

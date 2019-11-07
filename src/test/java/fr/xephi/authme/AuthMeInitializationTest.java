@@ -52,7 +52,7 @@ import static org.mockito.Mockito.verify;
  * with the {@link Injector}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AuthMeInitializationTest {
+class AuthMeInitializationTest {
 
     @Mock
     private Server server;
@@ -62,7 +62,7 @@ public class AuthMeInitializationTest {
     File dataFolder;
 
     @BeforeEach
-    public void initAuthMe() throws IOException {
+    void initAuthMe() throws IOException {
         File settingsFile = new File(dataFolder, "config.yml");
         JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
@@ -80,7 +80,7 @@ public class AuthMeInitializationTest {
     }
 
     @Test
-    public void shouldInitializeAllServices() {
+    void shouldInitializeAllServices() {
         // given
         PropertyReader reader = mock(PropertyReader.class, RETURNS_DEEP_STUBS);
         given(reader.getList(anyString())).willReturn(Collections.emptyList());
@@ -123,7 +123,7 @@ public class AuthMeInitializationTest {
     }
 
     @Test
-    public void shouldHandlePrematureShutdownGracefully() {
+    void shouldHandlePrematureShutdownGracefully() {
         // given
         BukkitScheduler scheduler = mock(BukkitScheduler.class);
         given(server.getScheduler()).willReturn(scheduler);

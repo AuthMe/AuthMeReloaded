@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link UpdateHelpMessagesCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class UpdateHelpMessagesCommandTest {
+class UpdateHelpMessagesCommandTest {
 
     @InjectMocks
     private UpdateHelpMessagesCommand command;
@@ -35,12 +35,12 @@ public class UpdateHelpMessagesCommandTest {
     private HelpMessagesService helpMessagesService;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldUpdateHelpMessage() throws IOException {
+    void shouldUpdateHelpMessage() throws IOException {
         // given
         File updatedFile = new File("some/path/help_xx.yml");
         given(helpTranslationGenerator.updateHelpFile()).willReturn(updatedFile);
@@ -55,7 +55,7 @@ public class UpdateHelpMessagesCommandTest {
     }
 
     @Test
-    public void shouldCatchAndReportException() throws IOException {
+    void shouldCatchAndReportException() throws IOException {
         // given
         given(helpTranslationGenerator.updateHelpFile()).willThrow(new IOException("Couldn't do the thing"));
         CommandSender sender = mock(CommandSender.class);
