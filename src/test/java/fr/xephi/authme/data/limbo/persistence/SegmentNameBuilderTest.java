@@ -12,9 +12,9 @@ import static fr.xephi.authme.data.limbo.persistence.SegmentSize.SIXTEEN;
 import static fr.xephi.authme.data.limbo.persistence.SegmentSize.SIXTY_FOUR;
 import static fr.xephi.authme.data.limbo.persistence.SegmentSize.THIRTY_TWO;
 import static fr.xephi.authme.data.limbo.persistence.SegmentSize.TWO_FIFTY;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link SegmentNameBuilder}.

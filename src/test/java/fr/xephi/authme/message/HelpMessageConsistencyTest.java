@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests that all help_xx.yml files contain all entries for

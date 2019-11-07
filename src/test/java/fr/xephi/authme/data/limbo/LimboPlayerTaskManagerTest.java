@@ -23,11 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;

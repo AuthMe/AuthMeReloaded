@@ -3,8 +3,8 @@ package fr.xephi.authme.settings.properties;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link AuthMeSettingsRetriever}.

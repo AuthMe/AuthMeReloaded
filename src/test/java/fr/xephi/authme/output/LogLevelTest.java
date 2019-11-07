@@ -3,8 +3,8 @@ package fr.xephi.authme.output;
 import org.junit.jupiter.api.Test;
 
 import static java.lang.String.format;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link LogLevel}.

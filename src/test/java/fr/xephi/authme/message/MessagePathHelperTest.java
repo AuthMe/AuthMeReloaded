@@ -3,9 +3,9 @@ package fr.xephi.authme.message;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link MessagePathHelper}.

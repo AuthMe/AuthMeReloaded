@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.util.Collection;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 

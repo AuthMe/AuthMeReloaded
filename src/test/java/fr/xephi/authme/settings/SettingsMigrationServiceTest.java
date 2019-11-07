@@ -36,9 +36,9 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
 import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAWN_ON_WORLDS;
 import static fr.xephi.authme.settings.properties.SecuritySettings.LEGACY_HASHES;
 import static fr.xephi.authme.settings.properties.SecuritySettings.PASSWORD_HASH;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link SettingsMigrationService}.
