@@ -2,7 +2,7 @@
 # %nl% - Goes to new line.
 # %username% - Replaces the username of the player receiving the message.
 # %displayname% - Replaces the nickname (and colors) of the player receiving the message.
-# Edited: 2018/09/16 MCBBS ID:CH1
+# Edited: 2019/11/17 MCBBS ID:CH1
 
 # Registration
 registration:
@@ -41,7 +41,7 @@ error:
     max_registration: '&8[&6玩家系统&8] &f你不允许再为你的IP在服务器注册更多用户了！'
     logged_in: '&8[&6玩家系统&8] &c你已经登陆过了！'
     kick_for_vip: '&8[&6玩家系统&8] &cA VIP玩家加入了已满的服务器!'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+    kick_unresolved_hostname: '&8[&6玩家系统&8] &c发生了一个错误: 无法解析玩家的Hostname'
     tempban_max_logins: '&c由于您登录失败次数过多，已被暂时禁止登录。'
 
 # AntiBot
@@ -84,30 +84,30 @@ on_join_validation:
 
 # Email
 email:
-    add_email_request: '&8[&6玩家系统&8] &c请输入“/email add <你的邮箱> <再输入一次以确认>”以把你的邮箱添加到此帐号'
-    usage_email_add: '&8[&6玩家系统&8] &f用法: /email add <邮箱> <确认电子邮件> '
+    add_email_request: '&8[&6玩家系统&8] &c请输入“/email add <你的邮箱> <再输入一次以确认>”以添加您的邮箱到此帐号'
+    usage_email_add: '&8[&6玩家系统&8] &f用法: /email add <邮箱> <确认邮箱地址> '
     usage_email_change: '&8[&6玩家系统&8] &f用法: /email change <旧邮箱> <新邮箱> '
     new_email_invalid: '&8[&6玩家系统&8] &f新邮箱无效!'
     old_email_invalid: '&8[&6玩家系统&8] &f旧邮箱无效!'
     invalid: '&8[&6玩家系统&8] &f无效的邮箱'
     added: '&8[&6玩家系统&8] &f邮箱已添加 !'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&8[&6玩家系统&8] &c服务器不允许添加邮箱地址'
     request_confirmation: '&8[&6玩家系统&8] &f确认你的邮箱 !'
-    changed: '&8[&6玩家系统&8] &f邮箱已改变 !'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
-    email_show: '&2您当前的电子邮件地址为： &f%email'
-    no_email_for_account: '&2您当前并没有任何邮箱与该账号绑定'
+    changed: '&8[&6玩家系统&8] &f邮箱已修改 !'
+    change_not_allowed: '&8[&6玩家系统&8] &c服务器不允许修改邮箱地址'
+    email_show: '&8[&6玩家系统&8] &2您当前的电子邮件地址为： &f%email'
+    no_email_for_account: '&8[&6玩家系统&8] &2您当前并没有任何邮箱与该账号绑定'
     already_used: '&8[&6玩家系统&8] &4邮箱已被使用'
-    incomplete_settings: '错误：并非所有发送邮件需要的设置都已被设置，请联系管理员'
-    send_failure: '邮件发送失败，请联系管理员'
-    change_password_expired: '您不能使用此命令更改密码'
-    email_cooldown_error: '&c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
+    incomplete_settings: '&8[&6玩家系统&8] 错误：必要设置未设定完成，请联系管理员'
+    send_failure: '&8[&6玩家系统&8] 邮件发送失败，请联系管理员'
+    change_password_expired: '&8[&6玩家系统&8] 您不能使用此命令更改密码'
+    email_cooldown_error: '&8[&6玩家系统&8] &c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
 
 # Password recovery by email
 recovery:
     forgot_password_hint: '&8[&6玩家系统&8] &c忘了你的密码？请输入：“/email recovery <你的邮箱>”'
     command_usage: '&8[&6玩家系统&8] &f用法: /email recovery <邮箱>'
-    email_sent: '&8[&6玩家系统&8] &f恢复邮件已发送 !'
+    email_sent: '&8[&6玩家系统&8] &f找回密码邮件已发送 !'
     code:
         code_sent: '一个用于重置您的密码的验证码已发到您的邮箱'
         incorrect: '验证码不正确！ 使用 /email recovery [邮箱] 以生成新的验证码'
