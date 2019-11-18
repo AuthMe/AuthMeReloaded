@@ -29,8 +29,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -67,7 +67,7 @@ public class ConverterCommandTest {
         // then
         String converters = String.join(", ", ConverterCommand.CONVERTERS.keySet());
         verify(sender).sendMessage(argThat(containsString(converters)));
-        verifyZeroInteractions(commonService, converterFactory, bukkitService);
+        verifyNoInteractions(commonService, converterFactory, bukkitService);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ConverterCommandTest {
         // then
         String converters = String.join(", ", ConverterCommand.CONVERTERS.keySet());
         verify(sender).sendMessage(argThat(containsString(converters)));
-        verifyZeroInteractions(commonService, converterFactory, bukkitService);
+        verifyNoInteractions(commonService, converterFactory, bukkitService);
     }
 
     @Test

@@ -13,6 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * AuthMe player data.
  */
+@SuppressWarnings("checkstyle:FinalClass") // Justification: class is mocked in multiple tests
 public class PlayerAuth {
 
     /** Default email used in the database if the email column is defined to be NOT NULL. */

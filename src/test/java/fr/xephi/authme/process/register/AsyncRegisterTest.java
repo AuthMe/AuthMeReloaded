@@ -28,7 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link AsyncRegister}.
@@ -64,7 +64,7 @@ public class AsyncRegisterTest {
 
         // then
         verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-        verifyZeroInteractions(dataSource, executor);
+        verifyNoInteractions(dataSource, executor);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class AsyncRegisterTest {
 
         // then
         verify(commonService).send(player, MessageKey.REGISTRATION_DISABLED);
-        verifyZeroInteractions(dataSource, executor);
+        verifyNoInteractions(dataSource, executor);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class AsyncRegisterTest {
         // then
         verify(commonService).send(player, MessageKey.NAME_ALREADY_REGISTERED);
         verify(dataSource, only()).isAuthAvailable(name);
-        verifyZeroInteractions(executor);
+        verifyNoInteractions(executor);
     }
 
     @Test

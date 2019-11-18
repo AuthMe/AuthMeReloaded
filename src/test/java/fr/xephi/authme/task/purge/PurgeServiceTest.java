@@ -39,7 +39,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -77,7 +77,7 @@ public class PurgeServiceTest {
         purgeService.runAutoPurge();
 
         // then
-        verifyZeroInteractions(bukkitService, dataSource);
+        verifyNoInteractions(bukkitService, dataSource);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class PurgeServiceTest {
         purgeService.runAutoPurge();
 
         // then
-        verifyZeroInteractions(bukkitService, dataSource);
+        verifyNoInteractions(bukkitService, dataSource);
     }
 
     @Test
@@ -127,7 +127,7 @@ public class PurgeServiceTest {
         verify(dataSource).getRecordsToPurge(delay);
         verify(dataSource, never()).purgeRecords(anyCollection());
         verify(sender).sendMessage("No players to purge");
-        verifyZeroInteractions(bukkitService, permissionsManager);
+        verifyNoInteractions(bukkitService, permissionsManager);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class PurgeServiceTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("Purge is already in progress")));
-        verifyZeroInteractions(bukkitService, dataSource, permissionsManager);
+        verifyNoInteractions(bukkitService, dataSource, permissionsManager);
     }
 
     @Test

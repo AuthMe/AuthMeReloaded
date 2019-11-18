@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link PasswordRegisterExecutor}.
@@ -138,7 +138,7 @@ public class PasswordRegisterExecutorTest {
         executor.executePostPersistAction(params);
 
         // then
-        verifyZeroInteractions(bukkitService, asynchronousLogin);
+        verifyNoInteractions(bukkitService, asynchronousLogin);
         verify(syncProcessManager).processSyncPasswordRegister(player);
     }
 

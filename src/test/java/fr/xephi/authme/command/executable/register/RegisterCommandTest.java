@@ -37,7 +37,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -86,7 +86,7 @@ public class RegisterCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("Player only!")));
-        verifyZeroInteractions(management, emailService);
+        verifyNoInteractions(management, emailService);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class RegisterCommandTest {
         verify(registrationCaptchaManager).isCaptchaRequired("test2");
         verify(management).performRegister(eq(RegistrationMethod.TWO_FACTOR_REGISTRATION),
             argThat(hasEqualValuesOnAllFields(TwoFactorRegisterParams.of(player))));
-        verifyZeroInteractions(emailService);
+        verifyNoInteractions(emailService);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management, emailService);
+        verifyNoInteractions(management, emailService);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management, emailService);
+        verifyNoInteractions(management, emailService);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class RegisterCommandTest {
         // then
         verify(commonService).send(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
         verify(emailService).hasAllInformation();
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -181,7 +181,7 @@ public class RegisterCommandTest {
         // then
         verify(validationService).validateEmail(playerMail);
         verify(commonService).send(player, MessageKey.INVALID_EMAIL);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -200,7 +200,7 @@ public class RegisterCommandTest {
         // then
         verify(commonService).send(player, MessageKey.USAGE_REGISTER);
         verify(emailService).hasAllInformation();
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -236,7 +236,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commonService).send(player, MessageKey.PASSWORD_MATCH_ERROR);
-        verifyZeroInteractions(management, emailService);
+        verifyNoInteractions(management, emailService);
     }
 
     @Test
@@ -287,7 +287,7 @@ public class RegisterCommandTest {
         verify(registrationCaptchaManager).isCaptchaRequired("Waaa");
         verify(validationService).validateEmail(email);
         verify(commonService).send(player, MessageKey.INVALID_EMAIL);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -321,7 +321,7 @@ public class RegisterCommandTest {
         // then
         verify(registrationCaptchaManager).isCaptchaRequired(name);
         verify(commonService).send(player, MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captcha);
-        verifyZeroInteractions(management, validationService);
+        verifyNoInteractions(management, validationService);
     }
 
     private static Player mockPlayerWithName(String name) {

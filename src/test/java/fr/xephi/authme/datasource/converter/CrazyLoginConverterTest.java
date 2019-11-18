@@ -26,7 +26,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -81,7 +81,7 @@ public class CrazyLoginConverterTest {
         crazyLoginConverter.execute(sender);
 
         // then
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
         verify(sender).sendMessage(argThat(containsString("file not found")));
     }
 

@@ -1,6 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.TestHelper;
 import org.bukkit.ChatColor;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -81,12 +80,6 @@ public class CommandUtilsTest {
 
         // when / then
         checkArgumentCount(command, 1, 3);
-    }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(CommandUtils.class);
     }
 
     @Test

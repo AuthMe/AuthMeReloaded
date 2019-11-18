@@ -30,8 +30,8 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     private boolean isEnabled;
 
     @Inject
-    BungeeReceiver(final AuthMe plugin, final BukkitService bukkitService, final Management management,
-                   final DataSource dataSource, final Settings settings) {
+    BungeeReceiver(AuthMe plugin, BukkitService bukkitService, Management management,
+                   DataSource dataSource, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         this.management = management;
@@ -51,6 +51,11 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         }
     }
 
+    /**
+     * Processes the given data input and attempts to translate it to a message for the "AuthMe.v2.Broadcast" channel.
+     *
+     * @param in the input to handle
+     */
     private void handleBroadcast(final ByteArrayDataInput in) {
         // Read data byte array
         final short dataLength = in.readShort();
@@ -91,7 +96,12 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         }
     }
 
-    private void handle(final ByteArrayDataInput in) {
+    /**
+     * Processes the given data input and attempts to translate it to a message for the "AuthMe.v2" channel.
+     *
+     * @param in the input to handle
+     */
+    private void handle(ByteArrayDataInput in) {
         // Parse type
         final String typeId = in.readUTF();
         final Optional<MessageType> type = MessageType.fromId(typeId);

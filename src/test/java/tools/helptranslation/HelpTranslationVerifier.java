@@ -109,6 +109,12 @@ public class HelpTranslationVerifier {
         return commandPaths;
     }
 
+    /**
+     * Creates all paths of the properties that are used to define the help translation of the given command definition.
+     *
+     * @param command the command to create the paths for
+     * @return all yaml paths that can be used to translate the command
+     */
     private List<String> getYamlPaths(CommandDescription command) {
         // e.g. commands.authme.register
         String commandPath = "commands." + CommandUtils.constructParentList(command).stream()

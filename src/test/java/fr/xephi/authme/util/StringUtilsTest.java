@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import static java.util.Arrays.asList;
@@ -75,11 +74,6 @@ public class StringUtilsTest {
         assertThat(StringUtils.getDifference("test", "taste"), equalTo(0.4));
         assertThat(StringUtils.getDifference("test", "bear"), equalTo(0.75));
         assertThat(StringUtils.getDifference("test", "something"), greaterThan(0.88));
-    }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(StringUtils.class);
     }
 
     @Test

@@ -1,7 +1,6 @@
 package fr.xephi.authme.settings.properties;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
-import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.closeTo;
@@ -23,10 +22,5 @@ public class AuthMeSettingsRetrieverTest {
         // If this test fails, replace the first argument in closeTo() with the new number of properties
         assertThat((double) configurationData.getProperties().size(),
             closeTo(182, 10));
-    }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(AuthMeSettingsRetriever.class);
     }
 }

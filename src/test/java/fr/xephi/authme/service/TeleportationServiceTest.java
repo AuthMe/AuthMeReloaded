@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link TeleportationService}.
@@ -77,8 +77,8 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnJoin(player);
 
         // then
-        verifyZeroInteractions(player);
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(player);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test
@@ -134,7 +134,7 @@ public class TeleportationServiceTest {
         verify(player, never()).teleport(any(Location.class));
         verify(spawnLoader).getFirstSpawn();
         verify(spawnLoader, never()).getSpawnLocation(any(Player.class));
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class TeleportationServiceTest {
 
         // then
         verify(player, never()).teleport(any(Location.class));
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class TeleportationServiceTest {
 
         // then
         verify(player, never()).teleport(any(Location.class));
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test
@@ -226,7 +226,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verifyZeroInteractions(player, auth, limbo, bukkitService, spawnLoader);
+        verifyNoInteractions(player, auth, limbo, bukkitService, spawnLoader);
     }
 
     @Test
@@ -270,7 +270,7 @@ public class TeleportationServiceTest {
 
         // then
         verify(player, never()).teleport(spawn);
-        verifyZeroInteractions(bukkitService, spawnLoader);
+        verifyNoInteractions(bukkitService, spawnLoader);
     }
 
     @Test
@@ -387,7 +387,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verifyZeroInteractions(player);
+        verifyNoInteractions(player);
         verify(limbo, times(2)).getLocation();
     }
 

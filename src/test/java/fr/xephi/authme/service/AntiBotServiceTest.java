@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link AntiBotService}.
@@ -76,7 +76,7 @@ public class AntiBotServiceTest {
 
         // then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.DISABLED));
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test

@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link LimboPlayerTaskManager}.
@@ -97,7 +97,7 @@ public class LimboPlayerTaskManagerTest {
         limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.LOG_IN);
 
         // then
-        verifyZeroInteractions(limboPlayer, bukkitService);
+        verifyNoInteractions(limboPlayer, bukkitService);
     }
 
     @Test
@@ -173,7 +173,7 @@ public class LimboPlayerTaskManagerTest {
         limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer);
 
         // then
-        verifyZeroInteractions(limboPlayer, bukkitService);
+        verifyNoInteractions(limboPlayer, bukkitService);
     }
 
     @Test

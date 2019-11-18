@@ -83,8 +83,8 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link PlayerListener}.
@@ -140,7 +140,7 @@ public class PlayerListenerTest {
 
         // then
         assertThat(event.isCancelled(), equalTo(true));
-        verifyZeroInteractions(player, management, antiBotService);
+        verifyNoInteractions(player, management, antiBotService);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class PlayerListenerTest {
         // then
         assertThat(event.isCancelled(), equalTo(false));
         verify(antiBotService).wasPlayerKicked(name);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -205,7 +205,7 @@ public class PlayerListenerTest {
 
         // then
         verify(event, only()).getMessage();
-        verifyZeroInteractions(listenerService, messages);
+        verifyNoInteractions(listenerService, messages);
     }
 
     @Test
@@ -220,7 +220,7 @@ public class PlayerListenerTest {
 
         // then
         verify(event, only()).getMessage();
-        verifyZeroInteractions(listenerService, messages);
+        verifyNoInteractions(listenerService, messages);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class PlayerListenerTest {
         verify(event).getMessage();
         verifyNoMoreInteractions(event);
         verify(listenerService).shouldCancelEvent(player);
-        verifyZeroInteractions(messages);
+        verifyNoInteractions(messages);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class PlayerListenerTest {
         listener.onPlayerChat(event);
 
         // then
-        verifyZeroInteractions(event, listenerService, messages);
+        verifyNoInteractions(event, listenerService, messages);
     }
 
     @Test
@@ -324,7 +324,7 @@ public class PlayerListenerTest {
 
         // then
         verify(listenerService).shouldCancelEvent(event.getPlayer());
-        verifyZeroInteractions(event, messages);
+        verifyNoInteractions(event, messages);
     }
 
     @Test
@@ -400,7 +400,7 @@ public class PlayerListenerTest {
         listener.onPlayerMove(event);
 
         // then
-        verifyZeroInteractions(event);
+        verifyNoInteractions(event);
     }
 
     @Test
@@ -551,7 +551,7 @@ public class PlayerListenerTest {
         listener.onPlayerRespawn(event);
 
         // then
-        verifyZeroInteractions(listenerService);
+        verifyNoInteractions(listenerService);
         verify(event, never()).setRespawnLocation(any());
     }
 
@@ -568,7 +568,7 @@ public class PlayerListenerTest {
         listener.onPlayerRespawn(event);
 
         // then
-        verifyZeroInteractions(spawnLoader);
+        verifyNoInteractions(spawnLoader);
         verify(event, never()).setRespawnLocation(any());
     }
 
@@ -659,7 +659,7 @@ public class PlayerListenerTest {
         // then
         verify(validationService).isUnrestricted(name);
         verifyNoModifyingCalls(event);
-        verifyZeroInteractions(onJoinVerifier);
+        verifyNoInteractions(onJoinVerifier);
     }
 
     @Test
@@ -717,7 +717,7 @@ public class PlayerListenerTest {
         verify(validationService).isUnrestricted(name);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
         verifyNoModifyingCalls(preLoginEvent);
     }
 
@@ -780,7 +780,7 @@ public class PlayerListenerTest {
         // then
         verify(validationService).isUnrestricted(name);
         verify(onJoinVerifier).refusePlayerForFullServer(loginEvent);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
         verifyNoModifyingCalls(loginEvent);
     }
 
@@ -805,7 +805,7 @@ public class PlayerListenerTest {
         verify(validationService).isUnrestricted(name);
         verify(onJoinVerifier).checkIsValidName(name);
         // Check that we don't talk with the data source before performing checks that don't require it
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
         verify(event).setKickMessage(message);
         verify(event).setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
     }
@@ -844,7 +844,7 @@ public class PlayerListenerTest {
         // then
         assertThat(event.getQuitMessage(), nullValue());
         verify(antiBotService).wasPlayerKicked(name);
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -942,7 +942,7 @@ public class PlayerListenerTest {
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test
@@ -980,7 +980,7 @@ public class PlayerListenerTest {
 
         // then
         assertThat(event.getJoinMessage(), equalTo(joinMsg));
-        verifyZeroInteractions(joinMessageService);
+        verifyNoInteractions(joinMessageService);
     }
 
     @Test
@@ -996,7 +996,7 @@ public class PlayerListenerTest {
 
         // then
         assertThat(event.getJoinMessage(), nullValue());
-        verifyZeroInteractions(joinMessageService);
+        verifyNoInteractions(joinMessageService);
     }
 
     @Test
@@ -1017,7 +1017,7 @@ public class PlayerListenerTest {
 
         // then
         assertThat(event.getJoinMessage(), equalTo("Hello doooew (aka Displ)"));
-        verifyZeroInteractions(joinMessageService);
+        verifyNoInteractions(joinMessageService);
     }
 
     @Test

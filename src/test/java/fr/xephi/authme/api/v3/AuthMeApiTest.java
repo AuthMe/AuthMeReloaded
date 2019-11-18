@@ -24,11 +24,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.Instant;
 
 import static fr.xephi.authme.IsEqualByReflectionMatcher.hasEqualValuesOnAllFields;
 import static org.hamcrest.Matchers.contains;
@@ -43,7 +43,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -478,7 +478,7 @@ public class AuthMeApiTest {
         // then
         assertThat(result, equalTo(false));
         verify(dataSource, only()).isAuthAvailable(name);
-        verifyZeroInteractions(management, passwordSecurity);
+        verifyNoInteractions(management, passwordSecurity);
     }
 
     @Test

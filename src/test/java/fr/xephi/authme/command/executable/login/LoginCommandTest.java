@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -43,7 +43,7 @@ public class LoginCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
         verify(sender).sendMessage(argThat(containsString("/authme forcelogin <player>")));
     }
 

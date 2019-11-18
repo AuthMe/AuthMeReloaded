@@ -1,7 +1,6 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -53,12 +52,6 @@ public class ExceptionUtilsTest {
         // then
         assertThat(resultNpe, nullValue());
         assertThat(resultUoe, sameInstance(uoe));
-    }
-
-    @Test
-    public void shouldHaveHiddenConstructor() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(ExceptionUtils.class);
     }
 
     @Test

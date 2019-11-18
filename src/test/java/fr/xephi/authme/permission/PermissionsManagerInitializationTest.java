@@ -64,7 +64,7 @@ public class PermissionsManagerInitializationTest {
 
     @BeforeClass
     public static void setUpLogger() {
-        TestHelper.setRealLogger();
+        TestHelper.setupLogger();
     }
 
     @Before

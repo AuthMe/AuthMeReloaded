@@ -17,7 +17,7 @@ import java.util.Arrays;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link ChangePasswordAdminCommand}.
@@ -68,6 +68,6 @@ public class ChangePasswordAdminCommandTest {
         // then
         verify(validationService).validatePassword(pass, name);
         verify(commonService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, "7");
-        verifyZeroInteractions(management);
+        verifyNoInteractions(management);
     }
 }

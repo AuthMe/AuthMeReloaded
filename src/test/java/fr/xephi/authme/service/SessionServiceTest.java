@@ -25,8 +25,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link SessionService}.
@@ -66,7 +66,7 @@ public class SessionServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test

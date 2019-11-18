@@ -42,7 +42,7 @@ settings:
         maxNicknameLength: 16
         # When this setting is enabled, online players can't be kicked out
         # due to "Logged in from another Location"
-        # This setting will prevent potetial security exploits.
+        # This setting will prevent potential security exploits.
         ForceSingleSession: true
         ForceSpawnLocOnJoin:
             # If enabled, every player will be teleported to the world spawnpoint
@@ -61,7 +61,7 @@ settings:
         SaveQuitLocation: false
         # To activate the restricted user feature you need
         # to enable this option and configure the
-        # AllowedRestrctedUser field.
+        # AllowedRestrictedUser field.
         AllowRestrictedUser: false
         # The restricted user feature will kick players listed below
         # if they don't match of the defined ip address.
@@ -87,7 +87,7 @@ settings:
         # After how many time players who fail to login or register
         # should be kicked? Set to 0 to disable.
         timeout: 30
-        # Regex sintax of allowed characters in the player name.
+        # Regex syntax of allowed characters in the player name.
         allowedNicknameCharacters: '[a-zA-Z0-9_]*'
         # How far can unregistered players walk? Set to 0
         # for unlimited radius

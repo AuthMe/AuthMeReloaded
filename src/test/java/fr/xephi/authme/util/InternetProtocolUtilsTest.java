@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.TestHelper;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -49,11 +48,5 @@ public class InternetProtocolUtilsTest {
         assertThat(InternetProtocolUtils.isLoopbackAddress("localhost"), equalTo(true));
         assertThat(InternetProtocolUtils.isLoopbackAddress("127.0.0.1"), equalTo(true));
         assertThat(InternetProtocolUtils.isLoopbackAddress("::1"), equalTo(true));
-    }
-
-    @Test
-    public void shouldHavePrivateConstructor() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(InternetProtocolUtils.class);
     }
 }

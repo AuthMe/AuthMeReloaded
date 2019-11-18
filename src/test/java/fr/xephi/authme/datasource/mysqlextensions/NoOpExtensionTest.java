@@ -14,7 +14,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link NoOpExtension}.
@@ -49,6 +49,6 @@ public class NoOpExtensionTest {
         extension.saveAuth(auth, connection);
 
         // then
-        verifyZeroInteractions(connection, auth);
+        verifyNoInteractions(connection, auth);
     }
 }

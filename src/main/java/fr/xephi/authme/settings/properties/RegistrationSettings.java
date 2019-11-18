@@ -97,7 +97,7 @@ public final class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> REMOVE_LEAVE_MESSAGE =
         newProperty("settings.removeLeaveMessage", false);
 
-    @Comment("Do we need to add potion effect Blinding before login/reigster?")
+    @Comment("Do we need to add potion effect Blinding before login/register?")
     public static final Property<Boolean> APPLY_BLIND_EFFECT =
         newProperty("settings.applyBlindEffect", false);
 
