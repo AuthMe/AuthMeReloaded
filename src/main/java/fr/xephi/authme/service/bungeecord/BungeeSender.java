@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -62,6 +63,14 @@ public class BungeeSender implements SettingsDependent {
         bukkitService.sendBungeeMessage(out.toByteArray());
     }
 
+    private void sendBungeecordMessage(Player player, final String... data) {
+        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        for (final String element : data) {
+            out.writeUTF(element);
+        }
+        bukkitService.sendBungeeMessage(player, out.toByteArray());
+    }
+
     private void sendForwardedBungeecordMessage(final String subChannel, final String... data) {
         final ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
@@ -86,7 +95,7 @@ public class BungeeSender implements SettingsDependent {
     public void connectPlayerOnLogin(final Player player) {
         if (isEnabled && !destinationServerOnLogin.isEmpty()) {
             bukkitService.scheduleSyncDelayedTask(() ->
-                sendBungeecordMessage("ConnectOther", player.getName(), destinationServerOnLogin), 5L);
+                sendBungeecordMessage(player, "Connect", destinationServerOnLogin), 5L);
         }
     }
 

@@ -312,6 +312,19 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
+     * Send the specified message to bungeecord using the player connection.
+     *
+     * @param player the player to be used for getting the connection
+     * @param bytes the message
+     */
+    public void sendBungeeMessage(Player player, byte[] bytes) {
+        Player plyr = player.getServer().getPlayer(player.getUniqueId());
+        if (plyr != null) {
+            plyr.sendPluginMessage(authMe, "BungeeCord", bytes);
+        }
+    }
+
+    /**
      * Adds a ban to the this list. If a previous ban exists, this will
      * update the previous entry.
      *
