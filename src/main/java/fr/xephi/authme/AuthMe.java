@@ -32,7 +32,6 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.util.ExceptionUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -127,7 +126,7 @@ public class AuthMe extends JavaPlugin {
         // Check server version
         if (!isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")
             || !isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
-            logger.warning("You are running an unsupported server version!"
+            logger.warning("You are running an unsupported server version (" + getServerNameVersionSafe() + "). "
                 + "AuthMe requires Spigot 1.8.X or later!");
             stopOrUnload();
             return;
@@ -198,11 +197,6 @@ public class AuthMe extends JavaPlugin {
      * Initialize the plugin and all the services.
      */
     private void initialize() {
-        // Check java version
-        if (!SystemUtils.isJavaVersionAtLeast(1.8f)) {
-            throw new IllegalStateException("You need Java 1.8 or above to run this plugin!");
-        }
-
         // Create plugin folder
         getDataFolder().mkdir();
 
@@ -348,5 +342,14 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
+    }
+
+    private String getServerNameVersionSafe() {
+        try {
+            Server server = getServer();
+            return server.getName() + " v. " + server.getVersion();
+        } catch (Throwable ignore) {
+            return "-";
+        }
     }
 }
