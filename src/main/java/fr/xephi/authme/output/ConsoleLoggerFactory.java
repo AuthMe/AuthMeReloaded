@@ -24,7 +24,8 @@ public final class ConsoleLoggerFactory {
      * @return logger for the given class
      */
     public static ConsoleLogger get(Class<?> owningClass) {
-        String name = owningClass.getCanonicalName();
+        // Remove technical package start, so log levels are configured just with "authme", e.g. as "authme.events.Foo"
+        String name = owningClass.getCanonicalName().replace("fr.xephi.", "");
         return consoleLoggers.computeIfAbsent(name, ConsoleLoggerFactory::createLogger);
     }
 

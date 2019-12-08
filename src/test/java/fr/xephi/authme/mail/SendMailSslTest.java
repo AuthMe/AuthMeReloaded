@@ -4,10 +4,8 @@ import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.junit.BeforeClass;
@@ -17,7 +15,6 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -48,10 +45,9 @@ public class SendMailSslTest {
     }
 
     @BeforeInjecting
-    public void initFields() throws IOException {
+    public void initFields() {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
     }
 
     @Test
@@ -70,7 +66,6 @@ public class SendMailSslTest {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderAccount);
         String senderName = "Server administration";
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.DEBUG);
 
         // when
         HtmlEmail email = sendMailSsl.initializeMail("recipient@example.com");

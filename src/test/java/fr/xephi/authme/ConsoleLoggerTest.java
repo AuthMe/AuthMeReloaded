@@ -2,6 +2,7 @@ package fr.xephi.authme;
 
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.hierarchicalvalues.HierarchicalValues;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.After;
@@ -208,7 +209,7 @@ public class ConsoleLoggerTest {
     private static Settings newSettings(boolean logToFile, LogLevel logLevel) {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(logToFile);
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(logLevel);
+        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(HierarchicalValues.createContainerWithRoot(logLevel));
         return settings;
     }
 

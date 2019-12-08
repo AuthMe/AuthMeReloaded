@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static fr.xephi.authme.settings.hierarchicalvalues.HierarchicalValues.createContainerWithRoot;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -73,7 +74,7 @@ public class ReloadCommandTest {
     @Before
     public void setDefaultSettings() {
         // Mock properties retrieved by ConsoleLogger
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
+        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(createContainerWithRoot(LogLevel.INFO));
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(false);
     }
 

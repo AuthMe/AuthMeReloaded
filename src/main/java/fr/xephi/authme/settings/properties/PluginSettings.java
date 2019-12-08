@@ -4,8 +4,10 @@ import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.output.LogLevel;
+import fr.xephi.authme.settings.hierarchicalvalues.HierarchicalValuesProperty;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
+import static ch.jalu.configme.properties.types.EnumPropertyType.of;
 
 public final class PluginSettings implements SettingsHolder {
 
@@ -72,8 +74,8 @@ public final class PluginSettings implements SettingsHolder {
         "FINE for some additional detailed ones (like password failed),",
         "and DEBUG for debugging"
     })
-    public static final Property<LogLevel> LOG_LEVEL =
-        newProperty(LogLevel.class, "settings.logLevel", LogLevel.FINE);
+    public static final HierarchicalValuesProperty<LogLevel> LOG_LEVEL =
+        new HierarchicalValuesProperty<>(of(LogLevel.class), "settings.logging", LogLevel.FINE);
 
     @Comment({
         "By default we schedule async tasks when talking to the database. If you want",

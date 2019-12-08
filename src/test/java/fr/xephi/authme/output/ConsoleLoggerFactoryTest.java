@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.hierarchicalvalues.HierarchicalValues;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.After;
@@ -48,9 +49,9 @@ public class ConsoleLoggerFactoryTest {
         ConsoleLogger logger = ConsoleLoggerFactory.get(AuthMe.class);
 
         // then
-        assertThat(logger.getName(), equalTo("fr.xephi.authme.AuthMe"));
+        assertThat(logger.getName(), equalTo("authme.AuthMe"));
         assertThat(logger.getLogLevel(), equalTo(LogLevel.INFO));
-        assertThat(getConsoleLoggerMap().keySet(), contains("fr.xephi.authme.AuthMe"));
+        assertThat(getConsoleLoggerMap().keySet(), contains("authme.AuthMe"));
     }
 
     @Test
@@ -70,7 +71,8 @@ public class ConsoleLoggerFactoryTest {
     public void shouldInitializeAccordingToSettings() {
         // given
         Settings settings = mock(Settings.class);
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.FINE);
+        given(settings.getProperty(PluginSettings.LOG_LEVEL))
+            .willReturn(HierarchicalValues.createContainerWithRoot(LogLevel.FINE));
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(false);
         ConsoleLogger existingLogger = ConsoleLoggerFactory.get(String.class);
 

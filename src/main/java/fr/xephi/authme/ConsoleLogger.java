@@ -83,7 +83,7 @@ public final class ConsoleLogger {
      * @param settings the settings to read from
      */
     public void initializeSettings(Settings settings) {
-        this.logLevel = settings.getProperty(PluginSettings.LOG_LEVEL);
+        this.logLevel = settings.getProperty(PluginSettings.LOG_LEVEL).getValue(name);
     }
 
     public LogLevel getLogLevel() {

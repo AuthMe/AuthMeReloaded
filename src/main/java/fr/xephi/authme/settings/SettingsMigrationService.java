@@ -4,6 +4,7 @@ import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyReader;
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -11,6 +12,7 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.settings.hierarchicalvalues.HierarchicalValues;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -22,7 +24,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
@@ -73,13 +74,13 @@ public class SettingsMigrationService extends PlainMigrationService {
             | migrateJoinLeaveMessages(reader, configurationData)
             | migrateForceSpawnSettings(reader, configurationData)
             | migratePoolSizeSetting(reader, configurationData)
-            | changeBooleanSettingToLogLevelProperty(reader, configurationData)
             | hasOldHelpHeaderProperty(reader)
             | hasSupportOldPasswordProperty(reader)
             | convertToRegistrationType(reader, configurationData)
             | mergeAndMovePermissionGroupSettings(reader, configurationData)
             | moveDeprecatedHashAlgorithmIntoLegacySection(reader, configurationData)
             | moveSaltColumnConfigWithOtherColumnConfigs(reader, configurationData)
+            | migrateLogLevelProperty(reader, configurationData)
             || hasDeprecatedProperties(reader);
     }
 
@@ -202,28 +203,6 @@ public class SettingsMigrationService extends PlainMigrationService {
         return true;
     }
 
-    /**
-     * Changes the old boolean property "hide spam from console" to the new property specifying
-     * the log level.
-     *
-     * @param reader The property reader
-     * @param configData Configuration data
-     * @return True if the configuration has changed, false otherwise
-     */
-    private static boolean changeBooleanSettingToLogLevelProperty(PropertyReader reader,
-                                                                  ConfigurationData configData) {
-        final String oldPath = "Security.console.noConsoleSpam";
-        final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
-        if (!newProperty.isPresent(reader) && reader.contains(oldPath)) {
-            logger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
-            boolean oldValue = Optional.ofNullable(reader.getBoolean(oldPath)).orElse(false);
-            LogLevel level = oldValue ? LogLevel.INFO : LogLevel.FINE;
-            configData.setValue(newProperty, level);
-            return true;
-        }
-        return false;
-    }
-
     private static boolean hasOldHelpHeaderProperty(PropertyReader reader) {
         if (reader.contains("settings.helpHeader")) {
             logger.warning("Help header setting is now in messages/help_xx.yml, "
@@ -340,6 +319,33 @@ public class SettingsMigrationService extends PlainMigrationService {
         Property<String> oldProperty = newProperty("ExternalBoardOptions.mySQLColumnSalt",
             DatabaseSettings.MYSQL_COL_SALT.getDefaultValue());
         return moveProperty(oldProperty, DatabaseSettings.MYSQL_COL_SALT, reader, configData);
+    }
+
+    /**
+     * Migrates the old single-value log level property to the hierarchical values structure, setting the old value
+     * for the root, "authme". Also ensures that an entry is always present for the "authme" key.
+     *
+     * @param reader the reader
+     * @param configData the configuration data
+     * @return true if the configuration has changed, false otherwise
+     */
+    private static boolean migrateLogLevelProperty(PropertyReader reader, ConfigurationData configData) {
+        LogLevel defaultRootValue = PluginSettings.LOG_LEVEL.getRootValueFromDefault();
+        if (!reader.contains(PluginSettings.LOG_LEVEL.getPath())) {
+            Property<LogLevel> oldProperty = newProperty(LogLevel.class, "settings.logLevel", defaultRootValue);
+            LogLevel oldLogLevel = oldProperty.determineValue(reader);
+            configData.setValue(PluginSettings.LOG_LEVEL,
+                HierarchicalValues.createContainer(defaultRootValue, ImmutableMap.of("authme", oldLogLevel)));
+            return true;
+        } else {
+            // Ensure there is an entry for "authme"
+            HierarchicalValues<LogLevel> logLevelProperty = configData.getValue(PluginSettings.LOG_LEVEL);
+            if (!logLevelProperty.hasSpecificValueForKey("authme")) {
+                logLevelProperty.addValue("authme", defaultRootValue);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
