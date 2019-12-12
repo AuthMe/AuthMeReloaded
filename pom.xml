@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.3.9</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.14.2-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.15-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -690,9 +690,9 @@
 
         <!-- LuckPerms plugin -->
         <dependency>
-            <groupId>me.lucko.luckperms</groupId>
-            <artifactId>luckperms-api</artifactId>
-            <version>4.4</version>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.0</version>
             <scope>provided</scope>
         </dependency>
 

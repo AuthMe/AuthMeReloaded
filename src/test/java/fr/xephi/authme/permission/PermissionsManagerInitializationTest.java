@@ -10,8 +10,8 @@ import fr.xephi.authme.permission.handlers.VaultHandler;
 import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.LuckPermsApi;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -162,8 +162,8 @@ public class PermissionsManagerInitializationTest {
 
     private void setUpForPermissionSystemTest() {
         if (permissionsSystemType == LUCK_PERMS) {
-            LuckPermsApi api = mock(LuckPermsApi.class);
-            ReflectionTestUtils.setField(LuckPerms.class, null, "instance", api);
+            LuckPerms api = mock(LuckPerms.class);
+            ReflectionTestUtils.setField(LuckPermsProvider.class, null, "instance", api);
         } else if (permissionsSystemType == PERMISSIONS_EX) {
             throw new AssumptionViolatedException(
                 "PermissionsEx instance cannot be mocked because of missing dependencies -- skipping");
