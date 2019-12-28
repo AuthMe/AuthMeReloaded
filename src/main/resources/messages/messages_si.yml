@@ -1,0 +1,157 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
+# Registration
+registration:
+    register_request: '&3Registrirajte se z ukazom "/register <geslo> <PotrdiGeslo>"'
+    command_usage: '&cUporaba: /register <geslo> <PotrdiGeslo>'
+    reg_only: '&4Samo registrirani uporabniki se lahko povezejo! Obiscite http://example.com , da se registrirate!'
+    kicked_admin_registered: 'Administrator vas je registriral; prosimo, da se prijavite.'
+    success: '&2Uspešno registriran!'
+    disabled: '&cRegistracija v igri je onemogočena!'
+    name_taken: '&cTo uporabniško ime ste ze registrirali!'
+
+# Password errors on registration
+password:
+    match_error: '&cGesli se ne ujemata, ponovno ju preverite!'
+    name_in_password: '&cSvoje uporabniško ime ne morete uporabiti kot geslo, izberite drugo...'
+    unsafe_password: '&cIzbrano geslo ni varno, izberite drugo...'
+    forbidden_characters: '&4Vaše geslo vsebuje nedovoljene znake. Dovoljeni znaki: %valid_chars'
+    wrong_length: '&cVaše geslo je prekratko ali predolgo! Poskusite z drugim!'
+
+# Login
+login:
+    command_usage: '&cUporaba: /login <geslo>'
+    wrong_password: '&cNapačno geslo!'
+    success: '&2Uspešna prijava!'
+    login_request: '&cPrijavi se z ukazom "/login <geslo>"'
+    timeout_error: '&4Časovna omejitev prijave prekoračena, vrzeni ste bili s strežnika, poskusite ponovno!'
+
+# Errors
+error:
+    denied_command: '&cZa uporabo ukazov se je potrebno prijaviti!'
+    denied_chat: '&cZa pogovor se je potrebno prijaviti!'
+    unregistered_user: '&cNi mogoče najti zahtevanega uporabnika v podatkovni bazi!'
+    not_logged_in: '&cNiste prijavljeni!'
+    no_permission: '&4Nimate dovoljenja za izvedbo tega dejanja!'
+    unexpected_error: '&4Prišlo je do nepričakovane napake, prosim kontaktirajte administratorja!'
+    max_registration: '&cPresegli ste največjo stevilo registracij (%reg_count/%max_acc %reg_names) za vašo povezavo!'
+    logged_in: '&cSte že povezani!'
+    kick_for_vip: '&3VIP igralec se je pridruzil serverju, ko je bil poln!'
+    tempban_max_logins: '&cBil si začasno izločen zaradi preveč neuspešnih prijav.'
+
+# AntiBot
+antibot:
+    kick_antibot: 'Počakajte nekaj minut preden se povezete na strežnik.'
+    auto_enabled: '&4[AntiBotService] AntiBot je bil aktiviran zaradi velikega števila prijav!'
+    auto_disabled: '&2[AntiBotService] AntiBot je bil deaktiviran po %m minut!'
+
+# Unregister
+unregister:
+    success: '&cUsprešno deregistriran!'
+    command_usage: '&cUporaba: /unregister <geslo>'
+
+# Other messages
+misc:
+    account_not_activated: '&cVas račun se ni aktiviran, preverite e-mail!'
+    password_changed: '&2Geslo uspesno spremenjeno!'
+    logout: '&2Odjavljeni uspesno!'
+    reload: '&2Konfiguracija in baza podatkov sta bila uspesno osvezena!'
+    usage_change_password: '&cUporaba: /changepassword <staroGeslo> <novoGeslo>'
+    accounts_owned_self: 'You own %count accounts:'
+    accounts_owned_other: 'The player %name has %count accounts:'
+
+# Session messages
+session:
+    valid_session: '&2Uspešna povezava.'
+    invalid_session: '&cVas IP je bil spremenjen in vasa seja je potekla!'
+
+# Error messages when joining
+on_join_validation:
+    same_ip_online: 'Igralec z enakim IP-jem kot vi je že v igri.'
+    same_nick_online: '&4Uporabnik z enakim imenom ze igra!'
+    name_length: '&4Vaše uporabniško ime je prekratko ali predolgo!'
+    characters_in_name: '&4Vaše uporabniško ime vsebuje nedovoljene znake. Dovoljeni znaki: %valid_chars'
+    kick_full_server: '&4Streznik je trenutno poln!'
+    country_banned: '&4Vaša država je prepovedana na strežniku!'
+    not_owner_error: 'Niste lastnik tega uporabniškega računa. Izberite drugo uporabnisko ime!'
+    invalid_name_case: 'Povežite se z uporabo uporabniskega imena %valid in ne %invalid.'
+    quick_command: 'Komando ste uporabili prehitro! Prosimo, da se ponovno povežete in počakate pred ponovno uporabo komand.'
+
+# Email
+email:
+    add_email_request: '&3Dodajte email vašemu računu z ukazom "/email add <VašEmail> <PotrdiEmail>"'
+    usage_email_add: '&cUporaba: /email add <VašEmail> <PotrdiEmail>'
+    usage_email_change: '&cUporaba: /email change <StarEmail> <NovEmail>'
+    new_email_invalid: '&cNeveljaven nov email, poskusite ponovno!'
+    old_email_invalid: '&cNeveljaven star email, poskusite ponovno!'
+    invalid: '&cNapačni email!'
+    added: '&2Email uspešno dodan!'
+    add_not_allowed: '&cDodajanje emailov ni dovoljeno!'
+    request_confirmation: '&cPotrdite vaš email naslov.'
+    changed: '&2Email uspešno spremenjen!'
+    change_not_allowed: '&cSpreminjanje emailov ni dovoljeno.'
+    email_show: '&2Vaš trenuten email: &f%email'
+    no_email_for_account: '&2Trenutno nimate povezanega emaila.'
+    already_used: '&4Ta email naslov je že v uporabi!'
+    incomplete_settings: 'Napaka: Administrator ni nastavil vseh nastavitev za pošiljanje emailov. Prosimo, da ga obvestite.'
+    send_failure: 'Emaila ni bilo mogoče poslati. Prosimo obvestite administratorja.'
+    change_password_expired: 'Prosim uporabite novi ukaz.'
+    email_cooldown_error: '&cSporočilo je bilo že poslano. Pocakajte %time preden zahtevate novega!'
+
+# Password recovery by email
+recovery:
+    forgot_password_hint: '&3Ste pozabili vaše geslo? Uporabite ukaz "/email recovery <VašEmail>"'
+    command_usage: '&cUporaba: /email recovery <VašEmail>'
+    email_sent: '&2Email za obnovitev uspešno poslan! Preverite prejeta email sporočila! Preverite tudi Spam/Vsiljeno pošto!'
+    code:
+        code_sent: 'Koda za ponastavitev gesla je bila poslana na vaš email.'
+        incorrect: 'Koda je nepravilna! Uporabite /email recovery [Email], da pridobite novo kodo.'
+        tries_exceeded: 'Prekoračili ste število poskusov! Uporabite /email recovery [Email], da pridobite novo kodo.'
+        correct: 'Uspešno vnesena koda!'
+        change_password: 'Prosim uporabite /email setpassword <Novo Geslo> za nastavitev novega gesla.'
+
+# Captcha
+captcha:
+    usage_captcha: '&3Da se prijavite rešite captcha kodo, uporabite ukaz "/captcha %captcha_code"'
+    wrong_captcha: '&cNapačna captcha, vpišite "/captcha %captcha_code" v chat!'
+    valid_captcha: '&2Captcha pravilno rešena!'
+    captcha_for_registration: 'Za registracijo morate prvo rešiti captcha. Uporabite: /captcha %captcha_code'
+    register_captcha_valid: '&2Pravilna captcha! Sedaj se lahko registrirate z /register'
+
+# Verification code
+verification:
+    code_required: '&3Ta ukaz je lahko tvegan in zahteva preverjanje preko emaila. Preverite email za dodatna navodila.'
+    command_usage: '&cUporabite: /verification <Koda>'
+    incorrect_code: '&cIncorrect code, please type "/verification <Koda>" into the chat, using the code you received by email'
+    success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    already_verified: '&2You can already execute every sensitive command within the current session!'
+    code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    email_needed: '&3To verify your identity you need to link an email address with your account!'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Vasa skrivna koda je %code. Lahko je skenirate tu %url!'
+    confirmation_required: 'Prosimo, da potrdite svojo dvo stopično kodo z /2fa confirm <Koda>'
+    code_required: 'Prosimo, da pošljete svojo dvo stopično kodo z /2fa code <Koda>'
+    already_enabled: 'Dvo stopična prijava je že vključena za vaš račun!'
+    enable_error_no_code: 'Nobeden dvo stopični ključ ni bil generiran za vaš račun ali pa je potekel. Uporabite /2fa add'
+    enable_success: 'Usprešno ste vključili dvo stopično prijavo za vaš račun.'
+    enable_error_wrong_code: 'Napačna koda ali pa je potekla. Uporabite /2fa add'
+    not_enabled_error: 'Dvo stopična prijava ni vključena za vaš račun. Uporabite /2fa add'
+    removed_success: 'Usprešno ste odstranili dvo stopično prijavo za vaš račun.'
+    invalid_code: 'Nepravilna koda!'
+
+# Time units
+time:
+    second: 'sekunda'
+    seconds: 'sekund'
+    minute: 'minuta'
+    minutes: 'minut'
+    hour: 'ur'
+    hours: 'ure'
+    day: 'dan'
+    days: 'dni'
+    
