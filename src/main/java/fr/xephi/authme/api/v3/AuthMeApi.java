@@ -352,4 +352,32 @@ public class AuthMeApi {
     public String getCountryName(String ip) {
         return geoIpService.getCountryName(ip);
     }
+    
+    /**
+     * Get the email of a player.
+     *
+     * @param playerName The name of the player to check
+     * @return The email of the player
+     */
+    public String getEmail(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if (auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return auth.getEmail();
+        }
+        return null;
+    }    
+    
+    /**
+     * Check if player has linked email
+     *
+     * @param playerName The name of the player to check
+     * @return true if the player has linked email
+     */
+    public boolean hasEmail(String playerName) {
+        return getEmail(playerName) != null;
+    } 
+    
 }
