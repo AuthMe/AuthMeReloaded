@@ -377,7 +377,7 @@ public class AuthMeApi {
      * @return true if the player has linked email
      */
     public boolean hasEmail(String playerName) {
-        return getEmail(playerName) != null;
+        return (getEmail(playerName) != null && !getEmail(playerName).equals("your@email.com"));
     } 
     
 }
