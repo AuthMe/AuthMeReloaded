@@ -36,8 +36,8 @@ section:
 # OBS: Coloque os comandos principais, como "authme" antes de seus subcomandos (como "authme.reload")
 commands:
     authme.register:
-        description: 'Registrar um jogador'
-        detailedDescription: 'Registrar um jogador específico com uma senha específica.'
+        description: 'Registra um jogador'
+        detailedDescription: 'Registra um jogador específico com uma senha específica.'
         arg1:
             label: 'player'
             description: 'Nome do jogador'
