@@ -366,7 +366,7 @@ public class AuthMeApi {
         }
         if (auth != null) {
             String email = auth.getEmail();
-            if (email == null || email.equals("your@email.com")) {
+            if (("your@email.com").equals(email)) {
                 return null;
             }
             return email;
