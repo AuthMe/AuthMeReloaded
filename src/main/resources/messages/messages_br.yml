@@ -135,7 +135,7 @@ verification:
     code_expired: '&3Seu código expirou! Execute outro comando sensível para gerar outro código.'
     email_needed: '&3Para verificar sua identidade, você precisa vincular um e-mail à sua conta!'
 
-# Autenticação em duas etapas
+# Verificação em duas etapas
 two_factor:
     code_created: '&2O seu código secreto é %code. Você pode verificá-lo aqui %url'
     confirmation_required: 'Confirme seu código com /2fa confirm <código>'
