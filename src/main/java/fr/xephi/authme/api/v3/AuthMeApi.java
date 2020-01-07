@@ -365,7 +365,11 @@ public class AuthMeApi {
             auth = dataSource.getAuth(playerName);
         }
         if (auth != null) {
-            return auth.getEmail();
+            String email = auth.getEmail();
+            if (email == null || email.equals("your@email.com")) {
+                return null;
+            }
+            return email;
         }
         return null;
     }    
@@ -377,7 +381,7 @@ public class AuthMeApi {
      * @return true if the player has linked email
      */
     public boolean hasEmail(String playerName) {
-        return (getEmail(playerName) != null && !getEmail(playerName).equals("your@email.com"));
+        return (getEmail(playerName) != null);
     } 
     
 }
