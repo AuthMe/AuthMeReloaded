@@ -13,7 +13,7 @@ common:
     defaultPermissions:
         notAllowed: 'Sem permissão'
         opOnly: 'Apenas jogadores com OP'
-        allowed: 'Todos são permitidos'
+        allowed: 'Todos tem permissão'
 
 # -------------------------------------------------------
 # Títulos das seções individuais de ajuda
