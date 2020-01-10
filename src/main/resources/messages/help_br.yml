@@ -1,5 +1,5 @@
-# Arquivo de tradução da ajuda do AuthMe, aka quando o comando /authme help é usado
-# Traduzido por Frani (PotterCraft_) | www.magitechserver.com
+# Arquivo de tradução da ajuda do AuthMe (comando /authme help)
+# Tradução por Frani (PotterCraft_) e RenanYudi
 
 # -------------------------------------------------------
 # Lista de textos usados na seção de ajuda:
@@ -7,21 +7,21 @@ common:
     header: '==========[ Ajuda AuthMeReloaded ]=========='
     optional: 'Opcional'
     hasPermission: 'Você tem permissão'
-    noPermission: 'Sem Permissão'
+    noPermission: 'Sem permissão'
     default: 'Padrão'
     result: 'Resultado'
     defaultPermissions:
-        notAllowed: 'Sem Permissão'
+        notAllowed: 'Sem permissão'
         opOnly: 'Apenas jogadores com OP'
-        allowed: 'Todos podem'
+        allowed: 'Todos tem permissão'
 
 # -------------------------------------------------------
 # Títulos das seções individuais de ajuda
-# Defina o texto traduzido como vazio para desativá-lo, aka esconder do help
+# Deixe o texto traduzido vazio para desativá-lo/esconde-lo
 #   alternatives: ''
 section:
     command: 'Comando'
-    description: 'Pequena descrição'
+    description: 'Descrição breve'
     detailedDescription: 'Descrição detalhada'
     arguments: 'Argumentos'
     permissions: 'Permissões'
@@ -31,16 +31,16 @@ section:
 # -------------------------------------------------------
 # Você pode traduzir o help de qualquer comando usando o padrão abaixo
 # Por exemplo, para traduzir /authme reload, crie uma seção "authme.reload", ou "login" para /login
-# Se o comando usa argumentos, você pode usar arg1 como usado abaixo para traduzir o primeiro argumento em diante
-# Traduções não precisam ser completas. Qualquer parte faltante vai ser pega normalente da config padrão.
-# OBS: Coloque os comandos principais, como "authme" antes dos seus subcomandos (como "authme.reload")
+# Se o comando usa argumentos, você pode usar arg1 para traduzir o primeiro argumento e assim em diante, como exemplificado abaixo
+# As traduções não precisam ser completas, qualquer parte faltante será obtida da configuração padrão.
+# OBS: Coloque os comandos principais, como "authme" antes de seus subcomandos (como "authme.reload")
 commands:
     authme.register:
         description: 'Registra um jogador'
-        detailedDescription: 'Registra um esprecifico jogador com uma senha especifica.'
+        detailedDescription: 'Registra um jogador específico com uma senha específica.'
         arg1:
             label: 'player'
-            description: 'Nome do player'
+            description: 'Nome do jogador'
         arg2:
             label: 'password'
             description: 'Senha'
