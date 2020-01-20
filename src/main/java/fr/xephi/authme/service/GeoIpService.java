@@ -4,9 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import com.google.common.io.Resources;
-import com.ice.tar.TarEntry;
-import com.ice.tar.TarInputStream;
 import com.maxmind.db.GeoIp2Provider;
 import com.maxmind.db.Reader;
 import com.maxmind.db.Reader.FileMode;
@@ -24,13 +21,11 @@ import fr.xephi.authme.util.InternetProtocolUtils;
 import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -195,15 +190,14 @@ public class GeoIpService {
 
         String clientId = settings.getProperty(ProtectionSettings.MAXMIND_API_CLIENT_ID);
         String licenseKey = settings.getProperty(ProtectionSettings.MAXMIND_API_LICENSE_KEY);
-        if(clientId.isEmpty() || licenseKey.isEmpty()) {
+        if (clientId.isEmpty() || licenseKey.isEmpty()) {
             logger.warning("No MaxMind credentials found in the configuration file!"
                 + " GeoIp protections will be disabled.");
             return null;
         }
         String basicAuth = "Basic " + new String(Base64.getEncoder().encode((clientId + ":" + licenseKey).getBytes()));
-        connection.setRequestProperty ("Authorization", basicAuth);
+        connection.setRequestProperty("Authorization", basicAuth);
 
-        // TODO: is this still checked?
         if (lastModified != null) {
             // Only download if we actually need a newer version - this field is specified in GMT zone
             ZonedDateTime zonedTime = lastModified.atZone(ZoneId.of("GMT"));
