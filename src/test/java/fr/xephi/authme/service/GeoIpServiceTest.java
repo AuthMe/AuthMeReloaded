@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import fr.xephi.authme.settings.Settings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,13 +41,16 @@ public class GeoIpServiceTest {
     @Mock
     private BukkitService bukkitService;
 
+    @Mock
+    private Settings settings;
+
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
     public void initializeGeoLiteApi() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        geoIpService = new GeoIpService(dataFolder, bukkitService, lookupService);
+        geoIpService = new GeoIpService(dataFolder, bukkitService, settings, lookupService);
     }
 
     @Test
