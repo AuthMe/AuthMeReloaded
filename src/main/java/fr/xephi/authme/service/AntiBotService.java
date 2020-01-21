@@ -10,7 +10,7 @@ import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
-import fr.xephi.authme.util.AtomicCounter;
+import fr.xephi.authme.util.AtomicIntervalCounter;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
@@ -35,7 +35,7 @@ public class AntiBotService implements SettingsDependent {
     private AntiBotStatus antiBotStatus;
     private boolean startup;
     private BukkitTask disableTask;
-    private AtomicCounter flaggedCounter;
+    private AtomicIntervalCounter flaggedCounter;
 
     @Inject
     AntiBotService(Settings settings, Messages messages, PermissionsManager permissionsManager,
@@ -58,7 +58,7 @@ public class AntiBotService implements SettingsDependent {
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         int sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
         int interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL) * 1000;
-        flaggedCounter = new AtomicCounter(sensibility, interval);
+        flaggedCounter = new AtomicIntervalCounter(sensibility, interval);
 
         // Stop existing protection
         stopProtection();

@@ -646,7 +646,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotInterfereWithUnrestrictedUser() {
+    public void shouldNotInterfereWithUnrestrictedUser() throws FailedVerificationException {
         // given
         String name = "Player01";
         Player player = mockPlayerWithName(name);
@@ -658,12 +658,13 @@ public class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
+        verify(onJoinVerifier).checkSingleSession(name);
         verifyNoModifyingCalls(event);
-        verifyNoInteractions(onJoinVerifier);
+        verifyNoMoreInteractions(onJoinVerifier);
     }
 
     @Test
-    public void shouldStopHandlingForFullServer() {
+    public void shouldStopHandlingForFullServer() throws FailedVerificationException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -676,12 +677,14 @@ public class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier, only()).refusePlayerForFullServer(event);
+        verify(onJoinVerifier).checkSingleSession(name);
+        verify(onJoinVerifier).refusePlayerForFullServer(event);
+        verifyNoMoreInteractions(onJoinVerifier);
         verifyNoModifyingCalls(event);
     }
 
     @Test
-    public void shouldStopHandlingEventForBadResult() {
+    public void shouldStopHandlingEventForBadResult() throws FailedVerificationException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -696,7 +699,8 @@ public class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier, only()).refusePlayerForFullServer(event);
+        verify(onJoinVerifier).checkSingleSession(name);
+        verify(onJoinVerifier).refusePlayerForFullServer(event);
         verifyNoModifyingCalls(event);
     }
 
@@ -715,7 +719,6 @@ public class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
         verifyNoInteractions(dataSource);
         verifyNoModifyingCalls(preLoginEvent);

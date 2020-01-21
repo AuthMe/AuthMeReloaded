@@ -1,12 +1,12 @@
 package fr.xephi.authme.util;
 
-public class AtomicCounter {
+public class AtomicIntervalCounter {
     private final int threshold;
     private final int interval;
     private int count;
     private long lastInsert;
 
-    public AtomicCounter(int threshold, int interval) {
+    public AtomicIntervalCounter(int threshold, int interval) {
         this.threshold = threshold;
         this.interval = interval;
         reset();
