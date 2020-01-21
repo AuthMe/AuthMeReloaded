@@ -197,6 +197,32 @@ public class AuthMeApi {
     }
 
     /**
+     * Get the registration (AuthMe) timestamp of a player.
+     *
+     * @param playerName The name of the player to process
+     *
+     * @return The timestamp of when the player was registered, or null if the player doesn't exist or is not registered
+     */
+    public Instant getRegistrationTime(String playerName) {
+        Long registrationDate = getRegistrationMillis(playerName);
+        return registrationDate == null ? null : Instant.ofEpochMilli(registrationDate);
+    }
+
+    private Long getRegistrationMillis(String playerName) {
+        if (!isRegistered(playerName.toLowerCase())) {
+            return null;
+        }
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if (auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return auth.getRegistrationDate();
+        }
+        return null;
+    }
+
+    /**
      * Return whether the player is registered.
      *
      * @param playerName The player name to check
