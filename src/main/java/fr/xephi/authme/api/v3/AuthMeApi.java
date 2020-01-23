@@ -133,6 +133,23 @@ public class AuthMeApi {
     }
 
     /**
+     * Get the registration ip address of a player.
+     *
+     * @param playerName The name of the player to process
+     * @return The registration ip address of the player
+     */
+    public String getRegistrationIp(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if (auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return auth.getRegistrationIp();
+        }
+        return null;
+    }
+
+    /**
      * Get the last ip address of a player.
      *
      * @param playerName The name of the player to process
