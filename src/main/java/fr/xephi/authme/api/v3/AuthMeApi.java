@@ -209,9 +209,6 @@ public class AuthMeApi {
     }
 
     private Long getRegistrationMillis(String playerName) {
-        if (!isRegistered(playerName.toLowerCase())) {
-            return null;
-        }
         PlayerAuth auth = playerCache.getAuth(playerName);
         if (auth == null) {
             auth = dataSource.getAuth(playerName);
