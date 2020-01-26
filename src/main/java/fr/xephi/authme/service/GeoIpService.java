@@ -151,7 +151,7 @@ public class GeoIpService {
             // MD5 checksum verification
             verifyChecksum(Hashing.md5(), tempFile, expectedChecksum);
 
-            Files.copy(tempFile, dataFile);
+            Files.copy(tempFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
 
             //only set this value to false on success otherwise errors could lead to endless download triggers
             logger.info("Successfully downloaded new GEO IP database to " + dataFile);
