@@ -5,6 +5,10 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Implementation of {@link AuthMePlayer}. This implementation is not part of the API and
+ * may have breaking changes in subsequent releases.
+ */
 class AuthMePlayerImpl implements AuthMePlayer {
 
     private String name;
@@ -20,6 +24,13 @@ class AuthMePlayerImpl implements AuthMePlayer {
     AuthMePlayerImpl() {
     }
 
+    /**
+     * Maps the given player auth to an AuthMePlayer instance. Returns null if
+     * the player auth is null.
+     *
+     * @param playerAuth the player auth or null
+     * @return the mapped player auth, or null if the argument was null
+     */
     static AuthMePlayer fromPlayerAuth(PlayerAuth playerAuth) {
         if (playerAuth == null) {
             return null;
