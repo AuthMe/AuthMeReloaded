@@ -5,7 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Read-only player info exposed in the AuthMe API.
+ * Read-only player info exposed in the AuthMe API. The data in this object is copied from the
+ * database and not updated afterwards. As such, it may become outdated if the player data changes
+ * in AuthMe.
  *
  * @see AuthMeApi#getPlayerInfo
  */
