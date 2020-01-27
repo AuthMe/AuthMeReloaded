@@ -1,6 +1,7 @@
 package fr.xephi.authme.api.v3;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -17,19 +18,19 @@ public interface AuthMePlayer {
 
     /**
      * Returns the UUID of the player as given by the server (may be offline UUID or not).
-     * The UUID is null if AuthMe is configured not to store the UUID or if the data is not
+     * The UUID is not present if AuthMe is configured not to store the UUID or if the data is not
      * present (e.g. older record).
      *
-     * @return player uuid, or null if not available
+     * @return player uuid, or empty optional if not available
      */
-    UUID getUuid();
+    Optional<UUID> getUuid();
 
     /**
-     * Returns the email address associated with this player, or null if not available.
+     * Returns the email address associated with this player, or an empty optional if not available.
      *
-     * @return player's email or null
+     * @return player's email or empty optional
      */
-    String getEmail();
+    Optional<String> getEmail();
 
     /**
      * @return the registration date of the player's account - never null
@@ -37,26 +38,26 @@ public interface AuthMePlayer {
     Instant getRegistrationDate();
 
     /**
-     * Returns the IP address with which the player's account was registered. May be null
+     * Returns the IP address with which the player's account was registered. Returns an empty optional
      * for older accounts, or if the account was registered by someone else (e.g. by an admin).
      *
-     * @return the ip address used during the registration of the account, or null
+     * @return the ip address used during the registration of the account, or empty optional
      */
-    String getRegistrationIpAddress();
+    Optional<String> getRegistrationIpAddress();
 
     /**
-     * Returns the last login date of the player. May be null if the player never logged in.
+     * Returns the last login date of the player. An empty optional is returned if the player never logged in.
      *
-     * @return date the player last logged in successfully, or null if not applicable
+     * @return date the player last logged in successfully, or empty optional if not applicable
      */
-    Instant getLastLoginDate();
+    Optional<Instant> getLastLoginDate();
 
     /**
-     * Returns the IP address the player last logged in with successfully. May be null if the
+     * Returns the IP address the player last logged in with successfully. Returns an empty optional if the
      * player never logged in.
      *
-     * @return ip address the player last logged in with successfully, or null if not applicable
+     * @return ip address the player last logged in with successfully, or empty optional if not applicable
      */
-    String getLastLoginIpAddress();
+    Optional<String> getLastLoginIpAddress();
 
 }

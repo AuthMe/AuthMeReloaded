@@ -3,6 +3,7 @@ package fr.xephi.authme.api.v3;
 import fr.xephi.authme.data.auth.PlayerAuth;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -25,15 +26,15 @@ class AuthMePlayerImpl implements AuthMePlayer {
     }
 
     /**
-     * Maps the given player auth to an AuthMePlayer instance. Returns null if
+     * Maps the given player auth to an AuthMePlayer instance. Returns an empty optional if
      * the player auth is null.
      *
      * @param playerAuth the player auth or null
-     * @return the mapped player auth, or null if the argument was null
+     * @return the mapped player auth, or empty optional if the argument was null
      */
-    static AuthMePlayer fromPlayerAuth(PlayerAuth playerAuth) {
+    static Optional<AuthMePlayer> fromPlayerAuth(PlayerAuth playerAuth) {
         if (playerAuth == null) {
-            return null;
+            return Optional.empty();
         }
 
         AuthMePlayerImpl authMeUser = new AuthMePlayerImpl();
@@ -45,7 +46,7 @@ class AuthMePlayerImpl implements AuthMePlayer {
         authMeUser.registrationIpAddress = playerAuth.getRegistrationIp();
         authMeUser.lastLoginDate = toInstant(lastLoginMillis);
         authMeUser.lastLoginIpAddress = nullIfDefault(playerAuth.getLastIp(), PlayerAuth.DB_LAST_IP_DEFAULT);
-        return authMeUser;
+        return Optional.of(authMeUser);
     }
 
     @Override
@@ -53,13 +54,13 @@ class AuthMePlayerImpl implements AuthMePlayer {
         return name;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public Optional<UUID> getUuid() {
+        return Optional.ofNullable(uuid);
     }
 
     @Override
-    public String getEmail() {
-        return email;
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
     }
 
     @Override
@@ -68,18 +69,18 @@ class AuthMePlayerImpl implements AuthMePlayer {
     }
 
     @Override
-    public String getRegistrationIpAddress() {
-        return registrationIpAddress;
+    public Optional<String> getRegistrationIpAddress() {
+        return Optional.ofNullable(registrationIpAddress);
     }
 
     @Override
-    public Instant getLastLoginDate() {
-        return lastLoginDate;
+    public Optional<Instant> getLastLoginDate() {
+        return Optional.ofNullable( lastLoginDate);
     }
 
     @Override
-    public String getLastLoginIpAddress() {
-        return lastLoginIpAddress;
+    public Optional<String> getLastLoginIpAddress() {
+        return Optional.ofNullable(lastLoginIpAddress);
     }
 
     private static Instant toInstant(Long epochMillis) {

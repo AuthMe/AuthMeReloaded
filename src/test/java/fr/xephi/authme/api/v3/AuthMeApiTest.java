@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.IsEqualByReflectionMatcher.hasEqualValuesOnAllFields;
@@ -523,9 +524,10 @@ public class AuthMeApiTest {
         given(dataSource.getAuth("bobb")).willReturn(auth);
 
         // when
-        AuthMePlayer playerInfo = api.getPlayerInfo("bobb");
+        Optional<AuthMePlayer> result = api.getPlayerInfo("bobb");
 
         // then
+        AuthMePlayer playerInfo = result.get();
         assertThat(playerInfo.getName(), equalTo("Bobb"));
         assertThat(playerInfo.getRegistrationDate(), equalTo(Instant.ofEpochMilli(1433166082000L)));
     }
@@ -533,10 +535,10 @@ public class AuthMeApiTest {
     @Test
     public void shouldReturnNullForNonExistentAuth() {
         // given / when
-        AuthMePlayer result = api.getPlayerInfo("doesNotExist");
+        Optional<AuthMePlayer> result = api.getPlayerInfo("doesNotExist");
 
         // then
-        assertThat(result, nullValue());
+        assertThat(result.isPresent(), equalTo(false));
         verify(playerCache).getAuth("doesNotExist");
         verify(dataSource).getAuth("doesNotExist");
     }
