@@ -1,6 +1,9 @@
 package fr.xephi.authme.service;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.ThreadSafetyUtils;
+import fr.xephi.authme.annotation.MightBeAsync;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.initialization.Reloadable;
@@ -67,7 +70,9 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
      * @param player The player getting the code.
      * @param email The email to send the code to.
      */
+    @ShouldBeAsync
     public void createAndSendRecoveryCode(Player player, String email) {
+        ThreadSafetyUtils.shouldBeAsync();
         if (!checkEmailCooldown(player)) {
             return;
         }
@@ -89,7 +94,9 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
      * @param player The player recovering their password.
      * @param email The email to send the password to.
      */
+    @ShouldBeAsync
     public void generateAndSendNewPassword(Player player, String email) {
+        ThreadSafetyUtils.shouldBeAsync();
         if (!checkEmailCooldown(player)) {
             return;
         }
@@ -140,6 +147,7 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
      * @param player The player to check.
      * @return True if the player is not on cooldown.
      */
+    @MightBeAsync
     private boolean checkEmailCooldown(Player player) {
         Duration waitDuration = emailCooldown.getExpiration(player.getName().toLowerCase());
         if (waitDuration.getDuration() > 0) {

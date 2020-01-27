@@ -32,40 +32,34 @@ public class AccountsCommand implements ExecutableCommand {
 
         // Assumption: a player name cannot contain '.'
         if (playerName.contains(".")) {
-            bukkitService.runTaskAsynchronously(new Runnable() {
-                @Override
-                public void run() {
-                    List<String> accountList = dataSource.getAllAuthsByIp(playerName);
-                    if (accountList.isEmpty()) {
-                        sender.sendMessage("[AuthMe] This IP does not exist in the database.");
-                    } else if (accountList.size() == 1) {
-                        sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
-                    } else {
-                        outputAccountsList(sender, playerName, accountList);
-                    }
+            bukkitService.runTaskAsynchronously(() -> {
+                List<String> accountList = dataSource.getAllAuthsByIp(playerName);
+                if (accountList.isEmpty()) {
+                    sender.sendMessage("[AuthMe] This IP does not exist in the database.");
+                } else if (accountList.size() == 1) {
+                    sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
+                } else {
+                    outputAccountsList(sender, playerName, accountList);
                 }
             });
         } else {
-            bukkitService.runTaskAsynchronously(new Runnable() {
-                @Override
-                public void run() {
-                    PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase());
-                    if (auth == null) {
-                        commonService.send(sender, MessageKey.UNKNOWN_USER);
-                        return;
-                    } else if (auth.getLastIp() == null) {
-                        sender.sendMessage("No known last IP address for player");
-                        return;
-                    }
+            bukkitService.runTaskAsynchronously(() -> {
+                PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase());
+                if (auth == null) {
+                    commonService.send(sender, MessageKey.UNKNOWN_USER);
+                    return;
+                } else if (auth.getLastIp() == null) {
+                    sender.sendMessage("No known last IP address for player");
+                    return;
+                }
 
-                    List<String> accountList = dataSource.getAllAuthsByIp(auth.getLastIp());
-                    if (accountList.isEmpty()) {
-                        commonService.send(sender, MessageKey.UNKNOWN_USER);
-                    } else if (accountList.size() == 1) {
-                        sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
-                    } else {
-                        outputAccountsList(sender, playerName, accountList);
-                    }
+                List<String> accountList = dataSource.getAllAuthsByIp(auth.getLastIp());
+                if (accountList.isEmpty()) {
+                    commonService.send(sender, MessageKey.UNKNOWN_USER);
+                } else if (accountList.size() == 1) {
+                    sender.sendMessage("[AuthMe] " + playerName + " is a single account player");
+                } else {
+                    outputAccountsList(sender, playerName, accountList);
                 }
             });
         }

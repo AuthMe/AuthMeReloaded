@@ -1,8 +1,9 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.ThreadSafetyUtils;
+import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.annotation.ShouldBeAsync;
-import fr.xephi.authme.annotation.Sync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
@@ -75,6 +76,7 @@ public class OnJoinVerifier implements Reloadable {
      */
     @ShouldBeAsync
     public void checkAntibot(String name, boolean isAuthAvailable) throws FailedVerificationException {
+        ThreadSafetyUtils.shouldBeAsync();
         if (isAuthAvailable || permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT)) {
             return;
         }
@@ -90,7 +92,7 @@ public class OnJoinVerifier implements Reloadable {
      * @param isAuthAvailable whether or not the player is registered
      * @throws FailedVerificationException if the verification fails
      */
-    @ShouldBeAsync
+    @MightBeAsync
     public void checkKickNonRegistered(boolean isAuthAvailable) throws FailedVerificationException {
         if (!isAuthAvailable && settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)) {
             throw new FailedVerificationException(MessageKey.MUST_REGISTER_MESSAGE);
@@ -103,7 +105,7 @@ public class OnJoinVerifier implements Reloadable {
      * @param name the name to verify
      * @throws FailedVerificationException if the verification fails
      */
-    @ShouldBeAsync
+    @MightBeAsync
     public void checkIsValidName(String name) throws FailedVerificationException {
         if (name.length() > settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)
             || name.length() < settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)) {
@@ -124,8 +126,8 @@ public class OnJoinVerifier implements Reloadable {
      * @return true if the player's connection should be refused (i.e. the event does not need to be processed
      *         further), false if the player is not refused
      */
-    @Sync
     public boolean refusePlayerForFullServer(PlayerLoginEvent event) {
+        ThreadSafetyUtils.requireSync();
         final Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL) {
             // Server is not full, no need to do anything
@@ -163,6 +165,7 @@ public class OnJoinVerifier implements Reloadable {
      */
     @ShouldBeAsync
     public void checkNameCasing(String connectingName, PlayerAuth auth) throws FailedVerificationException {
+        ThreadSafetyUtils.shouldBeAsync();
         if (auth != null && settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)) {
             String realName = auth.getRealName(); // might be null or "Player"
 
@@ -185,6 +188,7 @@ public class OnJoinVerifier implements Reloadable {
     @ShouldBeAsync
     public void checkPlayerCountry(String name, String address,
                                    boolean isAuthAvailable) throws FailedVerificationException {
+        ThreadSafetyUtils.shouldBeAsync();
         if ((!isAuthAvailable || settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED))
             && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)
             && !permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_COUNTRY_CHECK)
@@ -200,8 +204,8 @@ public class OnJoinVerifier implements Reloadable {
      * @param name the player name to check
      * @throws FailedVerificationException if the verification fails
      */
-    @Sync
     public void checkSingleSession(String name) throws FailedVerificationException {
+        ThreadSafetyUtils.requireSync();
         if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
             return;
         }
@@ -219,8 +223,8 @@ public class OnJoinVerifier implements Reloadable {
      *
      * @return the player to kick, or null if none applicable
      */
-    @Sync
     private Player generateKickPlayer(Collection<Player> onlinePlayers) {
+        ThreadSafetyUtils.requireSync();
         for (Player player : onlinePlayers) {
             if (!permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
                 return player;

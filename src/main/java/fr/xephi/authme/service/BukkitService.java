@@ -2,6 +2,7 @@ package fr.xephi.authme.service;
 
 import com.google.common.collect.Iterables;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -206,6 +207,7 @@ public class BukkitService implements SettingsDependent {
      * @param name the name the player to retrieve
      * @return an offline player
      */
+    @MightBeAsync
     public OfflinePlayer getOfflinePlayer(String name) {
         return authMe.getServer().getOfflinePlayer(name);
     }

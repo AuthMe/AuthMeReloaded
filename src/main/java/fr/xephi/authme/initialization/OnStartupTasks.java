@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
@@ -94,12 +95,15 @@ public class OnStartupTasks {
             return;
         }
         bukkitService.runTaskTimerAsynchronously(() -> {
-            for (String playerWithoutMail : dataSource.getLoggedPlayersWithEmptyMail()) {
-                Player player = bukkitService.getPlayerExact(playerWithoutMail);
-                if (player != null) {
-                    messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
+            List<String> loggedPlayersWithEmptyMail = dataSource.getLoggedPlayersWithEmptyMail();
+            bukkitService.runTask(() -> {
+                for (String playerWithoutMail : loggedPlayersWithEmptyMail) {
+                    Player player = bukkitService.getPlayerExact(playerWithoutMail);
+                    if (player != null) {
+                        messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
+                    }
                 }
-            }
+            });
         }, 1, TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));
     }
 }

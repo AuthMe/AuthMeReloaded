@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
@@ -76,6 +77,7 @@ class ListenerService implements SettingsDependent {
      * @param player the player to verify
      * @return true if the associated event should be canceled, false otherwise
      */
+    @MightBeAsync
     public boolean shouldCancelEvent(Player player) {
         return player != null && !checkAuth(player.getName()) && !PlayerUtils.isNpc(player);
     }
@@ -92,6 +94,7 @@ class ListenerService implements SettingsDependent {
      * @param name the name of the player to verify
      * @return true if the player may play, false otherwise
      */
+    @MightBeAsync
     private boolean checkAuth(String name) {
         if (validationService.isUnrestricted(name) || playerCache.isAuthenticated(name)) {
             return true;

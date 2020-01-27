@@ -4,6 +4,7 @@ import ch.jalu.configme.properties.Property;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -138,6 +139,7 @@ public class ValidationService implements Reloadable {
      * @param name the name to verify
      * @return true if unrestricted, false otherwise
      */
+    @MightBeAsync
     public boolean isUnrestricted(String name) {
         return settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name.toLowerCase());
     }

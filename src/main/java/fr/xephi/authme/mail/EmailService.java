@@ -1,6 +1,9 @@
 package fr.xephi.authme.mail;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.ThreadSafetyUtils;
+import fr.xephi.authme.annotation.MightBeAsync;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
@@ -49,7 +52,9 @@ public class EmailService {
      * @param newPass the new password
      * @return true if email could be sent, false otherwise
      */
+    @ShouldBeAsync
     public boolean sendPasswordMail(String name, String mailAddress, String newPass) {
+        ThreadSafetyUtils.shouldBeAsync();
         if (!hasAllInformation()) {
             logger.warning("Cannot perform email registration: not all email settings are complete");
             return false;
@@ -89,7 +94,9 @@ public class EmailService {
      * @param code the verification code
      * @return true if email could be sent, false otherwise
      */
+    @ShouldBeAsync
     public boolean sendVerificationMail(String name, String mailAddress, String code) {
+        ThreadSafetyUtils.shouldBeAsync();
         if (!hasAllInformation()) {
             logger.warning("Cannot send verification email: not all email settings are complete");
             return false;
@@ -116,7 +123,9 @@ public class EmailService {
      * @param code the recovery code
      * @return true if email could be sent, false otherwise
      */
+    @ShouldBeAsync
     public boolean sendRecoveryCode(String name, String email, String code) {
+        ThreadSafetyUtils.shouldBeAsync();
         HtmlEmail htmlEmail;
         try {
             htmlEmail = sendMailSsl.initializeMail(email);
@@ -130,6 +139,7 @@ public class EmailService {
         return sendMailSsl.sendEmail(message, htmlEmail);
     }
 
+    @MightBeAsync
     private File generatePasswordImage(String name, String newPass) throws IOException {
         ImageGenerator gen = new ImageGenerator(newPass);
         File file = new File(dataFolder, name + "_new_pass.jpg");
@@ -137,6 +147,7 @@ public class EmailService {
         return file;
     }
 
+    @MightBeAsync
     private static String embedImageIntoEmailContent(File image, HtmlEmail email, String content)
         throws EmailException {
         DataSource source = new FileDataSource(image);
@@ -144,6 +155,7 @@ public class EmailService {
         return content.replace("<image />", "<img src=\"cid:" + tag + "\">");
     }
 
+    @MightBeAsync
     private String replaceTagsForPasswordMail(String mailText, String name, String newPass) {
         return mailText
             .replace("<playername />", name)
@@ -151,6 +163,7 @@ public class EmailService {
             .replace("<generatedpass />", newPass);
     }
 
+    @MightBeAsync
     private String replaceTagsForVerificationEmail(String mailText, String name, String code, int minutesValid) {
         return mailText
             .replace("<playername />", name)
@@ -159,6 +172,7 @@ public class EmailService {
             .replace("<minutesvalid />", String.valueOf(minutesValid));
     }
 
+    @MightBeAsync
     private String replaceTagsForRecoveryCodeMail(String mailText, String name, String code, int hoursValid) {
         return mailText
             .replace("<playername />", name)
