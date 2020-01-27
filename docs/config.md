@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Oct 17 08:29:25 CEST 2019. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Jan 21 10:33:12 CET 2020. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -398,6 +398,14 @@ Protection:
     enableProtection: false
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
+    geoIpDatabase:
+        # The MaxMind clientId used to download the GeoIp database,
+        # get one at https://www.maxmind.com/en/accounts/current/license-key
+        # The EssentialsX project has a very useful tutorial on how to generate
+        # the license key: https://essentialsx.cf/wiki/GeoIP.html
+        clientId: ''
+        # The MaxMind licenseKey used to download the GeoIp database.
+        licenseKey: ''
     # Countries allowed to join the server and register. For country codes, see
     # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # Use "LOCALHOST" for local addresses.
@@ -576,4 +584,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Oct 17 08:29:25 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Jan 21 10:33:12 CET 2020

@@ -51,7 +51,7 @@ public class OnStartupTasks {
      * @param settings the settings
      */
     public static void sendMetrics(AuthMe plugin, Settings settings) {
-        final Metrics metrics = new Metrics(plugin);
+        final Metrics metrics = new Metrics(plugin, 164);
 
         metrics.addCustomChart(new Metrics.SimplePie("messages_language",
             () -> settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)));

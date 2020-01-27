@@ -4,9 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import com.google.common.io.Resources;
-import com.ice.tar.TarEntry;
-import com.ice.tar.TarInputStream;
 import com.maxmind.db.GeoIp2Provider;
 import com.maxmind.db.Reader;
 import com.maxmind.db.Reader.FileMode;
@@ -18,19 +15,19 @@ import fr.xephi.authme.ThreadSafetyUtils;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.InternetProtocolUtils;
 
 import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -40,6 +37,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
@@ -50,39 +48,38 @@ public class GeoIpService {
             "[LICENSE] This product includes GeoLite2 data created by MaxMind, available at https://www.maxmind.com";
 
     private static final String DATABASE_NAME = "GeoLite2-Country";
-    private static final String DATABASE_EXT = ".mmdb";
-    private static final String DATABASE_FILE = DATABASE_NAME + DATABASE_EXT;
+    private static final String DATABASE_FILE = DATABASE_NAME + ".mmdb";
+    private static final String DATABASE_TMP_FILE = DATABASE_NAME + ".mmdb.tmp";
 
-    private static final String ARCHIVE_FILE = DATABASE_NAME + ".tar.gz";
+    private static final String ARCHIVE_FILE = DATABASE_NAME + ".mmdb.gz";
 
-    private static final String ARCHIVE_URL = "https://geolite.maxmind.com/download/geoip/database/" + ARCHIVE_FILE;
-    private static final String CHECKSUM_URL = ARCHIVE_URL + ".md5";
+    private static final String ARCHIVE_URL =
+        "https://updates.maxmind.com/geoip/databases/" + DATABASE_NAME + "/update";
 
     private static final int UPDATE_INTERVAL_DAYS = 30;
-
-    // The server for MaxMind doesn't seem to understand RFC1123,
-    // but every HTTP implementation have to support  RFC 1023
-    private static final String TIME_RFC_1023 = "EEE, dd-MMM-yy HH:mm:ss zzz";
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(GeoIpService.class);
     private final Path dataFile;
     private final BukkitService bukkitService;
+    private final Settings settings;
 
     private GeoIp2Provider databaseReader;
     private volatile boolean downloading;
 
     @Inject
-    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService) {
+    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings) {
         this.bukkitService = bukkitService;
         this.dataFile = dataFolder.toPath().resolve(DATABASE_FILE);
+        this.settings = settings;
 
         // Fires download of recent data or the initialization of the look up service
         isDataAvailable();
     }
 
     @VisibleForTesting
-    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, GeoIp2Provider reader) {
+    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings, GeoIp2Provider reader) {
         this.bukkitService = bukkitService;
+        this.settings = settings;
         this.dataFile = dataFolder.toPath().resolve(DATABASE_FILE);
 
         this.databaseReader = reader;
@@ -139,22 +136,26 @@ public class GeoIpService {
         logger.info("Downloading GEO IP database, because the old database is older than "
                 + UPDATE_INTERVAL_DAYS + " days or doesn't exist");
 
+        Path downloadFile = null;
         Path tempFile = null;
         try {
             // download database to temporarily location
-            tempFile = Files.createTempFile(ARCHIVE_FILE, null);
-            if (!downloadDatabaseArchive(tempFile)) {
+            downloadFile = Files.createTempFile(ARCHIVE_FILE, null);
+            tempFile = Files.createTempFile(DATABASE_TMP_FILE, null);
+            String expectedChecksum = downloadDatabaseArchive(downloadFile);
+            if (expectedChecksum == null) {
                 logger.info("There is no newer GEO IP database uploaded to MaxMind. Using the old one for now.");
                 startReading();
                 return;
             }
 
+            // tar extract database and copy to target destination
+            extractDatabase(downloadFile, tempFile);
+
             // MD5 checksum verification
-            String expectedChecksum = Resources.toString(new URL(CHECKSUM_URL), StandardCharsets.UTF_8);
             verifyChecksum(Hashing.md5(), tempFile, expectedChecksum);
 
-            // tar extract database and copy to target destination
-            extractDatabase(tempFile, dataFile);
+            Files.copy(tempFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
 
             //only set this value to false on success otherwise errors could lead to endless download triggers
             logger.info("Successfully downloaded new GEO IP database to " + dataFile);
@@ -163,6 +164,9 @@ public class GeoIpService {
             logger.logException("Could not download GeoLiteAPI database", ioEx);
         } finally {
             // clean up
+            if (downloadFile != null) {
+                FileUtils.delete(downloadFile.toFile());
+            }
             if (tempFile != null) {
                 FileUtils.delete(tempFile.toFile());
             }
@@ -182,36 +186,51 @@ public class GeoIpService {
      *
      * @param lastModified modification timestamp of the already present file
      * @param destination save file
-     * @return false if we already have the newest version, true if successful
+     * @return null if no updates were found, the MD5 hash of the downloaded archive if successful
      * @throws IOException if failed during downloading and writing to destination file
      */
-    private boolean downloadDatabaseArchive(Instant lastModified, Path destination) throws IOException {
+    private String downloadDatabaseArchive(Instant lastModified, Path destination) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(ARCHIVE_URL).openConnection();
+
+        String clientId = settings.getProperty(ProtectionSettings.MAXMIND_API_CLIENT_ID);
+        String licenseKey = settings.getProperty(ProtectionSettings.MAXMIND_API_LICENSE_KEY);
+        if (clientId.isEmpty() || licenseKey.isEmpty()) {
+            logger.warning("No MaxMind credentials found in the configuration file!"
+                + " GeoIp protections will be disabled.");
+            return null;
+        }
+        String basicAuth = "Basic " + new String(Base64.getEncoder().encode((clientId + ":" + licenseKey).getBytes()));
+        connection.setRequestProperty("Authorization", basicAuth);
+
         if (lastModified != null) {
             // Only download if we actually need a newer version - this field is specified in GMT zone
             ZonedDateTime zonedTime = lastModified.atZone(ZoneId.of("GMT"));
-            String timeFormat = DateTimeFormatter.ofPattern(TIME_RFC_1023).format(zonedTime);
+            String timeFormat = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedTime);
             connection.addRequestProperty("If-Modified-Since", timeFormat);
         }
 
         if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
             //we already have the newest version
             connection.getInputStream().close();
-            return false;
+            return null;
         }
 
+        String hash = connection.getHeaderField("X-Database-MD5");
+        String rawModifiedDate = connection.getHeaderField("Last-Modified");
+        Instant modifiedDate = Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(rawModifiedDate));
         Files.copy(connection.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-        return true;
+        Files.setLastModifiedTime(destination, FileTime.from(modifiedDate));
+        return hash;
     }
 
     /**
      * Downloads the archive to the destination file if it's newer than the locally version.
      *
      * @param destination save file
-     * @return false if we already have the newest version, true if successful
+     * @return null if no updates were found, the MD5 hash of the downloaded archive if successful
      * @throws IOException if failed during downloading and writing to destination file
      */
-    private boolean downloadDatabaseArchive(Path destination) throws IOException {
+    private String downloadDatabaseArchive(Path destination) throws IOException {
         Instant lastModified = null;
         if (Files.exists(dataFile)) {
             lastModified = Files.getLastModifiedTime(dataFile).toInstant();
@@ -238,34 +257,23 @@ public class GeoIpService {
     }
 
     /**
-     * Extract the database from the tar archive. Existing outputFile will be replaced if it already exists.
+     * Extract the database from gzipped data. Existing outputFile will be replaced if it already exists.
      *
-     * @param tarInputFile gzipped tar input file where the database is
+     * @param inputFile gzipped database input file
      * @param outputFile destination file for the database
-     * @throws IOException on I/O error reading the tar archive, or writing the output
-     * @throws FileNotFoundException if the database cannot be found inside the archive
+     * @throws IOException on I/O error reading the archive, or writing the output
      */
-    private void extractDatabase(Path tarInputFile, Path outputFile) throws FileNotFoundException, IOException {
+    private void extractDatabase(Path inputFile, Path outputFile) throws IOException {
         // .gz -> gzipped file
-        try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(tarInputFile));
-             TarInputStream tarIn = new TarInputStream(new GZIPInputStream(in))) {
-            for (TarEntry entry = tarIn.getNextEntry(); entry != null; entry = tarIn.getNextEntry()) {
-                // filename including folders (absolute path inside the archive)
-                String filename = entry.getName();
-                if (entry.isDirectory() || !filename.endsWith(DATABASE_EXT)) {
-                    continue;
-                }
+        try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(inputFile));
+             GZIPInputStream gzipIn = new GZIPInputStream(in)) {
 
-                // found the database file and copy file
-                Files.copy(tarIn, outputFile, StandardCopyOption.REPLACE_EXISTING);
+            // found the database file and copy file
+            Files.copy(gzipIn, outputFile, StandardCopyOption.REPLACE_EXISTING);
 
-                // update the last modification date to be same as in the archive
-                Files.setLastModifiedTime(outputFile, FileTime.from(entry.getModTime().toInstant()));
-                return;
-            }
+            // update the last modification date to be same as in the archive
+            Files.setLastModifiedTime(outputFile, Files.getLastModifiedTime(inputFile));
         }
-
-        throw new FileNotFoundException("Cannot find database inside downloaded GEO IP file at " + tarInputFile);
     }
 
     /**

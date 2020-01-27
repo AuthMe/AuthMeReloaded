@@ -133,6 +133,23 @@ public class AuthMeApi {
     }
 
     /**
+     * Get the registration ip address of a player.
+     *
+     * @param playerName The name of the player to process
+     * @return The registration ip address of the player
+     */
+    public String getRegistrationIp(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if (auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return auth.getRegistrationIp();
+        }
+        return null;
+    }
+
+    /**
      * Get the last ip address of a player.
      *
      * @param playerName The name of the player to process
@@ -192,6 +209,29 @@ public class AuthMeApi {
         }
         if (auth != null) {
             return auth.getLastLogin();
+        }
+        return null;
+    }
+
+    /**
+     * Get the registration (AuthMe) timestamp of a player.
+     *
+     * @param playerName The name of the player to process
+     *
+     * @return The timestamp of when the player was registered, or null if the player doesn't exist or is not registered
+     */
+    public Instant getRegistrationTime(String playerName) {
+        Long registrationDate = getRegistrationMillis(playerName);
+        return registrationDate == null ? null : Instant.ofEpochMilli(registrationDate);
+    }
+
+    private Long getRegistrationMillis(String playerName) {
+        PlayerAuth auth = playerCache.getAuth(playerName);
+        if (auth == null) {
+            auth = dataSource.getAuth(playerName);
+        }
+        if (auth != null) {
+            return auth.getRegistrationDate();
         }
         return null;
     }
