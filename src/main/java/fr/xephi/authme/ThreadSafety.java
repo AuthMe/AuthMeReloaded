@@ -2,15 +2,15 @@ package fr.xephi.authme;
 
 import org.bukkit.Bukkit;
 
-public final class ThreadSafetyUtils {
+public final class ThreadSafety {
 
     private static boolean enabled = false;
 
-    private ThreadSafetyUtils() {
+    private ThreadSafety() {
     }
 
     public static void setEnabled(boolean enabled) {
-        ThreadSafetyUtils.enabled = enabled;
+        ThreadSafety.enabled = enabled;
     }
 
     public static void requireSync() {

@@ -1,7 +1,7 @@
 package fr.xephi.authme.service;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ThreadSafetyUtils;
+import fr.xephi.authme.ThreadSafety;
 import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.datasource.DataSource;
@@ -72,7 +72,7 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
      */
     @ShouldBeAsync
     public void createAndSendRecoveryCode(Player player, String email) {
-        ThreadSafetyUtils.shouldBeAsync();
+        ThreadSafety.shouldBeAsync();
         if (!checkEmailCooldown(player)) {
             return;
         }
@@ -96,7 +96,7 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
      */
     @ShouldBeAsync
     public void generateAndSendNewPassword(Player player, String email) {
-        ThreadSafetyUtils.shouldBeAsync();
+        ThreadSafety.shouldBeAsync();
         if (!checkEmailCooldown(player)) {
             return;
         }

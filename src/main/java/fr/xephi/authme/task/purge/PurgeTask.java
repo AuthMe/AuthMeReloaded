@@ -1,7 +1,7 @@
 package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ThreadSafetyUtils;
+import fr.xephi.authme.ThreadSafety;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -61,7 +61,7 @@ class PurgeTask extends BukkitRunnable {
     @Override
     @ShouldBeAsync
     public void run() {
-        ThreadSafetyUtils.shouldBeAsync();
+        ThreadSafety.shouldBeAsync();
         if (toPurge.isEmpty()) {
             //everything was removed
             finish();

@@ -116,7 +116,6 @@ public class AuthMe extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        ThreadSafetyUtils.setEnabled(true);
         // Load the plugin version data from the plugin description file
         loadPluginInfo(getDescription().getVersion());
 
@@ -172,6 +171,8 @@ public class AuthMe extends JavaPlugin {
 
         // Successful message
         logger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber() + " successfully enabled!");
+        // Start catching wrong sync/async calls
+        ThreadSafety.setEnabled(true);
 
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);

@@ -1,7 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import ch.jalu.datasourcecolumns.data.DataSourceValue;
-import fr.xephi.authme.ThreadSafetyUtils;
+import fr.xephi.authme.ThreadSafety;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.initialization.Reloadable;
@@ -313,7 +313,7 @@ public interface DataSource extends Reloadable {
      */
     @ShouldBeAsync
     default void refreshCache(String playerName) {
-        ThreadSafetyUtils.shouldBeAsync();
+        ThreadSafety.shouldBeAsync();
     }
 
 }
