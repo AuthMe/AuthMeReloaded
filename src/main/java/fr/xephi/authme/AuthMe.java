@@ -116,6 +116,7 @@ public class AuthMe extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+        ThreadSafetyUtils.setEnabled(true);
         // Load the plugin version data from the plugin description file
         loadPluginInfo(getDescription().getVersion());
 

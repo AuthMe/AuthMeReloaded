@@ -96,7 +96,7 @@ public class AntiBotService implements SettingsDependent {
         // Schedule auto-disable
         disableTask = bukkitService.runTaskLater(this::stopProtection, duration * TICKS_PER_MINUTE);
         antiBotStatus = AntiBotStatus.ACTIVE;
-        bukkitService.scheduleSyncDelayedTask(() -> {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
             // Inform admins
             bukkitService.getOnlinePlayers().stream()
                 .filter(player -> permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES))
