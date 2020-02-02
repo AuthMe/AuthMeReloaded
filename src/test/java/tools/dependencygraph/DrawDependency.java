@@ -204,8 +204,8 @@ public class DrawDependency implements ToolTask {
                 LimboPersistence.class.getPackage().getName() + ".LimboPersistenceHandler");
 
             return ImmutableList.of(ExecutableCommand.class, SynchronousProcess.class, AsynchronousProcess.class,
-                EncryptionMethod.class, AbstractConverter.class, Listener.class, RegistrationExecutor.class, debugSectionClass,
-                limboPersistenceClass);
+                EncryptionMethod.class, AbstractConverter.class, Listener.class, RegistrationExecutor.class,
+                debugSectionClass, limboPersistenceClass);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }

@@ -173,7 +173,7 @@ public class AuthMe extends JavaPlugin {
         // Successful message
         logger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber() + " successfully enabled!");
         // Start catching wrong sync/async calls
-        if(System.getProperty("authme.disableThreadSafetyChecks") == null) {
+        if (System.getProperty("authme.disableThreadSafetyChecks") == null) {
             BukkitThreadSafety.setEnabled(true);
         }
 
