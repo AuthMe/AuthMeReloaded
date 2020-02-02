@@ -59,7 +59,7 @@ public class CrazyLoginConverterTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        crazyLoginConverter.execute(sender);
+        crazyLoginConverter.executeInternal(sender);
 
         // then
         ArgumentCaptor<PlayerAuth> authCaptor = ArgumentCaptor.forClass(PlayerAuth.class);
@@ -78,7 +78,7 @@ public class CrazyLoginConverterTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        crazyLoginConverter.execute(sender);
+        crazyLoginConverter.executeInternal(sender);
 
         // then
         verifyNoInteractions(dataSource);

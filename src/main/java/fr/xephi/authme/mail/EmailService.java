@@ -1,7 +1,7 @@
 package fr.xephi.authme.mail;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ThreadSafety;
+import fr.xephi.authme.util.BukkitThreadSafety;
 import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.initialization.DataFolder;
@@ -54,7 +54,7 @@ public class EmailService {
      */
     @ShouldBeAsync
     public boolean sendPasswordMail(String name, String mailAddress, String newPass) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         if (!hasAllInformation()) {
             logger.warning("Cannot perform email registration: not all email settings are complete");
             return false;
@@ -96,7 +96,7 @@ public class EmailService {
      */
     @ShouldBeAsync
     public boolean sendVerificationMail(String name, String mailAddress, String code) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         if (!hasAllInformation()) {
             logger.warning("Cannot send verification email: not all email settings are complete");
             return false;
@@ -125,7 +125,7 @@ public class EmailService {
      */
     @ShouldBeAsync
     public boolean sendRecoveryCode(String name, String email, String code) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         HtmlEmail htmlEmail;
         try {
             htmlEmail = sendMailSsl.initializeMail(email);

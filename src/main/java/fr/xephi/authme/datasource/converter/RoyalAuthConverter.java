@@ -2,6 +2,7 @@ package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -15,7 +16,7 @@ import java.io.File;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
-public class RoyalAuthConverter implements Converter {
+public class RoyalAuthConverter extends AbstractConverter {
 
     private static final String LAST_LOGIN_PATH = "timestamps.quit";
     private static final String PASSWORD_PATH = "login.password";
@@ -32,7 +33,8 @@ public class RoyalAuthConverter implements Converter {
     }
 
     @Override
-    public void execute(CommandSender sender) {
+    @ShouldBeAsync
+    public void executeInternal(CommandSender sender) {
         for (OfflinePlayer player : plugin.getServer().getOfflinePlayers()) {
             try {
                 String name = player.getName().toLowerCase();

@@ -11,7 +11,7 @@ import com.maxmind.db.cache.CHMCache;
 import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ThreadSafety;
+import fr.xephi.authme.util.BukkitThreadSafety;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -132,7 +132,7 @@ public class GeoIpService {
      */
     @ShouldBeAsync
     private void updateDatabase() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         logger.info("Downloading GEO IP database, because the old database is older than "
                 + UPDATE_INTERVAL_DAYS + " days or doesn't exist");
 

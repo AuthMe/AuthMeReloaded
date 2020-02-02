@@ -5,7 +5,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSortedMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.datasource.converter.Converter;
+import fr.xephi.authme.datasource.converter.AbstractConverter;
 import fr.xephi.authme.datasource.converter.CrazyLoginConverter;
 import fr.xephi.authme.datasource.converter.LoginSecurityConverter;
 import fr.xephi.authme.datasource.converter.MySqlToSqlite;
@@ -30,7 +30,7 @@ import java.util.Map;
 public class ConverterCommand implements ExecutableCommand {
 
     @VisibleForTesting
-    static final Map<String, Class<? extends Converter>> CONVERTERS = getConverters();
+    static final Map<String, Class<? extends AbstractConverter>> CONVERTERS = getConverters();
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(ConverterCommand.class);
 
@@ -41,18 +41,18 @@ public class ConverterCommand implements ExecutableCommand {
     private BukkitService bukkitService;
 
     @Inject
-    private Factory<Converter> converterFactory;
+    private Factory<AbstractConverter> converterFactory;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
-        Class<? extends Converter> converterClass = getConverterClassFromArgs(arguments);
+        Class<? extends AbstractConverter> converterClass = getConverterClassFromArgs(arguments);
         if (converterClass == null) {
             sender.sendMessage("Converters: " + String.join(", ", CONVERTERS.keySet()));
             return;
         }
 
         // Get the proper converter instance
-        final Converter converter = converterFactory.newInstance(converterClass);
+        final AbstractConverter converter = converterFactory.newInstance(converterClass);
 
         // Run the convert job
         bukkitService.runTaskAsynchronously(() -> {
@@ -68,7 +68,7 @@ public class ConverterCommand implements ExecutableCommand {
         sender.sendMessage("[AuthMe] Successfully started " + arguments.get(0));
     }
 
-    private static Class<? extends Converter> getConverterClassFromArgs(List<String> arguments) {
+    private static Class<? extends AbstractConverter> getConverterClassFromArgs(List<String> arguments) {
         return arguments.isEmpty()
             ? null
             : CONVERTERS.get(arguments.get(0).toLowerCase());
@@ -79,8 +79,8 @@ public class ConverterCommand implements ExecutableCommand {
      *
      * @return map with all available converters
      */
-    private static Map<String, Class<? extends Converter>> getConverters() {
-        return ImmutableSortedMap.<String, Class<? extends Converter>>naturalOrder()
+    private static Map<String, Class<? extends AbstractConverter>> getConverters() {
+        return ImmutableSortedMap.<String, Class<? extends AbstractConverter>>naturalOrder()
             .put("xauth", XAuthConverter.class)
             .put("crazylogin", CrazyLoginConverter.class)
             .put("rakamak", RakamakConverter.class)

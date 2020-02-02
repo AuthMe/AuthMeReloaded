@@ -2,6 +2,7 @@ package fr.xephi.authme.datasource.converter;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -30,7 +31,7 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
 /**
  * Converts data from LoginSecurity to AuthMe.
  */
-public class LoginSecurityConverter implements Converter {
+public class LoginSecurityConverter extends AbstractConverter {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(LoginSecurityConverter.class);
     private final File dataFolder;
@@ -55,7 +56,8 @@ public class LoginSecurityConverter implements Converter {
     }
 
     @Override
-    public void execute(CommandSender sender) {
+    @ShouldBeAsync
+    public void executeInternal(CommandSender sender) {
         try (Connection connection = createConnectionOrInformSender(sender)) {
             if (connection != null) {
                 performConversion(sender, connection);

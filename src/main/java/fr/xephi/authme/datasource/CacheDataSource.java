@@ -10,7 +10,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ThreadSafety;
+import fr.xephi.authme.util.BukkitThreadSafety;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -84,14 +84,14 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public boolean isAuthAvailable(String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return getAuth(user) != null;
     }
 
     @Override
     @ShouldBeAsync
     public HashedPassword getPassword(String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         user = user.toLowerCase();
         Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user);
         if (pAuthOpt != null && pAuthOpt.isPresent()) {
@@ -103,7 +103,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public PlayerAuth getAuth(String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         user = user.toLowerCase();
         return cachedAuths.getUnchecked(user).orElse(null);
     }
@@ -111,7 +111,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public boolean saveAuth(PlayerAuth auth) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         boolean result = source.saveAuth(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -122,7 +122,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public boolean updatePassword(PlayerAuth auth) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         boolean result = source.updatePassword(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -133,7 +133,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public boolean updatePassword(String user, HashedPassword password) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         user = user.toLowerCase();
         boolean result = source.updatePassword(user, password);
         if (result) {
@@ -145,7 +145,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public boolean updateSession(PlayerAuth auth) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         boolean result = source.updateSession(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -156,7 +156,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public boolean updateQuitLoc(final PlayerAuth auth) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         boolean result = source.updateQuitLoc(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -167,14 +167,14 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public Set<String> getRecordsToPurge(long until) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.getRecordsToPurge(until);
     }
 
     @Override
     @ShouldBeAsync
     public boolean removeAuth(String name) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         name = name.toLowerCase();
         boolean result = source.removeAuth(name);
         if (result) {
@@ -198,7 +198,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public boolean updateEmail(final PlayerAuth auth) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         boolean result = source.updateEmail(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -209,77 +209,77 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public List<String> getAllAuthsByIp(String ip) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.getAllAuthsByIp(ip);
     }
 
     @Override
     @ShouldBeAsync
     public int countAuthsByEmail(String email) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.countAuthsByEmail(email);
     }
 
     @Override
     @ShouldBeAsync
     public void purgeRecords(Collection<String> banned) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         source.purgeRecords(banned);
         cachedAuths.invalidateAll(banned);
     }
 
     @Override
     public DataSourceType getType() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.getType();
     }
 
     @Override
     @ShouldBeAsync
     public boolean isLogged(String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.isLogged(user);
     }
 
     @Override
     @ShouldBeAsync
     public void setLogged(final String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         source.setLogged(user.toLowerCase());
     }
 
     @Override
     @ShouldBeAsync
     public void setUnlogged(final String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         source.setUnlogged(user.toLowerCase());
     }
 
     @Override
     @ShouldBeAsync
     public boolean hasSession(final String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.hasSession(user);
     }
 
     @Override
     @ShouldBeAsync
     public void grantSession(final String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         source.grantSession(user);
     }
 
     @Override
     @ShouldBeAsync
     public void revokeSession(final String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         source.revokeSession(user);
     }
 
     @Override
     @ShouldBeAsync
     public void purgeLogged() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         source.purgeLogged();
         cachedAuths.invalidateAll();
     }
@@ -287,14 +287,14 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public int getAccountsRegistered() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.getAccountsRegistered();
     }
 
     @Override
     @ShouldBeAsync
     public boolean updateRealName(String user, String realName) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         boolean result = source.updateRealName(user, realName);
         if (result) {
             cachedAuths.refresh(user);
@@ -305,7 +305,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public DataSourceValue<String> getEmail(String user) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return cachedAuths.getUnchecked(user)
             .map(auth -> DataSourceValueImpl.of(auth.getEmail()))
             .orElse(DataSourceValueImpl.unknownRow());
@@ -314,14 +314,14 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public List<PlayerAuth> getAllAuths() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.getAllAuths();
     }
 
     @Override
     @ShouldBeAsync
     public List<String> getLoggedPlayersWithEmptyMail() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return playerCache.getCache().values().stream()
             .filter(auth -> Utils.isEmailEmpty(auth.getEmail()))
             .map(PlayerAuth::getRealName)
@@ -331,14 +331,14 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public List<PlayerAuth> getRecentlyLoggedInPlayers() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         return source.getRecentlyLoggedInPlayers();
     }
 
     @Override
     @ShouldBeAsync
     public boolean setTotpKey(String user, String totpKey) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         boolean result = source.setTotpKey(user, totpKey);
         if (result) {
             cachedAuths.refresh(user);
@@ -354,7 +354,7 @@ public class CacheDataSource implements DataSource {
     @Override
     @ShouldBeAsync
     public void refreshCache(String playerName) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         if (cachedAuths.getIfPresent(playerName) != null) {
             cachedAuths.refresh(playerName);
         }

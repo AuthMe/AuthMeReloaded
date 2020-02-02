@@ -31,6 +31,7 @@ import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
+import fr.xephi.authme.util.BukkitThreadSafety;
 import fr.xephi.authme.util.ExceptionUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -172,7 +173,9 @@ public class AuthMe extends JavaPlugin {
         // Successful message
         logger.info("AuthMe " + getPluginVersion() + " build n." + getPluginBuildNumber() + " successfully enabled!");
         // Start catching wrong sync/async calls
-        ThreadSafety.setEnabled(true);
+        if(System.getProperty("authme.disableThreadSafetyChecks") == null) {
+            BukkitThreadSafety.setEnabled(true);
+        }
 
         // Purge on start if enabled
         PurgeService purgeService = injector.getSingleton(PurgeService.class);

@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -24,7 +25,7 @@ import java.util.Map.Entry;
 /**
  * @author Xephi59
  */
-public class RakamakConverter implements Converter {
+public class RakamakConverter extends AbstractConverter {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(RakamakConverter.class);
     private final DataSource database;
@@ -41,9 +42,10 @@ public class RakamakConverter implements Converter {
         this.passwordSecurity = passwordSecurity;
     }
 
-    @Override
     //TODO ljacqu 20151229: Restructure this into smaller portions
-    public void execute(CommandSender sender) {
+    @Override
+    @ShouldBeAsync
+    public void executeInternal(CommandSender sender) {
         boolean useIp = settings.getProperty(ConverterSettings.RAKAMAK_USE_IP);
         String fileName = settings.getProperty(ConverterSettings.RAKAMAK_FILE_NAME);
         String ipFileName = settings.getProperty(ConverterSettings.RAKAMAK_IP_FILE_NAME);

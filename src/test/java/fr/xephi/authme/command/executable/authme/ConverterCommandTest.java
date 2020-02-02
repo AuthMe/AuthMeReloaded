@@ -2,7 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.datasource.converter.Converter;
+import fr.xephi.authme.datasource.converter.AbstractConverter;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
@@ -49,7 +49,7 @@ public class ConverterCommandTest {
     private BukkitService bukkitService;
 
     @Mock
-    private Factory<Converter> converterFactory;
+    private Factory<AbstractConverter> converterFactory;
 
     @BeforeClass
     public static void initLogger() {
@@ -87,10 +87,10 @@ public class ConverterCommandTest {
     @Test
     public void shouldHaveUniqueClassForEachConverter() {
         // given
-        Set<Class<? extends Converter>> classes = new HashSet<>();
+        Set<Class<? extends AbstractConverter>> classes = new HashSet<>();
 
         // when / then
-        for (Map.Entry<String, Class<? extends Converter>> entry : ConverterCommand.CONVERTERS.entrySet()) {
+        for (Map.Entry<String, Class<? extends AbstractConverter>> entry : ConverterCommand.CONVERTERS.entrySet()) {
             assertThat("Name is not null or empty",
                 StringUtils.isEmpty(entry.getKey()), equalTo(false));
 
@@ -103,8 +103,8 @@ public class ConverterCommandTest {
     public void shouldLaunchConverterForAllTypes() {
         // given
         String converterName = "rakamak";
-        Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
-        Converter converter = createMockReturnedByInjector(converterClass);
+        Class<? extends AbstractConverter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
+        AbstractConverter converter = createMockReturnedByInjector(converterClass);
         CommandSender sender = mock(CommandSender.class);
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
@@ -122,8 +122,8 @@ public class ConverterCommandTest {
     public void shouldCatchExceptionInConverterAndInformSender() {
         // given
         String converterName = "vauth";
-        Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
-        Converter converter = createMockReturnedByInjector(converterClass);
+        Class<? extends AbstractConverter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
+        AbstractConverter converter = createMockReturnedByInjector(converterClass);
         doThrow(IllegalStateException.class).when(converter).execute(any(CommandSender.class));
         CommandSender sender = mock(CommandSender.class);
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
@@ -139,7 +139,7 @@ public class ConverterCommandTest {
         verify(commonService).send(sender, MessageKey.ERROR);
     }
 
-    private <T extends Converter> T createMockReturnedByInjector(Class<T> clazz) {
+    private <T extends AbstractConverter> T createMockReturnedByInjector(Class<T> clazz) {
         T converter = mock(clazz);
         given(converterFactory.newInstance(clazz)).willReturn(converter);
         return converter;

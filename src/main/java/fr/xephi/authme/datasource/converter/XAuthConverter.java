@@ -3,6 +3,7 @@ package fr.xephi.authme.datasource.converter;
 import de.luricos.bukkit.xAuth.database.DatabaseTables;
 import de.luricos.bukkit.xAuth.utils.xAuthLog;
 import de.luricos.bukkit.xAuth.xAuth;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -21,7 +22,7 @@ import java.util.List;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
-public class XAuthConverter implements Converter {
+public class XAuthConverter extends AbstractConverter {
 
     @Inject
     @DataFolder
@@ -35,7 +36,8 @@ public class XAuthConverter implements Converter {
     }
 
     @Override
-    public void execute(CommandSender sender) {
+    @ShouldBeAsync
+    public void executeInternal(CommandSender sender) {
         try {
             Class.forName("de.luricos.bukkit.xAuth.xAuth");
             convert(sender);

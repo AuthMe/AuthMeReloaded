@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;

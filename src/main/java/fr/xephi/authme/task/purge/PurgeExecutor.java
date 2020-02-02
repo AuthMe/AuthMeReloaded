@@ -1,7 +1,7 @@
 package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ThreadSafety;
+import fr.xephi.authme.util.BukkitThreadSafety;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -57,7 +57,7 @@ public class PurgeExecutor {
      */
     @ShouldBeAsync
     public void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         // Purge other data
         purgeFromAuthMe(names);
         purgeEssentials(players);

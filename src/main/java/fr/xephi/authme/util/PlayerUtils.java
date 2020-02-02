@@ -24,7 +24,6 @@ public final class PlayerUtils {
 
     /**
      * Returns if the player is an NPC or not.
-     * TODO: is player metadata thread-safe?
      *
      * @param player The player to check
      * @return True if the player is an NPC, false otherwise

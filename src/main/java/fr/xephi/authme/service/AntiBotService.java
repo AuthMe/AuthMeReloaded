@@ -1,6 +1,6 @@
 package fr.xephi.authme.service;
 
-import fr.xephi.authme.ThreadSafety;
+import fr.xephi.authme.util.BukkitThreadSafety;
 import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.initialization.SettingsDependent;
@@ -108,7 +108,7 @@ public class AntiBotService implements SettingsDependent {
      * Transitions the anti bot service from active status back to listening.
      */
     private void stopProtection() {
-        ThreadSafety.requireSync();
+        BukkitThreadSafety.requireSync();
         if (antiBotStatus != AntiBotStatus.ACTIVE) {
             return;
         }
@@ -144,7 +144,7 @@ public class AntiBotService implements SettingsDependent {
      * @param started the new protection status
      */
     public void overrideAntiBotStatus(boolean started) {
-        ThreadSafety.requireSync();
+        BukkitThreadSafety.requireSync();
         if (antiBotStatus != AntiBotStatus.DISABLED) {
             if (started) {
                 startProtection();
@@ -161,7 +161,7 @@ public class AntiBotService implements SettingsDependent {
      */
     @ShouldBeAsync
     public boolean shouldKick() {
-        ThreadSafety.shouldBeAsync();
+        BukkitThreadSafety.shouldBeAsync();
         if (antiBotStatus == AntiBotStatus.DISABLED) {
             return false;
         } else if (antiBotStatus == AntiBotStatus.ACTIVE) {
