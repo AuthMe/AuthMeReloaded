@@ -7,6 +7,7 @@ import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.process.AsyncUserScheduler;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.service.BukkitService;
@@ -56,6 +57,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private AsyncUserScheduler asyncUserScheduler;
 
     @Inject
     private AsynchronousLogin asynchronousLogin;
@@ -126,7 +130,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 // Run commands
                 bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
                     () -> commandManager.runCommandsOnSessionLogin(player));
-                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                asyncUserScheduler.runTask(name, () -> asynchronousLogin.forceLogin(player));
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
