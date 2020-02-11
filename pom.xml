@@ -443,7 +443,7 @@
         <!-- ProtocolLib Repo -->
         <repository>
             <id>dmulloy2-repo-releases</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -453,7 +453,7 @@
         </repository>
         <repository>
             <id>dmulloy2-repo-snapshots</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/snapshots/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -465,7 +465,7 @@
         <!-- Multiverse Repo -->
         <repository>
             <id>onarandombox-repo-releases</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse/</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -475,7 +475,7 @@
         </repository>
         <repository>
             <id>onarandombox-repo-snapshots</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -487,7 +487,7 @@
         <!-- Vault Repo -->
         <repository>
             <id>vault-repo-releases</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+            <url>https://nexus.hc.to/content/repositories/pub_releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -497,7 +497,7 @@
         </repository>
         <repository>
             <id>vault-repo-snapshots</id>
-            <url>http://nexus.hc.to/content/repositories/pub_snapshots</url>
+            <url>https://nexus.hc.to/content/repositories/pub_snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
