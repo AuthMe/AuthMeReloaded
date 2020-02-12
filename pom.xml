@@ -484,25 +484,15 @@
             </snapshots>
         </repository>
 
-        <!-- Vault Repo -->
+        <!-- Jitpack Repo that builds Git projects -->
         <repository>
-            <id>vault-repo-releases</id>
-            <url>https://nexus.hc.to/content/repositories/pub_releases</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>vault-repo-snapshots</id>
-            <url>https://nexus.hc.to/content/repositories/pub_snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
@@ -730,7 +720,7 @@
 
         <!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
         <dependency>
-            <groupId>net.milkbowl.vault</groupId>
+            <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
             <scope>provided</scope>
