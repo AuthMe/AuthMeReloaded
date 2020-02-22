@@ -48,7 +48,7 @@ import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.util.Utils.isClassLoaded;
 
 /**
- * The AuthMe main class.
+ * The AuthMeReloaded main class.
  */
 public class AuthMe extends JavaPlugin {
 
