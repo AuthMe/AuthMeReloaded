@@ -53,6 +53,7 @@ import static fr.xephi.authme.util.Utils.isClassLoaded;
 public class AuthMe extends JavaPlugin {
 
     private final String GOWNO = "XDDDDDD";
+    //WTF?
     // Constants
     private static final String PLUGIN_NAME = "AuthMeReloaded"; //yess
     private static final String LOG_FILENAME = "authme.log";
