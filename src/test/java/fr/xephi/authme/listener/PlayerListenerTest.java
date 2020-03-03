@@ -932,7 +932,6 @@ public class PlayerListenerTest {
         // given
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
-        given(transaction.getPlayer()).willReturn(player);
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
         given(listenerService.shouldCancelEvent(player)).willReturn(false);
@@ -951,7 +950,6 @@ public class PlayerListenerTest {
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES)).willReturn(Collections.emptySet());
-        given(transaction.getPlayer()).willReturn(player);
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
