@@ -40,7 +40,7 @@ error:
     max_registration: '&cAtingiu o numero máximo de %reg_count contas registas, maximo de contas %max_acc'
     logged_in: '&cJá se encontra autenticado!'
     kick_for_vip: '&cUm jogador VIP entrou no servidor cheio!'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+    kick_unresolved_hostname: '&cOcorreu um erro: nome do servidor do jogador não resolvido!'
     tempban_max_logins: '&cVocê foi temporariamente banido por falhar muitas vezes o login.'
 
 # AntiBot
