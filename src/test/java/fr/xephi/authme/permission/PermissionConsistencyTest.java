@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 /**
  * Tests that the permissions listed in plugin.yml correspond to the ones in the code.
  */
-public class PermissionConsistencyTest {
+class PermissionConsistencyTest {
 
     /** Wildcard permissions (present in plugin.yml but not in the codebase). */
     private static final Set<String> PLUGIN_YML_PERMISSIONS_WILDCARDS =
@@ -46,7 +46,7 @@ public class PermissionConsistencyTest {
     private static Map<String, PermissionDefinition> pluginYmlPermissions;
 
     @BeforeAll
-    public static void gatherPermissionNodes() {
+    static void gatherPermissionNodes() {
         permissionClasses = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "permission")
             .collectClasses(PermissionNode.class).stream()
             .filter(clz -> !clz.isInterface())
@@ -56,7 +56,7 @@ public class PermissionConsistencyTest {
     }
 
     @Test
-    public void shouldHaveAllPermissionsInPluginYml() {
+    void shouldHaveAllPermissionsInPluginYml() {
         // given
         List<String> errors = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class PermissionConsistencyTest {
     }
 
     @Test
-    public void shouldNotHaveUnknownPermissionsInPluginYml() {
+    void shouldNotHaveUnknownPermissionsInPluginYml() {
         // given
         List<String> errors = new ArrayList<>();
 

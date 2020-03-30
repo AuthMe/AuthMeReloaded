@@ -8,19 +8,19 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link LoginCaptchaManager}.
  */
-public class LoginCaptchaManagerTest {
+class LoginCaptchaManagerTest {
 
     @Test
-    public void shouldAddCounts() {
+    void shouldAddCounts() {
         // given
         Settings settings = mockSettings(3, 4);
         LoginCaptchaManager manager = new LoginCaptchaManager(settings);
@@ -39,7 +39,7 @@ public class LoginCaptchaManagerTest {
     }
 
     @Test
-    public void shouldCreateAndCheckCaptcha() {
+    void shouldCreateAndCheckCaptcha() {
         // given
         String name = "Miner";
         Player player = mock(Player.class);
@@ -59,7 +59,7 @@ public class LoginCaptchaManagerTest {
     }
 
     @Test
-    public void shouldGenerateNewCodeOnFailure() {
+    void shouldGenerateNewCodeOnFailure() {
         // given
         String name = "Tarheel";
         Player player = mock(Player.class);
@@ -78,7 +78,7 @@ public class LoginCaptchaManagerTest {
     }
 
     @Test
-    public void shouldHaveSameCodeAfterGeneration() {
+    void shouldHaveSameCodeAfterGeneration() {
         // given
         String player = "Tester";
         Settings settings = mockSettings(1, 5);
@@ -96,7 +96,7 @@ public class LoginCaptchaManagerTest {
     }
 
     @Test
-    public void shouldIncreaseAndResetCount() {
+    void shouldIncreaseAndResetCount() {
         // given
         String player = "plaYer";
         Settings settings = mockSettings(2, 3);
@@ -119,7 +119,7 @@ public class LoginCaptchaManagerTest {
     }
 
     @Test
-    public void shouldNotIncreaseCountForDisabledCaptcha() {
+    void shouldNotIncreaseCountForDisabledCaptcha() {
         // given
         String player = "someone_";
         Settings settings = mockSettings(1, 3);
@@ -135,7 +135,7 @@ public class LoginCaptchaManagerTest {
     }
 
     @Test
-    public void shouldNotCheckCountIfCaptchaIsDisabled() {
+    void shouldNotCheckCountIfCaptchaIsDisabled() {
         // given
         String player = "Robert001";
         Settings settings = mockSettings(1, 5);

@@ -17,18 +17,18 @@ import org.mockito.Mock;
 
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
  * Test for {@link SendMailSsl}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class SendMailSslTest {
+class SendMailSslTest {
 
     @InjectDelayed
     private SendMailSsl sendMailSsl;
@@ -37,25 +37,25 @@ public class SendMailSslTest {
     private Settings settings;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void initFields() {
+    void initFields() {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
     }
 
     @Test
-    public void shouldHaveAllInformation() {
+    void shouldHaveAllInformation() {
         // given / when / then
         assertThat(sendMailSsl.hasAllInformation(), equalTo(true));
     }
 
     @Test
-    public void shouldCreateEmailObject() throws EmailException {
+    void shouldCreateEmailObject() throws EmailException {
         // given
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(465);
         String smtpHost = "mail.example.com";
@@ -80,7 +80,7 @@ public class SendMailSslTest {
     }
 
     @Test
-    public void shouldCreateEmailObjectWithAddress() throws EmailException {
+    void shouldCreateEmailObjectWithAddress() throws EmailException {
         // given
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(465);
         String smtpHost = "mail.example.com";
@@ -106,7 +106,7 @@ public class SendMailSslTest {
     }
 
     @Test
-    public void shouldCreateEmailObjectWithOAuth2() throws EmailException {
+    void shouldCreateEmailObjectWithOAuth2() throws EmailException {
         // given
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(587);
         given(settings.getProperty(EmailSettings.OAUTH2_TOKEN)).willReturn("oAuth2 token");

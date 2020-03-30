@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link UnregisterAdminCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class UnregisterAdminCommandTest {
+class UnregisterAdminCommandTest {
 
     @InjectMocks
     private UnregisterAdminCommand command;
@@ -42,7 +42,7 @@ public class UnregisterAdminCommandTest {
     private Management management;
 
     @Test
-    public void shouldHandleUnknownPlayer() {
+    void shouldHandleUnknownPlayer() {
         // given
         String user = "bobby";
         given(dataSource.isAuthAvailable(user)).willReturn(false);
@@ -57,7 +57,7 @@ public class UnregisterAdminCommandTest {
     }
 
     @Test
-    public void shouldInvokeUnregisterProcess() {
+    void shouldInvokeUnregisterProcess() {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);
@@ -75,7 +75,7 @@ public class UnregisterAdminCommandTest {
     }
 
     @Test
-    public void shouldInvokeUnregisterProcessWithNullPlayer() {
+    void shouldInvokeUnregisterProcessWithNullPlayer() {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);

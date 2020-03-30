@@ -25,7 +25,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeLastPositionCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PurgeLastPositionCommandTest {
+class PurgeLastPositionCommandTest {
 
     @InjectMocks
     private PurgeLastPositionCommand command;
@@ -40,7 +40,7 @@ public class PurgeLastPositionCommandTest {
     private BungeeSender bungeeSender;
 
     @Test
-    public void shouldPurgeLastPosOfUser() {
+    void shouldPurgeLastPosOfUser() {
         // given
         String player = "_Bobby";
         PlayerAuth auth = mock(PlayerAuth.class);
@@ -57,7 +57,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldPurgePositionOfCommandSender() {
+    void shouldPurgePositionOfCommandSender() {
         // given
         String player = "_Bobby";
         CommandSender sender = mock(CommandSender.class);
@@ -75,7 +75,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldHandleNonExistentUser() {
+    void shouldHandleNonExistentUser() {
         // given
         String name = "invalidPlayer";
         CommandSender sender = mock(CommandSender.class);
@@ -89,7 +89,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldResetAllLastPositions() {
+    void shouldResetAllLastPositions() {
         // given
         PlayerAuth auth1 = mock(PlayerAuth.class);
         PlayerAuth auth2 = mock(PlayerAuth.class);

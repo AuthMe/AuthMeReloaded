@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Tests for {@link EmailSetPasswordCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class EmailSetPasswordCommandTest {
+class EmailSetPasswordCommandTest {
 
     @InjectMocks
     private EmailSetPasswordCommand command;
@@ -48,12 +48,12 @@ public class EmailSetPasswordCommandTest {
     private ValidationService validationService;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldChangePassword() {
+    void shouldChangePassword() {
         // given
         Player player = mock(Player.class);
         String name = "Jerry";
@@ -75,7 +75,7 @@ public class EmailSetPasswordCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidPassword() {
+    void shouldRejectInvalidPassword() {
         // given
         Player player = mock(Player.class);
         String name = "Morgan";
@@ -94,7 +94,7 @@ public class EmailSetPasswordCommandTest {
     }
 
     @Test
-    public void shouldDoNothingCantChangePass() {
+    void shouldDoNothingCantChangePass() {
         // given
         Player player = mock(Player.class);
 

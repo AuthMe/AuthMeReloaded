@@ -28,15 +28,15 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link AbstractDataSourceConverter}.
  */
-public class AbstractDataSourceConverterTest {
+class AbstractDataSourceConverterTest {
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldThrowForDestinationTypeMismatch() {
+    void shouldThrowForDestinationTypeMismatch() {
         // given
         DataSource destination = mock(DataSource.class);
         given(destination.getType()).willReturn(DataSourceType.MYSQL);
@@ -55,7 +55,7 @@ public class AbstractDataSourceConverterTest {
     }
 
     @Test
-    public void shouldHandleSourceThrowingException() {
+    void shouldHandleSourceThrowingException() {
         // given
         DataSource source = mock(DataSource.class);
         DataSource destination = mock(DataSource.class);
@@ -76,7 +76,7 @@ public class AbstractDataSourceConverterTest {
     }
 
     @Test
-    public void shouldConvertAndSkipExistingPlayers() {
+    void shouldConvertAndSkipExistingPlayers() {
         // given
         DataSource source = mock(DataSource.class);
         DataSource destination = mock(DataSource.class);

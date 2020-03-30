@@ -13,27 +13,27 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link ConsoleLoggerFactory}.
  */
-public class ConsoleLoggerFactoryTest {
+class ConsoleLoggerFactoryTest {
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         removeSettingsAndClearMap();
         TestHelper.setupLogger();
     }
 
     @AfterEach
-    public void resetConsoleLoggerFactoryToDefaults() {
+    void resetConsoleLoggerFactoryToDefaults() {
         removeSettingsAndClearMap();
     }
 
@@ -43,7 +43,7 @@ public class ConsoleLoggerFactoryTest {
     }
 
     @Test
-    public void shouldCreateLoggerWithProperNameAndDefaultLogLevel() {
+    void shouldCreateLoggerWithProperNameAndDefaultLogLevel() {
         // given / when
         ConsoleLogger logger = ConsoleLoggerFactory.get(AuthMe.class);
 
@@ -54,7 +54,7 @@ public class ConsoleLoggerFactoryTest {
     }
 
     @Test
-    public void shouldReturnSameInstanceForName() {
+    void shouldReturnSameInstanceForName() {
         // given / when
         ConsoleLogger logger1 = ConsoleLoggerFactory.get(String.class);
         ConsoleLogger logger2 = ConsoleLoggerFactory.get(Number.class);
@@ -67,7 +67,7 @@ public class ConsoleLoggerFactoryTest {
     }
 
     @Test
-    public void shouldInitializeAccordingToSettings() {
+    void shouldInitializeAccordingToSettings() {
         // given
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.FINE);

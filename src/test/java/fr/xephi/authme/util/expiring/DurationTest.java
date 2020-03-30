@@ -4,16 +4,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link Duration}.
  */
-public class DurationTest {
+class DurationTest {
 
     @Test
-    public void shouldConvertToAppropriateTimeUnit() {
+    void shouldConvertToAppropriateTimeUnit() {
         check(Duration.createWithSuitableUnit(0, TimeUnit.HOURS),
             0, TimeUnit.SECONDS);
 

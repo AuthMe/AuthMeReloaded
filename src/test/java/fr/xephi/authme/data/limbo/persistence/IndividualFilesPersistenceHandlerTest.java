@@ -22,11 +22,11 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
  * Test for {@link IndividualFilesPersistenceHandler}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class IndividualFilesPersistenceHandlerTest {
+class IndividualFilesPersistenceHandlerTest {
 
     private static final UUID SAMPLE_UUID = UUID.nameUUIDFromBytes("PersistenceTest".getBytes());
     private static final String SOURCE_FOLDER = TestHelper.PROJECT_ROOT + "data/backup/";
@@ -50,7 +50,7 @@ public class IndividualFilesPersistenceHandlerTest {
     File dataFolder;
 
     @BeforeInjecting
-    public void copyTestFiles() throws IOException {
+    void copyTestFiles() throws IOException {
         File playerFolder = new File(dataFolder, FileUtils.makePath("playerdata", SAMPLE_UUID.toString()));
         if (!playerFolder.mkdirs()) {
             throw new IllegalStateException("Cannot create '" + playerFolder.getAbsolutePath() + "'");
@@ -60,7 +60,7 @@ public class IndividualFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldReadDataFromFile() {
+    void shouldReadDataFromFile() {
         // given
         Player player = mock(Player.class);
         given(player.getUniqueId()).willReturn(SAMPLE_UUID);
@@ -87,7 +87,7 @@ public class IndividualFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldReturnNullForUnavailablePlayer() {
+    void shouldReturnNullForUnavailablePlayer() {
         // given
         Player player = mock(Player.class);
         given(player.getUniqueId()).willReturn(UUID.nameUUIDFromBytes("other-player".getBytes()));
@@ -100,7 +100,7 @@ public class IndividualFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldSavePlayerData() {
+    void shouldSavePlayerData() {
         // given
         Player player = mock(Player.class);
         UUID uuid = UUID.nameUUIDFromBytes("New player".getBytes());

@@ -27,9 +27,9 @@ import java.util.logging.Logger;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link ValidationService}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class ValidationServiceTest {
+class ValidationServiceTest {
 
     @InjectDelayed
     private ValidationService validationService;
@@ -53,7 +53,7 @@ public class ValidationServiceTest {
     private GeoIpService geoIpService;
 
     @BeforeInjecting
-    public void createService() {
+    void createService() {
         given(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).willReturn("[a-zA-Z]+");
         given(settings.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(3);
         given(settings.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(20);
@@ -64,7 +64,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectPasswordSameAsUsername() {
+    void shouldRejectPasswordSameAsUsername() {
         // given/when
         ValidationResult error = validationService.validatePassword("bobby", "Bobby");
 
@@ -73,7 +73,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectPasswordNotMatchingPattern() {
+    void shouldRejectPasswordNotMatchingPattern() {
         // given/when
         // service mock returns pattern a-zA-Z -> numbers should not be accepted
         ValidationResult error = validationService.validatePassword("invalid1234", "myPlayer");
@@ -83,7 +83,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectTooShortPassword() {
+    void shouldRejectTooShortPassword() {
         // given/when
         ValidationResult error = validationService.validatePassword("ab", "tester");
 
@@ -92,7 +92,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectTooLongPassword() {
+    void shouldRejectTooLongPassword() {
         // given/when
         ValidationResult error = validationService.validatePassword(Strings.repeat("a", 30), "player");
 
@@ -101,7 +101,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectUnsafePassword() {
+    void shouldRejectUnsafePassword() {
         // given/when
         ValidationResult error = validationService.validatePassword("unsafe", "playertest");
 
@@ -110,7 +110,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldAcceptValidPassword() {
+    void shouldAcceptValidPassword() {
         // given/when
         ValidationResult error = validationService.validatePassword("safePass", "some_user");
 
@@ -119,7 +119,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldAcceptEmailWithEmptyLists() {
+    void shouldAcceptEmailWithEmptyLists() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.emptyList());
@@ -132,7 +132,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldAcceptEmailWithWhitelist() {
+    void shouldAcceptEmailWithWhitelist() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
             .willReturn(asList("domain.tld", "example.com"));
@@ -146,7 +146,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectEmailNotInWhitelist() {
+    void shouldRejectEmailNotInWhitelist() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
             .willReturn(asList("domain.tld", "example.com"));
@@ -160,7 +160,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldAcceptEmailNotInBlacklist() {
+    void shouldAcceptEmailNotInBlacklist() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
@@ -174,7 +174,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectEmailInBlacklist() {
+    void shouldRejectEmailInBlacklist() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
@@ -188,25 +188,25 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectInvalidEmail() {
+    void shouldRejectInvalidEmail() {
         // given/when/then
         assertThat(validationService.validateEmail("invalidinput"), equalTo(false));
     }
 
     @Test
-    public void shouldRejectInvalidEmailWithoutDomain() {
+    void shouldRejectInvalidEmailWithoutDomain() {
         // given/when/then
         assertThat(validationService.validateEmail("invalidinput@"), equalTo(false));
     }
 
     @Test
-    public void shouldRejectDefaultEmail() {
+    void shouldRejectDefaultEmail() {
         // given/when/then
         assertThat(validationService.validateEmail("your@email.com"), equalTo(false));
     }
 
     @Test
-    public void shouldAllowRegistration() {
+    void shouldAllowRegistration() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String email = "my.address@example.org";
@@ -222,7 +222,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectEmailWithTooManyAccounts() {
+    void shouldRejectEmailWithTooManyAccounts() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String email = "mail@example.org";
@@ -238,7 +238,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldAllowBypassForPresentPermission() {
+    void shouldAllowBypassForPresentPermission() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String email = "mail-address@example.com";
@@ -254,7 +254,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRecognizeUnrestrictedNames() {
+    void shouldRecognizeUnrestrictedNames() {
         assertThat(validationService.isUnrestricted("npc"), equalTo(true));
         assertThat(validationService.isUnrestricted("someplayer"), equalTo(false));
         assertThat(validationService.isUnrestricted("NAME01"), equalTo(true));
@@ -267,7 +267,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldNotInvokeGeoLiteApiIfCountryListsAreEmpty() {
+    void shouldNotInvokeGeoLiteApiIfCountryListsAreEmpty() {
         // given
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.emptyList());
@@ -281,7 +281,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldAcceptCountryInWhitelist() {
+    void shouldAcceptCountryInWhitelist() {
         // given
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.emptyList());
@@ -297,7 +297,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectCountryMissingFromWhitelist() {
+    void shouldRejectCountryMissingFromWhitelist() {
         // given
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(asList("ch", "it"));
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(Collections.emptyList());
@@ -313,7 +313,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldAcceptCountryAbsentFromBlacklist() {
+    void shouldAcceptCountryAbsentFromBlacklist() {
         // given
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
@@ -329,7 +329,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldRejectCountryInBlacklist() {
+    void shouldRejectCountryInBlacklist() {
         // given
         given(settings.getProperty(ProtectionSettings.COUNTRIES_WHITELIST)).willReturn(Collections.emptyList());
         given(settings.getProperty(ProtectionSettings.COUNTRIES_BLACKLIST)).willReturn(asList("ch", "it"));
@@ -345,7 +345,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldCheckNameRestrictions() {
+    void shouldCheckNameRestrictions() {
         // given
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
@@ -383,7 +383,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void shouldLogWarningForInvalidRestrictionRule() {
+    void shouldLogWarningForInvalidRestrictionRule() {
         // given
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(true);

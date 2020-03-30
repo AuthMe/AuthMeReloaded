@@ -1,19 +1,19 @@
 package fr.xephi.authme.output;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
 import org.apache.logging.log4j.core.Filter.Result;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.message.Message;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
+
 /**
  * Test for {@link Log4JFilter}.
  */
-public class Log4JFilterTest {
+class Log4JFilterTest {
 	
 	private final Log4JFilter log4JFilter = new Log4JFilter();
 	
@@ -25,7 +25,7 @@ public class Log4JFilterTest {
 	// Test the filter(LogEvent) method
 	// ---------
 	@Test
-	public void shouldFilterSensitiveLogEvent() {
+    void shouldFilterSensitiveLogEvent() {
 		// given
 		Message message = mockMessage(SENSITIVE_COMMAND);
 		LogEvent event = Mockito.mock(LogEvent.class);
@@ -39,7 +39,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterIrrelevantLogEvent() {
+    void shouldNotFilterIrrelevantLogEvent() {
 		// given
 		Message message = mockMessage(NORMAL_COMMAND);
 		LogEvent event = Mockito.mock(LogEvent.class);
@@ -53,7 +53,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNonCommandLogEvent() {
+    void shouldNotFilterNonCommandLogEvent() {
 		// given
 		Message message = mockMessage(OTHER_COMMAND);
 		LogEvent event = Mockito.mock(LogEvent.class);
@@ -67,7 +67,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterLogEventWithNullMessage() {
+    void shouldNotFilterLogEventWithNullMessage() {
 		// given
 		Message message = mockMessage(null);
 		LogEvent event = Mockito.mock(LogEvent.class);
@@ -81,7 +81,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterWhenLogEventIsNull() {
+    void shouldNotFilterWhenLogEventIsNull() {
 		// given / when
 		Result result = log4JFilter.filter(null);
 		
@@ -93,7 +93,7 @@ public class Log4JFilterTest {
 	// Test filter(Logger, Level, Marker, String, Object...)
 	// ----------
 	@Test
-	public void shouldFilterSensitiveStringMessage() {
+    void shouldFilterSensitiveStringMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, SENSITIVE_COMMAND);
 		
@@ -102,7 +102,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNormalStringMessage() {
+    void shouldNotFilterNormalStringMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, NORMAL_COMMAND);
 		
@@ -111,7 +111,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNonCommandStringMessage() {
+    void shouldNotFilterNonCommandStringMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND);
 		
@@ -120,7 +120,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldReturnNeutralForNullMessage() {
+    void shouldReturnNeutralForNullMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, null);
 		
@@ -132,7 +132,7 @@ public class Log4JFilterTest {
 	// Test filter(Logger, Level, Marker, Object, Throwable)
 	// --------
 	@Test
-	public void shouldFilterSensitiveObjectMessage() {
+    void shouldFilterSensitiveObjectMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, SENSITIVE_COMMAND, new Exception());
 		
@@ -141,7 +141,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNullObjectParam() {
+    void shouldNotFilterNullObjectParam() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, (Object) null, new Exception());
 		
@@ -150,7 +150,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterIrrelevantMessage() {
+    void shouldNotFilterIrrelevantMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND, new Exception());
 		
@@ -159,7 +159,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNonSensitiveCommand() {
+    void shouldNotFilterNonSensitiveCommand() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, NORMAL_COMMAND, new Exception());
 		
@@ -171,7 +171,7 @@ public class Log4JFilterTest {
 	// Test filter(Logger, Level, Marker, Message, Throwable)
 	// --------
 	@Test
-	public void shouldFilterSensitiveMessage() {
+    void shouldFilterSensitiveMessage() {
 		// given
 		Message message = mockMessage(SENSITIVE_COMMAND);
 		
@@ -183,7 +183,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNonSensitiveMessage() {
+    void shouldNotFilterNonSensitiveMessage() {
 		// given
 		Message message = mockMessage(NORMAL_COMMAND);
 		
@@ -195,7 +195,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNonCommandMessage() {
+    void shouldNotFilterNonCommandMessage() {
 		// given
 		Message message = mockMessage(OTHER_COMMAND);
 		
@@ -207,7 +207,7 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
-	public void shouldNotFilterNullMessage() {
+    void shouldNotFilterNullMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, null, new Exception());
 		

@@ -23,10 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link PasswordRegisterExecutor}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PasswordRegisterExecutorTest {
+class PasswordRegisterExecutorTest {
 
     @InjectMocks
     private PasswordRegisterExecutor executor;
@@ -56,7 +56,7 @@ public class PasswordRegisterExecutorTest {
     private AsynchronousLogin asynchronousLogin;
 
     @Test
-    public void shouldCheckPasswordValidity() {
+    void shouldCheckPasswordValidity() {
         // given
         String password = "myPass";
         String name = "player040";
@@ -73,7 +73,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldDetectInvalidPasswordAndInformPlayer() {
+    void shouldDetectInvalidPasswordAndInformPlayer() {
         // given
         String password = "myPass";
         String name = "player040";
@@ -92,7 +92,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldCreatePlayerAuth() {
+    void shouldCreatePlayerAuth() {
         // given
         given(passwordSecurity.computeHash(anyString(), anyString())).willAnswer(
             invocation -> new HashedPassword(invocation.getArgument(0)));
@@ -111,7 +111,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldLogPlayerIn() {
+    void shouldLogPlayerIn() {
         // given
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(false);
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
@@ -128,7 +128,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldNotLogPlayerIn() {
+    void shouldNotLogPlayerIn() {
         // given
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(true);
         Player player = mock(Player.class);

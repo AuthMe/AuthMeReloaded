@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link PasswordRecoveryService}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class PasswordRecoveryServiceTest {
+class PasswordRecoveryServiceTest {
 
     @InjectDelayed
     private PasswordRecoveryService recoveryService;
@@ -49,13 +49,13 @@ public class PasswordRecoveryServiceTest {
     private Messages messages;
 
     @BeforeInjecting
-    public void initSettings() {
+    void initSettings() {
         given(commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS)).willReturn(40);
         given(commonService.getProperty(SecuritySettings.PASSWORD_CHANGE_TIMEOUT)).willReturn(2);
     }
 
     @Test
-    public void shouldSendRecoveryCode() {
+    void shouldSendRecoveryCode() {
         // given
         Player player = mock(Player.class);
         String name = "Carl";
@@ -75,7 +75,7 @@ public class PasswordRecoveryServiceTest {
     }
 
     @Test
-    public void shouldKeepTrackOfSuccessfulRecoversByIp() {
+    void shouldKeepTrackOfSuccessfulRecoversByIp() {
         // given
         Player bobby = mock(Player.class);
         TestHelper.mockPlayerIp(bobby, "192.168.8.8");
@@ -99,7 +99,7 @@ public class PasswordRecoveryServiceTest {
     }
 
     @Test
-    public void shouldRemovePlayerFromSuccessfulRecovers() {
+    void shouldRemovePlayerFromSuccessfulRecovers() {
         // given
         Player bobby = mock(Player.class);
         TestHelper.mockPlayerIp(bobby, "192.168.8.8");

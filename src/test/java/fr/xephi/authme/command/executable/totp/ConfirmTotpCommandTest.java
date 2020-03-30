@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link ConfirmTotpCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ConfirmTotpCommandTest {
+class ConfirmTotpCommandTest {
 
     @InjectMocks
     private ConfirmTotpCommand command;
@@ -48,12 +48,12 @@ public class ConfirmTotpCommandTest {
     private Messages messages;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldAddTotpCodeToUserAfterSuccessfulConfirmation() {
+    void shouldAddTotpCodeToUserAfterSuccessfulConfirmation() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -79,7 +79,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleWrongTotpCode() {
+    void shouldHandleWrongTotpCode() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -102,7 +102,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleMissingTotpKey() {
+    void shouldHandleMissingTotpKey() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -122,7 +122,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldStopForAlreadyExistingTotpKeyOnAccount() {
+    void shouldStopForAlreadyExistingTotpKeyOnAccount() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -140,7 +140,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleMissingAuthAccount() {
+    void shouldHandleMissingAuthAccount() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";

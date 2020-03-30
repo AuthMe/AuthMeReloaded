@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link ShowEmailCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ShowEmailCommandTest {
+class ShowEmailCommandTest {
 
     private static final String CURRENT_EMAIL = "my.email@example.com";
     private static final String USERNAME = "name";
@@ -37,7 +37,7 @@ public class ShowEmailCommandTest {
     private PlayerCache playerCache;
 
     @Test
-    public void shouldShowCurrentEmailMessage() {
+    void shouldShowCurrentEmailMessage() {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
@@ -52,7 +52,7 @@ public class ShowEmailCommandTest {
     }
 
     @Test
-    public void shouldShowHiddenEmailMessage() {
+    void shouldShowHiddenEmailMessage() {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
@@ -67,7 +67,7 @@ public class ShowEmailCommandTest {
     }
 
     @Test
-    public void shouldReturnNoEmailMessage() {
+    void shouldReturnNoEmailMessage() {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);

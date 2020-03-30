@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link CleanupTask}.
  */
 @ExtendWith(MockitoExtension.class)
-public class CleanupTaskTest {
+class CleanupTaskTest {
 
     @InjectMocks
     private CleanupTask cleanupTask;
@@ -28,7 +28,7 @@ public class CleanupTaskTest {
     private SingletonStore<HasCleanup> hasCleanupStore;
 
     @Test
-    public void shouldPerformCleanup() {
+    void shouldPerformCleanup() {
         // given
         List<HasCleanup> services = asList(mock(HasCleanup.class), mock(HasCleanup.class), mock(HasCleanup.class));
         given(hasCleanupStore.retrieveAllOfType()).willReturn(services);

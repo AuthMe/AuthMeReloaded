@@ -7,18 +7,18 @@ import org.yaml.snakeyaml.parser.ParserException;
 
 import java.io.File;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
  * Test for {@link YamlFileResourceProvider}.
  */
-public class YamlFileResourceProviderTest {
+class YamlFileResourceProviderTest {
 
     @Test
-    public void shouldLoadValidFile() {
+    void shouldLoadValidFile() {
         // given
         File yamlFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "service/yaml/validYaml.yml");
 
@@ -30,7 +30,7 @@ public class YamlFileResourceProviderTest {
     }
 
     @Test
-    public void shouldThrowForInvalidFile() {
+    void shouldThrowForInvalidFile() {
         // given
         File yamlFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "service/yaml/invalidYaml.yml");
 

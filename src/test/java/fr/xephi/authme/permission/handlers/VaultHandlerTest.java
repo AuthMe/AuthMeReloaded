@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -17,12 +17,12 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link VaultHandler}.
  */
-public class VaultHandlerTest {
+class VaultHandlerTest {
 
     private VaultHandlerTestImpl vaultHandlerTest = VaultHandlerTestImpl.create();
 
     @Test
-    public void shouldReturnGroups() {
+    void shouldReturnGroups() {
         // given
         Permission permissionMock = vaultHandlerTest.permissionMock;
         Player player = mock(Player.class);
@@ -40,7 +40,7 @@ public class VaultHandlerTest {
      * Bug #1702: VaultHandler may return null for groups list.
      */
     @Test
-    public void shouldHandleNullAsGroups() {
+    void shouldHandleNullAsGroups() {
         // given
         Permission permissionMock = vaultHandlerTest.permissionMock;
         Player player = mock(Player.class);

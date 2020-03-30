@@ -12,15 +12,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -33,7 +31,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link MigrationService}.
  */
 @ExtendWith(MockitoExtension.class)
-public class MigrationServiceTest {
+class MigrationServiceTest {
 
     @Mock
     private Settings settings;
@@ -45,12 +43,12 @@ public class MigrationServiceTest {
     private Sha256 sha256;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldMigratePlaintextHashes() {
+    void shouldMigratePlaintextHashes() {
         // given
         PlayerAuth auth1 = authWithNickAndHash("bobby", "test");
         PlayerAuth auth2 = authWithNickAndHash("user", "myPassword");
@@ -76,7 +74,7 @@ public class MigrationServiceTest {
     }
 
     @Test
-    public void shouldNotMigrateShaHashes() {
+    void shouldNotMigrateShaHashes() {
         // given
         PlayerAuth auth1 = authWithNickAndHash("testUser", "abc1234");
         PlayerAuth auth2 = authWithNickAndHash("minecraft", "$SHA$f28930ae09823eba4cd98a3");
@@ -98,7 +96,7 @@ public class MigrationServiceTest {
     }
 
     @Test
-    public void shouldNotMigrateForHashOtherThanPlaintext() {
+    void shouldNotMigrateForHashOtherThanPlaintext() {
         // given
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
 

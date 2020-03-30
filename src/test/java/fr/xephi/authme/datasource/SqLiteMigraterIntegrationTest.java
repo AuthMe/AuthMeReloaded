@@ -20,24 +20,24 @@ import java.util.List;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static fr.xephi.authme.datasource.SqlDataSourceTestUtil.createSqlite;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
  * Integration test for {@link SqLiteMigrater}. Uses a real SQLite database.
  */
-public class SqLiteMigraterIntegrationTest {
+class SqLiteMigraterIntegrationTest {
 
     @TempDir
     File dataFolder;
     private SQLite sqLite;
 
     @BeforeEach
-    public void setup() throws SQLException, IOException {
+    void setup() throws SQLException, IOException {
         TestHelper.setupLogger();
 
         Settings settings = mock(Settings.class);
@@ -57,7 +57,7 @@ public class SqLiteMigraterIntegrationTest {
     }
 
     @Test
-    public void shouldRun() throws SQLException {
+    void shouldRun() throws SQLException {
         // given / when
         sqLite.setup();
         sqLite.migrateIfNeeded();

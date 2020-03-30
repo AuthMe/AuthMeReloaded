@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Unit tests for {@link Settings}.
  */
-public class SettingsTest {
+class SettingsTest {
     
     private static final ConfigurationData CONFIG_DATA =
         ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
@@ -34,12 +34,12 @@ public class SettingsTest {
     File testPluginFolder;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldLoadEmailMessage() throws IOException {
+    void shouldLoadEmailMessage() throws IOException {
         // given
         String emailMessage = "Sample email message\nThat's all!";
         File emailFile = new File(testPluginFolder, "email.html");
@@ -57,7 +57,7 @@ public class SettingsTest {
     }
 
     @Test
-    public void shouldLoadRecoveryCodeMessage() throws IOException {
+    void shouldLoadRecoveryCodeMessage() throws IOException {
         // given
         String emailMessage = "Your recovery code is %code.";
         File emailFile = new File(testPluginFolder, "recovery_code_email.html");
@@ -75,7 +75,7 @@ public class SettingsTest {
     }
 
     @Test
-    public void shouldLoadVerificationMessage() throws IOException {
+    void shouldLoadVerificationMessage() throws IOException {
         // given
         String emailMessage = "Please verify your identity with <recoverycode />.";
         File emailFile = new File(testPluginFolder, "verification_code_email.html");

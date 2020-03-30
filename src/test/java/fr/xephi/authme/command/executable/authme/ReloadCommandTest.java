@@ -39,7 +39,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link ReloadCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ReloadCommandTest {
+class ReloadCommandTest {
 
     @InjectMocks
     private ReloadCommand command;
@@ -66,19 +66,19 @@ public class ReloadCommandTest {
     private SingletonStore<SettingsDependent> settingsDependentStore;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeEach
-    public void setDefaultSettings() {
+    void setDefaultSettings() {
         // Mock properties retrieved by ConsoleLogger
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(false);
     }
 
     @Test
-    public void shouldReload() {
+    void shouldReload() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
@@ -101,7 +101,7 @@ public class ReloadCommandTest {
     }
 
     @Test
-    public void shouldHandleReloadError() {
+    void shouldHandleReloadError() {
         // given
         CommandSender sender = mock(CommandSender.class);
         doThrow(IllegalStateException.class).when(reloadableStore).retrieveAllOfType();
@@ -119,7 +119,7 @@ public class ReloadCommandTest {
     }
 
     @Test
-    public void shouldIssueWarningForChangedDataSourceSetting() {
+    void shouldIssueWarningForChangedDataSourceSetting() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);

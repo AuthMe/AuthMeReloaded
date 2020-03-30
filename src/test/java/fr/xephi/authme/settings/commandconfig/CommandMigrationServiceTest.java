@@ -22,17 +22,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
  * Test for {@link CommandMigrationService}.
  */
 @ExtendWith(MockitoExtension.class)
-public class CommandMigrationServiceTest {
+class CommandMigrationServiceTest {
 
     @InjectMocks
     private CommandMigrationService commandMigrationService;
@@ -41,12 +41,12 @@ public class CommandMigrationServiceTest {
     private SettingsMigrationService settingsMigrationService;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRewriteForEmptyFile() {
+    void shouldRewriteForEmptyFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.empty.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
@@ -60,7 +60,7 @@ public class CommandMigrationServiceTest {
     }
 
     @Test
-    public void shouldRewriteIncompleteFile() {
+    void shouldRewriteIncompleteFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.incomplete.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
@@ -74,7 +74,7 @@ public class CommandMigrationServiceTest {
     }
 
     @Test
-    public void shouldNotChangeCompleteFile() {
+    void shouldNotChangeCompleteFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.complete.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
@@ -92,7 +92,7 @@ public class CommandMigrationServiceTest {
      * {@link CommandConfig} class. It is used to ensure that the commands.yml file is complete.
      */
     @Test
-    public void shouldHaveAllPropertiesFromCommandConfig() {
+    void shouldHaveAllPropertiesFromCommandConfig() {
         // given
         String[] properties = new BeanDescriptionFactoryImpl()
             .getAllProperties(CommandConfig.class)
@@ -105,7 +105,7 @@ public class CommandMigrationServiceTest {
     }
 
     @Test
-    public void shouldMigrateOldOtherAccountsCommand() {
+    void shouldMigrateOldOtherAccountsCommand() {
         // given
         given(settingsMigrationService.hasOldOtherAccountsCommand()).willReturn(true);
         given(settingsMigrationService.getOldOtherAccountsCommand())

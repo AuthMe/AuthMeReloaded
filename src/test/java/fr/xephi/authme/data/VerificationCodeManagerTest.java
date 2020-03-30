@@ -14,8 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link VerificationCodeManager}.
  */
 @ExtendWith(MockitoExtension.class)
-public class VerificationCodeManagerTest {
+class VerificationCodeManagerTest {
 
     @Mock
     private Settings settings;
@@ -41,13 +41,13 @@ public class VerificationCodeManagerTest {
     private PermissionsManager permissionsManager;
 
     @BeforeEach
-    public void setUpBasicBehavior() {
+    void setUpBasicBehavior() {
         given(emailService.hasAllInformation()).willReturn(true);
         given(settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES)).willReturn(1);
     }
 
     @Test
-    public void shouldRequireVerification() {
+    void shouldRequireVerification() {
         // given
         String name1 = "ILoveTests";
         Player player1 = mockPlayerWithName(name1);
@@ -71,7 +71,7 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldNotRequireVerificationIfEmailSettingsAreIncomplete() {
+    void shouldNotRequireVerificationIfEmailSettingsAreIncomplete() {
         // given
         given(emailService.hasAllInformation()).willReturn(false);
         VerificationCodeManager codeManager = createCodeManager();
@@ -86,7 +86,7 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldNotRequireVerificationForMissingPermission() {
+    void shouldNotRequireVerificationForMissingPermission() {
         // given
         Player player = mockPlayerWithName("ILoveTests");
         given(permissionsManager.hasPermission(player, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
@@ -102,7 +102,7 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldGenerateCode() {
+    void shouldGenerateCode() {
         // given
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
@@ -121,7 +121,7 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldRequireCode() {
+    void shouldRequireCode() {
         // given
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
@@ -140,7 +140,7 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldVerifyCode() {
+    void shouldVerifyCode() {
         // given
         String player = "ILoveTests";
         String code = "193458";

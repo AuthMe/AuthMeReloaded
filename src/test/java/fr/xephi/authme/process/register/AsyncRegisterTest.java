@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link AsyncRegister}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AsyncRegisterTest {
+class AsyncRegisterTest {
 
     @InjectMocks
     private AsyncRegister asyncRegister;
@@ -51,7 +51,7 @@ public class AsyncRegisterTest {
     private SingletonStore<RegistrationExecutor> registrationExecutorStore;
 
     @Test
-    public void shouldDetectAlreadyLoggedInPlayer() {
+    void shouldDetectAlreadyLoggedInPlayer() {
         // given
         String name = "robert";
         Player player = mockPlayerWithName(name);
@@ -62,11 +62,11 @@ public class AsyncRegisterTest {
 
         // then
         verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-        verifyNoInteractions(dataSource, executor);
+        verifyNoInteractions(dataSource, registrationExecutorStore);
     }
 
     @Test
-    public void shouldStopForDisabledRegistration() {
+    void shouldStopForDisabledRegistration() {
         // given
         String name = "albert";
         Player player = mockPlayerWithName(name);
@@ -78,11 +78,11 @@ public class AsyncRegisterTest {
 
         // then
         verify(commonService).send(player, MessageKey.REGISTRATION_DISABLED);
-        verifyNoInteractions(dataSource, executor);
+        verifyNoInteractions(dataSource, registrationExecutorStore);
     }
 
     @Test
-    public void shouldStopForAlreadyRegisteredName() {
+    void shouldStopForAlreadyRegisteredName() {
         // given
         String name = "dilbert";
         Player player = mockPlayerWithName(name);
@@ -96,12 +96,12 @@ public class AsyncRegisterTest {
         // then
         verify(commonService).send(player, MessageKey.NAME_ALREADY_REGISTERED);
         verify(dataSource, only()).isAuthAvailable(name);
-        verifyNoInteractions(executor);
+        verifyNoInteractions(registrationExecutorStore);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForCanceledEvent() {
+    void shouldStopForCanceledEvent() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
@@ -119,12 +119,12 @@ public class AsyncRegisterTest {
 
         // then
         verify(dataSource, only()).isAuthAvailable(name);
-        verifyZeroInteractions(registrationExecutorStore);
+        verifyNoInteractions(registrationExecutorStore);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForFailedExecutorCheck() {
+    void shouldStopForFailedExecutorCheck() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);

@@ -9,22 +9,22 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link FileUtils}.
  */
-public class FileUtilsTest {
+class FileUtilsTest {
 
     /** Regex that matches timestamps such as 20180211_1048. */
     private static final String BACKUP_TIMESTAMP_PATTERN = "20\\d{6}_\\d{4}";
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
@@ -32,7 +32,7 @@ public class FileUtilsTest {
     File temporaryFolder;
 
     @Test
-    public void shouldNotCopyFile() throws IOException {
+    void shouldNotCopyFile() throws IOException {
         // given
         File file = new File(temporaryFolder, "config.yml");
         // purposely don't copy config.yml to verify that config.yml isn't copied by the method
@@ -48,7 +48,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldCopyFileFromJar() throws IOException {
+    void shouldCopyFileFromJar() {
         // given
         File file = new File(temporaryFolder, "some/folders/welcome.txt");
 
@@ -63,7 +63,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseForInvalidJarFile() throws IOException {
+    void shouldReturnFalseForInvalidJarFile() {
         // given
         File file = new File(temporaryFolder, "bogus");
 
@@ -76,7 +76,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseForParentInvalidParentFolders() throws IOException {
+    void shouldReturnFalseForParentInvalidParentFolders() throws IOException {
         // given
         new File(temporaryFolder, "hello").createNewFile();
         File fileToCreate = new File(temporaryFolder, "hello/test");
@@ -89,7 +89,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldPurgeDirectory() throws IOException {
+    void shouldPurgeDirectory() throws IOException {
         // given
         File file1 = new File(temporaryFolder, "a/b/c/test.html");
         File file2 = new File(temporaryFolder, "a/b/f/toast.txt");
@@ -109,7 +109,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldDeleteFile() throws IOException {
+    void shouldDeleteFile() throws IOException {
         // given
         File file = TestHelper.createFile(temporaryFolder, "tempFile");
         assertThat(file.exists(), equalTo(true));
@@ -122,7 +122,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldDoNothingForNullFile() {
+    void shouldDoNothingForNullFile() {
         // given
         File file = null;
 
@@ -134,14 +134,14 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldGetResourceFromJar() {
+    void shouldGetResourceFromJar() {
         // given / when / then
         assertThat(FileUtils.getResourceFromJar("config.yml"), not(nullValue()));
         assertThat(FileUtils.getResourceFromJar("does-not-exist"), nullValue());
     }
 
     @Test
-    public void shouldConstructPath() {
+    void shouldConstructPath() {
         // given/when
         String result = FileUtils.makePath("path", "to", "test-file.txt");
 
@@ -150,7 +150,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldCreateDirectory() {
+    void shouldCreateDirectory() {
         // given
         File dir = new File(temporaryFolder, "folder/folder2/myFolder");
 
@@ -164,7 +164,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseOnDirectoryCreateFail() throws IOException {
+    void shouldReturnFalseOnDirectoryCreateFail() throws IOException {
         // given
         File dirAsFile = new File(temporaryFolder, "file");
         dirAsFile.createNewFile();
@@ -178,7 +178,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldCreateCurrentTimestampString() {
+    void shouldCreateCurrentTimestampString() {
         // given / when
         String currentTimeString = FileUtils.createCurrentTimeString();
 
@@ -187,7 +187,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldCreateBackupFile() {
+    void shouldCreateBackupFile() {
         // given
         File file = new File("some/folders/config.yml");
 

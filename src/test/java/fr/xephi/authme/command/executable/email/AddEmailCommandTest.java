@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link AddEmailCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AddEmailCommandTest {
+class AddEmailCommandTest {
 
     @InjectMocks
     private AddEmailCommand command;
@@ -37,7 +37,7 @@ public class AddEmailCommandTest {
     private Management management;
 
     @Test
-    public void shouldRejectNonPlayerSender() {
+    void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
 
@@ -49,7 +49,7 @@ public class AddEmailCommandTest {
     }
 
     @Test
-    public void shouldForwardData() {
+    void shouldForwardData() {
         // given
         Player sender = mock(Player.class);
         String email = "mail@example";
@@ -62,7 +62,7 @@ public class AddEmailCommandTest {
     }
 
     @Test
-    public void shouldFailForConfirmationMismatch() {
+    void shouldFailForConfirmationMismatch() {
         // given
         Player sender = mock(Player.class);
         String email = "asdfasdf@example.com";
@@ -76,7 +76,7 @@ public class AddEmailCommandTest {
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_ADD_EMAIL));
     }

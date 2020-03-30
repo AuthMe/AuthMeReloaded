@@ -28,7 +28,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link TotpDisableAdminCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class TotpDisableAdminCommandTest {
+class TotpDisableAdminCommandTest {
 
     @InjectMocks
     private TotpDisableAdminCommand command;
@@ -43,12 +43,12 @@ public class TotpDisableAdminCommandTest {
     private BukkitService bukkitService;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldHandleUnknownUser() {
+    void shouldHandleUnknownUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(dataSource.getAuth("user")).willReturn(null);
@@ -62,7 +62,7 @@ public class TotpDisableAdminCommandTest {
     }
 
     @Test
-    public void shouldHandleUserWithNoTotpEnabled() {
+    void shouldHandleUserWithNoTotpEnabled() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()
@@ -80,7 +80,7 @@ public class TotpDisableAdminCommandTest {
     }
 
     @Test
-    public void shouldRemoveTotpFromUser() {
+    void shouldRemoveTotpFromUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()
@@ -101,7 +101,7 @@ public class TotpDisableAdminCommandTest {
     }
 
     @Test
-    public void shouldHandleErrorWhileRemovingTotp() {
+    void shouldHandleErrorWhileRemovingTotp() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()

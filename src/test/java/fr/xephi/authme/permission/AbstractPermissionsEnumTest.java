@@ -13,7 +13,7 @@ import static org.junit.Assert.fail;
 public abstract class AbstractPermissionsEnumTest {
 
     @Test
-    public void shouldAllStartWitRequiredPrefix() {
+    void shouldAllStartWitRequiredPrefix() {
         // given
         String requiredPrefix = getRequiredPrefix();
 
@@ -27,7 +27,7 @@ public abstract class AbstractPermissionsEnumTest {
     }
 
     @Test
-    public void shouldHaveUniqueNodes() {
+    void shouldHaveUniqueNodes() {
         // given
         Set<String> nodes = new HashSet<>();
 

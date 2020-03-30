@@ -22,7 +22,7 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
     private static Columns columns;
 
     @BeforeAll
-    public static void initSettings() {
+    static void initSettings() {
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
         columns = new Columns(settings);

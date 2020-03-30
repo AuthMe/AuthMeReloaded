@@ -16,8 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link RemoveTotpCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class RemoveTotpCommandTest {
+class RemoveTotpCommandTest {
 
     @InjectMocks
     private RemoveTotpCommand command;
@@ -43,12 +43,12 @@ public class RemoveTotpCommandTest {
     private Messages messages;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRemoveTotpKey() {
+    void shouldRemoveTotpKey() {
         // given
         String name = "aws";
         PlayerAuth auth = PlayerAuth.builder().name(name).totpKey("some-totp-key").build();
@@ -70,7 +70,7 @@ public class RemoveTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleDatabaseError() {
+    void shouldHandleDatabaseError() {
         // given
         String name = "aws";
         PlayerAuth auth = PlayerAuth.builder().name(name).totpKey("some-totp-key").build();
@@ -91,7 +91,7 @@ public class RemoveTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleInvalidCode() {
+    void shouldHandleInvalidCode() {
         // given
         String name = "cesar";
         PlayerAuth auth = PlayerAuth.builder().name(name).totpKey("some-totp-key").build();
@@ -111,7 +111,7 @@ public class RemoveTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleUserWithoutTotpKey() {
+    void shouldHandleUserWithoutTotpKey() {
         // given
         String name = "cesar";
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
@@ -130,7 +130,7 @@ public class RemoveTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleNonLoggedInUser() {
+    void shouldHandleNonLoggedInUser() {
         // given
         String name = "cesar";
         given(playerCache.getAuth(name)).willReturn(null);

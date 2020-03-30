@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link EmailBaseCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class EmailBaseCommandTest {
+class EmailBaseCommandTest {
 
     @InjectMocks
     private EmailBaseCommand command;
@@ -33,7 +33,7 @@ public class EmailBaseCommandTest {
     private CommandMapper commandMapper;
 
     @Test
-    public void shouldDisplayHelp() {
+    void shouldDisplayHelp() {
         // given
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult result = mock(FoundCommandResult.class);

@@ -9,8 +9,8 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -19,9 +19,9 @@ import java.io.File;
 import java.util.List;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -33,7 +33,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link CrazyLoginConverter}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class CrazyLoginConverterTest {
+class CrazyLoginConverterTest {
 
     @InjectDelayed
     private CrazyLoginConverter crazyLoginConverter;
@@ -48,12 +48,12 @@ public class CrazyLoginConverterTest {
     private File dataFolder = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "/datasource/converter/");
 
     @BeforeAll
-    public static void initializeLogger() {
+    static void initializeLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldImportUsers() {
+    void shouldImportUsers() {
         // given
         given(settings.getProperty(ConverterSettings.CRAZYLOGIN_FILE_NAME)).willReturn("crazylogin.db");
         CommandSender sender = mock(CommandSender.class);
@@ -72,7 +72,7 @@ public class CrazyLoginConverterTest {
     }
 
     @Test
-    public void shouldStopForNonExistentFile() {
+    void shouldStopForNonExistentFile() {
         // given
         given(settings.getProperty(ConverterSettings.CRAZYLOGIN_FILE_NAME)).willReturn("invalid-file");
         CommandSender sender = mock(CommandSender.class);

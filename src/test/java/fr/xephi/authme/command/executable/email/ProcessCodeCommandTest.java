@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Tests for {@link ProcessCodeCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ProcessCodeCommandTest {
+class ProcessCodeCommandTest {
 
     @InjectMocks
     private ProcessCodeCommand command;
@@ -37,7 +37,7 @@ public class ProcessCodeCommandTest {
     private PasswordRecoveryService recoveryService;
 
     @Test
-    public void shouldSendErrorForInvalidRecoveryCode() {
+    void shouldSendErrorForInvalidRecoveryCode() {
         // given
         String name = "Vultur3";
         Player sender = mock(Player.class);
@@ -55,7 +55,7 @@ public class ProcessCodeCommandTest {
     }
 
     @Test
-    public void shouldSendErrorForNoMoreTries() {
+    void shouldSendErrorForNoMoreTries() {
         // given
         String name = "BobbY";
         Player sender = mock(Player.class);
@@ -72,7 +72,7 @@ public class ProcessCodeCommandTest {
     }
 
     @Test
-    public void shouldProcessCorrectCode() {
+    void shouldProcessCorrectCode() {
         // given
         String name = "Dwight";
         String code = "chickenDinner";

@@ -25,10 +25,10 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link WelcomeMessageConfiguration}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class WelcomeMessageConfigurationTest {
+class WelcomeMessageConfigurationTest {
 
     @InjectDelayed
     private WelcomeMessageConfiguration welcomeMessageConfiguration;
@@ -58,14 +58,14 @@ public class WelcomeMessageConfigurationTest {
     private File welcomeFile;
 
     @BeforeInjecting
-    public void createPluginFolder() throws IOException {
+    void createPluginFolder() throws IOException {
         welcomeFile = new File(testPluginFolder, "welcome.txt");
         welcomeFile.createNewFile();
         given(service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)).willReturn(true);
     }
 
     @Test
-    public void shouldLoadWelcomeMessage() {
+    void shouldLoadWelcomeMessage() {
         // given
         String welcomeMessage = "This is my welcome message for testing\nBye!";
         setWelcomeMessageAndReload(welcomeMessage);
@@ -81,7 +81,7 @@ public class WelcomeMessageConfigurationTest {
     }
 
     @Test
-    public void shouldReplaceNameAndIpAndCountry() {
+    void shouldReplaceNameAndIpAndCountry() {
         // given
         String welcomeMessage = "Hello {PLAYER}, your IP is {IP}\nYour country is {COUNTRY}.\nWelcome to {SERVER}!";
         setWelcomeMessageAndReload(welcomeMessage);
@@ -104,7 +104,7 @@ public class WelcomeMessageConfigurationTest {
     }
 
     @Test
-    public void shouldApplyOtherReplacements() {
+    void shouldApplyOtherReplacements() {
         // given
         String welcomeMessage = "{ONLINE}/{MAXPLAYERS} online\n{LOGINS} logged in\nYour world is {WORLD}\nServer: {VERSION}";
         setWelcomeMessageAndReload(welcomeMessage);

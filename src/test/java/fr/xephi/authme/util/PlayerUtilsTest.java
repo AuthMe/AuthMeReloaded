@@ -5,23 +5,23 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link PlayerUtils}.
  */
-public class PlayerUtilsTest {
+class PlayerUtilsTest {
 
     @BeforeAll
-    public static void setAuthmeInstance() {
+    static void setAuthmeInstance() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldGetPlayerIp() {
+    void shouldGetPlayerIp() {
         // given
         Player player = mock(Player.class);
         String ip = "124.86.248.62";
@@ -35,7 +35,7 @@ public class PlayerUtilsTest {
     }
 
     @Test
-    public void shouldCheckIfIsNpc() {
+    void shouldCheckIfIsNpc() {
         // given
         Player player1 = mock(Player.class);
         given(player1.hasMetadata("NPC")).willReturn(false);

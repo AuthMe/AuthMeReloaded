@@ -13,15 +13,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests that commands.yml is well-formed.
  */
 @ExtendWith(MockitoExtension.class)
-public class CommandYmlConsistencyTest {
+class CommandYmlConsistencyTest {
 
     @InjectMocks
     private CommandMigrationService commandMigrationService;
@@ -30,7 +30,7 @@ public class CommandYmlConsistencyTest {
     private SettingsMigrationService settingsMigrationService;
 
     @Test
-    public void shouldLoadWithNoMigrations() {
+    void shouldLoadWithNoMigrations() {
         // given
         File commandFile = TestHelper.getJarFile("/commands.yml");
         PropertyResource resource = new YamlFileResource(commandFile);

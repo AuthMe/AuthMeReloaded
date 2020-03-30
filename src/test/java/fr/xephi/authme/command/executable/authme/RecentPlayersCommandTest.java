@@ -26,7 +26,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link RecentPlayersCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class RecentPlayersCommandTest {
+class RecentPlayersCommandTest {
 
     @InjectMocks
     @Spy
@@ -36,7 +36,7 @@ public class RecentPlayersCommandTest {
     private DataSource dataSource;
 
     @Test
-    public void shouldShowRecentPlayers() {
+    void shouldShowRecentPlayers() {
         // given
         PlayerAuth auth1 = PlayerAuth.builder()
             .name("hannah").realName("Hannah").lastIp("11.11.11.11")
@@ -61,7 +61,7 @@ public class RecentPlayersCommandTest {
     }
 
     @Test
-    public void shouldHandlePlayerWithNullLastLogin() {
+    void shouldHandlePlayerWithNullLastLogin() {
         // given
         PlayerAuth auth1 = PlayerAuth.builder()
             .name("xephren").realName("Xephren").lastIp("11.11.11.11")

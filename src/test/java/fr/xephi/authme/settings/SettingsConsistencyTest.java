@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
 /**
  * Tests the consistency of the settings configuration.
  */
-public class SettingsConsistencyTest {
+class SettingsConsistencyTest {
 
     /**
      * Maximum characters one comment line may have (prevents horizontal scrolling).
@@ -39,12 +39,12 @@ public class SettingsConsistencyTest {
     private static ConfigurationData configurationData;
 
     @BeforeAll
-    public static void buildConfigurationData() {
+    static void buildConfigurationData() {
         configurationData = AuthMeSettingsRetriever.buildConfigurationData();
     }
 
     @Test
-    public void shouldHaveCommentOnEachProperty() {
+    void shouldHaveCommentOnEachProperty() {
         // given
         List<Property<?>> properties = configurationData.getProperties();
 
@@ -57,7 +57,7 @@ public class SettingsConsistencyTest {
     }
 
     @Test
-    public void shouldNotHaveVeryLongCommentLines() {
+    void shouldNotHaveVeryLongCommentLines() {
         // given
         Map<String, List<String>> commentEntries = configurationData.getAllComments();
         List<String> badPaths = new ArrayList<>(0);
@@ -86,7 +86,7 @@ public class SettingsConsistencyTest {
      * so the user knows which values are available.
      */
     @Test
-    public void shouldMentionAllEnumValues() {
+    void shouldMentionAllEnumValues() {
         // given
         Map<Property<?>, Enum<?>> invalidEnumProperties = new HashMap<>();
 

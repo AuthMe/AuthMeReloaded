@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link DataStatistics}.
  */
 @ExtendWith(MockitoExtension.class)
-public class DataStatisticsTest {
+class DataStatisticsTest {
 
     @InjectMocks
     private DataStatistics dataStatistics;
@@ -56,14 +56,14 @@ public class DataStatisticsTest {
     private SingletonStore<Object> singletonStore;
 
     @BeforeEach
-    public void setUpLimboCacheMap() {
+    void setUpLimboCacheMap() {
         Map<String, LimboPlayer> limboMap = new HashMap<>();
         limboMap.put("test", mock(LimboPlayer.class));
         ReflectionTestUtils.setField(LimboService.class, limboService, "entries", limboMap);
     }
 
     @Test
-    public void shouldOutputStatistics() {
+    void shouldOutputStatistics() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(singletonStore.retrieveAllOfType()).willReturn(mockListOfSize(Object.class, 7));
@@ -96,7 +96,7 @@ public class DataStatisticsTest {
     }
 
     @Test
-    public void shouldOutputCachedDataSourceStatistics() {
+    void shouldOutputCachedDataSourceStatistics() {
         // given
         CacheDataSource cacheDataSource = mock(CacheDataSource.class);
         LoadingCache<String, Optional<PlayerAuth>> cache = mock(LoadingCache.class);

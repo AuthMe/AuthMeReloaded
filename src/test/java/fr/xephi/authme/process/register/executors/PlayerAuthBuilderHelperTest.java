@@ -8,19 +8,19 @@ import org.junit.jupiter.api.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link PlayerAuthBuilderHelper}.
  */
-public class PlayerAuthBuilderHelperTest {
+class PlayerAuthBuilderHelperTest {
 
     @Test
-    public void shouldConstructPlayerAuth() {
+    void shouldConstructPlayerAuth() {
         // given
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Noah");

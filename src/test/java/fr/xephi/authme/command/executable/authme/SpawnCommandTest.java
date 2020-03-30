@@ -24,7 +24,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link SpawnCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class SpawnCommandTest {
+class SpawnCommandTest {
 
     @InjectMocks
     private SpawnCommand command;
@@ -34,7 +34,7 @@ public class SpawnCommandTest {
 
 
     @Test
-    public void shouldTeleportToSpawn() {
+    void shouldTeleportToSpawn() {
         // given
         Location spawn = mock(Location.class);
         given(spawnLoader.getSpawn()).willReturn(spawn);
@@ -49,7 +49,7 @@ public class SpawnCommandTest {
     }
 
     @Test
-    public void shouldHandleMissingSpawn() {
+    void shouldHandleMissingSpawn() {
         // given
         given(spawnLoader.getSpawn()).willReturn(null);
         Player player = mock(Player.class);

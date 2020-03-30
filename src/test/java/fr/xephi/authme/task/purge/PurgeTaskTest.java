@@ -31,10 +31,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,7 +50,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeTask}.
  */
 @ExtendWith(MockitoExtension.class)
-public class PurgeTaskTest {
+class PurgeTaskTest {
 
     private static final PermissionNode BYPASS_NODE = PlayerStatePermission.BYPASS_PURGE;
 
@@ -69,12 +69,12 @@ public class PurgeTaskTest {
     private ArgumentCaptor<Collection<String>> namesCaptor;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRunTask() {
+    void shouldRunTask() {
         // given
         Set<String> names =
             newHashSet("alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india");
@@ -129,7 +129,7 @@ public class PurgeTaskTest {
      * #1008: OfflinePlayer#getName may return null.
      */
     @Test
-    public void shouldHandleOfflinePlayerWithNullName() {
+    void shouldHandleOfflinePlayerWithNullName() {
         // given
         Set<String> names = newHashSet("name1", "name2");
         OfflinePlayer[] players = asArray(
@@ -147,7 +147,7 @@ public class PurgeTaskTest {
     }
 
     @Test
-    public void shouldStopTaskAndInformSenderUponCompletion() {
+    void shouldStopTaskAndInformSenderUponCompletion() {
         // given
         Set<String> names = newHashSet("name1", "name2");
         Player sender = mock(Player.class);
@@ -176,7 +176,7 @@ public class PurgeTaskTest {
     }
 
     @Test
-    public void shouldStopTaskAndInformConsoleUser() {
+    void shouldStopTaskAndInformConsoleUser() {
         // given
         Set<String> names = newHashSet("name1", "name2");
         PurgeTask task = new PurgeTask(purgeService, permissionsManager, null, names, new OfflinePlayer[0]);

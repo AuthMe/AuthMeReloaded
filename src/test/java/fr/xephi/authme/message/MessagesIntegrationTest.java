@@ -26,11 +26,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -42,7 +42,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link Messages}.
  */
-public class MessagesIntegrationTest {
+class MessagesIntegrationTest {
 
     private static final String TEST_MESSAGES_LOCAL_PATH = "message/messages_test.yml";
     private static final String YML_TEST_FILE = TestHelper.PROJECT_ROOT + TEST_MESSAGES_LOCAL_PATH;
@@ -53,7 +53,7 @@ public class MessagesIntegrationTest {
     File dataFolder;
 
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         TestHelper.setupLogger();
     }
 
@@ -66,7 +66,7 @@ public class MessagesIntegrationTest {
      * file that should contain all messages, but again, for testing, it just contains a few.
      */
     @BeforeEach
-    public void setUpMessages() throws IOException {
+    void setUpMessages() throws IOException {
         File testFile = new File(dataFolder, MessagePathHelper.createMessageFilePath("test"));
         new File(dataFolder, MessagePathHelper.MESSAGES_FOLDER).mkdirs();
         FileUtils.create(testFile);
@@ -77,12 +77,12 @@ public class MessagesIntegrationTest {
     }
 
     @AfterEach
-    public void removeLoggerReferences() {
+    void removeLoggerReferences() {
         ConsoleLogger.initialize(null, null);
     }
 
     @Test
-    public void shouldLoadMessageAndSplitAtNewLines() {
+    void shouldLoadMessageAndSplitAtNewLines() {
         // given
         MessageKey key = MessageKey.UNKNOWN_USER;
         CommandSender sender = mock(CommandSender.class);
@@ -97,7 +97,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldLoadMessageAsStringWithNewLines() {
+    void shouldLoadMessageAsStringWithNewLines() {
         // given
         MessageKey key = MessageKey.UNKNOWN_USER;
         CommandSender sender = mock(CommandSender.class);
@@ -111,7 +111,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldFormatColorCodes() {
+    void shouldFormatColorCodes() {
         // given
         MessageKey key = MessageKey.LOGIN_SUCCESS;
         CommandSender sender = mock(CommandSender.class);
@@ -126,7 +126,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldNotSendEmptyMessage() {
+    void shouldNotSendEmptyMessage() {
         // given
         MessageKey key = MessageKey.EMAIL_ALREADY_USED_ERROR;
         CommandSender sender = mock(CommandSender.class);
@@ -140,7 +140,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldSendMessageToPlayer() {
+    void shouldSendMessageToPlayer() {
         // given
         MessageKey key = MessageKey.LOGIN_SUCCESS;
         Player player = Mockito.mock(Player.class);
@@ -155,7 +155,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldSendMultiLineMessageToPlayer() {
+    void shouldSendMultiLineMessageToPlayer() {
         // given
         MessageKey key = MessageKey.UNKNOWN_USER;
         Player player = Mockito.mock(Player.class);
@@ -173,7 +173,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldSendMessageToPlayerWithNameReplacement() {
+    void shouldSendMessageToPlayerWithNameReplacement() {
         // given
         MessageKey key = MessageKey.REGISTER_MESSAGE;
         Player player = Mockito.mock(Player.class);
@@ -188,7 +188,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldSendMessageToPlayerWithTagReplacement() {
+    void shouldSendMessageToPlayerWithTagReplacement() {
         // given
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = Mockito.mock(CommandSender.class);
@@ -202,7 +202,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldNotLogErrorForKeyWithNoTagReplacements() {
+    void shouldNotLogErrorForKeyWithNoTagReplacements() {
         // given
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = mock(CommandSender.class);
@@ -216,7 +216,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldLogErrorForInvalidReplacementCount() {
+    void shouldLogErrorForInvalidReplacementCount() {
         // given
         Logger logger = mock(Logger.class);
         ConsoleLogger.initialize(logger, null);
@@ -232,7 +232,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldSendErrorForReplacementsOnKeyWithNoTags() {
+    void shouldSendErrorForReplacementsOnKeyWithNoTags() {
         // given
         Logger logger = mock(Logger.class);
         ConsoleLogger.initialize(logger, null);
@@ -248,7 +248,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldNotUseMessageFromDefaultFile() {
+    void shouldNotUseMessageFromDefaultFile() {
         // given
         // Key is present in both files
         MessageKey key = MessageKey.WRONG_PASSWORD;
@@ -263,7 +263,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldRetrieveMessageWithReplacements() {
+    void shouldRetrieveMessageWithReplacements() {
         // given
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = mock(CommandSender.class);
@@ -277,7 +277,7 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldFormatDurationObjects() throws IOException {
+    void shouldFormatDurationObjects() throws IOException {
         // given
         // Use the JAR's messages_en.yml file for this, so copy to the file we're using and reload the file handler
         File testFile = new File(dataFolder, MessagePathHelper.createMessageFilePath("test"));

@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -37,7 +37,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link ConverterCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ConverterCommandTest {
+class ConverterCommandTest {
 
     @InjectMocks
     private ConverterCommand command;
@@ -52,12 +52,12 @@ public class ConverterCommandTest {
     private Factory<Converter> converterFactory;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldHandleUnknownConversionType() {
+    void shouldHandleUnknownConversionType() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -71,7 +71,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldHandleCommandWithNoArgs() {
+    void shouldHandleCommandWithNoArgs() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -85,7 +85,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldHaveUniqueClassForEachConverter() {
+    void shouldHaveUniqueClassForEachConverter() {
         // given
         Set<Class<? extends Converter>> classes = new HashSet<>();
 
@@ -100,7 +100,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldLaunchConverterForAllTypes() {
+    void shouldLaunchConverterForAllTypes() {
         // given
         String converterName = "rakamak";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
@@ -119,7 +119,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldCatchExceptionInConverterAndInformSender() {
+    void shouldCatchExceptionInConverterAndInformSender() {
         // given
         String converterName = "vauth";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);

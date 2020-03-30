@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link SetEmailCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class SetEmailCommandTest {
+class SetEmailCommandTest {
 
     @InjectMocks
     private SetEmailCommand command;
@@ -50,7 +50,7 @@ public class SetEmailCommandTest {
     private ValidationService validationService;
 
     @Test
-    public void shouldRejectInvalidMail() {
+    void shouldRejectInvalidMail() {
         // given
         String user = "somebody";
         String email = "some.test@example.org";
@@ -67,7 +67,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldHandleUnknownUser() {
+    void shouldHandleUnknownUser() {
         // given
         String user = "nonexistent";
         String email = "mail@example.com";
@@ -87,7 +87,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldHandleAlreadyTakenEmail() {
+    void shouldHandleAlreadyTakenEmail() {
         // given
         String user = "someone";
         String email = "mail@example.com";
@@ -111,7 +111,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldHandlePersistenceError() {
+    void shouldHandlePersistenceError() {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
@@ -136,7 +136,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldUpdateEmail() {
+    void shouldUpdateEmail() {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
@@ -163,7 +163,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldUpdateEmailAndPlayerCache() {
+    void shouldUpdateEmailAndPlayerCache() {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";

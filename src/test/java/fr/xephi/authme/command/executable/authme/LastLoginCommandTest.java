@@ -15,9 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link LastLoginCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class LastLoginCommandTest {
+class LastLoginCommandTest {
 
     private static final long HOUR_IN_MSEC = 3600 * 1000;
     private static final long DAY_IN_MSEC = 24 * HOUR_IN_MSEC;
@@ -43,7 +43,7 @@ public class LastLoginCommandTest {
 
 
     @Test
-    public void shouldRejectNonExistentUser() {
+    void shouldRejectNonExistentUser() {
         // given
         String player = "tester";
         given(dataSource.getAuth(player)).willReturn(null);
@@ -58,7 +58,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldDisplayLastLoginOfUser() {
+    void shouldDisplayLastLoginOfUser() {
         // given
         String player = "SomePlayer";
         long lastLogin = System.currentTimeMillis() -
@@ -84,7 +84,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldDisplayLastLoginOfCommandSender() {
+    void shouldDisplayLastLoginOfCommandSender() {
         // given
         String name = "CommandSender";
         CommandSender sender = mock(CommandSender.class);
@@ -112,7 +112,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldHandleNullLastLoginDate() {
+    void shouldHandleNullLastLoginDate() {
         // given
         String name = "player";
         PlayerAuth auth = PlayerAuth.builder()

@@ -19,8 +19,8 @@ import org.mockito.Mock;
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
  * Test for {@link SpawnLoader}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class SpawnLoaderTest {
+class SpawnLoaderTest {
 
     @InjectDelayed
     private SpawnLoader spawnLoader;
@@ -44,7 +44,7 @@ public class SpawnLoaderTest {
     File testFolder;
 
     @BeforeInjecting
-    public void setup() throws IOException {
+    void setup() throws IOException {
         // Copy test config into a new temporary folder
         File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/spawn-firstspawn.yml");
         File destination = new File(testFolder, "spawn.yml");
@@ -56,7 +56,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldSetSpawn() {
+    void shouldSetSpawn() {
         // given
         World world = mock(World.class);
         given(world.getName()).willReturn("new_world");

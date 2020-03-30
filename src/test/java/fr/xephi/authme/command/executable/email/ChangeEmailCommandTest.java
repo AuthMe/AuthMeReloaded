@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
  * Test for {@link ChangeEmailCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-public class ChangeEmailCommandTest {
+class ChangeEmailCommandTest {
 
     @InjectMocks
     private ChangeEmailCommand command;
@@ -44,7 +44,7 @@ public class ChangeEmailCommandTest {
 
 
     @Test
-    public void shouldRejectNonPlayerSender() {
+    void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
 
@@ -56,7 +56,7 @@ public class ChangeEmailCommandTest {
     }
 
     @Test
-    public void shouldStopIfVerificationIsRequired() {
+    void shouldStopIfVerificationIsRequired() {
         // given
         String name = "Testeroni";
         Player player = initPlayerWithName(name);
@@ -72,7 +72,7 @@ public class ChangeEmailCommandTest {
     }
 
     @Test
-    public void shouldForwardData() {
+    void shouldForwardData() {
         // given
         Player sender = initPlayerWithName("AmATest");
         given(codeManager.isVerificationRequired(sender)).willReturn(false);
@@ -86,7 +86,7 @@ public class ChangeEmailCommandTest {
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_CHANGE_EMAIL));
     }

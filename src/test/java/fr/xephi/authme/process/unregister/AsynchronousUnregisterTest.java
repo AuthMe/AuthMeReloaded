@@ -32,8 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.function.Function;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link AsynchronousUnregister}.
  */
 @ExtendWith(MockitoExtension.class)
-public class AsynchronousUnregisterTest {
+class AsynchronousUnregisterTest {
 
     @InjectMocks
     private AsynchronousUnregister asynchronousUnregister;
@@ -71,12 +71,12 @@ public class AsynchronousUnregisterTest {
     private BungeeSender bungeeSender;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRejectWrongPassword() {
+    void shouldRejectWrongPassword() {
         // given
         Player player = mock(Player.class);
         String name = "Bobby";
@@ -99,7 +99,7 @@ public class AsynchronousUnregisterTest {
     }
 
     @Test
-    public void shouldPerformUnregister() {
+    void shouldPerformUnregister() {
         // given
         Player player = mock(Player.class);
         String name = "Frank21";
@@ -133,7 +133,7 @@ public class AsynchronousUnregisterTest {
     }
 
     @Test
-    public void shouldPerformUnregisterAndNotApplyBlindEffect() {
+    void shouldPerformUnregisterAndNotApplyBlindEffect() {
         // given
         Player player = mock(Player.class);
         String name = "Frank21";
@@ -166,7 +166,7 @@ public class AsynchronousUnregisterTest {
     }
 
     @Test
-    public void shouldNotApplyUnregisteredEffectsForNotForcedRegistration() {
+    void shouldNotApplyUnregisteredEffectsForNotForcedRegistration() {
         // given
         Player player = mock(Player.class);
         String name = "__FranK";
@@ -196,7 +196,7 @@ public class AsynchronousUnregisterTest {
     }
 
     @Test
-    public void shouldHandleDatabaseError() {
+    void shouldHandleDatabaseError() {
         // given
         Player player = mock(Player.class);
         String name = "Frank21";
@@ -220,7 +220,7 @@ public class AsynchronousUnregisterTest {
     }
 
     @Test
-    public void shouldNotTeleportOfflinePlayer() {
+    void shouldNotTeleportOfflinePlayer() {
         // given
         Player player = mock(Player.class);
         String name = "Frank21";
@@ -248,7 +248,7 @@ public class AsynchronousUnregisterTest {
 
     // Initiator known and Player object available
     @Test
-    public void shouldPerformAdminUnregister() {
+    void shouldPerformAdminUnregister() {
         // given
         Player player = mock(Player.class);
         String name = "Frank21";
@@ -274,7 +274,7 @@ public class AsynchronousUnregisterTest {
     }
 
     @Test
-    public void shouldPerformAdminUnregisterWithoutInitiatorOrPlayer() {
+    void shouldPerformAdminUnregisterWithoutInitiatorOrPlayer() {
         // given
         String name = "billy";
         given(dataSource.removeAuth(name)).willReturn(true);
@@ -291,7 +291,7 @@ public class AsynchronousUnregisterTest {
     }
 
     @Test
-    public void shouldHandleDatabaseErrorForAdminUnregister() {
+    void shouldHandleDatabaseErrorForAdminUnregister() {
         // given
         String name = "TtOoLl";
         CommandSender initiator = mock(CommandSender.class);

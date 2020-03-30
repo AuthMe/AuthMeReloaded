@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  * Test for {@link DistributedFilesPersistenceHandler}.
  */
 @ExtendWith(DelayedInjectionExtension.class)
-public class DistributedFilesPersistenceHandlerTest {
+class DistributedFilesPersistenceHandlerTest {
 
     /** Player is in seg32-10110 and should be migrated into seg16-f. */
     private static final UUID MIGRATED_UUID = fromString("f6a97c88-7c8f-c12e-4931-6206d4ca067d");
@@ -84,12 +84,12 @@ public class DistributedFilesPersistenceHandlerTest {
     private File playerDataFolder;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeInjecting
-    public void setUpClasses() throws IOException {
+    void setUpClasses() throws IOException {
         given(settings.getProperty(LimboSettings.DISTRIBUTION_SIZE)).willReturn(SegmentSize.SIXTEEN);
         playerDataFolder = new File(dataFolder, "playerdata");
         playerDataFolder.mkdir();
@@ -112,7 +112,7 @@ public class DistributedFilesPersistenceHandlerTest {
     // test things in one test that would traditionally belong into two separate tests
 
     @Test
-    public void shouldMigrateOldSegmentFilesOnStartup() {
+    void shouldMigrateOldSegmentFilesOnStartup() {
         // Ensure that only the files of the current segmenting scheme remain
         assertThat(playerDataFolder.list(), arrayContainingInAnyOrder("seg16-8-limbo.json", "seg16-f-limbo.json"));
 
@@ -128,7 +128,7 @@ public class DistributedFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldRemovePlayer() {
+    void shouldRemovePlayer() {
         // given
         Player playerToRemove = mockPlayerWithUuid(UUID_STAFF);
         Player unknownPlayerToRemove = mockPlayerWithUuid(UNKNOWN_UUID);
@@ -148,7 +148,7 @@ public class DistributedFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldAddPlayer() {
+    void shouldAddPlayer() {
         // given
         Player uuidToAdd1 = mockPlayerWithUuid(UNKNOWN_UUID);
         Location location1 = mockLocation("1world");
@@ -176,7 +176,7 @@ public class DistributedFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldHandleReadErrorGracefully() throws IOException {
+    void shouldHandleReadErrorGracefully() throws IOException {
         // given
         // assumption
         File invalidFile = new File(playerDataFolder, "seg16-4-limbo.json");

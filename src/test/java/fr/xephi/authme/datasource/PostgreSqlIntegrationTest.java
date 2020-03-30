@@ -36,7 +36,7 @@ public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
     @BeforeAll
-    public static void initializeSettings() throws IOException, ClassNotFoundException {
+    static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an H2 driver
         Class.forName("org.h2.jdbcx.JdbcDataSource");
 
@@ -51,7 +51,7 @@ public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest
     }
 
     @BeforeEach
-    public void initializeConnectionAndTable() throws SQLException {
+    void initializeConnectionAndTable() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
         config.setConnectionTestQuery("VALUES 1");
@@ -69,7 +69,7 @@ public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest
     }
 
     @AfterEach
-    public void closeConnection() {
+    void closeConnection() {
         silentClose(hikariSource);
     }
 
