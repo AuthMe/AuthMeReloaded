@@ -150,7 +150,6 @@
         </module>
         <module name="JavadocMethod">
             <property name="scope" value="package"/>
-            <property name="allowMissingThrowsTags" value="true"/>
             <property name="allowedAnnotations" value="Override, Test, SectionComments, EventHandler, Before, BeforeClass"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
         </module>
@@ -162,7 +161,6 @@
         </module>
         <module name="JavadocMethod">
             <property name="scope" value="private"/>
-            <property name="allowMissingThrowsTags" value="true"/>
             <property name="allowedAnnotations" value="Override, Test, SectionComments, EventHandler"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
         </module>
