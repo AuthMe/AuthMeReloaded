@@ -26,7 +26,7 @@
 
     <ciManagement>
         <system>jenkins</system>
-        <url>http://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/</url>
+        <url>https://ci.codemc.io/job/AuthMe/job/AuthMeReloaded/</url>
     </ciManagement>
 
     <issueManagement>
@@ -37,18 +37,18 @@
     <distributionManagement>
         <snapshotRepository>
             <id>codemc-snapshots</id>
-            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
+            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>codemc-releases</id>
-            <url>https://repo.codemc.org/repository/maven-releases/</url>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
     <licenses>
         <license>
             <name>The GNU General Public Licence version 3 (GPLv3)</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.3.9</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.14.2-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.15.2-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -205,7 +205,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.4</version>
+                <version>0.8.5</version>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -241,7 +241,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.0</version>
             </plugin>
             <!-- Generate a jar containing the source javadoc -->
             <plugin>
@@ -265,7 +265,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.1</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                 </configuration>
@@ -282,7 +282,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -358,6 +358,7 @@
                             <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
                         </relocation>
                     </relocations>
+
                     <filters>
                         <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
                         <!-- "Invalid signature file digest for Manifest main attributes" -->
@@ -388,7 +389,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.8.2</version>
+                <version>3.9.0</version>
             </plugin>
             <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
             <plugin>
@@ -419,7 +420,7 @@
         <!-- CodeMC Repo (Contains many required libraries) -->
         <repository>
             <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -443,7 +444,7 @@
         <!-- ProtocolLib Repo -->
         <repository>
             <id>dmulloy2-repo-releases</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -453,7 +454,7 @@
         </repository>
         <repository>
             <id>dmulloy2-repo-snapshots</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/snapshots/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -465,7 +466,7 @@
         <!-- Multiverse Repo -->
         <repository>
             <id>onarandombox-repo-releases</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse/</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -475,29 +476,7 @@
         </repository>
         <repository>
             <id>onarandombox-repo-snapshots</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <!-- Vault Repo -->
-        <repository>
-            <id>vault-repo-releases</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>vault-repo-snapshots</id>
-            <url>http://nexus.hc.to/content/repositories/pub_snapshots</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -531,7 +510,7 @@
         <dependency>
             <groupId>com.maxmind.db</groupId>
             <artifactId>maxmind-db-gson</artifactId>
-            <version>2.0.2-SNAPSHOT</version>
+            <version>2.0.3</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -569,7 +548,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.4.1</version>
+            <version>3.4.2</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -582,7 +561,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.28</version>
+            <version>1.7.30</version>
             <optional>true</optional>
         </dependency>
 
@@ -606,11 +585,11 @@
         <dependency>
             <groupId>com.warrenstrange</groupId>
             <artifactId>googleauth</artifactId>
-            <version>1.2.0</version>
+            <version>1.4.0</version>
             <optional>true</optional>
         </dependency>
 
-        <!-- Spigot API, http://www.spigotmc.org/ -->
+        <!-- Spigot API, https://www.spigotmc.org/ -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
@@ -666,7 +645,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.4</version>
+            <version>1.7</version>
             <optional>true</optional>
         </dependency>
 
@@ -690,9 +669,9 @@
 
         <!-- LuckPerms plugin -->
         <dependency>
-            <groupId>me.lucko.luckperms</groupId>
-            <artifactId>luckperms-api</artifactId>
-            <version>4.4</version>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -728,7 +707,7 @@
             </exclusions>
         </dependency>
 
-        <!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
+        <!-- Vault, https://dev.bukkit.org/bukkit-plugins/vault/ -->
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
@@ -746,7 +725,7 @@
             </exclusions>
         </dependency>
 
-        <!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
+        <!-- Multi World plugin, https://www.spigotmc.org/resources/multiverse-core.390/ -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
@@ -855,7 +834,7 @@
         <dependency>
             <groupId>at.favre.lib</groupId>
             <artifactId>bcrypt</artifactId>
-            <version>0.8.0</version>
+            <version>0.9.0</version>
             <optional>true</optional>
         </dependency>
 
@@ -877,7 +856,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.8</version>
+            <version>42.2.11</version>
         </dependency>
 
         <!-- Unit Testing Libraries -->
@@ -912,7 +891,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>3.1.0</version>
+            <version>3.3.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -931,7 +910,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>2.11.1</version>
+            <version>3.2.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -939,13 +918,13 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.28.0</version>
+            <version>3.30.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.199</version>
+            <version>1.4.200</version>
             <scope>test</scope>
         </dependency>
 

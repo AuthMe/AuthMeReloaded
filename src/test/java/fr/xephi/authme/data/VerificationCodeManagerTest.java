@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link VerificationCodeManager}.
@@ -82,7 +82,7 @@ public class VerificationCodeManagerTest {
 
         // then
         assertThat(result, equalTo(false));
-        verifyZeroInteractions(permissionsManager, dataSource);
+        verifyNoInteractions(permissionsManager, dataSource);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class VerificationCodeManagerTest {
         // then
         assertThat(result, equalTo(false));
         verify(permissionsManager).hasPermission(player, PlayerPermission.VERIFICATION_CODE);
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test

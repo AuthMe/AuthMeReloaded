@@ -18,7 +18,7 @@ import java.util.Collections;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link AddTotpCommand}.
@@ -47,7 +47,7 @@ public class AddTotpCommandTest {
 
         // then
         verify(messages).send(player, MessageKey.NOT_LOGGED_IN);
-        verifyZeroInteractions(generateTotpService);
+        verifyNoInteractions(generateTotpService);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class AddTotpCommandTest {
 
         // then
         verify(messages).send(player, MessageKey.TWO_FACTOR_ALREADY_ENABLED);
-        verifyZeroInteractions(generateTotpService);
+        verifyNoInteractions(generateTotpService);
     }
 
     @Test

@@ -82,8 +82,7 @@ public class AuthMeInitializationTest {
     @Test
     public void shouldInitializeAllServices() {
         // given
-        PropertyReader reader = mock(PropertyReader.class, RETURNS_DEEP_STUBS);
-        given(reader.getList(anyString())).willReturn(Collections.emptyList());
+        PropertyReader reader = mock(PropertyReader.class);
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.createReader()).willReturn(reader);
         Settings settings = new Settings(dataFolder, resource, null, buildConfigurationData());

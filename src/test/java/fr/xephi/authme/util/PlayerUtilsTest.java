@@ -35,12 +35,6 @@ public class PlayerUtilsTest {
     }
 
     @Test
-    public void shouldHaveHiddenConstructor() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(PlayerUtils.class);
-    }
-
-    @Test
     public void shouldCheckIfIsNpc() {
         // given
         Player player1 = mock(Player.class);

@@ -28,22 +28,23 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.IsEqualByReflectionMatcher.hasEqualValuesOnAllFields;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -478,7 +479,7 @@ public class AuthMeApiTest {
         // then
         assertThat(result, equalTo(false));
         verify(dataSource, only()).isAuthAvailable(name);
-        verifyZeroInteractions(management, passwordSecurity);
+        verifyNoInteractions(management, passwordSecurity);
     }
 
     @Test
@@ -510,6 +511,36 @@ public class AuthMeApiTest {
         // then
         assertThat(countryCode, equalTo("XA"));
         assertThat(countryName, equalTo("Syldavia"));
+    }
+
+    @Test
+    public void shouldReturnAuthMePlayerInfo() {
+        // given
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobb")
+            .realName("Bobb")
+            .registrationDate(1433166082000L)
+            .build();
+        given(dataSource.getAuth("bobb")).willReturn(auth);
+
+        // when
+        Optional<AuthMePlayer> result = api.getPlayerInfo("bobb");
+
+        // then
+        AuthMePlayer playerInfo = result.get();
+        assertThat(playerInfo.getName(), equalTo("Bobb"));
+        assertThat(playerInfo.getRegistrationDate(), equalTo(Instant.ofEpochMilli(1433166082000L)));
+    }
+
+    @Test
+    public void shouldReturnNullForNonExistentAuth() {
+        // given / when
+        Optional<AuthMePlayer> result = api.getPlayerInfo("doesNotExist");
+
+        // then
+        assertThat(result.isPresent(), equalTo(false));
+        verify(playerCache).getAuth("doesNotExist");
+        verify(dataSource).getAuth("doesNotExist");
     }
 
     private static Player mockPlayerWithName(String name) {

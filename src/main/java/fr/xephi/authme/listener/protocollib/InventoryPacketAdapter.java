@@ -69,6 +69,11 @@ class InventoryPacketAdapter extends PacketAdapter {
         }
     }
 
+    /**
+     * Registers itself to ProtocolLib and blanks out the inventory packet to any applicable players.
+     *
+     * @param bukkitService the bukkit service (for retrieval of online players)
+     */
     public void register(BukkitService bukkitService) {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
 
@@ -85,6 +90,11 @@ class InventoryPacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().removePacketListener(this);
     }
 
+    /**
+     * Sends a blanked out packet to the given player in order to hide the inventory.
+     *
+     * @param player the player to send the blank inventory packet to
+     */
     public void sendBlankInventoryPacket(Player player) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);

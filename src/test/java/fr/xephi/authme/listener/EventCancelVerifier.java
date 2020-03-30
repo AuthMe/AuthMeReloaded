@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests simple listener methods that should cancel an event when the listener service says so.
@@ -54,7 +54,7 @@ public final class EventCancelVerifier {
         event = mock(clazz);
         mockShouldCancel(false, listenerService, event);
         listenerMethod.accept(event);
-        verifyZeroInteractions(event);
+        verifyNoInteractions(event);
 
         return this;
     }

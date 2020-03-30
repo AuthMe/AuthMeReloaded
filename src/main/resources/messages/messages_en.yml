@@ -8,7 +8,7 @@ registration:
   register_request: '&3Please, register to the server with the command: /register <password> <ConfirmPassword>'
   command_usage: '&cUsage: /register <password> <ConfirmPassword>'
   reg_only: '&4Only registered users can join the server! Please visit http://example.com to register yourself!'
-  kicked_admin_registered: 'An admin just registered you; please log in again'
+  kicked_admin_registered: 'An admin just registered you; please log in again.'
   success: '&2Successfully registered!'
   disabled: '&cIn-game registration is disabled!'
   name_taken: '&cYou already have registered this username!'
@@ -98,8 +98,8 @@ email:
   add_email_request: '&3Please add your email to your account with the command: /email add <yourEmail> <confirmEmail>'
   change_password_expired: 'You cannot change your password using this command anymore.'
   email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
-  add_not_allowed: '&cAdding email was not allowed'
-  change_not_allowed: '&cChanging email was not allowed'
+  add_not_allowed: '&cAdding email was not allowed.'
+  change_not_allowed: '&cChanging email was not allowed.'
 
 # Password recovery by email
 recovery:
@@ -131,6 +131,7 @@ verification:
   code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
   email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
+# Two-factor authentication
 two_factor:
   code_created: '&2Your secret code is %code. You can scan it from here %url'
   confirmation_required: 'Please confirm your code with /2fa confirm <code>'

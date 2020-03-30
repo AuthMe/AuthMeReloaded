@@ -21,7 +21,7 @@ import java.util.Collections;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link EmailSetPasswordCommand}.
@@ -102,7 +102,7 @@ public class EmailSetPasswordCommandTest {
         command.runCommand(player, Collections.singletonList("abc123"));
 
         // then
-        verifyZeroInteractions(validationService, dataSource);
+        verifyNoInteractions(validationService, dataSource);
         verify(commonService).send(player, MessageKey.CHANGE_PASSWORD_EXPIRED);
     }
 }

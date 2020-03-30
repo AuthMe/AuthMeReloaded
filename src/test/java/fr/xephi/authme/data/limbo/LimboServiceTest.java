@@ -34,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link LimboService}, and {@link LimboServiceHelper}.
@@ -222,7 +222,7 @@ public class LimboServiceTest {
         limboService.replaceTasksAfterRegistration(player);
 
         // then
-        verifyZeroInteractions(taskManager);
+        verifyNoInteractions(taskManager);
         verify(authGroupHandler).setGroup(player, null, AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
 

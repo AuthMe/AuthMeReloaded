@@ -30,73 +30,55 @@ class WordpressExtension extends MySqlExtension {
         }
     }
 
+    /**
+     * Saves the required data to Wordpress tables.
+     *
+     * @param auth the player data
+     * @param id the player id
+     * @param con the sql connection
+     * @throws SQLException .
+     */
     private void saveSpecifics(PlayerAuth auth, int id, Connection con) throws SQLException {
         String sql = "INSERT INTO " + wordpressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?)";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
-            // First Name
-            pst.setInt(1, id);
-            pst.setString(2, "first_name");
-            pst.setString(3, "");
-            pst.addBatch();
-            // Last Name
-            pst.setInt(1, id);
-            pst.setString(2, "last_name");
-            pst.setString(3, "");
-            pst.addBatch();
-            // Nick Name
-            pst.setInt(1, id);
-            pst.setString(2, "nickname");
-            pst.setString(3, auth.getNickname());
-            pst.addBatch();
-            // Description
-            pst.setInt(1, id);
-            pst.setString(2, "description");
-            pst.setString(3, "");
-            pst.addBatch();
-            // Rich_Editing
-            pst.setInt(1, id);
-            pst.setString(2, "rich_editing");
-            pst.setString(3, "true");
-            pst.addBatch();
-            // Comments_Shortcuts
-            pst.setInt(1, id);
-            pst.setString(2, "comment_shortcuts");
-            pst.setString(3, "false");
-            pst.addBatch();
-            // admin_color
-            pst.setInt(1, id);
-            pst.setString(2, "admin_color");
-            pst.setString(3, "fresh");
-            pst.addBatch();
-            // use_ssl
-            pst.setInt(1, id);
-            pst.setString(2, "use_ssl");
-            pst.setString(3, "0");
-            pst.addBatch();
-            // show_admin_bar_front
-            pst.setInt(1, id);
-            pst.setString(2, "show_admin_bar_front");
-            pst.setString(3, "true");
-            pst.addBatch();
-            // wp_capabilities
-            pst.setInt(1, id);
-            pst.setString(2, wordpressPrefix + "capabilities");
-            pst.setString(3, "a:1:{s:10:\"subscriber\";b:1;}");
-            pst.addBatch();
-            // wp_user_level
-            pst.setInt(1, id);
-            pst.setString(2, wordpressPrefix + "user_level");
-            pst.setString(3, "0");
-            pst.addBatch();
-            // default_password_nag
-            pst.setInt(1, id);
-            pst.setString(2, "default_password_nag");
-            pst.setString(3, "");
-            pst.addBatch();
+
+            new UserMetaBatchAdder(pst, id)
+                .addMetaRow("first_name", "")
+                .addMetaRow("last_name", "")
+                .addMetaRow("nickname", auth.getNickname())
+                .addMetaRow("description", "")
+                .addMetaRow("rich_editing", "true")
+                .addMetaRow("comment_shortcuts", "false")
+                .addMetaRow("admin_color", "fresh")
+                .addMetaRow("use_ssl", "0")
+                .addMetaRow("show_admin_bar_front", "true")
+                .addMetaRow(wordpressPrefix + "capabilities", "a:1:{s:10:\"subscriber\";b:1;}")
+                .addMetaRow(wordpressPrefix + "user_level", "0")
+                .addMetaRow("default_password_nag", "");
 
             // Execute queries
             pst.executeBatch();
             pst.clearBatch();
+        }
+    }
+
+    /** Helper to add batch entries to the wrapped prepared statement. */
+    private static final class UserMetaBatchAdder {
+
+        private final PreparedStatement pst;
+        private final int userId;
+
+        UserMetaBatchAdder(PreparedStatement pst, int userId) {
+            this.pst = pst;
+            this.userId = userId;
+        }
+
+        UserMetaBatchAdder addMetaRow(String metaKey, String metaValue) throws SQLException {
+            pst.setInt(1, userId);
+            pst.setString(2, metaKey);
+            pst.setString(3, metaValue);
+            pst.addBatch();
+            return this;
         }
     }
 }

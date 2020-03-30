@@ -3,20 +3,25 @@ package fr.xephi.authme.service;
 import com.maxmind.db.GeoIp2Provider;
 import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
+
+import fr.xephi.authme.settings.Settings;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,12 +29,11 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link GeoIpService}.
  */
-@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class GeoIpServiceTest {
 
     private GeoIpService geoIpService;
-    @TempDir
-    File dataFolder;
+    private File dataFolder;
 
     @Mock
     private GeoIp2Provider lookupService;
@@ -37,9 +41,16 @@ public class GeoIpServiceTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeEach
-    public void initializeGeoLiteApi() {
-        geoIpService = new GeoIpService(dataFolder, bukkitService, lookupService);
+    @Mock
+    private Settings settings;
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Before
+    public void initializeGeoLiteApi() throws IOException {
+        dataFolder = temporaryFolder.newFolder();
+        geoIpService = new GeoIpService(dataFolder, bukkitService, settings, lookupService);
     }
 
     @Test

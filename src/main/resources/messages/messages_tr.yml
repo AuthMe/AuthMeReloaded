@@ -40,7 +40,7 @@ error:
     max_registration: '&cSen maksimum kayit sinirini astin (%reg_count/%max_acc %reg_names)!'
     logged_in: '&cZaten giris yaptin!'
     kick_for_vip: '&3Bir VIP oyuna giris yaptigi icin atildin!'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+    kick_unresolved_hostname: '&cBir hata olustu: cozumlenemeyen oyuncu bilgisayar adi!'
     tempban_max_logins: '&cBir cok kez yanlis giris yaptiginiz icin gecici olarak banlandiniz.'
 
 # AntiBot

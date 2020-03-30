@@ -2,9 +2,8 @@ package tools.docs.translations;
 
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.YamlFileReader;
-import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.message.MessageKey;
-import tools.utils.ToolsConstants;
+import fr.xephi.authme.message.MessagePathHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,13 +11,14 @@ import java.util.Comparator;
 import java.util.List;
 
 import static tools.utils.FileIoUtils.listFilesOrThrow;
+import static tools.utils.ToolsConstants.MAIN_RESOURCES_ROOT;
 
 /**
  * Gathers all available translations of AuthMe.
  */
 public class TranslationsGatherer {
 
-    private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + MessagePathHelper.MESSAGES_FOLDER;
+    private static final String MESSAGES_FOLDER = MAIN_RESOURCES_ROOT + MessagePathHelper.MESSAGES_FOLDER;
 
     private List<TranslationInfo> translationInfo = new ArrayList<>();
 

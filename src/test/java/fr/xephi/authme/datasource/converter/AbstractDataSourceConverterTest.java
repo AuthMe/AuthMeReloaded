@@ -21,8 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -51,7 +51,7 @@ public class AbstractDataSourceConverterTest {
         // then
         verify(sender).sendMessage(argThat(containsString("Please configure your connection to SQLITE")));
         verify(destination, only()).getType();
-        verifyZeroInteractions(source);
+        verifyNoInteractions(source);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class AbstractDataSourceConverterTest {
         // then
         verify(sender).sendMessage("The data source to convert from could not be initialized");
         verify(destination, only()).getType();
-        verifyZeroInteractions(source);
+        verifyNoInteractions(source);
     }
 
     @Test

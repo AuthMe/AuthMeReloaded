@@ -121,7 +121,7 @@ settings:
             # If the server change fails the player will be kicked.
             target: LoginLobby1
             failKickMessage: 'Failed to connect to the lobby! Please try to join the server again!'
-    
+
         # Variables:
         # %p playername
         bungee_commands:
@@ -174,7 +174,7 @@ settings:
     # Registration settings.
     # ===========================
 
-    registration:       
+    registration:
         # After how many time unregistered players should be kicked?
         # Set to 0 to disable. (default: 30)
         timeout: 30
@@ -205,12 +205,12 @@ settings:
     # Login settings.
     # ===========================
 
-    login:       
+    login:
         # After how many time unlogged players should be kicked?
         # Set to 0 to disable. (default: 30)
         timeout: 30
 
-        
+
 
     # ===========================
     # Encryption parameters.
@@ -235,7 +235,7 @@ settings:
     unlogged_restrictions:
         # Deny chat messages send for unlogged users.
         deny_chat: true
-        # Hide chat to unlogged users. 
+        # Hide chat to unlogged users.
         # Only player messages, plugins will be able to send messages to the player anyway.
         hide_chat: false
 
@@ -257,16 +257,16 @@ settings:
             # Should unlogged players have speed = 0?
             # After the login the walking/flying speeed will be reset to the default value.
             removeSpeed: true
-        
+
         # End is there atm xD
-        
+
         # This option will save the quit location of the players.
         SaveQuitLocation: false
         # Should not logged in players be teleported to the spawn?
         # After the authentication, if SaveQuitLocation is enabled,
         # they will be teleported back to their normal position.
         teleportUnAuthedToSpawn: false
-        
+
         # If enabled, after the login, if the ForceSpawnOnTheseWorlds setting contains
         # the player's world, he will be teleported to the world spawnpoint.
         # The quit location of the player will be overwritten.
@@ -306,22 +306,22 @@ settings:
         # ===========================
         # Address restrictions
         # ===========================
-        
+
         # Max number of registrations per IP (default: 1)
         maxRegPerIp: 1
         # Maximum allowed number of Logins per IP, 0 to disable (default: 0)
         maxLoginPerIp: 0
         # Maximum allowed number of Joins per IP, 0 to disable (default: 0)
         maxJoinPerIp: 0
-        
+
         # When this setting is enabled, online players can't be kicked out
         # due to "Logged in from another Location"
-        # This setting will prevent potetial security exploits.
+        # This setting will prevent potential security exploits.
         ForceSingleSession: true
-        
+
         # To activate the restricted user feature you need
         # to enable this option and configure the
-        # AllowedRestrctedUser field.
+        # AllowedRestrictedUser field.
         AllowRestrictedUser: false
         # The restricted user feature will kick players listed below
         # if they dont match of the defined ip address.
@@ -332,35 +332,35 @@ settings:
         - playername;127.0.0.
         # Ban ip when the ip is not the ip registered in database
         banUnsafedIP: false
-        
 
-        
+
+
         # ===============================
         # Other restrictions
         # ===============================
-        
+
         # Should we protect the player inventory before logging in?
         # Warning: Requires the latest version of ProtocolLib!
         ProtectInventoryBeforeLogIn: true
-        
+
         # Should unregistered players be kicked immediately?
         kickNonRegistered: false
         # Should players be kicked on wrong password?
         kickOnWrongPassword: false
-        
+
         # Should we display all other accounts of a player when he joins?
         # Required permission: authme.admin.accounts
         displayOtherAccounts: true
-        
+
         # ===============================
         # Restrictions compatibility
         # ===============================
-        
+
         # Spawn Priority. Avariable values : authme, essentials, multiverse, default
         spawnPriority: authme,essentials,multiverse,default
         # AuthMe will NEVER teleport players!
         noTeleport: false
-        
+
     GameMode:
         # Do you want to set player's gamemode to survival when he joins?
         # This enables also the settings below.
@@ -369,9 +369,9 @@ settings:
         ResetInventoryIfCreative: false
         # Do you want to force the survival mode ONLY after the /login process?
         ForceOnlyAfterLogin: false
-        
+
         # sgdc3: Ok, our configuration is shit.... xD Today I will stop there
-        
+
 
     registration:
         # enable registration on the server?

@@ -83,8 +83,8 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Test for {@link PlayerListener}.
@@ -725,7 +725,7 @@ public class PlayerListenerTest {
         // given
         String name = "someone";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
-    
+
         AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, null, uniqueId));
         given(messages.retrieveSingle(name, MessageKey.KICK_UNRESOLVED_HOSTNAME)).willReturn("Unresolved hostname");
 
@@ -929,7 +929,6 @@ public class PlayerListenerTest {
         // given
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
-        given(transaction.getPlayer()).willReturn(player);
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
         given(listenerService.shouldCancelEvent(player)).willReturn(false);
@@ -948,7 +947,6 @@ public class PlayerListenerTest {
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES)).willReturn(Collections.emptySet());
-        given(transaction.getPlayer()).willReturn(player);
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
         given(listenerService.shouldCancelEvent(player)).willReturn(true);

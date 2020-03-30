@@ -98,6 +98,7 @@ public class SQLite extends AbstractSqlDataSource {
      * @throws SQLException when an SQL error occurs while initializing the database
      */
     @VisibleForTesting
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     protected void setup() throws SQLException {
         try (Statement st = con.createStatement()) {
             // Note: cannot add unique fields later on in SQLite, so we add it on initialization

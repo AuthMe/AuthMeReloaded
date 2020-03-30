@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
@@ -52,7 +52,7 @@ public class PurgePlayerCommandTest {
 
         // then
         verify(sender).sendMessage(argThat(containsString("This player is still registered")));
-        verifyZeroInteractions(purgeExecutor);
+        verifyNoInteractions(purgeExecutor);
     }
 
     @Test

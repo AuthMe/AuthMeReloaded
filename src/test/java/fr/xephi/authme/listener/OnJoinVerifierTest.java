@@ -39,8 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link OnJoinVerifier}.
@@ -86,7 +86,7 @@ public class OnJoinVerifierTest {
         assertThat(result, equalTo(false));
         verify(event).getResult();
         verifyNoMoreInteractions(event);
-        verifyZeroInteractions(bukkitService, dataSource, permissionsManager);
+        verifyNoInteractions(bukkitService, dataSource, permissionsManager);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class OnJoinVerifierTest {
         assertThat(result, equalTo(true));
         assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.KICK_FULL));
         assertThat(event.getKickMessage(), equalTo(serverFullMessage));
-        verifyZeroInteractions(bukkitService, dataSource);
+        verifyNoInteractions(bukkitService, dataSource);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class OnJoinVerifierTest {
         assertThat(result, equalTo(false));
         assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.ALLOWED));
         // First player is VIP, so expect no interactions there and second player to have been kicked
-        verifyZeroInteractions(onlinePlayers.get(0));
+        verifyNoInteractions(onlinePlayers.get(0));
         verify(onlinePlayers.get(1)).kickPlayer("kick for vip");
     }
 
@@ -154,7 +154,7 @@ public class OnJoinVerifierTest {
         assertThat(result, equalTo(true));
         assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.KICK_FULL));
         assertThat(event.getKickMessage(), equalTo("kick full server"));
-        verifyZeroInteractions(onlinePlayers.get(0));
+        verifyNoInteractions(onlinePlayers.get(0));
     }
 
     @Test
@@ -243,7 +243,7 @@ public class OnJoinVerifierTest {
         onJoinVerifier.checkNameCasing(name, auth);
 
         // then
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class OnJoinVerifierTest {
         expectValidationExceptionWith(() -> onJoinVerifier.checkNameCasing(name, auth),
             MessageKey.INVALID_NAME_CASE, "testeR", "Tester");
 
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -299,7 +299,7 @@ public class OnJoinVerifierTest {
         onJoinVerifier.checkNameCasing(name, auth);
 
         // then
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -312,7 +312,7 @@ public class OnJoinVerifierTest {
         onJoinVerifier.checkNameCasing(name, auth);
 
         // then
-        verifyZeroInteractions(dataSource);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
@@ -354,7 +354,7 @@ public class OnJoinVerifierTest {
         onJoinVerifier.checkSingleSession(name);
 
         // then
-        verifyZeroInteractions(bukkitService);
+        verifyNoInteractions(bukkitService);
     }
 
     @Test
@@ -383,7 +383,7 @@ public class OnJoinVerifierTest {
         onJoinVerifier.checkAntibot(name, isAuthAvailable);
 
         // then
-        verifyZeroInteractions(permissionsManager, antiBotService);
+        verifyNoInteractions(permissionsManager, antiBotService);
     }
 
     @Test
@@ -398,7 +398,7 @@ public class OnJoinVerifierTest {
 
         // then
         verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
-        verifyZeroInteractions(antiBotService);
+        verifyNoInteractions(antiBotService);
     }
 
     @Test
@@ -425,19 +425,19 @@ public class OnJoinVerifierTest {
      */
     @Test
     public void shouldNotCheckCountry() throws FailedVerificationException {
+        // given
         String name = "david";
         String ip = "127.0.0.1";
 
-        // protection setting disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(false);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
-        verifyZeroInteractions(validationService);
 
-        // protection for registered players disabled
-        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
+        // when
+        onJoinVerifier.checkPlayerCountry(name, ip, false);
         onJoinVerifier.checkPlayerCountry(name, ip, true);
-        verifyZeroInteractions(validationService);
+
+        // then
+        verifyNoInteractions(validationService);
     }
 
     @Test

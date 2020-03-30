@@ -110,11 +110,6 @@ public class MigrationServiceTest {
         verifyNoMoreInteractions(settings, dataSource, sha256);
     }
 
-    @Test
-    public void shouldHaveHiddenEmptyConstructorOnly() {
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(MigrationService.class);
-    }
-
     private static PlayerAuth authWithNickAndHash(String nick, String hash) {
         return PlayerAuth.builder()
             .name(nick)
@@ -123,12 +118,9 @@ public class MigrationServiceTest {
     }
 
     private static void setSha256MockToUppercase(Sha256 sha256) {
-        given(sha256.computeHash(anyString(), anyString())).willAnswer(new Answer<HashedPassword>() {
-            @Override
-            public HashedPassword answer(InvocationOnMock invocation) {
-                String plainPassword = invocation.getArgument(0);
-                return new HashedPassword(plainPassword.toUpperCase(), null);
-            }
+        given(sha256.computeHash(anyString(), anyString())).willAnswer(invocation -> {
+            String plainPassword = invocation.getArgument(0);
+            return new HashedPassword(plainPassword.toUpperCase(), null);
         });
     }
 }

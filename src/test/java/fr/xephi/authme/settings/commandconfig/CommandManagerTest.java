@@ -28,8 +28,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link CommandManager}.
@@ -80,7 +80,7 @@ public class CommandManagerTest {
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class CommandManagerTest {
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class CommandManagerTest {
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(240L));
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -145,7 +145,7 @@ public class CommandManagerTest {
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class CommandManagerTest {
         verify(bukkitService).dispatchCommand(any(Player.class), eq("list"));
         verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(100L));
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class CommandManagerTest {
         // then
         verify(bukkitService).dispatchConsoleCommand("msg Bobby Session login!");
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -193,7 +193,7 @@ public class CommandManagerTest {
         // then
         verify(bukkitService).dispatchConsoleCommand("pay Bobby 30");
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -206,7 +206,7 @@ public class CommandManagerTest {
         manager.runCommandsOnFirstLogin(player, Arrays.asList("u", "wot", "m8"));
 
         // then
-        verifyZeroInteractions(bukkitService, geoIpService);
+        verifyNoInteractions(bukkitService, geoIpService);
     }
 
     @Test
@@ -220,7 +220,7 @@ public class CommandManagerTest {
 
         // then
         verify(bukkitService, only()).dispatchConsoleCommand("broadcast bob has joined");
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -234,7 +234,7 @@ public class CommandManagerTest {
 
         // then
         verify(bukkitService, only()).dispatchConsoleCommand("broadcast Bobby has joined");
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -265,7 +265,7 @@ public class CommandManagerTest {
         // then
         verify(bukkitService).dispatchConsoleCommand("broadcast Bobby (127.0.0.3) logged out");
         verifyNoMoreInteractions(bukkitService);
-        verifyZeroInteractions(geoIpService);
+        verifyNoInteractions(geoIpService);
     }
 
     @Test
@@ -278,7 +278,7 @@ public class CommandManagerTest {
         manager.runCommandsOnRegister(player);
 
         // then
-        verifyZeroInteractions(bukkitService, geoIpService);
+        verifyNoInteractions(bukkitService, geoIpService);
     }
 
     @Test
@@ -292,12 +292,6 @@ public class CommandManagerTest {
 
         // then
         verify(bukkitService).dispatchConsoleCommand("msg Bobby sad to see you go!");
-    }
-
-    @Test
-    public void shouldHaveHiddenConstructorInSettingsHolderClass() {
-        // given / when / then
-        TestHelper.validateHasOnlyPrivateEmptyConstructor(CommandSettingsHolder.class);
     }
 
     private void initManager() {
