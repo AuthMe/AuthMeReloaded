@@ -439,18 +439,18 @@ public class OnJoinVerifierTest {
      */
     @Test
     public void shouldNotCheckCountry() throws FailedVerificationException {
+        // given
         String name = "david";
         String ip = "127.0.0.1";
 
-        // protection setting disabled
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(false);
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(true);
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
-        verifyNoInteractions(validationService);
 
-        // protection for registered players disabled
-        given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED)).willReturn(false);
+        // when
+        onJoinVerifier.checkPlayerCountry(name, ip, false);
         onJoinVerifier.checkPlayerCountry(name, ip, true);
+
+        // then
         verifyNoInteractions(validationService);
     }
 

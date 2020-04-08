@@ -6,7 +6,7 @@
 # %username% - Affiche le pseudo du joueur recevant le message.
 # %displayname% - Affiche le pseudo, avec couleurs, du joueur recevant le message.
 
-# Registration
+# Enregistrement
 registration:
     disabled: '&cL''inscription est désactivée.'
     name_taken: '&cUtilisateur déjà inscrit.'
@@ -16,7 +16,7 @@ registration:
     success: '&aInscription effectuée !'
     kicked_admin_registered: 'Un admin vient de vous inscrire, veuillez vous reconnecter.'
 
-# Password errors on registration
+# Erreur de mot de passe lors de l'enregistrement
 password:
     match_error: '&cLe mot de passe de confirmation ne correspond pas.'
     name_in_password: '&cVous ne pouvez pas utiliser votre pseudo comme mot de passe.'
@@ -24,7 +24,7 @@ password:
     forbidden_characters: '&cVotre mot de passe contient des caractères non autorisés. Caractères permis : %valid_chars'
     wrong_length: '&cVotre mot de passe est trop court ou trop long !'
 
-# Login
+# Identification
 login:
     command_usage: '&cUsage: /login <MotDePasse>'
     wrong_password: '&cMauvais mot de passe !'
@@ -32,7 +32,7 @@ login:
     login_request: '&cPour vous identifier, utilisez "/login <MotDePasse>"'
     timeout_error: 'Vous avez été expulsé car vous êtes trop lent pour vous enregistrer/identifier !'
 
-# Errors
+# Erreurs
 error:
     denied_command: '&cVous devez être connecté pour pouvoir utiliser cette commande.'
     denied_chat: '&cVous devez être connecté pour pouvoir écrire dans le chat.'
@@ -43,7 +43,7 @@ error:
     max_registration: 'Vous avez atteint la limite d''inscription !%nl%&cVous avez %reg_count sur %max_acc : %reg_names'
     logged_in: '&aVous êtes déjà connecté.'
     kick_for_vip: 'Un joueur VIP a rejoint le serveur à votre place (serveur plein).'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+    kick_unresolved_hostname: '&cUne erreur est apparue : nom d''hôte non identifié !'
     tempban_max_logins: '&cVous êtes temporairement banni suite à plusieurs échecs de connexions !'
 
 # AntiBot
@@ -52,12 +52,12 @@ antibot:
     auto_enabled: 'L''AntiBot a été activé automatiquement à cause de nombreuses connexions !'
     auto_disabled: 'L''AntiBot a été désactivé automatiquement après %m minutes, espérons que l''invasion se soit arrêtée !'
 
-# Unregister
+# Dé-enregistrement
 unregister:
     success: '&aCompte supprimé !'
     command_usage: '&cPour supprimer votre compte, utilisez "/unregister <MotDePasse>"'
 
-# Other messages
+# Autres messages
 misc:
     account_not_activated: '&fCe compte n''est pas actif, consultez vos mails !'
     password_changed: '&aMot de passe changé avec succès !'
@@ -67,12 +67,12 @@ misc:
     accounts_owned_self: 'Vous avez %count comptes:'
     accounts_owned_other: 'Le joueur %name a %count comptes:'
 
-# Session messages
+# Session
 session:
     valid_session: '&aVous avez été automatiquement connecté !'
     invalid_session: 'Session expirée suite à un changement d''IP.'
 
-# Error messages when joining
+# Erreurs lors d'une tentative connexion
 on_join_validation:
     same_ip_online: 'Un joueur avec la même adresse IP joue déjà !'
     same_nick_online: 'Un joueur ayant le même pseudo est déjà connecté.'
@@ -105,7 +105,7 @@ email:
     change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cette commande.'
     email_cooldown_error: '&cUn mail de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
 
-# Password recovery by email
+# Récupération de mot de passe par mail
 recovery:
     forgot_password_hint: '&cVous avez oublié votre Mot de Passe? Utilisez "/email recovery <votreEmail>"'
     command_usage: '&fUsage: /email recovery <Email>'
@@ -125,7 +125,7 @@ captcha:
     captcha_for_registration: 'Avant de vous inscrire, veuillez rentrer un captcha en faisant "/captcha %captcha_code"'
     register_captcha_valid: '&aCaptcha validé! Vous pouvez maintenant vous inscrire.'
 
-# Verification code
+# Code de vérification
 verification:
     code_required: '&cCette commande est sensible, elle nécessite donc une confirmation par email.%nl%&cVeuillez suivre les instructions qui viennent de vous être envoyées par email.'
     command_usage: '&cUsage: /verification <code>'
@@ -135,7 +135,7 @@ verification:
     code_expired: '&cVotre code d''identification a expiré !%nl%&cVeuillez re-exécuter une commande sensible pour recevoir un nouveau code.'
     email_needed: '&cAfin de vérifier votre identité, vous devez avoir un email lié à votre compte.%nl%&cPour cela, faites "/email add <Email> <ConfirmerEmail>"'
 
-# Time units
+# Unités de temps
 time:
     second: 'seconde'
     seconds: 'secondes'
@@ -146,7 +146,7 @@ time:
     day: 'jour'
     days: 'jours'
 
-# Two-factor authentication
+# Identification à deux facteurs
 two_factor:
     code_created: '&aVotre code secret est &2%code&a. Vous pouvez le scanner depuis &2%url'
     confirmation_required: 'Veuillez confirmer votre code secret en écrivant "/2fa confirm <Code>"'
