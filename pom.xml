@@ -26,7 +26,7 @@
 
     <ciManagement>
         <system>jenkins</system>
-        <url>http://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/</url>
+        <url>https://ci.codemc.io/job/AuthMe/job/AuthMeReloaded/</url>
     </ciManagement>
 
     <issueManagement>
@@ -37,18 +37,18 @@
     <distributionManagement>
         <snapshotRepository>
             <id>codemc-snapshots</id>
-            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
+            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>codemc-releases</id>
-            <url>https://repo.codemc.org/repository/maven-releases/</url>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
     <licenses>
         <license>
             <name>The GNU General Public Licence version 3 (GPLv3)</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.3.9</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.15-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.15.2-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -282,7 +282,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -358,6 +358,7 @@
                             <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
                         </relocation>
                     </relocations>
+
                     <filters>
                         <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
                         <!-- "Invalid signature file digest for Manifest main attributes" -->
@@ -419,7 +420,7 @@
         <!-- CodeMC Repo (Contains many required libraries) -->
         <repository>
             <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -443,7 +444,7 @@
         <!-- ProtocolLib Repo -->
         <repository>
             <id>dmulloy2-repo-releases</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -453,7 +454,7 @@
         </repository>
         <repository>
             <id>dmulloy2-repo-snapshots</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/snapshots/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -465,7 +466,7 @@
         <!-- Multiverse Repo -->
         <repository>
             <id>onarandombox-repo-releases</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse/</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -475,29 +476,7 @@
         </repository>
         <repository>
             <id>onarandombox-repo-snapshots</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <!-- Vault Repo -->
-        <repository>
-            <id>vault-repo-releases</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>vault-repo-snapshots</id>
-            <url>http://nexus.hc.to/content/repositories/pub_snapshots</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -610,7 +589,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Spigot API, http://www.spigotmc.org/ -->
+        <!-- Spigot API, https://www.spigotmc.org/ -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
@@ -728,7 +707,7 @@
             </exclusions>
         </dependency>
 
-        <!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
+        <!-- Vault, https://dev.bukkit.org/bukkit-plugins/vault/ -->
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
@@ -746,7 +725,7 @@
             </exclusions>
         </dependency>
 
-        <!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
+        <!-- Multi World plugin, https://www.spigotmc.org/resources/multiverse-core.390/ -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
@@ -877,7 +856,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.9</version>
+            <version>42.2.10</version>
         </dependency>
 
         <!-- Unit Testing Libraries -->
@@ -913,7 +892,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.1.0</version>
+            <version>3.1.1</version>
             <scope>test</scope>
         </dependency>
 

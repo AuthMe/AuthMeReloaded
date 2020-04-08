@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The current API of AuthMe.
@@ -133,20 +134,17 @@ public class AuthMeApi {
     }
 
     /**
-     * Get the registration ip address of a player.
+     * Returns the AuthMe info of the given player's name, or empty optional if the player doesn't exist.
      *
-     * @param playerName The name of the player to process
-     * @return The registration ip address of the player
+     * @param playerName The player name to look up
+     * @return AuthMe player info, or empty optional if the player doesn't exist
      */
-    public String getRegistrationIp(String playerName) {
+    public Optional<AuthMePlayer> getPlayerInfo(String playerName) {
         PlayerAuth auth = playerCache.getAuth(playerName);
         if (auth == null) {
             auth = dataSource.getAuth(playerName);
         }
-        if (auth != null) {
-            return auth.getRegistrationIp();
-        }
-        return null;
+        return AuthMePlayerImpl.fromPlayerAuth(auth);
     }
 
     /**
@@ -180,7 +178,6 @@ public class AuthMeApi {
      * Get the last (AuthMe) login date of a player.
      *
      * @param playerName The name of the player to process
-     *
      * @return The date of the last login, or null if the player doesn't exist or has never logged in
      * @deprecated Use Java 8's Instant method {@link #getLastLoginTime(String)}
      */
@@ -209,29 +206,6 @@ public class AuthMeApi {
         }
         if (auth != null) {
             return auth.getLastLogin();
-        }
-        return null;
-    }
-
-    /**
-     * Get the registration (AuthMe) timestamp of a player.
-     *
-     * @param playerName The name of the player to process
-     *
-     * @return The timestamp of when the player was registered, or null if the player doesn't exist or is not registered
-     */
-    public Instant getRegistrationTime(String playerName) {
-        Long registrationDate = getRegistrationMillis(playerName);
-        return registrationDate == null ? null : Instant.ofEpochMilli(registrationDate);
-    }
-
-    private Long getRegistrationMillis(String playerName) {
-        PlayerAuth auth = playerCache.getAuth(playerName);
-        if (auth == null) {
-            auth = dataSource.getAuth(playerName);
-        }
-        if (auth != null) {
-            return auth.getRegistrationDate();
         }
         return null;
     }
