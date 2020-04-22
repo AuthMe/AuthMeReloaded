@@ -475,7 +475,7 @@ public class PlayerListener implements Listener {
             return false;
         }
         Set<String> whitelist = settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES);
-        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()));
+        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()).toLowerCase());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
