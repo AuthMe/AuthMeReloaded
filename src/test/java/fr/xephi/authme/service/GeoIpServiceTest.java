@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 
 import static org.hamcrest.MatcherAssert.assertThat;

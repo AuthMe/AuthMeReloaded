@@ -11,7 +11,9 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,13 +44,13 @@ class VerificationCodeManagerTest {
 
     @BeforeEach
     void setUpBasicBehavior() {
-        given(emailService.hasAllInformation()).willReturn(true);
         given(settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES)).willReturn(1);
     }
 
     @Test
     void shouldRequireVerification() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String name1 = "ILoveTests";
         Player player1 = mockPlayerWithName(name1);
         given(dataSource.getEmail(name1)).willReturn(DataSourceValueImpl.of("ilovetests@test.com"));
@@ -88,6 +90,7 @@ class VerificationCodeManagerTest {
     @Test
     void shouldNotRequireVerificationForMissingPermission() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mockPlayerWithName("ILoveTests");
         given(permissionsManager.hasPermission(player, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
         VerificationCodeManager codeManager = createCodeManager();
@@ -104,6 +107,7 @@ class VerificationCodeManagerTest {
     @Test
     void shouldGenerateCode() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
         given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
@@ -123,6 +127,7 @@ class VerificationCodeManagerTest {
     @Test
     void shouldRequireCode() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
         given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
@@ -142,6 +147,7 @@ class VerificationCodeManagerTest {
     @Test
     void shouldVerifyCode() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String player = "ILoveTests";
         String code = "193458";
         String email = "ilovetests@test.com";
