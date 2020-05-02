@@ -949,6 +949,7 @@ public class PlayerListenerTest {
         // given
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
+        given(transaction.getTitle()).willReturn("Spawn");
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES)).willReturn(Collections.emptySet());
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
