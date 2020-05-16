@@ -5,14 +5,14 @@
 common:
     header: '==========[ AuthMeReloaded ABI ]=========='
     optional: 'Valikuline'
-    hasPermission: 'Sul on õigus'
-    noPermission: 'Pole õigust'
+    hasPermission: 'Sul on luba'
+    noPermission: 'Pole luba'
     default: 'Vaikimisi'
     result: 'Tulemus'
     defaultPermissions:
-        notAllowed: 'Pole õigust'
+        notAllowed: 'Pole luba'
         opOnly: 'Ainult operaatorid'
-        allowed: 'Õigus kõigil'
+        allowed: 'Luba kõigil'
 
 # -------------------------------------------------------
 # Titles of the individual help sections
@@ -23,7 +23,7 @@ section:
     description: 'Lühike kirjeldus'
     detailedDescription: 'Detailne kirjeldus'
     arguments: 'Argumendid'
-    permissions: 'Õigused'
+    permissions: 'Load'
     alternatives: 'Alternatiivid'
     children: 'Käsklused'
 
