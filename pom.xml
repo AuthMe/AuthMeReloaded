@@ -405,6 +405,18 @@
     </build>
 
     <repositories>
+        <!-- Apache snapshots repo -->
+        <repository>
+            <id>apache-snapshots</id>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
         <!-- SpigotAPI Repo -->
         <repository>
             <id>spigotmc-repo</id>
@@ -532,7 +544,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
-            <version>1.5</version>
+            <version>1.6-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
 
