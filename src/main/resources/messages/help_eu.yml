@@ -1,0 +1,23 @@
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ AuthMeReloaded LAGUNTZA ]=========='
+    optional: 'Hautazkoa'
+    hasPermission: 'Baimena daukazu'
+    noPermission: 'Ez daukazu baimenik'
+    default: 'Lehenetsia'
+    result: 'Emaitza'
+    defaultPermissions:
+        notAllowed: 'Baimenik ez'
+        opOnly: 'OP bakarrik'
+        allowed: 'Edonor baimenduta'
+section:
+    command: 'Komandoa'
+    description: 'Deskribapen laburra'
+    detailedDescription: 'Deskribapen xehakatua'
+    arguments: 'Argumentuak'
+    permissions: 'Baimenak'
+    alternatives: 'Alternatibak'
+    children: 'Komandoak'
