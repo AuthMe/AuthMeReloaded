@@ -14,7 +14,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.executable.authme.debug.DebugCommand;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
-import fr.xephi.authme.datasource.converter.Converter;
+import fr.xephi.authme.datasource.converter.AbstractConverter;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SynchronousProcess;
@@ -204,8 +204,8 @@ public class DrawDependency implements ToolTask {
                 LimboPersistence.class.getPackage().getName() + ".LimboPersistenceHandler");
 
             return ImmutableList.of(ExecutableCommand.class, SynchronousProcess.class, AsynchronousProcess.class,
-                EncryptionMethod.class, Converter.class, Listener.class, RegistrationExecutor.class, debugSectionClass,
-                limboPersistenceClass);
+                EncryptionMethod.class, AbstractConverter.class, Listener.class, RegistrationExecutor.class,
+                debugSectionClass, limboPersistenceClass);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }

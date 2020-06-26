@@ -1,5 +1,7 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.annotation.MightBeAsync;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -93,6 +95,7 @@ public class PlayerListener implements Listener {
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
+    @ShouldBeAsync
     public void onAsyncPlayerPreLoginEventLowest(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             return;
@@ -112,7 +115,6 @@ public class PlayerListener implements Listener {
 
         // Non-blocking checks
         try {
-            onJoinVerifier.checkSingleSession(name);
             onJoinVerifier.checkIsValidName(name);
         } catch (FailedVerificationException e) {
             event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
@@ -128,6 +130,7 @@ public class PlayerListener implements Listener {
     // the permission handler, we don't need to call permissionsManager.loadUserData()
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    @ShouldBeAsync
     public void onAsyncPlayerPreLoginEventHighest(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             return;
@@ -160,6 +163,14 @@ public class PlayerListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();
+
+        try {
+            onJoinVerifier.checkSingleSession(name);
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
 
         if (validationService.isUnrestricted(name)) {
             return;
@@ -257,6 +268,7 @@ public class PlayerListener implements Listener {
      * Chat/command events
      */
 
+    @MightBeAsync
     private void removeUnauthorizedRecipients(AsyncPlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
             event.getRecipients().removeIf(listenerService::shouldCancelEvent);
@@ -267,6 +279,7 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @MightBeAsync
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
             return;

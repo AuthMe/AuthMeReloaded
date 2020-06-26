@@ -1,6 +1,8 @@
 package fr.xephi.authme.datasource;
 
 import ch.jalu.datasourcecolumns.data.DataSourceValue;
+import fr.xephi.authme.util.BukkitThreadSafety;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -29,6 +31,7 @@ public interface DataSource extends Reloadable {
      * @param user The username to look up
      * @return True if there is a record, false otherwise
      */
+    @ShouldBeAsync
     boolean isAuthAvailable(String user);
 
     /**
@@ -37,6 +40,7 @@ public interface DataSource extends Reloadable {
      * @param user The user whose password should be retrieve
      * @return The password hash of the player
      */
+    @ShouldBeAsync
     HashedPassword getPassword(String user);
 
     /**
@@ -45,6 +49,7 @@ public interface DataSource extends Reloadable {
      * @param user The user to retrieve
      * @return The PlayerAuth object for the given username
      */
+    @ShouldBeAsync
     PlayerAuth getAuth(String user);
 
     /**
@@ -53,6 +58,7 @@ public interface DataSource extends Reloadable {
      * @param auth The new PlayerAuth to persist
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean saveAuth(PlayerAuth auth);
 
     /**
@@ -61,6 +67,7 @@ public interface DataSource extends Reloadable {
      * @param auth The PlayerAuth object to update in the database
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean updateSession(PlayerAuth auth);
 
     /**
@@ -69,6 +76,7 @@ public interface DataSource extends Reloadable {
      * @param auth The PlayerAuth whose password should be updated
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean updatePassword(PlayerAuth auth);
 
     /**
@@ -78,6 +86,7 @@ public interface DataSource extends Reloadable {
      * @param password The new password
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean updatePassword(String user, HashedPassword password);
 
     /**
@@ -86,6 +95,7 @@ public interface DataSource extends Reloadable {
      * @param until The minimum last login
      * @return The account names selected to purge
      */
+    @ShouldBeAsync
     Set<String> getRecordsToPurge(long until);
 
     /**
@@ -93,6 +103,7 @@ public interface DataSource extends Reloadable {
      *
      * @param toPurge The players to purge
      */
+    @ShouldBeAsync
     void purgeRecords(Collection<String> toPurge);
 
     /**
@@ -101,6 +112,7 @@ public interface DataSource extends Reloadable {
      * @param user The user to remove
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean removeAuth(String user);
 
     /**
@@ -109,6 +121,7 @@ public interface DataSource extends Reloadable {
      * @param auth The entry whose quit location should be updated
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean updateQuitLoc(PlayerAuth auth);
 
     /**
@@ -117,6 +130,7 @@ public interface DataSource extends Reloadable {
      * @param ip The IP address to look up
      * @return Usernames associated with the given IP address
      */
+    @ShouldBeAsync
     List<String> getAllAuthsByIp(String ip);
 
     /**
@@ -125,6 +139,7 @@ public interface DataSource extends Reloadable {
      * @param email The email address to look up
      * @return Number of accounts using the given email address
      */
+    @ShouldBeAsync
     int countAuthsByEmail(String email);
 
     /**
@@ -133,6 +148,7 @@ public interface DataSource extends Reloadable {
      * @param auth The PlayerAuth whose email should be updated
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean updateEmail(PlayerAuth auth);
 
     /**
@@ -153,6 +169,7 @@ public interface DataSource extends Reloadable {
      * @param user The name of the player to verify
      * @return True if logged in, false otherwise
      */
+    @ShouldBeAsync
     boolean isLogged(String user);
 
     /**
@@ -160,6 +177,7 @@ public interface DataSource extends Reloadable {
      *
      * @param user The name of the player to change
      */
+    @ShouldBeAsync
     void setLogged(String user);
 
     /**
@@ -167,6 +185,7 @@ public interface DataSource extends Reloadable {
      *
      * @param user The name of the player to change
      */
+    @ShouldBeAsync
     void setUnlogged(String user);
 
     /**
@@ -176,6 +195,7 @@ public interface DataSource extends Reloadable {
      * @param user The name of the player to verify
      * @return True if the user has a valid session, false otherwise
      */
+    @ShouldBeAsync
     boolean hasSession(String user);
 
     /**
@@ -183,6 +203,7 @@ public interface DataSource extends Reloadable {
      *
      * @param user The name of the player to change
      */
+    @ShouldBeAsync
     void grantSession(String user);
 
     /**
@@ -190,11 +211,13 @@ public interface DataSource extends Reloadable {
      *
      * @param user The name of the player to change
      */
+    @ShouldBeAsync
     void revokeSession(String user);
 
     /**
      * Set all players who are marked as logged in as NOT logged in.
      */
+    @ShouldBeAsync
     void purgeLogged();
 
     /**
@@ -202,6 +225,7 @@ public interface DataSource extends Reloadable {
      *
      * @return logged in players with no email
      */
+    @ShouldBeAsync
     List<String> getLoggedPlayersWithEmptyMail();
 
     /**
@@ -209,6 +233,7 @@ public interface DataSource extends Reloadable {
      *
      * @return Total number of accounts
      */
+    @ShouldBeAsync
     int getAccountsRegistered();
 
     /**
@@ -218,6 +243,7 @@ public interface DataSource extends Reloadable {
      * @param realName The real name of the user (proper casing)
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean updateRealName(String user, String realName);
 
     /**
@@ -226,6 +252,7 @@ public interface DataSource extends Reloadable {
      * @param user the user to retrieve an email for
      * @return the email saved for the user, or null if user or email is not present
      */
+    @ShouldBeAsync
     DataSourceValue<String> getEmail(String user);
 
     /**
@@ -233,6 +260,7 @@ public interface DataSource extends Reloadable {
      *
      * @return List of all players
      */
+    @ShouldBeAsync
     List<PlayerAuth> getAllAuths();
 
     /**
@@ -240,6 +268,7 @@ public interface DataSource extends Reloadable {
      *
      * @return the 10 last players who last logged in
      */
+    @ShouldBeAsync
     List<PlayerAuth> getRecentlyLoggedInPlayers();
 
     /**
@@ -249,6 +278,7 @@ public interface DataSource extends Reloadable {
      * @param totpKey the totp key to set
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     boolean setTotpKey(String user, String totpKey);
 
     /**
@@ -257,6 +287,7 @@ public interface DataSource extends Reloadable {
      * @param user the name of the player to modify
      * @return True upon success, false upon failure
      */
+    @ShouldBeAsync
     default boolean removeTotpKey(String user) {
         return setTotpKey(user, null);
     }
@@ -280,7 +311,9 @@ public interface DataSource extends Reloadable {
      *
      * @param playerName the player name
      */
+    @ShouldBeAsync
     default void refreshCache(String playerName) {
+        BukkitThreadSafety.shouldBeAsync();
     }
 
 }

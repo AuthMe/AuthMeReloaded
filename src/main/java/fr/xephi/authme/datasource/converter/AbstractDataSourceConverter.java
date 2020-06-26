@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
@@ -17,7 +18,7 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
  *
  * @param <S> the source type to convert from
  */
-public abstract class AbstractDataSourceConverter<S extends DataSource> implements Converter {
+public abstract class AbstractDataSourceConverter<S extends DataSource> extends AbstractConverter {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlToSqlite.class);
 
@@ -40,7 +41,8 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
     // Implementation note: Because of ForceFlatToSqlite it is possible that the CommandSender is null,
     // which is never the case when a converter is launched from the /authme converter command.
     @Override
-    public void execute(CommandSender sender) {
+    @ShouldBeAsync
+    public void executeInternal(CommandSender sender) {
         if (destinationType != destination.getType()) {
             if (sender != null) {
                 sender.sendMessage("Please configure your connection to "

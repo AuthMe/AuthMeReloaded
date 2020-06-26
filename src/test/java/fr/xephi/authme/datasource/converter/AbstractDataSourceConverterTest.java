@@ -42,11 +42,11 @@ public class AbstractDataSourceConverterTest {
         given(destination.getType()).willReturn(DataSourceType.MYSQL);
         DataSourceType destinationType = DataSourceType.SQLITE;
         DataSource source = mock(DataSource.class);
-        Converter converter = new DataSourceConverterTestImpl<>(source, destination, destinationType);
+        AbstractConverter converter = new DataSourceConverterTestImpl<>(source, destination, destinationType);
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        converter.execute(sender);
+        converter.executeInternal(sender);
 
         // then
         verify(sender).sendMessage(argThat(containsString("Please configure your connection to SQLITE")));
@@ -67,7 +67,7 @@ public class AbstractDataSourceConverterTest {
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        converter.execute(sender);
+        converter.executeInternal(sender);
 
         // then
         verify(sender).sendMessage("The data source to convert from could not be initialized");
@@ -88,11 +88,11 @@ public class AbstractDataSourceConverterTest {
         given(source.getAllAuths()).willReturn(auths);
         given(destination.isAuthAvailable(auths.get(0).getNickname())).willReturn(true);
 
-        Converter converter = new DataSourceConverterTestImpl<>(source, destination, destinationType);
+        AbstractConverter converter = new DataSourceConverterTestImpl<>(source, destination, destinationType);
         CommandSender sender = mock(CommandSender.class);
 
         // when
-        converter.execute(sender);
+        converter.executeInternal(sender);
 
         // then
         verify(destination).getType();

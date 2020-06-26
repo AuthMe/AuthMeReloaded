@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
-public class VAuthConverter implements Converter {
+public class VAuthConverter extends AbstractConverter {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(VAuthConverter.class);
     private final DataSource dataSource;
@@ -30,7 +31,8 @@ public class VAuthConverter implements Converter {
     }
 
     @Override
-    public void execute(CommandSender sender) {
+    @ShouldBeAsync
+    public void executeInternal(CommandSender sender) {
         try (Scanner scanner = new Scanner(vAuthPasswordsFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();

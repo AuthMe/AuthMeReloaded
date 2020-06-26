@@ -2,6 +2,7 @@ package fr.xephi.authme.message;
 
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.util.expiring.Duration;
@@ -57,6 +58,7 @@ public class Messages {
      * @param sender The entity to send the message to
      * @param key The key of the message to send
      */
+    @MightBeAsync
     public void send(CommandSender sender, MessageKey key) {
         String[] lines = retrieve(key, sender);
         for (String line : lines) {
@@ -73,6 +75,7 @@ public class Messages {
      * @param key The key of the message to send
      * @param replacements The replacements to apply for the tags
      */
+    @MightBeAsync
     public void send(CommandSender sender, MessageKey key, String... replacements) {
         String message = retrieveSingle(sender, key, replacements);
         for (String line : message.split("\n")) {
@@ -87,6 +90,7 @@ public class Messages {
      * @param sender The entity to send the message to
      * @return The message split by new lines
      */
+    @MightBeAsync
     public String[] retrieve(MessageKey key, CommandSender sender) {
         String message = retrieveMessage(key, sender);
         if (message.isEmpty()) {
@@ -103,6 +107,7 @@ public class Messages {
      * @param duration the duration to build a text of
      * @return text of the duration
      */
+    @MightBeAsync
     public String formatDuration(Duration duration) {
         long value = duration.getDuration();
         MessageKey timeUnitKey = value == 1
@@ -119,6 +124,7 @@ public class Messages {
      * @param sender The entity to send the message to
      * @return The message from the file
      */
+    @MightBeAsync
     private String retrieveMessage(MessageKey key, CommandSender sender) {
         String message = messagesFileHandler.getMessage(key.getKey());
         String displayName = sender.getName();
@@ -139,6 +145,7 @@ public class Messages {
      * @param name The name of the entity to send the message to
      * @return The message from the file
      */
+    @MightBeAsync
     private String retrieveMessage(MessageKey key, String name) {
         String message = messagesFileHandler.getMessage(key.getKey());
         
@@ -158,6 +165,7 @@ public class Messages {
      * @param replacements The replacements to apply for the tags
      * @return The message from the file with replacements
      */
+    @MightBeAsync
     public String retrieveSingle(CommandSender sender, MessageKey key, String... replacements) {
         String message = retrieveMessage(key, sender);
         String[] tags = key.getTags();
@@ -181,6 +189,7 @@ public class Messages {
      * @param replacements The replacements to apply for the tags
      * @return The message from the file with replacements
      */
+    @MightBeAsync
     public String retrieveSingle(String name, MessageKey key, String... replacements) {
         String message = retrieveMessage(key, name);
         String[] tags = key.getTags();

@@ -1,6 +1,8 @@
 package fr.xephi.authme.task.purge;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.util.BukkitThreadSafety;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -99,7 +101,7 @@ public class PurgeService {
 
         isPurging = true;
         PurgeTask purgeTask = new PurgeTask(this, permissionsManager, sender, names, players);
-        bukkitService.runTaskTimer(purgeTask, 0, 1);
+        bukkitService.runTaskTimerAsynchronously(purgeTask, 0, 1);
     }
 
     /**
@@ -117,7 +119,9 @@ public class PurgeService {
      * @param players the players (associated with the names)
      * @param names the lowercase names
      */
+    @ShouldBeAsync
     void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
+        BukkitThreadSafety.shouldBeAsync();
         purgeExecutor.executePurge(players, names);
     }
 }

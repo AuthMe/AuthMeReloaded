@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
@@ -29,10 +30,11 @@ public class PurgePlayerCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
         String option = arguments.size() > 1 ? arguments.get(1) : null;
-        bukkitService.runTaskOptionallyAsync(
+        bukkitService.runTaskAsynchronously(
             () -> executeCommand(sender, arguments.get(0), option));
     }
 
+    @ShouldBeAsync
     private void executeCommand(CommandSender sender, String name, String option) {
         if ("force".equals(option) || !dataSource.isAuthAvailable(name)) {
             OfflinePlayer offlinePlayer = bukkitService.getOfflinePlayer(name);

@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
@@ -18,7 +19,7 @@ import java.io.IOException;
 /**
  * Converter for CrazyLogin to AuthMe.
  */
-public class CrazyLoginConverter implements Converter {
+public class CrazyLoginConverter extends AbstractConverter {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(CrazyLoginConverter.class);
 
@@ -34,7 +35,8 @@ public class CrazyLoginConverter implements Converter {
     }
 
     @Override
-    public void execute(CommandSender sender) {
+    @ShouldBeAsync
+    public void executeInternal(CommandSender sender) {
         String fileName = settings.getProperty(ConverterSettings.CRAZYLOGIN_FILE_NAME);
         File source = new File(dataFolder, fileName);
         if (!source.exists()) {

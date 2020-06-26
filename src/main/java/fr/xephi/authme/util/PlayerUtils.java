@@ -1,5 +1,6 @@
 package fr.xephi.authme.util;
 
+import fr.xephi.authme.annotation.MightBeAsync;
 import org.bukkit.entity.Player;
 
 /**
@@ -27,6 +28,7 @@ public final class PlayerUtils {
      * @param player The player to check
      * @return True if the player is an NPC, false otherwise
      */
+    @MightBeAsync
     public static boolean isNpc(Player player) {
         return player.hasMetadata("NPC");
     }

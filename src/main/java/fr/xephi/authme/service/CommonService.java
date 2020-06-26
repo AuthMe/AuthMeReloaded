@@ -1,6 +1,7 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.configme.properties.Property;
+import fr.xephi.authme.annotation.MightBeAsync;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionNode;
@@ -45,6 +46,7 @@ public class CommonService {
      * @param sender the command sender
      * @param key the message key
      */
+    @MightBeAsync
     public void send(CommandSender sender, MessageKey key) {
         messages.send(sender, key);
     }
@@ -56,6 +58,7 @@ public class CommonService {
      * @param key the message key
      * @param replacements the replacements to apply to the message
      */
+    @MightBeAsync
     public void send(CommandSender sender, MessageKey key, String... replacements) {
         messages.send(sender, key, replacements);
     }
@@ -67,6 +70,7 @@ public class CommonService {
      * @param key the key of the message
      * @return the message
      */
+    @MightBeAsync
     public String retrieveSingleMessage(CommandSender sender, MessageKey key) {
         return messages.retrieveSingle(sender, key);
     }

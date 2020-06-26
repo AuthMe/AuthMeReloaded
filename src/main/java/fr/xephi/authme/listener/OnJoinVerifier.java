@@ -1,6 +1,9 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.util.BukkitThreadSafety;
+import fr.xephi.authme.annotation.MightBeAsync;
+import fr.xephi.authme.annotation.ShouldBeAsync;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
@@ -71,7 +74,9 @@ public class OnJoinVerifier implements Reloadable {
      * @param isAuthAvailable whether or not the player is registered
      * @throws FailedVerificationException if the verification fails
      */
+    @ShouldBeAsync
     public void checkAntibot(String name, boolean isAuthAvailable) throws FailedVerificationException {
+        BukkitThreadSafety.shouldBeAsync();
         if (isAuthAvailable || permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT)) {
             return;
         }
@@ -87,6 +92,7 @@ public class OnJoinVerifier implements Reloadable {
      * @param isAuthAvailable whether or not the player is registered
      * @throws FailedVerificationException if the verification fails
      */
+    @MightBeAsync
     public void checkKickNonRegistered(boolean isAuthAvailable) throws FailedVerificationException {
         if (!isAuthAvailable && settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)) {
             throw new FailedVerificationException(MessageKey.MUST_REGISTER_MESSAGE);
@@ -99,6 +105,7 @@ public class OnJoinVerifier implements Reloadable {
      * @param name the name to verify
      * @throws FailedVerificationException if the verification fails
      */
+    @MightBeAsync
     public void checkIsValidName(String name) throws FailedVerificationException {
         if (name.length() > settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)
             || name.length() < settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)) {
@@ -120,6 +127,7 @@ public class OnJoinVerifier implements Reloadable {
      *         further), false if the player is not refused
      */
     public boolean refusePlayerForFullServer(PlayerLoginEvent event) {
+        BukkitThreadSafety.requireSync();
         final Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL) {
             // Server is not full, no need to do anything
@@ -155,7 +163,9 @@ public class OnJoinVerifier implements Reloadable {
      * @param auth the auth object associated with the player
      * @throws FailedVerificationException if the verification fails
      */
+    @ShouldBeAsync
     public void checkNameCasing(String connectingName, PlayerAuth auth) throws FailedVerificationException {
+        BukkitThreadSafety.shouldBeAsync();
         if (auth != null && settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)) {
             String realName = auth.getRealName(); // might be null or "Player"
 
@@ -175,8 +185,10 @@ public class OnJoinVerifier implements Reloadable {
      * @param isAuthAvailable whether or not the user is registered
      * @throws FailedVerificationException if the verification fails
      */
+    @ShouldBeAsync
     public void checkPlayerCountry(String name, String address,
                                    boolean isAuthAvailable) throws FailedVerificationException {
+        BukkitThreadSafety.shouldBeAsync();
         if ((!isAuthAvailable || settings.getProperty(ProtectionSettings.ENABLE_PROTECTION_REGISTERED))
             && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)
             && !permissionsManager.hasPermissionOffline(name, PlayerStatePermission.BYPASS_COUNTRY_CHECK)
@@ -193,6 +205,7 @@ public class OnJoinVerifier implements Reloadable {
      * @throws FailedVerificationException if the verification fails
      */
     public void checkSingleSession(String name) throws FailedVerificationException {
+        BukkitThreadSafety.requireSync();
         if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
             return;
         }
@@ -211,6 +224,7 @@ public class OnJoinVerifier implements Reloadable {
      * @return the player to kick, or null if none applicable
      */
     private Player generateKickPlayer(Collection<Player> onlinePlayers) {
+        BukkitThreadSafety.requireSync();
         for (Player player : onlinePlayers) {
             if (!permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
                 return player;
