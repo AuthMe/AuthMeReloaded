@@ -7,6 +7,7 @@ import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
+import fr.xephi.authme.util.AtomicIntervalCounter;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
@@ -29,14 +30,11 @@ public class AntiBotService implements SettingsDependent {
     private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<>();
     // Settings
     private int duration;
-    private int sensibility;
-    private int interval;
     // Service status
     private AntiBotStatus antiBotStatus;
     private boolean startup;
     private BukkitTask disableTask;
-    private Instant lastFlaggedJoin;
-    private int flagged = 0;
+    private AtomicIntervalCounter flaggedCounter;
 
     @Inject
     AntiBotService(Settings settings, Messages messages, PermissionsManager permissionsManager,
@@ -47,7 +45,6 @@ public class AntiBotService implements SettingsDependent {
         this.bukkitService = bukkitService;
         // Initial status
         disableTask = null;
-        flagged = 0;
         antiBotStatus = AntiBotStatus.DISABLED;
         startup = true;
         // Load settings and start if required
@@ -58,8 +55,9 @@ public class AntiBotService implements SettingsDependent {
     public void reload(Settings settings) {
         // Load settings
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
-        sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
-        interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
+        int sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
+        int interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
+        flaggedCounter = new AtomicIntervalCounter(sensibility, interval);
 
         // Stop existing protection
         stopProtection();
@@ -83,19 +81,25 @@ public class AntiBotService implements SettingsDependent {
         }
     }
 
+    /**
+     * Transitions the anti bot service to an active status.
+     */
     private void startProtection() {
-        // Disable existing antibot session
-        stopProtection();
-        // Enable the new session
-        antiBotStatus = AntiBotStatus.ACTIVE;
-
-        // Inform admins
-        bukkitService.getOnlinePlayers().stream()
-            .filter(player -> permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES))
-            .forEach(player -> messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE));
-
+        if (antiBotStatus == AntiBotStatus.ACTIVE) {
+            return; // Already activating/active
+        }
+        if (disableTask != null) {
+            disableTask.cancel();
+        }
         // Schedule auto-disable
         disableTask = bukkitService.runTaskLater(this::stopProtection, duration * TICKS_PER_MINUTE);
+        antiBotStatus = AntiBotStatus.ACTIVE;
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            // Inform admins
+            bukkitService.getOnlinePlayers().stream()
+                .filter(player -> permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES))
+                .forEach(player -> messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE));
+        });
     }
 
     /**
@@ -108,7 +112,7 @@ public class AntiBotService implements SettingsDependent {
 
         // Change status
         antiBotStatus = AntiBotStatus.LISTENING;
-        flagged = 0;
+        flaggedCounter.reset();
         antibotKicked.clear();
 
         // Cancel auto-disable task
@@ -158,17 +162,7 @@ public class AntiBotService implements SettingsDependent {
             return true;
         }
 
-        if (lastFlaggedJoin == null) {
-            lastFlaggedJoin = Instant.now();
-        }
-        if (ChronoUnit.SECONDS.between(lastFlaggedJoin, Instant.now()) <= interval) {
-            flagged++;
-        } else {
-            // reset to 1 because this player is also count as not registered
-            flagged = 1;
-            lastFlaggedJoin = null;
-        }
-        if (flagged > sensibility) {
+        if (flaggedCounter.handle()) {
             startProtection();
             return true;
         }

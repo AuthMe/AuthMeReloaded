@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -45,7 +46,7 @@ public class PurgePlayerCommandTest {
         String name = "Bobby";
         given(dataSource.isAuthAvailable(name)).willReturn(true);
         CommandSender sender = mock(CommandSender.class);
-        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, singletonList(name));
@@ -63,7 +64,7 @@ public class PurgePlayerCommandTest {
         OfflinePlayer player = mock(OfflinePlayer.class);
         given(bukkitService.getOfflinePlayer(name)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
-        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, singletonList(name));
@@ -80,7 +81,7 @@ public class PurgePlayerCommandTest {
         OfflinePlayer player = mock(OfflinePlayer.class);
         given(bukkitService.getOfflinePlayer(name)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
-        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, asList(name, "force"));
