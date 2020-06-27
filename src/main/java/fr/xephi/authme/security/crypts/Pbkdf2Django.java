@@ -1,6 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import com.google.common.primitives.Ints;
 import de.rtner.security.auth.spi.PBKDF2Engine;
 import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;

@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import com.google.common.primitives.Ints;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.ChatColor;

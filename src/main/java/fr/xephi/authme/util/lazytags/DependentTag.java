@@ -22,7 +22,7 @@ public class DependentTag<A> implements Tag<A> {
      * @param name the tag (placeholder) that will be replaced
      * @param replacementFunction the function producing the replacement
      */
-    public DependentTag(@NotNull String name,@NotNull Function<A, String> replacementFunction) {
+    public DependentTag(@NotNull String name, @NotNull Function<A, String> replacementFunction) {
         this.name = name;
         this.replacementFunction = replacementFunction;
     }

@@ -73,6 +73,11 @@ public class PlayerAuth {
         return groupId;
     }
 
+    /**
+     * Sets the player's auth quit location.
+     *
+     * @param location the quit location
+     */
     public void setQuitLocation(Location location) {
         Objects.requireNonNull(location.getWorld(), "world not loaded!");
         x = location.getBlockX();

@@ -55,7 +55,8 @@ public class HelpTranslationGenerator {
         Map<String, Object> helpEntries = generateHelpMessageEntries();
 
         String helpEntriesYaml = exportToYaml(helpEntries);
-        Files.write(helpFile.toPath(), helpEntriesYaml.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(helpFile.toPath(), helpEntriesYaml.getBytes(StandardCharsets.UTF_8),
+            StandardOpenOption.TRUNCATE_EXISTING);
         return helpFile;
     }
 
