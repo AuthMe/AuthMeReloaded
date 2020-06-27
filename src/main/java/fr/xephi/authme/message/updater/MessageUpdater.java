@@ -7,7 +7,6 @@ import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
@@ -15,6 +14,8 @@ import fr.xephi.authme.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,7 +31,7 @@ import static java.util.Collections.singletonList;
  */
 public class MessageUpdater {
 
-    private ConsoleLogger logger = ConsoleLoggerFactory.get(MessageUpdater.class);
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(MessageUpdater.class);
 
     /**
      * Applies any necessary migrations to the user's messages file and saves it if it has been modified.
@@ -120,7 +121,7 @@ public class MessageUpdater {
         String backupName = FileUtils.createBackupFilePath(messagesFile);
         File backupFile = new File(backupName);
         try {
-            Files.copy(messagesFile, backupFile);
+            Files.copy(messagesFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new IllegalStateException("Could not back up '" + messagesFile + "' to '" + backupFile + "'", e);
         }
@@ -166,7 +167,7 @@ public class MessageUpdater {
 
         // Create ConfigurationData instance
         Map<String, List<String>> commentsMap = comments.entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey(), e -> singletonList(e.getValue())));
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> singletonList(e.getValue())));
         return new MessageKeyConfigurationData(builder, commentsMap);
     }
 
@@ -184,13 +185,13 @@ public class MessageUpdater {
 
     static final class MessageKeyPropertyListBuilder {
 
-        private PropertyListBuilder propertyListBuilder = new PropertyListBuilder();
+        private final PropertyListBuilder propertyListBuilder = new PropertyListBuilder();
 
         void addMessageKey(MessageKey key) {
             propertyListBuilder.add(new MessageKeyProperty(key));
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         List<MessageKeyProperty> getAllProperties() {
             return (List) propertyListBuilder.create();
         }

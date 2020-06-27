@@ -9,6 +9,7 @@ import fr.xephi.authme.data.limbo.LimboPlayer;
 import org.bukkit.Location;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 /**
  * Converts a LimboPlayer to a JsonElement.
@@ -36,7 +37,7 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
     public JsonElement serialize(LimboPlayer limboPlayer, Type type, JsonSerializationContext context) {
         Location loc = limboPlayer.getLocation();
         JsonObject locationObject = new JsonObject();
-        locationObject.addProperty(LOC_WORLD, loc.getWorld().getName());
+        locationObject.addProperty(LOC_WORLD, Objects.requireNonNull(loc.getWorld()).getName());
         locationObject.addProperty(LOC_X, loc.getX());
         locationObject.addProperty(LOC_Y, loc.getY());
         locationObject.addProperty(LOC_Z, loc.getZ());

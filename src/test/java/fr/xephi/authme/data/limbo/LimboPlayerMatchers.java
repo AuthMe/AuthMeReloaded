@@ -21,7 +21,7 @@ public final class LimboPlayerMatchers {
     }
 
     public static Matcher<LimboPlayer> isLimbo(LimboPlayer limbo) {
-        String[] groups = limbo.getGroups().toArray(new String[limbo.getGroups().size()]);
+        String[] groups = limbo.getGroups().toArray(new String[0]);
         return isLimbo(limbo.isOperator(), limbo.isCanFly(), limbo.getWalkSpeed(), limbo.getFlySpeed(), groups);
     }
 
@@ -57,7 +57,7 @@ public final class LimboPlayerMatchers {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
                 Location location = item.getLocation();
-                return location.getWorld().getName().equals(world)
+                return location.getWorld() != null && location.getWorld().getName().equals(world)
                     && location.getX() == x && location.getY() == y && location.getZ() == z;
             }
 
@@ -74,7 +74,8 @@ public final class LimboPlayerMatchers {
                     description.appendText("Limbo with location = null");
                 } else {
                     description.appendText(format("Limbo with location: world=%s, x=%f, y=%f, z=%f",
-                        location.getWorld().getName(), location.getX(), location.getY(), location.getZ()));
+                        location.getWorld() != null ? location.getWorld().getName() : "N/D",
+                        location.getX(), location.getY(), location.getZ()));
                 }
             }
         };
@@ -89,7 +90,8 @@ public final class LimboPlayerMatchers {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
                 Location location = item.getLocation();
-                return hasLocation(location.getWorld(), location.getX(), location.getY(), location.getZ()).matches(item)
+                return location.getWorld() != null
+                    && hasLocation(location.getWorld(), location.getX(), location.getY(), location.getZ()).matches(item)
                     && location.getYaw() == yaw && location.getPitch() == pitch;
             }
 
@@ -106,16 +108,16 @@ public final class LimboPlayerMatchers {
                     description.appendText("Limbo with location = null");
                 } else {
                     description.appendText(format("Limbo with location: world=%s, x=%f, y=%f, z=%f, yaw=%f, pitch=%f",
-                        location.getWorld().getName(), location.getX(), location.getY(), location.getZ(),
-                        location.getYaw(), location.getPitch()));
+                        location.getWorld() != null ? location.getWorld().getName() : "N/D",
+                        location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch()));
                 }
             }
         };
     }
 
     public static Matcher<LimboPlayer> hasLocation(Location location) {
-        return hasLocation(location.getWorld().getName(), location.getX(), location.getY(), location.getZ(),
-            location.getYaw(), location.getPitch());
+        return hasLocation(location.getWorld() != null ? location.getWorld().getName() : null,
+            location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
     // Hamcrest's contains() doesn't like it when there are no items, so we need to check for the empty case explicitly

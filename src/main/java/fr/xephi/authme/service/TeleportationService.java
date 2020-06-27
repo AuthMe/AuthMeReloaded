@@ -131,7 +131,7 @@ public class TeleportationService implements Reloadable {
         }
 
         // #856: If LimboPlayer comes from a persisted file, the Location might be null
-        String worldName = (limbo != null && limbo.getLocation() != null)
+        String worldName = (limbo != null && limbo.getLocation() != null && limbo.getLocation().getWorld() != null)
             ? limbo.getLocation().getWorld().getName()
             : null;
 

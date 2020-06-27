@@ -19,6 +19,7 @@ import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -123,7 +124,7 @@ public class LoginSecurityConverterTest {
 
     private Connection initializeMySqlTable() throws IOException, SQLException {
         File sqlInitFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "datasource/converter/loginsecurity.sql");
-        String initStatement = new String(Files.readAllBytes(sqlInitFile.toPath()));
+        String initStatement = new String(Files.readAllBytes(sqlInitFile.toPath()), StandardCharsets.UTF_8);
 
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");

@@ -3,6 +3,7 @@ package fr.xephi.authme.events;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Event fired after a player has been unregistered from an external source (by an admin or via the API).
@@ -61,7 +62,9 @@ public class UnregisterByAdminEvent extends AbstractUnregisterEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }
+
 }

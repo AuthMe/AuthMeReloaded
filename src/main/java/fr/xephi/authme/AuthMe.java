@@ -2,7 +2,6 @@ package fr.xephi.authme;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
-import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
@@ -32,6 +31,7 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.CleanupTask;
 import fr.xephi.authme.task.purge.PurgeService;
 import fr.xephi.authme.util.ExceptionUtils;
+import fr.xephi.authme.util.FileUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,6 +40,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -79,7 +80,6 @@ public class AuthMe extends JavaPlugin {
     /*
      * Constructor for unit testing.
      */
-    @VisibleForTesting
     AuthMe(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }
@@ -89,6 +89,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The plugin's name.
      */
+    @NotNull
     public static String getPluginName() {
         return PLUGIN_NAME;
     }
@@ -98,6 +99,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The plugin's version.
      */
+    @NotNull
     public static String getPluginVersion() {
         return pluginVersion;
     }
@@ -107,6 +109,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The plugin's build number.
      */
+    @NotNull
     public static String getPluginBuildNumber() {
         return pluginBuildNumber;
     }
@@ -182,7 +185,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @param versionRaw the version as given by the plugin description file
      */
-    private static void loadPluginInfo(String versionRaw) {
+    private static void loadPluginInfo(@NotNull String versionRaw) {
         int index = versionRaw.lastIndexOf("-");
         if (index != -1) {
             pluginVersion = versionRaw.substring(0, index);
@@ -198,7 +201,7 @@ public class AuthMe extends JavaPlugin {
      */
     private void initialize() {
         // Create plugin folder
-        getDataFolder().mkdir();
+        FileUtils.createDirectoryOrFail(getDataFolder());
 
         // Create injector, provide elements from the Bukkit environment and register providers
         injector = new InjectorBuilder()
@@ -241,7 +244,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @param injector the injector
      */
-    void instantiateServices(Injector injector) {
+    void instantiateServices(@NotNull Injector injector) {
         database = injector.getSingleton(DataSource.class);
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
@@ -259,7 +262,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @param injector the injector
      */
-    void registerEventListeners(Injector injector) {
+    void registerEventListeners(@NotNull Injector injector) {
         // Get the plugin manager instance
         PluginManager pluginManager = getServer().getPluginManager();
 
@@ -332,8 +335,8 @@ public class AuthMe extends JavaPlugin {
      * @return True if the command was executed, false otherwise.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd,
-                             String commandLabel, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
+                             @NotNull String commandLabel, String[] args) {
         // Make sure the command handler has been initialized
         if (commandHandler == null) {
             getLogger().severe("AuthMe command handler is not available");
@@ -344,6 +347,7 @@ public class AuthMe extends JavaPlugin {
         return commandHandler.processCommand(sender, commandLabel, args);
     }
 
+    @NotNull
     private String getServerNameVersionSafe() {
         try {
             Server server = getServer();
@@ -352,4 +356,5 @@ public class AuthMe extends JavaPlugin {
             return "-";
         }
     }
+
 }

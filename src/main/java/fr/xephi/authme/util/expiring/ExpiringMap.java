@@ -1,5 +1,7 @@
 package fr.xephi.authme.util.expiring;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpiringMap<K, V> {
 
+    @NotNull
     private final Map<K, ExpiringEntry<V>> entries = new ConcurrentHashMap<>();
     private long expirationMillis;
 
@@ -33,7 +36,7 @@ public class ExpiringMap<K, V> {
      * @param duration the duration of time after which entries expire
      * @param unit the time unit in which {@code duration} is expressed
      */
-    public ExpiringMap(long duration, TimeUnit unit) {
+    public ExpiringMap(long duration, @NotNull TimeUnit unit) {
         setExpiration(duration, unit);
     }
 
@@ -44,7 +47,7 @@ public class ExpiringMap<K, V> {
      * @param key the key to look up
      * @return the associated value, or {@code null} if not available
      */
-    public V get(K key) {
+    public V get(@NotNull K key) {
         ExpiringEntry<V> value = entries.get(key);
         if (value == null) {
             return null;
@@ -62,7 +65,7 @@ public class ExpiringMap<K, V> {
      * @param key the key to insert a value for
      * @param value the value to insert
      */
-    public void put(K key, V value) {
+    public void put(@NotNull K key, @NotNull V value) {
         long expiration = System.currentTimeMillis() + expirationMillis;
         entries.put(key, new ExpiringEntry<>(value, expiration));
     }
@@ -72,7 +75,7 @@ public class ExpiringMap<K, V> {
      *
      * @param key the key to remove the value for
      */
-    public void remove(K key) {
+    public void remove(@NotNull K key) {
         entries.remove(key);
     }
 
@@ -90,7 +93,7 @@ public class ExpiringMap<K, V> {
      * @param duration the duration of time after which entries expire
      * @param unit the time unit in which {@code duration} is expressed
      */
-    public void setExpiration(long duration, TimeUnit unit) {
+    public void setExpiration(long duration, @NotNull TimeUnit unit) {
         this.expirationMillis = unit.toMillis(duration);
     }
 
@@ -108,6 +111,7 @@ public class ExpiringMap<K, V> {
     /**
      * @return the internal map
      */
+    @NotNull
     protected Map<K, ExpiringEntry<V>> getEntries() {
         return entries;
     }
@@ -119,15 +123,16 @@ public class ExpiringMap<K, V> {
      */
     protected static final class ExpiringEntry<V> {
 
+        @NotNull
         private final V value;
         private final long expiration;
 
-        ExpiringEntry(V value, long expiration) {
+        ExpiringEntry(@NotNull V value, long expiration) {
             this.value = value;
             this.expiration = expiration;
         }
 
-        V getValue() {
+        @NotNull V getValue() {
             return value;
         }
 
@@ -135,4 +140,5 @@ public class ExpiringMap<K, V> {
             return expiration;
         }
     }
+
 }

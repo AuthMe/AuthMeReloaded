@@ -1,6 +1,5 @@
 package fr.xephi.authme.data.limbo.persistence;
 
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.xephi.authme.ConsoleLogger;
@@ -15,6 +14,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 /**
  * Saves LimboPlayer objects as JSON into individual files.
@@ -48,7 +48,7 @@ class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
         }
 
         try {
-            String str = Files.asCharSource(file, StandardCharsets.UTF_8).read();
+            String str = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
             return gson.fromJson(str, LimboPlayer.class);
         } catch (IOException e) {
             logger.logException("Could not read player data on disk for '" + player.getName() + "'", e);
@@ -61,9 +61,8 @@ class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
         String id = player.getUniqueId().toString();
         try {
             File file = new File(cacheDir, id + File.separator + "data.json");
-            Files.createParentDirs(file);
-            Files.touch(file);
-            Files.write(gson.toJson(limboPlayer), file, StandardCharsets.UTF_8);
+            FileUtils.createDirectoryOrFail(file);
+            Files.write(file.toPath(), gson.toJson(limboPlayer).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             logger.logException("Failed to write " + player.getName() + " data:", e);
         }

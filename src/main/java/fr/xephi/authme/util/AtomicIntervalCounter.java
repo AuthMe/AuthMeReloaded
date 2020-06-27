@@ -5,6 +5,7 @@ package fr.xephi.authme.util;
  * in the given 'interval'.
  */
 public class AtomicIntervalCounter {
+
     private final int threshold;
     private final int interval;
     private int count;
@@ -50,4 +51,5 @@ public class AtomicIntervalCounter {
         lastInsert = now;
         return false;
     }
+
 }

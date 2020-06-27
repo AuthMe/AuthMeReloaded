@@ -1,7 +1,6 @@
 package fr.xephi.authme.datasource;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
@@ -12,6 +11,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -39,7 +40,7 @@ public class SqLiteMigraterIntegrationTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
-    public void setup() throws SQLException, IOException, NoSuchMethodException {
+    public void setup() throws SQLException, IOException {
         TestHelper.setupLogger();
 
         Settings settings = mock(Settings.class);
@@ -48,15 +49,16 @@ public class SqLiteMigraterIntegrationTest {
         File sqliteDbFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "datasource/sqlite.april2016.db");
         dataFolder = temporaryFolder.newFolder();
         File tempFile = new File(dataFolder, "authme.db");
-        Files.copy(sqliteDbFile, tempFile);
+        Files.copy(sqliteDbFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         Connection con = DriverManager.getConnection("jdbc:sqlite:" + tempFile.getPath());
         sqLite = createSqlite(settings, dataFolder, con);
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void shouldRun() throws ClassNotFoundException, SQLException {
+    public void shouldRun() throws SQLException {
         // given / when
         sqLite.setup();
         sqLite.migrateIfNeeded();

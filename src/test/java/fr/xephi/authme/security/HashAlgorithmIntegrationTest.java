@@ -59,6 +59,7 @@ public class HashAlgorithmIntegrationTest {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldBeAbleToInstantiateEncryptionAlgorithms() {
         // given / when / then
@@ -81,6 +82,7 @@ public class HashAlgorithmIntegrationTest {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldBeDeprecatedIfEncryptionClassIsDeprecated() throws NoSuchFieldException {
         // given

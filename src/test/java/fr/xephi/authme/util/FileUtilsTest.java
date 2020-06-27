@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -9,6 +8,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -39,7 +40,7 @@ public class FileUtilsTest {
         File file = new File(folder, "config.yml");
         // purposely don't copy config.yml to verify that config.yml isn't copied by the method
         File emailJarFile = TestHelper.getJarFile("/email.html");
-        Files.copy(emailJarFile, file);
+        Files.copy(emailJarFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         // when
         boolean result = FileUtils.copyFileFromResource(file, "config.yml");
@@ -83,7 +84,7 @@ public class FileUtilsTest {
     public void shouldReturnFalseForParentInvalidParentFolders() throws IOException {
         // given
         File folder = temporaryFolder.newFolder();
-        new File(folder, "hello").createNewFile();
+        FileUtils.createFileOrFail(new File(folder, "hello"));
         File fileToCreate = new File(folder, "hello/test");
 
         // when
@@ -127,6 +128,7 @@ public class FileUtilsTest {
         assertThat(file.exists(), equalTo(false));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldDoNothingForNullFile() {
         // given
@@ -175,7 +177,7 @@ public class FileUtilsTest {
         // given
         File root = temporaryFolder.newFolder();
         File dirAsFile = new File(root, "file");
-        dirAsFile.createNewFile();
+        FileUtils.createFileOrFail(dirAsFile);
 
         // when
         boolean result = FileUtils.createDirectory(dirAsFile);

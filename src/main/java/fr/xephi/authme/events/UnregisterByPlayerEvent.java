@@ -2,6 +2,7 @@ package fr.xephi.authme.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Event fired after a player has unregistered himself.
@@ -30,7 +31,9 @@ public class UnregisterByPlayerEvent extends AbstractUnregisterEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }
+
 }

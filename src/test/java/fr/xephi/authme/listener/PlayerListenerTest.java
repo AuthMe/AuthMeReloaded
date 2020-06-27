@@ -650,7 +650,7 @@ public class PlayerListenerTest {
         // given
         String name = "Player01";
         Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
+        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", mock(InetAddress.class)));
         given(validationService.isUnrestricted(name)).willReturn(true);
 
         // when
@@ -668,7 +668,7 @@ public class PlayerListenerTest {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
+        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", mock(InetAddress.class)));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(true);
 
@@ -688,7 +688,7 @@ public class PlayerListenerTest {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "", null);
+        PlayerLoginEvent event = new PlayerLoginEvent(player, "", mock(InetAddress.class));
         event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
         event = spy(event);
         given(validationService.isUnrestricted(name)).willReturn(false);

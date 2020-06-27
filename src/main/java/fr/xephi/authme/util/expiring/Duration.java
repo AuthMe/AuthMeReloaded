@@ -1,5 +1,7 @@
 package fr.xephi.authme.util.expiring;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -8,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class Duration {
 
     private final long duration;
+    @NotNull
     private final TimeUnit unit;
 
     /**
@@ -16,7 +19,7 @@ public class Duration {
      * @param duration the duration
      * @param unit the time unit in which {@code duration} is expressed
      */
-    public Duration(long duration, TimeUnit unit) {
+    public Duration(long duration, @NotNull TimeUnit unit) {
         this.duration = duration;
         this.unit = unit;
     }
@@ -38,7 +41,8 @@ public class Duration {
      * @param sourceUnit the time unit the duration is expressed in
      * @return Duration object using the most suitable time unit
      */
-    public static Duration createWithSuitableUnit(long sourceDuration, TimeUnit sourceUnit) {
+    @NotNull
+    public static Duration createWithSuitableUnit(long sourceDuration, @NotNull TimeUnit sourceUnit) {
         long durationMillis = Math.abs(TimeUnit.MILLISECONDS.convert(sourceDuration, sourceUnit));
 
         TimeUnit targetUnit;
@@ -66,7 +70,9 @@ public class Duration {
     /**
      * @return the time unit in which the duration is expressed
      */
+    @NotNull
     public TimeUnit getTimeUnit() {
         return unit;
     }
+
 }

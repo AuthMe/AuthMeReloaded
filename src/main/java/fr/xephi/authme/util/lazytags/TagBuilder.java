@@ -1,5 +1,7 @@
 package fr.xephi.authme.util.lazytags;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -11,11 +13,14 @@ public final class TagBuilder {
     private TagBuilder() {
     }
 
-    public static <A> Tag<A> createTag(String name, Function<A, String> replacementFunction) {
+    @NotNull
+    public static <A> Tag<A> createTag(@NotNull String name, @NotNull Function<A, String> replacementFunction) {
         return new DependentTag<>(name, replacementFunction);
     }
 
-    public static <A> Tag<A> createTag(String name, Supplier<String> replacementFunction) {
+    @NotNull
+    public static <A> Tag<A> createTag(@NotNull String name, @NotNull Supplier<String> replacementFunction) {
         return new SimpleTag<>(name, replacementFunction);
     }
+
 }

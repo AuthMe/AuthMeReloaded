@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -228,8 +229,9 @@ public class ListenerServiceTest {
         }
 
         @Override
+        @NotNull
         public HandlerList getHandlers() {
-            return null;
+            throw new UnsupportedOperationException();
         }
     }
 }

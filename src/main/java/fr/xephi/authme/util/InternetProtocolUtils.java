@@ -1,5 +1,7 @@
 package fr.xephi.authme.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -18,7 +20,7 @@ public final class InternetProtocolUtils {
      * @param address address to check
      * @return true if the address is a local (site and link) or loopback address, false otherwise
      */
-    public static boolean isLocalAddress(String address) {
+    public static boolean isLocalAddress(@NotNull String address) {
         try {
             InetAddress inetAddress = InetAddress.getByName(address);
 
@@ -48,7 +50,7 @@ public final class InternetProtocolUtils {
      * @param address address to check
      * @return true if the address is a loopback one
      */
-    public static boolean isLoopbackAddress(String address) {
+    public static boolean isLoopbackAddress(@NotNull String address) {
         try {
             InetAddress inetAddress = InetAddress.getByName(address);
             return inetAddress.isLoopbackAddress();
@@ -57,11 +59,7 @@ public final class InternetProtocolUtils {
         }
     }
 
-    private static boolean isLoopbackAddress(InetAddress address) {
-        return address.isLoopbackAddress();
-    }
-
-    private static boolean isIPv6UniqueSiteLocal(InetAddress address) {
+    private static boolean isIPv6UniqueSiteLocal(@NotNull InetAddress address) {
         // ref: https://en.wikipedia.org/wiki/Unique_local_address
 
         // currently undefined but could be used in the near future fc00::/8
@@ -69,4 +67,5 @@ public final class InternetProtocolUtils {
                 // in use for unique site-local fd00::/8
                 || (address.getAddress()[0] & 0xFF) == 0xFD;
     }
+
 }

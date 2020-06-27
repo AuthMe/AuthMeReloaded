@@ -18,6 +18,7 @@ import org.yaml.snakeyaml.Yaml;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.LinkedHashMap;
@@ -54,7 +55,7 @@ public class HelpTranslationGenerator {
         Map<String, Object> helpEntries = generateHelpMessageEntries();
 
         String helpEntriesYaml = exportToYaml(helpEntries);
-        Files.write(helpFile.toPath(), helpEntriesYaml.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(helpFile.toPath(), helpEntriesYaml.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
         return helpFile;
     }
 

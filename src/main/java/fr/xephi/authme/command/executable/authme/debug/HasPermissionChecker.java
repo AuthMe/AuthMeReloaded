@@ -61,12 +61,8 @@ class HasPermissionChecker implements DebugSection {
         Player player = bukkitService.getPlayerExact(playerName);
         if (player == null) {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-            if (offlinePlayer == null) {
-                sender.sendMessage(ChatColor.DARK_RED + "Player '" + playerName + "' does not exist");
-            } else {
-                sender.sendMessage("Player '" + playerName + "' not online; checking with offline player");
-                performPermissionCheck(offlinePlayer, permissionNode, permissionsManager::hasPermissionOffline, sender);
-            }
+            sender.sendMessage("Player '" + playerName + "' not online; checking with offline player");
+            performPermissionCheck(offlinePlayer, permissionNode, permissionsManager::hasPermissionOffline, sender);
         } else {
             performPermissionCheck(player, permissionNode, permissionsManager::hasPermission, sender);
         }

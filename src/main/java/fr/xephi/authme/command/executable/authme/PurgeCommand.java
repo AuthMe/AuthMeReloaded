@@ -27,8 +27,10 @@ public class PurgeCommand implements ExecutableCommand {
         String daysStr = arguments.get(0);
 
         // Convert the days string to an integer value, and make sure it's valid
-        Integer days = Ints.tryParse(daysStr);
-        if (days == null) {
+        int days;
+        try {
+            days = Integer.parseInt(daysStr);
+        } catch (NumberFormatException e) {
             sender.sendMessage(ChatColor.RED + "The value you've entered is invalid!");
             return;
         }

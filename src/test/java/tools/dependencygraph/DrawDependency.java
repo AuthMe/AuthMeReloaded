@@ -28,6 +28,7 @@ import tools.utils.ToolsConstants;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class DrawDependency implements ToolTask {
 
         // Write dot file
         try {
-            Files.write(Paths.get(DOT_FILE), ("digraph G {\n" + dotFile + "\n}").getBytes());
+            Files.write(Paths.get(DOT_FILE), ("digraph G {\n" + dotFile + "\n}").getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

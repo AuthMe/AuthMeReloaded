@@ -23,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -403,7 +404,7 @@ public class ValidationServiceTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         TestHelper.mockPlayerIp(player, ip);
-        given(player.getAddress().getHostName()).willReturn("--");
+        given(Objects.requireNonNull(player.getAddress()).getHostName()).willReturn("--");
         return player;
     }
 

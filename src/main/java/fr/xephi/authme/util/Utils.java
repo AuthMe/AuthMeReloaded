@@ -5,6 +5,7 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
@@ -17,7 +18,7 @@ public final class Utils {
     /** Number of milliseconds in a minute. */
     public static final long MILLIS_PER_MINUTE = 60_000L;
 
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
 
     // Utility class
     private Utils() {
@@ -30,7 +31,8 @@ public final class Utils {
      *
      * @return the given regex compiled into Pattern object.
      */
-    public static Pattern safePatternCompile(String pattern) {
+    @NotNull
+    public static Pattern safePatternCompile(@NotNull String pattern) {
         try {
             return Pattern.compile(pattern);
         } catch (Exception e) {
@@ -46,7 +48,7 @@ public final class Utils {
      *
      * @return true if the class is loaded, false otherwise
      */
-    public static boolean isClassLoaded(String className) {
+    public static boolean isClassLoaded(@NotNull String className) {
         try {
             Class.forName(className);
             return true;
@@ -63,7 +65,7 @@ public final class Utils {
      * @param sender the sender to inform
      * @param message the message to log and send
      */
-    public static void logAndSendMessage(CommandSender sender, String message) {
+    public static void logAndSendMessage(CommandSender sender, @NotNull String message) {
         logger.info(message);
         // Make sure sender is not console user, which will see the message from ConsoleLogger already
         if (sender != null && !(sender instanceof ConsoleCommandSender)) {
@@ -79,7 +81,7 @@ public final class Utils {
      * @param sender the sender to inform
      * @param message the warning to log and send
      */
-    public static void logAndSendWarning(CommandSender sender, String message) {
+    public static void logAndSendWarning(CommandSender sender, @NotNull String message) {
         logger.warning(message);
         // Make sure sender is not console user, which will see the message from ConsoleLogger already
         if (sender != null && !(sender instanceof ConsoleCommandSender)) {
@@ -107,4 +109,5 @@ public final class Utils {
     public static boolean isEmailEmpty(String email) {
         return StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email);
     }
+
 }

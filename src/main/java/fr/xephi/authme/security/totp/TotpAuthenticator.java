@@ -55,7 +55,12 @@ public class TotpAuthenticator implements HasCleanup {
      */
     public boolean checkCode(String playerName, String totpKey, String inputCode) {
         String nameLower = playerName.toLowerCase();
-        Integer totpCode = Ints.tryParse(inputCode);
+        Integer totpCode;
+        try {
+            totpCode = Integer.parseInt(inputCode);
+        } catch (NumberFormatException e) {
+            totpCode = null;
+        }
         if (totpCode != null && !usedCodes.contains(nameLower, totpCode)
             && authenticator.authorize(totpKey, totpCode)) {
             usedCodes.put(nameLower, totpCode, System.currentTimeMillis());

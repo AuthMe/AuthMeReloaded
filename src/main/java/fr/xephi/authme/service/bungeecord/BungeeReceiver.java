@@ -14,6 +14,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     }
 
     @Override
-    public void reload(final Settings settings) {
+    public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
 
         if (this.isEnabled) {
@@ -56,7 +57,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
      *
      * @param in the input to handle
      */
-    private void handleBroadcast(final ByteArrayDataInput in) {
+    private void handleBroadcast(ByteArrayDataInput in) {
         // Read data byte array
         final short dataLength = in.readShort();
         final byte[] dataBytes = new byte[dataLength];
@@ -130,7 +131,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     }
 
     @Override
-    public void onPluginMessageReceived(final String channel, final Player player, final byte[] data) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] data) {
         if (!isEnabled) {
             return;
         }
@@ -146,7 +147,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         }
     }
 
-    private void performLogin(final String name) {
+    private void performLogin(String name) {
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
             management.forceLogin(player);

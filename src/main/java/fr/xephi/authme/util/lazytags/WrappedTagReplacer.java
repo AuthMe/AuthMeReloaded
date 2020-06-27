@@ -1,5 +1,7 @@
 package fr.xephi.authme.util.lazytags;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,8 +20,11 @@ import java.util.stream.Collectors;
  */
 public class WrappedTagReplacer<T, A> {
 
+    @NotNull
     private final Collection<T> items;
+    @NotNull
     private final BiFunction<T, String, ? extends T> itemCreator;
+    @NotNull
     private final TagReplacer<A> tagReplacer;
 
     /**
@@ -30,10 +35,10 @@ public class WrappedTagReplacer<T, A> {
      * @param stringGetter getter of the String property to adapt on the items
      * @param itemCreator a function taking (T, String): the original item and the adapted String, returning a new item
      */
-    public WrappedTagReplacer(Collection<Tag<A>> allTags,
-                              Collection<T> items,
-                              Function<? super T, String> stringGetter,
-                              BiFunction<T, String, ? extends T> itemCreator) {
+    public WrappedTagReplacer(@NotNull Collection<Tag<A>> allTags,
+                              @NotNull Collection<T> items,
+                              @NotNull Function<? super T, String> stringGetter,
+                              @NotNull BiFunction<T, String, ? extends T> itemCreator) {
         this.items = items;
         this.itemCreator = itemCreator;
 
@@ -47,7 +52,8 @@ public class WrappedTagReplacer<T, A> {
      * @param argument the argument to adapt the items for
      * @return the adapted items
      */
-    public List<T> getAdaptedItems(A argument) {
+    @NotNull
+    public List<T> getAdaptedItems(@NotNull A argument) {
         List<String> adaptedStrings = tagReplacer.getAdaptedMessages(argument);
         List<T> adaptedItems = new LinkedList<>();
 
@@ -58,4 +64,5 @@ public class WrappedTagReplacer<T, A> {
         }
         return adaptedItems;
     }
+
 }

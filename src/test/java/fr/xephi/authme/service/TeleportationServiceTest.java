@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
@@ -240,7 +241,7 @@ public class TeleportationServiceTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
-        given(limboLocation.getWorld().getName()).willReturn("forced1");
+        given(Objects.requireNonNull(limboLocation.getWorld()).getName()).willReturn("forced1");
         given(limbo.getLocation()).willReturn(limboLocation);
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
@@ -262,7 +263,7 @@ public class TeleportationServiceTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
-        given(limboLocation.getWorld().getName()).willReturn("Forced1"); // different case
+        given(Objects.requireNonNull(limboLocation.getWorld()).getName()).willReturn("Forced1"); // different case
         given(limbo.getLocation()).willReturn(limboLocation);
 
         // when

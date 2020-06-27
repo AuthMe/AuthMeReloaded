@@ -3,7 +3,6 @@ package fr.xephi.authme.settings;
 import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.PluginHookService;
@@ -19,6 +18,8 @@ import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -31,12 +32,14 @@ import static org.mockito.Mockito.mock;
 @RunWith(DelayedInjectionRunner.class)
 public class SpawnLoaderTest {
 
+    @SuppressWarnings("unused")
     @InjectDelayed
     private SpawnLoader spawnLoader;
 
     @Mock
     private Settings settings;
 
+    @SuppressWarnings("unused")
     @Mock
     private PluginHookService pluginHookService;
 
@@ -52,7 +55,7 @@ public class SpawnLoaderTest {
         testFolder = temporaryFolder.newFolder();
         File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/spawn-firstspawn.yml");
         File destination = new File(testFolder, "spawn.yml");
-        Files.copy(source, destination);
+        Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         // Create a settings mock with default values
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY))

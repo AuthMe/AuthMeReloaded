@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -131,6 +132,7 @@ public class PermissionConsistencyTest {
     private static Map<String, PermissionDefinition> getPermissionsFromPluginYmlFile() {
         FileConfiguration pluginFile = YamlConfiguration.loadConfiguration(getJarFile("/plugin.yml"));
         MemorySection permsList = (MemorySection) pluginFile.get("permissions");
+        Objects.requireNonNull(permsList);
 
         Map<String, PermissionDefinition> permissions = new HashMap<>();
         addChildren(permsList, permissions);
@@ -148,7 +150,7 @@ public class PermissionConsistencyTest {
         boolean hasPermissionEntry = false;
         for (String key : node.getKeys(false)) {
             if (node.get(key) instanceof MemorySection && !"children".equals(key)) {
-                addChildren((MemorySection) node.get(key), collection);
+                addChildren((MemorySection) Objects.requireNonNull(node.get(key)), collection);
             } else if (PERMISSION_FIELDS.contains(key)) {
                 hasPermissionEntry = true;
             } else {
@@ -199,7 +201,7 @@ public class PermissionConsistencyTest {
 
             if (memorySection.get("children") instanceof MemorySection) {
                 List<String> children = new ArrayList<>();
-                collectChildren((MemorySection) memorySection.get("children"), children);
+                collectChildren((MemorySection) Objects.requireNonNull(memorySection.get("children")), children);
                 this.children = removeStart(memorySection.getCurrentPath() + ".children.", children);
             } else {
                 this.children = Collections.emptySet();

@@ -4,7 +4,6 @@ import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.LogLevel;
@@ -20,6 +19,8 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class SettingsMigrationServiceTest {
         // given
         File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
-        Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
+        Files.copy(getJarFile(OLD_CONFIG_FILE).toPath(), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         PropertyResource resource = new YamlFileResource(configFile);
         SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
 
@@ -83,7 +84,7 @@ public class SettingsMigrationServiceTest {
         // given
         File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
-        Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
+        Files.copy(getJarFile(OLD_CONFIG_FILE).toPath(), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         PropertyResource resource = new YamlFileResource(configFile);
         TestMigrationServiceExtension migrationService = new TestMigrationServiceExtension(dataFolder);
         ConfigurationData configurationData = AuthMeSettingsRetriever.buildConfigurationData();
@@ -103,7 +104,7 @@ public class SettingsMigrationServiceTest {
         // given
         File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
-        Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
+        Files.copy(getJarFile(OLD_CONFIG_FILE).toPath(), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         PropertyResource resource = new YamlFileResource(configFile);
         SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
 
@@ -132,14 +133,14 @@ public class SettingsMigrationServiceTest {
         assertThat(settings.getProperty(MYSQL_COL_SALT), equalTo("salt_col_name"));
 
         // Check migration of old setting to email.html
-        assertThat(Files.readLines(new File(dataFolder, "email.html"), StandardCharsets.UTF_8),
+        assertThat(Files.readAllLines(new File(dataFolder, "email.html").toPath(), StandardCharsets.UTF_8),
             contains("Dear <playername />, <br /><br /> This is your new AuthMe password for the server "
                 + "<br /><br /> <servername /> : <br /><br /> <generatedpass /><br /><image /><br />Do not forget to "
                 + "change password after login! <br /> /changepassword <generatedpass /> newPassword"));
     }
 
     private static class TestMigrationServiceExtension extends SettingsMigrationService {
-        private List<Boolean> returnedValues = new ArrayList<>();
+        private final List<Boolean> returnedValues = new ArrayList<>();
 
         TestMigrationServiceExtension(@DataFolder File pluginFolder) {
             super(pluginFolder);

@@ -100,6 +100,7 @@ public class PlayerListener implements Listener {
         final String name = event.getName();
 
         // NOTE: getAddress() sometimes returning null, we don't want to handle this race condition
+        //noinspection ConstantConditions
         if (event.getAddress() == null) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                 messages.retrieveSingle(name, MessageKey.KICK_UNRESOLVED_HOSTNAME));

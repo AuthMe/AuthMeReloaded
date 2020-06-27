@@ -84,7 +84,6 @@ public class RegistrationCaptchaManagerTest {
         assertThat(captchaManager.checkCode(player, captcha1), equalTo(true));
     }
 
-    @SuppressWarnings("unchecked")
     private static ExpiringMap<String, String> getCodeMap(RegistrationCaptchaManager captchaManager) {
         CaptchaCodeStorage captchaStorage = ReflectionTestUtils.getFieldValue(
             RegistrationCaptchaManager.class, captchaManager, "captchaCodeStorage");

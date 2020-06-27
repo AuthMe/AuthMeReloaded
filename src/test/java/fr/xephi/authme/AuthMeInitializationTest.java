@@ -4,7 +4,6 @@ import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
-import com.google.common.io.Files;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
@@ -35,6 +34,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.logging.Logger;
 
@@ -72,7 +73,8 @@ public class AuthMeInitializationTest {
         dataFolder = temporaryFolder.newFolder();
         File settingsFile = new File(dataFolder, "config.yml");
         JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
-        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml").toPath(),
+            settingsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         // Mock / wire various Bukkit components
         given(server.getLogger()).willReturn(Logger.getAnonymousLogger());

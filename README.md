@@ -90,23 +90,28 @@ You can also create your own translation file and, if you want, you can share it
 - **Dev resources:**
   - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
   - <a href="http://repo.codemc.org/repository/maven-public/">Maven Repository</a>
-  ```xml
-    <repositories>
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
-        </repository>
-    </repositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>fr.xephi</groupId>
-            <artifactId>authme</artifactId>
-            <version>5.6.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-  ```
+  - Maven dependency usage:
+    ```xml
+    <project>
+        ...
+        <repositories>
+            <repository>
+                <id>codemc-repo</id>
+                <url>https://repo.codemc.org/repository/maven-public/</url>
+            </repository>
+        </repositories>
+        ...
+        <dependencies>
+            <dependency>
+                <groupId>fr.xephi</groupId>
+                <artifactId>authme</artifactId>
+                <version>5.6.0-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+        ...
+    </project>
+    ```
 
 - **Statistics:**
     ![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)

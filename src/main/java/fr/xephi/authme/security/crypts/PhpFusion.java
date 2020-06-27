@@ -9,6 +9,7 @@ import fr.xephi.authme.util.RandomStringUtils;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -21,10 +22,10 @@ public class PhpFusion extends SeparateSaltMethod {
         String algo = "HmacSHA256";
         String keyString = HashUtils.sha1(salt);
         try {
-            SecretKeySpec key = new SecretKeySpec(keyString.getBytes("UTF-8"), algo);
+            SecretKeySpec key = new SecretKeySpec(keyString.getBytes(StandardCharsets.UTF_8), algo);
             Mac mac = Mac.getInstance(algo);
             mac.init(key);
-            byte[] bytes = mac.doFinal(password.getBytes("ASCII"));
+            byte[] bytes = mac.doFinal(password.getBytes(StandardCharsets.US_ASCII));
             StringBuilder hash = new StringBuilder();
             for (byte aByte : bytes) {
                 String hex = Integer.toHexString(0xFF & aByte);
@@ -34,7 +35,7 @@ public class PhpFusion extends SeparateSaltMethod {
                 hash.append(hex);
             }
             return hash.toString();
-        } catch (UnsupportedEncodingException | InvalidKeyException | NoSuchAlgorithmException e) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             throw new UnsupportedOperationException("Cannot create PHPFUSION hash for " + name, e);
         }
     }

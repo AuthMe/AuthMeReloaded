@@ -1,6 +1,5 @@
 package fr.xephi.authme.data.limbo.persistence;
 
-import com.google.common.io.Files;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +18,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -115,7 +115,7 @@ class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
         }
 
         try {
-            return gson.fromJson(Files.asCharSource(file, StandardCharsets.UTF_8).read(), LIMBO_MAP_TYPE);
+            return gson.fromJson(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8), LIMBO_MAP_TYPE);
         } catch (Exception e) {
             logger.logException("Failed reading '" + file + "':", e);
         }

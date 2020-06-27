@@ -309,6 +309,7 @@ public class SettingsMigrationService extends PlainMigrationService {
      * @param configData Configuration data
      * @return True if the configuration has changed, false otherwise
      */
+    @SuppressWarnings("deprecation")
     private static boolean moveDeprecatedHashAlgorithmIntoLegacySection(PropertyReader reader,
                                                                         ConfigurationData configData) {
         HashAlgorithm currentHash = SecuritySettings.PASSWORD_HASH.determineValue(reader);

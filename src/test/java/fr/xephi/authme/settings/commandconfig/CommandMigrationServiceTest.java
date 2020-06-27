@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -120,12 +121,14 @@ public class CommandMigrationServiceTest {
             resource.createReader(), configurationData);
 
         // then
-        Map<String, OnLoginCommand> onLoginCommands = configurationData.getValue(CommandSettingsHolder.COMMANDS).getOnLogin();
+        CommandConfig commandConfig = configurationData.getValue(CommandSettingsHolder.COMMANDS);
+        Objects.requireNonNull(commandConfig);
+        Map<String, OnLoginCommand> onLoginCommands = commandConfig.getOnLogin();
         assertThat(onLoginCommands, aMapWithSize(6)); // 5 in the file + the newly migrated on
         OnLoginCommand newCommand = getUnknownOnLoginCommand(onLoginCommands);
         assertThat(newCommand.getCommand(), equalTo("helpop %p (%ip) has other accounts!"));
         assertThat(newCommand.getExecutor(), equalTo(Executor.CONSOLE));
-        assertThat(newCommand.getIfNumberOfAccountsAtLeast().get(), equalTo(3));
+        assertThat(newCommand.getIfNumberOfAccountsAtLeast().orElse(null), equalTo(3));
         assertThat(newCommand.getIfNumberOfAccountsLessThan().isPresent(), equalTo(false));
     }
 

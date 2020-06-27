@@ -39,6 +39,7 @@ public class StringUtilsTest {
         assertThat(result, equalTo(false));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldReturnFalseForNullString() {
         // given/when

@@ -61,7 +61,6 @@ public final class ReflectionTestUtils {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T, V> V getFieldValue(Class<T> clazz, T instance, String fieldName) {
         Field field = getField(clazz, fieldName);
         return getFieldValue(field, instance);

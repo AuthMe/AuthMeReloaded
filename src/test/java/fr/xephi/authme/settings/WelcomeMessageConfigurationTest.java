@@ -22,6 +22,7 @@ import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
@@ -135,7 +136,7 @@ public class WelcomeMessageConfigurationTest {
 
     private void setWelcomeMessageAndReload(String welcomeMessage) {
         try {
-            Files.write(welcomeFile.toPath(), welcomeMessage.getBytes());
+            Files.write(welcomeFile.toPath(), welcomeMessage.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new IllegalStateException("Could not write to '" + welcomeFile + "'", e);
         }

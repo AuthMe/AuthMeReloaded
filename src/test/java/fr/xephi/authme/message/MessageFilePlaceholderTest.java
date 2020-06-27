@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
@@ -64,7 +65,7 @@ public class MessageFilePlaceholderTest {
 
     private List<String> findMissingTags(MessageKey key, PropertyReader reader) {
         if (key.getTags().length > 0 && reader.contains(key.getKey())) {
-            String message = reader.getString(key.getKey());
+            String message = Objects.requireNonNull(reader.getString(key.getKey()));
             return Arrays.stream(key.getTags())
                 .filter(tag -> !EXCLUSIONS.get(key).contains(tag) && !message.contains(tag))
                 .collect(Collectors.toList());

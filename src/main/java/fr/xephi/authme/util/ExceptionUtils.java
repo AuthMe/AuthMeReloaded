@@ -1,7 +1,11 @@
 package fr.xephi.authme.util;
 
-import com.google.common.collect.Sets;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Set;
 
 /**
@@ -21,8 +25,9 @@ public final class ExceptionUtils {
      * @param <T> the desired throwable subtype
      * @return the first throwable found of the given type, or null if none found
      */
-    public static <T extends Throwable> T findThrowableInCause(Class<T> wantedThrowableType, Throwable throwable) {
-        Set<Throwable> visitedObjects = Sets.newIdentityHashSet();
+    public static <T extends Throwable> T findThrowableInCause(@NotNull Class<T> wantedThrowableType,
+                                                               @NotNull Throwable throwable) {
+        Set<Throwable> visitedObjects = Collections.newSetFromMap(new IdentityHashMap<>());
         Throwable currentThrowable = throwable;
         while (currentThrowable != null && !visitedObjects.contains(currentThrowable)) {
             if (wantedThrowableType.isInstance(currentThrowable)) {
@@ -40,7 +45,22 @@ public final class ExceptionUtils {
      * @param th the throwable to process
      * @return string with the type of the Throwable and its message, e.g. "[IOException]: Could not open stream"
      */
-    public static String formatException(Throwable th) {
+    @NotNull
+    public static String formatException(@NotNull Throwable th) {
         return "[" + th.getClass().getSimpleName() + "]: " + th.getMessage();
     }
+
+    /**
+     * Returns a string containing the result of {@link Throwable#toString()}, followed by the full, recursive
+     * stack trace of {@code throwable}.
+     *
+     * @param throwable the throwable to precess
+     * @return string containing the stacktrace
+     */
+    public static String getStackTraceAsString(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
+    }
+
 }

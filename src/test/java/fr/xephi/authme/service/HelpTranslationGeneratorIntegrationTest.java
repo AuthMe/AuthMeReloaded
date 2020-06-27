@@ -3,7 +3,6 @@ package fr.xephi.authme.service;
 import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.help.HelpMessage;
@@ -13,6 +12,7 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.FileUtils;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,6 +25,8 @@ import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -67,9 +69,10 @@ public class HelpTranslationGeneratorIntegrationTest {
     public void setUpClasses() throws IOException {
         dataFolder = temporaryFolder.newFolder();
         File messagesFolder = new File(dataFolder, "messages");
-        messagesFolder.mkdir();
+        FileUtils.createDirectoryOrFail(messagesFolder);
         helpMessagesFile = new File(messagesFolder, "help_test.yml");
-        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/help_test.yml"), helpMessagesFile);
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/help_test.yml").toPath(),
+            helpMessagesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
     }
 

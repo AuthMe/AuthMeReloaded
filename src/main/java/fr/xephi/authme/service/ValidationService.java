@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -155,7 +156,7 @@ public class ValidationService implements Reloadable {
         }
 
         String ip = PlayerUtils.getPlayerIp(player);
-        String domain = player.getAddress().getHostName();
+        String domain = Objects.requireNonNull(player.getAddress()).getHostName();
         for (String restriction : restrictions) {
             if (restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");

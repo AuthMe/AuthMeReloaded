@@ -4,13 +4,13 @@ import ch.jalu.configme.SettingsManagerImpl;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.MigrationService;
 import ch.jalu.configme.resource.PropertyResource;
-import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 
@@ -89,7 +89,7 @@ public class Settings extends SettingsManagerImpl {
         final File file = new File(pluginFolder, filename);
         if (copyFileFromResource(file, filename)) {
             try {
-                return Files.asCharSource(file, StandardCharsets.UTF_8).read();
+                return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 logger.logException("Failed to read file '" + filename + "':", e);
             }
@@ -98,4 +98,5 @@ public class Settings extends SettingsManagerImpl {
         }
         return "";
     }
+
 }

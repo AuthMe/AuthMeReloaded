@@ -38,7 +38,6 @@ exclude_patterns:
   - 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClient.java'
   - 'src/main/java/fr/xephi/authme/mail/OAuth2SaslClientFactory.java'
   - 'src/main/java/fr/xephi/authme/security/crypts/PhpBB.java'
-  - 'src/main/java/fr/xephi/authme/security/crypts/Whirlpool.java'
   - 'src/main/java/fr/xephi/authme/security/crypts/Wordpress.java'
   # Don't check test classes
   - 'src/test/java/**/*Test.java'

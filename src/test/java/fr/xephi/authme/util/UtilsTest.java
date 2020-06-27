@@ -98,6 +98,7 @@ public class UtilsTest {
         verifyNoInteractions(sender);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldCheckIfCollectionIsEmpty() {
         // given
@@ -140,6 +141,7 @@ public class UtilsTest {
         verifyNoInteractions(sender);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldLogWarningAndHandleNullCommandSender() {
         // given

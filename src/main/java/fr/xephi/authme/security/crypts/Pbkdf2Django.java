@@ -30,8 +30,11 @@ public class Pbkdf2Django extends HexSaltedMethod {
         if (line.length != 4) {
             return false;
         }
-        Integer iterations = Ints.tryParse(line[1]);
-        if (iterations == null) {
+
+        int iterations;
+        try {
+            iterations = Integer.parseInt(line[1]);
+        } catch (NumberFormatException e) {
             logger.warning("Cannot read number of rounds for Pbkdf2Django: '" + line[1] + "'");
             return false;
         }

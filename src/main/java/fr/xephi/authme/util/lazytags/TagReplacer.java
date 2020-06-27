@@ -1,5 +1,7 @@
 package fr.xephi.authme.util.lazytags;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +15,9 @@ import java.util.stream.Collectors;
  */
 public final class TagReplacer<A> {
 
+    @NotNull
     private final List<Tag<A>> tags;
+    @NotNull
     private final Collection<String> messages;
 
     /**
@@ -22,7 +26,7 @@ public final class TagReplacer<A> {
      * @param tags the tags that are being used in the messages
      * @param messages the messages
      */
-    private TagReplacer(List<Tag<A>> tags, Collection<String> messages) {
+    private TagReplacer(@NotNull List<Tag<A>> tags, @NotNull Collection<String> messages) {
         this.tags = tags;
         this.messages = messages;
     }
@@ -36,7 +40,9 @@ public final class TagReplacer<A> {
      * @param <A> the argument type
      * @return new tag replacer instance
      */
-    public static <A> TagReplacer<A> newReplacer(Collection<Tag<A>> allTags, Collection<String> messages) {
+    @NotNull
+    public static <A> TagReplacer<A> newReplacer(@NotNull Collection<Tag<A>> allTags,
+                                                 @NotNull Collection<String> messages) {
         List<Tag<A>> usedTags = determineUsedTags(allTags, messages);
         return new TagReplacer<>(usedTags, messages);
     }
@@ -47,7 +53,8 @@ public final class TagReplacer<A> {
      * @param argument the argument to get the messages for
      * @return the adapted messages
      */
-    public List<String> getAdaptedMessages(A argument) {
+    @NotNull
+    public List<String> getAdaptedMessages(@NotNull A argument) {
         // Note ljacqu 20170121: Using a Map might seem more natural here but we avoid doing so for performance
         // Although the performance gain here is probably minimal...
         List<TagValue> tagValues = new LinkedList<>();
@@ -74,7 +81,9 @@ public final class TagReplacer<A> {
      * @param <A> argument type
      * @return tags used at least once
      */
-    private static <A> List<Tag<A>> determineUsedTags(Collection<Tag<A>> allTags, Collection<String> messages) {
+    @NotNull
+    private static <A> List<Tag<A>> determineUsedTags(@NotNull Collection<Tag<A>> allTags,
+                                                      @NotNull Collection<String> messages) {
         return allTags.stream()
             .filter(tag -> messages.stream().anyMatch(msg -> msg.contains(tag.getName())))
             .collect(Collectors.toList());
@@ -84,11 +93,13 @@ public final class TagReplacer<A> {
     private static final class TagValue {
 
         /** The tag to replace. */
+        @NotNull
         private final String tag;
         /** The value to replace with. */
+        @NotNull
         private final String value;
 
-        TagValue(String tag, String value) {
+        TagValue(@NotNull String tag, @NotNull String value) {
             this.tag = tag;
             this.value = value;
         }

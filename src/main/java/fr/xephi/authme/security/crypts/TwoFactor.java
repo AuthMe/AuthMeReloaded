@@ -1,9 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import com.google.common.escape.Escaper;
 import com.google.common.io.BaseEncoding;
-import com.google.common.net.UrlEscapers;
-import com.google.common.primitives.Ints;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.HasSalt;
@@ -13,6 +10,9 @@ import fr.xephi.authme.security.crypts.description.Usage;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -50,8 +50,15 @@ public class TwoFactor extends UnsaltedMethod {
         String format = "https://www.google.com/chart?chs=130x130&chld=M%%7C0&cht=qr&chl="
                 + "otpauth://totp/"
                 + "%s@%s%%3Fsecret%%3D%s";
-        Escaper urlEscaper = UrlEscapers.urlFragmentEscaper();
-        return String.format(format, urlEscaper.escape(user), urlEscaper.escape(host), secret);
+
+        try {
+            user = URLEncoder.encode(user, StandardCharsets.UTF_8.toString());
+            host = URLEncoder.encode(host, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return String.format(format, user, host, secret);
     }
 
     @Override
@@ -81,8 +88,10 @@ public class TwoFactor extends UnsaltedMethod {
 
     private boolean checkPassword(String secretKey, String userInput)
             throws NoSuchAlgorithmException, InvalidKeyException {
-        Integer code = Ints.tryParse(userInput);
-        if (code == null) {
+        int code;
+        try {
+            code = Integer.parseInt(userInput);
+        } catch (NumberFormatException e) {
             //code is not an integer
             return false;
         }

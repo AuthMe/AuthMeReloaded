@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -96,7 +97,7 @@ public class OnJoinVerifierTest {
     public void shouldRefuseNonVipPlayerForFullServer() {
         // given
         Player player = mock(Player.class);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
+        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", mock(InetAddress.class));
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(false);
         String serverFullMessage = "server is full";
@@ -116,7 +117,7 @@ public class OnJoinVerifierTest {
     public void shouldKickNonVipForJoiningVipPlayer() {
         // given
         Player player = mock(Player.class);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
+        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", mock(InetAddress.class));
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
         List<Player> onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class));
@@ -141,7 +142,7 @@ public class OnJoinVerifierTest {
     public void shouldKickVipPlayerIfNoPlayerCanBeKicked() {
         // given
         Player player = mock(Player.class);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
+        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", mock(InetAddress.class));
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
         given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
         List<Player> onlinePlayers = Collections.singletonList(mock(Player.class));
@@ -314,6 +315,7 @@ public class OnJoinVerifierTest {
         verifyNoInteractions(dataSource);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldAcceptNameForUnregisteredAccount() throws FailedVerificationException {
         // given
@@ -371,6 +373,7 @@ public class OnJoinVerifierTest {
         verifyNoInteractions(bukkitService);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldAllowUser() throws FailedVerificationException {
         // given
@@ -387,6 +390,7 @@ public class OnJoinVerifierTest {
         verify(antiBotService).shouldKick();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldAllowUserWithAuth() throws FailedVerificationException {
         // given
@@ -400,6 +404,7 @@ public class OnJoinVerifierTest {
         verifyNoInteractions(permissionsManager, antiBotService);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldAllowUserWithBypassPermission() throws FailedVerificationException {
         // given
@@ -415,6 +420,7 @@ public class OnJoinVerifierTest {
         verifyNoInteractions(antiBotService);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldKickUserForFailedAntibotCheck() {
         // given
