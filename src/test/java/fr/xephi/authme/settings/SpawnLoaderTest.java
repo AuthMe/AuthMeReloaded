@@ -32,14 +32,12 @@ import static org.mockito.Mockito.mock;
 @RunWith(DelayedInjectionRunner.class)
 public class SpawnLoaderTest {
 
-    @SuppressWarnings("unused")
     @InjectDelayed
     private SpawnLoader spawnLoader;
 
     @Mock
     private Settings settings;
 
-    @SuppressWarnings("unused")
     @Mock
     private PluginHookService pluginHookService;
 

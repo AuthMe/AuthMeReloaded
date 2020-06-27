@@ -48,9 +48,10 @@ public class CommandManagerTest {
 
     @Mock
     private BukkitService bukkitService;
+
     @Mock
     private GeoIpService geoIpService;
-    @SuppressWarnings("unused")
+
     @Mock
     private SettingsMigrationService settingsMigrationService;
 

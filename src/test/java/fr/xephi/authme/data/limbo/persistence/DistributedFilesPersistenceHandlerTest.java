@@ -74,8 +74,6 @@ public class DistributedFilesPersistenceHandlerTest {
     /** UUID for which no data is stored (belongs to an existing segment file: seg16-8). */
     private static final UUID UNKNOWN_UUID2 = fromString("84d1cc0b-8f12-d04a-e7ba-a067d05cdc39");
 
-
-    @SuppressWarnings("unused")
     @InjectDelayed
     private DistributedFilesPersistenceHandler persistenceHandler;
 
