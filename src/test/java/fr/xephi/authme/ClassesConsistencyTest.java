@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -52,7 +53,7 @@ public class ClassesConsistencyTest {
     private static final Set<Class<?>> IMMUTABLE_TYPES = ImmutableSet.of(
         /* JDK */
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
-        Charset.class,
+        Charset.class, Pattern.class,
         /* AuthMe */
         Property.class, RegistrationMethod.class, DataSourceColumn.class, PlayerAuthColumn.class,
         /* Guava */

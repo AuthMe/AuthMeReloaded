@@ -10,6 +10,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -54,12 +55,7 @@ public class TotpAuthenticator implements HasCleanup {
      */
     public boolean checkCode(String playerName, String totpKey, String inputCode) {
         String nameLower = playerName.toLowerCase();
-        Integer totpCode;
-        try {
-            totpCode = Integer.parseInt(inputCode);
-        } catch (NumberFormatException e) {
-            totpCode = null;
-        }
+        Integer totpCode = Utils.tryInteger(inputCode);
         if (totpCode != null && !usedCodes.contains(nameLower, totpCode)
             && authenticator.authorize(totpKey, totpCode)) {
             usedCodes.put(nameLower, totpCode, System.currentTimeMillis());

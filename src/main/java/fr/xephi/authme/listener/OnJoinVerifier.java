@@ -61,7 +61,10 @@ public class OnJoinVerifier implements Reloadable {
     @Override
     public void reload() {
         String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
-        nicknamePattern = Utils.safePatternCompile(nickRegEx);
+        nicknamePattern = Utils.safePatternCompile(nickRegEx, patternString -> {
+            logger.warning("Failed to compile pattern '" + patternString + "' - defaulting to allowing everything");
+            return Utils.MATCH_ANYTHING_PATTERN;
+        });
     }
 
     /**

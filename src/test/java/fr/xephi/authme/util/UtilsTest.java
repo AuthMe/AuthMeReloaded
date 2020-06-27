@@ -37,7 +37,7 @@ public class UtilsTest {
         String pattern = "gr(a|e)ys?";
 
         // when
-        Pattern result = Utils.safePatternCompile(pattern);
+        Pattern result = Utils.safePatternCompile(pattern, patternString -> null);
 
         // then
         assertThat(result.toString(), equalTo(pattern));
@@ -49,53 +49,10 @@ public class UtilsTest {
         String invalidPattern = "gr(a|eys?"; // missing closing ')'
 
         // when
-        Pattern result = Utils.safePatternCompile(invalidPattern);
+        Pattern result = Utils.safePatternCompile(invalidPattern, patternString -> Utils.MATCH_ANYTHING_PATTERN);
 
         // then
         assertThat(result.toString(), equalTo(".*?"));
-    }
-
-    @Test
-    public void shouldLogAndSendMessage() {
-        // given
-        Logger logger = TestHelper.setupLogger();
-        Player player = mock(Player.class);
-        String message = "Finished adding foo to the bar";
-
-        // when
-        Utils.logAndSendMessage(player, message);
-
-        // then
-        verify(logger).info(message);
-        verify(player).sendMessage(message);
-    }
-
-    @Test
-    public void shouldHandleNullAsCommandSender() {
-        // given
-        Logger logger = TestHelper.setupLogger();
-        String message = "Test test, test.";
-
-        // when
-        Utils.logAndSendMessage(null, message);
-
-        // then
-        verify(logger).info(message);
-    }
-
-    @Test
-    public void shouldNotSendToCommandSenderTwice() {
-        // given
-        Logger logger = TestHelper.setupLogger();
-        CommandSender sender = mock(ConsoleCommandSender.class);
-        String message = "Test test, test.";
-
-        // when
-        Utils.logAndSendMessage(sender, message);
-
-        // then
-        verify(logger).info(message);
-        verifyNoInteractions(sender);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -109,51 +66,6 @@ public class UtilsTest {
         assertThat(Utils.isCollectionEmpty(emptyList), equalTo(true));
         assertThat(Utils.isCollectionEmpty(nonEmptyColl), equalTo(false));
         assertThat(Utils.isCollectionEmpty(null), equalTo(true));
-    }
-
-    @Test
-    public void shouldLogAndSendWarning() {
-        // given
-        Logger logger = TestHelper.setupLogger();
-        String message = "Error while performing action";
-        CommandSender sender = mock(CommandSender.class);
-
-        // when
-        Utils.logAndSendWarning(sender, message);
-
-        // then
-        verify(logger).warning(message);
-        verify(sender).sendMessage(ChatColor.RED + message);
-    }
-
-    @Test
-    public void shouldLogWarningAndNotSendToConsoleSender() {
-        // given
-        Logger logger = TestHelper.setupLogger();
-        String message = "Error while performing action";
-        CommandSender sender = mock(ConsoleCommandSender.class);
-
-        // when
-        Utils.logAndSendWarning(sender, message);
-
-        // then
-        verify(logger).warning(message);
-        verifyNoInteractions(sender);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    public void shouldLogWarningAndHandleNullCommandSender() {
-        // given
-        Logger logger = TestHelper.setupLogger();
-        String message = "Error while performing action";
-        CommandSender sender = null;
-
-        // when
-        Utils.logAndSendWarning(sender, message);
-
-        // then
-        verify(logger).warning(message);
     }
 
     @Test
@@ -174,4 +86,5 @@ public class UtilsTest {
         assertThat(Utils.isEmailEmpty("my@example.org"), equalTo(false));
         assertThat(Utils.isEmailEmpty("hey"), equalTo(false));
     }
+
 }

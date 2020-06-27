@@ -56,7 +56,11 @@ public class ValidationService implements Reloadable {
     @PostConstruct
     @Override
     public void reload() {
-        passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
+        passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX),
+            patternString -> {
+                logger.warning("Failed to compile pattern '" + patternString + "' - defaulting to allowing everything");
+                return Utils.MATCH_ANYTHING_PATTERN;
+        });
         restrictedNames = settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)
             ? loadNameRestrictions(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
             : HashMultimap.create();

@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -229,7 +230,7 @@ public class SpawnLoader implements Reloadable {
      *
      * @return True upon success, false otherwise
      */
-    private boolean isValidSpawnPoint(Location location) {
+    private boolean isValidSpawnPoint(@NotNull Location location) {
         return location.getX() != 0 || location.getY() != 0 || location.getZ() != 0;
     }
 
@@ -241,7 +242,7 @@ public class SpawnLoader implements Reloadable {
      *
      * @return True upon success, false otherwise
      */
-    private boolean setLocation(String prefix, Location location) {
+    private boolean setLocation(@NotNull String prefix, Location location) {
         if (location != null && location.getWorld() != null) {
             authMeConfiguration.set(prefix + ".world", location.getWorld().getName());
             authMeConfiguration.set(prefix + ".x", location.getX());
@@ -271,7 +272,7 @@ public class SpawnLoader implements Reloadable {
      *
      * @return location of the given player if alive, spawn location if dead.
      */
-    public Location getPlayerLocationOrSpawn(Player player) {
+    public Location getPlayerLocationOrSpawn(@NotNull Player player) {
         if (player.isOnline() && player.isDead()) {
             return getSpawnLocation(player);
         }
@@ -286,7 +287,8 @@ public class SpawnLoader implements Reloadable {
      *
      * @return Location corresponding to the values in the path
      */
-    private static Location getLocationFromConfiguration(FileConfiguration configuration, String pathPrefix) {
+    private static Location getLocationFromConfiguration(@NotNull FileConfiguration configuration,
+                                                         @NotNull String pathPrefix) {
         if (containsAllSpawnFields(configuration, pathPrefix)) {
             String prefix = pathPrefix + ".";
             String worldName = Objects.requireNonNull(configuration.getString(prefix + "world"));
@@ -307,7 +309,7 @@ public class SpawnLoader implements Reloadable {
      *
      * @return Location corresponding to the values in the path
      */
-    private static Location getLocationFromCmiConfiguration(FileConfiguration configuration) {
+    private static Location getLocationFromCmiConfiguration(@NotNull FileConfiguration configuration) {
         final String pathPrefix = "Spawn.Main";
         if (isLocationCompleteInCmiConfig(configuration, pathPrefix)) {
             String prefix = pathPrefix + ".";
@@ -331,7 +333,8 @@ public class SpawnLoader implements Reloadable {
      *
      * @return True if all spawn fields are present, false otherwise
      */
-    private static boolean containsAllSpawnFields(FileConfiguration configuration, String pathPrefix) {
+    private static boolean containsAllSpawnFields(@NotNull FileConfiguration configuration,
+                                                  @NotNull String pathPrefix) {
         String[] fields = {"world", "x", "y", "z", "yaw", "pitch"};
         for (String field : fields) {
             if (!configuration.contains(pathPrefix + "." + field)) {
@@ -349,7 +352,8 @@ public class SpawnLoader implements Reloadable {
      *
      * @return True if all spawn fields are present, false otherwise
      */
-    private static boolean isLocationCompleteInCmiConfig(FileConfiguration cmiConfiguration, String pathPrefix) {
+    private static boolean isLocationCompleteInCmiConfig(@NotNull FileConfiguration cmiConfiguration,
+                                                         @NotNull String pathPrefix) {
         String[] fields = {"World", "X", "Y", "Z", "Yaw", "Pitch"};
         for (String field : fields) {
             if (!cmiConfiguration.contains(pathPrefix + "." + field)) {
@@ -367,7 +371,7 @@ public class SpawnLoader implements Reloadable {
      *
      * @return The float
      */
-    private static float getFloat(FileConfiguration configuration, String path) {
+    private static float getFloat(@NotNull FileConfiguration configuration, @NotNull String path) {
         Object value = configuration.get(path);
         // This behavior is consistent with FileConfiguration#getDouble
         return (value instanceof Number) ? ((Number) value).floatValue() : 0;

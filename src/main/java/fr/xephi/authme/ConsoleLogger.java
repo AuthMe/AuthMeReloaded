@@ -5,6 +5,9 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ExceptionUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
@@ -109,11 +112,7 @@ public final class ConsoleLogger {
      * @param message The message to log
      */
     public void warning(@NotNull String message) {
-        if (logger != null) {
-            logger.warning(message);
-        } else {
-            System.err.println("[WARN] " + message);
-        }
+        logger.warning(message);
         writeLog("[WARN] " + message);
     }
 
@@ -135,11 +134,7 @@ public final class ConsoleLogger {
      * @param message The message to log
      */
     public void info(@NotNull String message) {
-        if (logger != null) {
-            logger.info(message);
-        } else {
-            System.out.println("[INFO] " + message);
-        }
+        logger.info(message);
         writeLog("[INFO] " + message);
     }
 
@@ -153,12 +148,40 @@ public final class ConsoleLogger {
      */
     public void fine(@NotNull String message) {
         if (logLevel.includes(LogLevel.FINE)) {
-            if (logger != null) {
-                logger.info(message);
-            } else {
-                System.err.println("[FINE] " + message);
-            }
+            logger.info(message);
             writeLog("[FINE] " + message);
+        }
+    }
+
+    /**
+     * Sends a message to the given sender (null safe), and logs the message to the console.
+     * This method is aware that the command sender might be the console sender and avoids
+     * displaying the message twice in this case.
+     *
+     * @param sender the sender to inform
+     * @param message the message to log and send
+     */
+    public void logAndSendMessage(CommandSender sender, @NotNull String message) {
+        info(message);
+        // Make sure sender is not console user, which will see the message from ConsoleLogger already
+        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
+            sender.sendMessage(message);
+        }
+    }
+
+    /**
+     * Sends a warning to the given sender (null safe), and logs the warning to the console.
+     * This method is aware that the command sender might be the console sender and avoids
+     * displaying the message twice in this case.
+     *
+     * @param sender the sender to inform
+     * @param message the warning to log and send
+     */
+    public void logAndSendWarning(CommandSender sender, @NotNull String message) {
+        warning(message);
+        // Make sure sender is not console user, which will see the message from ConsoleLogger already
+        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
+            sender.sendMessage(ChatColor.RED + message);
         }
     }
 
@@ -232,11 +255,7 @@ public final class ConsoleLogger {
 
     private void logAndWriteWithDebugPrefix(@NotNull String message) {
         String debugMessage = "[DEBUG] " + message;
-        if (logger != null) {
-            logger.info(debugMessage);
-        } else {
-            System.err.println(debugMessage);
-        }
+        logger.info(debugMessage);
         writeLog(debugMessage);
     }
 

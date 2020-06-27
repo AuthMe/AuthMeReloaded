@@ -88,7 +88,7 @@ public class RakamakConverter implements Converter {
                 database.saveAuth(auth);
                 database.updateSession(auth);
             }
-            Utils.logAndSendMessage(sender, "Rakamak database has been imported successfully");
+            logger.logAndSendMessage(sender, "Rakamak database has been imported successfully");
         } catch (IOException ex) {
             logger.logException("Can't open the rakamak database file! Does it exist?", ex);
         }

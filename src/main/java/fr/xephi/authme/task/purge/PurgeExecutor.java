@@ -11,6 +11,7 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -53,7 +54,7 @@ public class PurgeExecutor {
      * @param players the players to purge
      * @param names   names to purge
      */
-    public void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
+    public void executePurge(@NotNull Collection<OfflinePlayer> players, @NotNull Collection<String> names) {
         // Purge other data
         purgeFromAuthMe(names);
         purgeEssentials(players);
@@ -68,7 +69,7 @@ public class PurgeExecutor {
      *
      * @param cleared the players whose data should be cleared
      */
-    synchronized void purgeAntiXray(Collection<String> cleared) {
+    synchronized void purgeAntiXray(@NotNull Collection<String> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE)) {
             return;
         }
@@ -96,7 +97,7 @@ public class PurgeExecutor {
      *
      * @param names the name of the accounts to delete
      */
-    synchronized void purgeFromAuthMe(Collection<String> names) {
+    synchronized void purgeFromAuthMe(@NotNull Collection<String> names) {
         dataSource.purgeRecords(names);
         //TODO ljacqu 20160717: We shouldn't output namedBanned.size() but the actual total that was deleted
         logger.info(ChatColor.GOLD + "Deleted " + names.size() + " user accounts");
@@ -107,7 +108,7 @@ public class PurgeExecutor {
      *
      * @param cleared the players whose data should be cleared
      */
-    synchronized void purgeLimitedCreative(Collection<String> cleared) {
+    synchronized void purgeLimitedCreative(@NotNull Collection<String> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES)) {
             return;
         }
@@ -152,7 +153,7 @@ public class PurgeExecutor {
      *
      * @param cleared list of players to clear
      */
-    synchronized void purgeDat(Collection<OfflinePlayer> cleared) {
+    synchronized void purgeDat(@NotNull Collection<OfflinePlayer> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT)) {
             return;
         }
@@ -176,7 +177,7 @@ public class PurgeExecutor {
      *
      * @param cleared list of players to clear
      */
-    synchronized void purgeEssentials(Collection<OfflinePlayer> cleared) {
+    synchronized void purgeEssentials(@NotNull Collection<OfflinePlayer> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)) {
             return;
         }
@@ -208,7 +209,7 @@ public class PurgeExecutor {
      *
      * @param cleared the players to remove data for
      */
-    synchronized void purgePermissions(Collection<OfflinePlayer> cleared) {
+    synchronized void purgePermissions(@NotNull Collection<OfflinePlayer> cleared) {
         if (!settings.getProperty(PurgeSettings.REMOVE_PERMISSIONS)) {
             return;
         }
@@ -223,4 +224,5 @@ public class PurgeExecutor {
 
         logger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }
+
 }

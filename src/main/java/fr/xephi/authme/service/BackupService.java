@@ -19,9 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static fr.xephi.authme.util.Utils.logAndSendMessage;
-import static fr.xephi.authme.util.Utils.logAndSendWarning;
-
 /**
  * Performs a backup of the data source.
  */
@@ -66,7 +63,7 @@ public class BackupService {
         if (!settings.getProperty(BackupSettings.ENABLED)) {
             // Print a warning if the backup was requested via command or by another plugin
             if (cause == BackupCause.COMMAND || cause == BackupCause.OTHER) {
-                logAndSendWarning(sender,
+                logger.logAndSendWarning(sender,
                     "Can't perform a backup: disabled in configuration. Cause of the backup: " + cause.name());
             }
             return;
@@ -78,10 +75,10 @@ public class BackupService {
 
         // Do backup and check return value!
         if (doBackup()) {
-            logAndSendMessage(sender,
+            logger.logAndSendMessage(sender,
                 "A backup has been performed successfully. Cause of the backup: " + cause.name());
         } else {
-            logAndSendWarning(sender, "Error while performing a backup! Cause of the backup: " + cause.name());
+            logger.logAndSendWarning(sender, "Error while performing a backup! Cause of the backup: " + cause.name());
         }
     }
 

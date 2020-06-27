@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,11 +22,16 @@ class PurgeTask extends BukkitRunnable {
     private static final int INTERVAL_CHECK = 5;
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(PurgeTask.class);
+
+    @NotNull
     private final PurgeService purgeService;
+    @NotNull
     private final PermissionsManager permissionsManager;
     private final UUID sender;
+    @NotNull
     private final Set<String> toPurge;
 
+    @NotNull
     private final OfflinePlayer[] offlinePlayers;
     private final int totalPurgeCount;
 
@@ -40,8 +46,8 @@ class PurgeTask extends BukkitRunnable {
      * @param toPurge lowercase names to purge
      * @param offlinePlayers offline players to map to the names
      */
-    PurgeTask(PurgeService service, PermissionsManager permissionsManager, CommandSender sender,
-              Set<String> toPurge, OfflinePlayer[] offlinePlayers) {
+    PurgeTask(@NotNull PurgeService service, @NotNull PermissionsManager permissionsManager, CommandSender sender,
+              @NotNull Set<String> toPurge, OfflinePlayer[] offlinePlayers) {
         this.purgeService = service;
         this.permissionsManager = permissionsManager;
 
@@ -116,7 +122,7 @@ class PurgeTask extends BukkitRunnable {
         purgeService.setPurging(false);
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(@NotNull String message) {
         if (sender == null) {
             Bukkit.getConsoleSender().sendMessage(message);
         } else {
@@ -126,4 +132,5 @@ class PurgeTask extends BukkitRunnable {
             }
         }
     }
+
 }

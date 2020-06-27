@@ -52,7 +52,7 @@ public class DrawDependency implements ToolTask {
 
     private boolean mapToSupertype;
     // Map with the graph's nodes: value is one of the key's dependencies
-    private Multimap<Class<?>, String> foundDependencies = HashMultimap.create();
+    private final Multimap<Class<?>, String> foundDependencies = HashMultimap.create();
 
     @Override
     public String getTaskName() {
@@ -75,7 +75,7 @@ public class DrawDependency implements ToolTask {
         System.out.println("Specify the number of times to do this: [0=keep all]");
         int stripVerticesCount;
         try {
-            stripVerticesCount = Integer.valueOf(scanner.nextLine());
+            stripVerticesCount = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
             stripVerticesCount = 0;
         }
@@ -87,9 +87,9 @@ public class DrawDependency implements ToolTask {
 
         // Create dot file content
         final String pattern = "\t\"%s\" -> \"%s\";";
-        String dotFile = "";
+        StringBuilder dotFile = new StringBuilder();
         for (Map.Entry<Class<?>, String> entry : foundDependencies.entries()) {
-            dotFile += "\n" + String.format(pattern, entry.getValue(), entry.getKey().getSimpleName());
+            dotFile.append("\n").append(String.format(pattern, entry.getValue(), entry.getKey().getSimpleName()));
         }
 
         // Write dot file

@@ -56,7 +56,7 @@ public class ReloadCommand implements ExecutableCommand {
 
             // We do not change database type for consistency issues, but we'll output a note in the logs
             if (!settings.getProperty(DatabaseSettings.BACKEND).equals(dataSource.getType())) {
-                Utils.logAndSendMessage(sender, "Note: cannot change database type during /authme reload");
+                logger.logAndSendMessage(sender, "Note: cannot change database type during /authme reload");
             }
             performReloadOnServices();
             commonService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
@@ -69,9 +69,10 @@ public class ReloadCommand implements ExecutableCommand {
 
     private void performReloadOnServices() {
         reloadableStore.retrieveAllOfType()
-            .forEach(r -> r.reload());
+            .forEach(Reloadable::reload);
 
         settingsDependentStore.retrieveAllOfType()
             .forEach(s -> s.reload(settings));
     }
+
 }

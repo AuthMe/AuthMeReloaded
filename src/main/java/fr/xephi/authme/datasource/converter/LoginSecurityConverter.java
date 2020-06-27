@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static fr.xephi.authme.util.Utils.logAndSendMessage;
-
 /**
  * Converts data from LoginSecurity to AuthMe.
  */
@@ -104,9 +102,9 @@ public class LoginSecurityConverter implements Converter {
             }
         }
 
-        logAndSendMessage(sender, "Migrated " + successfulSaves + " accounts successfully from LoginSecurity");
+        logger.logAndSendMessage(sender, "Migrated " + successfulSaves + " accounts successfully from LoginSecurity");
         if (!skippedPlayers.isEmpty()) {
-            logAndSendMessage(sender, "Skipped conversion for players which were already in AuthMe: "
+            logger.logAndSendMessage(sender, "Skipped conversion for players which were already in AuthMe: "
                 + String.join(", ", skippedPlayers));
         }
     }
@@ -205,4 +203,5 @@ public class LoginSecurityConverter implements Converter {
             return null;
         }
     }
+
 }

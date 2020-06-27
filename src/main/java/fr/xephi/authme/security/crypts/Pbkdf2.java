@@ -9,6 +9,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.Utils;
 
 import javax.inject.Inject;
 
@@ -41,10 +42,8 @@ public class Pbkdf2 extends HexSaltedMethod {
             return false;
         }
 
-        int iterations;
-        try {
-            iterations = Integer.parseInt(line[1]);
-        } catch (NumberFormatException e) {
+        Integer iterations = Utils.tryInteger(line[1]);
+        if (iterations == null) {
             logger.warning("Cannot read number of rounds for Pbkdf2: '" + line[1] + "'");
             return false;
         }

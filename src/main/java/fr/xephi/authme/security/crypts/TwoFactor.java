@@ -7,6 +7,7 @@ import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
+import fr.xephi.authme.util.Utils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -88,10 +89,8 @@ public class TwoFactor extends UnsaltedMethod {
 
     private boolean checkPassword(String secretKey, String userInput)
             throws NoSuchAlgorithmException, InvalidKeyException {
-        int code;
-        try {
-            code = Integer.parseInt(userInput);
-        } catch (NumberFormatException e) {
+        Integer code = Utils.tryInteger(userInput);
+        if (code == null) {
             //code is not an integer
             return false;
         }

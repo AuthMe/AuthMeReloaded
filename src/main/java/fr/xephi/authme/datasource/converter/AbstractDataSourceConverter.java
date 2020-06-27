@@ -10,8 +10,6 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.xephi.authme.util.Utils.logAndSendMessage;
-
 /**
  * Converts from one AuthMe data source type to another.
  *
@@ -53,7 +51,7 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
         try {
             source = getSource();
         } catch (Exception e) {
-            logAndSendMessage(sender, "The data source to convert from could not be initialized");
+            logger.logAndSendMessage(sender, "The data source to convert from could not be initialized");
             logger.logException("Could not initialize source:", e);
             return;
         }
@@ -70,10 +68,10 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
         }
 
         if (!skippedPlayers.isEmpty()) {
-            logAndSendMessage(sender, "Skipped conversion for players which were already in "
+            logger.logAndSendMessage(sender, "Skipped conversion for players which were already in "
                 + destinationType + ": " + String.join(", ", skippedPlayers));
         }
-        logAndSendMessage(sender, "Database successfully converted from " + source.getType()
+        logger.logAndSendMessage(sender, "Database successfully converted from " + source.getType()
             + " to " + destinationType);
     }
 
@@ -82,4 +80,5 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
      * @throws Exception during initialization of source
      */
     protected abstract S getSource() throws Exception;
+
 }
