@@ -19,13 +19,13 @@ common:
 # Set the translation text to empty text to disable the section, e.g. to hide alternatives:
 #   alternatives: ''
 section:
-    command: 'comanda'
-    description: 'descriere scurta'
-    detailedDescription: 'descriere detaliata'
-    arguments: 'argumente'
-    permissions: 'permisiuni'
-    alternatives: 'alternative'
-    children: 'comenzi'
+    command: 'Comanda'
+    description: 'Descriere scurta'
+    detailedDescription: 'Descriere detaliata'
+    arguments: 'Argumente'
+    permissions: 'Permisiuni'
+    alternatives: 'Alternative'
+    children: 'Comenzi'
 
 # -------------------------------------------------------
 # You can translate the data for all commands using the below pattern.
