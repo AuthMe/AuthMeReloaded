@@ -45,9 +45,9 @@ class SqLiteMigrater {
      * @return true if a migration is necessary, false otherwise
      */
     static boolean isMigrationRequired(DatabaseMetaData metaData, String tableName, Columns col) throws SQLException {
-        return SqlDataSourceUtils.isNotNullColumn(metaData, tableName, col.LAST_IP)
-            && SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, col.LAST_IP) == null
-            && SqlDataSourceUtils.getColumnSize(metaData, tableName, col.TOTP_KEY) != 32;
+        return SqlDataSourceUtils.getColumnSize(metaData, tableName, col.TOTP_KEY) != 32
+            || (SqlDataSourceUtils.isNotNullColumn(metaData, tableName, col.LAST_IP)
+                && SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, col.LAST_IP) == null);
     }
 
     /**
