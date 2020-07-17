@@ -243,9 +243,9 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             if (isColumnMissing(md, col.TOTP_KEY)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(32);");
-            } else if (isColumnSizeIncorrect(md, col.TOTP_KEY, 32)) {
+            } else if (SqlDataSourceUtils.getColumnSize(md, tableName, col.TOTP_KEY) != 32) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ALTER COLUMN " + col.TOTP_KEY + " VARCHAR(32);");
+                    + " ALTER COLUMN " + col.TOTP_KEY + " TYPE VARCHAR(32);");
             }
 
             if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {
@@ -259,16 +259,6 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
         try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName.toLowerCase())) {
             return !rs.next();
-        }
-    }
-
-    private boolean isColumnSizeIncorrect(DatabaseMetaData metaData, String columnName, int size) throws SQLException {
-        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
-            if (!rs.next()) {
-                throw new RuntimeException("Column " + columnName + " doesn't exist!");
-            }
-            int currentSize = rs.getInt("COLUMN_SIZE");
-            return size != currentSize;
         }
     }
 
