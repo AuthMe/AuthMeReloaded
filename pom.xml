@@ -891,7 +891,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>3.4.2</version>
+            <version>3.4.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
