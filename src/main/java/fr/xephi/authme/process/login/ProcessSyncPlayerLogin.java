@@ -13,7 +13,8 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.proxy.ProxyMessenger;
+import fr.xephi.authme.service.proxy.message.ProxyMessage;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -28,7 +29,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     @Inject
-    private BungeeSender bungeeSender;
+    private ProxyMessenger proxyMessenger;
 
     @Inject
     private LimboService limboService;
@@ -71,8 +72,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     /**
      * Performs operations in sync mode for a player that has just logged in.
      *
-     * @param player the player that was logged in
-     * @param isFirstLogin true if this is the first time the player logged in
+     * @param player          the player that was logged in
+     * @param isFirstLogin    true if this is the first time the player logged in
      * @param authsWithSameIp registered names with the same IP address as the player's
      */
     public void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
@@ -110,9 +111,15 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
         commandManager.runCommandsOnLogin(player, authsWithSameIp);
 
-        if (!permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_BUNGEE_SEND)) {
+        if (!permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_BUNGEE_SEND)
+            && proxyMessenger.shouldSendConnectMessage()
+        ) {
             // Send Bungee stuff. The service will check if it is enabled or not.
-            bungeeSender.connectPlayerOnLogin(player);
+            proxyMessenger.getEncoder().sendMessage(
+                ProxyMessage.CONNECT,
+                player.getName(),
+                proxyMessenger.getConnectServer()
+            );
         }
     }
 }

@@ -61,7 +61,7 @@ public class SettingsWarner {
 
         // Warn if spigot.yml has settings.bungeecord set to true but config.yml has Hooks.bungeecord set to false
         if (isTrue(bukkitService.isBungeeCordConfiguredForSpigot())
-            && !settings.getProperty(HooksSettings.BUNGEECORD)) {
+            && !settings.getProperty(HooksSettings.PROXY)) {
             logger.warning("Note: Hooks.bungeecord is set to false but your server appears to be running in"
                 + " bungeecord mode (see your spigot.yml). In order to allow the datasource caching and the"
                 + " AuthMeBungee add-on to work properly you have to enable this option!");

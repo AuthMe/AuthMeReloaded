@@ -7,15 +7,13 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.UnregisterByAdminEvent;
 import fr.xephi.authme.events.UnregisterByPlayerEvent;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -29,7 +27,7 @@ import javax.inject.Inject;
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
 public class AsynchronousUnregister implements AsynchronousProcess {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousUnregister.class);
 
     @Inject
@@ -56,9 +54,6 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     @Inject
     private CommandManager commandManager;
 
-    @Inject
-    private BungeeSender bungeeSender;
-
     AsynchronousUnregister() {
     }
 
@@ -66,7 +61,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * Processes a player's request to unregister himself. Unregisters the player after
      * successful password check.
      *
-     * @param player the player
+     * @param player   the player
      * @param password the input password to check before unregister
      */
     public void unregister(Player player, String password) {
@@ -89,8 +84,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * Unregisters a player as administrator or console.
      *
      * @param initiator the initiator of this process (nullable)
-     * @param name the name of the player
-     * @param player the according Player object (nullable)
+     * @param name      the name of the player
+     * @param player    the according Player object (nullable)
      */
     // We need to have the name and the player separate because Player might be null in this case:
     // we might have some player in the database that has never been online on the server
@@ -113,12 +108,11 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     /**
      * Process the post unregister actions. Makes the user status consistent.
      *
-     * @param name the name of the player
+     * @param name   the name of the player
      * @param player the according Player object (nullable)
      */
     private void performPostUnregisterActions(String name, Player player) {
         playerCache.removePlayer(name);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
 
         if (player == null || !player.isOnline()) {
             return;

@@ -12,8 +12,8 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
+import fr.xephi.authme.service.proxy.ProxyMessenger;
+import fr.xephi.authme.service.proxy.message.ProxyMessage;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
@@ -41,7 +41,7 @@ public class AsyncRegister implements AsynchronousProcess {
     @Inject
     private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
     @Inject
-    private BungeeSender bungeeSender;
+    private ProxyMessenger proxyMessenger;
 
     AsyncRegister() {
     }
@@ -67,7 +67,6 @@ public class AsyncRegister implements AsynchronousProcess {
      *
      * @param variant the registration type variant.
      * @param player  the player which is trying to register.
-     *
      * @return true if the checks are successful and the event hasn't marked the action as denied, false otherwise.
      */
     private boolean preRegisterCheck(RegistrationMethod<?> variant, Player player) {
@@ -104,7 +103,7 @@ public class AsyncRegister implements AsynchronousProcess {
         PlayerAuth auth = executor.buildPlayerAuth(parameters);
         if (database.saveAuth(auth)) {
             executor.executePostPersistAction(parameters);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REGISTER, parameters.getPlayerName());
+            proxyMessenger.getEncoder().sendMessage(ProxyMessage.LOGGED_IN, parameters.getPlayerName());
         } else {
             service.send(parameters.getPlayer(), MessageKey.ERROR);
         }
@@ -114,7 +113,6 @@ public class AsyncRegister implements AsynchronousProcess {
      * Checks whether the registration threshold has been exceeded for the given player's IP address.
      *
      * @param player the player to check
-     *
      * @return true if registration may take place, false otherwise (IP check failed)
      */
     private boolean isPlayerIpAllowedToRegister(Player player) {

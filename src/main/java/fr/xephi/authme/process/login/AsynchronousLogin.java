@@ -12,9 +12,9 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.events.FailedLoginEvent;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -24,8 +24,8 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
+import fr.xephi.authme.service.proxy.ProxyMessenger;
+import fr.xephi.authme.service.proxy.message.ProxyMessage;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -45,7 +45,7 @@ import java.util.List;
  * Asynchronous task for a player login.
  */
 public class AsynchronousLogin implements AsynchronousProcess {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousLogin.class);
 
     @Inject
@@ -82,7 +82,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     private SessionService sessionService;
 
     @Inject
-    private BungeeSender bungeeSender;
+    private ProxyMessenger proxyMessenger;
 
     AsynchronousLogin() {
     }
@@ -90,7 +90,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     /**
      * Processes a player's login request.
      *
-     * @param player the player to log in
+     * @param player   the player to log in
      * @param password the password to log in with
      */
     public void login(Player player, String password) {
@@ -124,7 +124,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *
      * @param player the player to check
      * @return the PlayerAuth object, or {@code null} if the player doesn't exist or may not log in
-     *         (e.g. because he is already logged in)
+     * (e.g. because he is already logged in)
      */
     private PlayerAuth getPlayerAuth(Player player) {
         final String name = player.getName().toLowerCase();
@@ -165,11 +165,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
     /**
      * Checks various conditions for regular player login (not used in force login).
      *
-     * @param player the player requesting to log in
-     * @param auth the PlayerAuth object of the player
+     * @param player   the player requesting to log in
+     * @param auth     the PlayerAuth object of the player
      * @param password the password supplied by the player
      * @return true if the password matches and all other conditions are met (e.g. no captcha required),
-     *         false otherwise
+     * false otherwise
      */
     private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password) {
         final String name = player.getName().toLowerCase();
@@ -198,8 +198,8 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * Handles a login with wrong password.
      *
      * @param player the player who attempted to log in
-     * @param auth the PlayerAuth object of the player
-     * @param ip the ip address of the player
+     * @param auth   the PlayerAuth object of the player
+     * @param ip     the ip address of the player
      */
     private void handleWrongPassword(Player player, PlayerAuth auth, String ip) {
         logger.fine(player.getName() + " used the wrong password");
@@ -228,7 +228,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * Sets the player to the logged in state.
      *
      * @param player the player to log in
-     * @param auth the associated PlayerAuth object
+     * @param auth   the associated PlayerAuth object
      */
     public void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
@@ -240,7 +240,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
             auth.setLastLogin(System.currentTimeMillis());
             auth.setLastIp(ip);
             dataSource.updateSession(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
 
             // Successful login, so reset the captcha & temp ban count
             final String name = player.getName();
@@ -265,7 +264,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
             sessionService.grantSession(name);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
+            proxyMessenger.getEncoder().sendMessage(ProxyMessage.LOGGED_IN, player.getName());
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end
@@ -280,7 +279,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
     /**
      * Sends info about the other accounts owned by the given player to the configured users.
      *
-     * @param auths the names of the accounts also owned by the player
+     * @param auths  the names of the accounts also owned by the player
      * @param player the player
      */
     private void displayOtherAccounts(List<String> auths, Player player) {
@@ -321,7 +320,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * for the given player and IP address.
      *
      * @param player the player to process
-     * @param ip the associated ip address
+     * @param ip     the associated ip address
      * @return true if the threshold has been reached, false otherwise
      */
     @VisibleForTesting

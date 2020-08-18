@@ -3,12 +3,13 @@ package fr.xephi.authme.process.register;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.events.RegisterEvent;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.proxy.ProxyMessenger;
+import fr.xephi.authme.service.proxy.message.ProxyMessage;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -25,7 +26,7 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(ProcessSyncPasswordRegister.class);
 
     @Inject
-    private BungeeSender bungeeSender;
+    private ProxyMessenger proxyMessenger;
 
     @Inject
     private CommonService service;
@@ -86,6 +87,12 @@ public class ProcessSyncPasswordRegister implements SynchronousProcess {
         }
 
         // Send Bungee stuff. The service will check if it is enabled or not.
-        bungeeSender.connectPlayerOnLogin(player);
+        if (proxyMessenger.shouldSendConnectMessage()) {
+            proxyMessenger.getEncoder().sendMessage(
+                ProxyMessage.CONNECT,
+                player.getName(),
+                proxyMessenger.getConnectServer()
+            );
+        }
     }
 }

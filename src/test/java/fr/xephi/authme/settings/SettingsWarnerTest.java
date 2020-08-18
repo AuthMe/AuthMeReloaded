@@ -52,7 +52,7 @@ public class SettingsWarnerTest {
         given(settings.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
         given(settings.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(-5);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
-        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(false);
+        given(settings.getProperty(HooksSettings.PROXY)).willReturn(false);
         given(bukkitService.isBungeeCordConfiguredForSpigot()).willReturn(Optional.of(true));
 
         // when

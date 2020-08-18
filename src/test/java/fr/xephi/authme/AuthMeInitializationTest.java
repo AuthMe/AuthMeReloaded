@@ -15,8 +15,7 @@ import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.bungeecord.BungeeReceiver;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.proxy.ProxyMessenger;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.Bukkit;
@@ -35,16 +34,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -117,8 +113,7 @@ public class AuthMeInitializationTest {
         // Take a few samples and ensure that they are not null
         assertThat(injector.getIfAvailable(AuthMeApi.class), not(nullValue()));
         assertThat(injector.getIfAvailable(BlockListener.class), not(nullValue()));
-        assertThat(injector.getIfAvailable(BungeeReceiver.class), not(nullValue()));
-        assertThat(injector.getIfAvailable(BungeeSender.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(ProxyMessenger.class), not(nullValue()));
         assertThat(injector.getIfAvailable(CommandHandler.class), not(nullValue()));
         assertThat(injector.getIfAvailable(Management.class), not(nullValue()));
         assertThat(injector.getIfAvailable(PasswordSecurity.class), not(nullValue()));

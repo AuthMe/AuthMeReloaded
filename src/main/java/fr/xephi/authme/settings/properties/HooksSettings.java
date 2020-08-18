@@ -15,12 +15,15 @@ public final class HooksSettings implements SettingsHolder {
     public static final Property<Boolean> MULTIVERSE =
         newProperty("Hooks.multiverse", true);
 
-    @Comment("Do we need to hook with BungeeCord?")
-    public static final Property<Boolean> BUNGEECORD =
+    @Comment({
+        "Do we need to hook with proxy?",
+        "This isn't BungeeCord only, the name of the setting is a leftover from previous releases."
+    })
+    public static final Property<Boolean> PROXY =
         newProperty("Hooks.bungeecord", false);
 
-    @Comment("Send player to this BungeeCord server after register/login")
-    public static final Property<String> BUNGEECORD_SERVER =
+    @Comment("Send player to this proxy server after register/login")
+    public static final Property<String> PROXY_SERVER =
         newProperty("Hooks.sendPlayerTo", "");
 
     @Comment("Do we need to disable Essentials SocialSpy on join?")

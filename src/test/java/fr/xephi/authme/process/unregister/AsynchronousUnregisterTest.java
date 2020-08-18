@@ -12,8 +12,6 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -67,8 +65,6 @@ public class AsynchronousUnregisterTest {
     private TeleportationService teleportationService;
     @Mock
     private CommandManager commandManager;
-    @Mock
-    private BungeeSender bungeeSender;
 
     @BeforeClass
     public static void initLogger() {
@@ -94,7 +90,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(service).send(player, MessageKey.WRONG_PASSWORD);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
-        verifyNoInteractions(dataSource, limboService, teleportationService, bukkitService, bungeeSender);
+        verifyNoInteractions(dataSource, limboService, teleportationService, bukkitService);
         verify(player, only()).getName();
     }
 
@@ -128,7 +124,6 @@ public class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(player).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 21 * 20, 2));
     }
 
@@ -161,7 +156,6 @@ public class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(player, never()).addPotionEffect(any(PotionEffect.class));
     }
 
@@ -191,7 +185,6 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyNoInteractions(teleportationService, limboService);
         verifyCalledUnregisterEventFor(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(commandManager).runCommandsOnUnregister(player);
     }
 
@@ -216,7 +209,7 @@ public class AsynchronousUnregisterTest {
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
         verify(service).send(player, MessageKey.ERROR);
-        verifyNoInteractions(teleportationService, bukkitService, bungeeSender);
+        verifyNoInteractions(teleportationService, bukkitService);
     }
 
     @Test
@@ -243,7 +236,6 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyNoInteractions(teleportationService);
         verifyCalledUnregisterEventFor(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     // Initiator known and Player object available
@@ -270,7 +262,6 @@ public class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     @Test
@@ -287,7 +278,6 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyNoInteractions(teleportationService);
         verifyCalledUnregisterEventFor(null);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     @Test
@@ -303,7 +293,7 @@ public class AsynchronousUnregisterTest {
         // then
         verify(dataSource).removeAuth(name);
         verify(service).send(initiator, MessageKey.ERROR);
-        verifyNoInteractions(playerCache, teleportationService, bukkitService, bungeeSender);
+        verifyNoInteractions(playerCache, teleportationService, bukkitService);
     }
 
     @SuppressWarnings("unchecked")

@@ -9,8 +9,6 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 
@@ -39,9 +37,6 @@ public class AsynchronousLogout implements AsynchronousProcess {
     @Inject
     private SessionService sessionService;
 
-    @Inject
-    private BungeeSender bungeeSender;
-
     AsynchronousLogout() {
     }
 
@@ -59,18 +54,15 @@ public class AsynchronousLogout implements AsynchronousProcess {
 
         PlayerAuth auth = playerCache.getAuth(name);
         database.updateSession(auth);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, name);
         if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
             auth.setQuitLocation(player.getLocation());
             database.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
 
         playerCache.removePlayer(name);
         codeManager.unverify(name);
         database.setUnlogged(name);
         sessionService.revokeSession(name);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGOUT, name);
         syncProcessManager.processSyncPlayerLogout(player);
     }
 }

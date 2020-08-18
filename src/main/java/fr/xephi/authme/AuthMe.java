@@ -24,7 +24,7 @@ import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
-import fr.xephi.authme.service.bungeecord.BungeeReceiver;
+import fr.xephi.authme.service.proxy.ProxyMessenger;
 import fr.xephi.authme.service.yaml.YamlParseException;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsWarner;
@@ -248,7 +248,7 @@ public class AuthMe extends JavaPlugin {
         backupService = injector.getSingleton(BackupService.class);
 
         // Trigger instantiation (class not used elsewhere)
-        injector.getSingleton(BungeeReceiver.class);
+        injector.getSingleton(ProxyMessenger.class);
 
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(AuthMeApi.class);

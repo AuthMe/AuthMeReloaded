@@ -8,7 +8,6 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,9 +48,6 @@ public class AsyncChangeEmailTest {
 
     @Mock
     private ValidationService validationService;
-
-    @Mock
-    private BungeeSender bungeeSender;
 
     @Mock
     private BukkitService bukkitService;

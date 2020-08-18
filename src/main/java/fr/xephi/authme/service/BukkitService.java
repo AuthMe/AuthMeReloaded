@@ -301,18 +301,6 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Send the specified message to bungeecord using the first available player connection.
-     *
-     * @param bytes the message
-     */
-    public void sendBungeeMessage(byte[] bytes) {
-        Player player = Iterables.getFirst(getOnlinePlayers(), null);
-        if (player != null) {
-            player.sendPluginMessage(authMe, "BungeeCord", bytes);
-        }
-    }
-
-    /**
      * Adds a ban to the this list. If a previous ban exists, this will
      * update the previous entry.
      *
@@ -336,6 +324,7 @@ public class BukkitService implements SettingsDependent {
      */
     public Optional<Boolean> isBungeeCordConfiguredForSpigot() {
         try {
+            // todo: check for velocity
             YamlConfiguration spigotConfig = Bukkit.spigot().getConfig();
             return Optional.of(spigotConfig.getBoolean("settings.bungeecord"));
         } catch (NoSuchMethodError e) {

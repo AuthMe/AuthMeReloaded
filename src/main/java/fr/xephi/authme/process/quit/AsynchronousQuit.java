@@ -10,8 +10,6 @@ import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -53,9 +51,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private SessionService sessionService;
 
-    @Inject
-    private BungeeSender bungeeSender;
-
     AsynchronousQuit() {
     }
 
@@ -88,7 +83,6 @@ public class AsynchronousQuit implements AsynchronousProcess {
                 .lastLogin(System.currentTimeMillis())
                 .build();
             database.updateSession(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip
