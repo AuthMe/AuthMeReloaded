@@ -7,6 +7,8 @@ import fr.xephi.authme.permission.PermissionsSystemType;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.context.ContextSetFactory;
+import net.luckperms.api.context.ImmutableContextSet;
 import net.luckperms.api.model.data.DataMutateResult;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
@@ -15,10 +17,14 @@ import net.luckperms.api.node.types.InheritanceNode;
 import net.luckperms.api.query.QueryMode;
 import net.luckperms.api.query.QueryOptions;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -168,10 +174,8 @@ public class LuckPermsHandler implements PermissionHandler {
             return Collections.emptyList();
         }
 
-        return user.getDistinctNodes().stream()
-            .filter(node -> node instanceof InheritanceNode)
-            .map(node -> (InheritanceNode) node)
-            .map(node -> luckPerms.getGroupManager().getGroup(node.getGroupName()))
+        Collection<Group> groups = user.getInheritedGroups(user.getQueryOptions());
+        return groups.stream()
             .filter(Objects::nonNull)
             .sorted((o1, o2) -> {
                 if (o1.getName().equals(user.getPrimaryGroup()) || o2.getName().equals(user.getPrimaryGroup())) {
