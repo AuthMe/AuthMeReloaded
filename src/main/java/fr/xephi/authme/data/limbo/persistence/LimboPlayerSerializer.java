@@ -52,7 +52,7 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
         List<JsonObject> groups = limboPlayer.getGroups().stream().map(g -> {
             JsonObject jsonGroup = new JsonObject();
             jsonGroup.addProperty("groupName", g.getGroupName());
-            if(g.getContextMap() != null) {
+            if (g.getContextMap() != null) {
                 jsonGroup.addProperty("contextMap", GSON.toJson(g.getContextMap()));
             }
             return jsonGroup;
