@@ -9,7 +9,6 @@ import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 

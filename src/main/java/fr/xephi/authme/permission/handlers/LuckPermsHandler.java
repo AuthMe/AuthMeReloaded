@@ -213,11 +213,13 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     private int sortGroups(User user, LuckPermGroup o1, LuckPermGroup o2) {
-        if (o1.getGroup().getName().equals(user.getPrimaryGroup()) || o2.getGroup().getName().equals(user.getPrimaryGroup())) {
-            return o1.getGroup().getName().equals(user.getPrimaryGroup()) ? 1 : -1;
+        Group group1 = o1.getGroup();
+        Group group2 = o2.getGroup();
+        if (group1.getName().equals(user.getPrimaryGroup()) || group2.getName().equals(user.getPrimaryGroup())) {
+            return group1.getName().equals(user.getPrimaryGroup()) ? 1 : -1;
         }
 
-        int i = Integer.compare(o2.getGroup().getWeight().orElse(0), o1.getGroup().getWeight().orElse(0));
-        return i != 0 ? i : o1.getGroup().getName().compareToIgnoreCase(o2.getGroup().getName());
+        int i = Integer.compare(group2.getWeight().orElse(0), group1.getWeight().orElse(0));
+        return i != 0 ? i : group1.getName().compareToIgnoreCase(group2.getName());
     }
 }

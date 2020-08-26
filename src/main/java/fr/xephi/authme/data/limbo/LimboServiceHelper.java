@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static fr.xephi.authme.util.Utils.isCollectionEmpty;
 import static java.util.stream.Collectors.toList;
@@ -34,9 +33,9 @@ class LimboServiceHelper {
     /**
      * Creates a LimboPlayer with the given player's details.
      *
-     * @param player the player to process
+     * @param player       the player to process
      * @param isRegistered whether the player is registered
-     * @param location the player location
+     * @param location     the player location
      * @return limbo player with the player's data
      */
     LimboPlayer createLimboPlayer(Player player, boolean isRegistered, Location location) {
@@ -108,7 +107,8 @@ class LimboServiceHelper {
         return first == null ? second : first;
     }
 
-    private Collection<UserGroup> getLimboGroups(Collection<UserGroup> oldLimboGroups, Collection<UserGroup> newLimboGroups) {
+    private Collection<UserGroup> getLimboGroups(Collection<UserGroup> oldLimboGroups,
+                                                 Collection<UserGroup> newLimboGroups) {
         logger.debug("Limbo merge: new and old groups are `{0}` and `{1}`", newLimboGroups, oldLimboGroups);
         return isCollectionEmpty(oldLimboGroups) ? newLimboGroups : oldLimboGroups;
     }

@@ -27,11 +27,15 @@ public class UserGroup {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserGroup userGroup = (UserGroup) o;
-        return Objects.equals(groupName, userGroup.groupName) &&
-            Objects.equals(contextMap, userGroup.contextMap);
+        return Objects.equals(groupName, userGroup.groupName)
+            && Objects.equals(contextMap, userGroup.contextMap);
     }
 
     @Override

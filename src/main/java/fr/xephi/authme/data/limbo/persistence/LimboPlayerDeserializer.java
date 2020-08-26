@@ -7,8 +7,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -90,23 +90,29 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         return element != null ? element.getAsString() : "";
     }
 
+    /**
+     * @param jsonObject LimboPlayer represented as JSON
+     * @return The list of UserGroups create from JSON
+     */
     private static List<UserGroup> getLimboGroups(JsonObject jsonObject) {
         JsonElement element = jsonObject.get(GROUPS);
         if (element == null) {
             String legacyGroup = ofNullable(jsonObject.get(GROUP_LEGACY)).map(JsonElement::getAsString).orElse(null);
-            return legacyGroup == null ? Collections.emptyList() : Collections.singletonList(new UserGroup(legacyGroup, null));
+            return legacyGroup == null ? Collections.emptyList() :
+                Collections.singletonList(new UserGroup(legacyGroup, null));
         }
         List<UserGroup> result = new ArrayList<>();
         JsonArray jsonArray = element.getAsJsonArray();
         for (JsonElement arrayElement : jsonArray) {
-            if(!arrayElement.isJsonObject()) {
+            if (!arrayElement.isJsonObject()) {
                 result.add(new UserGroup(arrayElement.getAsString(), null));
             } else {
                 JsonObject jsonGroup = arrayElement.getAsJsonObject();
                 Map<String, String> contextMap = null;
-                if(jsonGroup.has(CONTEXT_MAP)) {
+                if (jsonGroup.has(CONTEXT_MAP)) {
                     JsonElement contextMapJson = jsonGroup.get("contextMap");
-                    Type type = new TypeToken<Map<String, String>>(){}.getType();
+                    Type type = new TypeToken<Map<String, String>>() {
+                    }.getType();
                     contextMap = new Gson().fromJson(contextMapJson.getAsString(), type);
                 }
 
@@ -141,7 +147,6 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
      * @param numberFunction the function to get the number from the element
      * @param defaultValue   the value to return if the element is null or the number cannot be retrieved
      * @param <N>            the number type
-     *
      * @return the number from the given JSON element, or the default value
      */
     private static <N extends Number> N getNumberFromElement(JsonElement jsonElement,
