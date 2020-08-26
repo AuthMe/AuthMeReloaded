@@ -12,8 +12,11 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static fr.xephi.authme.util.Utils.isCollectionEmpty;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Helper class for the LimboService.
@@ -42,10 +45,14 @@ class LimboServiceHelper {
         boolean flyEnabled = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
         float flySpeed = player.getFlySpeed();
-        Collection<String> playerGroups = permissionsManager.hasGroupSupport()
+        Collection<UserGroup> playerGroups = permissionsManager.hasGroupSupport()
             ? permissionsManager.getGroups(player) : Collections.emptyList();
-        logger.debug("Player `{0}` has groups `{1}`", player.getName(), String.join(", ", playerGroups));
 
+        List<String> groupNames = playerGroups.stream()
+            .map(UserGroup::getGroupName)
+            .collect(toList());
+
+        logger.debug("Player `{0}` has groups `{1}`", player.getName(), String.join(", ", groupNames));
         return new LimboPlayer(location, isOperator, playerGroups, flyEnabled, walkSpeed, flySpeed);
     }
 
@@ -91,7 +98,7 @@ class LimboServiceHelper {
         boolean canFly = newLimbo.isCanFly() || oldLimbo.isCanFly();
         float flySpeed = Math.max(newLimbo.getFlySpeed(), oldLimbo.getFlySpeed());
         float walkSpeed = Math.max(newLimbo.getWalkSpeed(), oldLimbo.getWalkSpeed());
-        Collection<String> groups = getLimboGroups(oldLimbo.getGroups(), newLimbo.getGroups());
+        Collection<UserGroup> groups = getLimboGroups(oldLimbo.getGroups(), newLimbo.getGroups());
         Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 
         return new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed);
@@ -101,7 +108,7 @@ class LimboServiceHelper {
         return first == null ? second : first;
     }
 
-    private Collection<String> getLimboGroups(Collection<String> oldLimboGroups, Collection<String> newLimboGroups) {
+    private Collection<UserGroup> getLimboGroups(Collection<UserGroup> oldLimboGroups, Collection<UserGroup> newLimboGroups) {
         logger.debug("Limbo merge: new and old groups are `{0}` and `{1}`", newLimboGroups, oldLimboGroups);
         return isCollectionEmpty(oldLimboGroups) ? newLimboGroups : oldLimboGroups;
     }

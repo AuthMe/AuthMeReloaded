@@ -1,12 +1,14 @@
 package fr.xephi.authme.permission.handlers;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.context.ContextSetFactory;
 import net.luckperms.api.model.data.DataMutateResult;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
@@ -15,6 +17,7 @@ import net.luckperms.api.node.types.InheritanceNode;
 import net.luckperms.api.query.QueryMode;
 import net.luckperms.api.query.QueryOptions;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,8 +48,8 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean addToGroup(OfflinePlayer player, String group) {
-        Group newGroup = luckPerms.getGroupManager().getGroup(group);
+    public boolean addToGroup(OfflinePlayer player, UserGroup group) {
+        Group newGroup = luckPerms.getGroupManager().getGroup(group.getGroupName());
         if (newGroup == null) {
             return false;
         }
@@ -60,7 +63,8 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        InheritanceNode node = InheritanceNode.builder(group).build();
+        InheritanceNode node = buildGroupNode(group);
+
         DataMutateResult result = user.data().add(node);
         if (result == DataMutateResult.FAIL) {
             return false;
@@ -85,12 +89,12 @@ public class LuckPermsHandler implements PermissionHandler {
         }
 
         CachedPermissionData permissionData = user.getCachedData()
-            .getPermissionData(QueryOptions.builder(QueryMode.NON_CONTEXTUAL).build());
+            .getPermissionData(QueryOptions.builder(QueryMode.CONTEXTUAL).build());
         return permissionData.checkPermission(node.getNode()).asBoolean();
     }
 
     @Override
-    public boolean isInGroup(OfflinePlayer player, String group) {
+    public boolean isInGroup(OfflinePlayer player, UserGroup group) {
         String playerName = player.getName();
         if (playerName == null) {
             return false;
@@ -102,12 +106,12 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        InheritanceNode inheritanceNode = InheritanceNode.builder(group).build();
+        InheritanceNode inheritanceNode = InheritanceNode.builder(group.getGroupName()).build();
         return user.data().contains(inheritanceNode, NodeEqualityPredicate.EXACT).asBoolean();
     }
 
     @Override
-    public boolean removeFromGroup(OfflinePlayer player, String group) {
+    public boolean removeFromGroup(OfflinePlayer player, UserGroup group) {
         String playerName = player.getName();
         if (playerName == null) {
             return false;
@@ -119,7 +123,7 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
 
-        InheritanceNode groupNode = InheritanceNode.builder(group).build();
+        InheritanceNode groupNode = InheritanceNode.builder(group.getGroupName()).build();
         boolean result = user.data().remove(groupNode) != DataMutateResult.FAIL;
 
         luckPerms.getUserManager().saveUser(user);
@@ -127,7 +131,7 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean setGroup(OfflinePlayer player, String group) {
+    public boolean setGroup(OfflinePlayer player, UserGroup group) {
         String playerName = player.getName();
         if (playerName == null) {
             return false;
@@ -138,7 +142,9 @@ public class LuckPermsHandler implements PermissionHandler {
                 + player.getName() + " but it isn't loaded!");
             return false;
         }
-        InheritanceNode groupNode = InheritanceNode.builder(group).build();
+
+        InheritanceNode groupNode = buildGroupNode(group);
+
         DataMutateResult result = user.data().add(groupNode);
         if (result == DataMutateResult.FAIL) {
             return false;
@@ -156,7 +162,7 @@ public class LuckPermsHandler implements PermissionHandler {
     }
 
     @Override
-    public List<String> getGroups(OfflinePlayer player) {
+    public List<UserGroup> getGroups(OfflinePlayer player) {
         String playerName = player.getName();
         if (playerName == null) {
             return Collections.emptyList();
@@ -171,17 +177,16 @@ public class LuckPermsHandler implements PermissionHandler {
         return user.getDistinctNodes().stream()
             .filter(node -> node instanceof InheritanceNode)
             .map(node -> (InheritanceNode) node)
-            .map(node -> luckPerms.getGroupManager().getGroup(node.getGroupName()))
-            .filter(Objects::nonNull)
-            .sorted((o1, o2) -> {
-                if (o1.getName().equals(user.getPrimaryGroup()) || o2.getName().equals(user.getPrimaryGroup())) {
-                    return o1.getName().equals(user.getPrimaryGroup()) ? 1 : -1;
+            .map(node -> {
+                Group group = luckPerms.getGroupManager().getGroup(node.getGroupName());
+                if (group == null) {
+                    return null;
                 }
-
-                int i = Integer.compare(o2.getWeight().orElse(0), o1.getWeight().orElse(0));
-                return i != 0 ? i : o1.getName().compareToIgnoreCase(o2.getName());
+                return new LuckPermGroup(group, node.getContexts());
             })
-            .map(Group::getName)
+            .filter(Objects::nonNull)
+            .sorted((o1, o2) -> sortGroups(user, o1, o2))
+            .map(g -> new UserGroup(g.getGroup().getName(), g.getContexts().toFlattenedMap()))
             .collect(Collectors.toList());
     }
 
@@ -199,4 +204,20 @@ public class LuckPermsHandler implements PermissionHandler {
         }
     }
 
+    @NotNull
+    private InheritanceNode buildGroupNode(UserGroup group) {
+        ContextSetFactory contextSetFactory = luckPerms.getContextManager().getContextSetFactory();
+        InheritanceNode.Builder builder = InheritanceNode.builder(group.getGroupName());
+        group.getContextMap().forEach((k, v) -> builder.withContext((contextSetFactory.immutableOf(k, v))));
+        return builder.build();
+    }
+
+    private int sortGroups(User user, LuckPermGroup o1, LuckPermGroup o2) {
+        if (o1.getGroup().getName().equals(user.getPrimaryGroup()) || o2.getGroup().getName().equals(user.getPrimaryGroup())) {
+            return o1.getGroup().getName().equals(user.getPrimaryGroup()) ? 1 : -1;
+        }
+
+        int i = Integer.compare(o2.getGroup().getWeight().orElse(0), o1.getGroup().getWeight().orElse(0));
+        return i != 0 ? i : o1.getGroup().getName().compareToIgnoreCase(o2.getGroup().getName());
+    }
 }
