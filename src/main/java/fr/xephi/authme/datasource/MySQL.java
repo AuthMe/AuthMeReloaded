@@ -91,7 +91,7 @@ public class MySQL extends AbstractSqlDataSource {
     /**
      * Retrieves various settings.
      *
-     * @param settings the settings to read properties from
+     * @param settings          the settings to read properties from
      * @param extensionsFactory factory to create the MySQL extension
      */
     private void setParameters(Settings settings, MySqlExtensionsFactory extensionsFactory) {
@@ -161,6 +161,11 @@ public class MySQL extends AbstractSqlDataSource {
         }
         setConnectionArguments();
         logger.info("Hikari ConnectionPool arguments reloaded!");
+    }
+
+    @Override
+    public void reload(boolean migrate) {
+        reload();
     }
 
     private Connection getConnection() throws SQLException {
@@ -329,11 +334,6 @@ public class MySQL extends AbstractSqlDataSource {
             logSqlException(ex);
         }
         return false;
-    }
-
-    @Override
-    public void reload(boolean migrate) {
-        reload();
     }
 
     @Override

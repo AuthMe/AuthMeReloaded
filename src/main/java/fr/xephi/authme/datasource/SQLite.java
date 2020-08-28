@@ -220,7 +220,7 @@ public class SQLite extends AbstractSqlDataSource {
         try {
             this.connect();
             this.setup();
-            if(migrate) {
+            if (migrate) {
                 this.migrateIfNeeded();
             }
         } catch (SQLException ex) {

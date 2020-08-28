@@ -144,6 +144,11 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
         logger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
+    @Override
+    public void reload(boolean migrate) {
+        reload();
+    }
+
     private Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
@@ -304,11 +309,6 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             logSqlException(ex);
         }
         return false;
-    }
-
-    @Override
-    public void reload(boolean migrate) {
-        reload();
     }
 
     @Override
