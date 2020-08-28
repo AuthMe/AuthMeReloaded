@@ -215,15 +215,22 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public void reload() {
+    public void reload(boolean migrate) {
         close(con);
         try {
             this.connect();
             this.setup();
-            this.migrateIfNeeded();
+            if(migrate) {
+                this.migrateIfNeeded();
+            }
         } catch (SQLException ex) {
             logger.logException("Error while reloading SQLite:", ex);
         }
+    }
+
+    @Override
+    public void reload() {
+        reload(true);
     }
 
     @Override

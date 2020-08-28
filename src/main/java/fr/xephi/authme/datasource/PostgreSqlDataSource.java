@@ -307,6 +307,11 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
     }
 
     @Override
+    public void reload(boolean migrate) {
+        reload();
+    }
+
+    @Override
     public Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE GREATEST("

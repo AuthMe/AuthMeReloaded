@@ -95,7 +95,7 @@ class SqLiteMigrater {
             st.execute("ALTER TABLE " + tableName + " RENAME TO " + tempTable + ";");
         }
 
-        sqLite.reload();
+        sqLite.reload(false);
         connection = getConnection(sqLite);
 
         try (Statement st = connection.createStatement()) {

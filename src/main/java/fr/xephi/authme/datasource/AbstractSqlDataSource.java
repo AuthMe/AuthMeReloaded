@@ -167,4 +167,6 @@ public abstract class AbstractSqlDataSource implements DataSource {
             return DataSourceValueImpl.unknownRow();
         }
     }
+
+    public abstract void reload(boolean migrate);
 }

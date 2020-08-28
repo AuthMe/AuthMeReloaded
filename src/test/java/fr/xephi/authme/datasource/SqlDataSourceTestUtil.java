@@ -37,7 +37,7 @@ public final class SqlDataSourceTestUtil {
      * Creates a SQLite implementation for testing purposes. Methods are overridden so the
      * provided connection is never overridden.
      *
-     * @param settings settings instance
+     * @param settings   settings instance
      * @param dataFolder data folder
      * @param connection connection to use
      * @return the created SQLite instance
@@ -46,10 +46,12 @@ public final class SqlDataSourceTestUtil {
         return new SQLite(settings, dataFolder, connection) {
             // Override reload() so it doesn't run SQLite#connect, since we're given a specific Connection to use
             @Override
-            public void reload() {
+            public void reload(boolean migrate) {
                 try {
                     this.setup();
-                    this.migrateIfNeeded();
+                    if (migrate) {
+                        this.migrateIfNeeded();
+                    }
                 } catch (SQLException e) {
                     throw new IllegalStateException(e);
                 }
