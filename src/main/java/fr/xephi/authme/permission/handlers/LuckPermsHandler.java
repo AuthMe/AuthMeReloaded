@@ -208,7 +208,7 @@ public class LuckPermsHandler implements PermissionHandler {
     private InheritanceNode buildGroupNode(UserGroup group) {
         ContextSetFactory contextSetFactory = luckPerms.getContextManager().getContextSetFactory();
         InheritanceNode.Builder builder = InheritanceNode.builder(group.getGroupName());
-        if(group.getContextMap() != null) {
+        if (group.getContextMap() != null) {
             group.getContextMap().forEach((k, v) -> builder.withContext((contextSetFactory.immutableOf(k, v))));
         }
         return builder.build();
