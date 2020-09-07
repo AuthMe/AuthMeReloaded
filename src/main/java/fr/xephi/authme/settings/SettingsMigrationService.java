@@ -3,6 +3,7 @@ package fr.xephi.authme.settings;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.properties.convertresult.PropertyValue;
 import ch.jalu.configme.resource.PropertyReader;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
@@ -214,7 +215,7 @@ public class SettingsMigrationService extends PlainMigrationService {
                                                                   ConfigurationData configData) {
         final String oldPath = "Security.console.noConsoleSpam";
         final Property<LogLevel> newProperty = PluginSettings.LOG_LEVEL;
-        if (!newProperty.isPresent(reader) && reader.contains(oldPath)) {
+        if (!newProperty.isValidInResource(reader) && reader.contains(oldPath)) {
             logger.info("Moving '" + oldPath + "' to '" + newProperty.getPath() + "'");
             boolean oldValue = Optional.ofNullable(reader.getBoolean(oldPath)).orElse(false);
             LogLevel level = oldValue ? LogLevel.INFO : LogLevel.FINE;
@@ -252,17 +253,18 @@ public class SettingsMigrationService extends PlainMigrationService {
      */
     private static boolean convertToRegistrationType(PropertyReader reader, ConfigurationData configData) {
         String oldEmailRegisterPath = "settings.registration.enableEmailRegistrationSystem";
-        if (RegistrationSettings.REGISTRATION_TYPE.isPresent(reader) || !reader.contains(oldEmailRegisterPath)) {
+        if (RegistrationSettings.REGISTRATION_TYPE.isValidInResource(reader)
+            || !reader.contains(oldEmailRegisterPath)) {
             return false;
         }
 
-        boolean useEmail = newProperty(oldEmailRegisterPath, false).determineValue(reader);
+        boolean useEmail = newProperty(oldEmailRegisterPath, false).determineValue(reader).getValue();
         RegistrationType registrationType = useEmail ? RegistrationType.EMAIL : RegistrationType.PASSWORD;
 
         String useConfirmationPath = useEmail
             ? "settings.registration.doubleEmailCheck"
             : "settings.restrictions.enablePasswordConfirmation";
-        boolean hasConfirmation = newProperty(useConfirmationPath, false).determineValue(reader);
+        boolean hasConfirmation = newProperty(useConfirmationPath, false).determineValue(reader).getValue();
         RegisterSecondaryArgument secondaryArgument = hasConfirmation
             ? RegisterSecondaryArgument.CONFIRMATION
             : RegisterSecondaryArgument.NONE;
@@ -287,7 +289,7 @@ public class SettingsMigrationService extends PlainMigrationService {
         // We have two old settings replaced by only one: move the first non-empty one
         Property<String> oldUnloggedInGroup = newProperty("settings.security.unLoggedinGroup", "");
         Property<String> oldRegisteredGroup = newProperty("GroupOptions.RegisteredPlayerGroup", "");
-        if (!oldUnloggedInGroup.determineValue(reader).isEmpty()) {
+        if (!oldUnloggedInGroup.determineValue(reader).getValue().isEmpty()) {
             performedChanges = moveProperty(oldUnloggedInGroup, PluginSettings.REGISTERED_GROUP, reader, configData);
         } else {
             performedChanges = moveProperty(oldRegisteredGroup, PluginSettings.REGISTERED_GROUP, reader, configData);
@@ -311,13 +313,13 @@ public class SettingsMigrationService extends PlainMigrationService {
      */
     private static boolean moveDeprecatedHashAlgorithmIntoLegacySection(PropertyReader reader,
                                                                         ConfigurationData configData) {
-        HashAlgorithm currentHash = SecuritySettings.PASSWORD_HASH.determineValue(reader);
+        HashAlgorithm currentHash = SecuritySettings.PASSWORD_HASH.determineValue(reader).getValue();
         // Skip CUSTOM (has no class) and PLAINTEXT (is force-migrated later on in the startup process)
         if (currentHash != HashAlgorithm.CUSTOM && currentHash != HashAlgorithm.PLAINTEXT) {
             Class<?> encryptionClass = currentHash.getClazz();
             if (encryptionClass.isAnnotationPresent(Deprecated.class)) {
                 configData.setValue(SecuritySettings.PASSWORD_HASH, HashAlgorithm.SHA256);
-                Set<HashAlgorithm> legacyHashes = SecuritySettings.LEGACY_HASHES.determineValue(reader);
+                Set<HashAlgorithm> legacyHashes = SecuritySettings.LEGACY_HASHES.determineValue(reader).getValue();
                 legacyHashes.add(currentHash);
                 configData.setValue(SecuritySettings.LEGACY_HASHES, legacyHashes);
                 logger.warning("The hash algorithm '" + currentHash
@@ -352,9 +354,11 @@ public class SettingsMigrationService extends PlainMigrationService {
         Property<String> commandProperty = newProperty("settings.restrictions.otherAccountsCmd", "");
         Property<Integer> commandThresholdProperty = newProperty("settings.restrictions.otherAccountsCmdThreshold", 0);
 
-        if (commandProperty.isPresent(reader) && commandThresholdProperty.determineValue(reader) >= 2) {
-            oldOtherAccountsCommand = commandProperty.determineValue(reader);
-            oldOtherAccountsCommandThreshold = commandThresholdProperty.determineValue(reader);
+        PropertyValue<String> commandPropValue = commandProperty.determineValue(reader);
+        int commandThreshold = commandThresholdProperty.determineValue(reader).getValue();
+        if (commandPropValue.isValidInResource() && commandThreshold >= 2) {
+            oldOtherAccountsCommand = commandPropValue.getValue();
+            oldOtherAccountsCommandThreshold = commandThreshold;
         }
     }
 
@@ -372,12 +376,13 @@ public class SettingsMigrationService extends PlainMigrationService {
                                               Property<T> newProperty,
                                               PropertyReader reader,
                                               ConfigurationData configData) {
-        if (reader.contains(oldProperty.getPath())) {
+        PropertyValue<T> oldPropertyValue = oldProperty.determineValue(reader);
+        if (oldPropertyValue.isValidInResource()) {
             if (reader.contains(newProperty.getPath())) {
                 logger.info("Detected deprecated property " + oldProperty.getPath());
             } else {
                 logger.info("Renaming " + oldProperty.getPath() + " to " + newProperty.getPath());
-                configData.setValue(newProperty, oldProperty.determineValue(reader));
+                configData.setValue(newProperty, oldPropertyValue.getValue());
             }
             return true;
         }
