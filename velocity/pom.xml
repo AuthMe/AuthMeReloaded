@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>authme-parent</artifactId>
+    <groupId>eu.authme</groupId>
+    <version>6.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>authme-velocity</artifactId>
+
+  <name>AuthMe-Velocity</name>
+  <description>Velocity addon to AuthMe!</description>
+  <inceptionYear>2020</inceptionYear>
+
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <velocity.version>1.1.0-SNAPSHOT</velocity.version>
+
+    <plugin.platform>velocity</plugin.platform>
+    <plugin.platformCapitalized>Velocity</plugin.platformCapitalized>
+    <pluginDescription.main>${groupId}.${plugin.platform}.${pluginDescription.name}${plugin.platformCapitalized}</pluginDescription.main>
+
+    <project.finalNameBase>${pluginDescription.name}${plugin.platformCapitalized}-${project.version}</project.finalNameBase>
+  </properties>
+
+  <repositories>
+    <!-- Velocity -->
+    <repository>
+      <id>velocity</id>
+      <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Velocity -->
+    <dependency>
+      <groupId>com.velocitypowered</groupId>
+      <artifactId>velocity-api</artifactId>
+      <version>${velocity.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- Little hack to make the shade plugin output a file with the right name -->
+    <finalName>${project.finalNameBase}-noshade</finalName>
+    <plugins>
+      <!-- Generate a jar containing classes, resources and shaded libraries -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
+          <createDependencyReducedPom>false</createDependencyReducedPom>
+          <!-- Deploy the non shaded jar as main artifact -->
+          <shadedArtifactAttached>true</shadedArtifactAttached>
+          <!-- Use the base jar name, to help server owners download the right jar -->
+          <finalName>${project.finalNameBase}</finalName>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+</project>

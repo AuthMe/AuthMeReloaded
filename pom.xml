@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>eu.authme</groupId>
+  <artifactId>authme-parent</artifactId>
+  <version>6.0.0-SNAPSHOT</version>
+  <modules>
+    <module>bukkit</module>
+    <module>bungee</module>
+    <module>velocity</module>
+    <module>api</module>
+    <module>common</module>
+  </modules>
+  <packaging>pom</packaging>
+
+  <name>AuthMe-Parent</name>
+  <url>https://github.com/AuthMe/AuthMeReloaded</url>
+
+  <organization>
+    <name>AuthMe-Team</name>
+    <url>https://github.com/AuthMe</url>
+  </organization>
+
+  <properties>
+    <!-- Maven stuff -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.minimumVersion>3.3.9</maven.minimumVersion>
+
+    <!-- Project stuff -->
+    <project.buildNumber>CUSTOM</project.buildNumber>
+    <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
+    <pluginDescription.name>AuthMe</pluginDescription.name>
+    <pluginDescription.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008, MrIvanPlays</pluginDescription.authors>
+    <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
+
+    <!-- Dependency versions, dependencies of cannot be put in the parent pom -->
+    <configme.version>1.2.0</configme.version>
+    <bstats.version>1.7</bstats.version>
+  </properties>
+
+  <developers>
+    <developer>
+      <id>Xephi</id>
+    </developer>
+    <developer>
+      <id>sgdc3</id>
+    </developer>
+    <developer>
+      <id>DNx5</id>
+    </developer>
+    <developer>
+      <id>timvisee</id>
+    </developer>
+    <developer>
+      <id>games647</id>
+    </developer>
+    <developer>
+      <id>ljacqu</id>
+    </developer>
+    <developer>
+      <id>Gnat008</id>
+    </developer>
+    <developer>
+      <id>MrIvanPlays</id>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:AuthMe/AuthMeReloaded.git</connection>
+    <developerConnection>scm:git:git@github.com:AuthMe/AuthMeReloaded.git</developerConnection>
+    <url>git@github.com:AuthMe/AuthMeReloaded.git</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/AuthMe/AuthMeReloaded/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>jenkins</system>
+    <url>https://ci.codemc.io/job/AuthMe/job/AuthMeReloaded/</url>
+  </ciManagement>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>codemc-snapshots</id>
+      <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>codemc-releases</id>
+      <url>https://repo.codemc.io/repository/maven-releases/</url>
+    </repository>
+  </distributionManagement>
+
+  <!-- Jenkins profile -->
+  <profiles>
+    <!-- Set the buildNumber using the jenkins env. variable -->
+    <profile>
+      <id>jenkins</id>
+      <activation>
+        <property>
+          <name>env.BUILD_NUMBER</name>
+        </property>
+      </activation>
+      <properties>
+        <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
+      </properties>
+    </profile>
+    <!-- Skip long hash tests, reduce the test time of 20-30 seconds -->
+    <profile>
+      <id>skipLongHashTests</id>
+      <activation>
+        <property>
+          <name>skipLongHashTests</name>
+        </property>
+      </activation>
+      <properties>
+        <project.skipExtendedHashTests>true</project.skipExtendedHashTests>
+      </properties>
+    </profile>
+    <!-- Skip javadoc generation for faster local build -->
+    <profile>
+      <id>skipJavadocGeneration</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <repositories>
+    <repository>
+      <id>codemc-repo</id>
+      <url>https://repo.codemc.io/repository/maven-public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>apache-snapshots</id>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Unit Testing Libraries -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+      <version>4.13</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>java-hamcrest</artifactId>
+      <scope>test</scope>
+      <version>2.0.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+      <version>3.5.10</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Required to mock the LuckPerms API-->
+    <dependency>
+      <groupId>org.checkerframework</groupId>
+      <artifactId>checker-qual</artifactId>
+      <version>3.6.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JDBC drivers for datasource integration tests -->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.32.3.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.4.200</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>clean package</defaultGoal>
+    <resources>
+      <resource>
+        <directory>.</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>LICENSE</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources/</directory>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources/messages/</directory>
+        <targetPath>./messages/</targetPath>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <!-- Enforce build environment -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce-environment</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>${maven.minimumVersion}</version>
+                </requireMavenVersion>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Generate a jar containing the source javadoc -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <!-- In sync with the source/target properties of the maven-compiler-plugin -->
+          <source>8</source>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadoc</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Generate a jar containing the java sources -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Generate test coverage reports -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.5</version>
+        <executions>
+          <execution>
+            <id>pre-unit-test</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>post-unit-test</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Unit testing -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version>
+        <configuration>
+          <!-- Force the right file encoding during unit testing -->
+          <!-- Set language to English in order to get consistent results for localized time formatting -->
+          <argLine>-Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
+          <systemPropertyVariables>
+            <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
+          </systemPropertyVariables>
+          <!-- Don't trim stack traces -->
+          <trimStackTrace>false</trimStackTrace>
+        </configuration>
+      </plugin>
+      <!-- Clean the target folder content -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+      </plugin>
+      <!-- Include resource files -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+      </plugin>
+      <!-- Generate a jar containing classes and resources -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+      </plugin>
+      <!-- Install the jars as artifacts into the local repository -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+      </plugin>
+      <!-- Deploy the jars as artifacts into the remote repository -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+      </plugin>
+      <!-- Handle documentation generation, required by other plugins -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.9.1</version>
+      </plugin>
+      <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>4.3.0</version>
+        <configuration>
+          <!-- The secret token is provided with a command-line parameter -->
+          <failOnServiceError>false</failOnServiceError>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

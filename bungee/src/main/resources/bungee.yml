@@ -1,0 +1,5 @@
+name: ${pluginDescription.name}${plugin.platformCapitalized}
+main: ${pluginDescription.main}
+description: ${project.description}
+version: ${project.versionCode}
+author: AuthMeTeam

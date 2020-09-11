@@ -1,0 +1,1 @@
+{"id":"authmevelocity","name":"${pluginDescription.name}${plugin.platformCapitalized}","version":"${project.version}","authors":["AuthMeTeam"],"dependencies":[],"main":"${pluginDescription.main}"}

@@ -1,0 +1,17 @@
+name: ${pluginDescription.name}
+main: ${pluginDescription.main}
+website: ${project.url}
+description: ${project.description}
+version: ${project.versionCode}
+authors: [${pluginDescription.authors}]
+api-version: 1.13
+softdepend:
+  - Vault
+  - LuckPerms
+  - PermissionsEx
+  - bPermissions
+  - zPermissions
+  - Multiverse-Core
+  - Essentials
+  - EssentialsSpawn
+  - ProtocolLib
