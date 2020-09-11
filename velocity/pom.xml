@@ -35,6 +35,14 @@
   </repositories>
 
   <dependencies>
+    <!-- AuthMe commons -->
+    <dependency>
+      <groupId>${groupId}</groupId>
+      <artifactId>authme-common</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Velocity -->
     <dependency>
       <groupId>com.velocitypowered</groupId>

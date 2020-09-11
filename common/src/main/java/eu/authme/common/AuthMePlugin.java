@@ -1,3 +1,8 @@
 package eu.authme.common;
 
-public interface AuthMePlugin {}
+import eu.authme.api.AuthMeAPI;
+
+public interface AuthMePlugin {
+
+  void registerInServiceManager(AuthMeAPI api);
+}

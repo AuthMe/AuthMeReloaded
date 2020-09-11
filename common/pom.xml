@@ -14,5 +14,44 @@
   <name>AuthMe-Common</name>
   <inceptionYear>2020</inceptionYear>
 
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+
+  <dependencies>
+    <!-- AuthMe API -->
+    <dependency>
+      <groupId>${groupId}</groupId>
+      <artifactId>authme-api</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Generate a jar containing classes, resources and shaded libraries -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
+          <createDependencyReducedPom>false</createDependencyReducedPom>
+          <!-- Deploy the non shaded jar as main artifact -->
+          <shadedArtifactAttached>true</shadedArtifactAttached>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 
 </project>
