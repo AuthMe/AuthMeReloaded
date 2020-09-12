@@ -1,4 +1,4 @@
-package eu.authme.common;
+package eu.authme.common.api;
 
 import eu.authme.api.AuthEventListener;
 import eu.authme.api.AuthMeAPI;

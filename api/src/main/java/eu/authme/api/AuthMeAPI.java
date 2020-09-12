@@ -2,6 +2,7 @@ package eu.authme.api;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 // todo: find a way to get this api for platforms with no service manager (singleton????)
 /** Represents the base AuthMe API */
@@ -11,18 +12,13 @@ public interface AuthMeAPI {
    * Returns the user with the specified name. If the user has not been found in AuthMe's cache, it
    * will create a one.
    *
-   * <p><b>WARNING: This may or may not be a thread blocking method. Call
-   * asynchronously!!!!!!1!!11!!!!</b>
-   *
    * @param name name of the user you want to get
    * @return non-null user object
    */
-  User getUser(String name);
+  CompletableFuture<User> getUser(String name);
 
   /**
    * Returns the user with the specified name.
-   *
-   * <p><b>WARNING: This is a thread blocking method. Call asynchronously!!!!!!1!!11!!!!</b>
    *
    * @param name name of the user you want to get
    * @return user if present in AuthMe's cache, empty optional otherwise
@@ -31,8 +27,6 @@ public interface AuthMeAPI {
 
   /**
    * Returns the user with the specified unique id.
-   *
-   * <p><b>WARNING: This is a thread blocking method. Call asynchronously!!!!!!1!!11!!!!</b>
    *
    * @param uuid uuid of the user you want to get
    * @return user if present in AuthMe's cache, empty optional otherwise
