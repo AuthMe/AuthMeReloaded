@@ -1,0 +1,45 @@
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ AuthMeReloaded HELP ]=========='
+    optional: 'Volitelné'
+    hasPermission: 'Máš oprávnění'
+    noPermission: 'Bez oprávnění'
+    default: 'Defaultní'
+    result: 'Výsledek'
+    defaultPermissions:
+        notAllowed: 'Bez oprávnění'
+        opOnly: 'Pouze OP'
+        allowed: 'Povolené pro všechny'
+
+# -------------------------------------------------------
+# Titles of the individual help sections
+# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+#   alternatives: ''
+section:
+    command: 'Příkaz'
+    description: 'Krátký popis'
+    detailedDescription: 'Detailní popis'
+    arguments: 'Argumenty'
+    permissions: 'Oprávnění'
+    alternatives: 'Alternativy'
+    children: 'Příkazy'
+
+# -------------------------------------------------------
+# You can translate the data for all commands using the below pattern.
+# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
+# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
+# Translations don't need to be complete; any missing section will be taken from the default silently
+# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+commands:
+    authme.register:
+        description: 'Registrovat hráče'
+        detailedDescription: 'Registrovat daného hráče s daným heslem.'
+        arg1:
+            label: 'hráč'
+            description: 'Jméno hráče'
+        arg2:
+            label: 'heslo'
+            description: 'Heslo'
