@@ -9,7 +9,7 @@ registration:
     name_taken: '&cUživatelské jméno je již zaregistrováno.'
     register_request: '&cProsím, zaregistruj se pomocí "/register <heslo> <ZnovuHeslo>"'
     command_usage: '&cPoužij: "/register heslo ZnovuHeslo".'
-    reg_only: '&cServer je pouze pro registrované! Navštiv naší webovou stránku https://priklad.cz.'
+    reg_only: '&cServer je pouze pro registrované! Navštiv naši webovou stránku https://priklad.cz.'
     success: '&cRegistrace úspěšná!'
     kicked_admin_registered: 'Admin vás právě zaregistroval; Přihlašte se prosím znovu.'
 
@@ -130,7 +130,7 @@ verification:
     success: '&2Tvoje identita ověřena! V rámci své relace můžeš nyní používat všechny příkazy.'
     already_verified: '&2Již můžeš používat příkazy ve své relaci bez omezení.'
     code_expired: '&3Tvůj kód vypršel. Použij další citlivý příkaz pro získání nového kódu.'
-    email_needed: '&3Pro ověřené tvé identity potřebujeme, abys ke svému účtu přidal svůj email.'
+    email_needed: '&3Pro ověření tvé identity potřebujeme, abys ke svému účtu přidal svůj email.'
 
 # Time units
 time:
