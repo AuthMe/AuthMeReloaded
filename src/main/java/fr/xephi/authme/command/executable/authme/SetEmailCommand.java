@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.process.AsyncUserScheduler;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -33,11 +34,14 @@ public class SetEmailCommand implements ExecutableCommand {
     @Inject
     private ValidationService validationService;
 
+    @Inject
+    private AsyncUserScheduler asyncUserScheduler;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments) {
         // Get the player name and email address
-        final String playerName = arguments.get(0);
-        final String playerEmail = arguments.get(1);
+        String playerName = arguments.get(0);
+        String playerEmail = arguments.get(1);
 
         // Validate the email address
         if (!validationService.validateEmail(playerEmail)) {
@@ -45,34 +49,32 @@ public class SetEmailCommand implements ExecutableCommand {
             return;
         }
 
-        bukkitService.runTaskOptionallyAsync(new Runnable() {
-            @Override
-            public void run() {
-                // Validate the user
-                PlayerAuth auth = dataSource.getAuth(playerName);
-                if (auth == null) {
-                    commonService.send(sender, MessageKey.UNKNOWN_USER);
-                    return;
-                } else if (!validationService.isEmailFreeForRegistration(playerEmail, sender)) {
-                    commonService.send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
-                    return;
-                }
-
-                // Set the email address
-                auth.setEmail(playerEmail);
-                if (!dataSource.updateEmail(auth)) {
-                    commonService.send(sender, MessageKey.ERROR);
-                    return;
-                }
-
-                // Update the player cache
-                if (playerCache.getAuth(playerName) != null) {
-                    playerCache.updatePlayer(auth);
-                }
-
-                // Show a status message
-                commonService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
+        String lowercasePlayerName = playerName.toLowerCase();
+        asyncUserScheduler.runTask(lowercasePlayerName, (Runnable) () -> {
+            // Validate the user
+            PlayerAuth auth = dataSource.getAuth(playerName);
+            if (auth == null) {
+                commonService.send(sender, MessageKey.UNKNOWN_USER);
+                return;
+            } else if (!validationService.isEmailFreeForRegistration(playerEmail, sender)) {
+                commonService.send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
+                return;
             }
+
+            // Set the email address
+            auth.setEmail(playerEmail);
+            if (!dataSource.updateEmail(auth)) {
+                commonService.send(sender, MessageKey.ERROR);
+                return;
+            }
+
+            // Update the player cache
+            if (playerCache.getAuth(playerName) != null) {
+                playerCache.updatePlayer(auth);
+            }
+
+            // Show a status message
+            commonService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
         });
     }
 }
