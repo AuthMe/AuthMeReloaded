@@ -69,7 +69,7 @@ public class Management {
     }
 
     public void performUnregisterByAdmin(CommandSender initiator, String name, Player player) {
-        runTask(player, () -> asynchronousUnregister.adminUnregister(initiator, name, player));
+        runTask(name, () -> asynchronousUnregister.adminUnregister(initiator, name, player));
     }
 
     public void performJoin(Player player) {
