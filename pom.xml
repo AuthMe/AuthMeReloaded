@@ -309,6 +309,10 @@
                             <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>com.jano7.executor</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.jano7.executor</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
                             <shadedPattern>fr.xephi.authme.libs.com.zaxxer.hikari</shadedPattern>
                         </relocation>
@@ -554,6 +558,14 @@
             <artifactId>log4j-core</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Key Sequential Executor for async tasks -->
+        <dependency>
+            <groupId>com.jano7</groupId>
+            <artifactId>executor</artifactId>
+            <version>2.0.2</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Database Connection Pool -->
