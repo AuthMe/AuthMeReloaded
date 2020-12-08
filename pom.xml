@@ -881,6 +881,7 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.18</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Unit Testing Libraries -->
@@ -903,7 +904,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>3.6.0</version>
+            <version>3.6.28</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -916,7 +917,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.7.1</version>
+            <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
 
