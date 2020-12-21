@@ -657,7 +657,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
+            <version>1.8</version>
             <optional>true</optional>
         </dependency>
 
