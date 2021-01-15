@@ -128,6 +128,9 @@ public class MySQL extends AbstractSqlDataSource {
         // Auth
         ds.setUsername(this.username);
         ds.setPassword(this.password);
+        
+        // Driver
+        ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         // Request mysql over SSL
         ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
