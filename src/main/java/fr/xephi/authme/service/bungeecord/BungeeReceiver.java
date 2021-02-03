@@ -147,10 +147,14 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         }
     }
 
+    /**
+     * Attempt to log in player for up to 30s
+     *
+     * @param name username of player
+     */
     private void performLogin(final String name) {
-        // Attempt the login for up to 30s in case a slow player login causes this to fail
         bukkitService.runTaskTimerAsynchronously(new BukkitRunnable() {
-            int count=0;
+            private int count = 0;
 
             @Override
             public void run() {
