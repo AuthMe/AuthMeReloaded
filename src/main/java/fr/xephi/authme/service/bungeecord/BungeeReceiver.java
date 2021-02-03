@@ -14,6 +14,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -147,12 +148,25 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     }
 
     private void performLogin(final String name) {
-        Player player = bukkitService.getPlayerExact(name);
-        if (player != null && player.isOnline()) {
-            management.forceLogin(player);
-            logger.info("The user " + player.getName() + " has been automatically logged in, "
-                + "as requested via plugin messaging.");
-        }
+        // Attempt the login for up to 30s in case a slow player login causes this to fail
+        bukkitService.runTaskTimerAsynchronously(new BukkitRunnable() {
+            int count=0;
+
+            @Override
+            public void run() {
+                Player player = bukkitService.getPlayerExact(name);
+                if (player != null && player.isOnline()) {
+                    management.forceLogin(player);
+                    logger.info("The user " + player.getName() + " has been automatically logged in, "
+                        + "as requested via plugin messaging.");
+                    cancel();
+                }
+
+                if (++count > 30) {
+                    cancel();
+                }
+            }
+        }, 5, 20);
     }
 
 }
