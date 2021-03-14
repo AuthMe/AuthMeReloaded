@@ -43,6 +43,7 @@ public class MySQL extends AbstractSqlDataSource {
     private String port;
     private String username;
     private String password;
+    private String className;
     private String database;
     private String tableName;
     private int poolSize;
@@ -99,6 +100,7 @@ public class MySQL extends AbstractSqlDataSource {
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
         this.username = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
         this.password = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
+        this.className = settings.getProperty(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME);
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
@@ -128,6 +130,9 @@ public class MySQL extends AbstractSqlDataSource {
         // Auth
         ds.setUsername(this.username);
         ds.setPassword(this.password);
+        
+        // Driver
+        ds.setDriverClassName(this.className);
 
         // Request mysql over SSL
         ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
