@@ -136,10 +136,11 @@ settings:
         # Hide the chat log from players who are not authenticated?
         hideChat: false
         # Allowed commands for unauthenticated players
-        allowCommands: 
+        allowCommands:
         - /login
-        - /register
+        - /log
         - /l
+        - /register
         - /reg
         - /email
         - /captcha
@@ -165,7 +166,7 @@ settings:
             enabled: false
             # WorldNames where we need to force the spawn location
             # Case-sensitive!
-            worlds: 
+            worlds:
             - world
             - world_nether
             - world_the_end
@@ -268,7 +269,7 @@ settings:
         # - '123456'
         # - 'password'
         # - 'help'
-        unsafePasswords: 
+        unsafePasswords:
         - '123456'
         - password
         - qwerty
@@ -374,7 +375,7 @@ Email:
     # Delay in minute for the recall scheduler
     delayRecall: 5
     # Blacklist these domains for emails
-    emailBlacklisted: 
+    emailBlacklisted:
     - 10minutemail.com
     # Whitelist ONLY these domains for emails
     emailWhitelisted: []
@@ -410,13 +411,13 @@ Protection:
     # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # Use "LOCALHOST" for local addresses.
     # PLEASE USE QUOTES!
-    countries: 
+    countries:
     - US
     - GB
     - LOCALHOST
     # Countries not allowed to join the server and register
     # PLEASE USE QUOTES!
-    countriesBlacklist: 
+    countriesBlacklist:
     - A1
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
