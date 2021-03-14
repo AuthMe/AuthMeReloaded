@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.3.9</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.16.1-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.16.5-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -657,7 +657,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
+            <version>2.2.1</version>
             <optional>true</optional>
         </dependency>
 
