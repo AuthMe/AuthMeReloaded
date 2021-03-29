@@ -29,9 +29,12 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
         Set<OfflinePlayer> bannedPlayers = bukkitService.getBannedPlayers();
         Set<String> namedBanned = new HashSet<>(bannedPlayers.size());
         for (OfflinePlayer offlinePlayer : bannedPlayers) {
+            if (offlinePlayer.getName() == null) {
+                continue;
+            }
             namedBanned.add(offlinePlayer.getName().toLowerCase());
         }
 
-        purgeService.purgePlayers(sender, namedBanned, bannedPlayers.toArray(new OfflinePlayer[bannedPlayers.size()]));
+        purgeService.purgePlayers(sender, namedBanned, bannedPlayers.toArray(new OfflinePlayer[0]));
     }
 }

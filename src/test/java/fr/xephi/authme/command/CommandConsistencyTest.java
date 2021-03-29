@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -68,6 +69,7 @@ public class CommandConsistencyTest {
     private static Map<String, List<String>> getLabelsFromPluginFile() {
         FileConfiguration pluginFile = YamlConfiguration.loadConfiguration(getJarFile("/plugin.yml"));
         MemorySection commandList = (MemorySection) pluginFile.get("commands");
+        Objects.requireNonNull(commandList);
         Map<String, Object> commandDefinitions = commandList.getValues(false);
 
         Map<String, List<String>> commandLabels = new HashMap<>();

@@ -4,6 +4,10 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,6 +39,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
@@ -145,6 +150,7 @@ public class ConsoleLoggerTest {
         assertThat(String.join("", loggedLines), containsString(getClass().getCanonicalName()));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldSupportVariousDebugMethods() throws IOException {
         // given
@@ -203,6 +209,106 @@ public class ConsoleLoggerTest {
         verify(fileWriter).flush();
         verify(fileWriter).close();
         assertThat(ReflectionTestUtils.getFieldValue(ConsoleLogger.class, null, "fileWriter"), nullValue());
+    }
+
+    @Test
+    public void shouldLogAndSendMessage() {
+        // given
+        Settings settings = newSettings(false, LogLevel.INFO);
+        ConsoleLogger.initializeSharedSettings(settings);
+        consoleLogger.initializeSettings(settings);
+        Player player = mock(Player.class);
+        String message = "Finished adding foo to the bar";
+
+        // when
+        consoleLogger.logAndSendMessage(player, message);
+
+        // then
+        verify(logger).info(message);
+        verify(player).sendMessage(message);
+    }
+
+    @Test
+    public void shouldHandleNullAsCommandSender() {
+        // given
+        Settings settings = newSettings(false, LogLevel.INFO);
+        ConsoleLogger.initializeSharedSettings(settings);
+        consoleLogger.initializeSettings(settings);
+        String message = "Test test, test.";
+
+        // when
+        consoleLogger.logAndSendMessage(null, message);
+
+        // then
+        verify(logger).info(message);
+    }
+
+    @Test
+    public void shouldNotSendToCommandSenderTwice() {
+        // given
+        Settings settings = newSettings(false, LogLevel.INFO);
+        ConsoleLogger.initializeSharedSettings(settings);
+        consoleLogger.initializeSettings(settings);
+        CommandSender sender = mock(ConsoleCommandSender.class);
+        String message = "Test test, test.";
+
+        // when
+        consoleLogger.logAndSendMessage(sender, message);
+
+        // then
+        verify(logger).info(message);
+        verifyNoInteractions(sender);
+    }
+
+    @Test
+    public void shouldLogAndSendWarning() {
+        // given
+        Settings settings = newSettings(false, LogLevel.INFO);
+        ConsoleLogger.initializeSharedSettings(settings);
+        consoleLogger.initializeSettings(settings);
+        String message = "Error while performing action";
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        consoleLogger.logAndSendWarning(sender, message);
+
+        // then
+        verify(logger).warning(message);
+        verify(sender).sendMessage(ChatColor.RED + message);
+    }
+
+    @Test
+    public void shouldLogWarningAndNotSendToConsoleSender() {
+        // given
+        Settings settings = newSettings(false, LogLevel.INFO);
+        ConsoleLogger.initializeSharedSettings(settings);
+        consoleLogger.initializeSettings(settings);
+        String message = "Error while performing action";
+        CommandSender sender = mock(ConsoleCommandSender.class);
+
+        // when
+        consoleLogger.logAndSendWarning(sender, message);
+
+        // then
+        verify(logger).warning(message);
+        verifyNoInteractions(sender);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void shouldLogWarningAndHandleNullCommandSender() {
+        // given
+        Settings settings = newSettings(false, LogLevel.INFO);
+        ConsoleLogger.initializeSharedSettings(settings);
+        consoleLogger.initializeSettings(settings);
+        String message = "Error while performing action";
+        CommandSender sender = null;
+
+        // when
+        consoleLogger.logAndSendWarning(sender, message);
+
+        // then
+        verify(logger).warning(message);
     }
 
     private static Settings newSettings(boolean logToFile, LogLevel logLevel) {

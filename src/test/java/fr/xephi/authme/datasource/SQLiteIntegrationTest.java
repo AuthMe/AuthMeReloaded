@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -52,7 +53,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         Path sqlInitFile = TestHelper.getJarPath(TestHelper.PROJECT_ROOT + "datasource/sql-initialize.sql");
         // Note ljacqu 20160221: It appears that we can only run one statement per Statement.execute() so we split
         // the SQL file by ";\n" as to get the individual statements
-        sqlInitialize = new String(Files.readAllBytes(sqlInitFile)).split(";(\\r?)\\n");
+        sqlInitialize = new String(Files.readAllBytes(sqlInitFile), StandardCharsets.UTF_8).split(";(\\r?)\\n");
     }
 
     @Before

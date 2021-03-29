@@ -329,17 +329,16 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Returns an optional with a boolean indicating whether bungeecord is enabled or not if the
-     * server implementation is Spigot. Otherwise returns an empty optional.
+     * Returns a boolean indicating whether bungeecord support is enabled or not.
      *
-     * @return Optional with configuration value for Spigot, empty optional otherwise
+     * @return boolean with configuration value for Spigot
      */
-    public Optional<Boolean> isBungeeCordConfiguredForSpigot() {
+    public boolean isBungeeCordConfiguredForSpigot() {
         try {
             YamlConfiguration spigotConfig = Bukkit.spigot().getConfig();
-            return Optional.of(spigotConfig.getBoolean("settings.bungeecord"));
+            return spigotConfig.getBoolean("settings.bungeecord");
         } catch (NoSuchMethodError e) {
-            return Optional.empty();
+            return false;
         }
     }
 

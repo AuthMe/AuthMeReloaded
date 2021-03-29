@@ -18,6 +18,7 @@ import fr.xephi.authme.util.Utils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -65,8 +66,8 @@ public class CacheDataSource implements DataSource {
             });
     }
 
-    public LoadingCache<String, Optional<PlayerAuth>> getCachedAuths() {
-        return cachedAuths;
+    public Map<String, Optional<PlayerAuth>> getCachedAuths() {
+        return cachedAuths.asMap();
     }
 
     @Override
@@ -292,8 +293,10 @@ public class CacheDataSource implements DataSource {
         cachedAuths.invalidate(playerName);
     }
 
+    @SuppressWarnings("OptionalAssignedToNull")
     @Override
     public void refreshCache(String playerName) {
+        // We are actually checking if the entry is cached
         if (cachedAuths.getIfPresent(playerName) != null) {
             cachedAuths.refresh(playerName);
         }

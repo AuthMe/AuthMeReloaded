@@ -1,5 +1,7 @@
 package fr.xephi.authme.util.expiring;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpiringSet<E> {
 
-    private Map<E, Long> entries = new ConcurrentHashMap<>();
+    @NotNull
+    private final Map<E, Long> entries = new ConcurrentHashMap<>();
     private long expirationMillis;
 
     /**
@@ -27,7 +30,7 @@ public class ExpiringSet<E> {
      * @param duration the duration of time after which entries expire
      * @param unit the time unit in which {@code duration} is expressed
      */
-    public ExpiringSet(long duration, TimeUnit unit) {
+    public ExpiringSet(long duration, @NotNull TimeUnit unit) {
         setExpiration(duration, unit);
     }
 
@@ -36,7 +39,7 @@ public class ExpiringSet<E> {
      *
      * @param entry the entry to add
      */
-    public void add(E entry) {
+    public void add(@NotNull E entry) {
         entries.put(entry, System.currentTimeMillis() + expirationMillis);
     }
 
@@ -46,7 +49,7 @@ public class ExpiringSet<E> {
      * @param entry the entry to check
      * @return true if the entry is present and not expired, false otherwise
      */
-    public boolean contains(E entry) {
+    public boolean contains(@NotNull E entry) {
         Long expiration = entries.get(entry);
         if (expiration == null) {
             return false;
@@ -63,7 +66,7 @@ public class ExpiringSet<E> {
      *
      * @param entry the entry to remove
      */
-    public void remove(E entry) {
+    public void remove(@NotNull E entry) {
         entries.remove(entry);
     }
 
@@ -88,7 +91,8 @@ public class ExpiringSet<E> {
      * @param entry the entry whose duration before it expires should be returned
      * @return duration the entry will remain in the set (if there are not modifications)
      */
-    public Duration getExpiration(E entry) {
+    @NotNull
+    public Duration getExpiration(@NotNull E entry) {
         Long expiration = entries.get(entry);
         if (expiration == null) {
             return new Duration(-1, TimeUnit.SECONDS);
@@ -108,7 +112,7 @@ public class ExpiringSet<E> {
      * @param duration the duration of time after which entries expire
      * @param unit the time unit in which {@code duration} is expressed
      */
-    public void setExpiration(long duration, TimeUnit unit) {
+    public void setExpiration(long duration, @NotNull TimeUnit unit) {
         this.expirationMillis = unit.toMillis(duration);
     }
 

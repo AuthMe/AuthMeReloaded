@@ -24,6 +24,7 @@ hs_err_pid*
 
 # Include the project's code style settings file
 !.idea/codeStyleSettings.xml
+!.idea/misc.xml
 
 # File-based project format:
 *.ipr

@@ -53,7 +53,7 @@ public class SettingsWarnerTest {
         given(settings.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(-5);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
         given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(false);
-        given(bukkitService.isBungeeCordConfiguredForSpigot()).willReturn(Optional.of(true));
+        given(bukkitService.isBungeeCordConfiguredForSpigot()).willReturn(true);
 
         // when
         settingsWarner.logWarningsForMisconfigurations();
@@ -70,7 +70,7 @@ public class SettingsWarnerTest {
         given(settings.getProperty(EmailSettings.PORT25_USE_TLS)).willReturn(false);
         given(settings.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(false);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
-        given(bukkitService.isBungeeCordConfiguredForSpigot()).willReturn(Optional.empty());
+        given(bukkitService.isBungeeCordConfiguredForSpigot()).willReturn(false);
 
         // when
         settingsWarner.logWarningsForMisconfigurations();

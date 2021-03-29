@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.help;
 
-import com.google.common.io.Files;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandDescription;
@@ -11,6 +10,7 @@ import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +18,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
@@ -45,9 +47,10 @@ public class HelpMessagesServiceTest {
     @Before
     public void initializeHandler() throws IOException {
         dataFolder = temporaryFolder.newFolder();
-        new File(dataFolder, "messages").mkdirs();
+        FileUtils.createDirectoryOrFail(new File(dataFolder, "messages"));
         File messagesFile = new File(dataFolder, MessagePathHelper.createHelpMessageFilePath("test"));
-        Files.copy(TestHelper.getJarFile(TEST_FILE), messagesFile);
+        Files.copy(TestHelper.getJarFile(TEST_FILE).toPath(), messagesFile.toPath(),
+            StandardCopyOption.REPLACE_EXISTING);
 
         HelpMessagesFileHandler helpMessagesFileHandler = createMessagesFileHandler();
         helpMessagesService = new HelpMessagesService(helpMessagesFileHandler);

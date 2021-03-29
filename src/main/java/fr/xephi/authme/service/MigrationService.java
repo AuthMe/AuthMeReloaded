@@ -29,6 +29,7 @@ public final class MigrationService {
      * @param dataSource The data source
      * @param authmeSha256 Instance to the AuthMe Sha256 encryption method implementation
      */
+    @SuppressWarnings("deprecation")
     public static void changePlainTextToSha256(Settings settings, DataSource dataSource,
                                                Sha256 authmeSha256) {
         if (HashAlgorithm.PLAINTEXT == settings.getProperty(SecuritySettings.PASSWORD_HASH)) {

@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
 import ch.jalu.injector.factory.SingletonStore;
-import com.google.common.cache.LoadingCache;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -40,6 +39,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link DataStatistics}.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @RunWith(MockitoJUnitRunner.class)
 public class DataStatisticsTest {
 
@@ -99,9 +99,9 @@ public class DataStatisticsTest {
     public void shouldOutputCachedDataSourceStatistics() {
         // given
         CacheDataSource cacheDataSource = mock(CacheDataSource.class);
-        LoadingCache<String, Optional<PlayerAuth>> cache = mock(LoadingCache.class);
-        given(cache.size()).willReturn(11L);
-        given(cacheDataSource.getCachedAuths()).willReturn(cache);
+        Map<String, Optional<PlayerAuth>> cacheValues = mock(Map.class);
+        given(cacheValues.size()).willReturn(11);
+        given(cacheDataSource.getCachedAuths()).willReturn(cacheValues);
         ReflectionTestUtils.setField(DataStatistics.class, dataStatistics, "dataSource", cacheDataSource);
         CommandSender sender = mock(CommandSender.class);
 

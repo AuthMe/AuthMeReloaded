@@ -66,6 +66,7 @@ class LimboPlayerTaskManager {
      */
     void registerTimeoutTask(Player player, LimboPlayer limbo) {
         final int timeout = settings.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+        //noinspection ConstantConditions Inspection error!
         if (timeout > 0) {
             String message = messages.retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
             BukkitTask task = bukkitService.runTaskLater(new TimeoutTask(player, message, playerCache), timeout);

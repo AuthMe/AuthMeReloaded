@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Called if a player is teleported to a specific spawn upon joining or logging in.
@@ -44,6 +45,7 @@ public class SpawnTeleportEvent extends AbstractTeleportEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }

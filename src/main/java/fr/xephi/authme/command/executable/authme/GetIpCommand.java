@@ -25,7 +25,7 @@ public class GetIpCommand implements ExecutableCommand {
         Player player = bukkitService.getPlayerExact(playerName);
         PlayerAuth auth = dataSource.getAuth(playerName);
 
-        if (player != null) {
+        if (player != null && player.getAddress() != null) {
             sender.sendMessage("Current IP of " + player.getName() + " is " + PlayerUtils.getPlayerIp(player)
                 + ":" + player.getAddress().getPort());
         }

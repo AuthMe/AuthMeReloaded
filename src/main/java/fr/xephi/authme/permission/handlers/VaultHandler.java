@@ -42,12 +42,7 @@ public class VaultHandler implements PermissionHandler {
             throw new PermissionHandlerException("Could not load permissions provider service");
         }
 
-        // Get the Vault provider and make sure it's valid
-        Permission vaultPerms = permissionProvider.getProvider();
-        if (vaultPerms == null) {
-            throw new PermissionHandlerException("Could not load Vault permissions provider");
-        }
-        return vaultPerms;
+        return permissionProvider.getProvider();
     }
 
     @Override

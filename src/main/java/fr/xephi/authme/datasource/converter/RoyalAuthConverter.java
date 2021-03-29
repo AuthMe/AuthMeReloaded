@@ -34,6 +34,9 @@ public class RoyalAuthConverter implements Converter {
     @Override
     public void execute(CommandSender sender) {
         for (OfflinePlayer player : plugin.getServer().getOfflinePlayers()) {
+            if (player.getName() == null) {
+                continue;
+            }
             try {
                 String name = player.getName().toLowerCase();
                 File file = new File(makePath(".", "plugins", "RoyalAuth", "userdata", name + ".yml"));

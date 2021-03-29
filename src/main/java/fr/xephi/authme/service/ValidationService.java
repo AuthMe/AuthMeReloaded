@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -55,7 +56,11 @@ public class ValidationService implements Reloadable {
     @PostConstruct
     @Override
     public void reload() {
-        passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX));
+        passwordRegex = Utils.safePatternCompile(settings.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX),
+            patternString -> {
+                logger.warning("Failed to compile pattern '" + patternString + "' - defaulting to allowing everything");
+                return Utils.MATCH_ANYTHING_PATTERN;
+        });
         restrictedNames = settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)
             ? loadNameRestrictions(settings.getProperty(RestrictionSettings.RESTRICTED_USERS))
             : HashMultimap.create();
@@ -155,7 +160,7 @@ public class ValidationService implements Reloadable {
         }
 
         String ip = PlayerUtils.getPlayerIp(player);
-        String domain = player.getAddress().getHostName();
+        String domain = Objects.requireNonNull(player.getAddress()).getHostName();
         for (String restriction : restrictions) {
             if (restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");

@@ -5,7 +5,6 @@ import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.resource.PropertyReader;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +12,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,7 +49,8 @@ public class MigraterYamlFileResourceTest {
     public void shouldWriteWithCorrectCharset() throws IOException {
         // given
         File file = temporaryFolder.newFile();
-        Files.copy(TestHelper.getJarFile(CHINESE_MESSAGES_FILE), file);
+        Files.copy(TestHelper.getJarFile(CHINESE_MESSAGES_FILE).toPath(), file.toPath(),
+            StandardCopyOption.REPLACE_EXISTING);
         MigraterYamlFileResource resource = new MigraterYamlFileResource(file);
         ConfigurationData configurationData = buildConfigurationData();
         configurationData.initializeValues(resource.createReader());

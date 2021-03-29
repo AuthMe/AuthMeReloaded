@@ -1,5 +1,7 @@
 package fr.xephi.authme.util.expiring;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,12 +20,13 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
      * @param duration the duration of time after which entries expire
      * @param unit the time unit in which {@code duration} is expressed
      */
-    public TimedCounter(long duration, TimeUnit unit) {
+    public TimedCounter(long duration, @NotNull TimeUnit unit) {
         super(duration, unit);
     }
 
     @Override
-    public Integer get(K key) {
+    @NotNull
+    public Integer get(@NotNull K key) {
         Integer value = super.get(key);
         return value == null ? 0 : value;
     }
@@ -33,7 +36,7 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
      *
      * @param key the key to increment the counter for
      */
-    public void increment(K key) {
+    public void increment(@NotNull K key) {
         put(key, get(key) + 1);
     }
 
@@ -43,7 +46,7 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
      *
      * @param key the key to increment the counter for
      */
-    public void decrement(K key) {
+    public void decrement(@NotNull K key) {
         ExpiringEntry<Integer> e = getEntries().get(key);
 
         if (e != null) {
@@ -67,4 +70,5 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
             .map(ExpiringEntry::getValue)
             .reduce(0, Integer::sum);
     }
+
 }

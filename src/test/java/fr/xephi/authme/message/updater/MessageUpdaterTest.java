@@ -3,7 +3,6 @@ package fr.xephi.authme.message.updater;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.YamlFileReader;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
 import org.junit.BeforeClass;
@@ -13,6 +12,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertThat;
  */
 public class MessageUpdaterTest {
 
-    private MessageUpdater messageUpdater = new MessageUpdater();
+    private final MessageUpdater messageUpdater = new MessageUpdater();
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -43,7 +44,8 @@ public class MessageUpdaterTest {
         // given
         String messagesFilePath = DEFAULT_MESSAGES_FILE;
         File messagesFile = temporaryFolder.newFile();
-        Files.copy(TestHelper.getJarFile("/" + messagesFilePath), messagesFile);
+        Files.copy(TestHelper.getJarFile("/" + messagesFilePath).toPath(), messagesFile.toPath(),
+            StandardCopyOption.REPLACE_EXISTING);
         long modifiedDate = messagesFile.lastModified();
 
         // when
@@ -58,7 +60,8 @@ public class MessageUpdaterTest {
     public void shouldAddMissingKeys() throws IOException {
         // given
         File messagesFile = temporaryFolder.newFile();
-        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test.yml"), messagesFile);
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test.yml").toPath(),
+            messagesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         
         // when
         boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "does-not-exist", DEFAULT_MESSAGES_FILE);
@@ -78,7 +81,8 @@ public class MessageUpdaterTest {
     public void shouldMigrateOldEntries() throws IOException {
         // given
         File messagesFile = temporaryFolder.newFile();
-        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_en_old.yml"), messagesFile);
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_en_old.yml").toPath(),
+            messagesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         // when
         boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, DEFAULT_MESSAGES_FILE, DEFAULT_MESSAGES_FILE);
@@ -104,7 +108,8 @@ public class MessageUpdaterTest {
     public void shouldPerformNewerMigrations() throws IOException {
         // given
         File messagesFile = temporaryFolder.newFile();
-        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test2.yml"), messagesFile);
+        Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test2.yml").toPath(),
+            messagesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         // when
         boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, DEFAULT_MESSAGES_FILE, DEFAULT_MESSAGES_FILE);

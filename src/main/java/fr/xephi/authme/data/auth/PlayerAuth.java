@@ -73,7 +73,13 @@ public class PlayerAuth {
         return groupId;
     }
 
+    /**
+     * Sets the player's auth quit location.
+     *
+     * @param location the quit location
+     */
     public void setQuitLocation(Location location) {
+        Objects.requireNonNull(location.getWorld(), "world not loaded!");
         x = location.getBlockX();
         y = location.getBlockY();
         z = location.getBlockZ();
@@ -300,6 +306,7 @@ public class PlayerAuth {
          * @return this builder instance
          */
         public Builder location(Location location) {
+            Objects.requireNonNull(location.getWorld(), "world not loaded!");
             this.x = location.getX();
             this.y = location.getY();
             this.z = location.getZ();

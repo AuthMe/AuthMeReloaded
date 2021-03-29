@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -47,7 +48,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         TestHelper.setRealLogger();
 
         Path sqlInitFile = TestHelper.getJarPath(TestHelper.PROJECT_ROOT + "datasource/sql-initialize.sql");
-        sqlInitialize = new String(Files.readAllBytes(sqlInitFile));
+        sqlInitialize = new String(Files.readAllBytes(sqlInitFile), StandardCharsets.UTF_8);
     }
 
     @Before

@@ -13,7 +13,6 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 /**
  * Logs warning messages in cases where the configured values suggest a misconfiguration.
@@ -60,7 +59,7 @@ public class SettingsWarner {
         }
 
         // Warn if spigot.yml has settings.bungeecord set to true but config.yml has Hooks.bungeecord set to false
-        if (isTrue(bukkitService.isBungeeCordConfiguredForSpigot())
+        if (bukkitService.isBungeeCordConfiguredForSpigot()
             && !settings.getProperty(HooksSettings.BUNGEECORD)) {
             logger.warning("Note: Hooks.bungeecord is set to false but your server appears to be running in"
                 + " bungeecord mode (see your spigot.yml). In order to allow the datasource caching and the"
@@ -76,7 +75,4 @@ public class SettingsWarner {
         }
     }
 
-    private static boolean isTrue(Optional<Boolean> value) {
-        return value.isPresent() && value.get();
-    }
 }

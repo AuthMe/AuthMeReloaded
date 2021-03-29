@@ -1,6 +1,5 @@
 package tools.messages;
 
-import com.google.common.collect.Lists;
 import fr.xephi.authme.message.MessageKey;
 import tools.utils.AutoToolTask;
 import tools.utils.FileIoUtils;
@@ -9,8 +8,10 @@ import tools.utils.ToolsConstants;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -33,8 +34,11 @@ public class CheckMessageKeyUsages implements AutoToolTask {
         if (unusedKeys.isEmpty()) {
             System.out.println("No unused MessageKey entries found :)");
         } else {
-            System.out.println("Did not find usages for keys:\n- "
-                + String.join("\n- ", Lists.transform(unusedKeys, MessageKey::name)));
+            System.out.println("Did not find usages for keys:\n- " + unusedKeys.stream()
+                .filter(Objects::nonNull)
+                .map(Enum::name)
+                .collect(Collectors.joining("\n- "))
+            );
         }
     }
 

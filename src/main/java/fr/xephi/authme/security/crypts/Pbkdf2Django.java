@@ -1,11 +1,11 @@
 package fr.xephi.authme.security.crypts;
 
-import com.google.common.primitives.Ints;
 import de.rtner.security.auth.spi.PBKDF2Engine;
 import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
+import fr.xephi.authme.util.Utils;
 
 import java.util.Base64;
 
@@ -30,7 +30,8 @@ public class Pbkdf2Django extends HexSaltedMethod {
         if (line.length != 4) {
             return false;
         }
-        Integer iterations = Ints.tryParse(line[1]);
+
+        Integer iterations = Utils.tryInteger(line[1]);
         if (iterations == null) {
             logger.warning("Cannot read number of rounds for Pbkdf2Django: '" + line[1] + "'");
             return false;

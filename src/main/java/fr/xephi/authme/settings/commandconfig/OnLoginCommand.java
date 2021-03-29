@@ -17,7 +17,7 @@ public class OnLoginCommand extends Command {
     }
 
     /**
-     * Creates a copy of this object, using the given command as new {@link Command#command command}.
+     * Creates a copy of this object, using the given command.
      *
      * @param command the command text to use in the copy
      * @return copy of the source with the new command

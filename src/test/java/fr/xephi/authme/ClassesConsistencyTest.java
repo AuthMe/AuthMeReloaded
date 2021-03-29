@@ -12,7 +12,6 @@ import fr.xephi.authme.datasource.columnshandler.PlayerAuthColumn;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
-import fr.xephi.authme.security.crypts.Whirlpool;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import fr.xephi.authme.util.expiring.ExpiringSet;
 import fr.xephi.authme.util.expiring.TimedCounter;
@@ -30,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -53,7 +53,7 @@ public class ClassesConsistencyTest {
     private static final Set<Class<?>> IMMUTABLE_TYPES = ImmutableSet.of(
         /* JDK */
         int.class, long.class, float.class, String.class, File.class, Enum.class, collectionsUnmodifiableList(),
-        Charset.class,
+        Charset.class, Pattern.class,
         /* AuthMe */
         Property.class, RegistrationMethod.class, DataSourceColumn.class, PlayerAuthColumn.class,
         /* Guava */
@@ -61,7 +61,6 @@ public class ClassesConsistencyTest {
 
     /** Classes excluded from the field visibility test. */
     private static final Set<Class<?>> CLASSES_EXCLUDED_FROM_VISIBILITY_TEST = ImmutableSet.of(
-        Whirlpool.class, // not our implementation, so we don't touch it
         MySqlExtension.class, // has immutable protected fields used by all children
         AbstractSqlDataSource.class, // protected members for inheritance
         Columns.class // uses non-static String constants, which is safe

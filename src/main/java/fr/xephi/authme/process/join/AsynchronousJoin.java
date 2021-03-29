@@ -143,9 +143,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-                welcomeMessageConfiguration.sendWelcomeMessage(player);
-            });
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
+                welcomeMessageConfiguration.sendWelcomeMessage(player));
 
             // Skip if registration is optional
             return;
@@ -182,6 +181,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
                 // Allow infinite blindness effect
+                //noinspection ConstantConditions Inspection error!
                 int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
             }

@@ -1,7 +1,6 @@
 package fr.xephi.authme.message;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
@@ -23,6 +22,8 @@ import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -71,9 +72,10 @@ public class MessagesIntegrationTest {
     public void setUpMessages() throws IOException {
         dataFolder = temporaryFolder.newFolder();
         File testFile = new File(dataFolder, MessagePathHelper.createMessageFilePath("test"));
-        new File(dataFolder, MessagePathHelper.MESSAGES_FOLDER).mkdirs();
+        FileUtils.createDirectoryOrFail(new File(dataFolder, MessagePathHelper.MESSAGES_FOLDER));
         FileUtils.create(testFile);
-        Files.copy(TestHelper.getJarFile(YML_TEST_FILE), testFile);
+        Files.copy(TestHelper.getJarFile(YML_TEST_FILE).toPath(), testFile.toPath(),
+            StandardCopyOption.REPLACE_EXISTING);
 
         messagesFileHandler = createMessagesFileHandler();
         messages = new Messages(messagesFileHandler);
@@ -284,7 +286,8 @@ public class MessagesIntegrationTest {
         // given
         // Use the JAR's messages_en.yml file for this, so copy to the file we're using and reload the file handler
         File testFile = new File(dataFolder, MessagePathHelper.createMessageFilePath("test"));
-        Files.copy(TestHelper.getJarFile("/" + MessagePathHelper.DEFAULT_MESSAGES_FILE), testFile);
+        Files.copy(TestHelper.getJarFile("/" + MessagePathHelper.DEFAULT_MESSAGES_FILE).toPath(),
+            testFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         messagesFileHandler.reload();
 
         Map<Duration, String> expectedTexts = ImmutableMap.<Duration, String>builder()

@@ -3,6 +3,7 @@ package fr.xephi.authme.events;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is called when a player logs out through AuthMe, i.e. only when the player
@@ -42,6 +43,7 @@ public class LogoutEvent extends CustomEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }

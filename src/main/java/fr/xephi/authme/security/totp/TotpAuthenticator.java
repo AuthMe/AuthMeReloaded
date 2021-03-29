@@ -2,7 +2,6 @@ package fr.xephi.authme.security.totp;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.google.common.primitives.Ints;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
@@ -11,6 +10,7 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -55,7 +55,7 @@ public class TotpAuthenticator implements HasCleanup {
      */
     public boolean checkCode(String playerName, String totpKey, String inputCode) {
         String nameLower = playerName.toLowerCase();
-        Integer totpCode = Ints.tryParse(inputCode);
+        Integer totpCode = Utils.tryInteger(inputCode);
         if (totpCode != null && !usedCodes.contains(nameLower, totpCode)
             && authenticator.authorize(totpKey, totpCode)) {
             usedCodes.put(nameLower, totpCode, System.currentTimeMillis());

@@ -7,7 +7,6 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
@@ -19,6 +18,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class SettingsIntegrationTest {
     /** File name of the sample config missing certain {@link TestConfiguration} values. */
     private static final String INCOMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-incomplete-sample.yml";
 
-    private static ConfigurationData CONFIG_DATA =
+    private static final ConfigurationData CONFIG_DATA =
         ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
 
     @Rule
@@ -125,7 +126,7 @@ public class SettingsIntegrationTest {
 
         // when
         assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER), equalTo(TestEnum.SECOND)); // default value
-        Files.copy(getJarFile(COMPLETE_FILE), configFile);
+        Files.copy(getJarFile(COMPLETE_FILE).toPath(), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         settings.reload();
 
         // then
@@ -136,7 +137,7 @@ public class SettingsIntegrationTest {
         try {
             File source = getJarFile(path);
             File destination = temporaryFolder.newFile();
-            Files.copy(source, destination);
+            Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
             return destination;
         } catch (IOException e) {
             throw new IllegalStateException("Could not copy test file", e);

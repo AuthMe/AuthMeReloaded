@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -150,6 +151,7 @@ public class HelpTranslationVerifier {
             return Collections.emptySet();
         }
         MemorySection memorySection = (MemorySection) configuration.get(path);
+        Objects.requireNonNull(memorySection);
 
         // MemorySection#getKeys(true) returns all keys on all levels, e.g. if the configuration has
         // 'commands.authme.register' then it also has 'commands.authme' and 'commands'. We can traverse each node and

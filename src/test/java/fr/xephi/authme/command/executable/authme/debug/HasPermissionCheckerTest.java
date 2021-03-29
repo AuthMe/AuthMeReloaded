@@ -45,6 +45,7 @@ public class HasPermissionCheckerTest {
     @Mock
     private BukkitService bukkitService;
 
+    @SuppressWarnings("FuseStreamOperations")
     @Test
     public void shouldListAllPermissionNodeClasses() {
         // given

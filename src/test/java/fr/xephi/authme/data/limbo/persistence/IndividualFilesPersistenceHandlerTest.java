@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -60,7 +61,7 @@ public class IndividualFilesPersistenceHandlerTest {
             throw new IllegalStateException("Cannot create '" + playerFolder.getAbsolutePath() + "'");
         }
         Files.copy(TestHelper.getJarPath(FileUtils.makePath(SOURCE_FOLDER, "sample-folder", "data.json")),
-            new File(playerFolder, "data.json").toPath());
+            new File(playerFolder, "data.json").toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Test

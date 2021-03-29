@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.BukkitServiceTestHelper;
@@ -18,6 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -47,8 +48,10 @@ public class CommandManagerTest {
 
     @Mock
     private BukkitService bukkitService;
+
     @Mock
     private GeoIpService geoIpService;
+
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
@@ -302,7 +305,7 @@ public class CommandManagerTest {
         File source = TestHelper.getJarFile(path);
         File destination = new File(testFolder, "commands.yml");
         try {
-            Files.copy(source, destination);
+            Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

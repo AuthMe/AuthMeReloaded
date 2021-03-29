@@ -3,6 +3,7 @@ package fr.xephi.authme.events;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Event fired when a player enters a wrong password.
@@ -40,6 +41,7 @@ public class FailedLoginEvent extends CustomEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }

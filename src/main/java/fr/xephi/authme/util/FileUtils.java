@@ -1,13 +1,14 @@
 package fr.xephi.authme.util;
 
-import com.google.common.io.Files;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -21,7 +22,7 @@ public final class FileUtils {
     private static final DateTimeFormatter CURRENT_DATE_STRING_FORMATTER =
         DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
 
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(FileUtils.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(FileUtils.class);
 
     // Utility class
     private FileUtils() {
@@ -35,7 +36,7 @@ public final class FileUtils {
      *
      * @return False if the file does not exist and could not be copied, true otherwise
      */
-    public static boolean copyFileFromResource(File destinationFile, String resourcePath) {
+    public static boolean copyFileFromResource(@NotNull File destinationFile, @NotNull String resourcePath) {
         if (destinationFile.exists()) {
             return true;
         } else if (!createDirectory(destinationFile.getParentFile())) {
@@ -48,7 +49,7 @@ public final class FileUtils {
                 logger.warning(format("Cannot copy resource '%s' to file '%s': cannot load resource",
                     resourcePath, destinationFile.getPath()));
             } else {
-                java.nio.file.Files.copy(is, destinationFile.toPath());
+                Files.copy(is, destinationFile.toPath());
                 return true;
             }
         } catch (IOException e) {
@@ -64,12 +65,40 @@ public final class FileUtils {
      * @param dir the directory to create
      * @return true upon success, false otherwise
      */
-    public static boolean createDirectory(File dir) {
+    public static boolean createDirectory(@NotNull File dir) {
         if (!dir.exists() && !dir.mkdirs()) {
             logger.warning("Could not create directory '" + dir + "'");
             return false;
         }
         return dir.isDirectory();
+    }
+
+    /**
+     * Creates the given directory, throws a runtime exception on fail.
+     *
+     * @param dir the directory to create
+     * @throws IllegalStateException when unable to create the directory
+     */
+    public static void createDirectoryOrFail(@NotNull File dir) {
+        if (!dir.exists() && !dir.mkdirs() || !dir.isDirectory()) {
+            throw new IllegalStateException("Could not create directory '" + dir + "'");
+        }
+    }
+
+    /**
+     * Creates the given file, throws a runtime exception on fail.
+     *
+     * @param file the file to create
+     * @throws IllegalStateException when unable to create the file
+     */
+    public static void createFileOrFail(@NotNull File file) {
+        try {
+            if (!file.exists() && !file.createNewFile() || !file.isFile()) {
+                throw new IllegalStateException("Could not create file '" + file + "'");
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not create file '" + file + "'", e);
+        }
     }
 
     /**
@@ -165,9 +194,10 @@ public final class FileUtils {
      * @return path to a file suitably named for storing a backup
      */
     public static String createBackupFilePath(File file) {
-        String filename = "backup_" + Files.getNameWithoutExtension(file.getName())
+        String filename = "backup_" + com.google.common.io.Files.getNameWithoutExtension(file.getName())
             + "_" + createCurrentTimeString()
-            + "." + Files.getFileExtension(file.getName());
+            + "." + com.google.common.io.Files.getFileExtension(file.getName());
         return makePath(file.getParent(), filename);
     }
+
 }

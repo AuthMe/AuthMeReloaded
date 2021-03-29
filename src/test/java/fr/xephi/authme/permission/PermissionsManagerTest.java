@@ -123,6 +123,7 @@ public class PermissionsManagerTest {
         assertThat(result, equalTo(false));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldHandleNullPermissionForCommandSender() {
         // given
@@ -136,6 +137,7 @@ public class PermissionsManagerTest {
         assertThat(result, equalTo(true));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void shouldHandleNullPermissionForPlayer() {
         // given

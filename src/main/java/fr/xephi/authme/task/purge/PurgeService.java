@@ -10,13 +10,12 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
-
-import static fr.xephi.authme.util.Utils.logAndSendMessage;
 
 /**
  * Initiates purge tasks.
@@ -77,7 +76,7 @@ public class PurgeService {
         //todo: note this should may run async because it may executes a SQL-Query
         Set<String> toPurge = dataSource.getRecordsToPurge(until);
         if (Utils.isCollectionEmpty(toPurge)) {
-            logAndSendMessage(sender, "No players to purge");
+            logger.logAndSendMessage(sender, "No players to purge");
             return;
         }
 
@@ -91,9 +90,9 @@ public class PurgeService {
      * @param names The names to remove
      * @param players Collection of OfflinePlayers (including those with the given names)
      */
-    public void purgePlayers(CommandSender sender, Set<String> names, OfflinePlayer[] players) {
+    public void purgePlayers(CommandSender sender, @NotNull Set<String> names, @NotNull OfflinePlayer[] players) {
         if (isPurging) {
-            logAndSendMessage(sender, "Purge is already in progress! Aborting purge request");
+            logger.logAndSendMessage(sender, "Purge is already in progress! Aborting purge request");
             return;
         }
 
@@ -117,7 +116,8 @@ public class PurgeService {
      * @param players the players (associated with the names)
      * @param names the lowercase names
      */
-    void executePurge(Collection<OfflinePlayer> players, Collection<String> names) {
+    void executePurge(@NotNull Collection<OfflinePlayer> players, @NotNull Collection<String> names) {
         purgeExecutor.executePurge(players, names);
     }
+
 }

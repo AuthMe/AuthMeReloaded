@@ -1,6 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import com.google.common.primitives.Ints;
 import de.rtner.misc.BinTools;
 import de.rtner.security.auth.spi.PBKDF2Engine;
 import de.rtner.security.auth.spi.PBKDF2Parameters;
@@ -10,6 +9,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.Utils;
 
 import javax.inject.Inject;
 
@@ -41,7 +41,8 @@ public class Pbkdf2 extends HexSaltedMethod {
         if (line.length != 4) {
             return false;
         }
-        Integer iterations = Ints.tryParse(line[1]);
+
+        Integer iterations = Utils.tryInteger(line[1]);
         if (iterations == null) {
             logger.warning("Cannot read number of rounds for Pbkdf2: '" + line[1] + "'");
             return false;

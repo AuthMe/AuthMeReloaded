@@ -1,11 +1,14 @@
 package fr.xephi.authme;
 
-import com.google.common.base.Throwables;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ExceptionUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
 import java.io.File;
@@ -42,7 +45,9 @@ public final class ConsoleLogger {
     private static OutputStreamWriter fileWriter;
 
     // Individual state
+    @NotNull
     private final String name;
+    @NotNull
     private LogLevel logLevel = LogLevel.INFO;
 
     /**
@@ -50,7 +55,7 @@ public final class ConsoleLogger {
      *
      * @param name the name of this logger (the fully qualified class name using it)
      */
-    public ConsoleLogger(String name) {
+    public ConsoleLogger(@NotNull String name) {
         this.name = name;
     }
 
@@ -58,7 +63,7 @@ public final class ConsoleLogger {
     // Configurations
     // --------
 
-    public static void initialize(Logger logger, File logFile) {
+    public static void initialize(@NotNull Logger logger, @NotNull File logFile) {
         ConsoleLogger.logger = logger;
         ConsoleLogger.logFile = logFile;
     }
@@ -68,7 +73,7 @@ public final class ConsoleLogger {
      *
      * @param settings the settings to read from
      */
-    public static void initializeSharedSettings(Settings settings) {
+    public static void initializeSharedSettings(@NotNull Settings settings) {
         boolean useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
         if (useLogging) {
             initializeFileWriter();
@@ -82,14 +87,16 @@ public final class ConsoleLogger {
      *
      * @param settings the settings to read from
      */
-    public void initializeSettings(Settings settings) {
+    public void initializeSettings(@NotNull Settings settings) {
         this.logLevel = settings.getProperty(PluginSettings.LOG_LEVEL);
     }
 
+    @NotNull
     public LogLevel getLogLevel() {
         return logLevel;
     }
 
+    @NotNull
     public String getName() {
         return name;
     }
@@ -104,7 +111,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public void warning(String message) {
+    public void warning(@NotNull String message) {
         logger.warning(message);
         writeLog("[WARN] " + message);
     }
@@ -116,9 +123,9 @@ public final class ConsoleLogger {
      * @param message The message to accompany the exception
      * @param th      The Throwable to log
      */
-    public void logException(String message, Throwable th) {
+    public void logException(@NotNull String message, @NotNull Throwable th) {
         warning(message + " " + ExceptionUtils.formatException(th));
-        writeLog(Throwables.getStackTraceAsString(th));
+        writeLog(ExceptionUtils.getStackTraceAsString(th));
     }
 
     /**
@@ -126,7 +133,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public void info(String message) {
+    public void info(@NotNull String message) {
         logger.info(message);
         writeLog("[INFO] " + message);
     }
@@ -139,10 +146,42 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public void fine(String message) {
+    public void fine(@NotNull String message) {
         if (logLevel.includes(LogLevel.FINE)) {
             logger.info(message);
             writeLog("[FINE] " + message);
+        }
+    }
+
+    /**
+     * Sends a message to the given sender (null safe), and logs the message to the console.
+     * This method is aware that the command sender might be the console sender and avoids
+     * displaying the message twice in this case.
+     *
+     * @param sender the sender to inform
+     * @param message the message to log and send
+     */
+    public void logAndSendMessage(CommandSender sender, @NotNull String message) {
+        info(message);
+        // Make sure sender is not console user, which will see the message from ConsoleLogger already
+        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
+            sender.sendMessage(message);
+        }
+    }
+
+    /**
+     * Sends a warning to the given sender (null safe), and logs the warning to the console.
+     * This method is aware that the command sender might be the console sender and avoids
+     * displaying the message twice in this case.
+     *
+     * @param sender the sender to inform
+     * @param message the warning to log and send
+     */
+    public void logAndSendWarning(CommandSender sender, @NotNull String message) {
+        warning(message);
+        // Make sure sender is not console user, which will see the message from ConsoleLogger already
+        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
+            sender.sendMessage(ChatColor.RED + message);
         }
     }
 
@@ -158,7 +197,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to log
      */
-    public void debug(String message) {
+    public void debug(@NotNull String message) {
         if (logLevel.includes(LogLevel.DEBUG)) {
             logAndWriteWithDebugPrefix(message);
         }
@@ -171,7 +210,7 @@ public final class ConsoleLogger {
      * @param param1 parameter to replace in the message
      */
     // Avoids array creation if DEBUG level is disabled
-    public void debug(String message, Object param1) {
+    public void debug(@NotNull String message, Object param1) {
         if (logLevel.includes(LogLevel.DEBUG)) {
             debug(message, new Object[]{param1});
         }
@@ -185,7 +224,7 @@ public final class ConsoleLogger {
      * @param param2 second param to replace in message
      */
     // Avoids array creation if DEBUG level is disabled
-    public void debug(String message, Object param1, Object param2) {
+    public void debug(@NotNull String message, Object param1, Object param2) {
         if (logLevel.includes(LogLevel.DEBUG)) {
             debug(message, new Object[]{param1, param2});
         }
@@ -197,7 +236,7 @@ public final class ConsoleLogger {
      * @param message the message
      * @param params the params to replace in the message
      */
-    public void debug(String message, Object... params) {
+    public void debug(@NotNull String message, Object... params) {
         if (logLevel.includes(LogLevel.DEBUG)) {
             logAndWriteWithDebugPrefix(MessageFormat.format(message, params));
         }
@@ -208,13 +247,13 @@ public final class ConsoleLogger {
      *
      * @param msgSupplier the message supplier
      */
-    public void debug(Supplier<String> msgSupplier) {
+    public void debug(@NotNull Supplier<String> msgSupplier) {
         if (logLevel.includes(LogLevel.DEBUG)) {
             logAndWriteWithDebugPrefix(msgSupplier.get());
         }
     }
 
-    private void logAndWriteWithDebugPrefix(String message) {
+    private void logAndWriteWithDebugPrefix(@NotNull String message) {
         String debugMessage = "[DEBUG] " + message;
         logger.info(debugMessage);
         writeLog(debugMessage);
@@ -244,7 +283,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to write to the log
      */
-    private static void writeLog(String message) {
+    private static void writeLog(@NotNull String message) {
         if (fileWriter != null) {
             String dateTime = DATE_FORMAT.format(LocalDateTime.now());
             try {
@@ -284,4 +323,5 @@ public final class ConsoleLogger {
             }
         }
     }
+
 }

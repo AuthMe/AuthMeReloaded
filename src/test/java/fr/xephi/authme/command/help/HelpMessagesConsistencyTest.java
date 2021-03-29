@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -55,7 +56,7 @@ public class HelpMessagesConsistencyTest {
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
 
         // when
-        Object commands = configuration.get("commands");
+        Object commands = Objects.requireNonNull(configuration.get("commands"));
 
         // then
         assertThat(commands, instanceOf(MemorySection.class));

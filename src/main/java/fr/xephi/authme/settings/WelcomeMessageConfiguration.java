@@ -17,6 +17,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -95,6 +96,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
      * @param player the player for whom the welcome message should be prepared
      * @return the welcome message
      */
+    @NotNull
     public List<String> getWelcomeMessage(Player player) {
         return messageSupplier.getAdaptedMessages(player);
     }
@@ -104,7 +106,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
      *
      * @param player the player for whom the welcome message should be prepared
      */
-    public void sendWelcomeMessage(Player player) {
+    public void sendWelcomeMessage(@NotNull Player player) {
         if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
             List<String> welcomeMessage = getWelcomeMessage(player);
             if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
@@ -118,6 +120,7 @@ public class WelcomeMessageConfiguration implements Reloadable {
     /**
      * @return the lines of the welcome message file
      */
+    @NotNull
     private List<String> readWelcomeFile() {
         if (!(service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE))) {
             return Collections.emptyList();

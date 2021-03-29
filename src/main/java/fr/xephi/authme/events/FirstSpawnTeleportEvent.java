@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Event that is called if a player is teleported to the AuthMe first spawn, i.e. to the
@@ -33,6 +34,7 @@ public class FirstSpawnTeleportEvent extends AbstractTeleportEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }

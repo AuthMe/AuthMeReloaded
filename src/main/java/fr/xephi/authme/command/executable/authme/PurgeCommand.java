@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
-import com.google.common.primitives.Ints;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.task.purge.PurgeService;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -27,7 +27,7 @@ public class PurgeCommand implements ExecutableCommand {
         String daysStr = arguments.get(0);
 
         // Convert the days string to an integer value, and make sure it's valid
-        Integer days = Ints.tryParse(daysStr);
+        Integer days = Utils.tryInteger(daysStr);
         if (days == null) {
             sender.sendMessage(ChatColor.RED + "The value you've entered is invalid!");
             return;

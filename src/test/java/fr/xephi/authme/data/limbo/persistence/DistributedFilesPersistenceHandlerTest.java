@@ -3,13 +3,13 @@ package fr.xephi.authme.data.limbo.persistence;
 import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
-import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
+import fr.xephi.authme.util.FileUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -23,6 +23,9 @@ import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -71,7 +74,6 @@ public class DistributedFilesPersistenceHandlerTest {
     /** UUID for which no data is stored (belongs to an existing segment file: seg16-8). */
     private static final UUID UNKNOWN_UUID2 = fromString("84d1cc0b-8f12-d04a-e7ba-a067d05cdc39");
 
-
     @InjectDelayed
     private DistributedFilesPersistenceHandler persistenceHandler;
 
@@ -79,6 +81,7 @@ public class DistributedFilesPersistenceHandlerTest {
     private Settings settings;
     @Mock
     private BukkitService bukkitService;
+    @SuppressWarnings("FieldCanBeLocal")
     @DataFolder
     private File dataFolder;
     private File playerDataFolder;
@@ -96,12 +99,12 @@ public class DistributedFilesPersistenceHandlerTest {
         given(settings.getProperty(LimboSettings.DISTRIBUTION_SIZE)).willReturn(SegmentSize.SIXTEEN);
         dataFolder = temporaryFolder.newFolder();
         playerDataFolder = new File(dataFolder, "playerdata");
-        playerDataFolder.mkdir();
+        FileUtils.createDirectoryOrFail(playerDataFolder);
 
         File limboFilesFolder = new File(TEST_RESOURCES_FOLDER + PROJECT_ROOT + "data/limbo");
         for (File file : limboFilesFolder.listFiles()) {
             File from = new File(playerDataFolder, file.getName());
-            Files.copy(file, from);
+            Files.copy(file.toPath(), from.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
         given(bukkitService.getWorld(anyString()))
@@ -185,7 +188,7 @@ public class DistributedFilesPersistenceHandlerTest {
         // assumption
         File invalidFile = new File(playerDataFolder, "seg16-4-limbo.json");
         assertThat(invalidFile.exists(), equalTo(false));
-        Files.write("not valid json".getBytes(), invalidFile);
+        Files.write(invalidFile.toPath(), "not valid json".getBytes(StandardCharsets.UTF_8));
 
         // when
         LimboPlayer result = persistenceHandler.getLimboPlayer(mockPlayerWithUuid(UNKNOWN_UUID));

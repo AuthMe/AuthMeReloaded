@@ -5,8 +5,11 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -17,7 +20,8 @@ public final class Utils {
     /** Number of milliseconds in a minute. */
     public static final long MILLIS_PER_MINUTE = 60_000L;
 
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
+    /** A pattern that matches anything. */
+    public static final Pattern MATCH_ANYTHING_PATTERN = Pattern.compile(".*?");
 
     // Utility class
     private Utils() {
@@ -26,16 +30,16 @@ public final class Utils {
     /**
      * Compile Pattern sneaky without throwing Exception.
      *
-     * @param pattern pattern string to compile
+     * @param pattern  pattern string to compile
+     * @param fallback the fallback pattern supplier
      *
      * @return the given regex compiled into Pattern object.
      */
-    public static Pattern safePatternCompile(String pattern) {
+    public static Pattern safePatternCompile(@NotNull String pattern, @NotNull Function<String, Pattern> fallback) {
         try {
             return Pattern.compile(pattern);
         } catch (Exception e) {
-            logger.warning("Failed to compile pattern '" + pattern + "' - defaulting to allowing everything");
-            return Pattern.compile(".*?");
+            return fallback.apply(pattern);
         }
     }
 
@@ -46,44 +50,12 @@ public final class Utils {
      *
      * @return true if the class is loaded, false otherwise
      */
-    public static boolean isClassLoaded(String className) {
+    public static boolean isClassLoaded(@NotNull String className) {
         try {
             Class.forName(className);
             return true;
         } catch (ClassNotFoundException e) {
             return false;
-        }
-    }
-
-    /**
-     * Sends a message to the given sender (null safe), and logs the message to the console.
-     * This method is aware that the command sender might be the console sender and avoids
-     * displaying the message twice in this case.
-     *
-     * @param sender the sender to inform
-     * @param message the message to log and send
-     */
-    public static void logAndSendMessage(CommandSender sender, String message) {
-        logger.info(message);
-        // Make sure sender is not console user, which will see the message from ConsoleLogger already
-        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(message);
-        }
-    }
-
-    /**
-     * Sends a warning to the given sender (null safe), and logs the warning to the console.
-     * This method is aware that the command sender might be the console sender and avoids
-     * displaying the message twice in this case.
-     *
-     * @param sender the sender to inform
-     * @param message the warning to log and send
-     */
-    public static void logAndSendWarning(CommandSender sender, String message) {
-        logger.warning(message);
-        // Make sure sender is not console user, which will see the message from ConsoleLogger already
-        if (sender != null && !(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(ChatColor.RED + message);
         }
     }
 
@@ -107,4 +79,18 @@ public final class Utils {
     public static boolean isEmailEmpty(String email) {
         return StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email);
     }
+
+    /**
+     * Tries to parse a String as an Integer, returns null on fail.
+     *
+     * @return the parsed Integer value
+     */
+    public static Integer tryInteger(@NotNull String string) {
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 }

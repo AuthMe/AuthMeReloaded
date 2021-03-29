@@ -14,6 +14,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 
@@ -52,7 +53,7 @@ public class SettingsTest {
         String emailMessage = "Sample email message\nThat's all!";
         File emailFile = new File(testPluginFolder, "email.html");
         createFile(emailFile);
-        Files.write(emailFile.toPath(), emailMessage.getBytes());
+        Files.write(emailFile.toPath(), emailMessage.getBytes(StandardCharsets.UTF_8));
 
         PropertyResource resource = mockPropertyResourceAndReader();
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
@@ -70,7 +71,7 @@ public class SettingsTest {
         String emailMessage = "Your recovery code is %code.";
         File emailFile = new File(testPluginFolder, "recovery_code_email.html");
         createFile(emailFile);
-        Files.write(emailFile.toPath(), emailMessage.getBytes());
+        Files.write(emailFile.toPath(), emailMessage.getBytes(StandardCharsets.UTF_8));
 
         PropertyResource resource = mockPropertyResourceAndReader();
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
@@ -88,7 +89,7 @@ public class SettingsTest {
         String emailMessage = "Please verify your identity with <recoverycode />.";
         File emailFile = new File(testPluginFolder, "verification_code_email.html");
         createFile(emailFile);
-        Files.write(emailFile.toPath(), emailMessage.getBytes());
+        Files.write(emailFile.toPath(), emailMessage.getBytes(StandardCharsets.UTF_8));
 
         PropertyResource resource = mockPropertyResourceAndReader();
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
