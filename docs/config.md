@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Jan 21 10:33:12 CET 2020. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Apr 04 21:31:43 CEST 2021. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -28,6 +28,8 @@ DataSource:
     mySQLUsername: authme
     # Password to connect to the MySQL database
     mySQLPassword: '12345'
+    # Driver Name of the MySQL database
+    mySQLDriverClassName: com.mysql.jdbc.Driver
     # Database Name, use with converters or as SQLITE database name
     mySQLDatabase: authme
     # Table of the database
@@ -136,7 +138,7 @@ settings:
         # Hide the chat log from players who are not authenticated?
         hideChat: false
         # Allowed commands for unauthenticated players
-        allowCommands:
+        allowCommands: 
         - /login
         - /log
         - /l
@@ -166,7 +168,7 @@ settings:
             enabled: false
             # WorldNames where we need to force the spawn location
             # Case-sensitive!
-            worlds:
+            worlds: 
             - world
             - world_nether
             - world_the_end
@@ -269,7 +271,7 @@ settings:
         # - '123456'
         # - 'password'
         # - 'help'
-        unsafePasswords:
+        unsafePasswords: 
         - '123456'
         - password
         - qwerty
@@ -375,7 +377,7 @@ Email:
     # Delay in minute for the recall scheduler
     delayRecall: 5
     # Blacklist these domains for emails
-    emailBlacklisted:
+    emailBlacklisted: 
     - 10minutemail.com
     # Whitelist ONLY these domains for emails
     emailWhitelisted: []
@@ -411,13 +413,13 @@ Protection:
     # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
     # Use "LOCALHOST" for local addresses.
     # PLEASE USE QUOTES!
-    countries:
+    countries: 
     - US
     - GB
     - LOCALHOST
     # Countries not allowed to join the server and register
     # PLEASE USE QUOTES!
-    countriesBlacklist:
+    countriesBlacklist: 
     - A1
     # Do we need to enable automatic antibot system?
     enableAntiBot: true
@@ -585,4 +587,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Jan 21 10:33:12 CET 2020
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:43 CEST 2021
