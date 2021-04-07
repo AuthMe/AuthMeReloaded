@@ -589,7 +589,7 @@
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
-            <version>2.9.1</version>
+            <version>2.10.1</version>
             <optional>true</optional>
         </dependency>
 
