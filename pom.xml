@@ -285,10 +285,30 @@
                 <version>3.2.4</version>
                 <executions>
                     <execution>
+                        <id>shaded-jar</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>com.mysql</exclude>
+                                    <exclude>org.gjt.mm.mysql</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>shaded-jar-legacy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Use the base jar name, to help server owners download the right jar -->
+                            <finalName>${project.finalNameBase}-legacy</finalName>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
@@ -370,7 +390,22 @@
                                 <exclude>META-INF/*.RSA</exclude>
                             </excludes>
                         </filter>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.MF</exclude>
+                                <exclude>META-INF/DEPENDENCIES</exclude>
+                            </excludes>
+                        </filter>
                     </filters>
+
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                            <addHeader>false</addHeader>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
                 </configuration>
             </plugin>
             <!-- Install the jars as artifacts into the local repository -->
@@ -582,6 +617,14 @@
             <groupId>de.rtner</groupId>
             <artifactId>PBKDF2</artifactId>
             <version>1.1.4</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- MySQL connector, shaded into the legacy jar -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.49</version>
             <optional>true</optional>
         </dependency>
 
