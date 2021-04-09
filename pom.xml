@@ -293,8 +293,7 @@
                         <configuration>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>com.mysql</exclude>
-                                    <exclude>org.gjt.mm.mysql</exclude>
+                                    <exclude>mysql:mysql-connector-java</exclude>
                                 </excludes>
                             </artifactSet>
                         </configuration>
