@@ -242,7 +242,10 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
 
             if (isColumnMissing(md, col.TOTP_KEY)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
+                    + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(32);");
+            } else if (SqlDataSourceUtils.getColumnSize(md, tableName, col.TOTP_KEY) != 32) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ALTER COLUMN " + col.TOTP_KEY + " TYPE VARCHAR(32);");
             }
 
             if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Aug 02 16:25:51 CEST 2019. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Sun Apr 04 21:31:42 CEST 2021. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -24,9 +24,9 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.admin.changemail`
 - **/authme getip** &lt;player>: Get the IP address of the specified online player.
   <br />Requires `authme.admin.getip`
-- **/authme totp** &lt;player>: Returns whether the specified player has enabled two-factor authentication
+- **/authme totp** &lt;player>: Returns whether the specified player has enabled two-factor authentication.
   <br />Requires `authme.admin.totpviewstatus`
-- **/authme disabletotp** &lt;player>: Disable two-factor authentication for a player
+- **/authme disabletotp** &lt;player>: Disable two-factor authentication for a player.
   <br />Requires `authme.admin.totpdisable`
 - **/authme spawn**: Teleport to the spawn.
   <br />Requires `authme.admin.spawn`
@@ -108,4 +108,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Aug 02 16:25:51 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:42 CEST 2021

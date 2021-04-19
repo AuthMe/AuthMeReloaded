@@ -189,7 +189,7 @@ class PurgeServiceTest {
 
     private void verifyScheduledPurgeTask(UUID senderUuid, Set<String> names) {
         ArgumentCaptor<PurgeTask> captor = ArgumentCaptor.forClass(PurgeTask.class);
-        verify(bukkitService).runTaskTimer(captor.capture(), eq(0L), eq(1L));
+        verify(bukkitService).runTaskTimerAsynchronously(captor.capture(), eq(0L), eq(1L));
         PurgeTask task = captor.getValue();
 
         Object senderInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "sender");

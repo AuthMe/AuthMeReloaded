@@ -5,21 +5,21 @@
 
 # Registration
 registration:
-    disabled: '&cMängusisene registreerimine on välja lülitatud!'
-    name_taken: '&cSee kasutaja on juba registreeritud!'
     register_request: '&3Palun registreeri käsklusega: /register <parool> <KinnitaParool>'
     command_usage: '&cKasutus: /register <parool> <KinnitaParool>'
-    reg_only: '&4Vaid registreeritud mängijad saavad liituda serveriga! Külasta http://example.com enda kasutaja registreerimiseks!'
-    success: '&2Edukalt registreeritud!'
+    reg_only: '&4Vaid registreeritud mängijad saavad serveriga liituda! Enda kasutaja registreerimiseks külasta http://example.com!'
     kicked_admin_registered: 'Administraator registreeris su kasutaja, palun logi uuesti sisse.'
+    success: '&2Edukalt registreeritud!'
+    disabled: '&cMängusisene registreerimine on välja lülitatud!'
+    name_taken: '&cSee kasutaja on juba registreeritud!'
 
 # Password errors on registration
 password:
     match_error: '&cParoolid ei kattu, palun proovi uuesti!'
-    name_in_password: '&cSa ei saa kasutada oma kasutajanime paroolina, palun vali mõni teine parool.'
+    name_in_password: '&cSa ei saa oma kasutajanime paroolina kasutada, palun vali mõni teine parool.'
     unsafe_password: '&cSee parool ei ole turvaline, palun vali mõni teine parool.'
-    forbidden_characters: '&4Su parool sisaldab keelatud tähemärke. Lubatud tähemärgid: %valid_chars'
-    wrong_length: '&cSu parool on liiga pikk või lühike, palun vali mõni teine parool.'
+    forbidden_characters: '&4Sinu parool sisaldab keelatud tähemärke. Lubatud tähemärgid: %valid_chars'
+    wrong_length: '&cSinu parool on liiga pikk või lühike, palun vali mõni teine parool.'
 
 # Login
 login:
@@ -27,80 +27,79 @@ login:
     wrong_password: '&cVale parool!'
     success: '&2Edukalt sisselogitud!'
     login_request: '&cPalun logi sisse kasutades käsklust: /login <parool>'
-    timeout_error: '&4Sisselogimiseks antud aeg on läbi, palun proovi uuesti!'
+    timeout_error: '&4Sisselogimiseks antud aeg on läbi ning sind on serverist välja visatud, palun proovi uuesti!'
 
 # Errors
 error:
-    denied_command: '&cSelle käskluse kasutamiseks pead sisse logima!'
-    denied_chat: '&cRääkimiseks pead sisse logima!'
     unregistered_user: '&cSee kasutaja ei ole registreeritud!'
+    denied_command: '&cSelle käskluse kasutamiseks pead olema sisselogitud!'
+    denied_chat: '&cVestlemiseks pead olema sisselogitud!'
     not_logged_in: '&cSa ei ole sisselogitud!'
-    no_permission: '&4Sul ei ole õigust selle käskluse kasutamiseks.'
-    unexpected_error: '&4Süsteemis tekkis viga, teata sellest administraatorile!'
-    max_registration: '&cSu IP aadressile on registreeritud liiga palju kasutajaid! (%reg_count/%max_acc %reg_names)'
+    tempban_max_logins: '&cSind on ajutiselt serverist blokeeritud, kuna sisestasid mitu korda vale parooli.'
+    max_registration: '&cSinu IP-aadressile on registreeritud liiga palju kasutajaid! (%reg_count/%max_acc %reg_names)'
+    no_permission: '&4Sul puudub selle käskluse kasutamiseks luba.'
+    unexpected_error: '&4Esines ootamatu tõrge, palun teavita administraatorit!'
+    kick_for_vip: '&3VIP-mängija liitus serveriga ajal, mil see oli täis!'
     logged_in: '&cSa oled juba sisselogitud!'
-    kick_for_vip: '&3VIP mängija liitus serveriga ajal, mil see oli täis!'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
-    tempban_max_logins: '&cSind blokeeriti ajutiselt serverist, sest sisestasid mitu korda vale parooli.'
+    kick_unresolved_hostname: '&cEsines tõrge: mängija hostinimi on lahendamata!'
 
 # AntiBot
 antibot:
-    kick_antibot: 'AntiBot kaitse sisse lülitatud! Pead ootama mõne minuti enne kui serveriga liituda saad.'
-    auto_enabled: '&4[AntiBotKaitse] AntiBot sisselülitatud!'
-    auto_disabled: '&2[AntiBotKaitse] AntiBot välja lülitatud peale %m minutit!'
+    kick_antibot: 'AntiBot-kaitse sisse lülitatud! Pead ootama mõne minuti enne kui serveriga liituda saad.'
+    auto_enabled: '&4[AntiBotTeenus] AntiBot sisselülitatud!'
+    auto_disabled: '&2[AntiBotTeenus] AntiBot välja lülitatud peale %m minutit!'
 
-# Unregister
 unregister:
     success: '&cKasutaja edukalt kustutatud!'
     command_usage: '&cKasutus: /unregister <parool>'
 
 # Other messages
 misc:
-    account_not_activated: '&cSu konto ei ole veel aktiveeritud, kontrolli oma meili!'
-    password_changed: '&2Parool vahetatud!'
-    logout: '&2Edukalt välja logitud!'
-    reload: '&2Andmebaas edukalt laetud!'
-    usage_change_password: '&cKasutus: /changepassword <vanaParool> <uusParool>'
     accounts_owned_self: 'Sa omad %count kontot:'
     accounts_owned_other: 'Mängijal %name on %count kontot:'
+    account_not_activated: '&cSinu konto ei ole veel aktiveeritud, kontrolli oma meili!'
+    password_changed: '&2Parool edukalt vahetatud!'
+    logout: '&2Edukalt välja logitud!'
+    reload: '&2Seadistused ning andmebaas on edukalt taaslaaditud!'
+    usage_change_password: '&cKasutus: /changepassword <vanaParool> <uusParool>'
 
 # Session messages
 session:
+    invalid_session: '&cSinu IP-aadress muutus, seega sinu sessioon aegus!'
     valid_session: '&2Sisse logitud sessiooni jätkumise tõttu.'
-    invalid_session: '&cSu IP aadress muutus mistõttu sinu sessioon aegus!'
 
 # Error messages when joining
 on_join_validation:
-    same_ip_online: 'Sama IP aadressiga mängija juba mängib!'
-    same_nick_online: '&4Sama kasutaja on juba ühendatud serveriga!'
-    name_length: '&4Su kasutajanimi on liiga pikk või lühike!'
-    characters_in_name: '&4Su kasutajanimi sisaldab keelatud tähemärke. Lubatud tähemärgid: %valid_chars'
-    kick_full_server: '&4Server täis, proovi uuesti!'
-    country_banned: '&4Sinu riigist ei ole võimalik ühenduda sellesse serverisse!'
-    not_owner_error: 'Sa ei ole selle kasutaja omanik. Vali teine nimi!!'
+    name_length: '&4Sinu kasutajanimi on liiga pikk või liiga lühike!'
+    characters_in_name: '&4Sinu kasutajanimi sisaldab keelatud tähemärke. Lubatud tähemärgid: %valid_chars'
+    country_banned: '&4Sinu riigist ei ole võimalik sellesse serverisse ühenduda!'
+    not_owner_error: 'Sa ei ole selle konto omanik. Vali teine nimi!'
+    kick_full_server: '&4Server on täis, proovi hiljem uuesti!'
+    same_nick_online: '&4Sama kasutaja on juba serveriga ühendatud!'
     invalid_name_case: 'Sa peaksid liituma nimega %valid, mitte nimega %invalid.'
-    quick_command: 'Sa kasutasid käsklust liiga kiiresti! Palun liitu serveriga ja oota kauem enne kui käsklust kasutad.'
+    same_ip_online: 'Sama IP-aadressiga mängija juba mängib!'
+    quick_command: 'Sa kasutasid käsklust liiga kiiresti! Palun liitu serveriga uuesti ning oota enne mõne käskluse kasutamist kauem.'
 
 # Email
 email:
-    add_email_request: '&3Palun seo oma kasutajaga meiliaadress kasutades käsklust: /email add <sinuEmail> <kinnitaEmail>'
     usage_email_add: '&cKasutus: /email add <email> <kinnitaEmail>'
     usage_email_change: '&cKasutus: /email change <vanaEmail> <uusEmail>'
-    new_email_invalid: '&cUus meiliaadress on vale, proovi uuesti!'
-    old_email_invalid: '&cVana meiliaadress on vale, proovi uuesti!'
-    invalid: '&cVale meiliaadress, proovi uuesti!'
+    new_email_invalid: '&cUus meiliaadress on sobimatu, proovi uuesti!'
+    old_email_invalid: '&cVana meiliaadress on sobimatu, proovi uuesti!'
+    invalid: '&cSobimatu meiliaadress, proovi uuesti!'
     added: '&2Meiliaadress edukalt lisatud!'
-    add_not_allowed: '&cMeiliaadressi lisamine ei ole lubatud.'
     request_confirmation: '&cPalun kinnita oma meiliaadress!'
     changed: '&2Meiliaadress edukalt muudetud!'
-    change_not_allowed: '&cMeiliaadressi muutmine ei ole lubatud.'
-    email_show: '&2Su praegune meiliaadress on: &f%email'
-    no_email_for_account: '&2Selle kasutajaga ei ole seotud ühtegi meiliaadressi.'
+    email_show: '&2Sinu praegune meiliaadress on: &f%email'
+    incomplete_settings: 'Viga: meili saatmiseks pole kõik vajalikud seaded seadistatud. Teata sellest administraatorit.'
     already_used: '&4See meiliaadress on juba kasutuses!'
-    incomplete_settings: 'Viga: meili saatmiseks pole kõik vajalikud seaded seadistatud. Teata sellest administraatorile.'
-    send_failure: 'Meili ei õnnestunud saata. Teata sellest administraatorile.'
+    send_failure: 'Meili ei õnnestunud saata. Teata sellest administraatorit.'
+    no_email_for_account: '&2Selle kasutajaga ei ole seotud ühtegi meiliaadressi.'
+    add_email_request: '&3Palun seo oma kasutajaga meiliaadress kasutades käsklust: /email add <sinuEmail> <kinnitaEmail>'
     change_password_expired: 'Selle käsklusega ei saa sa enam parooli muuta.'
     email_cooldown_error: '&cMeil on juba saadetud. Sa pead ootama %time enne kui saad küsida uue saatmist.'
+    add_not_allowed: '&cMeiliaadressi lisamine ei ole lubatud.'
+    change_not_allowed: '&cMeiliaadressi muutmine ei ole lubatud.'
 
 # Password recovery by email
 recovery:
@@ -109,28 +108,41 @@ recovery:
     email_sent: '&2Konto taastamiseks vajalik meil saadetud! Vaata oma postkasti.'
     code:
         code_sent: 'Konto taastamise kood on saadetud!'
-        incorrect: 'Kood vale! Sul on %count katset jäänud.'
+        incorrect: 'Kood on vale! Sul on %count katset jäänud.'
         tries_exceeded: 'Sul on katsed otsas. Kasuta käsklust "/email recovery [email]" uue koodi saamiseks.'
         correct: 'Kood õigesti sisestatud!'
-        change_password: 'Palun kasuta käsklust /email setpassword <uusParool> parooli muutmiseks.'
+        change_password: 'Palun kasuta parooli muutmiseks käsklust /email setpassword <uusParool>.'
 
 # Captcha
 captcha:
-    usage_captcha: '&3Sisselogimiseks lahenda captcha käsklusega: /captcha %captcha_code'
-    wrong_captcha: '&cVale captcha, kasuta käsklust "/captcha %captcha_code"!'
-    valid_captcha: '&2Captcha lahendatud!'
-    captcha_for_registration: 'Registreerimiseks lahenda captcha kasutades käsklust: /captcha %captcha_code'
-    register_captcha_valid: '&2Captcha lahendatud! Võid nüüd registreerida kasutades käsklust /register'
+    usage_captcha: '&3Sisselogimiseks lahenda robotilõks käsklusega: /captcha %captcha_code'
+    wrong_captcha: '&cVale robotilõks, kasuta käsklust "/captcha %captcha_code"!'
+    valid_captcha: '&2Robotilõks lahendatud!'
+    captcha_for_registration: 'Registreerimiseks lahenda robotilõks kasutades käsklust: /captcha %captcha_code'
+    register_captcha_valid: '&2Robotilõks lahendatud! Võid nüüd registreerida kasutades käsklust /register'
 
 # Verification code
 verification:
     code_required: '&3See käsklus on ohtlik mistõttu saatsime sulle meili. Kontrolli oma meili ja järgi saadetud meili juhiseid.'
     command_usage: '&cKasutus: /verification <kood>'
     incorrect_code: '&cVale kood, palun kasuta käsklust "/verification <kood>" koodiga, mille saatsime sulle meilile.'
-    success: '&2Konto kinnitatud!'
+    success: '&2Sinu identiteet on kinnitatud! Sa saad nüüd praeguse sessiooni jal kasutada kõiki käsklusi.'
     already_verified: '&2Sa juba saad kasutada kõiki ohtlikke käsklusi!'
-    code_expired: '&3Kood aegunud! Kasuta mõnda ohtlikku käsklust, et saada uus kood!'
+    code_expired: '&3Kood on aegunud! Kasuta mõnda ohtlikku käsklust, et saada uus kood!'
     email_needed: '&3Konto kinnitamiseks pead siduma oma kontoga enda meiliaadressi!'
+
+# Two-factor authentication
+two_factor:
+    code_created: '&2Sinu privaatne kood on %code. Sa saad selle skännida aadressil %url'
+    confirmation_required: 'Palun kinnita oma kaheastmeline autentimise kood käsklusega /2fa confirm <kood>'
+    code_required: 'Palun sisesta kaheastmeline autentimise kood kasutades /2fa code <kood>'
+    already_enabled: 'Kaheastmeline autentimine on juba sisselülitatud!'
+    enable_error_no_code: '2FA võtit ei ole genereeritud või on see aegunud. Kasuta käsklust /2fa add'
+    enable_success: 'Kaheastmeline autentimine edukalt sisselülitatud!'
+    enable_error_wrong_code: 'Vale kood või kood on aegunud. Kasuta käsklust /2fa add'
+    not_enabled_error: 'Kaheastmeline autentimine ei ole su kontol sisse lülitatud. Kasuta käsklust /2fa add'
+    removed_success: 'Sinu kontolt on edukalt eemaldatud kaheastmeline autentimine.'
+    invalid_code: 'Vale kood!'
 
 # Time units
 time:
@@ -142,16 +154,3 @@ time:
     hours: 'tundi'
     day: 'päev'
     days: 'päeva'
-
-# Two-factor authentication
-two_factor:
-    code_created: '&2Sinu privaatne kood on %code. Sa saad selle skännida aadressil %url'
-    confirmation_required: 'Palun kinnita oma kaheastmeline autentimise kood käsklusega /2fa confirm <kood>'
-    code_required: 'Palun sisesta kaheastmeline autentimise kood kasutades /2fa code <kood>'
-    already_enabled: 'Kaheastmeline autentimine on juba sisselülitatud!'
-    enable_error_no_code: '2fa võtit ei ole genereeritud või on see aegunud. Kasuta käsklust /2fa add'
-    enable_success: 'Kaheastmeline autentimine edukalt sisselülitatud!'
-    enable_error_wrong_code: 'Vale kood või kood on aegunud. Kasuta käsklust /2fa add'
-    not_enabled_error: 'Kaheastmeline autentimine ei ole su kontol sisse lülitatud. Kasuta käsklust /2fa add'
-    removed_success: 'Sinu kontolt on edukalt eemaldatud kaheastmeline autentimine.'
-    invalid_code: 'Vale kood!'

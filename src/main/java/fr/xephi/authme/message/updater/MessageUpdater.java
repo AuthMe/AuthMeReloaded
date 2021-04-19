@@ -4,6 +4,7 @@ import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.PropertyListBuilder;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
+import ch.jalu.configme.properties.convertresult.ConvertErrorRecorder;
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.collect.ImmutableMap;
@@ -177,7 +178,7 @@ public class MessageUpdater {
         }
 
         @Override
-        protected String getFromReader(PropertyReader reader) {
+        protected String getFromReader(PropertyReader reader, ConvertErrorRecorder errorRecorder) {
             return reader.getString(getPath());
         }
     }

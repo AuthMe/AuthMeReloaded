@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -152,9 +153,10 @@ public class BukkitService implements SettingsDependent {
      * @param period the ticks to wait between runs
      * @return a BukkitTask that contains the id number
      * @throws IllegalArgumentException if task is null
+     * @throws IllegalStateException if this was already scheduled
      */
-    public BukkitTask runTaskTimerAsynchronously(Runnable task, long delay, long period) {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(authMe, task, delay, period);
+    public BukkitTask runTaskTimerAsynchronously(BukkitRunnable task, long delay, long period) {
+        return task.runTaskTimerAsynchronously(authMe, delay, period);
     }
 
     /**
@@ -167,7 +169,6 @@ public class BukkitService implements SettingsDependent {
      * @return a BukkitTask that contains the id number
      * @throws IllegalArgumentException if plugin is null
      * @throws IllegalStateException if this was already scheduled
-     * @see BukkitScheduler#runTaskTimer(org.bukkit.plugin.Plugin, Runnable, long, long)
      */
     public BukkitTask runTaskTimer(BukkitRunnable task, long delay, long period) {
         return task.runTaskTimer(authMe, delay, period);

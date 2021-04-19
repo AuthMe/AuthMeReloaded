@@ -1,6 +1,6 @@
 # AuthMeReloaded
 **"The best authentication plugin for the Bukkit modding API!"**
-<img src="https://cdn.authme.eu/logo.png" alt="AuthMeLogo" style="width: 250px;"/>
+<img src="wallpaper.png?raw=true" alt="AuthMeLogo" style="width: 250px;"/>
 
 | Type              | Badges                                                                                                                                                                                                                                                                                                                                                                                |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -24,16 +24,17 @@ You can also create your own translation file and, if you want, you can share it
 
 #### Features:
 <ul>
-  <li><strong>E-Mail Recovery System !!!</strong></li>
+  <li><strong>E-Mail Recovery System!</strong></li>
   <li>Username spoofing protection.</li>
   <li>Countries Whitelist/Blacklist! <a href="https://dev.maxmind.com/geoip/legacy/codes/iso3166/">(country codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
   <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
+  <li>Two-factor (2FA) support!</li>
   <li>Session Login!</li>
   <li>Editable translations and messages!</li>
   <li><strong>MySQL and SQLite Backend support!</strong></li>
-  <li>Supported password encryption algorithms: SHA256, BCRYPT, PBKDF2, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a></li>
+  <li>Supported password encryption algorithms: SHA256, ARGON2, BCRYPT, PBKDF2, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a></li>
   <li>Supported alternative registration methods:<br>
   <ul>
     <li>PHPBB, VBulletin: PHPBB - MD5VB</li>
@@ -83,9 +84,9 @@ You can also create your own translation file and, if you want, you can share it
 
  - **Support:**
    - [GitHub issue tracker](https://github.com/AuthMe/AuthMeReloaded/issues)
+   - [Discord](https://discord.gg/Vn9eCyE)
    - [BukkitDev page](https://dev.bukkit.org/projects/authme-reloaded)
    - [Spigot page](https://www.spigotmc.org/resources/authmereloaded.6269/)
-   - [Discord](https://discord.gg/Vn9eCyE)
 
 - **Dev resources:**
   - <a href="https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded/javadoc/">JavaDocs</a>
@@ -114,7 +115,7 @@ You can also create your own translation file and, if you want, you can share it
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 1.8
+>- JDK 8 (JDK 11 is recommended)
 >- Maven
 >- Git/Github (Optional)
 
@@ -123,8 +124,8 @@ You can also create your own translation file and, if you want, you can share it
 >- Execute command "mvn clean package"
 
 ##### Running requirements:
->- Java 1.8
->- TacoSpigot, PaperSpigot or Spigot (1.7.10, 1.8.X, 1.9.X, 1.10.X, 1.11.X, 1.12.X)<br>
+>- Java 8 (Java 11 is recommended)
+>- Paper or Spigot (1.8.X and up)<br>
    (In case you use Thermos, Cauldron or similar, you have to update the SpecialSource library to support Java 8 plugins.
    HowTo: https://github.com/games647/FastLogin/issues/111#issuecomment-272331347)
 >- ProtocolLib (optional, required by some features)

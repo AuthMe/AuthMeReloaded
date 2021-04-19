@@ -1,9 +1,9 @@
 package fr.xephi.authme.process.login;
 
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.LimboService;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -40,7 +40,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     private TeleportationService teleportationService;
 
     @Inject
-    private DataSource dataSource;
+    private PlayerCache playerCache;
 
     @Inject
     private CommandManager commandManager;
@@ -88,7 +88,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             restoreInventory(player);
         }
 
-        final PlayerAuth auth = dataSource.getAuth(name);
+        final PlayerAuth auth = playerCache.getAuth(name);
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // We can now display the join message (if delayed)

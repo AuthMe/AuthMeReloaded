@@ -44,6 +44,10 @@ public final class DatabaseSettings implements SettingsHolder {
     @Comment("Password to connect to the MySQL database")
     public static final Property<String> MYSQL_PASSWORD =
         newProperty("DataSource.mySQLPassword", "12345");
+    
+        @Comment("Driver Name of the MySQL database")
+    public static final Property<String> MYSQL_DRIVER_CLASS_NAME =
+        newProperty("DataSource.mySQLDriverClassName", "com.mysql.jdbc.Driver");
 
     @Comment("Database Name, use with converters or as SQLITE database name")
     public static final Property<String> MYSQL_DATABASE =

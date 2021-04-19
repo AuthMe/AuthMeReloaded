@@ -259,7 +259,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
-            logger.fine(player.getName() + " logged in!");
+            logger.fine(player.getName() + " logged in " + ip);
 
             // makes player loggedin
             playerCache.updatePlayer(auth);

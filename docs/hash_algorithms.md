@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Apr 19 17:16:06 CEST 2019. See docs/hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Sun Apr 04 21:31:44 CEST 2021. See docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -80,4 +80,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 19 17:16:06 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:44 CEST 2021

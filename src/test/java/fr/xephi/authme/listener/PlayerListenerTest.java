@@ -646,7 +646,7 @@ class PlayerListenerTest {
     }
 
     @Test
-    void shouldNotInterfereWithUnrestrictedUser() {
+    void shouldNotInterfereWithUnrestrictedUser() throws FailedVerificationException {
         // given
         String name = "Player01";
         Player player = mockPlayerWithName(name);
@@ -658,12 +658,13 @@ class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
+        verify(onJoinVerifier).checkSingleSession(name);
         verifyNoModifyingCalls(event);
-        verifyNoInteractions(onJoinVerifier);
+        verifyNoMoreInteractions(onJoinVerifier);
     }
 
     @Test
-    void shouldStopHandlingForFullServer() {
+    void shouldStopHandlingForFullServer() throws FailedVerificationException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -676,12 +677,14 @@ class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier, only()).refusePlayerForFullServer(event);
+        verify(onJoinVerifier).checkSingleSession(name);
+        verify(onJoinVerifier).refusePlayerForFullServer(event);
+        verifyNoMoreInteractions(onJoinVerifier);
         verifyNoModifyingCalls(event);
     }
 
     @Test
-    void shouldStopHandlingEventForBadResult() {
+    void shouldStopHandlingEventForBadResult() throws FailedVerificationException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -696,7 +699,8 @@ class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier, only()).refusePlayerForFullServer(event);
+        verify(onJoinVerifier).checkSingleSession(name);
+        verify(onJoinVerifier).refusePlayerForFullServer(event);
         verifyNoModifyingCalls(event);
     }
 
@@ -714,7 +718,6 @@ class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).checkIsValidName(name);
         verifyNoInteractions(dataSource);
         verifyNoModifyingCalls(preLoginEvent);
@@ -946,6 +949,7 @@ class PlayerListenerTest {
         // given
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
+        given(transaction.getTitle()).willReturn("Spawn");
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES)).willReturn(Collections.emptySet());
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);

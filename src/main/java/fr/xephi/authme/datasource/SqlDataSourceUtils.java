@@ -86,4 +86,24 @@ public final class SqlDataSourceUtils {
             return rs.getObject("COLUMN_DEF");
         }
     }
+
+    /**
+     * Returns the size of a column (as per its SQL definition).
+     *
+     * @param metaData the database meta data
+     * @param tableName the name of the table in which the column is
+     * @param columnName the name of the column to check
+     * @return the size of the column
+     * @throws SQLException :)
+     */
+    public static int getColumnSize(DatabaseMetaData metaData, String tableName,
+                                         String columnName) throws SQLException {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+            if (!rs.next()) {
+                throw new IllegalStateException("Did not find meta data for column '"
+                    + columnName + "' while checking its size");
+            }
+            return rs.getInt("COLUMN_SIZE");
+        }
+    }
 }

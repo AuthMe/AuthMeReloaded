@@ -3,29 +3,29 @@
 # -------------------------------------------------------
 # List of texts used in the help section
 common:
-    header: '==========[ AuthMeReloaded ABI ]=========='
-    optional: 'Valikuline'
-    hasPermission: 'Sul on luba'
-    noPermission: 'Pole luba'
-    default: 'Vaikimisi'
-    result: 'Tulemus'
+    header: '==========[ AuthMeReloaded HELP ]=========='
+    optional: 'Volitelné'
+    hasPermission: 'Máš oprávnění'
+    noPermission: 'Bez oprávnění'
+    default: 'Defaultní'
+    result: 'Výsledek'
     defaultPermissions:
-        notAllowed: 'Pole luba'
-        opOnly: 'Ainult operaatorid'
-        allowed: 'Luba kõigil'
+        notAllowed: 'Bez oprávnění'
+        opOnly: 'Pouze OP'
+        allowed: 'Povolené pro všechny'
 
 # -------------------------------------------------------
 # Titles of the individual help sections
 # Set the translation text to empty text to disable the section, e.g. to hide alternatives:
 #   alternatives: ''
 section:
-    command: 'Käsklus'
-    description: 'Lühike kirjeldus'
-    detailedDescription: 'Detailne kirjeldus'
-    arguments: 'Argumendid'
-    permissions: 'Load'
-    alternatives: 'Alternatiivid'
-    children: 'Käsklused'
+    command: 'Příkaz'
+    description: 'Krátký popis'
+    detailedDescription: 'Detailní popis'
+    arguments: 'Argumenty'
+    permissions: 'Oprávnění'
+    alternatives: 'Alternativy'
+    children: 'Příkazy'
 
 # -------------------------------------------------------
 # You can translate the data for all commands using the below pattern.
@@ -35,11 +35,11 @@ section:
 # Important: Put main commands like "authme" before their children (e.g. "authme.reload")
 commands:
     authme.register:
-        description: 'Registreeri mängija'
-        detailedDescription: 'Registreeri valitud mängija valitud parooliga.'
+        description: 'Registrovat hráče'
+        detailedDescription: 'Registrovat daného hráče s daným heslem.'
         arg1:
-            label: 'mängija'
-            description: 'Mängija nimi'
+            label: 'hráč'
+            description: 'Jméno hráče'
         arg2:
-            label: 'parool'
-            description: 'Parool'
+            label: 'heslo'
+            description: 'Heslo'

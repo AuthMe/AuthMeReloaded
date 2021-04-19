@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings;
 
 import ch.jalu.configme.properties.BaseProperty;
+import ch.jalu.configme.properties.convertresult.ConvertErrorRecorder;
 import ch.jalu.configme.resource.PropertyReader;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ public class EnumSetProperty<E extends Enum<E>> extends BaseProperty<Set<E>> {
     }
 
     @Override
-    protected Set<E> getFromReader(PropertyReader reader) {
+    protected Set<E> getFromReader(PropertyReader reader, ConvertErrorRecorder errorRecorder) {
         Object entry = reader.getObject(getPath());
         if (entry instanceof Collection<?>) {
             return ((Collection<?>) entry).stream()

@@ -183,7 +183,7 @@ public class SQLite extends AbstractSqlDataSource {
 
             if (isColumnMissing(md, col.TOTP_KEY)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(16);");
+                    + " ADD COLUMN " + col.TOTP_KEY + " VARCHAR(32);");
             }
 
             if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {

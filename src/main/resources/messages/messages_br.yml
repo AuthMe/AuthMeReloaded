@@ -4,16 +4,16 @@
 # Lista de tags globais:
 # %nl% - Pula uma linha
 # %username% - Substitui pelo nome do jogador que está recebendo a mensagem
-# %displayname% - Substitui o nickname (e cores) do jogador que está recebendo a mensagem
+# %displayname% - Substitui pelo nickname (e cores) do jogador que está recebendo a mensagem
 
 # Registro
 registration:
     register_request: '&3Por favor, registre-se com o comando "/register <senha> <senha>"'
     command_usage: '&cUse: /register <senha> <senha>'
     reg_only: '&4Somente usuários registrados podem entrar no servidor! Por favor visite www.seusite.com para se registrar!'
-    success: '&2Registrado com êxito!'
-    kicked_admin_registered: 'Um administrador registrou você. Por favor faça login novamente'
-    disabled: '&cO registro está desativado nesse servidor!'
+    success: '&2Registrado com sucesso!'
+    kicked_admin_registered: 'Um administrador registrou você. Por favor, faça login novamente'
+    disabled: '&cRegistrar-se está desativado neste servidor!'
     name_taken: '&cVocê já registrou este nome de usuário!'
 
 # Erros de senha ao registrar-se
@@ -70,17 +70,17 @@ misc:
 # Mensagens de sessão
 session:
     valid_session: '&2Você deslogou recentemente, então sua sessão foi retomada!'
-    invalid_session: '&O seu IP foi alterado e sua sessão expirou!'
+    invalid_session: '&fO seu IP foi alterado e sua sessão expirou!'
 
 # Mensagens de erro ao entrar
 on_join_validation:
-    name_length: '&4Seu nome de usuário ou é muito curto ou muito longo!'
+    name_length: '&4Seu nome de usuário ou é muito curto ou é muito longo!'
     characters_in_name: '&4Seu nome de usuário contém caracteres inválidos. Caracteres permitidos: %valid_chars'
-    country_banned: '&4O seu país está banido neste servidor!'
+    country_banned: '&4O seu país está banido deste servidor!'
     not_owner_error: 'Você não é o proprietário da conta. Por favor, escolha outro nome!'
     kick_full_server: '&4O servidor está cheio, tente novamente mais tarde!'
-    same_nick_online: '&4O mesmo nome de usuário já está jogando no servidor!'
-    invalid_name_case: 'Você deve se juntar usando o nome de usuário %valid, não %invalid.'
+    same_nick_online: '&4Alguém com o mesmo nome de usuário já está jogando no servidor!'
+    invalid_name_case: 'Você deve entrar usando o nome de usuário %valid, não %invalid.'
     same_ip_online: 'Um jogador com o mesmo IP já está no servidor!'
     quick_command: 'Você usou o comando muito rápido! Por favor, entre no servidor e aguarde antes de usar um comando novamente.'
 
@@ -92,7 +92,7 @@ email:
     old_email_invalid: '&cE-mail antigo inválido, tente novamente!'
     invalid: '&E-mail inválido, tente novamente!'
     added: '&2E-mail adicionado com sucesso!'
-    request_confirmation: '&cPor favor confirme seu endereço de e-mail!'
+    request_confirmation: '&cPor favor, confirme o seu endereço de e-mail!'
     changed: '&2E-mail alterado com sucesso!'
     email_show: '&2O seu endereço de e-mail atual é: &f%email'
     incomplete_settings: 'Erro: Nem todas as configurações necessárias estão definidas para o envio de e-mails. Entre em contato com um administrador.'
@@ -107,7 +107,7 @@ email:
 
 # Recuperação de senha por e-mail
 recovery:
-    forgot_password_hint: '&3Esqueceu sua senha? Por favor, use o comando "/email recovery <seuEmail>"'
+    forgot_password_hint: '&3Esqueceu a sua senha? Use o comando "/email recovery <seuEmail>"'
     command_usage: '&cUse: /email recovery <Email>'
     email_sent: '&2E-mail de recuperação enviado! Por favor, verifique sua caixa de entrada!'
     code:
@@ -120,7 +120,7 @@ recovery:
 # Captcha
 captcha:
     usage_captcha: '&3Para iniciar sessão você tem que resolver um captcha, utilize o comando "/captcha %captcha_code"'
-    wrong_captcha: '&cCaptcha incorreto, por favor, escreva "/captcha %captcha_code" no chat!'
+    wrong_captcha: '&cCaptcha incorreto. Por favor, escreva "/captcha %captcha_code" no chat!'
     valid_captcha: '&2Captcha correto!'
     captcha_for_registration: 'Para se registrar você tem que resolver um código captcha, utilize o comando "/captcha %captcha_code"'
     register_captcha_valid: '&2Captcha correto! Agora você pode se registrar usando /register <senha> <senha>!'
@@ -130,9 +130,9 @@ verification:
     code_required: '&3Esse comando é sensível e precisa de uma verificação via e-mail! Verifique sua caixa de entrada e siga as instruções do e-mail.'
     command_usage: '&cUse: /verification <código>'
     incorrect_code: '&cCódigo incorreto, utilize "/verification <código>" com o código que você recebeu por e-mail!'
-    success: '&2Sua identidade foi verificada, agora você pode usar todos os comandos nessa sessão.'
-    already_verified: '&2Você já pode executar comandos sensíveis nessa sessão!'
-    code_expired: '&3Seu código expirou! Execute outro comando sensível para gerar outro código.'
+    success: '&2Sua identidade foi verificada, agora você pode usar todos os comandos durante esta sessão.'
+    already_verified: '&2Você já pode executar comandos sensíveis durante esta sessão!'
+    code_expired: '&3O seu código expirou! Execute outro comando sensível para gerar um outro código.'
     email_needed: '&3Para verificar sua identidade, você precisa vincular um e-mail à sua conta!'
 
 # Verificação em duas etapas

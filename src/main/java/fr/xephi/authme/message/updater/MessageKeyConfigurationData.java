@@ -2,6 +2,7 @@ package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.configurationdata.ConfigurationDataImpl;
 import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.properties.convertresult.PropertyValue;
 import ch.jalu.configme.resource.PropertyReader;
 import fr.xephi.authme.message.MessageKey;
 
@@ -23,9 +24,18 @@ public class MessageKeyConfigurationData extends ConfigurationDataImpl {
 
     @Override
     public void initializeValues(PropertyReader reader) {
-        getAllMessageProperties().stream()
-            .filter(prop -> prop.isPresent(reader))
-            .forEach(prop -> setValue(prop, prop.determineValue(reader)));
+        for (Property<String> property : getAllMessageProperties()) {
+            PropertyValue<String> value = property.determineValue(reader);
+            if (value.isValidInResource()) {
+                setValue(property, value.getValue());
+            }
+        }
+    }
+
+    @Override
+    public <T> T getValue(Property<T> property) {
+        // Override to silently return null if property is unknown
+        return (T) getValues().get(property.getPath());
     }
 
     @SuppressWarnings("unchecked")

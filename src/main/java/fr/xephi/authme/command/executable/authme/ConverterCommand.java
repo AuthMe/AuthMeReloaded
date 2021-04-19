@@ -55,15 +55,12 @@ public class ConverterCommand implements ExecutableCommand {
         final Converter converter = converterFactory.newInstance(converterClass);
 
         // Run the convert job
-        bukkitService.runTaskAsynchronously(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    converter.execute(sender);
-                } catch (Exception e) {
-                    commonService.send(sender, MessageKey.ERROR);
-                    logger.logException("Error during conversion:", e);
-                }
+        bukkitService.runTaskAsynchronously(() -> {
+            try {
+                converter.execute(sender);
+            } catch (Exception e) {
+                commonService.send(sender, MessageKey.ERROR);
+                logger.logException("Error during conversion:", e);
             }
         });
 

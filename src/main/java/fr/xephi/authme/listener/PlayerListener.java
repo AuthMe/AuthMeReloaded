@@ -112,7 +112,6 @@ public class PlayerListener implements Listener {
 
         // Non-blocking checks
         try {
-            onJoinVerifier.checkSingleSession(name);
             onJoinVerifier.checkIsValidName(name);
         } catch (FailedVerificationException e) {
             event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
@@ -160,6 +159,14 @@ public class PlayerListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final String name = player.getName();
+
+        try {
+            onJoinVerifier.checkSingleSession(name);
+        } catch (FailedVerificationException e) {
+            event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
 
         if (validationService.isUnrestricted(name)) {
             return;
@@ -475,7 +482,7 @@ public class PlayerListener implements Listener {
             return false;
         }
         Set<String> whitelist = settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES);
-        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()));
+        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()).toLowerCase());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
