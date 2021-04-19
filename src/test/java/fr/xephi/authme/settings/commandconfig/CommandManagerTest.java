@@ -7,18 +7,13 @@ import fr.xephi.authme.service.BukkitServiceTestHelper;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
@@ -39,7 +34,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link CommandManager}.
  */
-@ExtendWith(MockitoExtension.class) // Blocked by Mockito/#1540
+@ExtendWith(MockitoExtension.class)
 class CommandManagerTest {
 
     private static final String TEST_FILES_FOLDER = "/fr/xephi/authme/settings/commandconfig/";
