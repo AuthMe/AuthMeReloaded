@@ -6,7 +6,7 @@ import fr.xephi.authme.settings.Settings;
 /**
  * Resource closing test for {@link WordpressExtension}.
  */
-public class WordpressExtensionResourceClosingTest extends AbstractMySqlExtensionResourceClosingTest {
+class WordpressExtensionResourceClosingTest extends AbstractMySqlExtensionResourceClosingTest {
 
     @Override
     protected MySqlExtension createExtension(Settings settings, Columns columns) {

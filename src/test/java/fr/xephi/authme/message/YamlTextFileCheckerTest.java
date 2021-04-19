@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**

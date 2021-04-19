@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Consistency tests for {@link DebugSection} implementors.
@@ -45,7 +45,7 @@ class DebugSectionConsistencyTest {
     }
 
     @Test
-    void shouldHaveDifferentSubcommandName() throws IllegalAccessException, InstantiationException {
+    void shouldHaveDifferentSubcommandName() {
         Set<String> names = new HashSet<>();
         for (DebugSection debugSection : debugSections) {
             if (!names.add(debugSection.getName())) {

@@ -19,7 +19,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
-import org.junit.AssumptionViolatedException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,6 +40,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -159,7 +159,7 @@ class PermissionsManagerInitializationTest {
             LuckPerms api = mock(LuckPerms.class);
             ReflectionTestUtils.setField(LuckPermsProvider.class, null, "instance", api);
         } else if (permissionsSystemType == PERMISSIONS_EX) {
-            throw new AssumptionViolatedException(
+            assumeTrue(false,
                 "PermissionsEx instance cannot be mocked because of missing dependencies -- skipping");
         } else if (permissionsSystemType == Z_PERMISSIONS) {
             ZPermissionsService zPermissionsService = mock(ZPermissionsService.class);

@@ -1,7 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Test for {@link Argon2}.
@@ -17,8 +16,7 @@ class Argon2Test extends AbstractEncryptionMethodTest {
             "$argon2i$v=19$m=65536,t=2,p=1$58v7dWNn9/bpD00QLzSebw$7cMC7p0qceE3Mgf2yQp4X7c+UkO9oyJwQ7S6XTBubNs",  // &^%te$t?Pw@_
             "$argon2i$v=19$m=65536,t=2,p=1$93OSU71DgBOzpmhti7+6rQ$sSSI6QQQdoG9DlGwLjYz576kTek89nwr9CyNpy6bsL0"); // âË_3(íù*
 
-        assumeThat("Argon2 library is not loaded - skipping test",
-            IS_LIBRARY_LOADED, equalTo(true));
+        assumeTrue(IS_LIBRARY_LOADED, "Argon2 library is not loaded - skipping test");
     }
 
     @Override

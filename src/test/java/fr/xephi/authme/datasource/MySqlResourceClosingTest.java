@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Resource closing test for {@link MySQL}.
  */
-public class MySqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
+class MySqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     @Override
     protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {

@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assume.assumeThat;
 
 /**
  * Abstract class for data source integration tests.
@@ -256,7 +255,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         // given
         DataSource dataSource = getDataSource();
         Set<String> playersToDelete = new HashSet<>(Arrays.asList("bobby", "doesNotExist"));
-        assumeThat(dataSource.getAccountsRegistered(), equalTo(2));
+        assertThat(dataSource.getAccountsRegistered(), equalTo(2)); // Make sure we start as expected
 
         // when
         dataSource.purgeRecords(playersToDelete);

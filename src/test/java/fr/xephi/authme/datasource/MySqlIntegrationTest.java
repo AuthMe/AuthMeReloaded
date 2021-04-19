@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 /**
  * Integration test for {@link MySQL}.
  */
-public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
+class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
     private static Settings settings;

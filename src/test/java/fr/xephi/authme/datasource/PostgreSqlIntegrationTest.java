@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 /**
  * Integration test for {@link PostgreSqlDataSource}.
  */
-public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest {
+class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
     private static Settings settings;

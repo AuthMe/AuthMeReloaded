@@ -7,7 +7,7 @@ import java.sql.Connection;
 /**
  * Resource closing test for {@link SQLite}.
  */
-public class SQLiteResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
+class SQLiteResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     @Override
     protected DataSource createDataSource(Settings settings, Connection connection) {

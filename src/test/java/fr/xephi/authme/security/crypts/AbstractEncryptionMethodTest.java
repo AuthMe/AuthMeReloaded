@@ -10,11 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 /**
  * Test for implementations of {@link EncryptionMethod}.
@@ -118,8 +116,8 @@ public abstract class AbstractEncryptionMethodTest {
         // Test entries in GIVEN_PASSWORDS except the last one
         for (int i = start; i < GIVEN_PASSWORDS.length - 1; ++i) {
             String password = GIVEN_PASSWORDS[i];
-            assertTrue("Hash for password '" + password + "' should match",
-                doesGivenHashMatch(password, method));
+            assertThat("Hash for password '" + password + "' should match",
+                doesGivenHashMatch(password, method), equalTo(true));
         }
 
         // Note #375: Windows console seems to use its own character encoding (Windows-1252?) and it seems impossible to
@@ -150,17 +148,17 @@ public abstract class AbstractEncryptionMethodTest {
                     hash, equalTo(method.computeHash(password, salt, USERNAME)));
             }
 
-            assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
-                method.comparePassword(password, hashedPassword, USERNAME));
-            assumeThat(SKIP_LONG_TESTS, equalTo(false));
+            assertThat("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
+                method.comparePassword(password, hashedPassword, USERNAME), equalTo(true));
+            assumeFalse(SKIP_LONG_TESTS);
 
             if (!password.equals(password.toLowerCase())) {
-                assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toLowerCase(), hashedPassword, USERNAME));
+                assertThat("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(password.toLowerCase(), hashedPassword, USERNAME), equalTo(false));
             }
             if (!password.equals(password.toUpperCase())) {
-                assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME));
+                assertThat("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME), equalTo(false));
             }
         }
     }
@@ -168,12 +166,12 @@ public abstract class AbstractEncryptionMethodTest {
     /** Tests various strings to ensure that encryption methods don't rely on the hash's format too much. */
     @Test
     void testMalformedHashes() {
-        assumeThat(SKIP_LONG_TESTS, equalTo(false));
+        assumeFalse(SKIP_LONG_TESTS);
         String salt = method.hasSeparateSalt() ? "testSalt" : null;
         for (String bogusHash : BOGUS_HASHES) {
             HashedPassword hashedPwd = new HashedPassword(bogusHash, salt);
-            assertFalse("Passing bogus hash '" + bogusHash + "' does not result in an error",
-                method.comparePassword("Password", hashedPwd, "player"));
+            assertThat("Passing bogus hash '" + bogusHash + "' does not result in an error",
+                method.comparePassword("Password", hashedPwd, "player"), equalTo(false));
         }
     }
 

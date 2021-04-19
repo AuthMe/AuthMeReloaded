@@ -514,7 +514,7 @@ class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnAuthMePlayerInfo() {
+    void shouldReturnAuthMePlayerInfo() {
         // given
         PlayerAuth auth = PlayerAuth.builder()
             .name("bobb")
@@ -533,7 +533,7 @@ class AuthMeApiTest {
     }
 
     @Test
-    public void shouldReturnNullForNonExistentAuth() {
+    void shouldReturnNullForNonExistentAuth() {
         // given / when
         Optional<AuthMePlayer> result = api.getPlayerInfo("doesNotExist");
 
