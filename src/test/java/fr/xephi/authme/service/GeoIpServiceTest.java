@@ -7,6 +7,7 @@ import fr.xephi.authme.settings.Settings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -28,7 +29,9 @@ import static org.mockito.Mockito.verify;
 class GeoIpServiceTest {
 
     private GeoIpService geoIpService;
-    private File dataFolder;
+
+    @TempDir
+    File dataFolder;
 
     @Mock
     private GeoIp2Provider lookupService;
