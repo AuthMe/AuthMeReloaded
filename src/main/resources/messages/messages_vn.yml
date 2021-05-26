@@ -90,10 +90,10 @@ email:
     old_email_invalid: '&cEmail cũ không hợp lệ, vui lòng thử lại!'
     invalid: '&cĐại chỉ email không hợp lệ, vui lòng thử lại!'
     added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thành công!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cViệc thêm email không được cho phép!'
     request_confirmation: '&cVui lòng xác nhận địa chỉ email của bạn!'
     changed: '&2Địa chỉ email đã thay đổi!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&cViệc đổi địa chỉ email không được cho phép'
     email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
     no_email_for_account: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
     already_used: '&4Địa chỉ email đã được sử dụng'
@@ -110,9 +110,9 @@ recovery:
     code:
         code_sent: 'Một mã khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn.'
         incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
-        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-        # TODO correct: 'Recovery code entered correctly!'
-        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
+        tries_exceeded: 'Bạn đã vượt quá số lần tối đa cho phép nhập mã khôi phục. Hãy sử dụng lệnh "/email recovery [email]" để tạo một mã mới.'
+        correct: 'Mã khôi phục đã được nhập chính xác!'
+        change_password: 'Hãy sử dụng lệnh "/email setpassword <mật khẩu mới>" để đổi mật khẩu của bạn ngay lập tức.'
 
 # Captcha
 captcha:
@@ -146,12 +146,13 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Hãy xác thực mã của bạn bằng lệnh /2fa confirm <mã>'
+    code_required: 'Hãy gửi đi mã xác thực 2 lớp của bạn bằng lệnh /2fa code <mã>'
+    already_enabled: 'Xác thực 2 lớp đã được kích hoạt trên tài khoản của bạn!'
+    enable_error_no_code: 'Không có mã xác thực nào đã được tạo cho tài khoản của bạn hoặc nó đã hết hạn. Hãy sử dụng lệnh /2fa add'
+    enable_success: 'Đã thành công kích hoạt xác thực 2 lớp cho tài khoản của bạn!'
+    enable_error_wrong_code: 'Mã xác thực bị sai hoặc đã bị hết hạn. Hãy sử dụng lệnh /2fa add'
+    not_enabled_error: 'Xác thực 2 lớp không được kích hoạt trên tài khoản của bạn. Hãy sử dụng lệnh /2fa add'
+    removed_success: 'Đã thành công tắt xác thực 2 lớp khỏi tài khoản của bạn'
+    invalid_code: 'Mã xác thực không hợp lệ!'
+
