@@ -61,10 +61,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <maven.minimumVersion>3.3.9</maven.minimumVersion>
+        <maven.minimumVersion>3.6.0</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.16.5-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.17-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -706,8 +706,8 @@
         <!-- ProtocolLib -->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib-API</artifactId>
-            <version>4.4.0</version>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.6.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
