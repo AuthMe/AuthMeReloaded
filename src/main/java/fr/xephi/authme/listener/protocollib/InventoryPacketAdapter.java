@@ -83,7 +83,20 @@ class InventoryPacketAdapter extends PacketAdapter {
     }
 
     private boolean shouldHideInventory(String playerName) {
-        return !playerCache.isAuthenticated(playerName) && dataSource.isAuthAvailable(playerName);
+        if (playerCache.isAuthenticated(playerName)) {
+            // fully logged in - no need to protect it
+            return false;
+        }
+
+        if (dataSource.isCached()) {
+            // load from cache or only request once
+            return dataSource.isAuthAvailable(playerName);
+        }
+
+        // data source is not cached - this means queries would run blocking
+        // Assume the player is registered would mean the inventory will be protected
+        // and any potential information leak can be prevented
+        return true;
     }
 
     public void unregister() {
