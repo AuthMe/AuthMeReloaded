@@ -54,14 +54,14 @@ class InventoryPacketAdapter extends PacketAdapter {
     private final PlayerCache playerCache;
     private final DataSource dataSource;
 
-    private final boolean isRegistrationForced;
+    private final ProtocolLibService protocolLibService;
 
     InventoryPacketAdapter(AuthMe plugin, PlayerCache playerCache, DataSource dataSource,
-                           boolean isRegistrationForced) {
+                           ProtocolLibService protocolLibService) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
         this.playerCache = playerCache;
         this.dataSource = dataSource;
-        this.isRegistrationForced = isRegistrationForced;
+        this.protocolLibService = protocolLibService;
     }
 
     @Override
@@ -70,7 +70,7 @@ class InventoryPacketAdapter extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         int windowId = packet.getIntegers().read(0);
-        if (windowId == PLAYER_INVENTORY && shouldHideInventory(player.getName())) {
+        if (windowId == PLAYER_INVENTORY && protocolLibService.shouldRestrictPlayer(player.getName())) {
             packetEvent.setCancelled(true);
         }
     }
@@ -84,25 +84,8 @@ class InventoryPacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
 
         bukkitService.getOnlinePlayers().stream()
-            .filter(player -> shouldHideInventory(player.getName()))
+            .filter(player -> protocolLibService.shouldRestrictPlayer(player.getName()))
             .forEach(this::sendBlankInventoryPacket);
-    }
-
-    private boolean shouldHideInventory(String playerName) {
-        if (playerCache.isAuthenticated(playerName)) {
-            // fully logged in - no need to protect it
-            return false;
-        }
-
-        if (dataSource.isCached()) {
-            // load from cache or only request once
-            return dataSource.isAuthAvailable(playerName);
-        }
-
-        // data source is not cached - this means queries would run blocking
-        // If registration is enforced: **assume** player is registered to prevent any information leak
-        // If not, players could play even without a registration, so there is no need for protection
-        return isRegistrationForced;
     }
 
     public void unregister() {

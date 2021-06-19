@@ -68,7 +68,7 @@ public class ProtocolLibService implements SettingsDependent {
         if (protectInvBeforeLogin) {
             if (inventoryPacketAdapter == null) {
                 // register the packet listener and start hiding it for all already online players (reload)
-                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache, dataSource, isRegistrationForced);
+                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache, dataSource, this);
                 inventoryPacketAdapter.register(bukkitService);
             }
         } else if (inventoryPacketAdapter != null) {
@@ -78,7 +78,7 @@ public class ProtocolLibService implements SettingsDependent {
 
         if (denyTabCompleteBeforeLogin) {
             if (tabCompletePacketAdapter == null) {
-                tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, playerCache);
+                tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, this);
                 tabCompletePacketAdapter.register();
             }
         } else if (tabCompletePacketAdapter != null) {
@@ -114,6 +114,23 @@ public class ProtocolLibService implements SettingsDependent {
         if (isEnabled && inventoryPacketAdapter != null) {
             inventoryPacketAdapter.sendBlankInventoryPacket(player);
         }
+    }
+
+    protected boolean shouldRestrictPlayer(String playerName) {
+        if (playerCache.isAuthenticated(playerName)) {
+            // fully logged in - no need to protect it
+            return false;
+        }
+
+        if (dataSource.isCached()) {
+            // load from cache or only request once
+            return dataSource.isAuthAvailable(playerName);
+        }
+
+        // data source is not cached - this means queries would run blocking
+        // If registration is enforced: **assume** player is registered to prevent any information leak
+        // If not, players could play even without a registration, so there is no need for protection
+        return isRegistrationForced;
     }
 
     @Override
