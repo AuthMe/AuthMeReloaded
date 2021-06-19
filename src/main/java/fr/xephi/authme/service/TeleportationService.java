@@ -113,7 +113,8 @@ public class TeleportationService implements Reloadable {
             return;
         }
 
-        if (!player.hasPlayedBefore() || playerCache.getRegistrationStatus(player.getName()) == RegistrationStatus.UNREGISTERED) {
+        RegistrationStatus registrationStatus = playerCache.getRegistrationStatus(player.getName());
+        if (!player.hasPlayedBefore() || registrationStatus == RegistrationStatus.UNREGISTERED) {
             logger.debug("Attempting to teleport player `{0}` to first spawn", player.getName());
             performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
         }

@@ -117,18 +117,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         final boolean isAuthAvailable = database.isAuthAvailable(name);
-        RegistrationStatus status = RegistrationStatus.UNREGISTERED;
-        playerCache.addRegistrationStatus(name, isAuthAvailable ? RegistrationStatus.REGISTERED : status);
+        playerCache.addRegistrationStatus(name, isAuthAvailable ? RegistrationStatus.REGISTERED : RegistrationStatus.UNREGISTERED);
         if (isAuthAvailable) {
-            // Protect inventory
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                ProtectInventoryEvent ev = bukkitService.createAndCallEvent(
-                    isAsync -> new ProtectInventoryEvent(player, isAsync));
-                if (ev.isCancelled()) {
-                    player.updateInventory();
-                    logger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
-                }
-            }
+            protectInventory(player);
 
             // Session logic
             if (sessionService.canResumeSession(player)) {
@@ -158,6 +149,18 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         processJoinSync(player, isAuthAvailable);
+    }
+
+    private void protectInventory(Player player) {
+        // Protect inventory
+        if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
+            ProtectInventoryEvent ev = bukkitService.createAndCallEvent(
+                isAsync -> new ProtectInventoryEvent(player, isAsync));
+            if (ev.isCancelled()) {
+                player.updateInventory();
+                logger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
+            }
+        }
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
