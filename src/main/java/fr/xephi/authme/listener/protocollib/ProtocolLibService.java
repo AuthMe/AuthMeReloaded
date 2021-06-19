@@ -9,6 +9,7 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 
@@ -26,6 +27,7 @@ public class ProtocolLibService implements SettingsDependent {
     /* Settings */
     private boolean protectInvBeforeLogin;
     private boolean denyTabCompleteBeforeLogin;
+    private boolean isRegistrationForced;
 
     /* Service */
     private boolean isEnabled;
@@ -66,7 +68,7 @@ public class ProtocolLibService implements SettingsDependent {
         if (protectInvBeforeLogin) {
             if (inventoryPacketAdapter == null) {
                 // register the packet listener and start hiding it for all already online players (reload)
-                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache, dataSource);
+                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache, dataSource, isRegistrationForced);
                 inventoryPacketAdapter.register(bukkitService);
             }
         } else if (inventoryPacketAdapter != null) {
@@ -120,6 +122,7 @@ public class ProtocolLibService implements SettingsDependent {
 
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
+        this.isRegistrationForced = settings.getProperty(RegistrationSettings.FORCE);
 
         //it was true and will be deactivated now, so we need to restore the inventory for every player
         if (oldProtectInventory && !protectInvBeforeLogin && inventoryPacketAdapter != null) {

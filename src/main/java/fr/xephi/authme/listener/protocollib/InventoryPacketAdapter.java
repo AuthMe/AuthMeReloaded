@@ -24,19 +24,21 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 class InventoryPacketAdapter extends PacketAdapter {
 
@@ -52,10 +54,14 @@ class InventoryPacketAdapter extends PacketAdapter {
     private final PlayerCache playerCache;
     private final DataSource dataSource;
 
-    InventoryPacketAdapter(AuthMe plugin, PlayerCache playerCache, DataSource dataSource) {
+    private final boolean isRegistrationForced;
+
+    InventoryPacketAdapter(AuthMe plugin, PlayerCache playerCache, DataSource dataSource,
+                           boolean isRegistrationForced) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
         this.playerCache = playerCache;
         this.dataSource = dataSource;
+        this.isRegistrationForced = isRegistrationForced;
     }
 
     @Override
@@ -94,9 +100,9 @@ class InventoryPacketAdapter extends PacketAdapter {
         }
 
         // data source is not cached - this means queries would run blocking
-        // Assume the player is registered would mean the inventory will be protected
-        // and any potential information leak can be prevented
-        return true;
+        // If registration is enforced: **assume** player is registered to prevent any information leak
+        // If not, players could play even without a registration, so there is no need for protection
+        return isRegistrationForced;
     }
 
     public void unregister() {
