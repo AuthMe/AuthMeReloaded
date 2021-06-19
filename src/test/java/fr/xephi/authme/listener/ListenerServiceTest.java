@@ -4,6 +4,7 @@ import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache.RegistrationStatus;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
@@ -119,6 +120,7 @@ public class ListenerServiceTest {
         String playerName = "myPlayer1";
         Player player = mockPlayerWithName(playerName);
         given(playerCache.isAuthenticated(playerName)).willReturn(false);
+        given(playerCache.getRegistrationStatus(playerName)).willReturn(RegistrationStatus.UNREGISTERED);
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);

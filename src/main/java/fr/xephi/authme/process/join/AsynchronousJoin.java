@@ -117,7 +117,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         final boolean isAuthAvailable = database.isAuthAvailable(name);
-        playerCache.addRegistrationStatus(name, isAuthAvailable ? RegistrationStatus.REGISTERED : RegistrationStatus.UNREGISTERED);
+        RegistrationStatus status = isAuthAvailable ? RegistrationStatus.REGISTERED : RegistrationStatus.UNREGISTERED;
+        playerCache.addRegistrationStatus(name, status);
         if (isAuthAvailable) {
             protectInventory(player);
 

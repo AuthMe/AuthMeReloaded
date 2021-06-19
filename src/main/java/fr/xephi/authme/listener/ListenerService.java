@@ -99,7 +99,9 @@ public class ListenerService implements SettingsDependent {
         }
 
         // registration not enforced, but registered players needs to be restricted if not logged in
-        return playerCache.getRegistrationStatus(name) == RegistrationStatus.REGISTERED;
+        // if there is no data fall back to safer alternative to prevent any leakage
+        final RegistrationStatus status = playerCache.getRegistrationStatus(name);
+        return status != RegistrationStatus.UNREGISTERED;
     }
 
     @Override
