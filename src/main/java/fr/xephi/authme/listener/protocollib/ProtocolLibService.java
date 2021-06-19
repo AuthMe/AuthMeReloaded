@@ -6,10 +6,10 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.listener.ListenerService;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 
@@ -27,22 +27,21 @@ public class ProtocolLibService implements SettingsDependent {
     /* Settings */
     private boolean protectInvBeforeLogin;
     private boolean denyTabCompleteBeforeLogin;
-    private boolean isRegistrationForced;
 
     /* Service */
     private boolean isEnabled;
     private final AuthMe plugin;
     private final BukkitService bukkitService;
+    private final ListenerService listenerService;
     private final PlayerCache playerCache;
-    private final DataSource dataSource;
 
     @Inject
-    ProtocolLibService(AuthMe plugin, Settings settings, BukkitService bukkitService, PlayerCache playerCache,
-                       DataSource dataSource) {
+    ProtocolLibService(AuthMe plugin, Settings settings, BukkitService bukkitService, ListenerService listenerService,
+                       PlayerCache playerCache) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
+        this.listenerService = listenerService;
         this.playerCache = playerCache;
-        this.dataSource = dataSource;
         reload(settings);
     }
 
@@ -68,7 +67,7 @@ public class ProtocolLibService implements SettingsDependent {
         if (protectInvBeforeLogin) {
             if (inventoryPacketAdapter == null) {
                 // register the packet listener and start hiding it for all already online players (reload)
-                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache, dataSource, this);
+                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, listenerService);
                 inventoryPacketAdapter.register(bukkitService);
             }
         } else if (inventoryPacketAdapter != null) {
@@ -78,7 +77,7 @@ public class ProtocolLibService implements SettingsDependent {
 
         if (denyTabCompleteBeforeLogin) {
             if (tabCompletePacketAdapter == null) {
-                tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, this);
+                tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, listenerService);
                 tabCompletePacketAdapter.register();
             }
         } else if (tabCompletePacketAdapter != null) {
@@ -116,34 +115,10 @@ public class ProtocolLibService implements SettingsDependent {
         }
     }
 
-    /**
-     * Should the given player need to be restricted
-     *
-     * @param playerName player that is about to prevented to do or see something
-     * @return true if restriction is necessary
-     */
-    protected boolean shouldRestrictPlayer(String playerName) {
-        if (playerCache.isAuthenticated(playerName)) {
-            // fully logged in - no need to protect it
-            return false;
-        }
-
-        if (dataSource.isCached()) {
-            // load from cache or only request once
-            return dataSource.isAuthAvailable(playerName);
-        }
-
-        // data source is not cached - this means queries would run blocking
-        // If registration is enforced: **assume** player is registered to prevent any information leak
-        // If not, players could play even without a registration, so there is no need for protection
-        return isRegistrationForced;
-    }
-
     @Override
     public void reload(Settings settings) {
         boolean oldProtectInventory = this.protectInvBeforeLogin;
 
-        this.isRegistrationForced = settings.getProperty(RegistrationSettings.FORCE);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
 

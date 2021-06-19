@@ -8,17 +8,18 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.listener.ListenerService;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 
 class TabCompletePacketAdapter extends PacketAdapter {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(TabCompletePacketAdapter.class);
 
-    private final ProtocolLibService protocolLibService;
+    private final ListenerService listenerService;
 
-    TabCompletePacketAdapter(AuthMe plugin, ProtocolLibService protocolLibService) {
+    TabCompletePacketAdapter(AuthMe plugin, ListenerService listenerService) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.TAB_COMPLETE);
-        this.protocolLibService = protocolLibService;
+        this.listenerService = listenerService;
     }
 
     @Override
@@ -26,7 +27,7 @@ class TabCompletePacketAdapter extends PacketAdapter {
         if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
             try {
                 String playerName = event.getPlayer().getName();
-                if (protocolLibService.shouldRestrictPlayer(playerName)) {
+                if (listenerService.shouldRestrictPlayer(playerName)) {
                     event.setCancelled(true);
                 }
             } catch (FieldAccessException e) {

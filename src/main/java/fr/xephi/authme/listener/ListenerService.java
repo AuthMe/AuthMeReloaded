@@ -1,6 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache.RegistrationStatus;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.service.ValidationService;
@@ -17,7 +18,7 @@ import javax.inject.Inject;
 /**
  * Service class for the AuthMe listeners to determine whether an event should be canceled.
  */
-class ListenerService implements SettingsDependent {
+public class ListenerService implements SettingsDependent {
 
     private final DataSource dataSource;
     private final PlayerCache playerCache;
@@ -77,28 +78,32 @@ class ListenerService implements SettingsDependent {
      * @return true if the associated event should be canceled, false otherwise
      */
     public boolean shouldCancelEvent(Player player) {
-        return player != null && !checkAuth(player.getName()) && !PlayerUtils.isNpc(player);
+        return player != null && !PlayerUtils.isNpc(player) && shouldRestrictPlayer(player.getName());
+    }
+
+    /**
+     * Check if restriction are required for the given player name. The check will be performed against the local
+     * cache. This means changes from other sources like web services will have a delay to it.
+     *
+     * @param name player name
+     * @return true if the player needs to be restricted
+     */
+    public boolean shouldRestrictPlayer(String name) {
+        if (validationService.isUnrestricted(name) || playerCache.isAuthenticated(name)) {
+            return false;
+        }
+
+        if (isRegistrationForced) {
+            // registration always required to play - so restrict everything
+            return true;
+        }
+
+        // registration not enforced, but registered players needs to be restricted if not logged in
+        return playerCache.getRegistrationStatus(name) == RegistrationStatus.REGISTERED;
     }
 
     @Override
     public void reload(Settings settings) {
         isRegistrationForced = settings.getProperty(RegistrationSettings.FORCE);
-    }
-
-    /**
-     * Checks whether the player is allowed to perform actions (i.e. whether he is logged in
-     * or if other settings permit playing).
-     *
-     * @param name the name of the player to verify
-     * @return true if the player may play, false otherwise
-     */
-    private boolean checkAuth(String name) {
-        if (validationService.isUnrestricted(name) || playerCache.isAuthenticated(name)) {
-            return true;
-        }
-        if (!isRegistrationForced && !dataSource.isAuthAvailable(name)) {
-            return true;
-        }
-        return false;
     }
 }

@@ -130,7 +130,7 @@ public class ListenerServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(playerCache).isAuthenticated(playerName);
-        verify(dataSource).isAuthAvailable(playerName);
+        verify(playerCache).getRegistrationStatus(playerName);
     }
 
     @Test
@@ -154,10 +154,9 @@ public class ListenerServiceTest {
     public void shouldAllowNpcPlayer() {
         // given
         String playerName = "other_npc";
-        Player player = mockPlayerWithName(playerName);
+        Player player = mockPlayerWithName(playerName, true);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
-        given(player.hasMetadata("NPC")).willReturn(true);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);
@@ -214,8 +213,13 @@ public class ListenerServiceTest {
     }
 
     private static Player mockPlayerWithName(String name) {
+        return mockPlayerWithName(name,false);
+    }
+
+    private static Player mockPlayerWithName(String name, boolean npc) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
+        given(player.hasMetadata("NPC")).willReturn(npc);
         return player;
     }
 

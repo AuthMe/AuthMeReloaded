@@ -3,6 +3,7 @@ package fr.xephi.authme.service;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache.RegistrationStatus;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AbstractTeleportEvent;
@@ -112,7 +113,7 @@ public class TeleportationService implements Reloadable {
             return;
         }
 
-        if (!player.hasPlayedBefore() || !dataSource.isAuthAvailable(player.getName())) {
+        if (!player.hasPlayedBefore() || playerCache.getRegistrationStatus(player.getName()) == RegistrationStatus.UNREGISTERED) {
             logger.debug("Attempting to teleport player `{0}` to first spawn", player.getName());
             performTeleportation(player, new FirstSpawnTeleportEvent(player, firstSpawn));
         }

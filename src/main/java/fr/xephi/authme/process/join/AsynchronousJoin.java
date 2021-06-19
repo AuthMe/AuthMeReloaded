@@ -2,6 +2,8 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache.RegistrationStatus;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -74,6 +76,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private SessionService sessionService;
 
     @Inject
+    private PlayerCache playerCache;
+
+    @Inject
     private ProxySessionManager proxySessionManager;
 
     AsynchronousJoin() {
@@ -112,7 +117,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         final boolean isAuthAvailable = database.isAuthAvailable(name);
-
+        RegistrationStatus status = RegistrationStatus.UNREGISTERED;
+        playerCache.addRegistrationStatus(name, isAuthAvailable ? RegistrationStatus.REGISTERED : status);
         if (isAuthAvailable) {
             // Protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
