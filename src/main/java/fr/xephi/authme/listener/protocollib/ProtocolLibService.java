@@ -116,6 +116,12 @@ public class ProtocolLibService implements SettingsDependent {
         }
     }
 
+    /**
+     * Should the given player need to be restricted
+     *
+     * @param playerName player that is about to prevented to do or see something
+     * @return true if restriction is necessary
+     */
     protected boolean shouldRestrictPlayer(String playerName) {
         if (playerCache.isAuthenticated(playerName)) {
             // fully logged in - no need to protect it
@@ -137,9 +143,9 @@ public class ProtocolLibService implements SettingsDependent {
     public void reload(Settings settings) {
         boolean oldProtectInventory = this.protectInvBeforeLogin;
 
-        this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
-        this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
         this.isRegistrationForced = settings.getProperty(RegistrationSettings.FORCE);
+        this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
+        this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
 
         //it was true and will be deactivated now, so we need to restore the inventory for every player
         if (oldProtectInventory && !protectInvBeforeLogin && inventoryPacketAdapter != null) {
