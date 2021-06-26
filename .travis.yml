@@ -2,8 +2,7 @@ sudo: false
 dist: trusty
 language: java
 jdk:
-  - oraclejdk8
-  - openjdk11
+  - openjdk16
 
 cache:
   directories:
