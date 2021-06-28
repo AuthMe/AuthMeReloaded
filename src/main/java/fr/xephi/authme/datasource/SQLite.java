@@ -88,7 +88,7 @@ public class SQLite extends AbstractSqlDataSource {
         }
 
         logger.debug("SQLite driver loaded");
-        this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
+        this.con = DriverManager.getConnection("jdbc:sqlite:" + this.dataFolder + File.separator + database + ".db");
         this.columnsHandler = AuthMeColumnsHandler.createForSqlite(con, settings);
     }
 
