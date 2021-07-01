@@ -2,6 +2,8 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache.RegistrationStatus;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -74,6 +76,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private SessionService sessionService;
 
     @Inject
+    private PlayerCache playerCache;
+
+    @Inject
     private ProxySessionManager proxySessionManager;
 
     AsynchronousJoin() {
@@ -112,17 +117,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         final boolean isAuthAvailable = database.isAuthAvailable(name);
-
+        RegistrationStatus status = isAuthAvailable ? RegistrationStatus.REGISTERED : RegistrationStatus.UNREGISTERED;
+        playerCache.addRegistrationStatus(name, status);
         if (isAuthAvailable) {
-            // Protect inventory
-            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
-                ProtectInventoryEvent ev = bukkitService.createAndCallEvent(
-                    isAsync -> new ProtectInventoryEvent(player, isAsync));
-                if (ev.isCancelled()) {
-                    player.updateInventory();
-                    logger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
-                }
-            }
+            protectInventory(player);
 
             // Session logic
             if (sessionService.canResumeSession(player)) {
@@ -152,6 +150,18 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         processJoinSync(player, isAuthAvailable);
+    }
+
+    private void protectInventory(Player player) {
+        // Protect inventory
+        if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
+            ProtectInventoryEvent ev = bukkitService.createAndCallEvent(
+                isAsync -> new ProtectInventoryEvent(player, isAsync));
+            if (ev.isCancelled()) {
+                player.updateInventory();
+                logger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
+            }
+        }
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {

@@ -267,7 +267,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public List<String> getLoggedPlayersWithEmptyMail() {
-        return playerCache.getCache().values().stream()
+        return playerCache.getAuthCache().values().stream()
             .filter(auth -> Utils.isEmailEmpty(auth.getEmail()))
             .map(PlayerAuth::getRealName)
             .collect(Collectors.toList());

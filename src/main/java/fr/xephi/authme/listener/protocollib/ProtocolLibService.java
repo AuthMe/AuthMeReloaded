@@ -1,18 +1,20 @@
 package fr.xephi.authme.listener.protocollib;
 
 import ch.jalu.injector.annotations.NoFieldScan;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.listener.ListenerService;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+
+import org.bukkit.entity.Player;
 
 @NoFieldScan
 public class ProtocolLibService implements SettingsDependent {
@@ -31,16 +33,16 @@ public class ProtocolLibService implements SettingsDependent {
     private boolean isEnabled;
     private final AuthMe plugin;
     private final BukkitService bukkitService;
+    private final ListenerService listenerService;
     private final PlayerCache playerCache;
-    private final DataSource dataSource;
 
     @Inject
-    ProtocolLibService(AuthMe plugin, Settings settings, BukkitService bukkitService, PlayerCache playerCache,
-                       DataSource dataSource) {
+    ProtocolLibService(AuthMe plugin, Settings settings, BukkitService bukkitService, ListenerService listenerService,
+                       PlayerCache playerCache) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
+        this.listenerService = listenerService;
         this.playerCache = playerCache;
-        this.dataSource = dataSource;
         reload(settings);
     }
 
@@ -66,7 +68,7 @@ public class ProtocolLibService implements SettingsDependent {
         if (protectInvBeforeLogin) {
             if (inventoryPacketAdapter == null) {
                 // register the packet listener and start hiding it for all already online players (reload)
-                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, playerCache, dataSource);
+                inventoryPacketAdapter = new InventoryPacketAdapter(plugin, listenerService);
                 inventoryPacketAdapter.register(bukkitService);
             }
         } else if (inventoryPacketAdapter != null) {
@@ -76,7 +78,7 @@ public class ProtocolLibService implements SettingsDependent {
 
         if (denyTabCompleteBeforeLogin) {
             if (tabCompletePacketAdapter == null) {
-                tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, playerCache);
+                tabCompletePacketAdapter = new TabCompletePacketAdapter(plugin, listenerService);
                 tabCompletePacketAdapter.register();
             }
         } else if (tabCompletePacketAdapter != null) {
@@ -118,8 +120,8 @@ public class ProtocolLibService implements SettingsDependent {
     public void reload(Settings settings) {
         boolean oldProtectInventory = this.protectInvBeforeLogin;
 
-        this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
+        this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
 
         //it was true and will be deactivated now, so we need to restore the inventory for every player
         if (oldProtectInventory && !protectInvBeforeLogin && inventoryPacketAdapter != null) {
