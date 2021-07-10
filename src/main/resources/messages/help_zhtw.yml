@@ -1,0 +1,349 @@
+# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+
+# -------------------------------------------------------
+# List of texts used in the help section
+common:
+    header: '==========[ AuthMeReloaded 幫助 ]=========='
+    optional: '選填'
+    hasPermission: '您有使用此指令的權限'
+    noPermission: '您沒有使用此指令的權限'
+    default: '預設'
+    result: '結果'
+    defaultPermissions:
+        notAllowed: '無權限'
+        opOnly: '僅限管理員'
+        allowed: '開放給所有人'
+
+# -------------------------------------------------------
+# Titles of the individual help sections
+# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+#   alternatives: ''
+section:
+    command: '指令'
+    description: '簡述'
+    detailedDescription: '詳述'
+    arguments: '參數'
+    permissions: '權限'
+    alternatives: '別名'
+    children: '指令集'
+
+# -------------------------------------------------------
+# You can translate the data for all commands using the below pattern.
+# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
+# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
+# Translations don't need to be complete; any missing section will be taken from the default silently
+# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+commands:
+    authme.register:
+        description: '註冊一位玩家'
+        detailedDescription: '以指定的密碼註冊一位玩家。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+        arg2:
+            label: '密碼'
+            description: '密碼'
+    authme.unregister:
+        description: '註銷一位玩家。'
+        detailedDescription: '註銷指定的玩家。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.forcelogin:
+        description: '強制玩家重新登入。'
+        detailedDescription: '強制指定的玩家重新登入。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.password:
+        description: '修改玩家的密碼。'
+        detailedDescription: '修改指定的玩家的密碼。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+        arg2:
+            label: '密碼'
+            description: '密碼'
+    authme.lastlogin: 
+        description: '查看玩家最後登入的日期。'
+        detailedDescription: '查看指定的玩家最後登入的日期。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.accounts: 
+        description: '透過玩家名稱或 IP 顯示玩家的所有帳號。'
+        detailedDescription: '透過玩家名稱或 IP 顯示玩家的所有帳號。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.email: 
+        description: '顯示指定的玩家的電子郵件地址。(如果有設置的話)'
+        detailedDescription: '顯示指定的玩家的電子郵件地址。(如果有設置的話)'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.setemail:
+        description: '修改玩家的電子郵件地址。'
+        detailedDescription: '修改指定的玩家的電子郵件地址。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+        arg2:
+            label: '電子郵件地址'
+            description: '電子郵件地址'
+    authme.getip: 
+        description: '取得線上玩家的 IP 位址。'
+        detailedDescription: '取得指定的線上玩家的 IP 位址。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.totp: 
+        description: '顯示玩家是否開啟兩步驟驗證。'
+        detailedDescription: '顯示指定的玩家是否開啟兩步驟驗證。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.disabletotp: 
+        description: '為玩家停用兩步驟驗證。'
+        detailedDescription: '為指定的玩家停用兩步驟驗證。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+    authme.spawn:
+        description: '傳送至重生點。'
+        detailedDescription: '傳送至重生點。'
+    authme.setspawn:
+        description: '將玩家的重生點設為您現在的位置。'
+        detailedDescription: '將玩家的重生點設為您現在的位置。'
+    authme.firstspawn:
+        description: '傳送至新玩家重生點。'
+        detailedDescription: '傳送至新玩家重生點。'
+    authme.setfirstspawn:
+        description: '將新玩家的重生點設為您現在的位置。'
+        detailedDescription: '將新玩家的重生點設為您現在的位置。'
+    authme.purge:
+        description: '刪除超過指定天數的 AuthMeReloaded 資料。'
+        detailedDescription: '刪除超過指定天數的 AuthMeReloaded 資料。'
+        arg1:
+            label: '天'
+            description: '天數'
+    authme.purgeplayer:
+        description: '刪除玩家資料。'
+        detailedDescription: '刪除指定的玩家的資料。'
+        arg1:
+            label: '名稱'
+            description: '玩家名稱'
+        arg2:
+            label: '選項'
+            description: '選項'
+    authme.backup:
+        description: '備份玩家資料。'
+        detailedDescription: '備份所有玩家的資料。'
+    authme.resetpos:
+        description: '重設玩家的登出前位置。'
+        detailedDescription: '重設指定/所有玩家的登出前位置。'
+        arg1:
+            label: '名稱/*'
+            description: '指定玩家/所有玩家'
+    authme.purgebannedplayers:
+        description: '刪除已被封禁的玩家的資料。'
+        detailedDescription: '刪除所有已被封禁的玩家的資料。'
+    authme.switchantibot:
+        description: '切換 AntiBot 的模式。'
+        detailedDescription: '切換 AntiBot 的模式。'
+        arg1:
+            label: '模式'
+            description: '模式'
+    authme.reload:
+        description: '重新載入 AuthMeReloaded。'
+        detailedDescription: '重新載入 AuthMeReloaded。'
+    authme.version:
+        description: '顯示 AuthMeReloaded 的詳細資訊。'
+        detailedDescription: '顯示 AuthMeReloaded 的詳細資訊。例如版本、開發者、貢獻者、及授權。'
+    authme.converter:
+        description: 'AuthMeReloaded 的轉換器指令。'
+        detailedDescription: 'AuthMeReloaded 的轉換器指令。'
+        arg1:
+            label: '工作'
+            description: '工作'
+    authme.messages:
+        description: '修改目前的幫助檔案。'
+        detailedDescription: '修改目前的幫助檔案。'
+    authme.recent:
+        description: '顯示最近登入的玩家。'
+        detailedDescription: '顯示最近登入的玩家。'
+    authme.debug:
+        description: '除錯。'
+        detailedDescription: '除錯。'
+        arg1:
+            label: '子程序'
+            description: '子程序'
+        arg2:
+            label: '參數'
+            description: '參數'
+        arg3:
+            label: '參數'
+            description: '參數'    
+    authme.help:
+        description: '顯示 /authme 指令的詳細介紹。'
+        detailedDescription: '顯示 /authme 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    email.show:
+        description: '顯示您目前的電子郵件地址。'
+        detailedDescription: '顯示您目前的電子郵件地址。'
+    email.add:
+        description: '新增電子郵件地址'
+        detailedDescription: '新增電子郵件地址至您的帳號。'
+        arg1:
+            label: '電子郵件地址'
+            description: '電子郵件地址'
+        arg2:
+            label: '確認電子郵件地址'
+            description: '確認電子郵件地址'
+    email.change:
+        description: '修改電子郵件地址'
+        detailedDescription: '修改您的帳號的電子郵件地址。'
+        arg1:
+            label: '舊的電子郵件地址'
+            description: '舊的電子郵件地址'
+        arg2:
+            label: '新的電子郵件地址'
+            description: '新的電子郵件地址'
+    email.recover:
+        description: '使用別的電子郵件地址復原您的帳號。'
+        detailedDescription: '復原您的帳號，將寄送新的密碼至您提供的電子郵件地址。'
+        arg1:
+            label: '電子郵件地址'
+            description: '電子郵件地址'
+    email.code:
+        description: '使用代碼復原您的帳號。'
+        detailedDescription: '輸入已寄送至您的電子郵件信箱的代碼以復原您的帳號。'
+        arg1:
+            label: '電子郵件地址'
+            description: '電子郵件地址'
+    email.setpassword:
+        description: '復原帳號後，設置新密碼。'
+        detailedDescription: '復原帳號後，設置新密碼。'
+        arg1:
+            label: '密碼'
+            description: '密碼'
+    email.help:
+        description: '顯示 /email 指令的詳細介紹。'
+        detailedDescription: '顯示 /email 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    login:
+    login.help:
+        description: '顯示 /login 指令的詳細介紹。'
+        detailedDescription: '顯示 /login 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    logout:
+        description: '登出帳號'
+        detailedDescription: '登出您的帳號。'
+    logout.help:
+        description: '顯示 /logout 指令的詳細介紹。'
+        detailedDescription: '顯示 /logout 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    register:
+        description: '註冊帳號'
+        detailedDescription: '註冊您的帳號。'
+        arg1:
+            label: '密碼'
+            description: '密碼'
+        arg2:
+            label: '確認密碼'
+            description: '確認密碼'
+    register.help:
+        description: '顯示 /register 指令的詳細介紹。'
+        detailedDescription: '顯示 /register 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    unregister:
+        description: '註銷帳號'
+        detailedDescription: '註銷您的帳號。'
+        arg1:
+            label: '密碼'
+            description: '密碼'
+    unregister.help:
+        description: '顯示 /unregister 指令的詳細介紹。'
+        detailedDescription: '顯示 /unregister 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    changepassword:
+        description: '修改密碼'
+        detailedDescription: '修改您的密碼。'
+        arg1:
+            label: '舊密碼'
+            description: '舊密碼'
+        arg2:
+            label: '新密碼'
+            description: '新密碼'
+    changepassword.help:
+        description: '顯示 /changepassword 指令的詳細介紹。'
+        detailedDescription: '顯示 /changepassword 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    totp:
+        description: '執行兩步驟驗證的相關操作。'
+        detailedDescription: '執行兩步驟驗證的相關操作。'
+    totp.code:
+        description: '登入時，輸入您的兩步驟驗證碼。'
+        detailedDescription: '登入時，輸入您的兩步驟驗證碼。'
+        arg1:
+            label: '驗證碼'
+            description: '驗證碼'
+    totp.add:
+        description: '為您的帳號啟用兩步驟驗證。'
+        detailedDescription: '為您的帳號啟用兩步驟驗證。'
+    totp.confirm:
+        description: '確認後，儲存生成的兩步驟驗證金鑰。'
+        detailedDescription: '確認後，儲存生成的兩步驟驗證金鑰。'
+        arg1:
+            label: '驗證碼'
+            description: '驗證碼'
+    totp.remove:
+        description: '為您的帳號停用兩步驟驗證。'
+        detailedDescription: '為您的帳號停用兩步驟驗證。'
+        arg1:
+            label: '驗證碼'
+            description: '驗證碼'
+    totp.help:
+        description: '顯示 /totp 指令的詳細介紹。'
+        detailedDescription: '顯示 /totp 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    captcha:
+        description: 'AuthMeReloaded 的 Captcha 指令。'
+        detailedDescription: 'AuthMeReloaded 的 Captcha 指令。'
+        arg1:
+            label: 'Captcha 碼'
+            description: 'Captcha 碼'
+    captcha.help:
+        description: '顯示 /captcha 指令的詳細介紹。'
+        detailedDescription: '顯示 /captcha 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
+    verification:
+        description: '完成驗證過程的指令。'
+        detailedDescription: '完成驗證過程的指令。'
+        arg1:
+            label: '驗證碼'
+            description: '驗證碼'
+    verification.help:
+        description: '顯示 /verification 指令的詳細介紹。'
+        detailedDescription: '顯示 /verification 指令的詳細介紹。'
+        arg1:
+            label: '要查詢的指令'
+            description: '要查詢的指令'
